@@ -262,6 +262,7 @@ describe( 'AudienceTile', () => {
 		);
 
 		// Wait for the tooltip to appear, its delay is 100ms.
+		// waitForRegistry() is not suitable to use here as no state changes occur.
 		await act( () => waitForTimeouts( 100 ) );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -414,6 +415,7 @@ describe( 'AudienceTile', () => {
 			);
 
 			// Wait for the tooltip to appear, its delay is 100ms.
+			// waitForRegistry() is not suitable to use here as no state changes occur.
 			await act( () => waitForTimeouts( 100 ) );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -449,6 +451,7 @@ describe( 'AudienceTile', () => {
 			);
 
 			// Wait for the tooltip to appear, its delay is 100ms.
+			// waitForRegistry() is not suitable to use here as no state changes occur.
 			await act( () => waitForTimeouts( 100 ) );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -558,6 +561,7 @@ describe( 'AudienceTile', () => {
 			);
 
 			// Wait for the tooltip to appear, its delay is 100ms.
+			// waitForRegistry() is not suitable to use here as no state changes occur.
 			await act( () => waitForTimeouts( 100 ) );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -595,6 +599,7 @@ describe( 'AudienceTile', () => {
 					);
 
 					// Allow the `trackEvent()` promise to resolve so the custom dimension creation logic can be executed.
+					// waitForRegistry() is not suitable to use here as no state changes occur.
 					await waitForTimeouts( 10 );
 				} );
 			} );
