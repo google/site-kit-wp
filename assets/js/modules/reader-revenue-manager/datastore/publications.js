@@ -36,9 +36,9 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../constants';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
 const fetchGetPublicationsStore = createFetchStore( {
@@ -46,7 +46,7 @@ const fetchGetPublicationsStore = createFetchStore( {
 	controlCallback: () =>
 		get(
 			'modules',
-			READER_REVENUE_MANAGER_MODULE_SLUG,
+			MODULE_SLUG_READER_REVENUE_MANAGER,
 			'publications',
 			{},
 			{ useCache: false }
@@ -59,7 +59,7 @@ const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 	controlCallback: ( { publicationID, publicationOnboardingState } ) =>
 		set(
 			'modules',
-			READER_REVENUE_MANAGER_MODULE_SLUG,
+			MODULE_SLUG_READER_REVENUE_MANAGER,
 			'sync-publication-onboarding-state',
 			{
 				publicationID,

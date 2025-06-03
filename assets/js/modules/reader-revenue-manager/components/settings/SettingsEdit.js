@@ -36,11 +36,11 @@ import { getPostTypesString } from '../../utils/settings';
 import { trackEvent } from '../../../../util';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import {
-	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
-} from '../../datastore/constants';
-import { SNIPPET_MODES } from '../../constants';
+	SNIPPET_MODES,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
+} from '../../constants';
 import SettingsForm from './SettingsForm';
 
 export default function SettingsEdit() {
@@ -55,7 +55,7 @@ export default function SettingsEdit() {
 			select( CORE_MODULES );
 
 		const hasAccess = hasModuleOwnershipOrAccess(
-			READER_REVENUE_MANAGER_MODULE_SLUG
+			MODULE_SLUG_READER_REVENUE_MANAGER
 		);
 
 		if ( hasAccess ) {
@@ -63,7 +63,7 @@ export default function SettingsEdit() {
 		}
 
 		const checkAccessError = getErrorForAction( 'checkModuleAccess', [
-			READER_REVENUE_MANAGER_MODULE_SLUG,
+			MODULE_SLUG_READER_REVENUE_MANAGER,
 		] );
 
 		// Return early if request is not completed yet.

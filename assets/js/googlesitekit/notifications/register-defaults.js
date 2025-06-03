@@ -55,8 +55,11 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { isZeroReport } from '../../modules/analytics-4/utils';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
 import AuthError from '../../components/notifications/AuthError';
 import UnsatisfiedScopesAlert from '../../components/notifications/UnsatisfiedScopesAlert';
@@ -108,8 +111,9 @@ export const DEFAULT_NOTIFICATIONS = {
 
 			const isAuthenticated = select( CORE_USER ).isAuthenticated();
 
-			const ga4ModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const ga4ModuleConnected = select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			);
 
 			const hasTagManagerReadScope = select( CORE_USER ).hasScope(
 				TAGMANAGER_READ_SCOPE
@@ -161,8 +165,9 @@ export const DEFAULT_NOTIFICATIONS = {
 
 			const isAuthenticated = select( CORE_USER ).isAuthenticated();
 
-			const ga4ModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const ga4ModuleConnected = select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			);
 
 			const hasTagManagerReadScope = select( CORE_USER ).hasScope(
 				TAGMANAGER_READ_SCOPE
@@ -271,11 +276,11 @@ export const DEFAULT_NOTIFICATIONS = {
 		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
 			const adSenseModuleConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( 'adsense' );
+			).isModuleConnected( MODULE_SLUG_ADSENSE );
 
 			const analyticsModuleConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( 'analytics-4' );
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 
 			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
 				return false;
@@ -459,16 +464,21 @@ export const DEFAULT_NOTIFICATIONS = {
 					: Promise.resolve( [] ),
 			] );
 
-			const isAnalyticsConnected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const isAnalyticsConnected = select(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 
 			const canViewSharedAnalytics = ! viewOnly
 				? true
-				: select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+				: select( CORE_USER ).canViewSharedModule(
+						MODULE_SLUG_ANALYTICS_4
+				  );
 
 			const canViewSharedSearchConsole = ! viewOnly
 				? true
-				: select( CORE_USER ).canViewSharedModule( 'search-console' );
+				: select( CORE_USER ).canViewSharedModule(
+						MODULE_SLUG_SEARCH_CONSOLE
+				  );
 
 			const showRecoverableAnalytics = await ( () => {
 				if ( ! viewOnly ) {
@@ -479,7 +489,7 @@ export const DEFAULT_NOTIFICATIONS = {
 					select( CORE_MODULES ).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
-					'analytics-4'
+					MODULE_SLUG_ANALYTICS_4
 				);
 			} )();
 			const showRecoverableSearchConsole = await ( () => {
@@ -491,7 +501,7 @@ export const DEFAULT_NOTIFICATIONS = {
 					select( CORE_MODULES ).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
-					'search-console'
+					MODULE_SLUG_SEARCH_CONSOLE
 				);
 			} )();
 
@@ -584,12 +594,12 @@ export const DEFAULT_NOTIFICATIONS = {
 
 			// Get Analytics-4 and Search Console states.
 			const analyticsState = await getModuleState(
-				'analytics-4',
+				MODULE_SLUG_ANALYTICS_4,
 				MODULES_ANALYTICS_4
 			);
 
 			const searchConsoleState = await getModuleState(
-				'search-console',
+				MODULE_SLUG_SEARCH_CONSOLE,
 				MODULES_SEARCH_CONSOLE
 			);
 

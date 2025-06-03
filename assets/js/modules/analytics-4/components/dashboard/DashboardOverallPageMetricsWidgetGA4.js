@@ -30,6 +30,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { Grid, Cell } from '../../../../material-components/layout';
@@ -219,6 +220,6 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 	);
 }
 
-export default whenActive( { moduleName: 'analytics-4' } )(
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
 	DashboardOverallPageMetricsWidgetGA4
 );

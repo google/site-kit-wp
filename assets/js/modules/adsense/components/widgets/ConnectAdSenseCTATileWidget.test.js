@@ -25,9 +25,10 @@ import {
 	provideUserCapabilities,
 	render,
 } from '../../../../../../tests/js/test-utils';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
-import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
 import { KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT } from '../../../../googlesitekit/datastore/user/constants';
+import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
@@ -41,17 +42,17 @@ describe( 'ConnectAdSenseCTATileWidget', () => {
 		provideUserCapabilities( registry );
 		provideModules( registry, [
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				active: false,
 				connected: false,
 			},
 		] );
 		provideKeyMetricsWidgetRegistrations( registry, {
 			[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
-				modules: [ 'adsense' ],
+				modules: [ MODULE_SLUG_ADSENSE ],
 			},
 			secondAdSenseWidget: {
-				modules: [ 'adsense' ],
+				modules: [ MODULE_SLUG_ADSENSE ],
 			},
 		} );
 
@@ -73,14 +74,14 @@ describe( 'ConnectAdSenseCTATileWidget', () => {
 		provideUserCapabilities( registry );
 		provideModules( registry, [
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				active: false,
 				connected: false,
 			},
 		] );
 		provideKeyMetricsWidgetRegistrations( registry, {
 			[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
-				modules: [ 'adsense' ],
+				modules: [ MODULE_SLUG_ADSENSE ],
 			},
 		} );
 
