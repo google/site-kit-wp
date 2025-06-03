@@ -42,7 +42,6 @@ import {
 	provideUserAuthentication,
 	provideUserInfo,
 	waitForDefaultTimeouts,
-	waitForTimeouts,
 } from '../../../../../../../tests/js/utils';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
@@ -569,7 +568,7 @@ describe( 'AudienceSegmentationSetupCTABanner', () => {
 			muteFetch( reportEndpoint );
 			muteFetch( expirableItemEndpoint );
 
-			const { getByRole } = render(
+			const { getByRole, waitForRegistry } = render(
 				<AudienceSegmentationSetupCTAComponent />,
 				{
 					registry,
@@ -580,7 +579,7 @@ describe( 'AudienceSegmentationSetupCTABanner', () => {
 				getByRole( 'button', { name: /Enabling groups/i } )
 			).toBeInTheDocument();
 
-			await act( () => waitForTimeouts( 100 ) );
+			await waitForRegistry();
 		} );
 
 		it( 'should track an event when the CTA is clicked', async () => {
