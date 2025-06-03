@@ -42,9 +42,11 @@ import {
 import { getMetaCapabilityPropertyName } from '../../../../../googlesitekit/datastore/util/permissions';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { provideAnalytics4MockReport } from '../../../../analytics-4/utils/data-mock';
 import * as fixtures from '../../../../analytics-4/datastore/__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../constants';
 import { DAY_IN_SECONDS } from '../../../../../util';
 import { provideSearchConsoleMockReport } from '../../../util/data-mock';
 import SearchFunnelWidgetGA4 from './index';
@@ -252,12 +254,12 @@ ReadyWithAnalyticsNotActive.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 			},
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 
@@ -273,12 +275,12 @@ ReadyWithActivateAnalyticsCTA.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 			},
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideSiteInfo( registry );
@@ -300,12 +302,12 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 			},
 			{
 				active: true,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideSiteInfo( registry );
@@ -439,24 +441,24 @@ ViewOnlySearchConsoleOnlyReady.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				shareable: true,
 			},
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				shareable: false,
 			},
 		] );
 		provideUserCapabilities( registry, {
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'search-console'
+				MODULE_SLUG_SEARCH_CONSOLE
 			) ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'analytics-4'
+				MODULE_SLUG_ANALYTICS_4
 			) ]: false,
 		} );
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
@@ -489,12 +491,12 @@ export default {
 				{
 					active: true,
 					connected: true,
-					slug: 'search-console',
+					slug: MODULE_SLUG_SEARCH_CONSOLE,
 				},
 				{
 					active: true,
 					connected: true,
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 				},
 			] );
 			provideUserAuthentication( registry );

@@ -33,6 +33,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '../../constants';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import NotificationWithSVG from '../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
 import Description from '../../../../googlesitekit/notifications/components/common/Description';
@@ -43,7 +44,7 @@ import SiWGSetupCTASVG from '../../../../../svg/graphics/sign-in-with-google-set
 export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 	const learnMoreURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
-			'sign-in-with-google'
+			MODULE_SLUG_SIGN_IN_WITH_GOOGLE
 		);
 	} );
 
@@ -52,7 +53,9 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 		triggerSurvey( 'view_siwg_setup_cta' );
 	} );
 
-	const onSetupActivate = useActivateModuleCallback( 'sign-in-with-google' );
+	const onSetupActivate = useActivateModuleCallback(
+		MODULE_SLUG_SIGN_IN_WITH_GOOGLE
+	);
 
 	return (
 		<Notification>

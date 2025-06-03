@@ -33,6 +33,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { Cell } from '../../../../../../material-components';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { ActivateAnalyticsCTA } from '../../../common';
 import CreateKeyEventCTA from '../CreateKeyEventCTA';
 import RecoverableModules from '../../../../../../components/RecoverableModules';
@@ -53,10 +54,10 @@ export default function OptionalCells( {
 	const breakpoint = useBreakpoint();
 
 	const ga4ModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const ga4ModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const analyticsModuleActiveAndConnected =
 		ga4ModuleActive && ga4ModuleConnected;
@@ -102,7 +103,9 @@ export default function OptionalCells( {
 				analyticsModuleActiveAndConnected &&
 				showRecoverableGA4 && (
 					<Cell { ...halfCellProps }>
-						<RecoverableModules moduleSlugs={ [ 'analytics-4' ] } />
+						<RecoverableModules
+							moduleSlugs={ [ MODULE_SLUG_ANALYTICS_4 ] }
+						/>
 					</Cell>
 				) }
 		</Fragment>
