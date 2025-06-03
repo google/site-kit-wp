@@ -35,7 +35,7 @@ import { Cell } from '../../../../../../material-components';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { ActivateAnalyticsCTA } from '../../../common';
-import CreateConversionCTA from '../CreateConversionCTA';
+import CreateKeyEventCTA from '../CreateKeyEventCTA';
 import RecoverableModules from '../../../../../../components/RecoverableModules';
 import {
 	BREAKPOINT_SMALL,
@@ -47,7 +47,7 @@ export default function OptionalCells( {
 	canViewSharedAnalytics4,
 	error,
 	showGA4,
-	showConversionsCTA,
+	showKeyEventsCTA,
 	showRecoverableGA4,
 	WidgetReportError,
 } ) {
@@ -63,7 +63,7 @@ export default function OptionalCells( {
 		ga4ModuleActive && ga4ModuleConnected;
 
 	const { quarterCellProps, halfCellProps } =
-		getCellProps( showConversionsCTA );
+		getCellProps( showKeyEventsCTA );
 
 	return (
 		<Fragment>
@@ -73,7 +73,7 @@ export default function OptionalCells( {
 						{ BREAKPOINT_SMALL !== breakpoint && (
 							<ActivateAnalyticsCTA
 								title={ __(
-									'Conversions completed',
+									'Key Events completed',
 									'google-site-kit'
 								) }
 							/>
@@ -95,7 +95,7 @@ export default function OptionalCells( {
 
 			{ showGA4 && (
 				<Cell { ...quarterCellProps } smSize={ 4 }>
-					{ showConversionsCTA && <CreateConversionCTA /> }
+					{ showKeyEventsCTA && <CreateKeyEventCTA /> }
 				</Cell>
 			) }
 
@@ -116,7 +116,7 @@ OptionalCells.propTypes = {
 	canViewSharedAnalytics4: PropTypes.bool.isRequired,
 	error: PropTypes.object,
 	showGA4: PropTypes.bool.isRequired,
-	showConversionsCTA: PropTypes.bool.isRequired,
+	showKeyEventsCTA: PropTypes.bool.isRequired,
 	showRecoverableGA4: PropTypes.bool,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };

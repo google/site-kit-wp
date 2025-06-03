@@ -557,7 +557,7 @@ exports[`SearchFunnelWidgetGA4 should render the Search Funnel Widget, including
                   <h3
                     class="googlesitekit-analytics-cta__preview-graph--title"
                   >
-                    Conversions completed
+                    Key Events completed
                   </h3>
                   <div>
                     <svg />

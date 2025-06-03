@@ -150,7 +150,7 @@ describe( 'SearchFunnelWidgetGA4 Chart', () => {
 		} );
 
 		describe.each( [
-			[ 3, 'Conversions' ],
+			[ 3, 'Key Events' ],
 			[ 4, 'Engagement Rate %' ],
 		] )( 'when selectedStats is %d', ( selectedStats, metricLabel ) => {
 			it( `should render the Analytics ${ metricLabel } stats when canViewSharedAnalytics4 is true`, () => {
