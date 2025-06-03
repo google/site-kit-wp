@@ -44,10 +44,11 @@ import {
 } from '../../googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import * as tracking from '../../util/tracking';
 import { enabledFeatures } from '../../features';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -84,7 +85,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 				connected: true,
 			},
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: true,
 				connected: true,
 			},

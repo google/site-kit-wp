@@ -37,13 +37,14 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
-import { enabledFeatures } from '../../features';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 import { FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID } from '../../googlesitekit/notifications/constants';
-import * as tracking from '../../util/tracking';
-import FirstPartyModeWarningNotification from './FirstPartyModeWarningNotification';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import * as tracking from '../../util/tracking';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { enabledFeatures } from '../../features';
+import FirstPartyModeWarningNotification from './FirstPartyModeWarningNotification';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -82,7 +83,7 @@ describe( 'FirstPartyModeWarningNotification', () => {
 				connected: true,
 			},
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: true,
 				connected: true,
 			},

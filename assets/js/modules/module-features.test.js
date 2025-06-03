@@ -28,6 +28,8 @@ import {
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from './pagespeed-insights/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from './reader-revenue-manager/constants';
+import { MODULE_SLUG_ADS } from './ads/constants';
+import { MODULE_SLUG_ADSENSE } from './adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from './analytics-4/constants';
 import { MODULE_SLUG_TAGMANAGER } from './tagmanager/constants';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from './sign-in-with-google/constants';
@@ -44,14 +46,14 @@ describe( 'Module Features', () => {
 
 	it.each( [
 		[
-			'ads',
+			MODULE_SLUG_ADS,
 			[
 				'Tagging necessary for your ads campaigns to work will be disabled',
 				'Conversion tracking for your ads campaigns will be disabled',
 			],
 		],
 		[
-			'adsense',
+			MODULE_SLUG_ADSENSE,
 			[
 				'Intelligent, automatic ad placement will be disabled',
 				'You will miss out on revenue from ads placed on your site',
