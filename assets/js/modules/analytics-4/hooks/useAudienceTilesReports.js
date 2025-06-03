@@ -41,7 +41,7 @@ function useReportsLoaded( reportOptions, configuredAudiences ) {
 				);
 
 			if ( partialDataSiteKitAudience === undefined ) {
-				return false;
+				return {};
 			}
 
 			const dimensionFilters = {};

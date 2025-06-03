@@ -459,7 +459,7 @@ export default function Body( {
 Body.propTypes = {
 	activeTileIndex: PropTypes.number.isRequired,
 	allTilesError: PropTypes.bool.isRequired,
-	individualTileErrors: PropTypes.object.isRequired,
+	individualTileErrors: PropTypes.object,
 	loading: PropTypes.bool.isRequired,
 	topCitiesReportsLoaded: PropTypes.object.isRequired,
 	topContentReportsLoaded: PropTypes.object.isRequired,
