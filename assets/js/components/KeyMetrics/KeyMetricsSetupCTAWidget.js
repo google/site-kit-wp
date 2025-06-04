@@ -42,7 +42,6 @@ import { useShowTooltip } from '../AdminMenuTooltip';
 import { trackEvent, WEEK_IN_SECONDS } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import useDisplayCTAWidget from './hooks/useDisplayCTAWidget';
-import KeyMetricsSetupCTARenderedEffect from './KeyMetricsSetupCTARenderedEffect';
 import Banner from '../Banner';
 import Link from '../Link';
 import BannerSVGDesktop from '@/svg/graphics/banner-conversions-setup-cta.svg?url';
@@ -125,7 +124,6 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	return (
 		<Widget noPadding>
-			<KeyMetricsSetupCTARenderedEffect />
 			<Banner
 				className="googlesitekit-banner--setup-cta"
 				title={ __(
