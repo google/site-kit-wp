@@ -42,12 +42,10 @@ import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import useDisplayCTAWidget from './hooks/useDisplayCTAWidget';
 import KeyMetricsSetupCTARenderedEffect from './KeyMetricsSetupCTARenderedEffect';
-import KeyMetricsCTAFooter from './KeyMetricsCTAFooter';
-// eslint-disable-next-line import/no-unresolved
-import BannerSVGDesktop from '../../../svg/graphics/banner-conversions-setup-cta.svg?url';
-// eslint-disable-next-line import/no-unresolved
-import BannerSVGMobile from '../../../svg/graphics/banner-conversions-setup-cta-mobile.svg?url';
 import Banner from '../Banner';
+import Link from '../Link';
+import BannerSVGDesktop from '@/svg/graphics/banner-conversions-setup-cta.svg?url';
+import BannerSVGMobile from '@/svg/graphics/banner-conversions-setup-cta-mobile.svg?url';
 
 function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const viewContext = useViewContext();
@@ -124,9 +122,20 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 					verticalPosition: 'top',
 				} }
 				footer={
-					<KeyMetricsCTAFooter
-						onActionClick={ openMetricsSelectionPanel }
-					/>
+					<div className="googlesitekit-widget-key-metrics-footer">
+						<span>
+							{ __(
+								'Interested in specific metrics?',
+								'google-site-kit'
+							) }
+						</span>
+						<Link onClick={ openMetricsSelectionPanel }>
+							{ __(
+								'Select your own metrics',
+								'google-site-kit'
+							) }
+						</Link>
+					</div>
 				}
 			/>
 		</Widget>
