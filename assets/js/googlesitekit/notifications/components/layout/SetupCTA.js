@@ -46,7 +46,6 @@ export default function SetupCTA( {
 	footer,
 	dismissOptions,
 	gaTrackingEventArgs,
-	noPadding = false,
 	...props
 } ) {
 	const trackEvents = useNotificationEvents(
@@ -85,7 +84,7 @@ export default function SetupCTA( {
 
 	return (
 		<div className="googlesitekit-widget-context">
-			<Grid collapsed={ noPadding }>
+			<Grid>
 				<Row>
 					<Cell size={ 12 }>
 						<Banner
