@@ -384,5 +384,16 @@
 		.mdc-layout-grid__inner.googlesitekit-widget-key-metrics-footer {
 			display: inline-block;
 		}
+
+		.googlesitekit-widget-key-metrics-footer {
+
+			& > .googlesitekit-cta-link {
+				margin: 5px 0 0;
+
+				@media (min-width: $bp-tablet) {
+					margin: 0 0 0 5px;
+				}
+			}
+		}
 	}
 }
