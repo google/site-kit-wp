@@ -20,12 +20,13 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -38,7 +39,7 @@ import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import whenActive from '../../util/when-active';
 import { useShowTooltip } from '../AdminMenuTooltip';
-import { trackEvent } from '../../util';
+import { trackEvent, WEEK_IN_SECONDS } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import useDisplayCTAWidget from './hooks/useDisplayCTAWidget';
 import KeyMetricsSetupCTARenderedEffect from './KeyMetricsSetupCTARenderedEffect';
@@ -48,6 +49,7 @@ import BannerSVGDesktop from '@/svg/graphics/banner-conversions-setup-cta.svg?ur
 import BannerSVGMobile from '@/svg/graphics/banner-conversions-setup-cta-mobile.svg?url';
 
 function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
+	const trackingRef = useRef();
 	const viewContext = useViewContext();
 	const trackEventCategory = `${ viewContext }_kmw-cta-notification`;
 	const displayCTAWidget = useDisplayCTAWidget();
@@ -57,6 +59,33 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const fullScreenSelectionLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-metric-selection' )
 	);
+
+	const intersectionEntry = useIntersection( trackingRef, {
+		threshold: 0.25,
+	} );
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const inView = !! intersectionEntry?.intersectionRatio;
+
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+
+	useEffect( () => {
+		if ( inView && ! hasBeenInView ) {
+			trackEvent(
+				`${ viewContext }_kmw-cta-notification`,
+				'view_notification'
+			);
+
+			if ( usingProxy ) {
+				triggerSurvey( 'view_kmw_setup_cta', { ttl: WEEK_IN_SECONDS } );
+			}
+
+			setHasBeenInView( true );
+		}
+	}, [ inView, hasBeenInView, viewContext, usingProxy, triggerSurvey ] );
 
 	const tooltipSettings = {
 		tooltipSlug: KEY_METRICS_SETUP_CTA_WIDGET_SLUG,
