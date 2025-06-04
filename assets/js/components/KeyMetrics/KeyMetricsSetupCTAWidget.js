@@ -31,6 +31,7 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
+import { CORE_USER } from '../../../js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
@@ -42,12 +43,15 @@ import useViewContext from '../../hooks/useViewContext';
 import useDisplayCTAWidget from './hooks/useDisplayCTAWidget';
 import KeyMetricsSetupCTARenderedEffect from './KeyMetricsSetupCTARenderedEffect';
 import KeyMetricsCTAFooter from './KeyMetricsCTAFooter';
-import SetupCTA from '../../../js/googlesitekit/notifications/components/layout/SetupCTA';
-import BannerSVGDesktop from '@/svg/graphics/banner-conversions-setup-cta.svg?url';
-import BannerSVGMobile from '@/svg/graphics/banner-conversions-setup-cta-mobile.svg?url';
+// eslint-disable-next-line import/no-unresolved
+import BannerSVGDesktop from '../../../svg/graphics/banner-conversions-setup-cta.svg?url';
+// eslint-disable-next-line import/no-unresolved
+import BannerSVGMobile from '../../../svg/graphics/banner-conversions-setup-cta-mobile.svg?url';
+import Banner from '../Banner';
 
 function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const viewContext = useViewContext();
+	const trackEventCategory = `${ viewContext }_kmw-cta-notification`;
 	const displayCTAWidget = useDisplayCTAWidget();
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
@@ -69,16 +73,24 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
 	};
 	const showTooltip = useShowTooltip( tooltipSettings );
+	const { dismissItem } = useDispatch( CORE_USER );
+
+	const handleDismiss = useCallback( async () => {
+		await trackEvent( trackEventCategory, 'dismiss_notification' );
+		showTooltip();
+		await dismissItem( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
+	}, [ trackEventCategory, showTooltip, dismissItem ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const openMetricsSelectionPanel = useCallback( async () => {
-		await trackEvent(
-			`${ viewContext }_kmw-cta-notification`,
-			'confirm_pick_own_metrics'
-		);
+		await trackEvent( trackEventCategory, 'confirm_pick_own_metrics' );
 
 		navigateTo( fullScreenSelectionLink );
-	}, [ navigateTo, fullScreenSelectionLink, viewContext ] );
+	}, [ trackEventCategory, navigateTo, fullScreenSelectionLink ] );
+
+	const onGetTailoredMetricsClick = useCallback( () => {
+		trackEvent( trackEventCategory, 'confirm_get_tailored_metrics' );
+	}, [ trackEventCategory ] );
 
 	if ( ! displayCTAWidget ) {
 		return <WidgetNull />;
@@ -87,13 +99,8 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	return (
 		<Widget noPadding>
 			<KeyMetricsSetupCTARenderedEffect />
-			<SetupCTA
-				notificationID={ KEY_METRICS_SETUP_CTA_WIDGET_SLUG }
-				footer={
-					<KeyMetricsCTAFooter
-						onActionClick={ openMetricsSelectionPanel }
-					/>
-				}
+			<Banner
+				className="googlesitekit-banner--setup-cta"
 				title={ __(
 					'Get personalized suggestions for user interaction metrics based on your goals',
 					'google-site-kit'
@@ -103,18 +110,24 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 					'google-site-kit'
 				) }
 				dismissButton={ {
-					showTooltip,
+					label: __( 'Maybe later', 'google-site-kit' ),
+					onClick: handleDismiss,
 				} }
 				ctaButton={ {
 					label: __( 'Get tailored metrics', 'google-site-kit' ),
 					href: ctaLink,
+					onClick: onGetTailoredMetricsClick,
 				} }
 				svg={ {
 					desktop: BannerSVGDesktop,
 					mobile: BannerSVGMobile,
 					verticalPosition: 'top',
 				} }
-				noPadding
+				footer={
+					<KeyMetricsCTAFooter
+						onActionClick={ openMetricsSelectionPanel }
+					/>
+				}
 			/>
 		</Widget>
 	);
