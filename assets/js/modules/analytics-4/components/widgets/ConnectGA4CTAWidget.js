@@ -28,7 +28,6 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import KeyMetricsCTAContent from '../../../../components/KeyMetrics/KeyMetricsCTAContent';
-import KeyMetricsCTAFooter from '../../../../components/KeyMetrics/KeyMetricsCTAFooter';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../../../googlesitekit/widgets/datastore/constants';
@@ -43,6 +42,7 @@ import {
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '../../../../hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '../../../../hooks/useDebounce';
+import Link from '../../../../../js/components/Link';
 
 export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 	const ga4DependantKeyMetrics = useSelect( ( select ) => {
@@ -148,14 +148,15 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 		<Widget
 			noPadding
 			Footer={ () => (
-				<KeyMetricsCTAFooter
-					onActionClick={ () =>
+				<Link
+					onClick={ () =>
 						dismissItem(
 							KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY
 						)
 					}
-					showDismiss
-				/>
+				>
+					{ __( 'Maybe later', 'google-site-kit' ) }
+				</Link>
 			) }
 		>
 			<KeyMetricsCTAContent
