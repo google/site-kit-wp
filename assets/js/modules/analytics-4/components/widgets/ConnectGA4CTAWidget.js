@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -43,7 +48,6 @@ import useCompleteModuleActivationCallback from '../../../../hooks/useCompleteMo
 import { useDebounce } from '../../../../hooks/useDebounce';
 import Link from '../../../../../js/components/Link';
 import Banner from '../../../../../js/components/Banner';
-import { useIntersection } from 'react-use';
 import BannerSVGDesktop from '@/svg/graphics/banner-conversions-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-conversions-setup-cta-mobile.svg?url';
 
