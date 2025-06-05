@@ -28,7 +28,7 @@ import {
 	setupAnalytics4Error,
 	setupSearchConsoleZeroData,
 	widgetDecorators,
-} from './common-GA4.stories';
+} from './common-GA4-stories';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardUniqueVisitorsGA4 from './WPDashboardUniqueVisitorsGA4';
