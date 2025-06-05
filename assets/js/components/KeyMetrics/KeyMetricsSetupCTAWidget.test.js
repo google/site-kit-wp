@@ -27,7 +27,9 @@ import { useIntersection as mockUseIntersection } from 'react-use';
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
 	render,
@@ -89,13 +91,15 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	it( 'does not render when GA4 is not connected', async () => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: false,
 			},
 		] );
 
-		provideGatheringDataState( registry, { 'search-console': false } );
+		provideGatheringDataState( registry, {
+			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+		} );
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.receiveIsDataAvailableOnLoad( true );
@@ -120,20 +124,20 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				active: true,
 				connected: true,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
 		] );
 
 		provideGatheringDataState( registry, {
-			'search-console': true,
-			'analytics-4': false,
+			[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
+			[ MODULE_SLUG_ANALYTICS_4 ]: false,
 		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -160,19 +164,19 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				active: true,
 				connected: true,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
 		] );
 
 		provideGatheringDataState( registry, {
-			'search-console': false,
+			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
 		} );
 
 		// The provideGatheringDataState() helper cannot handle the true case for Analytics 4, due to its dependence on additional state
@@ -216,12 +220,12 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				active: true,
 				connected: true,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},

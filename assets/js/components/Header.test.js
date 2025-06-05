@@ -23,7 +23,6 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	provideUserInfo,
-	waitForTimeouts,
 } from '../../../tests/js/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
@@ -64,7 +63,7 @@ describe( 'Header', () => {
 	} );
 
 	it( 'adds a class if the subheader renders any children', async () => {
-		const { container, rerender } = render(
+		const { container, rerender, waitForRegistry } = render(
 			<Header subHeader={ <Null /> } />,
 			{
 				registry,
@@ -85,6 +84,6 @@ describe( 'Header', () => {
 			'googlesitekit-header--has-subheader'
 		);
 
-		await act( () => waitForTimeouts( 30 ) );
+		await waitForRegistry();
 	} );
 } );

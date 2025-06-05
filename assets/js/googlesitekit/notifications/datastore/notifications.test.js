@@ -24,7 +24,7 @@ import {
 	provideNotifications,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { render } from '../../../../../tests/js/test-utils';
+import { render, waitFor } from '../../../../../tests/js/test-utils';
 import {
 	CORE_NOTIFICATIONS,
 	NOTIFICATION_AREAS,
@@ -47,16 +47,56 @@ describe( 'core/notifications Notifications', () => {
 
 	let registry;
 	let store;
+	let insertNotificationIntoResolvedQueue;
 	let registerNotification;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_NOTIFICATIONS ].store;
-		( { registerNotification } = registry.dispatch( CORE_NOTIFICATIONS ) );
+		( { insertNotificationIntoResolvedQueue, registerNotification } =
+			registry.dispatch( CORE_NOTIFICATIONS ) );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );
 
 	describe( 'actions', () => {
+		describe( 'insertNotificationIntoResolvedQueue', () => {
+			const id = 'test-notification-id';
+			function TestNotificationComponent( props ) {
+				return <div>Hello { props.children }!</div>;
+			}
+
+			it( 'should not try to insert an unregistered notification', () => {
+				insertNotificationIntoResolvedQueue( id );
+
+				const { queuedNotifications } = store.getState();
+
+				expect( console ).toHaveWarnedWith(
+					'Could not add notification with ID "test-notification-id" to queue. Notification "test-notification-id" is not registered.'
+				);
+				expect( queuedNotifications ).toEqual( {} );
+			} );
+
+			it( 'should not try to insert a notification into an unresolved queue', () => {
+				// Register the notification so it can be added.
+				registerNotification( id, {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 11,
+					isDismissible: false,
+				} );
+
+				insertNotificationIntoResolvedQueue( id );
+
+				const { queuedNotifications } = store.getState();
+
+				expect( console ).toHaveWarnedWith(
+					'Could not add notification with ID "test-notification-id" to queue. Queue is not yet populated/resolved.'
+				);
+				expect( queuedNotifications ).toEqual( {} );
+			} );
+		} );
+
 		describe( 'registerNotification', () => {
 			const id = 'test-notification-id';
 			function TestNotificationComponent( props ) {
@@ -147,6 +187,407 @@ describe( 'core/notifications Notifications', () => {
 				expect( store.getState().notifications[ id ].Component ).toBe(
 					NotificationOne
 				);
+			} );
+
+			it( 'should add the notification to the queue if the queue is already resolved', async () => {
+				fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+
+				const { getQueuedNotifications } =
+					registry.select( CORE_NOTIFICATIONS );
+
+				getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
+
+				expect(
+					getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.DEFAULT
+					)
+				).toEqual( [] );
+
+				registerNotification( id, {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 11,
+					checkRequirements: () => true,
+					isDismissible: false,
+				} );
+
+				insertNotificationIntoResolvedQueue( id );
+
+				expect(
+					getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.DEFAULT
+					)
+				).toMatchInlineSnapshot( `
+			Array [
+			  Object {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-banners-above-nav",
+			    "checkRequirements": [Function],
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "test-notification-id",
+			    "isDismissible": false,
+			    "priority": 11,
+			    "viewContexts": Array [
+			      "mainDashboard",
+			    ],
+			  },
+			]
+		` );
+			} );
+
+			it( 'should place the notification at the end of the queue if it is the lowest priority', async () => {
+				fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+
+				registerNotification( 'first', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 5,
+					isDismissible: false,
+				} );
+
+				registerNotification( 'second', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 10,
+					isDismissible: false,
+				} );
+
+				const { getQueuedNotifications } =
+					registry.select( CORE_NOTIFICATIONS );
+
+				getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
+
+				registerNotification( id, {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 20,
+					isDismissible: false,
+				} );
+
+				// Wait for the queue to be updated by the `registerNotification`
+				// action.
+				await waitFor( () => {
+					expect(
+						getQueuedNotifications(
+							VIEW_CONTEXT_MAIN_DASHBOARD,
+							NOTIFICATION_GROUPS.DEFAULT
+						)
+					).toHaveLength( 3 );
+				} );
+
+				expect(
+					getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.DEFAULT
+					)
+				).toMatchInlineSnapshot( `
+			Array [
+			  Object {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-banners-above-nav",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "first",
+			    "isDismissible": false,
+			    "priority": 5,
+			    "viewContexts": Array [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			  Object {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-banners-above-nav",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "second",
+			    "isDismissible": false,
+			    "priority": 10,
+			    "viewContexts": Array [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			  Object {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-banners-above-nav",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "test-notification-id",
+			    "isDismissible": false,
+			    "priority": 20,
+			    "viewContexts": Array [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			]
+		` );
+			} );
+
+			it( 'should place the notification in between two notifications of lower/higher priority', async () => {
+				fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+
+				registerNotification( 'first', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 5,
+					isDismissible: false,
+				} );
+
+				registerNotification( 'second', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 10,
+					isDismissible: false,
+				} );
+
+				const { getQueuedNotifications } =
+					registry.select( CORE_NOTIFICATIONS );
+
+				getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
+
+				registerNotification( 'in-between', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 6,
+					isDismissible: false,
+				} );
+
+				// Wait for the queue to be updated by the `registerNotification`
+				// action.
+				await waitFor( () => {
+					expect(
+						getQueuedNotifications(
+							VIEW_CONTEXT_MAIN_DASHBOARD,
+							NOTIFICATION_GROUPS.DEFAULT
+						)
+					).toHaveLength( 3 );
+				} );
+
+				expect(
+					getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.DEFAULT
+					)
+				).toMatchInlineSnapshot( `
+			Array [
+			  Object {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-banners-above-nav",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "first",
+			    "isDismissible": false,
+			    "priority": 5,
+			    "viewContexts": Array [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			  Object {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-banners-above-nav",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "in-between",
+			    "isDismissible": false,
+			    "priority": 6,
+			    "viewContexts": Array [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			  Object {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-banners-above-nav",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "second",
+			    "isDismissible": false,
+			    "priority": 10,
+			    "viewContexts": Array [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			]
+		` );
+			} );
+
+			it( 'should place the notification in the front of the queue when it has the highest priority', async () => {
+				fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+
+				registerNotification( 'first', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 5,
+					isDismissible: false,
+				} );
+
+				registerNotification( 'second', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 10,
+					isDismissible: false,
+				} );
+
+				const { getQueuedNotifications } =
+					registry.select( CORE_NOTIFICATIONS );
+
+				getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
+
+				registerNotification( 'in-between', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 1,
+					isDismissible: false,
+				} );
+
+				// Wait for the queue to be updated by the `registerNotification`
+				// action.
+				await waitFor( () => {
+					expect(
+						getQueuedNotifications(
+							VIEW_CONTEXT_MAIN_DASHBOARD,
+							NOTIFICATION_GROUPS.DEFAULT
+						)
+					).toHaveLength( 3 );
+				} );
+
+				expect(
+					getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.DEFAULT
+					)
+				).toMatchInlineSnapshot( `
+			Array [
+			  Object {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-banners-above-nav",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "in-between",
+			    "isDismissible": false,
+			    "priority": 1,
+			    "viewContexts": Array [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			  Object {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-banners-above-nav",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "first",
+			    "isDismissible": false,
+			    "priority": 5,
+			    "viewContexts": Array [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			  Object {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-banners-above-nav",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "second",
+			    "isDismissible": false,
+			    "priority": 10,
+			    "viewContexts": Array [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			]
+		` );
 			} );
 		} );
 

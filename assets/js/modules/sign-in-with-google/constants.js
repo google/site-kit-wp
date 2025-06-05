@@ -1,5 +1,7 @@
 /**
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Sign in with Google module constants.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +16,4 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-first-party-mode-setup-cta-banner";
+export const MODULE_SLUG_SIGN_IN_WITH_GOOGLE = 'sign-in-with-google';

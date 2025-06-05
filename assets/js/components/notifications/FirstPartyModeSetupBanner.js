@@ -17,9 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -29,33 +34,19 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import { useShowTooltip } from '../AdminMenuTooltip';
 import {
 	CORE_NOTIFICATIONS,
-	NOTIFICATION_GROUPS,
+	NOTIFICATION_AREAS,
 } from '../../googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import Description from '../../googlesitekit/notifications/components/common/Description';
-import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
-import NotificationWithSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSVG';
-import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
-import FPMSetupCTASVGDesktop from '../../../svg/graphics/first-party-mode-setup-banner-desktop.svg';
-import FPMSetupCTASVGTablet from '../../../svg/graphics/first-party-mode-setup-banner-tablet.svg';
-import FPMSetupCTASVGMobile from '../../../svg/graphics/first-party-mode-setup-banner-mobile.svg';
-import {
-	BREAKPOINT_SMALL,
-	BREAKPOINT_TABLET,
-	useBreakpoint,
-} from '../../hooks/useBreakpoint';
-import useViewContext from '../../hooks/useViewContext';
 import { DAY_IN_SECONDS } from '../../util';
-
-export const FPM_SHOW_SETUP_SUCCESS_NOTIFICATION =
-	'fpm-show-setup-success-notification';
+import SetupCTA from '../../googlesitekit/notifications/components/layout/SetupCTA';
+import BannerSVGDesktop from '@/svg/graphics/banner-first-party-mode-setup-cta.svg?url';
+import BannerSVGMobile from '@/svg/graphics/banner-first-party-mode-setup-cta-mobile.svg?url';
+import FirstPartyModeSetupSuccessSubtleNotification, {
+	FIRST_PARTY_MODE_SETUP_SUCCESS_NOTIFICATION,
+} from './FirstPartyModeSetupSuccessSubtleNotification';
 
 export default function FirstPartyModeSetupBanner( { id, Notification } ) {
-	const breakpoint = useBreakpoint();
-	const viewContext = useViewContext();
-
 	const { setFirstPartyModeEnabled, saveFirstPartyModeSettings } =
 		useDispatch( CORE_SITE );
 
@@ -73,30 +64,41 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		select( CORE_SITE ).isUsingProxy()
 	);
 
-	const { invalidateResolution } = useDispatch( CORE_NOTIFICATIONS );
+	const { dismissNotification, registerNotification } =
+		useDispatch( CORE_NOTIFICATIONS );
 
-	const { setValue } = useDispatch( CORE_UI );
-
-	const learnMoreURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getDocumentationLinkURL(
+	const learnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
 			'first-party-mode-introduction'
-		);
-	} );
+		)
+	);
 
 	const onCTAClick = async () => {
 		setFirstPartyModeEnabled( true );
 		const { error } = await saveFirstPartyModeSettings();
 
 		if ( error ) {
-			return { error };
+			return;
 		}
 
-		setValue( FPM_SHOW_SETUP_SUCCESS_NOTIFICATION, true );
-		invalidateResolution( 'getQueuedNotifications', [
-			viewContext,
-			NOTIFICATION_GROUPS.DEFAULT,
-		] );
+		dismissNotification( id );
+
+		registerNotification( FIRST_PARTY_MODE_SETUP_SUCCESS_NOTIFICATION, {
+			Component: FirstPartyModeSetupSuccessSubtleNotification,
+			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+			isDismissible: false,
+			featureFlag: 'firstPartyMode',
+		} );
 	};
+
+	const ctaError = useSelect( ( select ) => {
+		const firstPartyModeSettings =
+			select( CORE_SITE ).getFirstPartyModeSettings();
+		return select( CORE_SITE ).getErrorForAction(
+			'saveFirstPartyModeSettings',
+			[ firstPartyModeSettings ]
+		);
+	} );
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 	const handleView = useCallback( () => {
@@ -105,49 +107,46 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		}
 	}, [ triggerSurvey, usingProxy ] );
 
-	const breakpointSVGMap = {
-		[ BREAKPOINT_SMALL ]: FPMSetupCTASVGMobile,
-		[ BREAKPOINT_TABLET ]: FPMSetupCTASVGTablet,
-	};
-
 	return (
 		<Notification onView={ handleView }>
-			<NotificationWithSVG
-				id={ id }
+			<SetupCTA
+				notificationID={ id }
 				title={ __(
 					'Get more comprehensive stats by collecting metrics via your own site',
 					'google-site-kit'
 				) }
-				description={
-					<Description
-						text={ __(
-							'Enable First-party mode (<em>beta</em>) to send measurement through your own domain - this helps improve the quality and completeness of Analytics or Ads metrics.',
-							'google-site-kit'
-						) }
-						learnMoreLink={
-							<LearnMoreLink
-								id={ id }
-								label={ __( 'Learn more', 'google-site-kit' ) }
-								url={ learnMoreURL }
-							/>
-						}
-					/>
-				}
-				actions={
-					<ActionsCTALinkDismiss
-						id={ id }
-						className="googlesitekit-setup-cta-banner__actions-wrapper"
-						ctaLabel={ __(
-							'Enable First-party mode',
-							'google-site-kit'
-						) }
-						onCTAClick={ onCTAClick }
-						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
-						onDismiss={ showTooltip }
-					/>
-				}
-				SVG={ breakpointSVGMap[ breakpoint ] || FPMSetupCTASVGDesktop }
+				description={ createInterpolateElement(
+					__(
+						'Enable First-party mode (<em>beta</em>) to send measurement through your own domain - this helps improve the quality and completeness of Analytics or Ads metrics.',
+						'google-site-kit'
+					),
+					{
+						em: <em />,
+					}
+				) }
+				learnMoreLink={ {
+					href: learnMoreURL,
+				} }
+				ctaButton={ {
+					label: __( 'Enable First-party mode', 'google-site-kit' ),
+					onClick: onCTAClick,
+				} }
+				dismissButton={ {
+					label: __( 'Maybe later', 'google-site-kit' ),
+					onClick: showTooltip,
+				} }
+				svg={ {
+					desktop: BannerSVGDesktop,
+					mobile: BannerSVGMobile,
+					verticalPosition: 'bottom',
+				} }
+				errorText={ ctaError?.message }
 			/>
 		</Notification>
 	);
 }
+
+FirstPartyModeSetupBanner.propTypes = {
+	id: PropTypes.string,
+	Notification: PropTypes.elementType,
+};

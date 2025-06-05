@@ -32,6 +32,7 @@ import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 
 export default function useCreateCustomDimensionsEffect() {
 	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
@@ -39,7 +40,7 @@ export default function useCreateCustomDimensionsEffect() {
 	);
 
 	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const hasAnalyticsEditScope = useSelect( ( select ) =>

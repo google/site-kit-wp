@@ -43,6 +43,7 @@ import {
 	DATA_SRC_LAB,
 	UI_DATA_SOURCE,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../../constants';
 import Spinner from '../../../../../components/Spinner';
 
 export default function Footer( { isFetching } ) {
@@ -64,7 +65,7 @@ export default function Footer( { isFetching } ) {
 			// Invalidate the PageSpeed API request caches.
 			await invalidateCache(
 				'modules',
-				'pagespeed-insights',
+				MODULE_SLUG_PAGESPEED_INSIGHTS,
 				'pagespeed'
 			);
 

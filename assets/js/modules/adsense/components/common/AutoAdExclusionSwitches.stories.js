@@ -21,6 +21,7 @@
  */
 import AutoAdExclusionSwitches from './AutoAdExclusionSwitches';
 import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import {
 	createTestRegistry,
 	WithTestRegistry,
@@ -79,7 +80,7 @@ export default {
 			const registry = createTestRegistry();
 			provideModules( registry, [
 				{
-					slug: 'adsense',
+					slug: MODULE_SLUG_ADSENSE,
 					active: true,
 					connected: true,
 				},
