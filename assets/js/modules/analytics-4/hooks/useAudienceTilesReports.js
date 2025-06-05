@@ -32,16 +32,16 @@ import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from '../datastore/constants';
  * @param {Array}  configuredAudiences Configured audiences.
  * @return {boolean} Whether the report is loaded.
  */
-function useReportLoaded( reportOptions, configuredAudiences ) {
+function useReportsLoaded( reportOptions, configuredAudiences ) {
 	return useSelect( ( select ) =>
-		configuredAudiences.every( ( audienceResourceName ) => {
+		configuredAudiences.reduce( ( reportsLoaded, audienceResourceName ) => {
 			const partialDataSiteKitAudience =
 				select( MODULES_ANALYTICS_4 ).getPartialDataSiteKitAudience(
 					audienceResourceName
 				);
 
 			if ( partialDataSiteKitAudience === undefined ) {
-				return false;
+				return {};
 			}
 
 			const dimensionFilters = {};
@@ -55,19 +55,21 @@ function useReportLoaded( reportOptions, configuredAudiences ) {
 				dimensionFilters.audienceResourceName = audienceResourceName;
 			}
 
-			return select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[
-					{
-						...reportOptions,
-						dimensionFilters: {
-							...reportOptions.dimensionFilters,
-							...dimensionFilters,
-						},
+			const isLoaded = select(
+				MODULES_ANALYTICS_4
+			).hasFinishedResolution( 'getReport', [
+				{
+					...reportOptions,
+					dimensionFilters: {
+						...reportOptions.dimensionFilters,
+						...dimensionFilters,
 					},
-				]
-			);
-		} )
+				},
+			] );
+
+			reportsLoaded[ audienceResourceName ] = isLoaded;
+			return reportsLoaded;
+		}, {} )
 	);
 }
 
@@ -315,7 +317,7 @@ export default function useAudienceTilesReports( {
 		)
 	);
 
-	const topCitiesReportLoaded = useReportLoaded(
+	const topCitiesReportsLoaded = useReportsLoaded(
 		topCitiesReportOptions,
 		configuredAudiences
 	);
@@ -346,7 +348,7 @@ export default function useAudienceTilesReports( {
 			configuredAudiences
 		)
 	);
-	const topContentReportLoaded = useReportLoaded(
+	const topContentReportsLoaded = useReportsLoaded(
 		topContentReportOptions,
 		configuredAudiences
 	);
@@ -377,7 +379,7 @@ export default function useAudienceTilesReports( {
 			configuredAudiences
 		)
 	);
-	const topContentPageTitlesReportLoaded = useReportLoaded(
+	const topContentPageTitlesReportsLoaded = useReportsLoaded(
 		topContentPageTitlesReportOptions,
 		configuredAudiences
 	);
@@ -398,13 +400,13 @@ export default function useAudienceTilesReports( {
 		totalPageviewsReportLoaded,
 		totalPageviewsReportError,
 		topCitiesReport,
-		topCitiesReportLoaded,
+		topCitiesReportsLoaded,
 		topCitiesReportErrors,
 		topContentReport,
-		topContentReportLoaded,
+		topContentReportsLoaded,
 		topContentReportErrors,
 		topContentPageTitlesReport,
-		topContentPageTitlesReportLoaded,
+		topContentPageTitlesReportsLoaded,
 		topContentPageTitlesReportErrors,
 	};
 }

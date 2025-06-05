@@ -92,6 +92,10 @@ describe( 'AudienceCreationNotice', () => {
 	} );
 
 	it( 'should render null if no audiences are available', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAudienceSettings( {} );
+
 		const { container } = render( <AudienceCreationNotice />, {
 			registry,
 		} );
@@ -100,6 +104,10 @@ describe( 'AudienceCreationNotice', () => {
 	} );
 
 	it( 'should render null if the user has dismissed the notice', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAudienceSettings( {} );
+
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [ AUDIENCE_CREATION_NOTICE_SLUG ] );

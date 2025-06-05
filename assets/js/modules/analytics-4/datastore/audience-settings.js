@@ -250,13 +250,23 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|null|undefined)} Available audiences, `null` if not set, or `undefined` if not loaded.
 	 */
-	getAvailableAudiences( state ) {
-		return state.audienceSettings?.availableAudiences;
-	},
+	getAvailableAudiences: createRegistrySelector( ( select ) => () => {
+		const audienceSettings =
+			select( MODULES_ANALYTICS_4 ).getAudienceSettings() || {};
+		return audienceSettings.availableAudiences;
+	} ),
 
-	getOrSyncAvailableAudiences( state ) {
-		return state.audienceSettings?.availableAudiences;
-	},
+	/**
+	 * Gets the available audiences.
+	 *
+	 * @since 1.152.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array|null|undefined)} Available audiences, `null` if not set, or `undefined` if not loaded.
+	 */
+	getOrSyncAvailableAudiences: createRegistrySelector( ( select ) => () => {
+		return select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+	} ),
 
 	/**
 	 * Gets the audience settings.

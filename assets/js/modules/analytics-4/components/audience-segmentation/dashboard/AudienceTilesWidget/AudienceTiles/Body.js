@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback, useEffect } from '@wordpress/element';
@@ -56,6 +61,9 @@ export default function Body( {
 	allTilesError,
 	individualTileErrors,
 	loading,
+	topCitiesReportsLoaded,
+	topContentReportsLoaded,
+	topContentPageTitlesReportsLoaded,
 	visibleAudiences,
 	Widget,
 } ) {
@@ -321,6 +329,11 @@ export default function Body( {
 					// Return loading tile if data is not yet loaded.
 					if (
 						loading ||
+						! topCitiesReportsLoaded?.[ audienceResourceName ] ||
+						! topContentReportsLoaded?.[ audienceResourceName ] ||
+						! topContentPageTitlesReportsLoaded?.[
+							audienceResourceName
+						] ||
 						isZeroData === undefined ||
 						isPartialData === undefined
 					) {
@@ -442,3 +455,15 @@ export default function Body( {
 		</div>
 	);
 }
+
+Body.propTypes = {
+	activeTileIndex: PropTypes.number.isRequired,
+	allTilesError: PropTypes.bool.isRequired,
+	individualTileErrors: PropTypes.object,
+	loading: PropTypes.bool.isRequired,
+	topCitiesReportsLoaded: PropTypes.object.isRequired,
+	topContentReportsLoaded: PropTypes.object.isRequired,
+	topContentPageTitlesReportsLoaded: PropTypes.object.isRequired,
+	visibleAudiences: PropTypes.array.isRequired,
+	Widget: PropTypes.elementType.isRequired,
+};
