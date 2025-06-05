@@ -23,6 +23,7 @@ import * as fixtures from '../../datastore/__fixtures__';
 import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
@@ -174,7 +175,7 @@ export default {
 				provideUserAuthentication( registry );
 				provideModules( registry, [
 					{
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 						active: true,
 						connected: true,
 					},

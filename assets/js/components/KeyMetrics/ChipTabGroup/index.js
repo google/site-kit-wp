@@ -59,6 +59,7 @@ import {
 	CONVERSION_REPORTING_LEAD_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
@@ -139,7 +140,7 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	} );
 
 	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const detectedEvents = useSelect( ( select ) => {
 		if ( ! isGA4Connected ) {

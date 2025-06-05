@@ -43,6 +43,7 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../../components/KeyMetrics/constants';
 import { conversionReportingDetectedEventsTracking } from '../../../../components/KeyMetrics/utils';
 import ConversionReportingDashboardSubtleNotification from '../../../../components/KeyMetrics/ConversionReportingDashboardSubtleNotification';
@@ -440,6 +441,6 @@ ConversionReportingNotificationCTAWidget.propTypes = {
 };
 
 export default compose(
-	whenActive( { moduleName: 'analytics-4' } ),
+	whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } ),
 	whenHasChangedConversionEvents()
 )( ConversionReportingNotificationCTAWidget );
