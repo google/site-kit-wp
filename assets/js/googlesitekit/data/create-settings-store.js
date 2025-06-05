@@ -67,7 +67,7 @@ const ROLLBACK_SETTING = 'ROLLBACK_SETTING';
  * @private
  *
  * @param {string}        type                                  The data to access. One of 'core' or 'modules'.
- * @param {string}        identifier                            The data identifier, eg. a module slug like 'search-console'.
+ * @param {string}        identifier                            The data identifier, eg. a module slug like `search-console`.
  * @param {string}        datapoint                             The endpoint to request data from, e.g. 'settings'.
  * @param {Object}        options                               Optional. Options to consider for the store.
  * @param {Array}         [options.ownedSettingsSlugs]          Optional. List of "owned settings" for this module, if they exist.

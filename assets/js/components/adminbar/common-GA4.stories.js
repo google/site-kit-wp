@@ -33,6 +33,7 @@ import {
 	provideAnalyticsReportWithoutDateRangeData,
 } from '../../modules/analytics-4/utils/data-mock';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { DAY_IN_SECONDS } from '../../util';
 import { properties } from '../../modules/analytics-4/datastore/__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
@@ -122,7 +123,7 @@ export const setupBaseRegistry = ( registry, args ) => {
 	// Set up analytics-4 modules stores but provide no data.
 	provideModules( registry, [
 		{
-			slug: 'analytics-4',
+			slug: MODULE_SLUG_ANALYTICS_4,
 			active: true,
 			connected: true,
 		},

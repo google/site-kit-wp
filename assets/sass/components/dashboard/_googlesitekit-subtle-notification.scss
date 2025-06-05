@@ -134,28 +134,4 @@
 			}
 		}
 	}
-
-	&.googlesitekit-subtle-notification--info {
-		background-color: $c-surfaces-background;
-
-		.googlesitekit-subtle-notification__icon,
-		.googlesitekit-subtle-notification__content {
-			color: $c-surfaces-on-surface;
-		}
-
-		.mdc-button {
-
-			&.googlesitekit-subtle-notification__cta {
-				@include mdc-button-filled-accessible( $c-surfaces-on-surface );
-			}
-		}
-
-		.mdc-button--tertiary {
-			@include mdc-button-tertiary-styles(
-				$c-surfaces-on-surface,
-				$c-interactive-tertiary-hover,
-				$c-interactive-tertiary-focus
-			);
-		}
-	}
 }

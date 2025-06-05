@@ -30,6 +30,7 @@ import {
 	widgetDecorators,
 	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
 } from './common-GA4.stories';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardUniqueVisitorsGA4 from './WPDashboardUniqueVisitorsGA4';
 
@@ -48,7 +49,12 @@ function Template( { setupRegistry = () => {}, ...args } ) {
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
-	setupRegistry: setupAnalytics4MockReports,
+	setupRegistry: ( registry ) => {
+		setupAnalytics4MockReports( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+	},
 };
 
 export const GatheringData = Template.bind( {} );
@@ -63,6 +69,9 @@ ZeroData.args = {
 	setupRegistry: ( registry ) => {
 		setupAnalytics4ZeroData( registry );
 		setupSearchConsoleZeroData( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
 	},
 };
 
@@ -75,7 +84,12 @@ Loading.args = {
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
 Error.args = {
-	setupRegistry: setupAnalytics4Error,
+	setupRegistry: ( registry ) => {
+		setupAnalytics4Error( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+	},
 };
 
 export const NoDataInComparisonDateRange = Template.bind( {} );

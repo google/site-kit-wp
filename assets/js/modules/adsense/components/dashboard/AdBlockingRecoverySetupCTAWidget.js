@@ -59,6 +59,7 @@ import {
 	AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 import SurveyViewTrigger from '../../../../components/surveys/SurveyViewTrigger';
 
@@ -294,6 +295,6 @@ AdBlockingRecoverySetupCTAWidget.propTypes = {
 	WidgetNull: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( { moduleName: 'adsense' } )(
+export default whenActive( { moduleName: MODULE_SLUG_ADSENSE } )(
 	AdBlockingRecoverySetupCTAWidget
 );

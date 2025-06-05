@@ -65,14 +65,17 @@ const Notice = forwardRef(
 				) }
 
 				<div className="googlesitekit-notice__content">
-					<Title>{ title }</Title>
-					<Description>{ description }</Description>
+					{ title && <Title>{ title }</Title> }
+					{ description && (
+						<Description>{ description }</Description>
+					) }
 				</div>
 
 				{ ( dismissButton?.label ||
 					dismissButton?.onClick ||
 					( ctaButton?.label &&
-						( ctaButton?.onClick || ctaButton?.href ) ) ) && (
+						( ctaButton?.onClick || ctaButton?.href ) ) ||
+					children ) && (
 					<div className="googlesitekit-notice__action">
 						{ children }
 
@@ -109,11 +112,14 @@ Notice.TYPES = TYPES;
 
 Notice.propTypes = {
 	className: PropTypes.string,
-	title: PropTypes.string,
-	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.object ] ),
+	title: PropTypes.oneOfType( [ PropTypes.string, PropTypes.object ] ),
+	description: PropTypes.node,
 	type: PropTypes.oneOf( Object.values( TYPES ) ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
-	ctaButton: PropTypes.shape( CTAButton.propTypes ),
+	ctaButton: PropTypes.shape( {
+		...CTAButton.propTypes,
+		label: PropTypes.string, // CTAButton label should not be required for this parent component.
+	} ),
 	children: PropTypes.node,
 	hideIcon: PropTypes.bool,
 };

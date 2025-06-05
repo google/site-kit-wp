@@ -190,9 +190,6 @@ exports[`FirstPartyModeToggle should render in disabled state if server requirem
             </span>
           </a>
         </p>
-        <p
-          class="googlesitekit-notice__description"
-        />
       </div>
     </div>
   </div>

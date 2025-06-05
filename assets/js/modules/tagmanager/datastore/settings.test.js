@@ -28,6 +28,7 @@ import {
 	CONTEXT_AMP,
 	FORM_SETUP,
 } from './constants';
+import { MODULE_SLUG_TAGMANAGER } from '../constants';
 import {
 	CORE_SITE,
 	AMP_MODE_SECONDARY,
@@ -36,6 +37,7 @@ import {
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../analytics-4/constants';
 import defaultModules from '../../../googlesitekit/modules/datastore/__fixtures__';
 import * as fixtures from './__fixtures__';
 import {
@@ -103,7 +105,7 @@ describe( 'modules/tagmanager settings', () => {
 		// TODO: the analytics module should not be connected by default in the module fixtures assets/js/googlesitekit/modules/datastore/fixtures.json
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 			},
 		] );
@@ -317,7 +319,7 @@ describe( 'modules/tagmanager settings', () => {
 					);
 					const cacheKey = createCacheKey(
 						'modules',
-						'tagmanager',
+						MODULE_SLUG_TAGMANAGER,
 						'arbitrary-datapoint'
 					);
 					expect( await setItem( cacheKey, 'test-value' ) ).toBe(

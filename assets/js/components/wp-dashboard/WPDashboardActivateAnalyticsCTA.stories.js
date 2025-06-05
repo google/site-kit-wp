@@ -22,12 +22,15 @@
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { widgetDecorators } from './common-GA4.stories';
 import {
 	provideModules,
 	provideModuleRegistrations,
 	provideUserAuthentication,
+	provideUserCapabilities,
 } from '../../../../tests/js/utils';
+import { PERMISSION_MANAGE_OPTIONS } from '../../googlesitekit/datastore/user/constants';
 
 function Template( { setupRegistry } ) {
 	return (
@@ -42,11 +45,14 @@ Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry, {
+			[ PERMISSION_MANAGE_OPTIONS ]: true,
+		} );
 		provideModules( registry, [
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -60,11 +66,14 @@ CompleteActivation.storyName = 'Complete Activation';
 CompleteActivation.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry, {
+			[ PERMISSION_MANAGE_OPTIONS ]: true,
+		} );
 		provideModules( registry, [
 			{
 				active: true,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {

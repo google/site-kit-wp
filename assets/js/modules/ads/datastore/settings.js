@@ -34,6 +34,7 @@ import {
 import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from './constants';
+import { MODULE_SLUG_ADS } from '../constants';
 import { isValidConversionID } from '../utils/validation';
 import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
 
@@ -94,7 +95,7 @@ export async function submitChanges( { select, dispatch } ) {
 		}
 	}
 
-	await invalidateCache( 'modules', 'ads' );
+	await invalidateCache( 'modules', MODULE_SLUG_ADS );
 	await invalidateCache( 'core', 'site', 'ads-measurement-status' );
 
 	return {};

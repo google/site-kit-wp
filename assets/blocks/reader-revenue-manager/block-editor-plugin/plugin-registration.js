@@ -29,6 +29,7 @@ import { CORE_MODULES } from '../../../js/googlesitekit/modules/datastore/consta
 import { CORE_USER } from '../../../js/googlesitekit/datastore/user/constants';
 import { CORE_EDIT_SITE } from '../common/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import SettingPanel from './SettingPanel';
 
 const { select, resolveSelect } = Data;
@@ -47,22 +48,14 @@ export async function registerReaderRevenueManagerPlugin() {
 		resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings(),
 	] );
 
-	const isRRMConnected = select( CORE_MODULES ).isModuleConnected(
-		'reader-revenue-manager'
-	);
-
-	if ( ! isRRMConnected ) {
-		return;
-	}
-
 	let hasModuleOwnershipOrAccess = select( CORE_MODULES ).hasModuleOwnership(
-		'reader-revenue-manager'
+		MODULE_SLUG_READER_REVENUE_MANAGER
 	);
 
 	if ( hasModuleOwnershipOrAccess === false ) {
 		hasModuleOwnershipOrAccess = await resolveSelect(
 			CORE_MODULES
-		).hasModuleAccess( 'reader-revenue-manager' );
+		).hasModuleAccess( MODULE_SLUG_READER_REVENUE_MANAGER );
 	}
 
 	if ( ! hasModuleOwnershipOrAccess ) {

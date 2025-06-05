@@ -127,7 +127,7 @@ describe( 'Analytics write scope requests', () => {
 					request.continue();
 				}
 			} else if (
-				request.url().match( 'analytics-4/data/conversion-events' ) ||
+				request.url().match( 'analytics-4/data/key-events' ) ||
 				request.url().match( 'search-console/data/searchanalytics' )
 			) {
 				request.respond( {
@@ -356,18 +356,12 @@ describe( 'Analytics write scope requests', () => {
 
 		// They should end up on the dashboard.
 		await page.waitForNavigation();
-		await page.waitForSelector(
-			'.googlesitekit-subtle-notification__content p',
-			{
-				timeout: 5_000,
-			}
-		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-subtle-notification__content p',
-			{
-				text: /Congrats on completing the setup for Analytics!/i,
-			}
-		);
+		await page.waitForSelector( '.googlesitekit-notice__title', {
+			timeout: 5_000,
+		} );
+		await expect( page ).toMatchElement( '.googlesitekit-notice__title', {
+			text: /Congrats on completing the setup for Analytics!/i,
+		} );
 	} );
 
 	it( 'prompts for additional permissions during a new Analytics web data stream creation if the user has not granted the Analytics edit scope', async () => {
@@ -443,11 +437,8 @@ describe( 'Analytics write scope requests', () => {
 		// They should end up on the dashboard.
 		await page.waitForNavigation();
 		await page.waitForTimeout( 5000 );
-		await expect( page ).toMatchElement(
-			'.googlesitekit-subtle-notification__content p',
-			{
-				text: /Congrats on completing the setup for Analytics!/i,
-			}
-		);
+		await expect( page ).toMatchElement( '.googlesitekit-notice__title', {
+			text: /Congrats on completing the setup for Analytics!/i,
+		} );
 	} );
 } );
