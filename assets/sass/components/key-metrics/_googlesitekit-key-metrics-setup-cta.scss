@@ -204,7 +204,7 @@
 		div.mdc-layout-grid__inner.googlesitekit-widget-key-metrics-footer {
 			div.googlesitekit-widget-key-metrics-footer__cta-wrapper {
 				gap: 6px;
-				grid-template-columns: 1fr 1fr;
+				grid-template-columns: 1fr auto;
 
 				span {
 					display: block;
