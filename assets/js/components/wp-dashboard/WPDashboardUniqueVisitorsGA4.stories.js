@@ -95,7 +95,12 @@ Error.args = {
 export const NoDataInComparisonDateRange = Template.bind( {} );
 NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
 NoDataInComparisonDateRange.args = {
-	setupRegistry: setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
+	setupRegistry: ( registry ) => {
+		setupAnalytics4MockReportsWithNoDataInComparisonDateRange( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+	},
 };
 NoDataInComparisonDateRange.scenario = {};
 
