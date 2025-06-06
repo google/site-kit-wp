@@ -35,6 +35,7 @@ import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../util/errors';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 import { VIEW_CONTEXT_METRIC_SELECTION } from '../../googlesitekit/constants';
@@ -84,7 +85,7 @@ describe( 'FullScreenMetricSelectionApp', () => {
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		provideUserInfo( registry, { id: 1 } );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 		provideKeyMetrics( registry );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -107,7 +108,7 @@ describe( 'FullScreenMetricSelectionApp', () => {
 				( acc, widget ) => ( {
 					...acc,
 					[ widget ]: {
-						modules: [ 'analytics-4' ],
+						modules: [ MODULE_SLUG_ANALYTICS_4 ],
 					},
 				} ),
 				{}

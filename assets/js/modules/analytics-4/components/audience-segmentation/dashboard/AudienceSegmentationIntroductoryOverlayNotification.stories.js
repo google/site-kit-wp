@@ -29,6 +29,7 @@ import { Provider as ViewContextProvider } from '../../../../../components/Root/
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import AudienceSegmentationIntroductoryOverlayNotification from './AudienceSegmentationIntroductoryOverlayNotification';
 
 function Template() {
@@ -47,7 +48,7 @@ export default {
 				provideUserInfo( registry );
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 						setupComplete: true,

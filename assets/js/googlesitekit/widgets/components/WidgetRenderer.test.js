@@ -30,6 +30,8 @@ import {
 	provideModules,
 	render,
 } from '../../../../../tests/js/test-utils';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 describe( 'WidgetRenderer', () => {
 	let registry;
@@ -64,7 +66,10 @@ describe( 'WidgetRenderer', () => {
 			Component,
 			wrapWidget,
 			isPreloaded: () => preloadWidget,
-			modules: [ 'search-console', 'pagespeed-insights' ],
+			modules: [
+				MODULE_SLUG_SEARCH_CONSOLE,
+				MODULE_SLUG_PAGESPEED_INSIGHTS,
+			],
 		} );
 		registry
 			.dispatch( CORE_WIDGETS )
@@ -143,7 +148,7 @@ describe( 'WidgetRenderer', () => {
 
 	it( 'should output the recoverable modules component when the widget depends on a recoverable module in view-only mode', async () => {
 		setupRegistry( {
-			recoverableModules: [ 'search-console' ],
+			recoverableModules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 		} );
 
 		const { getByText, waitForRegistry } = render(
@@ -165,7 +170,10 @@ describe( 'WidgetRenderer', () => {
 
 	it( 'should output the recoverable modules component when the widget depends on multiple recoverable modules in view-only mode', async () => {
 		setupRegistry( {
-			recoverableModules: [ 'search-console', 'pagespeed-insights' ],
+			recoverableModules: [
+				MODULE_SLUG_SEARCH_CONSOLE,
+				MODULE_SLUG_PAGESPEED_INSIGHTS,
+			],
 		} );
 
 		const { getByText, waitForRegistry } = render(
@@ -187,7 +195,7 @@ describe( 'WidgetRenderer', () => {
 
 	it( 'should not output the recoverable modules component when the widget depends on a recoverable module and is not in view-only mode ', async () => {
 		setupRegistry( {
-			recoverableModules: [ 'search-console' ],
+			recoverableModules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 		} );
 
 		const { getByText, queryByText, waitForRegistry } = render(

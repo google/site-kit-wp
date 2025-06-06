@@ -23,19 +23,20 @@ import { useSelect } from 'googlesitekit-data';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import ErrorText from '../../../../components/ErrorText';
+import ErrorNotice from '../../../../components/ErrorNotice';
 
 export default function SetupErrorNotice() {
 	const analyticsModuleAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
+		select( CORE_MODULES ).isModuleAvailable( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const analyticsErrors = [
 		// Check if activating Analytics failed.
 		useSelect( ( select ) =>
 			select( CORE_MODULES ).getErrorForAction( 'activateModule', [
-				'analytics-4',
+				MODULE_SLUG_ANALYTICS_4,
 			] )
 		),
 		// Check if saving Analytics settings failed.
@@ -53,12 +54,8 @@ export default function SetupErrorNotice() {
 	].filter( Boolean );
 
 	if ( analyticsErrors.length ) {
-		return analyticsErrors.map( ( { message, reconnectURL } ) => (
-			<ErrorText
-				key={ message }
-				message={ message }
-				reconnectURL={ reconnectURL }
-			/>
+		return analyticsErrors.map( ( error ) => (
+			<ErrorNotice key={ error?.message } error={ error } />
 		) );
 	}
 

@@ -32,14 +32,12 @@ import * as tracking from '../../../../util/tracking';
 import {
 	RRM_PRODUCT_ID_INFO_NOTICE_SLUG,
 	RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 } from '../../constants';
 import SettingsEdit from './SettingsEdit';
 import { publications } from '../../datastore/__fixtures__';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
-} from '../../datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_SETTINGS } from '../../../../googlesitekit/constants';
 
@@ -135,7 +133,7 @@ describe( 'SettingsEdit', () => {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
-				{ slug: READER_REVENUE_MANAGER_MODULE_SLUG }
+				{ slug: MODULE_SLUG_READER_REVENUE_MANAGER }
 			);
 
 		const { queryByText, waitForRegistry } = render( <SettingsEdit />, {
@@ -174,17 +172,19 @@ describe( 'SettingsEdit', () => {
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( [ publications[ 0 ], publications[ 1 ] ] );
 
-		const { getByText, waitForRegistry } = render( <SettingsEdit />, {
+		const { waitForRegistry } = render( <SettingsEdit />, {
 			registry,
 		} );
 
 		await waitForRegistry();
 
 		expect(
-			getByText(
-				`Error: The previously selected publication with ID ${ publicationID } was not found. Please select a new publication.`
-			)
-		).toBeInTheDocument();
+			document.querySelector(
+				'.googlesitekit-notice--error .googlesitekit-notice__content p.googlesitekit-notice__description'
+			).textContent
+		).toContain(
+			`Error: The previously selected publication with ID ${ publicationID } was not found. Please select a new publication.`
+		);
 	} );
 
 	it( 'should not render an error message if the user does not have module access even if the publication is not available', async () => {
@@ -194,7 +194,7 @@ describe( 'SettingsEdit', () => {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
-				{ slug: READER_REVENUE_MANAGER_MODULE_SLUG }
+				{ slug: MODULE_SLUG_READER_REVENUE_MANAGER }
 			);
 
 		registry
@@ -221,7 +221,7 @@ describe( 'SettingsEdit', () => {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
-				{ slug: READER_REVENUE_MANAGER_MODULE_SLUG }
+				{ slug: MODULE_SLUG_READER_REVENUE_MANAGER }
 			);
 
 		const { getByText, waitForRegistry } = render( <SettingsEdit />, {

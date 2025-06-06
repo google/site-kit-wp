@@ -22,6 +22,7 @@
 import AdBlockerWarning from './AdBlockerWarning';
 import { render } from '../../../../tests/js/test-utils';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
 	provideModules,
@@ -37,7 +38,7 @@ describe( 'AdBlockerWarning', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				active: true,
 				connected: true,
 			},
@@ -48,7 +49,7 @@ describe( 'AdBlockerWarning', () => {
 	it( 'should render the warning when an AdBlocker is active and module is not connected', () => {
 		provideModules( registry, [
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				active: true,
 				connected: false,
 			},
@@ -57,7 +58,7 @@ describe( 'AdBlockerWarning', () => {
 		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
 		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 		const { container } = render(
-			<AdBlockerWarning moduleSlug="adsense" />,
+			<AdBlockerWarning moduleSlug={ MODULE_SLUG_ADSENSE } />,
 			{
 				registry,
 			}
@@ -75,7 +76,7 @@ describe( 'AdBlockerWarning', () => {
 		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 
 		const { container } = render(
-			<AdBlockerWarning moduleSlug="adsense" />,
+			<AdBlockerWarning moduleSlug={ MODULE_SLUG_ADSENSE } />,
 			{
 				registry,
 			}
@@ -93,7 +94,7 @@ describe( 'AdBlockerWarning', () => {
 		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
 
 		const { container } = render(
-			<AdBlockerWarning moduleSlug="adsense" />,
+			<AdBlockerWarning moduleSlug={ MODULE_SLUG_ADSENSE } />,
 			{
 				registry,
 			}

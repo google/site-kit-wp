@@ -19,13 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	provideModules,
-	provideUserInfo,
-} from '../../../../../../tests/js/utils';
 import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import RRMIntroductoryOverlayNotification, {
 	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from './RRMIntroductoryOverlayNotification';
@@ -59,15 +53,6 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
-				provideUserInfo( registry );
-				provideModules( registry, [
-					{
-						slug: 'reader-revenue-manager',
-						active: true,
-						connected: true,
-					},
-				] );
-
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( {
@@ -79,9 +64,7 @@ export default {
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
-						<Story />
-					</ViewContextProvider>
+					<Story />
 				</WithRegistrySetup>
 			);
 		},
