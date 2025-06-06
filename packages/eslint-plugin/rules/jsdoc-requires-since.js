@@ -21,6 +21,7 @@ const {
 } = require( 'eslint-plugin-jsdoc/dist/iterateJsdoc' );
 const semverCompare = require( 'semver-compare' );
 const semverRegex = require( 'semver-regex' );
+const { NEXT_VERSION } = require( './constants' );
 
 const SINCE_VALIDATION_RULES = [
 	( { tag } ) => {
@@ -29,9 +30,11 @@ const SINCE_VALIDATION_RULES = [
 		}
 	},
 	( { versionString } ) => {
-		const cleaned = versionString.toLowerCase().replace( /[^a-z]/g, '' );
-		if ( cleaned !== 'next' && ! semverRegex().test( versionString ) ) {
-			return 'The @since tag requires a valid semVer value or the "NEXT_VERSION" label.';
+		if (
+			versionString !== NEXT_VERSION &&
+			! semverRegex().test( versionString )
+		) {
+			return `The @since tag requires a valid semVer value or the "${ NEXT_VERSION }" label.`;
 		}
 	},
 	( { index, description } ) => {
@@ -54,11 +57,10 @@ const SINCE_VALIDATION_RULES = [
 		}
 	},
 	( { versionString, previousVersionString } ) => {
-		const cleaned = ( str ) => str?.toLowerCase().replace( /[^a-z]/g, '' );
 		if (
 			previousVersionString &&
-			cleaned( versionString ) !== 'next' &&
-			cleaned( previousVersionString ) !== 'next' &&
+			versionString !== NEXT_VERSION &&
+			previousVersionString !== NEXT_VERSION &&
 			semverRegex().test( versionString ) &&
 			semverRegex().test( previousVersionString )
 		) {
@@ -79,7 +81,7 @@ module.exports = iterateJsdoc(
 			return;
 		}
 
-		// Get all @since tags and make sure the format is correct.
+		// Check that at least one @since tag exists, and make sure that all tags are formatted correctly if so.
 		const sinceTags = utils.filterTags( ( { tag } ) => tag === 'since' );
 
 		if ( ! sinceTags.length ) {
@@ -92,12 +94,14 @@ module.exports = iterateJsdoc(
 		}
 
 		sinceTags.forEach( ( tag, index ) => {
-			const raw = tag.description?.trim() || '';
-			const [ versionString = '', ...descParts ] = raw.split( /\s+/ );
-			const description = descParts.join( ' ' );
+			const versionMatch = tag.description?.match( /^([^\s]+)\s?(.*)$/ );
+			const versionString = versionMatch?.[ 1 ] || '';
+			const description = versionMatch?.[ 2 ] || '';
+
 			const previousTag = sinceTags[ index - 1 ];
-			const prevRaw = previousTag?.description?.trim() || '';
-			const [ previousVersionString = '' ] = prevRaw.split( /\s+/ );
+			const prevMatch =
+				previousTag?.description?.match( /^([^\s]+)\s?(.*)$/ );
+			const previousVersionString = prevMatch?.[ 1 ] || '';
 
 			for ( const rule of SINCE_VALIDATION_RULES ) {
 				const error = rule( {

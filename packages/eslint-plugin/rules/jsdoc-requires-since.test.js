@@ -235,5 +235,20 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 				},
 			],
 		},
+		{
+			code: `
+/**
+ * The @since tag has extra whitespace but should still be valid.
+ *
+ * @since     1.23.0     
+ */
+			`,
+			errors: [
+				{
+					message:
+						'The @since tag requires a valid semVer value or the "n.e.x.t" label.',
+				},
+			],
+		},
 	],
 } );
