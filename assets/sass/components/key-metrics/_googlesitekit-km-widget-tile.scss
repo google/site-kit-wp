@@ -380,16 +380,6 @@
 			}
 		}
 
-		.googlesitekit-widget--keyMetricsConnectGA4All {
-
-			.googlesitekit-banner__content {
-
-				@media (max-width: $bp-mobileOnly) {
-					text-align: center;
-				}
-			}
-		}
-
 		// Reduce the size of the module disconnected Maybe Later CTA.
 		.mdc-layout-grid__inner.googlesitekit-widget-key-metrics-footer {
 			display: inline-block;

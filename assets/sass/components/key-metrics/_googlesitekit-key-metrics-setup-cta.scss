@@ -23,5 +23,12 @@
 		.googlesitekit-banner__title {
 			color: $c-red-r-500;
 		}
+
+		.googlesitekit-banner__content {
+
+			@media (max-width: $width-desktop - 1px) {
+				text-align: center;
+			}
+		}
 	}
 }
