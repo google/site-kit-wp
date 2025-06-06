@@ -35,7 +35,7 @@ export default function DataBlockGroup( { className, children } ) {
 			'.googlesitekit-data-block'
 		);
 
-		if ( ! blocks || ! blocks.length ) {
+		if ( ! blocks?.length ) {
 			return;
 		}
 
