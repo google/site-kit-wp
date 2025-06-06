@@ -394,7 +394,9 @@ LongDataValues.args = {
 			.receiveGetReport( extremeReport, { options: reportOptions[ 0 ] } );
 	},
 };
-LongDataValues.scenario = {};
+LongDataValues.scenario = {
+	delay: 300, // Delay required to allow time to wait for the font sizes to be resized.
+};
 
 export default {
 	title: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4',
