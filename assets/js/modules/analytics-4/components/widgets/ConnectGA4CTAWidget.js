@@ -46,8 +46,8 @@ import {
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '../../../../hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '../../../../hooks/useDebounce';
-import Link from '../../../../../js/components/Link';
-import Banner from '../../../../../js/components/Banner';
+import Link from '../../../../components/Link';
+import Banner from '../../../../components/Banner';
 import BannerSVGDesktop from '@/svg/graphics/banner-conversions-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-conversions-setup-cta-mobile.svg?url';
 
