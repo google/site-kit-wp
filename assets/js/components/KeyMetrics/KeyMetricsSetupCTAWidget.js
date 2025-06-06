@@ -125,6 +125,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	return (
 		<Widget noPadding>
 			<Banner
+				ref={ trackingRef }
 				className="googlesitekit-banner--setup-cta"
 				title={ __(
 					'Get personalized suggestions for user interaction metrics based on your goals',
