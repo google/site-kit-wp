@@ -30,6 +30,7 @@ import {
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
 } from '../../../utils/data-mock';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { dateSub, DAY_IN_SECONDS } from '../../../../../util';
@@ -299,6 +300,23 @@ EntityDashboardOneRowOfData.args = {
 	},
 };
 EntityDashboardOneRowOfData.scenario = {};
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		allTrafficReportOptions.forEach( ( options, index ) => {
+			if ( index === 0 ) {
+				provideReportWithIncreasedOtherDimension( registry, options );
+			} else {
+				provideAnalyticsReportWithoutDateRangeData( registry, options, {
+					emptyRowBehavior: 'remove',
+				} );
+			}
+		} );
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Widgets/All Traffic Widget GA4/Entity Dashboard',

@@ -28,6 +28,7 @@ import {
 	setupAnalytics4Error,
 	setupSearchConsoleZeroData,
 	widgetDecorators,
+	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
 } from './common-GA4.stories';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
@@ -90,6 +91,18 @@ Error.args = {
 			.receiveIsGatheringData( false );
 	},
 };
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		setupAnalytics4MockReportsWithNoDataInComparisonDateRange( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
 
 export default {
 	title: 'Views/WPDashboardApp/WPDashboardUniqueVisitorsGA4',

@@ -35,6 +35,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
 } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -170,6 +171,23 @@ InsufficientPermissions.args = {
 		] );
 	},
 };
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideAnalyticsReportWithoutDateRangeData(
+			registry,
+			reportOptions[ 0 ]
+		);
+		provideAnalyticsReportWithoutDateRangeData(
+			registry,
+			reportOptions[ 1 ],
+			{ emptyRowBehavior: 'remove' }
+		);
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
 
 export default {
 	title: 'Key Metrics/TopTrafficSourceDrivingAddToCart',

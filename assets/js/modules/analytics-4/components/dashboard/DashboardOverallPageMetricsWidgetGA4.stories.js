@@ -33,6 +33,7 @@ import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
 } from '../../utils/data-mock';
 import { properties } from '../../datastore/__fixtures__';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
@@ -372,6 +373,18 @@ ErrorEntityURL.args = {
 			.finishResolution( 'getReport', [ options ] );
 	},
 };
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideAnalyticsReportWithoutDateRangeData(
+			registry,
+			reportOptions[ 0 ]
+		);
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4',

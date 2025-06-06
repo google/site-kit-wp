@@ -42,9 +42,12 @@ import {
 import { getMetaCapabilityPropertyName } from '../../../../../googlesitekit/datastore/util/permissions';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { provideAnalytics4MockReport } from '../../../../analytics-4/utils/data-mock';
+import {
+	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
+} from '../../../../analytics-4/utils/data-mock';
 import * as fixtures from '../../../../analytics-4/datastore/__fixtures__';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../../../modules/analytics-4/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../constants';
 import { DAY_IN_SECONDS } from '../../../../../util';
@@ -468,6 +471,18 @@ ViewOnlySearchConsoleOnlyReady.args = {
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideSearchConsoleMockReport( registry, searchConsoleArgs );
+		for ( const options of ga4ReportArgs ) {
+			provideAnalyticsReportWithoutDateRangeData( registry, options );
+		}
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
 
 export default {
 	title: 'Modules/SearchConsole/Widgets/SearchFunnelWidgetGA4',

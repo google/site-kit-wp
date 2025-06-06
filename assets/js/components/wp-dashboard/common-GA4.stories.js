@@ -30,6 +30,7 @@ import {
 	STRATEGY_ZIP,
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
 } from '../../modules/analytics-4/utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../tests/js/utils/zeroReports';
 import { DAY_IN_SECONDS } from '../../util';
@@ -174,6 +175,17 @@ export const setupAnalytics4MockReports = (
 				options,
 			} );
 	} );
+};
+
+export const setupAnalytics4MockReportsWithNoDataInComparisonDateRange = (
+	registry,
+	mockOptions = wpDashboardAnalytics4OptionSets
+) => {
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+
+	mockOptions.forEach( ( options ) =>
+		provideAnalyticsReportWithoutDateRangeData( registry, options )
+	);
 };
 
 export const setupSearchConsoleMockReports = ( registry, data ) => {

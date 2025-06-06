@@ -31,6 +31,7 @@ import EngagedTrafficSourceWidget from './EngagedTrafficSourceWidget';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
 } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
@@ -147,6 +148,17 @@ InsufficientPermissions.args = {
 // this is the sole scenario and should not be added to any other generic
 // `MetricTile___` or KMW component.
 InsufficientPermissions.scenario = {};
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideAnalyticsReportWithoutDateRangeData( registry, reportOptions, {
+			emptyRowBehavior: 'remove',
+		} );
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
 
 export default {
 	title: 'Key Metrics/EngagedTrafficSourceWidget',
