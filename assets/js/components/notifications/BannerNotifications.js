@@ -30,7 +30,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import AdSenseAlerts from './AdSenseAlerts';
 import useViewOnly from '../../hooks/useViewOnly';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import Notifications from './Notifications';
 

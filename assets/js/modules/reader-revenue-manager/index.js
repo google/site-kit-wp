@@ -41,9 +41,10 @@ import {
 	RRMSetupSuccessSubtleNotification,
 } from './components/dashboard';
 import {
-	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/datastore/constants';
+	NOTIFICATION_AREAS,
+	PRIORITY,
+} from '../../googlesitekit/notifications/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -56,7 +57,6 @@ import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
 } from './constants';
 import ProductIDSubscriptionsNotification from './components/dashboard/ProductIDSubscriptionsNotification';
-import { PRIORITY } from '../../googlesitekit/notifications/constants';
 import PublicationApprovedOverlayNotification, {
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
 } from './components/dashboard/PublicationApprovedOverlayNotification';

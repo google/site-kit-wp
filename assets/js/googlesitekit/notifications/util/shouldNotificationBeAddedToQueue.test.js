@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-} from '../datastore/constants';
+import { NOTIFICATION_AREAS, NOTIFICATION_GROUPS } from '../constants';
 import { shouldNotificationBeAddedToQueue } from './shouldNotificationBeAddedToQueue';
 import {
 	VIEW_CONTEXT_ADMIN_BAR,

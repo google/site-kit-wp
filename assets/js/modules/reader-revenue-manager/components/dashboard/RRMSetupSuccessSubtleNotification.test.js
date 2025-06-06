@@ -29,10 +29,8 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
 import * as fixtures from '../../datastore/__fixtures__';
-import {
-	CORE_NOTIFICATIONS,
-	NOTIFICATION_GROUPS,
-} from '../../../../googlesitekit/notifications/datastore/constants';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
+import { NOTIFICATION_GROUPS } from '../../../../googlesitekit/notifications/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,

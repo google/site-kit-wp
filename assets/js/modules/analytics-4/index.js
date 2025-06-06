@@ -108,9 +108,10 @@ import {
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import {
-	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/datastore/constants';
+	NOTIFICATION_AREAS,
+	PRIORITY,
+} from '../../googlesitekit/notifications/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import AudienceSegmentationSetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
@@ -124,7 +125,6 @@ import {
 	LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
 	MODULE_SLUG_ANALYTICS_4,
 } from './constants';
-import { PRIORITY } from '../../googlesitekit/notifications/constants';
 import ConversionReportingNotificationCTAWidget from './components/widgets/ConversionReportingNotificationCTAWidget';
 
 export { registerStore } from './datastore';

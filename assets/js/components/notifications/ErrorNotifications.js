@@ -26,7 +26,7 @@ import { Fragment } from '@wordpress/element';
  */
 import InternalServerError from './InternalServerError';
 import Notifications from './Notifications';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
 
 export default function ErrorNotifications() {
 	return (

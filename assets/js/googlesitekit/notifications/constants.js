@@ -29,3 +29,15 @@ export const PRIORITY = {
 	SETUP_CTA_HIGH: 150,
 	SETUP_CTA_LOW: 200,
 };
+
+export const NOTIFICATION_AREAS = {
+	ERRORS: 'notification-area-errors',
+	BANNERS_ABOVE_NAV: 'notification-area-banners-above-nav',
+	BANNERS_BELOW_NAV: 'notification-area-banners-below-nav',
+	OVERLAYS: 'notification-area-overlays',
+};
+
+export const NOTIFICATION_GROUPS = {
+	DEFAULT: 'default',
+	SETUP_CTAS: 'setup-ctas',
+};

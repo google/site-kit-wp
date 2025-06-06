@@ -25,11 +25,8 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { render, waitFor } from '../../../../../tests/js/test-utils';
-import {
-	CORE_NOTIFICATIONS,
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-} from './constants';
+import { CORE_NOTIFICATIONS } from './constants';
+import { NOTIFICATION_GROUPS, NOTIFICATION_AREAS } from '../constants';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,

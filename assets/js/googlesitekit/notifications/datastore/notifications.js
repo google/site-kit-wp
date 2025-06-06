@@ -31,12 +31,8 @@ import {
 } from 'googlesitekit-data';
 import { getStorage } from '../../../util/storage';
 import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
-import {
-	CORE_NOTIFICATIONS,
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-	NOTIFICATION_VIEW_CONTEXTS,
-} from './constants';
+import { CORE_NOTIFICATIONS, NOTIFICATION_VIEW_CONTEXTS } from './constants';
+import { NOTIFICATION_GROUPS, NOTIFICATION_AREAS } from '../constants';
 import { CORE_USER } from '../../datastore/user/constants';
 import { createValidatedAction } from '../../data/utils';
 import { racePrioritizedAsyncTasks } from '../../../util/async';

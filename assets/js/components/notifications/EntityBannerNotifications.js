@@ -25,7 +25,7 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Notifications from './Notifications';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
 
 export default function EntityBannerNotifications() {
 	return (

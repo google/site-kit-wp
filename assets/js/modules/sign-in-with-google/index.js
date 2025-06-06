@@ -36,13 +36,13 @@ import SettingsEdit from './components/settings/SettingsEdit';
 import SettingsView from './components/settings/SettingsView';
 import SignInWithGoogleSetupCTABanner from './components/dashboard/SignInWithGoogleSetupCTABanner';
 import {
-	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/datastore/constants';
+	NOTIFICATION_AREAS,
+	PRIORITY,
+} from '../../googlesitekit/notifications/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import SetupSuccessSubtleNotification from './components/dashboard/SetupSuccessSubtleNotification';
 import { isURLUsingHTTPS } from '../../util/is-url-using-https';
-import { PRIORITY } from '../../googlesitekit/notifications/constants';
 
 export { registerStore } from './datastore';
 

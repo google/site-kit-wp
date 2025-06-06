@@ -76,9 +76,9 @@ import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
 import Notifications from './notifications/Notifications';
 import {
-	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../googlesitekit/notifications/datastore/constants';
+	NOTIFICATION_AREAS,
+} from '../googlesitekit/notifications/constants';
 import { AdminMenuTooltip } from './AdminMenuTooltip';
 
 export default function DashboardMainApp() {

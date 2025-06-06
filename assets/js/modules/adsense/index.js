@@ -56,7 +56,7 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../analytics-4/constants';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import AdBlockingRecoverySetupSuccessNotification from './components/dashboard/AdBlockingRecoverySetupSuccessNotification';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';

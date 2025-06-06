@@ -39,10 +39,8 @@ import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import BannerNotifications from './BannerNotifications';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import {
-	CORE_NOTIFICATIONS,
-	NOTIFICATION_AREAS,
-} from '../../googlesitekit/notifications/datastore/constants';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
 
 describe( 'BannerNotifications', () => {
 	mockLocation();
