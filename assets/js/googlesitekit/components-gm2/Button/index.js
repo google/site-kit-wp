@@ -16,12 +16,9 @@
  * limitations under the License.
  */
 
-/* eslint complexity: [ "error", 19 ] */
-
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import useMergedRef from '@react-hook/merged-ref';
 
@@ -34,8 +31,9 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { MDCRipple } from '../../material-components';
-import Tooltip from './Tooltip';
+import { MDCRipple } from '../../../material-components';
+import SemanticButton from './SemanticButton';
+import MaybeTooltip from './MaybeTooltip';
 
 const Button = forwardRef(
 	(
@@ -70,9 +68,6 @@ const Button = forwardRef(
 		}, [] );
 		const mergedRefs = useMergedRef( ref, buttonRef );
 
-		// Use a button if disabled, even if a href is provided to ensure expected behavior.
-		const SemanticButton = href && ! disabled ? 'a' : 'button';
-
 		const getAriaLabel = () => {
 			let label = ariaLabel;
 
@@ -97,25 +92,24 @@ const Button = forwardRef(
 			return newTabText;
 		};
 
-		const ButtonComponent = (
+		const tooltipTitle = ! hideTooltipTitle
+			? title || customizedTooltip || ariaLabel
+			: null;
+
+		const buttonComponent = (
 			<SemanticButton
-				className={ classnames( 'mdc-button', className, {
-					'mdc-button--raised': ! text && ! tertiary && ! callout,
-					'mdc-button--danger': danger,
-					'mdc-button--inverse': inverse,
-					'mdc-button--tertiary': tertiary,
-					'mdc-button--callout': callout,
-					'mdc-button--callout-primary':
-						callout || calloutStyle === 'primary',
-					'mdc-button--callout-warning': calloutStyle === 'warning',
-					'mdc-button--callout-error': calloutStyle === 'error',
-				} ) }
-				href={ disabled ? undefined : href }
+				href={ href }
+				disabled={ disabled }
+				className={ className }
+				danger={ danger }
+				text={ text }
+				tertiary={ tertiary }
+				inverse={ inverse }
+				callout={ callout }
+				calloutStyle={ calloutStyle }
 				ref={ mergedRefs }
-				disabled={ !! disabled }
 				aria-label={ getAriaLabel() }
 				target={ target || '_self' }
-				role={ 'a' === SemanticButton ? 'button' : undefined }
 				{ ...extraProps }
 			>
 				{ icon }
@@ -126,26 +120,17 @@ const Button = forwardRef(
 			</SemanticButton>
 		);
 
-		const tooltipTitle = ! hideTooltipTitle
-			? title || customizedTooltip || ariaLabel
-			: null;
-
-		if (
-			! disabled &&
-			( ( tooltip && tooltipTitle ) ||
-				( icon && tooltipTitle && children === undefined ) )
-		) {
-			return (
-				<Tooltip
-					title={ tooltipTitle }
-					enterDelay={ tooltipEnterDelayInMS }
-				>
-					{ ButtonComponent }
-				</Tooltip>
-			);
-		}
-
-		return ButtonComponent;
+		return (
+			<MaybeTooltip
+				disabled={ disabled }
+				tooltip={ tooltip }
+				tooltipTitle={ tooltipTitle }
+				hasIconOnly={ !! icon && children === undefined }
+				tooltipEnterDelayInMS={ tooltipEnterDelayInMS }
+			>
+				{ buttonComponent }
+			</MaybeTooltip>
+		);
 	}
 );
 
