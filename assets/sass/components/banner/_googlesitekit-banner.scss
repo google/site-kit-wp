@@ -166,9 +166,8 @@
 .googlesitekit-banner__progress-bar {
 	height: 7px;
 
-	// Important is required here to override the inline style set by the progress bar component.
-	margin-bottom: 0 !important;
-	margin-top: 0 !important;
+	// Prevent page shift between variants as the progress bar removes 10px padding from the widget context.
+	margin-bottom: 3px;
 
 	.mdc-linear-progress__buffer {
 		background-color: $c-site-kit-sk-50;

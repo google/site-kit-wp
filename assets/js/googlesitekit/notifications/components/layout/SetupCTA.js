@@ -53,7 +53,7 @@ export default function SetupCTA( {
 	footer,
 	dismissOptions,
 	gaTrackingEventArgs,
-	waitingProgress = false,
+	waitingProgress,
 	...props
 } ) {
 	const trackEvents = useNotificationEvents(
@@ -92,7 +92,7 @@ export default function SetupCTA( {
 
 	return (
 		<Fragment>
-			{ waitingProgress !== false && (
+			{ !! waitingProgress && (
 				<ProgressBar
 					{ ...waitingProgress }
 					className="googlesitekit-banner__progress-bar"
@@ -101,7 +101,7 @@ export default function SetupCTA( {
 			<div
 				className={ classnames( 'googlesitekit-widget-context', {
 					'googlesitekit-widget-context--with-progress-bar':
-						waitingProgress !== false,
+						!! waitingProgress,
 				} ) }
 			>
 				<Grid>

@@ -79,6 +79,7 @@ export default function InProgressBanner( { id, Notification, onDismiss } ) {
 					onClick: onDismiss,
 				} }
 				waitingProgress={ {
+					height: 4, // The progress bar height is set to 7px via CSS. This value removes margins within the ProgressBar component.
 					indeterminate: true,
 				} }
 				helpText={ __(

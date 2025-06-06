@@ -42,10 +42,6 @@ Default.scenario = {};
 
 export const NoEditScope = Template.bind( {} );
 NoEditScope.storyName = 'No Edit Scope';
-NoEditScope.args = {
-	grantedScopes: [],
-};
-NoEditScope.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/InProgressBanner',
