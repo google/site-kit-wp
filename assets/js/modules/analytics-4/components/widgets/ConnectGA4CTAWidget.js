@@ -129,13 +129,15 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 	);
 
 	useEffect( () => {
-		if ( inView && ! hasBeenInView ) {
-			if ( usingProxy ) {
-				triggerSurvey( 'view_kmw_setup_cta', { ttl: WEEK_IN_SECONDS } );
-			}
-
-			setHasBeenInView( true );
+		if ( ! inView || hasBeenInView ) {
+			return;
 		}
+
+		if ( usingProxy ) {
+			triggerSurvey( 'view_kmw_setup_cta', { ttl: WEEK_IN_SECONDS } );
+		}
+
+		setHasBeenInView( true );
 	}, [ inView, hasBeenInView, usingProxy, triggerSurvey ] );
 
 	const [ inProgress, setInProgress ] = useState( false );

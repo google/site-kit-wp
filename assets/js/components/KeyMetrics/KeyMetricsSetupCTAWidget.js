@@ -72,18 +72,20 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	);
 
 	useEffect( () => {
-		if ( inView && ! hasBeenInView ) {
-			trackEvent(
-				`${ viewContext }_kmw-cta-notification`,
-				'view_notification'
-			);
-
-			if ( usingProxy ) {
-				triggerSurvey( 'view_kmw_setup_cta', { ttl: WEEK_IN_SECONDS } );
-			}
-
-			setHasBeenInView( true );
+		if ( ! inView || hasBeenInView ) {
+			return;
 		}
+
+		trackEvent(
+			`${ viewContext }_kmw-cta-notification`,
+			'view_notification'
+		);
+
+		if ( usingProxy ) {
+			triggerSurvey( 'view_kmw_setup_cta', { ttl: WEEK_IN_SECONDS } );
+		}
+
+		setHasBeenInView( true );
 	}, [ inView, hasBeenInView, viewContext, usingProxy, triggerSurvey ] );
 
 	const tooltipSettings = {
