@@ -124,7 +124,7 @@ function ResetButton( { children } ) {
 				<ModalDialog
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
-					handleDialog={ closeDialog }
+					handleCancel={ closeDialog }
 					onClose={ closeDialog }
 					title={ __( 'Reset Site Kit', 'google-site-kit' ) }
 					subtitle={ createInterpolateElement(

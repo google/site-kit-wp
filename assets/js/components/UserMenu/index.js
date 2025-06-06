@@ -303,7 +303,7 @@ export default function UserMenu() {
 				<ModalDialog
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
-					handleDialog={ handleDialog }
+					handleCancel={ handleClose }
 					onClose={ handleClose }
 					title={ __( 'Disconnect', 'google-site-kit' ) }
 					subtitle={ __(

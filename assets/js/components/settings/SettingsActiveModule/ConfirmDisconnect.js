@@ -65,18 +65,14 @@ export default function ConfirmDisconnect( { slug } ) {
 		select( CORE_UI ).getValue( dialogActiveKey )
 	);
 
-	const handleDialog = useCallback( () => {
-		setValue( dialogActiveKey, ! dialogActive );
-	}, [ dialogActive, dialogActiveKey, setValue ] );
+	const onClose = useCallback( () => {
+		setValue( dialogActiveKey, false );
+	}, [ dialogActiveKey, setValue ] );
 
 	useEffect( () => {
 		const onKeyPress = ( event ) => {
-			// Only trigger the `handleDialog()` code when a key is pressed and
-			// the dialog is active. Calling `handleDialog()` without `dialogActive`
-			// being truthy will cause all dialogs to appear, see
-			// https://github.com/google/site-kit-wp/issues/3707.
 			if ( ESCAPE === event.keyCode && dialogActive ) {
-				handleDialog();
+				onClose();
 			}
 		};
 
@@ -84,7 +80,7 @@ export default function ConfirmDisconnect( { slug } ) {
 		return () => {
 			global.removeEventListener( 'keydown', onKeyPress );
 		};
-	}, [ dialogActive, handleDialog ] );
+	}, [ dialogActive, onClose ] );
 
 	const { deactivateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -148,8 +144,8 @@ export default function ConfirmDisconnect( { slug } ) {
 		<ModalDialog
 			className="googlesitekit-settings-module__confirm-disconnect-modal"
 			dialogActive
-			handleDialog={ handleDialog }
-			onClose={ handleDialog }
+			handleCancel={ onClose }
+			onClose={ onClose }
 			title={ title }
 			provides={ features }
 			handleConfirm={ handleDisconnect }

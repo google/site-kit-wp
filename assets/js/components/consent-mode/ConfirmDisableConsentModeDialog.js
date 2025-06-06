@@ -107,7 +107,7 @@ export default function ConfirmDisableConsentModeDialog( {
 			title={ __( 'Disable consent mode?', 'google-site-kit' ) }
 			subtitle={ subtitle }
 			handleConfirm={ onConfirm }
-			handleDialog={ onCancel }
+			handleCancel={ onCancel }
 			onClose={ onCancel }
 			provides={ provides }
 			dependentModules={ dependentModulesText }
