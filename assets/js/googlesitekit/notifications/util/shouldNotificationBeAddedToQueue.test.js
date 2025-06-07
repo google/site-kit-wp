@@ -38,7 +38,7 @@ describe( 'shouldNotificationBeAddedToQueue', () => {
 		const notificationToCheck = {
 			id,
 			Component: TestNotificationComponent,
-			areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+			areaSlug: NOTIFICATION_AREAS.HEADER,
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 			priority: 11,
 			featureFlag: 'test-feature-flag',
@@ -61,7 +61,7 @@ describe( 'shouldNotificationBeAddedToQueue', () => {
 		const nonDismissibleNotification = {
 			id: 'non-dismissible-notification',
 			Component: TestNotificationComponent,
-			areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+			areaSlug: NOTIFICATION_AREAS.HEADER,
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 			priority: 11,
 			// A notification that is not dismissible should not be checked.
@@ -77,7 +77,7 @@ describe( 'shouldNotificationBeAddedToQueue', () => {
 		const dismissibleNotification = {
 			id: 'non-dismissible-notification',
 			Component: TestNotificationComponent,
-			areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+			areaSlug: NOTIFICATION_AREAS.HEADER,
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 			priority: 11,
 			isDismissible: true,
@@ -101,7 +101,7 @@ describe( 'shouldNotificationBeAddedToQueue', () => {
 		const notificationToCheck = {
 			id,
 			Component: TestNotificationComponent,
-			areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+			areaSlug: NOTIFICATION_AREAS.HEADER,
 			groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 			priority: 11,
@@ -120,7 +120,7 @@ describe( 'shouldNotificationBeAddedToQueue', () => {
 
 		expect(
 			shouldNotificationBeAddedToQueue( notificationToCheck, {
-				groupID: NOTIFICATION_GROUPS.BANNERS_ABOVE_NAV,
+				groupID: NOTIFICATION_GROUPS.HEADER,
 			} )
 		).toBe( false );
 	} );
@@ -130,7 +130,7 @@ describe( 'shouldNotificationBeAddedToQueue', () => {
 		const notificationWithViewContexts = {
 			id,
 			Component: TestNotificationComponent,
-			areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+			areaSlug: NOTIFICATION_AREAS.HEADER,
 			groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 			viewContexts: [
 				VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -170,7 +170,7 @@ describe( 'shouldNotificationBeAddedToQueue', () => {
 		const notificationWithoutViewContexts = {
 			id,
 			Component: TestNotificationComponent,
-			areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+			areaSlug: NOTIFICATION_AREAS.HEADER,
 			groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 			priority: 11,
 		};
