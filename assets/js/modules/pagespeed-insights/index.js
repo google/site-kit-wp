@@ -74,7 +74,7 @@ export const registerWidgets = ( widgets ) => {
 export const NOTIFICATIONS = {
 	'setup-success-notification-psi': {
 		Component: SetupSuccessNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: () => {
 			const notification = getQueryArg( location.href, 'notification' );
