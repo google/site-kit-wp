@@ -1,7 +1,7 @@
 /**
- * `BannerNotifications` tests.
+ * `LegacyNotifications` tests.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,11 +35,11 @@ import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
-import BannerNotifications from './BannerNotifications';
+import LegacyNotifications from './LegacyNotifications';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
-describe( 'BannerNotifications', () => {
+describe( 'LegacyNotifications', () => {
 	mockLocation();
 
 	let registry;
@@ -111,7 +111,7 @@ describe( 'BannerNotifications', () => {
 			.receiveGetNotifications( [ testNotification ] );
 
 		const { container, waitForRegistry } = render(
-			<BannerNotifications />,
+			<LegacyNotifications />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
