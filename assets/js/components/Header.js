@@ -44,6 +44,8 @@ import useViewOnly from '../hooks/useViewOnly';
 import useDashboardType from '../hooks/useDashboardType';
 import Link from './Link';
 import LegacyNotifications from './notifications/LegacyNotifications';
+import Notifications from './notifications/Notifications';
+import { NOTIFICATION_AREAS } from '../googlesitekit/notifications/constants';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { useGlobalTrackingEffect } from '../hooks/useGlobalTrackingEffect';
 
@@ -120,6 +122,8 @@ function Header( { children, subHeader, showNavigation } ) {
 			{ /* These notifications are not yet refactored and will be shown
 			in addition to the refactored notifications rendered below. */ }
 			<LegacyNotifications />
+
+			<Notifications areaSlug={ NOTIFICATION_AREAS.HEADER } />
 		</Fragment>
 	);
 }
