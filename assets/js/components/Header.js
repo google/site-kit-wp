@@ -43,6 +43,7 @@ import ViewOnlyMenu from './ViewOnlyMenu';
 import useViewOnly from '../hooks/useViewOnly';
 import useDashboardType from '../hooks/useDashboardType';
 import Link from './Link';
+import LegacyNotifications from './notifications/LegacyNotifications';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { useGlobalTrackingEffect } from '../hooks/useGlobalTrackingEffect';
 
@@ -115,6 +116,10 @@ function Header( { children, subHeader, showNavigation } ) {
 			{ showNavigation && <DashboardNavigation /> }
 
 			<EntityHeader />
+
+			{ /* These notifications are not yet refactored and will be shown
+			in addition to the refactored notifications rendered below. */ }
+			<LegacyNotifications />
 		</Fragment>
 	);
 }
