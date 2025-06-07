@@ -30,11 +30,15 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import AdSenseAlerts from './AdSenseAlerts';
 import useViewOnly from '../../hooks/useViewOnly';
+import useDashboardType, {
+	DASHBOARD_TYPE_MAIN,
+} from '../../hooks/useDashboardType';
 import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
 import InternalServerError from './InternalServerError';
 
 export default function LegacyNotifications() {
 	const viewOnly = useViewOnly();
+	const dashboardType = useDashboardType();
 
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
@@ -46,7 +50,7 @@ export default function LegacyNotifications() {
 	return (
 		<Fragment>
 			<InternalServerError />
-			{ ! viewOnly && (
+			{ ! viewOnly && dashboardType === DASHBOARD_TYPE_MAIN && (
 				<Fragment>
 					{ adSenseModuleActive && <AdSenseAlerts /> }
 					{ isAuthenticated && <CoreSiteBannerNotifications /> }
