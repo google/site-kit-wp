@@ -35,7 +35,6 @@ import { Fragment } from '@wordpress/element';
 import { useSelect } from 'googlesitekit-data';
 import Logo from './Logo';
 import UserMenu from './UserMenu';
-import ErrorNotifications from './notifications/ErrorNotifications';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../material-components';
 import DashboardNavigation from './DashboardNavigation';
@@ -111,7 +110,6 @@ function Header( { children, subHeader, showNavigation } ) {
 			</header>
 
 			<div className="googlesitekit-subheader" ref={ subHeaderRef }>
-				<ErrorNotifications />
 				{ subHeader }
 			</div>
 
