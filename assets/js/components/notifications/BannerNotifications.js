@@ -30,9 +30,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import AdSenseAlerts from './AdSenseAlerts';
 import useViewOnly from '../../hooks/useViewOnly';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import Notifications from './Notifications';
+import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
 
 export default function BannerNotifications() {
 	const viewOnly = useViewOnly();
@@ -45,20 +43,13 @@ export default function BannerNotifications() {
 	);
 
 	if ( viewOnly ) {
-		return (
-			<Fragment>
-				<Notifications
-					areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV }
-				/>
-			</Fragment>
-		);
+		return null;
 	}
 
 	return (
 		<Fragment>
 			{ adSenseModuleActive && <AdSenseAlerts /> }
 			{ isAuthenticated && <CoreSiteBannerNotifications /> }
-			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />
 		</Fragment>
 	);
 }
