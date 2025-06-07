@@ -22,11 +22,20 @@
 import {
 	createTestRegistry,
 	provideSiteInfo,
+	provideUserAuthentication,
+	render,
 } from '../../../../tests/js/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
+import SetupErrorMessageNotification from './SetupErrorMessageNotification';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 const SETUP_ERROR_NOTIFICATION = 'setup_plugin_error';
+
+const NotificationWithComponentProps = withNotificationComponentProps(
+	'authentication-error'
+)( SetupErrorMessageNotification );
 
 describe( 'SetupErrorMessageNotification', () => {
 	let registry;
@@ -35,6 +44,36 @@ describe( 'SetupErrorMessageNotification', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+	} );
+
+	it( 'renders `Get help` link', async () => {
+		provideUserAuthentication( registry, {
+			unsatisfiedScopes: [
+				'https://www.googleapis.com/auth/analytics.readonly',
+			],
+		} );
+		provideSiteInfo( registry, {
+			proxySupportLinkURL: 'https://test.com',
+			setupErrorCode: 'error_code',
+			setupErrorMessage: 'An error occurred',
+		} );
+
+		const { container, getByRole, waitForRegistry } = render(
+			<NotificationWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toHaveTextContent( 'Get help' );
+		expect( getByRole( 'link', { name: /get help/i } ) ).toHaveAttribute(
+			'href',
+			registry.select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
+				code: registry.select( CORE_SITE ).getSetupErrorCode(),
+			} )
+		);
 	} );
 
 	describe( 'checkRequirements', () => {
