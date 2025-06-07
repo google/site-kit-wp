@@ -100,7 +100,7 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 			AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
 			{
 				Component: AudienceSegmentationSetupSuccessSubtleNotification,
-				areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 				isDismissible: true,
 			}
 		);
