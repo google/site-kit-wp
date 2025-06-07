@@ -43,7 +43,6 @@ import ViewOnlyMenu from './ViewOnlyMenu';
 import useViewOnly from '../hooks/useViewOnly';
 import useDashboardType from '../hooks/useDashboardType';
 import Link from './Link';
-import SubtleNotifications from './notifications/SubtleNotifications';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { useGlobalTrackingEffect } from '../hooks/useGlobalTrackingEffect';
 
@@ -114,8 +113,6 @@ function Header( { children, subHeader, showNavigation } ) {
 			</div>
 
 			{ showNavigation && <DashboardNavigation /> }
-
-			{ isDashboard && <SubtleNotifications /> }
 
 			<EntityHeader />
 		</Fragment>
