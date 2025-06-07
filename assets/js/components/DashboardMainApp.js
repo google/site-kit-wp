@@ -258,8 +258,13 @@ export default function DashboardMainApp() {
 				<HelpMenu />
 			</Header>
 
+			{ /* These notifications are rendered at the top of the dashboard,
+			but are not attached to the header. The first component renders the
+			default queue which mainly contains setup success notices. The
+			second renders the Setup CTA Widgets. */ }
+			<Notifications areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP } />
 			<Notifications
-				areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV }
+				areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP }
 				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
 			/>
 
