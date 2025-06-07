@@ -34,7 +34,9 @@ import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
 import { withNotificationComponentProps } from '../../../googlesitekit/notifications/util/component-props';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import UnsatisfiedScopesAlert from '.';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/constants';
+import { DEFAULT_NOTIFICATIONS } from '../../../googlesitekit/notifications/register-defaults';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../googlesitekit/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'authentication-error'
@@ -51,6 +53,8 @@ describe( 'UnsatisfiedScopesAlert', () => {
 	const userAuthenticationEndpoint = RegExp(
 		'^/google-site-kit/v1/core/user/data/authentication'
 	);
+
+	const notification = DEFAULT_NOTIFICATIONS[ 'authentication-error' ];
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -135,5 +139,44 @@ describe( 'UnsatisfiedScopesAlert', () => {
 		} );
 
 		expect( fetchMock ).toHaveFetched( moduleActivationEndpoint );
+	} );
+
+	describe( 'checkRequirements', () => {
+		it( 'is active', async () => {
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( true );
+		} );
+		it( 'is not active if the user is not authenticated', async () => {
+			provideUserAuthentication( registry, {
+				authenticated: false,
+				unsatisfiedScopes: [
+					'https://www.googleapis.com/auth/analytics.readonly',
+				],
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
+		it( 'is not active if the user does not have unsatisfied scopes', async () => {
+			provideUserAuthentication( registry, {
+				authenticated: true,
+				unsatisfiedScopes: [],
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBeFalsy();
+		} );
 	} );
 } );

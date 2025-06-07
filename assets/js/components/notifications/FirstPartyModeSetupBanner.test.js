@@ -33,11 +33,11 @@ import {
 } from '../../../../tests/js/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
-import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../googlesitekit/notifications/constants';
 import {
-	CORE_NOTIFICATIONS,
+	FPM_SETUP_CTA_BANNER_NOTIFICATION,
 	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/datastore/constants';
+} from '../../googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';

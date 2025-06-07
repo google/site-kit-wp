@@ -26,10 +26,8 @@ import PropTypes from 'prop-types';
  */
 import { useSelect } from 'googlesitekit-data';
 import useViewContext from '../../hooks/useViewContext';
-import {
-	CORE_NOTIFICATIONS,
-	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/datastore/constants';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import { NOTIFICATION_GROUPS } from '../../googlesitekit/notifications/constants';
 import { getNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 
 export default function Notifications( {

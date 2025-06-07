@@ -57,7 +57,6 @@ import PageHeader from './PageHeader';
 import Layout from './layout/Layout';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import ScrollEffect from './ScrollEffect';
-import EntityBannerNotifications from './notifications/EntityBannerNotifications';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import useViewOnly from '../hooks/useViewOnly';
 import OfflineNotification from './notifications/OfflineNotification';
@@ -216,7 +215,7 @@ function DashboardEntityApp() {
 		<Fragment>
 			<ScrollEffect />
 			<ModuleDashboardEffects />
-			<Header subHeader={ <EntityBannerNotifications /> } showNavigation>
+			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }

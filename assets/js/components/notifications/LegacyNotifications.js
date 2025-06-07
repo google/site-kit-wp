@@ -1,7 +1,7 @@
 /**
  * BannerNotifications component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,15 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import AdSenseAlerts from './AdSenseAlerts';
 import useViewOnly from '../../hooks/useViewOnly';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import Notifications from './Notifications';
+import useDashboardType, {
+	DASHBOARD_TYPE_MAIN,
+} from '../../hooks/useDashboardType';
+import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
+import InternalServerError from './InternalServerError';
 
-export default function BannerNotifications() {
+export default function LegacyNotifications() {
 	const viewOnly = useViewOnly();
+	const dashboardType = useDashboardType();
 
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
@@ -44,21 +47,15 @@ export default function BannerNotifications() {
 		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ADSENSE )
 	);
 
-	if ( viewOnly ) {
-		return (
-			<Fragment>
-				<Notifications
-					areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV }
-				/>
-			</Fragment>
-		);
-	}
-
 	return (
 		<Fragment>
-			{ adSenseModuleActive && <AdSenseAlerts /> }
-			{ isAuthenticated && <CoreSiteBannerNotifications /> }
-			<Notifications areaSlug={ NOTIFICATION_AREAS.BANNERS_ABOVE_NAV } />
+			<InternalServerError />
+			{ ! viewOnly && dashboardType === DASHBOARD_TYPE_MAIN && (
+				<Fragment>
+					{ adSenseModuleActive && <AdSenseAlerts /> }
+					{ isAuthenticated && <CoreSiteBannerNotifications /> }
+				</Fragment>
+			) }
 		</Fragment>
 	);
 }

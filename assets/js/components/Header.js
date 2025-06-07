@@ -35,7 +35,6 @@ import { Fragment } from '@wordpress/element';
 import { useSelect } from 'googlesitekit-data';
 import Logo from './Logo';
 import UserMenu from './UserMenu';
-import ErrorNotifications from './notifications/ErrorNotifications';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../material-components';
 import DashboardNavigation from './DashboardNavigation';
@@ -44,7 +43,9 @@ import ViewOnlyMenu from './ViewOnlyMenu';
 import useViewOnly from '../hooks/useViewOnly';
 import useDashboardType from '../hooks/useDashboardType';
 import Link from './Link';
-import SubtleNotifications from './notifications/SubtleNotifications';
+import LegacyNotifications from './notifications/LegacyNotifications';
+import Notifications from './notifications/Notifications';
+import { NOTIFICATION_AREAS } from '../googlesitekit/notifications/constants';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { useGlobalTrackingEffect } from '../hooks/useGlobalTrackingEffect';
 
@@ -111,15 +112,18 @@ function Header( { children, subHeader, showNavigation } ) {
 			</header>
 
 			<div className="googlesitekit-subheader" ref={ subHeaderRef }>
-				<ErrorNotifications />
 				{ subHeader }
 			</div>
 
 			{ showNavigation && <DashboardNavigation /> }
 
-			{ isDashboard && <SubtleNotifications /> }
-
 			<EntityHeader />
+
+			{ /* These notifications are not yet refactored and will be shown
+			in addition to the refactored notifications rendered below. */ }
+			<LegacyNotifications />
+
+			<Notifications areaSlug={ NOTIFICATION_AREAS.HEADER } />
 		</Fragment>
 	);
 }

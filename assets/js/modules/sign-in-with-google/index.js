@@ -36,13 +36,13 @@ import SettingsEdit from './components/settings/SettingsEdit';
 import SettingsView from './components/settings/SettingsView';
 import SignInWithGoogleSetupCTABanner from './components/dashboard/SignInWithGoogleSetupCTABanner';
 import {
-	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/datastore/constants';
+	NOTIFICATION_AREAS,
+	PRIORITY,
+} from '../../googlesitekit/notifications/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import SetupSuccessSubtleNotification from './components/dashboard/SetupSuccessSubtleNotification';
 import { isURLUsingHTTPS } from '../../util/is-url-using-https';
-import { PRIORITY } from '../../googlesitekit/notifications/constants';
 
 export { registerStore } from './datastore';
 
@@ -103,7 +103,7 @@ export const registerNotifications = ( notifications ) => {
 	notifications.registerNotification( 'sign-in-with-google-setup-cta', {
 		Component: SignInWithGoogleSetupCTABanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -133,7 +133,7 @@ export const registerNotifications = ( notifications ) => {
 	} );
 	notifications.registerNotification( 'setup-success-notification-siwg', {
 		Component: SetupSuccessSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: () => {
 			const notification = getQueryArg( location.href, 'notification' );

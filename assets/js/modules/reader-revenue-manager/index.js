@@ -41,9 +41,10 @@ import {
 	RRMSetupSuccessSubtleNotification,
 } from './components/dashboard';
 import {
-	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/datastore/constants';
+	NOTIFICATION_AREAS,
+	PRIORITY,
+} from '../../googlesitekit/notifications/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -56,7 +57,6 @@ import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
 } from './constants';
 import ProductIDSubscriptionsNotification from './components/dashboard/ProductIDSubscriptionsNotification';
-import { PRIORITY } from '../../googlesitekit/notifications/constants';
 import PublicationApprovedOverlayNotification, {
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
 } from './components/dashboard/PublicationApprovedOverlayNotification';
@@ -136,7 +136,7 @@ export const NOTIFICATIONS = {
 	[ RRM_SETUP_NOTIFICATION_ID ]: {
 		Component: ReaderRevenueManagerSetupCTABanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -181,7 +181,7 @@ export const NOTIFICATIONS = {
 	},
 	[ RRM_SETUP_SUCCESS_NOTIFICATION_ID ]: {
 		Component: RRMSetupSuccessSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			const rrmConnected = await resolveSelect(
@@ -215,7 +215,7 @@ export const NOTIFICATIONS = {
 	[ RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID ]: {
 		Component: ProductIDContributionsNotification,
 		priority: 20,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: async ( registry ) => {
@@ -230,7 +230,7 @@ export const NOTIFICATIONS = {
 	[ RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID ]: {
 		Component: ProductIDSubscriptionsNotification,
 		priority: 20,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: async ( registry ) => {
