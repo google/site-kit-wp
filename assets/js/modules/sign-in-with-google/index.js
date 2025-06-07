@@ -103,7 +103,7 @@ export const registerNotifications = ( notifications ) => {
 	notifications.registerNotification( 'sign-in-with-google-setup-cta', {
 		Component: SignInWithGoogleSetupCTABanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -133,7 +133,7 @@ export const registerNotifications = ( notifications ) => {
 	} );
 	notifications.registerNotification( 'setup-success-notification-siwg', {
 		Component: SetupSuccessSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: () => {
 			const notification = getQueryArg( location.href, 'notification' );
