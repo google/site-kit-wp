@@ -83,7 +83,7 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 
 		registerNotification( FIRST_PARTY_MODE_SETUP_SUCCESS_NOTIFICATION, {
 			Component: FirstPartyModeSetupSuccessSubtleNotification,
-			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+			areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 			isDismissible: false,
 			featureFlag: 'firstPartyMode',
 		} );
