@@ -84,7 +84,7 @@ export default {
 					.dispatch( CORE_NOTIFICATIONS )
 					.registerNotification( FPM_SETUP_CTA_BANNER_NOTIFICATION, {
 						Component: FirstPartyModeSetupBanner,
-						areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+						areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						isDismissible: true,
 					} );
