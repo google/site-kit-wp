@@ -31,6 +31,7 @@ export const PRIORITY = {
 };
 
 export const NOTIFICATION_AREAS = {
+	HEADER: 'notification-area-header',
 	ERRORS: 'notification-area-errors',
 	BANNERS_ABOVE_NAV: 'notification-area-banners-above-nav',
 	BANNERS_BELOW_NAV: 'notification-area-banners-below-nav',
