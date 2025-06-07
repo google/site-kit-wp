@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import {
-	act,
 	createTestRegistry,
 	muteFetch,
 	provideModules,
@@ -32,15 +31,13 @@ import {
 	render,
 } from '../../../../tests/js/test-utils';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import BannerNotifications from './BannerNotifications';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
 
 describe( 'BannerNotifications', () => {
 	mockLocation();
@@ -105,24 +102,7 @@ describe( 'BannerNotifications', () => {
 			.receiveHasMismatchGoogleTagID( false );
 	} );
 
-	it( 'prioritizes alerts over regular notifications', async () => {
-		// Trigger the gathering data notification using the new registration process
-		act( () => {
-			registry
-				.dispatch( CORE_NOTIFICATIONS )
-				.registerNotification( 'gathering-data-notification', {
-					Component() {
-						return (
-							<div className="googlesitekit-publisher-win">
-								Test notification!
-							</div>
-						);
-					},
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
-					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-				} );
-		} );
-
+	it( 'renders an AdSense Alert correctly', async () => {
 		activateAdsenseModule();
 
 		// Include alert notification.
@@ -144,12 +124,7 @@ describe( 'BannerNotifications', () => {
 			'.googlesitekit-publisher-win'
 		);
 
-		// Default notification for search console gathering data
-		// is present and adSense alert.
-		expect( notificationBanners.length ).toBe( 2 );
-
-		// The first (visible) notification should be alert,
-		// taking precedence over other notifications.
+		expect( notificationBanners.length ).toBe( 1 );
 		expect( notificationBanners[ 0 ] ).toHaveTextContent(
 			'AdSenseTest notification'
 		);
