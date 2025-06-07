@@ -173,7 +173,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_SETUP, { autoSubmit: true } );
 
-		const { container, getByText, waitForRegistry } = render(
+		const { container, waitForRegistry } = render(
 			<EnhancedMeasurementActivationBannerComponent />,
 			{
 				registry,
@@ -183,8 +183,6 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 		await waitForRegistry();
 
 		await waitFor( () => expect( container ).toMatchSnapshot() );
-
-		expect( getByText( 'Setup in progress' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should render the success step when the the setup form is successfully submitted', async () => {

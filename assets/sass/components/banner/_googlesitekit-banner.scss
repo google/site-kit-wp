@@ -162,3 +162,24 @@
 .googlesitekit-banner--setup-cta {
 	border-radius: $br-md;
 }
+
+.googlesitekit-banner__progress-bar {
+	height: 7px;
+
+	// Prevent page shift between variants as the progress bar removes 10px padding from the widget context.
+	margin-bottom: 3px;
+
+	.mdc-linear-progress__buffer {
+		background-color: $c-site-kit-sk-50;
+	}
+
+	.mdc-linear-progress__bar-inner {
+		background-color: $c-site-kit-sk-300;
+	}
+}
+
+// When a progress bar is rendered above the banner, remove the top padding to move the banner closer
+// to the progress bar.
+.googlesitekit-widget-context--with-progress-bar {
+	padding-top: 0;
+}
