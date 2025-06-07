@@ -100,7 +100,7 @@ export const registerWidgets = () => {};
 export const ADS_NOTIFICATIONS = {
 	'setup-success-notification-ads': {
 		Component: SetupSuccessSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -121,7 +121,7 @@ export const ADS_NOTIFICATIONS = {
 	},
 	'setup-success-notification-pax': {
 		Component: PAXSetupSuccessSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -138,7 +138,7 @@ export const ADS_NOTIFICATIONS = {
 	},
 	'account-linked-via-google-for-woocommerce': {
 		Component: AccountLinkedViaGoogleForWooCommerceSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			// isWooCommerceActivated, isGoogleForWooCommerceActivated and isGoogleForWooCommerceLinked are all relying
@@ -171,7 +171,7 @@ export const ADS_NOTIFICATIONS = {
 		// This notification should be displayed before audience segmentation one,
 		// which has priority of PRIORITY.SETUP_CTA_LOW
 		priority: PRIORITY.SETUP_CTA_HIGH,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
