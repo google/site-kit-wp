@@ -46,7 +46,6 @@ import { AudienceSelectionPanel } from '../modules/analytics-4/components/audien
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
-import BannerNotifications from './notifications/BannerNotifications';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import ScrollEffect from './ScrollEffect';
@@ -252,7 +251,7 @@ export default function DashboardMainApp() {
 
 			<AdminMenuTooltip />
 
-			<Header subHeader={ <BannerNotifications /> } showNavigation>
+			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
