@@ -30,7 +30,10 @@ import {
 import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
 import * as fixtures from '../../datastore/__fixtures__';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import { NOTIFICATION_GROUPS } from '../../../../googlesitekit/notifications/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../../../../googlesitekit/notifications/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
@@ -188,7 +191,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				.dispatch( CORE_NOTIFICATIONS )
 				.registerNotification( id, {
 					Component: NotificationWithComponentProps,
-					areaSlug: 'notification-area-banners-above-nav',
+					areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 					viewContexts: [ 'mainDashboard' ],
 					isDismissible: false,
 				} );
@@ -430,7 +433,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				.dispatch( CORE_NOTIFICATIONS )
 				.registerNotification( id, {
 					Component: NotificationWithComponentProps,
-					areaSlug: 'notification-area-banners-above-nav',
+					areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 					viewContexts: [ 'mainDashboard' ],
 					isDismissible: false,
 				} );
