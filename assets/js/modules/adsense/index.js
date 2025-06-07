@@ -208,7 +208,7 @@ export const ADSENSE_NOTIFICATIONS = {
 	'adsense-abr-success-notification': {
 		Component: AdBlockingRecoverySetupSuccessNotification,
 		priority: 10,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			// Check the query arg first as the simplest condition using global location.
