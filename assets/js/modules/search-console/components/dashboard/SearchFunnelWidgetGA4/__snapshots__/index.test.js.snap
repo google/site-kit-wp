@@ -54,7 +54,11 @@ exports[`SearchFunnelWidgetGA4 should not render the Activate Analytics CTA when
                     <div
                       class="googlesitekit-data-block__datapoint"
                     >
-                      7.9K
+                      <span
+                        class="googlesitekit-data-block__datapoint--resize"
+                      >
+                        7.9K
+                      </span>
                     </div>
                   </div>
                   <div
@@ -97,7 +101,11 @@ exports[`SearchFunnelWidgetGA4 should not render the Activate Analytics CTA when
                     <div
                       class="googlesitekit-data-block__datapoint"
                     >
-                      123
+                      <span
+                        class="googlesitekit-data-block__datapoint--resize"
+                      >
+                        123
+                      </span>
                     </div>
                   </div>
                   <div
@@ -236,7 +244,11 @@ exports[`SearchFunnelWidgetGA4 should render the Search Funnel Widget, including
                     <div
                       class="googlesitekit-data-block__datapoint"
                     >
-                      7.9K
+                      <span
+                        class="googlesitekit-data-block__datapoint--resize"
+                      >
+                        7.9K
+                      </span>
                     </div>
                   </div>
                   <div
@@ -279,7 +291,11 @@ exports[`SearchFunnelWidgetGA4 should render the Search Funnel Widget, including
                     <div
                       class="googlesitekit-data-block__datapoint"
                     >
-                      123
+                      <span
+                        class="googlesitekit-data-block__datapoint--resize"
+                      >
+                        123
+                      </span>
                     </div>
                   </div>
                   <div

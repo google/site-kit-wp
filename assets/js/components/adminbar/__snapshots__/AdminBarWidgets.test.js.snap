@@ -27,7 +27,11 @@ exports[`AdminBarWidgets should not render the Activate Analytics CTA when the A
           <div
             class="googlesitekit-data-block__datapoint"
           >
-            4.6K
+            <span
+              class="googlesitekit-data-block__datapoint--resize"
+            >
+              4.6K
+            </span>
           </div>
         </div>
         <div
@@ -67,7 +71,11 @@ exports[`AdminBarWidgets should not render the Activate Analytics CTA when the A
           <div
             class="googlesitekit-data-block__datapoint"
           >
-            123
+            <span
+              class="googlesitekit-data-block__datapoint--resize"
+            >
+              123
+            </span>
           </div>
         </div>
         <div
@@ -116,7 +124,11 @@ exports[`AdminBarWidgets should render the Admin Bar Widgets, including the Acti
           <div
             class="googlesitekit-data-block__datapoint"
           >
-            4.6K
+            <span
+              class="googlesitekit-data-block__datapoint--resize"
+            >
+              4.6K
+            </span>
           </div>
         </div>
         <div
@@ -156,7 +168,11 @@ exports[`AdminBarWidgets should render the Admin Bar Widgets, including the Acti
           <div
             class="googlesitekit-data-block__datapoint"
           >
-            123
+            <span
+              class="googlesitekit-data-block__datapoint--resize"
+            >
+              123
+            </span>
           </div>
         </div>
         <div
