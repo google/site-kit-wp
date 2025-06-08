@@ -115,5 +115,21 @@ describe( 'UnsatisfiedScopesAlertGTE', () => {
 
 			expect( isActive ).toBe( false );
 		} );
+
+		it( 'is not active when the user does have the Tag Manager scope', async () => {
+			provideUserAuthentication( registry, {
+				authenticated: true,
+				grantedScopes: [
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				],
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
