@@ -100,6 +100,7 @@ import {
 } from './components/dashboard';
 import { ModulePopularPagesWidgetGA4 } from './components/module';
 import {
+	AudienceSegmentationIntroductoryOverlayNotification,
 	AudienceTilesWidget,
 	ConnectAnalyticsCTAWidget,
 	InfoNoticeWidget,
@@ -126,6 +127,7 @@ import {
 } from './constants';
 import { PRIORITY } from '../../googlesitekit/notifications/constants';
 import ConversionReportingNotificationCTAWidget from './components/widgets/ConversionReportingNotificationCTAWidget';
+import { AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION } from './components/audience-segmentation/dashboard/AudienceSegmentationIntroductoryOverlayNotification';
 
 export { registerStore } from './datastore';
 
@@ -928,6 +930,14 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 
 			return isEnhancedMeasurementStreamEnabled === false;
 		},
+	},
+	[ AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION ]: {
+		Component: AudienceSegmentationIntroductoryOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
 	},
 };
 
