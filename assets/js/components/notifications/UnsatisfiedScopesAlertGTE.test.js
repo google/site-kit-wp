@@ -116,6 +116,23 @@ describe( 'UnsatisfiedScopesAlertGTE', () => {
 			expect( isActive ).toBe( false );
 		} );
 
+		it( 'is not active when GA4 is not connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: false,
+				},
+			] );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
+
 		it( 'is not active when the user does have the Tag Manager scope', async () => {
 			provideUserAuthentication( registry, {
 				authenticated: true,
