@@ -21,6 +21,7 @@
  */
 import {
 	createTestRegistry,
+	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 	render,
@@ -30,6 +31,7 @@ import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/registe
 import SetupErrorMessageNotification from './SetupErrorMessageNotification';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
 
 const SETUP_ERROR_NOTIFICATION = 'setup_plugin_error';
 
@@ -74,6 +76,35 @@ describe( 'SetupErrorMessageNotification', () => {
 				code: registry.select( CORE_SITE ).getSetupErrorCode(),
 			} )
 		);
+	} );
+
+	it( 'does not render the redo setup CTA if it is not due to the interruption of plugin setup and no permission is temporarily persisted', async () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+		provideUserAuthentication( registry );
+		provideSiteInfo( registry, {
+			setupErrorCode: 'access_denied',
+			setupErrorMessage:
+				'Setup was interrupted because you did not grant the necessary permissions',
+			setupErrorRedoURL: '#',
+		} );
+
+		const { container, waitForRegistry } = render(
+			<NotificationWithComponentProps />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toHaveTextContent( 'Setup was interrupted' );
+		expect( container ).not.toHaveTextContent( 'Redo the plugin setup' );
 	} );
 
 	describe( 'checkRequirements', () => {
