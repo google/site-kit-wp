@@ -112,7 +112,10 @@ import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 } from '../../googlesitekit/notifications/datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../googlesitekit/constants';
 import AudienceSegmentationSetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 } from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTABanner';
@@ -936,7 +939,10 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
 		isDismissible: true,
 	},
 };
