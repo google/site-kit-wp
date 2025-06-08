@@ -61,10 +61,6 @@ function AudienceSegmentationIntroductoryOverlayNotification() {
 
 	const shouldShowAudienceSegmentationIntroductoryOverlay = useSelect(
 		( select ) => {
-			const isDismissed = select( CORE_USER ).isItemDismissed(
-				AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
-			);
-
 			const isAudienceSegmentationWidgetHidden =
 				select( CORE_USER ).isAudienceSegmentationWidgetHidden();
 
@@ -87,7 +83,6 @@ function AudienceSegmentationIntroductoryOverlayNotification() {
 
 			return (
 				DASHBOARD_TYPE_MAIN === dashboardType &&
-				isDismissed === false &&
 				isAudienceSegmentationWidgetHidden === false &&
 				isModuleActive &&
 				canViewModule &&
