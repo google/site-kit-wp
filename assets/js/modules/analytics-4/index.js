@@ -113,6 +113,7 @@ import {
 	NOTIFICATION_GROUPS,
 } from '../../googlesitekit/notifications/datastore/constants';
 import {
+	SITE_KIT_VIEW_ONLY_CONTEXTS,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
@@ -944,7 +945,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
-		checkRequirements: async ( { select, resolveSelect } ) => {
+		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
 			await Promise.all( [
 				// The isModuleConnected() and isModuleActive() selectors rely
 				// on the resolution of the getModules() resolver.
@@ -958,6 +959,9 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				// The getID() selector relies on the resolution
 				// of the getUser() resolver.
 				resolveSelect( CORE_USER ).getUser(),
+				// The canViewSharedModule() selector relies on the resolution
+				// of the getCapabilities() resolver.
+				resolveSelect( CORE_USER ).getCapabilities(),
 			] );
 
 			const ga4ModuleConnected = select( CORE_MODULES ).isModuleConnected(
@@ -966,6 +970,14 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			const ga4ModuleActive = select( CORE_MODULES ).isModuleActive(
 				MODULE_SLUG_ANALYTICS_4
 			);
+
+			const isViewOnly =
+				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
+			const canViewModule =
+				! isViewOnly ||
+				select( CORE_USER ).canViewSharedModule(
+					MODULE_SLUG_ANALYTICS_4
+				);
 
 			const isAudienceSegmentationWidgetHidden =
 				select( CORE_USER ).isAudienceSegmentationWidgetHidden();
@@ -979,6 +991,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			if (
 				ga4ModuleConnected &&
 				ga4ModuleActive &&
+				canViewModule &&
 				isAudienceSegmentationWidgetHidden === false &&
 				Number.isInteger( audienceSegmentationSetupCompletedBy ) &&
 				audienceSegmentationSetupCompletedBy !== userID

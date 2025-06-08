@@ -34,34 +34,19 @@ import { useBreakpoint } from '../../../../../hooks/useBreakpoint';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import useViewContext from '../../../../../hooks/useViewContext';
-import useViewOnly from '../../../../../hooks/useViewOnly';
 import { trackEvent } from '../../../../../util';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 
 export const AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION =
 	'audienceSegmentationIntroductoryOverlayNotification';
 
 export default function AudienceSegmentationIntroductoryOverlayNotification() {
 	const viewContext = useViewContext();
-	const isViewOnly = useViewOnly();
 	const breakpoint = useBreakpoint();
 
 	const isDismissing = useSelect( ( select ) =>
 		select( CORE_USER ).isDismissingItem(
 			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
 		)
-	);
-
-	const shouldShowAudienceSegmentationIntroductoryOverlay = useSelect(
-		( select ) => {
-			const canViewModule =
-				! isViewOnly ||
-				select( CORE_USER ).canViewSharedModule(
-					MODULE_SLUG_ANALYTICS_4
-				);
-
-			return canViewModule;
-		}
 	);
 
 	const { dismissOverlayNotification } = useDispatch( CORE_UI );
@@ -106,9 +91,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 
 	return (
 		<OverlayNotification
-			shouldShowNotification={
-				shouldShowAudienceSegmentationIntroductoryOverlay
-			}
+			shouldShowNotification
 			GraphicDesktop={ AudienceIntroductoryGraphicDesktop }
 			GraphicMobile={ AudienceIntroductoryGraphicMobile }
 			notificationID={
