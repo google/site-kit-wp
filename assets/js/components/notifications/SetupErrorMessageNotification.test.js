@@ -32,6 +32,8 @@ import SetupErrorMessageNotification from './SetupErrorMessageNotification';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '../../googlesitekit/datastore/user/constants';
 
 const SETUP_ERROR_NOTIFICATION = 'setup_plugin_error';
 
@@ -105,6 +107,43 @@ describe( 'SetupErrorMessageNotification', () => {
 
 		expect( container ).toHaveTextContent( 'Setup was interrupted' );
 		expect( container ).not.toHaveTextContent( 'Redo the plugin setup' );
+	} );
+
+	it( 'does render the grant permission CTA if additional permissions were not granted and permission is temporarily persisted', async () => {
+		provideUserAuthentication( registry );
+		provideSiteInfo( registry, {
+			isAuthenticated: true,
+			setupErrorCode: 'access_denied',
+			setupErrorMessage:
+				'Setup was interrupted because you did not grant the necessary permissions',
+			setupErrorRedoURL: '#',
+		} );
+
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_TEMPORARY_PERSIST_PERMISSION_ERROR, {
+				permissionsError: {
+					status: 403,
+					message: 'Generic scope',
+					data: {
+						scopes: [
+							'https://www.googleapis.com/auth/analytics.edit',
+						],
+					},
+				},
+			} );
+
+		const { container, waitForRegistry } = render(
+			<NotificationWithComponentProps />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toHaveTextContent( 'Setup was interrupted' );
+		expect( container ).toHaveTextContent( 'Grant permission' );
 	} );
 
 	describe( 'checkRequirements', () => {
