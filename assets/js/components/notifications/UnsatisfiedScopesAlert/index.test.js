@@ -175,6 +175,29 @@ describe( 'UnsatisfiedScopesAlert', () => {
 			expect( isActive ).toBe( true );
 		} );
 
+		it( 'is not active when GA4 is connected but the only unsatisfied scope is the tagmanager readonly scope', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+				},
+			] );
+
+			provideUserAuthentication( registry, {
+				unsatisfiedScopes: [
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				],
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
+
 		it( 'is not active when there is a setup error', async () => {
 			provideSiteInfo( registry, {
 				proxySupportLinkURL: 'https://test.com',
