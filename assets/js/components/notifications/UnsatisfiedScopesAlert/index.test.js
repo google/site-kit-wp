@@ -150,6 +150,22 @@ describe( 'UnsatisfiedScopesAlert', () => {
 
 			expect( isActive ).toBe( true );
 		} );
+
+		it( 'is not active when there is a setup error', async () => {
+			provideSiteInfo( registry, {
+				proxySupportLinkURL: 'https://test.com',
+				setupErrorCode: 'error_code',
+				setupErrorMessage: 'An error occurred',
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
+
 		it( 'is not active if the user is not authenticated', async () => {
 			provideUserAuthentication( registry, {
 				authenticated: false,
@@ -165,6 +181,7 @@ describe( 'UnsatisfiedScopesAlert', () => {
 
 			expect( isActive ).toBe( false );
 		} );
+
 		it( 'is not active if the user does not have unsatisfied scopes', async () => {
 			provideUserAuthentication( registry, {
 				authenticated: true,
