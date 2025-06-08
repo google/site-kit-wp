@@ -97,8 +97,12 @@ export default function AudienceSegmentationIntroductoryOverlayNotification( {
 		} );
 	};
 
+	const gaTrackingEventArgs = {
+		category: `${ viewContext }_audiences-secondary-user-intro`,
+	};
+
 	return (
-		<Notification>
+		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			<OverlayNotification
 				notificationID={ id }
 				GraphicDesktop={ AudienceIntroductoryGraphicDesktop }
@@ -109,6 +113,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification( {
 						'view_notification'
 					);
 				} }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
 			>
 				<div className="googlesitekit-overlay-notification__body">
 					<h3>{ __( 'New! Visitor groups', 'google-site-kit' ) }</h3>
