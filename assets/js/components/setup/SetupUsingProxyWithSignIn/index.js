@@ -37,6 +37,7 @@ import {
 	ANALYTICS_NOTICE_FORM_NAME,
 	ANALYTICS_NOTICE_CHECKBOX,
 } from '../constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { setItem } from '../../../googlesitekit/api/cache';
 import useViewContext from '../../../hooks/useViewContext';
 import Header from './Header';
@@ -69,7 +70,7 @@ export default function SetupUsingProxyWithSignIn() {
 
 			if ( connectAnalytics ) {
 				const { error, response } = await activateModule(
-					'analytics-4'
+					MODULE_SLUG_ANALYTICS_4
 				);
 
 				if ( ! error ) {

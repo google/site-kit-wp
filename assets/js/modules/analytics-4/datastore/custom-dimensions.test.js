@@ -26,6 +26,7 @@ import { times } from 'lodash';
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import {
 	createTestRegistry,
 	provideModules,
@@ -388,7 +389,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 			it( 'does not make a network request if the analytics-4 module is not connected', async () => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: false,
 						connected: false,
 					},
@@ -417,7 +418,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 			it( 'uses the resolver to fetch and set available custom dimensions if they are null', async () => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

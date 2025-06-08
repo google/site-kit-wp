@@ -24,6 +24,7 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import { GTM_SCOPE, MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { ANALYTICS_4_NOTIFICATIONS } from '../..';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import * as fixtures from '../../datastore/__fixtures__';
@@ -48,7 +49,7 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 
@@ -217,7 +218,7 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 				{
 					active: false,
 					connected: false,
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 				},
 			] );
 			registry

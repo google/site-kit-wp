@@ -628,6 +628,9 @@ export const waitForDefaultTimeouts = () => {
 /**
  * Creates a delay in the execution of subsequent code for a specified duration in milliseconds.
  *
+ * Developers should consider using `waitForRegistry()`, instead of this helper,
+ * if state changes occur.
+ *
  * @since 1.102.0
  *
  * @param {number} timeout The duration to wait before resolving the promise, in milliseconds.
