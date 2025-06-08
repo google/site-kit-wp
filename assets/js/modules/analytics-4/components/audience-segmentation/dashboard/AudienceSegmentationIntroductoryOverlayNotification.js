@@ -39,12 +39,11 @@ import useViewOnly from '../../../../../hooks/useViewOnly';
 import { trackEvent } from '../../../../../util';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
-import whenActive from '../../../../../util/when-active';
 
 export const AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION =
 	'audienceSegmentationIntroductoryOverlayNotification';
 
-function AudienceSegmentationIntroductoryOverlayNotification() {
+export default function AudienceSegmentationIntroductoryOverlayNotification() {
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 	const breakpoint = useBreakpoint();
@@ -173,7 +172,3 @@ function AudienceSegmentationIntroductoryOverlayNotification() {
 		</OverlayNotification>
 	);
 }
-
-export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
-	AudienceSegmentationIntroductoryOverlayNotification
-);

@@ -944,6 +944,17 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
+		checkRequirements: async ( { resolveSelect } ) => {
+			const isGA4Connected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+
+			if ( ! isGA4Connected ) {
+				return false;
+			}
+
+			return true;
+		},
 	},
 };
 
