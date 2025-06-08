@@ -99,5 +99,21 @@ describe( 'UnsatisfiedScopesAlertGTE', () => {
 
 			expect( isActive ).toBe( false );
 		} );
+
+		it( 'is not active when the user is not authenticated', async () => {
+			provideUserAuthentication( registry, {
+				authenticated: false,
+				unsatisfiedScopes: [
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				],
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
