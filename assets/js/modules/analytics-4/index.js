@@ -949,6 +949,9 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				// The isModuleConnected() and isModuleActive() selectors rely
 				// on the resolution of the getModules() resolver.
 				resolveSelect( CORE_MODULES ).getModules(),
+				// The isAudienceSegmentationWidgetHidden() selector relies on
+				// the resolution of the getUserAudienceSettings() resolver.
+				resolveSelect( CORE_USER ).getUserAudienceSettings(),
 			] );
 
 			const ga4ModuleConnected = select( CORE_MODULES ).isModuleConnected(
@@ -958,7 +961,14 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				MODULE_SLUG_ANALYTICS_4
 			);
 
-			if ( ga4ModuleConnected && ga4ModuleActive ) {
+			const isAudienceSegmentationWidgetHidden =
+				select( CORE_USER ).isAudienceSegmentationWidgetHidden();
+
+			if (
+				ga4ModuleConnected &&
+				ga4ModuleActive &&
+				isAudienceSegmentationWidgetHidden === false
+			) {
 				return true;
 			}
 

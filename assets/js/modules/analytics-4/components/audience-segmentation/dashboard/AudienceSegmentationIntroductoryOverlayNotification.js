@@ -55,9 +55,6 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 
 	const shouldShowAudienceSegmentationIntroductoryOverlay = useSelect(
 		( select ) => {
-			const isAudienceSegmentationWidgetHidden =
-				select( CORE_USER ).isAudienceSegmentationWidgetHidden();
-
 			const canViewModule =
 				! isViewOnly ||
 				select( CORE_USER ).canViewSharedModule(
@@ -72,7 +69,6 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 			const userID = select( CORE_USER ).getID();
 
 			return (
-				isAudienceSegmentationWidgetHidden === false &&
 				canViewModule &&
 				Number.isInteger( audienceSegmentationSetupCompletedBy ) &&
 				audienceSegmentationSetupCompletedBy !== userID
