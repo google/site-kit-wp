@@ -944,16 +944,25 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
-		checkRequirements: async ( { resolveSelect } ) => {
-			const isGA4Connected = await resolveSelect(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The isModuleConnected() and isModuleActive() selectors rely
+				// on the resolution of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
 
-			if ( ! isGA4Connected ) {
-				return false;
+			const ga4ModuleConnected = select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			);
+			const ga4ModuleActive = select( CORE_MODULES ).isModuleActive(
+				MODULE_SLUG_ANALYTICS_4
+			);
+
+			if ( ga4ModuleConnected && ga4ModuleActive ) {
+				return true;
 			}
 
-			return true;
+			return false;
 		},
 	},
 };
