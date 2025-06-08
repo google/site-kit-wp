@@ -36,7 +36,6 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import useViewContext from '../../../../../hooks/useViewContext';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import { trackEvent } from '../../../../../util';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 
 export const AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION =
@@ -61,18 +60,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 					MODULE_SLUG_ANALYTICS_4
 				);
 
-			const audienceSegmentationSetupCompletedBy =
-				select(
-					MODULES_ANALYTICS_4
-				).getAudienceSegmentationSetupCompletedBy();
-
-			const userID = select( CORE_USER ).getID();
-
-			return (
-				canViewModule &&
-				Number.isInteger( audienceSegmentationSetupCompletedBy ) &&
-				audienceSegmentationSetupCompletedBy !== userID
-			);
+			return canViewModule;
 		}
 	);
 

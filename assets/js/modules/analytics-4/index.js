@@ -952,6 +952,12 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				// The isAudienceSegmentationWidgetHidden() selector relies on
 				// the resolution of the getUserAudienceSettings() resolver.
 				resolveSelect( CORE_USER ).getUserAudienceSettings(),
+				// The getAudienceSegmentationSetupCompletedBy() selector relies
+				// on the resolution of the getAudienceSettings() resolver.
+				resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings(),
+				// The getID() selector relies on the resolution
+				// of the getUser() resolver.
+				resolveSelect( CORE_USER ).getUser(),
 			] );
 
 			const ga4ModuleConnected = select( CORE_MODULES ).isModuleConnected(
@@ -964,10 +970,18 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			const isAudienceSegmentationWidgetHidden =
 				select( CORE_USER ).isAudienceSegmentationWidgetHidden();
 
+			const audienceSegmentationSetupCompletedBy =
+				select(
+					MODULES_ANALYTICS_4
+				).getAudienceSegmentationSetupCompletedBy();
+			const userID = select( CORE_USER ).getID();
+
 			if (
 				ga4ModuleConnected &&
 				ga4ModuleActive &&
-				isAudienceSegmentationWidgetHidden === false
+				isAudienceSegmentationWidgetHidden === false &&
+				Number.isInteger( audienceSegmentationSetupCompletedBy ) &&
+				audienceSegmentationSetupCompletedBy !== userID
 			) {
 				return true;
 			}
