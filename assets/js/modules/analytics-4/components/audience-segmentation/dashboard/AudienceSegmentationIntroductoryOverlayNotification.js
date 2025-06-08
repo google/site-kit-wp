@@ -33,7 +33,6 @@ import { getNavigationalScrollTop } from '../../../../../util/scroll';
 import { useBreakpoint } from '../../../../../hooks/useBreakpoint';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import useViewContext from '../../../../../hooks/useViewContext';
 import useViewOnly from '../../../../../hooks/useViewOnly';
 import { trackEvent } from '../../../../../util';
@@ -59,10 +58,6 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 			const isAudienceSegmentationWidgetHidden =
 				select( CORE_USER ).isAudienceSegmentationWidgetHidden();
 
-			const isModuleActive = select( CORE_MODULES ).isModuleActive(
-				MODULE_SLUG_ANALYTICS_4
-			);
-
 			const canViewModule =
 				! isViewOnly ||
 				select( CORE_USER ).canViewSharedModule(
@@ -78,7 +73,6 @@ export default function AudienceSegmentationIntroductoryOverlayNotification() {
 
 			return (
 				isAudienceSegmentationWidgetHidden === false &&
-				isModuleActive &&
 				canViewModule &&
 				Number.isInteger( audienceSegmentationSetupCompletedBy ) &&
 				audienceSegmentationSetupCompletedBy !== userID
