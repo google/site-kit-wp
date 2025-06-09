@@ -39,10 +39,7 @@ import AudienceSegmentationIntroductoryOverlayNotification, {
 import * as scrollUtils from '../../../../../util/scroll';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
-import {
-	VIEW_CONTEXT_ENTITY_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-} from '../../../../../googlesitekit/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
 import {
 	getViewportWidth,
 	setViewportWidth,
@@ -209,21 +206,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		} );
 	} );
 
-	it( 'should not render if the dashboard is entity dashboard', async () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-		const { container, waitForRegistry } = render(
-			<AudienceSegmentationIntroductoryOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
 	describe( 'checkRequirements', () => {
 		it( 'is active when all the conditions are met', async () => {
 			const isActive = await notification.checkRequirements(
