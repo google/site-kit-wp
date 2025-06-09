@@ -3,16 +3,8 @@ description:
 globs: 
 alwaysApply: true
 ---
-# Tech Stack Overview
+# Technical Stack Overview
 
-This document provides a concise overview of the primary technologies and architectual patterns used in this project codebase. Understanding this stack is crucial for developing and maintaining the application effectively.
-
-This project is a WordPress plugin that allows users to connect Google services such as Search Console, Analytics, AdSense, Ads, Tag Manager, Page Speed Insights, Reader Revenue Manager, and Sign in with Google to WordPress sites.
-
-## Frontend
-
-## Backend
-
-* **Language:** PHP - Used throught 
-
-The backend is written using PHP and follows WordPress standards.
+- **Backend:** PHP and WordPress API.
+- **Frontend:** React.js with WordPress Gutenberg's libraries, plus SCSS for styles.
+- **Tests:** PHPUnit for backend tests and Jest for frontend tests.
