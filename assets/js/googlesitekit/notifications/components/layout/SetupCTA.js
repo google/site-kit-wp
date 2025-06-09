@@ -165,8 +165,5 @@ SetupCTA.propTypes = {
 		label: PropTypes.string,
 		value: PropTypes.number,
 	} ),
-	waitingProgress: PropTypes.oneOfType( [
-		PropTypes.bool,
-		PropTypes.shape( ProgressBar.propTypes ),
-	] ),
+	waitingProgress: PropTypes.shape( ProgressBar.propTypes ),
 };
