@@ -946,6 +946,9 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		],
 		isDismissible: true,
 		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
+			const isViewOnly =
+				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
+
 			await Promise.all( [
 				// The isModuleConnected() and isModuleActive() selectors rely
 				// on the resolution of the getModules() resolver.
@@ -961,7 +964,9 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				resolveSelect( CORE_USER ).getUser(),
 				// The canViewSharedModule() selector relies on the resolution
 				// of the getCapabilities() resolver.
-				resolveSelect( CORE_USER ).getCapabilities(),
+				isViewOnly
+					? resolveSelect( CORE_USER ).getCapabilities()
+					: Promise.resolve( [] ),
 			] );
 
 			const ga4ModuleConnected = select( CORE_MODULES ).isModuleConnected(
@@ -971,8 +976,6 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				MODULE_SLUG_ANALYTICS_4
 			);
 
-			const isViewOnly =
-				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
 			const canViewModule =
 				! isViewOnly ||
 				select( CORE_USER ).canViewSharedModule(
