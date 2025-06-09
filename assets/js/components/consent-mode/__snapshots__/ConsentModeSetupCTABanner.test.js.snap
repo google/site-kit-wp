@@ -57,7 +57,7 @@ exports[`ConsentModeSetupCTABanner should render the banner 1`] = `
                   class="googlesitekit-notice__action"
                 >
                   <a
-                    class="mdc-button googlesitekit-banner__cta mdc-button--raised"
+                    class="mdc-button googlesitekit-banner__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
                     href="http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings"
                     role="button"
                     target="_self"
