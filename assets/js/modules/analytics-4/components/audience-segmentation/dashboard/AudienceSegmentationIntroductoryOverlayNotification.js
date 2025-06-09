@@ -29,17 +29,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import AudienceIntroductoryGraphicDesktop from '../../../../../../svg/graphics/audience-segmentation-introductory-graphic-desktop.svg';
 import AudienceIntroductoryGraphicMobile from '../../../../../../svg/graphics/audience-segmentation-introductory-graphic-mobile.svg';
 import OverlayNotification from '../../../../../googlesitekit/notifications/components/layout/OverlayNotification';
 import { getNavigationalScrollTop } from '../../../../../util/scroll';
 import { useBreakpoint } from '../../../../../hooks/useBreakpoint';
-import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 import useViewContext from '../../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../../util';
 
 export const AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION =
 	'audienceSegmentationIntroductoryOverlayNotification';
@@ -51,30 +48,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification( {
 	const viewContext = useViewContext();
 	const breakpoint = useBreakpoint();
 
-	const isDismissing = useSelect( ( select ) =>
-		select( CORE_USER ).isDismissingItem(
-			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
-		)
-	);
-
-	const { dismissOverlayNotification } = useDispatch( CORE_UI );
-
-	const dismissNotice = () => {
-		// Dismiss the notification, which also dismisses it from
-		// the current user's profile with the `dismissItem` action.
-		dismissOverlayNotification(
-			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
-		);
-	};
-
-	const dismissNotification = () => {
-		trackEvent(
-			`${ viewContext }_audiences-secondary-user-intro`,
-			'dismiss_notification'
-		).finally( () => {
-			dismissNotice();
-		} );
-	};
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const scrollToWidgetAndDismissNotification = ( event ) => {
 		event.preventDefault();
@@ -89,12 +63,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification( {
 			} );
 		}, 0 );
 
-		trackEvent(
-			`${ viewContext }_audiences-secondary-user-intro`,
-			'confirm_notification'
-		).finally( () => {
-			dismissNotice();
-		} );
+		dismissNotification( id );
 	};
 
 	const gaTrackingEventArgs = {
@@ -108,6 +77,11 @@ export default function AudienceSegmentationIntroductoryOverlayNotification( {
 				GraphicDesktop={ AudienceIntroductoryGraphicDesktop }
 				GraphicMobile={ AudienceIntroductoryGraphicMobile }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
+				ctaButton={ {
+					label: __( 'Show me', 'google-site-kit' ),
+					onClick: scrollToWidgetAndDismissNotification,
+				} }
+				dismissButton={ { label: __( 'Got it', 'google-site-kit' ) } }
 			>
 				<div className="googlesitekit-overlay-notification__body">
 					<h3>{ __( 'New! Visitor groups', 'google-site-kit' ) }</h3>
@@ -117,23 +91,6 @@ export default function AudienceSegmentationIntroductoryOverlayNotification( {
 							'google-site-kit'
 						) }
 					</p>
-				</div>
-
-				<div className="googlesitekit-overlay-notification__actions">
-					<Button
-						tertiary
-						disabled={ isDismissing }
-						onClick={ dismissNotification }
-					>
-						{ __( 'Got it', 'google-site-kit' ) }
-					</Button>
-
-					<Button
-						disabled={ isDismissing }
-						onClick={ scrollToWidgetAndDismissNotification }
-					>
-						{ __( 'Show me', 'google-site-kit' ) }
-					</Button>
 				</div>
 			</OverlayNotification>
 		</Notification>
