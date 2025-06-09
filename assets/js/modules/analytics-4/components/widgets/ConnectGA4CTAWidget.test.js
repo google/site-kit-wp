@@ -140,7 +140,7 @@ describe( 'ConnectGA4CTAWidget', () => {
 		await waitForRegistry();
 
 		expect(
-			container.querySelector( '.googlesitekit-publisher-win__title' )
+			container.querySelector( '.googlesitekit-banner__title' )
 		).toHaveTextContent( 'Analytics is disconnected' );
 		const button = getByRole( 'button', {
 			name: /Connect Analytics/i,
