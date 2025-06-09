@@ -50,7 +50,6 @@ import {
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 	PERMISSION_UPDATE_PLUGINS,
 } from '../datastore/user/constants';
-import { CORE_UI } from '../datastore/ui/constants';
 import { CORE_MODULES } from '../modules/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -71,10 +70,7 @@ import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSe
 import SetupErrorNotification from '../../components/notifications/SetupErrorNotification';
 import SetupErrorMessageNotification from '../../components/notifications/SetupErrorMessageNotification';
 import FirstPartyModeWarningNotification from '../../components/notifications/FirstPartyModeWarningNotification';
-import FirstPartyModeSetupBanner, {
-	FPM_SHOW_SETUP_SUCCESS_NOTIFICATION,
-} from '../../components/notifications/FirstPartyModeSetupBanner';
-import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
+import FirstPartyModeSetupBanner from '../../components/notifications/FirstPartyModeSetupBanner';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '../../components/consent-mode/constants';
 import ConsentModeSetupCTAWidget from '../../components/consent-mode/ConsentModeSetupCTAWidget';
 import EnableAutoUpdateBannerNotification, {
@@ -730,18 +726,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			);
 		},
 		isDismissible: true,
-		featureFlag: 'firstPartyMode',
-	},
-	'setup-success-notification-fpm': {
-		Component: FirstPartyModeSetupSuccessSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		isDismissible: false,
-		checkRequirements: ( { select } ) => {
-			return !! select( CORE_UI ).getValue(
-				FPM_SHOW_SETUP_SUCCESS_NOTIFICATION
-			);
-		},
 		featureFlag: 'firstPartyMode',
 	},
 };

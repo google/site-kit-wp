@@ -34,23 +34,19 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import { useShowTooltip } from '../AdminMenuTooltip';
 import {
 	CORE_NOTIFICATIONS,
-	NOTIFICATION_GROUPS,
+	NOTIFICATION_AREAS,
 } from '../../googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import SetupCTA from '../../googlesitekit/notifications/components/layout/SetupCTA';
-import useViewContext from '../../hooks/useViewContext';
 import { DAY_IN_SECONDS } from '../../util';
+import SetupCTA from '../../googlesitekit/notifications/components/layout/SetupCTA';
 import BannerSVGDesktop from '@/svg/graphics/banner-first-party-mode-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-first-party-mode-setup-cta-mobile.svg?url';
-
-export const FPM_SHOW_SETUP_SUCCESS_NOTIFICATION =
-	'fpm-show-setup-success-notification';
+import FirstPartyModeSetupSuccessSubtleNotification, {
+	FIRST_PARTY_MODE_SETUP_SUCCESS_NOTIFICATION,
+} from './FirstPartyModeSetupSuccessSubtleNotification';
 
 export default function FirstPartyModeSetupBanner( { id, Notification } ) {
-	const viewContext = useViewContext();
-
 	const { setFirstPartyModeEnabled, saveFirstPartyModeSettings } =
 		useDispatch( CORE_SITE );
 
@@ -68,17 +64,14 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 		select( CORE_SITE ).isUsingProxy()
 	);
 
-	const { invalidateResolution } = useDispatch( CORE_NOTIFICATIONS );
-
-	const { setValue } = useDispatch( CORE_UI );
+	const { dismissNotification, registerNotification } =
+		useDispatch( CORE_NOTIFICATIONS );
 
 	const learnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL(
 			'first-party-mode-introduction'
 		)
 	);
-
-	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const onCTAClick = async () => {
 		setFirstPartyModeEnabled( true );
@@ -88,13 +81,14 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 			return;
 		}
 
-		setValue( FPM_SHOW_SETUP_SUCCESS_NOTIFICATION, true );
-		invalidateResolution( 'getQueuedNotifications', [
-			viewContext,
-			NOTIFICATION_GROUPS.DEFAULT,
-		] );
-
 		dismissNotification( id );
+
+		registerNotification( FIRST_PARTY_MODE_SETUP_SUCCESS_NOTIFICATION, {
+			Component: FirstPartyModeSetupSuccessSubtleNotification,
+			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+			isDismissible: false,
+			featureFlag: 'firstPartyMode',
+		} );
 	};
 
 	const ctaError = useSelect( ( select ) => {
