@@ -225,5 +225,18 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			);
 			expect( isActive ).toBe( false );
 		} );
+		it( 'is not active when the current user is the one who completed the audience segmentation setup', async () => {
+			const userID = registry.select( CORE_USER ).getID();
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAudienceSegmentationSetupCompletedBy( userID );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
