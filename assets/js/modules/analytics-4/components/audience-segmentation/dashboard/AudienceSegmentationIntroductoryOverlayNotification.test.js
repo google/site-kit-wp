@@ -214,6 +214,22 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			);
 			expect( isActive ).toBe( true );
 		} );
+		it( 'is not active when the module is not connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: false,
+					connected: false,
+					setupComplete: true,
+				},
+			] );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 		it( 'is not active when the audiences widget area is hidden', async () => {
 			registry
 				.dispatch( CORE_USER )
