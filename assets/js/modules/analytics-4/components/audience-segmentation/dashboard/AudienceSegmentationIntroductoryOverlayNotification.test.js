@@ -214,6 +214,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			);
 			expect( isActive ).toBe( true );
 		} );
+
 		it( 'is not active when the module is not connected', async () => {
 			provideModules( registry, [
 				{
@@ -230,6 +231,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			);
 			expect( isActive ).toBe( false );
 		} );
+
 		it( 'is not active when the audiences widget area is hidden', async () => {
 			registry
 				.dispatch( CORE_USER )
@@ -241,6 +243,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			);
 			expect( isActive ).toBe( false );
 		} );
+
 		it( 'is not active when the current user is the one who completed the audience segmentation setup', async () => {
 			const userID = registry.select( CORE_USER ).getID();
 
