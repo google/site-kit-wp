@@ -100,6 +100,13 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			didSetAudiences: true,
 		} );
 
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
+				notification
+			);
+
 		originalViewportWidth = getViewportWidth();
 		setViewportWidth( 450 );
 	} );
@@ -130,12 +137,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 
 	it( 'should dismiss the notification when the "Got it" button is clicked', async () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-		registry
-			.dispatch( CORE_NOTIFICATIONS )
-			.registerNotification(
-				AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
-				notification
-			);
 
 		const { getByRole, waitForRegistry } = render(
 			<AudienceSegmentationIntroductoryOverlayNotificationComponent />,
@@ -180,7 +181,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		);
 
 		const { getByRole, waitForRegistry } = render(
-			<AudienceSegmentationIntroductoryOverlayNotification />,
+			<AudienceSegmentationIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
