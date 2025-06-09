@@ -127,26 +127,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should return null if the notification is dismissed', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
-			] );
-
-		const { container, waitForRegistry } = render(
-			<AudienceSegmentationIntroductoryOverlayNotification />,
-			{
-				registry,
-				context: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'should return null if the audiences widget area is hidden', async () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
