@@ -48,6 +48,7 @@ import {
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
 import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
+import { ANALYTICS_4_NOTIFICATIONS } from '../../..';
 
 const getNavigationalScrollTopSpy = jest.spyOn(
 	scrollUtils,
@@ -60,6 +61,11 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		withNotificationComponentProps(
 			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
 		)( AudienceSegmentationIntroductoryOverlayNotification );
+
+	const notification =
+		ANALYTICS_4_NOTIFICATIONS[
+			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
+		];
 
 	let registry;
 	let originalViewportWidth;
@@ -249,5 +255,14 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
+	} );
+	describe( 'checkRequirements', () => {
+		it( 'is active when all the conditions are met', async () => {
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
+		} );
 	} );
 } );
