@@ -74,25 +74,20 @@ export default function AudienceSegmentationIntroductoryOverlayNotification( {
 		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			<OverlayNotification
 				notificationID={ id }
+				title={ __( 'New! Visitor groups', 'google-site-kit' ) }
+				description={ __(
+					'You can now learn more about your site visitor groups by comparing different metrics.',
+					'google-site-kit'
+				) }
 				GraphicDesktop={ AudienceIntroductoryGraphicDesktop }
 				GraphicMobile={ AudienceIntroductoryGraphicMobile }
-				gaTrackingEventArgs={ gaTrackingEventArgs }
 				ctaButton={ {
 					label: __( 'Show me', 'google-site-kit' ),
 					onClick: scrollToWidgetAndDismissNotification,
 				} }
 				dismissButton={ { label: __( 'Got it', 'google-site-kit' ) } }
-			>
-				<div className="googlesitekit-overlay-notification__body">
-					<h3>{ __( 'New! Visitor groups', 'google-site-kit' ) }</h3>
-					<p>
-						{ __(
-							'You can now learn more about your site visitor groups by comparing different metrics',
-							'google-site-kit'
-						) }
-					</p>
-				</div>
-			</OverlayNotification>
+				gaTrackingEventArgs={ gaTrackingEventArgs }
+			/>
 		</Notification>
 	);
 }
