@@ -39,7 +39,10 @@ import AudienceSegmentationIntroductoryOverlayNotification, {
 import * as scrollUtils from '../../../../../util/scroll';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../../../../googlesitekit/constants';
 import {
 	getViewportWidth,
 	setViewportWidth,
@@ -221,7 +224,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 					slug: MODULE_SLUG_ANALYTICS_4,
 					active: false,
 					connected: false,
-					setupComplete: true,
 				},
 			] );
 
@@ -230,6 +232,25 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 				VIEW_CONTEXT_MAIN_DASHBOARD
 			);
 			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is active when the view context is view only but the module can be viewed', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+					shareable: true,
+				},
+			] );
+			registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+				'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+			} );
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+			);
+			expect( isActive ).toBe( true );
 		} );
 
 		it( 'is not active when the audiences widget area is hidden', async () => {
