@@ -37,7 +37,6 @@ import AudienceSegmentationIntroductoryOverlayNotification, {
 	AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from './AudienceSegmentationIntroductoryOverlayNotification';
 import * as scrollUtils from '../../../../../util/scroll';
-import * as tracking from '../../../../../util/tracking';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import {
@@ -55,9 +54,6 @@ const getNavigationalScrollTopSpy = jest.spyOn(
 	'getNavigationalScrollTop'
 );
 const scrollToSpy = jest.spyOn( global, 'scrollTo' );
-
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 	const AudienceSegmentationIntroductoryOverlayNotificationComponent =
@@ -102,7 +98,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 	} );
 
 	afterEach( () => {
-		mockTrackEvent.mockClear();
 		setViewportWidth( originalViewportWidth );
 	} );
 
@@ -124,12 +119,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 				'You can now learn more about your site visitor groups by comparing different metrics.'
 			)
 		).toBeInTheDocument();
-
-		// Make sure that the component is tracking the view event.
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-secondary-user-intro`,
-			'view_notification'
-		);
 	} );
 
 	it( 'should return null if the notification is dismissed', async () => {
@@ -150,8 +139,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
-
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should return null if the audiences widget area is hidden', async () => {
@@ -172,8 +159,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
-
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should dismiss the notification when the "Got it" button is clicked', async () => {
@@ -189,12 +174,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 
 		await waitForRegistry();
 
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			1,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-secondary-user-intro`,
-			'view_notification'
-		);
-
 		fetchMock.postOnce( dismissItemEndpoint, {
 			body: JSON.stringify( [
 				AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
@@ -208,11 +187,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		} );
 
 		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			2,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-secondary-user-intro`,
-			'dismiss_notification'
-		);
 	} );
 
 	it( 'should scroll to the traffic widget area and dismiss the notification when the notification is clicked', async () => {
@@ -242,12 +216,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 
 		await waitForRegistry();
 
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			1,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-secondary-user-intro`,
-			'view_notification'
-		);
-
 		fetchMock.postOnce( dismissItemEndpoint, {
 			body: JSON.stringify( [
 				AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
@@ -265,12 +233,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			top: 12345,
 			behavior: 'smooth',
 		} );
-
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			2,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-secondary-user-intro`,
-			'confirm_notification'
-		);
 	} );
 
 	it( 'should not render if the dashboard is entity dashboard', async () => {
@@ -287,7 +249,5 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
-
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 } );
