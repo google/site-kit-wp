@@ -164,6 +164,7 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 							: __( 'Enable groups', 'google-site-kit' ),
 						onClick: onEnableGroups,
 						disabled: isSaving,
+						inProgress: isSaving,
 					} }
 					dismissButton={ {
 						label: isDismissalFinal
