@@ -88,7 +88,7 @@ exports[`EnhancedMeasurementActivationBanner should render the in progress step 
                   class="googlesitekit-notice__action"
                 >
                   <button
-                    class="mdc-button googlesitekit-banner__cta mdc-button--raised"
+                    class="mdc-button googlesitekit-banner__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
                     disabled=""
                     target="_self"
                   >
@@ -185,7 +185,7 @@ exports[`EnhancedMeasurementActivationBanner should render the setup step when e
                   class="googlesitekit-notice__action"
                 >
                   <button
-                    class="mdc-button googlesitekit-banner__cta mdc-button--raised"
+                    class="mdc-button googlesitekit-banner__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
                     target="_self"
                   >
                     <span
