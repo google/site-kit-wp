@@ -23,11 +23,11 @@ import { provideUserAuthentication } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
 import { EDIT_SCOPE } from '../../../datastore/constants';
-import InProgressBanner from './InProgressBanner';
+import ProcessingBanner from './ProcessingBanner';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'enhanced-measurement-notification'
-)( InProgressBanner );
+)( ProcessingBanner );
 
 function Template() {
 	return <NotificationWithComponentProps />;
@@ -44,7 +44,7 @@ export const NoEditScope = Template.bind( {} );
 NoEditScope.storyName = 'No Edit Scope';
 
 export default {
-	title: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/InProgressBanner',
+	title: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/ProcessingBanner',
 	decorators: [
 		( Story, { args: { grantedScopes } } ) => {
 			const setupRegistry = ( registry ) => {

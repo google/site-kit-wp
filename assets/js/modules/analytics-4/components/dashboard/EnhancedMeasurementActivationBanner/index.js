@@ -47,7 +47,7 @@ import {
 	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
 } from '../../../constants';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
-import InProgressBanner from './InProgressBanner';
+import InProgressBanner from './ProcessingBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
 

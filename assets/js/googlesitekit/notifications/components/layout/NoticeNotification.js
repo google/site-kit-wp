@@ -43,7 +43,7 @@ export default function NoticeNotification( {
 			gaTrackingEventArgs?.value
 		);
 		dismissNotification( notificationID, {
-			...dismissButton?.dismissOptions,
+			...( dismissButton?.dismissOptions || {} ),
 		} );
 	};
 

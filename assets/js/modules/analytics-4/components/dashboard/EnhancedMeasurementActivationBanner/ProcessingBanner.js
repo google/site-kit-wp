@@ -1,5 +1,5 @@
 /**
- * EnhancedMeasurementActivationBanner > InProgressBanner component.
+ * EnhancedMeasurementActivationBanner > ProcessingBanner component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -37,7 +37,7 @@ import BannerMobileSVG from '@/svg/graphics/banner-enhanced-measurement-setup-ct
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { EDIT_SCOPE } from '../../../datastore/constants';
 
-export default function InProgressBanner( { id, Notification, onDismiss } ) {
+export default function ProcessingBanner( { id, Notification, onDismiss } ) {
 	const documentationURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/analytics/answer/9216061',
@@ -96,7 +96,7 @@ export default function InProgressBanner( { id, Notification, onDismiss } ) {
 	);
 }
 
-InProgressBanner.propTypes = {
+ProcessingBanner.propTypes = {
 	id: PropTypes.string.isRequired,
 	Notification: PropTypes.elementType,
 	onDismiss: PropTypes.func,

@@ -94,8 +94,8 @@ export default function SetupCTA( {
 		<Fragment>
 			{ !! waitingProgress && (
 				<ProgressBar
-					{ ...waitingProgress }
 					className="googlesitekit-banner__progress-bar"
+					{ ...waitingProgress }
 				/>
 			) }
 			<div
