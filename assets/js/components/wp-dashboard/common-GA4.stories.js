@@ -198,10 +198,22 @@ export const setupSearchConsoleGatheringData = ( registry ) => {
 	} );
 };
 
-export const setupAnalytics4GatheringData = ( registry ) => {
+export const setupAnalytics4GatheringData = (
+	registry,
+	mockOptionSets = wpDashboardAnalytics4OptionSets
+) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
+
+	mockOptionSets.forEach( ( options ) => {
+		const report = getAnalytics4MockResponse( options );
+		const zeroReport =
+			replaceValuesInAnalytics4ReportWithZeroData( report );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
+			options,
+		} );
+	} );
 };
 
 export function setupAnalytics4ZeroData(
