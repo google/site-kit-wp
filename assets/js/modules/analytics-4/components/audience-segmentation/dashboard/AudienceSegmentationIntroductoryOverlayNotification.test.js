@@ -48,6 +48,7 @@ import {
 	getViewportWidth,
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
+import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
 
 const getNavigationalScrollTopSpy = jest.spyOn(
 	scrollUtils,
@@ -59,6 +60,11 @@ const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
+	const AudienceSegmentationIntroductoryOverlayNotificationComponent =
+		withNotificationComponentProps(
+			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
+		)( AudienceSegmentationIntroductoryOverlayNotification );
+
 	let registry;
 	let originalViewportWidth;
 
@@ -104,7 +110,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		const { getByText, waitForRegistry } = render(
-			<AudienceSegmentationIntroductoryOverlayNotification />,
+			<AudienceSegmentationIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -115,7 +121,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 
 		expect(
 			getByText(
-				'You can now learn more about your site visitor groups by comparing different metrics'
+				'You can now learn more about your site visitor groups by comparing different metrics.'
 			)
 		).toBeInTheDocument();
 
