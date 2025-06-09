@@ -127,26 +127,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should return null if the audiences widget area is hidden', async () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-		registry
-			.dispatch( CORE_USER )
-			.setAudienceSegmentationWidgetHidden( true );
-
-		const { container, waitForRegistry } = render(
-			<AudienceSegmentationIntroductoryOverlayNotification />,
-			{
-				registry,
-				context: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'should dismiss the notification when the "Got it" button is clicked', async () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
@@ -243,6 +223,17 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 				VIEW_CONTEXT_MAIN_DASHBOARD
 			);
 			expect( isActive ).toBe( true );
+		} );
+		it( 'is not active when the audiences widget area is hidden', async () => {
+			registry
+				.dispatch( CORE_USER )
+				.setAudienceSegmentationWidgetHidden( true );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
 		} );
 	} );
 } );
