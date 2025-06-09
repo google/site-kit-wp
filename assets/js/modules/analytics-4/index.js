@@ -946,13 +946,23 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		],
 		isDismissible: true,
 		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
+			const ga4ModuleConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+			const ga4ModuleActive = await resolveSelect(
+				CORE_MODULES
+			).isModuleActive( MODULE_SLUG_ANALYTICS_4 );
+
+			// If the module is not connected or not active, we can return early
+			// to prevent additional audience settings being requested.
+			if ( ! ga4ModuleConnected || ! ga4ModuleActive ) {
+				return false;
+			}
+
 			const isViewOnly =
 				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
 
 			await Promise.all( [
-				// The isModuleConnected() and isModuleActive() selectors rely
-				// on the resolution of the getModules() resolver.
-				resolveSelect( CORE_MODULES ).getModules(),
 				// The isAudienceSegmentationWidgetHidden() selector relies on
 				// the resolution of the getUserAudienceSettings() resolver.
 				resolveSelect( CORE_USER ).getUserAudienceSettings(),
@@ -968,13 +978,6 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 					? resolveSelect( CORE_USER ).getCapabilities()
 					: Promise.resolve( [] ),
 			] );
-
-			const ga4ModuleConnected = select( CORE_MODULES ).isModuleConnected(
-				MODULE_SLUG_ANALYTICS_4
-			);
-			const ga4ModuleActive = select( CORE_MODULES ).isModuleActive(
-				MODULE_SLUG_ANALYTICS_4
-			);
 
 			const canViewModule =
 				! isViewOnly ||
@@ -992,8 +995,6 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			const userID = select( CORE_USER ).getID();
 
 			if (
-				ga4ModuleConnected &&
-				ga4ModuleActive &&
 				canViewModule &&
 				isAudienceSegmentationWidgetHidden === false &&
 				Number.isInteger( audienceSegmentationSetupCompletedBy ) &&
