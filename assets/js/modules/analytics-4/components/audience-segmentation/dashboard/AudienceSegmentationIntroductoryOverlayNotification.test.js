@@ -49,6 +49,7 @@ import {
 } from '../../../../../../../tests/js/viewport-width-utils';
 import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
 import { ANALYTICS_4_NOTIFICATIONS } from '../../..';
+import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 
 const getNavigationalScrollTopSpy = jest.spyOn(
 	scrollUtils,
@@ -129,9 +130,15 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 
 	it( 'should dismiss the notification when the "Got it" button is clicked', async () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
+				notification
+			);
 
 		const { getByRole, waitForRegistry } = render(
-			<AudienceSegmentationIntroductoryOverlayNotification />,
+			<AudienceSegmentationIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
