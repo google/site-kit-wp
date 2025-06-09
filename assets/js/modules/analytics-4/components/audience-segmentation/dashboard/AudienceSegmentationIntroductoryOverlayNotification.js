@@ -107,12 +107,6 @@ export default function AudienceSegmentationIntroductoryOverlayNotification( {
 				notificationID={ id }
 				GraphicDesktop={ AudienceIntroductoryGraphicDesktop }
 				GraphicMobile={ AudienceIntroductoryGraphicMobile }
-				onShow={ () => {
-					trackEvent(
-						`${ viewContext }_audiences-secondary-user-intro`,
-						'view_notification'
-					);
-				} }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
 			>
 				<div className="googlesitekit-overlay-notification__body">
