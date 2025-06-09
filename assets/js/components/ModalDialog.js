@@ -49,7 +49,8 @@ const log = console.log;
 // Use a singleton variable to store the clicked element before any dialog opens.
 // We need to do this at the module level since the component may not be mounted
 // when the user initiates an action that will open the dialog.
-let previouslyClickedElement = null;
+// Using WeakRef to prevent memory leaks if the element is removed from the DOM.
+let previouslyClickedElementRef = null;
 
 // Set up a global event listener to capture the clicked element before any dialog opens
 // This needs to happen at the module level to ensure it's set up before any user interaction
@@ -61,13 +62,18 @@ if (
 	const captureActiveElementOnClick = ( event ) => {
 		log( 'event', event );
 
-		// Store the clicked (or keyboard-activated) element when user clicks
-		// This will be the element that was clicked right before the dialog opens
+		// Store the clicked (or keyboard-activated) element when user clicks.
+		// This will be the element that was clicked right before the dialog opens.
+		// We'll assume that the user will always click a button or anchor, although
+		// may need to revisit this assumption.
 		const nearestParentButtonOrAnchor = event.target.closest( 'button, a' );
 		if ( nearestParentButtonOrAnchor ) {
-			previouslyClickedElement = nearestParentButtonOrAnchor;
+			// eslint-disable-next-line no-undef
+			previouslyClickedElementRef = new WeakRef(
+				nearestParentButtonOrAnchor
+			);
 		}
-		log( 'previouslyActiveElement', previouslyClickedElement );
+		log( 'previouslyActiveElement', previouslyClickedElementRef?.deref() );
 	};
 
 	global.document.addEventListener(
@@ -115,6 +121,8 @@ function ModalDialog( {
 			// Refocus the passed querySelector.
 			setTimeout( () => {
 				if ( refocusPreviousElement ) {
+					const previouslyClickedElement =
+						previouslyClickedElementRef?.deref();
 					if (
 						previouslyClickedElement &&
 						document.body.contains( previouslyClickedElement )
@@ -122,7 +130,7 @@ function ModalDialog( {
 						previouslyClickedElement.focus();
 					}
 					// Clear the reference so it doesn't persist indefinitely.
-					previouslyClickedElement = null;
+					previouslyClickedElementRef = null;
 				} else {
 					const element =
 						document.querySelector( refocusQuerySelector );
