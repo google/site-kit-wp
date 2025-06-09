@@ -253,6 +253,25 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			expect( isActive ).toBe( true );
 		} );
 
+		it( 'is not active when the view context is view only but the module cannot be viewed', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+					shareable: true,
+				},
+			] );
+			registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+				'googlesitekit_read_shared_module_data::["analytics-4"]': false,
+			} );
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+			);
+			expect( isActive ).toBe( false );
+		} );
+
 		it( 'is not active when the audiences widget area is hidden', async () => {
 			registry
 				.dispatch( CORE_USER )
