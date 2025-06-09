@@ -238,7 +238,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 		{
 			code: `
 /**
- * The @since tag has extra whitespace but should still be valid.
+ * Invalid because the @since tag has extra whitespace before the version.
  *
  * @since     1.23.0     
  */

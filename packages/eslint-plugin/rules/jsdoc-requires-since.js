@@ -58,7 +58,7 @@ const SINCE_VALIDATION_RULES = [
 	},
 	( { versionString, previousVersionString } ) => {
 		if (
-			previousVersionString &&
+			previousVersionString !== null &&
 			versionString !== NEXT_VERSION &&
 			previousVersionString !== NEXT_VERSION &&
 			semverRegex().test( versionString ) &&
@@ -94,14 +94,11 @@ module.exports = iterateJsdoc(
 		}
 
 		sinceTags.forEach( ( tag, index ) => {
-			const versionMatch = tag.description?.match( /^([^\s]+)\s?(.*)$/ );
-			const versionString = versionMatch?.[ 1 ] || '';
-			const description = versionMatch?.[ 2 ] || '';
-
+			const [ versionString ] = tag.description.split( ' ', 1 );
+			const description = tag.description.slice( versionString.length );
 			const previousTag = sinceTags[ index - 1 ];
-			const prevMatch =
-				previousTag?.description?.match( /^([^\s]+)\s?(.*)$/ );
-			const previousVersionString = prevMatch?.[ 1 ] || '';
+			const previousVersionString =
+				previousTag?.description.split( ' ', 1 )[ 0 ] || null;
 
 			for ( const rule of SINCE_VALIDATION_RULES ) {
 				const error = rule( {
