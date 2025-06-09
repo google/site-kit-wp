@@ -28,9 +28,9 @@ import {
 	commonActions,
 	createRegistryControl,
 	createRegistrySelector,
+	createReducer,
 } from 'googlesitekit-data';
 import { getStorage } from '../../../util/storage';
-import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 import {
 	CORE_NOTIFICATIONS,
 	NOTIFICATION_AREAS,
