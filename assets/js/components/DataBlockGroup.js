@@ -31,6 +31,7 @@ import { useDebounce } from '../hooks/useDebounce';
 export default function DataBlockGroup( { className, children } ) {
 	const ref = useRef();
 	const [ scalingComplete, setScalingComplete ] = useState( false );
+	console.log( '🚀 ~ DataBlockGroup ~ scalingComplete:', scalingComplete );
 
 	const adjustFontSize = () => {
 		const blocks = ref?.current?.querySelectorAll(
@@ -40,6 +41,7 @@ export default function DataBlockGroup( { className, children } ) {
 		if ( ! blocks?.length ) {
 			return;
 		}
+		console.log( '🚀 ~ adjustFontSize ~ blocks?.length:', blocks?.length );
 
 		// Reset font sizes first to get accurate measurement, specifically on resize.
 		setFontSizes( blocks, '' );
@@ -51,6 +53,7 @@ export default function DataBlockGroup( { className, children } ) {
 			const dataPoint = block.querySelector(
 				'.googlesitekit-data-block__datapoint'
 			);
+			console.log( '🚀 ~ blocks.forEach ~ dataPoint:', dataPoint );
 
 			if ( ! dataPoint ) {
 				return;
@@ -69,6 +72,10 @@ export default function DataBlockGroup( { className, children } ) {
 		} );
 
 		// Apply the smallest font size to all blocks if adjustment is needed.
+		console.log(
+			'🚀 ~ adjustFontSize ~ smallestScaleFactor < 1 :',
+			smallestScaleFactor < 1
+		);
 		if ( smallestScaleFactor < 1 ) {
 			const fontSize = parseInt(
 				global?.getComputedStyle(
@@ -80,6 +87,7 @@ export default function DataBlockGroup( { className, children } ) {
 			);
 
 			const newSize = Math.floor( fontSize * smallestScaleFactor );
+			console.log( '🚀 ~ adjustFontSize ~ newSize:', newSize );
 			const clampedNewSize = Math.max( newSize, 14 ); // Don't allow the font size to go below 14px.
 			setFontSizes( blocks, `${ clampedNewSize }px` );
 		} else {
@@ -101,6 +109,10 @@ export default function DataBlockGroup( { className, children } ) {
 			dataPoint.style.fontSize = adjustedSize;
 
 			blockCount++;
+			console.log(
+				'🚀 ~ blocks.forEach ~ blockCount === blocks.length:',
+				blockCount === blocks.length
+			);
 			setScalingComplete( blockCount === blocks.length );
 		} );
 	};
