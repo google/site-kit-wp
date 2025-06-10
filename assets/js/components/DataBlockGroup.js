@@ -19,16 +19,18 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { useMount, useUnmount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { useRef } from '@wordpress/element';
+import { useRef, useState } from '@wordpress/element';
 import { useDebounce } from '../hooks/useDebounce';
 
 export default function DataBlockGroup( { className, children } ) {
 	const ref = useRef();
+	const [ scalingComplete, setScalingComplete ] = useState( false );
 
 	const adjustFontSize = () => {
 		const blocks = ref?.current?.querySelectorAll(
@@ -80,20 +82,26 @@ export default function DataBlockGroup( { className, children } ) {
 			const newSize = Math.floor( fontSize * smallestScaleFactor );
 			const clampedNewSize = Math.max( newSize, 14 ); // Don't allow the font size to go below 14px.
 			setFontSizes( blocks, `${ clampedNewSize }px` );
+		} else {
+			setScalingComplete( true );
 		}
 	};
 
 	const setFontSizes = ( blocks, adjustedSize ) => {
-		console.log( '🚀 ~ setFontSizes ~ adjustedSize:', adjustedSize );
+		let blockCount = 0;
 		blocks.forEach( ( block ) => {
 			const dataPoint = block?.querySelector(
 				'.googlesitekit-data-block__datapoint'
 			);
 			if ( ! dataPoint ) {
+				blockCount++;
 				return;
 			}
 
 			dataPoint.style.fontSize = adjustedSize;
+
+			blockCount++;
+			setScalingComplete( blockCount === blocks.length );
 		} );
 	};
 
@@ -111,7 +119,12 @@ export default function DataBlockGroup( { className, children } ) {
 	);
 
 	return (
-		<div ref={ ref } className={ className }>
+		<div
+			ref={ ref }
+			className={ classnames( className, {
+				'googlesitekit-data-blocks--scaled': scalingComplete,
+			} ) }
+		>
 			{ children }
 		</div>
 	);

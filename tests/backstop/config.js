@@ -21,7 +21,6 @@ const viewports = require( './viewports' );
 
 module.exports = {
 	onBeforeScript: 'puppet/onBefore.js',
-	onReadyScript: 'puppet/onReady.js',
 	asyncCaptureLimit: 5,
 	asyncCompareLimit: 50,
 	debug: false,
