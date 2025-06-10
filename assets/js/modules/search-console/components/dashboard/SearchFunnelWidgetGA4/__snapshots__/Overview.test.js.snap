@@ -39,7 +39,11 @@ exports[`Overview should not render the Activate Analytics CTA when the Analytic
                 <div
                   class="googlesitekit-data-block__datapoint"
                 >
-                  7.9K
+                  <span
+                    class="googlesitekit-data-block__datapoint--resize"
+                  >
+                    7.9K
+                  </span>
                 </div>
               </div>
               <div
@@ -82,7 +86,11 @@ exports[`Overview should not render the Activate Analytics CTA when the Analytic
                 <div
                   class="googlesitekit-data-block__datapoint"
                 >
-                  123
+                  <span
+                    class="googlesitekit-data-block__datapoint--resize"
+                  >
+                    123
+                  </span>
                 </div>
               </div>
               <div
@@ -146,7 +154,11 @@ exports[`Overview should render the Search Funnel Overview, including the Activa
                 <div
                   class="googlesitekit-data-block__datapoint"
                 >
-                  7.9K
+                  <span
+                    class="googlesitekit-data-block__datapoint--resize"
+                  >
+                    7.9K
+                  </span>
                 </div>
               </div>
               <div
@@ -189,7 +201,11 @@ exports[`Overview should render the Search Funnel Overview, including the Activa
                 <div
                   class="googlesitekit-data-block__datapoint"
                 >
-                  123
+                  <span
+                    class="googlesitekit-data-block__datapoint--resize"
+                  >
+                    123
+                  </span>
                 </div>
               </div>
               <div

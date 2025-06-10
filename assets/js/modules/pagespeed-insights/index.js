@@ -34,7 +34,7 @@ import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedW
 import PageSpeedInsightsIcon from '../../../svg/graphics/pagespeed-insights.svg';
 import { MODULES_PAGESPEED_INSIGHTS } from './datastore/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from './constants';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import SetupSuccessNotification from './components/notifications/SetupSuccessNotification';
 
@@ -74,7 +74,7 @@ export const registerWidgets = ( widgets ) => {
 export const NOTIFICATIONS = {
 	'setup-success-notification-psi': {
 		Component: SetupSuccessNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: () => {
 			const notification = getQueryArg( location.href, 'notification' );

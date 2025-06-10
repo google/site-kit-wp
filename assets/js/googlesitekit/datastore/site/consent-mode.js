@@ -28,9 +28,9 @@ import {
 	commonActions,
 	combineStores,
 	createRegistrySelector,
+	createReducer,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
-import { createReducer } from '../../data/create-reducer';
 import { CORE_SITE } from './constants';
 import { CORE_USER } from '../user/constants';
 import { actions as errorStoreActions } from '../../data/create-error-store';

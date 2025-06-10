@@ -89,6 +89,7 @@
 		font-weight: $fw-medium;
 		line-height: $lh-display-md;
 		margin: 0;
+		text-wrap: nowrap;
 
 		.googlesitekit-adminbar & {
 			display: inline-block;
