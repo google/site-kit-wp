@@ -24,7 +24,6 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import AudienceSegmentationIntroductoryOverlayNotification from '../../modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationIntroductoryOverlayNotification';
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
@@ -33,7 +32,6 @@ export default function OverlayNotificationsRenderer() {
 		<Fragment>
 			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />
-			<AudienceSegmentationIntroductoryOverlayNotification />
 		</Fragment>
 	);
 }

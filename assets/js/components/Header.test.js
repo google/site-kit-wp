@@ -25,6 +25,7 @@ import {
 	provideUserInfo,
 } from '../../../tests/js/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
 import Header from './Header';
@@ -38,6 +39,7 @@ describe( 'Header', () => {
 		provideModules( registry );
 		provideUserInfo( registry );
 		provideUserAuthentication( registry );
+		registry.dispatch( CORE_SITE ).receiveGetNotifications( [] );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
