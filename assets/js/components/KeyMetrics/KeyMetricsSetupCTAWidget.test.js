@@ -118,6 +118,8 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	} );
 
 	it( 'does not render when SC is in the gathering data state', async () => {
+		mockSurveyEndpoints();
+
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -250,7 +252,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		await waitForRegistry();
 
 		expect(
-			container.querySelector( '.googlesitekit-publisher-win__title' )
+			container.querySelector( '.googlesitekit-banner__title' )
 		).toHaveTextContent(
 			'Get personalized suggestions for user interaction metrics based on your goals'
 		);
