@@ -100,6 +100,7 @@ import {
 } from './components/dashboard';
 import { ModulePopularPagesWidgetGA4 } from './components/module';
 import {
+	AudienceSegmentationIntroductoryOverlayNotification,
 	AudienceTilesWidget,
 	ConnectAnalyticsCTAWidget,
 	InfoNoticeWidget,
@@ -108,11 +109,15 @@ import {
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import {
-	NOTIFICATION_GROUPS,
+	SITE_KIT_VIEW_ONLY_CONTEXTS,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../googlesitekit/constants';
+import {
 	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
 	PRIORITY,
 } from '../../googlesitekit/notifications/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import AudienceSegmentationSetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 } from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTABanner';
@@ -126,6 +131,7 @@ import {
 	MODULE_SLUG_ANALYTICS_4,
 } from './constants';
 import ConversionReportingNotificationCTAWidget from './components/widgets/ConversionReportingNotificationCTAWidget';
+import { AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION } from './components/audience-segmentation/dashboard/AudienceSegmentationIntroductoryOverlayNotification';
 
 export { registerStore } from './datastore';
 
@@ -927,6 +933,77 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			).isEnhancedMeasurementStreamEnabled( propertyID, webDataStreamID );
 
 			return isEnhancedMeasurementStreamEnabled === false;
+		},
+	},
+	[ AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION ]: {
+		Component: AudienceSegmentationIntroductoryOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
+			const ga4ModuleConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+			const ga4ModuleActive = await resolveSelect(
+				CORE_MODULES
+			).isModuleActive( MODULE_SLUG_ANALYTICS_4 );
+
+			// If the module is not connected or not active, we can return early
+			// to prevent additional audience settings being requested.
+			if ( ! ga4ModuleConnected || ! ga4ModuleActive ) {
+				return false;
+			}
+
+			const isViewOnly =
+				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
+
+			await Promise.all( [
+				// The isAudienceSegmentationWidgetHidden() selector relies on
+				// the resolution of the getUserAudienceSettings() resolver.
+				resolveSelect( CORE_USER ).getUserAudienceSettings(),
+				// The getAudienceSegmentationSetupCompletedBy() selector relies
+				// on the resolution of the getAudienceSettings() resolver.
+				resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings(),
+				// The getID() selector relies on the resolution
+				// of the getUser() resolver.
+				resolveSelect( CORE_USER ).getUser(),
+				// The canViewSharedModule() selector relies on the resolution
+				// of the getCapabilities() resolver.
+				isViewOnly
+					? resolveSelect( CORE_USER ).getCapabilities()
+					: Promise.resolve( [] ),
+			] );
+
+			const canViewModule =
+				! isViewOnly ||
+				select( CORE_USER ).canViewSharedModule(
+					MODULE_SLUG_ANALYTICS_4
+				);
+
+			const isAudienceSegmentationWidgetHidden =
+				select( CORE_USER ).isAudienceSegmentationWidgetHidden();
+
+			const audienceSegmentationSetupCompletedBy =
+				select(
+					MODULES_ANALYTICS_4
+				).getAudienceSegmentationSetupCompletedBy();
+			const userID = select( CORE_USER ).getID();
+
+			if (
+				canViewModule &&
+				isAudienceSegmentationWidgetHidden === false &&
+				Number.isInteger( audienceSegmentationSetupCompletedBy ) &&
+				audienceSegmentationSetupCompletedBy !== userID
+			) {
+				return true;
+			}
+
+			return false;
 		},
 	},
 };
