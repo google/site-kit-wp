@@ -27,11 +27,12 @@
  *
  * @since n.e.x.t
  *
- * @param {Object} page     The Puppeteer page object.
- * @param {Object} scenario The scenario configuration.
+ * @param {Object} page      The Puppeteer page object.
+ * @param {Object} scenario  The scenario configuration.
+ * @param {Object} viewports The viewport configuration.
  */
-module.exports = async ( page, scenario ) => {
-	console.log( '🚀 ~ module.exports= ~ scenario:', scenario );
+module.exports = async ( page, scenario, viewports ) => {
+	console.log( '🚀 ~ module.exports= ~ scenario:', scenario, viewports );
 	// NOTE: We can implement waitForRegistry or other not arbitrary time based delays here to improve test stability.
 
 	// Wait for font resizing to complete before taking screenshots.
@@ -49,6 +50,12 @@ module.exports = async ( page, scenario ) => {
 						setTimeout( checkFontSizes, 100 );
 						return;
 					}
+
+					// Print body width for debugging.
+					console.log(
+						'🚀 ~ checkFontSizes ~ body width:',
+						document.body.offsetWidth
+					);
 
 					const fontSizes = Array.from( elements ).map(
 						( el ) => window.getComputedStyle( el ).fontSize
