@@ -93,6 +93,7 @@ export default function AudienceErrorModal( {
 		} );
 	}
 
+	// TODO: Remove this comment in the next commit.
 	function handleCancel() {
 		let action;
 
