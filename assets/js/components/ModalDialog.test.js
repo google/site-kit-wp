@@ -21,7 +21,6 @@
  */
 import {
 	createTestRegistry,
-	provideModules,
 	render,
 	fireEvent,
 } from '../../../tests/js/test-utils';
@@ -38,8 +37,6 @@ describe( 'ModalDialog', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
-		provideModules( registry );
 	} );
 
 	it( 'should refocus the element assigned to refocusQuerySelector on close.', async () => {
