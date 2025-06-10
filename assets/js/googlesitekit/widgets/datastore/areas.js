@@ -24,10 +24,9 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { createRegistrySelector } from 'googlesitekit-data';
+import { createRegistrySelector, createReducer } from 'googlesitekit-data';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from './constants';
 import { sortByProperty } from '../../../util/sort-by-property';
-import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
 
 const ASSIGN_WIDGET_AREA = 'ASSIGN_WIDGET_AREA';
 const REGISTER_WIDGET_AREA = 'REGISTER_WIDGET_AREA';
