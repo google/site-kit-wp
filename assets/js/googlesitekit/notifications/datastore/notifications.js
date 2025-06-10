@@ -31,16 +31,12 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { getStorage } from '../../../util/storage';
-import {
-	CORE_NOTIFICATIONS,
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-	NOTIFICATION_VIEW_CONTEXTS,
-} from './constants';
+import { CORE_NOTIFICATIONS, NOTIFICATION_VIEW_CONTEXTS } from './constants';
 import { CORE_USER } from '../../datastore/user/constants';
 import { createValidatedAction } from '../../data/utils';
 import { racePrioritizedAsyncTasks } from '../../../util/async';
 import { shouldNotificationBeAddedToQueue } from '../util/shouldNotificationBeAddedToQueue';
+import { NOTIFICATION_AREAS, NOTIFICATION_GROUPS } from '../constants';
 
 const INSERT_NOTIFICATION_INTO_RESOLVED_QUEUE =
 	'INSERT_NOTIFICATION_INTO_RESOLVED_QUEUE';
