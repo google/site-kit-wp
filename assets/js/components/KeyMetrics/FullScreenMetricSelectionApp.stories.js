@@ -53,7 +53,7 @@ export default {
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
 
-			provideSiteInfo( registry );
+			provideSiteInfo( registry, { keyMetricsSetupCompletedBy: 1 } );
 
 			return (
 				<WithTestRegistry
