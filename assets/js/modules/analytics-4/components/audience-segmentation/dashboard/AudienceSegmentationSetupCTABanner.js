@@ -35,10 +35,8 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import {
-	CORE_NOTIFICATIONS,
-	NOTIFICATION_AREAS,
-} from '../../../../../googlesitekit/notifications/datastore/constants';
+import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
+import { NOTIFICATION_AREAS } from '../../../../../googlesitekit/notifications/constants';
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../datastore/constants';
 import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/SettingsCardVisitorGroups/SetupSuccess';
 import useViewContext from '../../../../../hooks/useViewContext';
@@ -102,7 +100,7 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 			AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
 			{
 				Component: AudienceSegmentationSetupSuccessSubtleNotification,
-				areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 				isDismissible: true,
 			}
 		);
@@ -173,7 +171,6 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 						disabled: isSaving,
 					} }
 					dismissOptions={ {
-						skipHidingFromQueue: true,
 						expiresInSeconds: isDismissalFinal
 							? 0
 							: 2 * WEEK_IN_SECONDS,
