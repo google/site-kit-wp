@@ -31,7 +31,10 @@ import { useDebounce } from '../hooks/useDebounce';
 export default function DataBlockGroup( { className, children } ) {
 	const ref = useRef();
 	const [ scalingComplete, setScalingComplete ] = useState( false );
-	console.log( '🚀 ~ DataBlockGroup ~ scalingComplete:', scalingComplete );
+
+	// Get body width:
+	const bodyWidth = global?.document?.body?.offsetWidth || 0;
+	console.log( `🚀 ${bodyWidth} ~ DataBlockGroup ~ scalingComplete:`, scalingComplete );
 
 	const adjustFontSize = () => {
 		const blocks = ref?.current?.querySelectorAll(
@@ -41,7 +44,7 @@ export default function DataBlockGroup( { className, children } ) {
 		if ( ! blocks?.length ) {
 			return;
 		}
-		console.log( '🚀 ~ adjustFontSize ~ blocks?.length:', blocks?.length );
+		console.log( `🚀 ${bodyWidth} ~ adjustFontSize ~ blocks?.length:`, blocks?.length );
 
 		// Reset font sizes first to get accurate measurement, specifically on resize.
 		setFontSizes( blocks, '' );
@@ -53,7 +56,7 @@ export default function DataBlockGroup( { className, children } ) {
 			const dataPoint = block.querySelector(
 				'.googlesitekit-data-block__datapoint'
 			);
-			console.log( '🚀 ~ blocks.forEach ~ dataPoint:', dataPoint );
+			console.log( `🚀 ${bodyWidth} ~ blocks.forEach ~ dataPoint:`, dataPoint );
 
 			if ( ! dataPoint ) {
 				return;
@@ -87,7 +90,7 @@ export default function DataBlockGroup( { className, children } ) {
 			);
 
 			const newSize = Math.floor( fontSize * smallestScaleFactor );
-			console.log( '🚀 ~ adjustFontSize ~ newSize:', newSize );
+			console.log( `🚀 ${bodyWidth} ~ adjustFontSize ~ newSize:`, newSize );
 			const clampedNewSize = Math.max( newSize, 14 ); // Don't allow the font size to go below 14px.
 			setFontSizes( blocks, `${ clampedNewSize }px` );
 		} else {
@@ -123,11 +126,11 @@ export default function DataBlockGroup( { className, children } ) {
 	useMount( () => {
 		adjustFontSize();
 
-		global.addEventListener( 'resize', debouncedAdjustFontSize );
+		global.addEventListener( 'resize`, debouncedAdjustFontSize );
 	} );
 
 	useUnmount( () =>
-		global.removeEventListener( 'resize', debouncedAdjustFontSize )
+		global.removeEventListener( 'resize`, debouncedAdjustFontSize )
 	);
 
 	return (
