@@ -396,8 +396,7 @@ LongDataValues.args = {
 	},
 };
 LongDataValues.scenario = {
-	customWaitFunction: 'waitForFontSizeToStabalize',
-	fontSizeSelector: '.googlesitekit-data-block__datapoint',
+	readySelector: '.googlesitekit-data-blocks--scaled',
 };
 
 export const NoDataInComparisonDateRange = Template.bind( {} );
