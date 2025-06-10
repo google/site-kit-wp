@@ -29,3 +29,7 @@ export const PRIORITY = {
 	SETUP_CTA_HIGH: 150,
 	SETUP_CTA_LOW: 200,
 };
+
+export const TYPES = {
+	INFO: 'info',
+};
