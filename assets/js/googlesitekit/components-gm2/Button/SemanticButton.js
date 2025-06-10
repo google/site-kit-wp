@@ -20,6 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -76,5 +77,27 @@ const SemanticButton = forwardRef(
 );
 
 SemanticButton.displayName = 'SemanticButton';
+
+SemanticButton.propTypes = {
+	children: PropTypes.node,
+	href: PropTypes.string,
+	text: PropTypes.bool,
+	className: PropTypes.string,
+	danger: PropTypes.bool,
+	disabled: PropTypes.bool,
+	target: PropTypes.string,
+	icon: PropTypes.element,
+	trailingIcon: PropTypes.element,
+	'aria-label': PropTypes.string,
+	inverse: PropTypes.bool,
+	tertiary: PropTypes.bool,
+	callout: PropTypes.bool,
+	calloutStyle: PropTypes.oneOf( [ 'primary', 'warning', 'error' ] ),
+	title: PropTypes.string,
+	customizedTooltip: PropTypes.element,
+	tooltip: PropTypes.bool,
+	hideTooltipTitle: PropTypes.bool,
+	tooltipEnterDelayInMS: PropTypes.number,
+};
 
 export default SemanticButton;

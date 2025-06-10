@@ -96,30 +96,6 @@ const Button = forwardRef(
 			? title || customizedTooltip || ariaLabel
 			: null;
 
-		const buttonComponent = (
-			<SemanticButton
-				href={ href }
-				disabled={ disabled }
-				className={ className }
-				danger={ danger }
-				text={ text }
-				tertiary={ tertiary }
-				inverse={ inverse }
-				callout={ callout }
-				calloutStyle={ calloutStyle }
-				ref={ mergedRefs }
-				aria-label={ getAriaLabel() }
-				target={ target || '_self' }
-				{ ...extraProps }
-			>
-				{ icon }
-				{ children && (
-					<span className="mdc-button__label">{ children }</span>
-				) }
-				{ trailingIcon }
-			</SemanticButton>
-		);
-
 		return (
 			<MaybeTooltip
 				disabled={ disabled }
@@ -128,7 +104,27 @@ const Button = forwardRef(
 				hasIconOnly={ !! icon && children === undefined }
 				tooltipEnterDelayInMS={ tooltipEnterDelayInMS }
 			>
-				{ buttonComponent }
+				<SemanticButton
+					href={ href }
+					disabled={ disabled }
+					className={ className }
+					danger={ danger }
+					text={ text }
+					tertiary={ tertiary }
+					inverse={ inverse }
+					callout={ callout }
+					calloutStyle={ calloutStyle }
+					ref={ mergedRefs }
+					aria-label={ getAriaLabel() }
+					target={ target || '_self' }
+					{ ...extraProps }
+				>
+					{ icon }
+					{ children && (
+						<span className="mdc-button__label">{ children }</span>
+					) }
+					{ trailingIcon }
+				</SemanticButton>
 			</MaybeTooltip>
 		);
 	}

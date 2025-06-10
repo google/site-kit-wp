@@ -1,7 +1,7 @@
 /**
  * SemanticButton tests.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { render, fireEvent } from '../../../../../tests/js/test-utils';
+import { fireEvent, render } from '../../../../../tests/js/test-utils';
 import SemanticButton from './SemanticButton';
 
 describe( 'SemanticButton', () => {
@@ -54,37 +54,33 @@ describe( 'SemanticButton', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should apply danger class when danger prop is true', () => {
-		const { container } = render(
-			<SemanticButton danger>Test</SemanticButton>
+	describe( 'class application', () => {
+		it.each( [
+			[ 'danger', 'mdc-button--danger' ],
+			[ 'inverse', 'mdc-button--inverse' ],
+			[ 'tertiary', 'mdc-button--tertiary' ],
+		] )(
+			'should apply %s class when %s prop is true',
+			( prop, className ) => {
+				const props = { [ prop ]: true };
+				const { container } = render(
+					<SemanticButton { ...props }>Test</SemanticButton>
+				);
+				expect( container.firstChild ).toHaveClass( className );
+			}
 		);
-		expect( container.firstChild ).toHaveClass( 'mdc-button--danger' );
-	} );
 
-	it( 'should apply inverse class when inverse prop is true', () => {
-		const { container } = render(
-			<SemanticButton inverse>Test</SemanticButton>
-		);
-		expect( container.firstChild ).toHaveClass( 'mdc-button--inverse' );
-	} );
-
-	it( 'should apply tertiary class when tertiary prop is true', () => {
-		const { container } = render(
-			<SemanticButton tertiary>Test</SemanticButton>
-		);
-		expect( container.firstChild ).toHaveClass( 'mdc-button--tertiary' );
-	} );
-
-	it( 'should apply callout classes when callout props are set', () => {
-		const { container } = render(
-			<SemanticButton callout calloutStyle="warning">
-				Test
-			</SemanticButton>
-		);
-		expect( container.firstChild ).toHaveClass( 'mdc-button--callout' );
-		expect( container.firstChild ).toHaveClass(
-			'mdc-button--callout-warning'
-		);
+		it( 'should apply callout classes when callout props are set', () => {
+			const { container } = render(
+				<SemanticButton callout calloutStyle="warning">
+					Test
+				</SemanticButton>
+			);
+			expect( container.firstChild ).toHaveClass( 'mdc-button--callout' );
+			expect( container.firstChild ).toHaveClass(
+				'mdc-button--callout-warning'
+			);
+		} );
 	} );
 
 	it( 'should pass through additional props', () => {
