@@ -20,13 +20,17 @@
  * External dependencies
  */
 import { useKey } from 'react-use';
+
+/**
+ * WordPress dependencies
+ */
 import { useEffect } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Hook to handle dialog escape key press and scrim click for a MD2 Dialog.
  *
- * NOTE: You must set escapeKeyAction and scrimClickAction to an empty string ("") to disable the
+ * NOTE: You must set escapeKeyAction and scrimClickAction to an empty string ('') to disable the
  * default behavior of the Dialog component for these hook events to take precedence.
  *
  * @since n.e.x.t
