@@ -42,9 +42,14 @@ import {
 import { getMetaCapabilityPropertyName } from '../../../../../googlesitekit/datastore/util/permissions';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
-import { provideAnalytics4MockReport } from '../../../../analytics-4/utils/data-mock';
+import {
+	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
+} from '../../../../analytics-4/utils/data-mock';
 import * as fixtures from '../../../../analytics-4/datastore/__fixtures__';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../../../modules/analytics-4/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../constants';
 import { DAY_IN_SECONDS } from '../../../../../util';
 import { provideSearchConsoleMockReport } from '../../../util/data-mock';
 import SearchFunnelWidgetGA4 from './index';
@@ -74,7 +79,7 @@ const ga4ReportArgs = [
 		compareEndDate: '2021-09-14',
 		metrics: [
 			{
-				name: 'conversions',
+				name: 'keyEvents',
 			},
 			{
 				name: 'engagementRate',
@@ -96,7 +101,7 @@ const ga4ReportArgs = [
 		],
 		metrics: [
 			{
-				name: 'conversions',
+				name: 'keyEvents',
 			},
 			{
 				name: 'engagementRate',
@@ -252,12 +257,12 @@ ReadyWithAnalyticsNotActive.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 			},
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 
@@ -273,12 +278,12 @@ ReadyWithActivateAnalyticsCTA.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 			},
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideSiteInfo( registry );
@@ -300,12 +305,12 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 			},
 			{
 				active: true,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideSiteInfo( registry );
@@ -315,15 +320,13 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 	},
 };
 
-export const ReadyWithCreateConversionCTA = Template.bind( {} );
-ReadyWithCreateConversionCTA.storyName = 'Ready with Set up Conversions CTA';
-ReadyWithCreateConversionCTA.args = {
+export const ReadyWithCreateKeyEventCTA = Template.bind( {} );
+ReadyWithCreateKeyEventCTA.storyName = 'Ready with Set up Key Events CTA';
+ReadyWithCreateKeyEventCTA.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetConversionEvents( [], {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetKeyEvents( [], {} );
 
 		for ( const options of ga4ReportArgs ) {
 			provideAnalytics4MockReport( registry, options );
@@ -331,7 +334,7 @@ ReadyWithCreateConversionCTA.args = {
 	},
 };
 
-ReadyWithCreateConversionCTA.scenario = {
+ReadyWithCreateKeyEventCTA.scenario = {
 	delay: 3000,
 };
 
@@ -441,24 +444,24 @@ ViewOnlySearchConsoleOnlyReady.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				shareable: true,
 			},
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				shareable: false,
 			},
 		] );
 		provideUserCapabilities( registry, {
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'search-console'
+				MODULE_SLUG_SEARCH_CONSOLE
 			) ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'analytics-4'
+				MODULE_SLUG_ANALYTICS_4
 			) ]: false,
 		} );
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
@@ -468,6 +471,18 @@ ViewOnlySearchConsoleOnlyReady.args = {
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideSearchConsoleMockReport( registry, searchConsoleArgs );
+		for ( const options of ga4ReportArgs ) {
+			provideAnalyticsReportWithoutDateRangeData( registry, options );
+		}
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
 
 export default {
 	title: 'Modules/SearchConsole/Widgets/SearchFunnelWidgetGA4',
@@ -491,12 +506,12 @@ export default {
 				{
 					active: true,
 					connected: true,
-					slug: 'search-console',
+					slug: MODULE_SLUG_SEARCH_CONSOLE,
 				},
 				{
 					active: true,
 					connected: true,
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 				},
 			] );
 			provideUserAuthentication( registry );
@@ -517,7 +532,7 @@ export default {
 				.setPropertyID( propertyID );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetConversionEvents( fixtures.conversionEvents, {} );
+				.receiveGetKeyEvents( fixtures.keyEvents, {} );
 
 			return (
 				<WithTestRegistry registry={ registry }>

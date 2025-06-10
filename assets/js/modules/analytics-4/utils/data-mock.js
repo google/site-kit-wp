@@ -37,6 +37,7 @@ import {
 } from '../../../util';
 import { isValidDimensionFilters } from './report-validation';
 import { isValidPivotsObject } from './report-pivots-validation';
+import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '../../../../../tests/js/utils/zeroReports';
 
 export const STRATEGY_CARTESIAN = 'cartesian';
 export const STRATEGY_ZIP = 'zip';
@@ -53,7 +54,7 @@ const ANALYTICS_4_METRIC_TYPES = {
 	engagedSessions: 'TYPE_INTEGER',
 	engagementRate: 'TYPE_FLOAT',
 	averageSessionDuration: 'TYPE_SECONDS',
-	sessionConversionRate: 'TYPE_FLOAT',
+	sessionKeyEventRate: 'TYPE_FLOAT',
 	sessionsPerUser: 'TYPE_FLOAT',
 	totalAdRevenue: 'TYPE_INTEGER',
 	eventCount: 'TYPE_INTEGER',
@@ -1022,5 +1023,36 @@ export function provideAnalytics4MockPivotReport( registry, options ) {
 		.dispatch( MODULES_ANALYTICS_4 )
 		.receiveGetReport( getAnalytics4MockPivotResponse( options ), {
 			options,
+		} );
+}
+
+/**
+ * Provides a GA4 report with data for a specified date range removed.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry                   The registry instance to dispatch the report to.
+ * @param {Object} reportOptions              Options used to generate the mock GA4 report.
+ * @param {Object} [options]                  Optional behavior configuration.
+ * @param {string} [options.dateRangeKey]     The date range key to match in the report.
+ * @param {string} [options.emptyRowBehavior] Behavior for matching rows: zero out metrics or remove rows.
+ */
+export function provideAnalyticsReportWithoutDateRangeData(
+	registry,
+	reportOptions,
+	{ dateRangeKey = 'date_range_1', emptyRowBehavior = 'zero' } = {}
+) {
+	const report = getAnalytics4MockResponse( reportOptions );
+	const noComparisonDataReport =
+		replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
+			report,
+			dateRangeKey,
+			emptyRowBehavior
+		);
+
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetReport( noComparisonDataReport, {
+			options: reportOptions,
 		} );
 }

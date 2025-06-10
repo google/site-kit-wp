@@ -33,6 +33,7 @@ import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
 import ChipTabGroup from './';
@@ -76,7 +77,7 @@ describe( 'ChipTabGroup', () => {
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		provideKeyMetricsUserInputSettings( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 
 		provideKeyMetricsWidgetRegistrations(
 			registry,
@@ -84,7 +85,7 @@ describe( 'ChipTabGroup', () => {
 				( acc, widget ) => ( {
 					...acc,
 					[ widget ]: {
-						modules: [ 'analytics-4' ],
+						modules: [ MODULE_SLUG_ANALYTICS_4 ],
 					},
 				} ),
 				{}

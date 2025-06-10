@@ -60,7 +60,7 @@ exports[`SearchFunnelWidgetGA4 Chart Activate Analytics CTA with button "Complet
               <h3
                 class="googlesitekit-analytics-cta__preview-graph--title"
               >
-                Conversions completed
+                Key Events completed
               </h3>
               <div>
                 <svg />
@@ -161,7 +161,7 @@ exports[`SearchFunnelWidgetGA4 Chart Activate Analytics CTA with button "Set up 
               <h3
                 class="googlesitekit-analytics-cta__preview-graph--title"
               >
-                Conversions completed
+                Key Events completed
               </h3>
               <div>
                 <svg />
@@ -268,7 +268,7 @@ exports[`SearchFunnelWidgetGA4 Chart stats rendering should render Search Consol
 </div>
 `;
 
-exports[`SearchFunnelWidgetGA4 Chart stats rendering when selectedStats is 3 should render the Analytics Conversions stats when canViewSharedAnalytics4 is true 1`] = `
+exports[`SearchFunnelWidgetGA4 Chart stats rendering when selectedStats is 3 should render the Analytics Key Events stats when canViewSharedAnalytics4 is true 1`] = `
 <div>
   <div
     class="mdc-layout-grid googlesitekit-analytics-site-stats"
@@ -282,7 +282,7 @@ exports[`SearchFunnelWidgetGA4 Chart stats rendering when selectedStats is 3 sho
         <div
           id="google-chart-mock"
         >
-          Conversions
+          Key Events
         </div>
       </div>
     </div>

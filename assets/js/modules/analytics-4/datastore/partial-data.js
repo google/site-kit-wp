@@ -30,12 +30,13 @@ import {
 	commonActions,
 	combineStores,
 	createRegistrySelector,
+	createReducer,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createReducer } from '../../../googlesitekit/data/create-reducer';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getDateString } from '../../../util';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 
 export const RESOURCE_TYPE_AUDIENCE = 'audience';
 export const RESOURCE_TYPE_CUSTOM_DIMENSION = 'customDimension';
@@ -55,11 +56,16 @@ const SET_RESOURCE_DATA_AVAILABILITY_DATE =
 const fetchSaveResourceDataAvailabilityDateStore = createFetchStore( {
 	baseName: 'saveResourceDataAvailabilityDate',
 	controlCallback: ( { resourceSlug, resourceType, date } ) =>
-		set( 'modules', 'analytics-4', 'save-resource-data-availability-date', {
-			resourceSlug,
-			resourceType,
-			date,
-		} ),
+		set(
+			'modules',
+			MODULE_SLUG_ANALYTICS_4,
+			'save-resource-data-availability-date',
+			{
+				resourceSlug,
+				resourceType,
+				date,
+			}
+		),
 	argsToParams: ( resourceSlug, resourceType, date ) => ( {
 		resourceSlug,
 		resourceType,
@@ -189,7 +195,7 @@ const baseResolvers = {
 		}
 
 		const resourceAvailabilityDatesOnLoad =
-			global._googlesitekitModulesData?.[ 'analytics-4' ]
+			global._googlesitekitModulesData?.[ MODULE_SLUG_ANALYTICS_4 ]
 				?.resourceAvailabilityDates;
 
 		if ( resourceAvailabilityDatesOnLoad ) {

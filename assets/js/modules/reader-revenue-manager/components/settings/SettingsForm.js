@@ -27,11 +27,8 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
-} from '../../datastore/constants';
-import ErrorText from '../../../../components/ErrorText';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import {
 	PostTypesSelect,
 	PublicationOnboardingStateNotice,
@@ -42,6 +39,7 @@ import ProductIDSettings from './ProductIDSettings';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { getProductIDLabel } from '../../../../../../assets/js/modules/reader-revenue-manager/utils/settings';
 import Notice from '../../../../components/Notice';
+import ErrorNotice from '../../../../components/ErrorNotice';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const publicationID = useSelect( ( select ) =>
@@ -101,7 +99,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 
 	const formattedOwnerName = useSelect( ( select ) => {
 		const module = select( CORE_MODULES ).getModule(
-			READER_REVENUE_MANAGER_MODULE_SLUG
+			MODULE_SLUG_READER_REVENUE_MANAGER
 		);
 
 		return module?.owner?.login
@@ -121,12 +119,12 @@ export default function SettingsForm( { hasModuleAccess } ) {
 		<Fragment>
 			<div className="googlesitekit-settings-module__fields-group">
 				<StoreErrorNotices
-					moduleSlug={ READER_REVENUE_MANAGER_MODULE_SLUG }
+					moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
 					storeName={ MODULES_READER_REVENUE_MANAGER }
 				/>
 
 				{ hasModuleAccess && false === publicationAvailable && (
-					<ErrorText
+					<ErrorNotice
 						message={ sprintf(
 							/* translators: 1: Publication ID. */
 							__(
@@ -139,7 +137,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				) }
 
 				{ hasModuleAccess && publicationAvailable && missingProductID && (
-					<ErrorText
+					<ErrorNotice
 						message={ sprintf(
 							/* translators: 1: Product ID. */
 							__(
