@@ -1,5 +1,5 @@
 /**
- * ConsentModeSetupCTAWidget component tests.
+ * ConsentModeSetupCTABanner component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -23,7 +23,7 @@ import {
 	provideUserAuthentication,
 } from '../../../../tests/js/test-utils';
 import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
-import ConsentModeSetupCTAWidget from './ConsentModeSetupCTAWidget';
+import ConsentModeSetupCTABanner from './ConsentModeSetupCTABanner';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -31,11 +31,11 @@ import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
 
-describe( 'ConsentModeSetupCTAWidget', () => {
+describe( 'ConsentModeSetupCTABanner', () => {
 	let registry;
-	const ConsentModeSetupCTAWidgetComponent = withNotificationComponentProps(
+	const ConsentModeSetupCTABannerComponent = withNotificationComponentProps(
 		CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
-	)( ConsentModeSetupCTAWidget );
+	)( ConsentModeSetupCTABanner );
 
 	const notification =
 		DEFAULT_NOTIFICATIONS[ CONSENT_MODE_SETUP_CTA_WIDGET_SLUG ];
@@ -62,7 +62,7 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
 	} );
 
-	it( 'should render the widget', async () => {
+	it( 'should render the banner', async () => {
 		mockSurveyEndpoints();
 
 		registry
@@ -70,7 +70,7 @@ describe( 'ConsentModeSetupCTAWidget', () => {
 			.finishResolution( 'getDismissedPrompts', [] );
 
 		const { container, waitForRegistry } = render(
-			<ConsentModeSetupCTAWidgetComponent />,
+			<ConsentModeSetupCTABannerComponent />,
 			{
 				registry,
 			}

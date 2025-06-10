@@ -1,5 +1,5 @@
 /**
- * ConsentModeSetupCTAWidget Component Stories.
+ * ConsentModeSetupCTABanner Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -33,13 +33,13 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ADS } from '../../modules/ads/datastore/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { WEEK_IN_SECONDS } from '../../util';
-import ConsentModeSetupCTAWidget from './ConsentModeSetupCTAWidget';
+import ConsentModeSetupCTABanner from './ConsentModeSetupCTABanner';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
-)( ConsentModeSetupCTAWidget );
+)( ConsentModeSetupCTABanner );
 
 function Template() {
 	return <NotificationWithComponentProps />;
@@ -50,7 +50,7 @@ Default.storyName = 'Default';
 Default.scenario = {};
 
 export default {
-	title: 'Consent Mode/ConsentModeSetupCTAWidget',
+	title: 'Consent Mode/ConsentModeSetupCTABanner',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
