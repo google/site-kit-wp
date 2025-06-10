@@ -32,6 +32,7 @@ import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	getAnalytics4MockResponse,
+	provideAnalyticsReportWithoutDateRangeData,
 	provideAnalytics4MockReport,
 } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
@@ -147,6 +148,17 @@ InsufficientPermissions.args = {
 		] );
 	},
 };
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideAnalyticsReportWithoutDateRangeData( registry, reportOptions, {
+			emptyRowBehavior: 'remove',
+		} );
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
 
 export default {
 	title: 'Key Metrics/TopConvertingTrafficSourceWidget',
