@@ -397,7 +397,7 @@ LongDataValues.args = {
 };
 LongDataValues.scenario = {
 	readySelector: '.googlesitekit-data-blocks--scaled',
-	delay: 2000,
+	delay: 5000,
 };
 
 export const NoDataInComparisonDateRange = Template.bind( {} );
