@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ef12685d23d4285ae5bd2a88f6326974",
+    "content-hash": "98d75cb265e067be47e4a3f1345c1cfd",
     "packages": [
         {
             "name": "cweagans/composer-patches",
@@ -1738,6 +1738,34 @@
                 }
             ],
             "time": "2022-12-30T00:15:36+00:00"
+        },
+        {
+            "name": "google/site-kit-phpcs-standards",
+            "version": "0.1.0",
+            "dist": {
+                "type": "path",
+                "url": "packages/phpcs-standards",
+                "reference": "65a9e34eb34e06b976262d6d71d3b814e3cf0ad6"
+            },
+            "require": {
+                "php": ">=7.4",
+                "phpunit/phpunit": "^9.0",
+                "squizlabs/php_codesniffer": "^3.7"
+            },
+            "type": "phpcodesniffer-standard",
+            "autoload": {
+                "psr-4": {
+                    "Google\\Site_Kit\\PHPCS\\": "SiteKit/"
+                }
+            },
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "PHP_CodeSniffer standards for Google Site Kit",
+            "transport-options": {
+                "symlink": false,
+                "relative": true
+            }
         },
         {
             "name": "myclabs/deep-copy",
@@ -5227,5 +5255,5 @@
     "platform-overrides": {
         "php": "7.4.33"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
