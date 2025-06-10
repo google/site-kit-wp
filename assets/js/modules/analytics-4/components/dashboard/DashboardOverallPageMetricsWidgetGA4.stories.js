@@ -396,7 +396,8 @@ LongDataValues.args = {
 	},
 };
 LongDataValues.scenario = {
-	delay: 300, // Delay required to allow time to wait for the font sizes to be resized.
+	customWaitFunction: 'waitForFontSizeToStabalize',
+	fontSizeSelector: '.googlesitekit-data-block__datapoint',
 };
 
 export const NoDataInComparisonDateRange = Template.bind( {} );
