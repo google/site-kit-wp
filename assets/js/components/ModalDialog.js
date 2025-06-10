@@ -60,7 +60,7 @@ function setupFocusTracker() {
 	}
 
 	const captureActiveElementOnClick = ( event ) => {
-		// Store the clicked (or keyboard-activated) element when user clicks, skipping the modal's 'cancel' CTA.
+		// Store the clicked (or keyboard-activated) element when user clicks.
 		// This will be the element that was clicked right before the dialog opens.
 		const nearestParentButtonOrAnchor =
 			event.target.closest( 'button, a, input' );
