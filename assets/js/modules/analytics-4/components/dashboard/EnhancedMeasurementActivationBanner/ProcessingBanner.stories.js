@@ -19,12 +19,15 @@
 /**
  * Internal dependencies
  */
+import { provideUserAuthentication } from '../../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
-import InProgressBanner from './InProgressBanner';
+import { EDIT_SCOPE } from '../../../datastore/constants';
+import ProcessingBanner from './ProcessingBanner';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'enhanced-measurement-notification'
-)( InProgressBanner );
+)( ProcessingBanner );
 
 function Template() {
 	return <NotificationWithComponentProps />;
@@ -32,8 +35,29 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.args = {
+	grantedScopes: [ EDIT_SCOPE ],
+};
 Default.scenario = {};
 
+export const NoEditScope = Template.bind( {} );
+NoEditScope.storyName = 'No Edit Scope';
+
 export default {
-	title: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/InProgressBanner',
+	title: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/ProcessingBanner',
+	decorators: [
+		( Story, { args: { grantedScopes } } ) => {
+			const setupRegistry = ( registry ) => {
+				provideUserAuthentication( registry, {
+					grantedScopes,
+				} );
+			};
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };

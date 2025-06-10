@@ -84,7 +84,7 @@ const reportOptions = [
 		endDate: '2020-09-07',
 	},
 ];
-const currentEntityURL = 'https://www.example.com/example-page-3/';
+const currentEntityURL = 'https://www.example.com/example-page/';
 const reportOptionsWithEntity = reportOptions.map( ( options ) => {
 	return {
 		...options,
@@ -372,6 +372,31 @@ ErrorEntityURL.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ options ] );
 	},
+};
+
+export const LongDataValues = Template.bind( {} );
+LongDataValues.storyName = 'Long Data Values';
+LongDataValues.args = {
+	setupRegistry: ( registry ) => {
+		const extremeReport = getAnalytics4MockResponse( reportOptions[ 0 ] );
+
+		if ( extremeReport.rows && extremeReport.rows.length ) {
+			// Set extremely large values for metrics to test limits of the DataBlockGroup resizing logic.
+			extremeReport.totals[ 0 ].metricValues = [
+				{ value: '9876543210' },
+				{ value: '8765432109' },
+				{ value: '0.9999' },
+				{ value: '54321.9876' },
+			];
+		}
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( extremeReport, { options: reportOptions[ 0 ] } );
+	},
+};
+LongDataValues.scenario = {
+	delay: 300, // Delay required to allow time to wait for the font sizes to be resized.
 };
 
 export const NoDataInComparisonDateRange = Template.bind( {} );
