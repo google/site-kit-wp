@@ -108,7 +108,7 @@ export default function ConfirmDisableConsentModeDialog( {
 			dependentModules={ dependentModulesText }
 			confirmButton={ __( 'Disable', 'google-site-kit' ) }
 			danger
-			refocusQuerySelector=".googlesitekit-settings-consent-mode .mdc-switch__native-control"
+			refocusPreviousElement
 		/>
 	);
 }
