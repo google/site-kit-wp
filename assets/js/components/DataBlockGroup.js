@@ -111,6 +111,10 @@ export default function DataBlockGroup( { className, children } ) {
 	};
 
 	const setFontSizes = ( blocks, adjustedSize ) => {
+		console.log(
+			`🚀 ${ bodyWidth } ~ setFontSizes ~ adjustedSize:`,
+			adjustedSize
+		);
 		let blockCount = 0;
 		blocks.forEach( ( block ) => {
 			const dataPoint = block?.querySelector(
