@@ -31,6 +31,7 @@
  * @param {Object} scenario The scenario configuration.
  */
 module.exports = async ( page, scenario ) => {
+	console.log( '🚀 ~ module.exports= ~ scenario:', scenario );
 	// NOTE: We can implement waitForRegistry or other not arbitrary time based delays here to improve test stability.
 
 	// Wait for font resizing to complete before taking screenshots.
@@ -53,7 +54,6 @@ module.exports = async ( page, scenario ) => {
 						( el ) => window.getComputedStyle( el ).fontSize
 					);
 
-					// Store initial font sizes
 					const initialFontSizes = [ ...fontSizes ];
 
 					setTimeout( () => {
@@ -64,6 +64,7 @@ module.exports = async ( page, scenario ) => {
 						const stable = initialFontSizes.every(
 							( size, i ) => size === newFontSizes[ i ]
 						);
+						console.log( '🚀 ~ setTimeout ~ stable:', stable );
 
 						if ( stable ) {
 							resolve();
