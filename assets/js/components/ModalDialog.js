@@ -60,10 +60,16 @@ function setupFocusTracker() {
 	}
 
 	const captureActiveElementOnClick = ( event ) => {
-		// Store the clicked (or keyboard-activated) element when user clicks
-		// This will be the element that was clicked right before the dialog opens
-		const nearestParentButtonOrAnchor = event.target.closest( 'button, a' );
-		if ( nearestParentButtonOrAnchor ) {
+		// Store the clicked (or keyboard-activated) element when user clicks, skipping the modal's 'cancel' CTA.
+		// This will be the element that was clicked right before the dialog opens.
+		const nearestParentButtonOrAnchor =
+			event.target.closest( 'button, a, input' );
+		if (
+			nearestParentButtonOrAnchor &&
+			! nearestParentButtonOrAnchor.classList.contains(
+				'mdc-dialog__cancel-button'
+			)
+		) {
 			previouslyClickedElement = nearestParentButtonOrAnchor;
 		}
 	};
@@ -108,33 +114,43 @@ function ModalDialog( {
 	const describedByID = `googlesitekit-dialog-description-${ instanceID }`;
 	const hasProvides = !! ( provides && provides.length );
 
+	const handleElementRefocus = () => {
+		setTimeout( () => {
+			const elementToFocus = refocusPreviousElement
+				? previouslyClickedElement
+				: document.querySelector( refocusQuerySelector );
+
+			if ( elementToFocus && document.body.contains( elementToFocus ) ) {
+				elementToFocus.focus();
+			}
+
+			if ( refocusPreviousElement ) {
+				previouslyClickedElement = null;
+			}
+		} );
+	};
+
 	const shouldRefocus = refocusQuerySelector || refocusPreviousElement;
 
-	const handleEscapeOrScrim = () => {
+	const onCancel = () => {
+		handleDialog?.();
+
 		if ( shouldRefocus ) {
-			// Handle onClose as setting key action props on Dialog prevents these from being called.
-			onClose?.();
-			// Refocus the passed querySelector.
-			setTimeout( () => {
-				const elementToFocus = refocusPreviousElement
-					? previouslyClickedElement
-					: document.querySelector( refocusQuerySelector );
-
-				if (
-					elementToFocus &&
-					document.body.contains( elementToFocus )
-				) {
-					elementToFocus.focus();
-				}
-
-				if ( refocusPreviousElement ) {
-					previouslyClickedElement = null;
-				}
-			} );
+			handleElementRefocus();
 		}
 	};
 
-	// Override the escape and scrim click actions if refocusQuerySelector is set.
+	const handleEscapeOrScrim = () => {
+		if ( ! shouldRefocus ) {
+			return;
+		}
+
+		// Handle onClose as setting key action props on Dialog prevents these from being called.
+		onClose?.();
+		handleElementRefocus();
+	};
+
+	// Override the escape and scrim click actions if shouldRefocus is set.
 	useDialogEscapeAndScrim(
 		handleEscapeOrScrim,
 		dialogActive && shouldRefocus
@@ -202,7 +218,7 @@ function ModalDialog( {
 				<Button
 					className="mdc-dialog__cancel-button"
 					tertiary
-					onClick={ handleDialog }
+					onClick={ onCancel }
 					disabled={ inProgress }
 				>
 					{ __( 'Cancel', 'google-site-kit' ) }
