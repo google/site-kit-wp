@@ -137,7 +137,10 @@ export default function Footer( {
 	);
 
 	const isNavigatingToMainDashboard = useSelect( ( select ) => {
-		return select( CORE_LOCATION ).isNavigatingTo( mainDashboardURL );
+		return (
+			!! mainDashboardURL &&
+			select( CORE_LOCATION ).isNavigatingTo( mainDashboardURL )
+		);
 	} );
 
 	const { saveKeyMetricsSettings, setPermissionScopeError } =
