@@ -720,7 +720,7 @@ export const registerWidgets = ( widgets ) => {
 export const ANALYTICS_4_NOTIFICATIONS = {
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
 		Component: AudienceSegmentationSetupCTABanner,
-		priority: PRIORITY.SETUP_CTA_LOW,
+		priority: 220, // TODO: Revert this temporary priority after fixing Issue #10890.
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -865,7 +865,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 	'enhanced-measurement-notification': {
 		Component: EnhancedMeasurementActivationBanner,
-		priority: PRIORITY.SETUP_CTA_LOW,
+		priority: 210, // TODO: Revert this temporary priority after fixing Issue #10890.
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
