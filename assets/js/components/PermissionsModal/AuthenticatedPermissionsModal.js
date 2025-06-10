@@ -131,7 +131,7 @@ function AuthenticatedPermissionsModal() {
 				handleDialog={ onCancel }
 				onClose={ onCancel }
 				medium
-				refocusQuerySelector=".googlesitekit-setup-module__action > button"
+				refocusPreviousElement
 			/>
 		</Portal>
 	);
