@@ -32,6 +32,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { TYPES } from '../Notice/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
 import useModuleGatheringZeroData from '../../hooks/useModuleGatheringZeroData';
 import GatheringDataSVG from '@/svg/graphics/zero-state-cta.svg?url';
 import BannerNotification from '../../googlesitekit/notifications/components/layout/BannerNotification';
@@ -93,6 +94,9 @@ export default function GatheringDataNotification( { id, Notification } ) {
 				} }
 				dismissButton={ {
 					label: __( 'Maybe later', 'google-site-kit' ),
+				} }
+				dismissOptions={ {
+					expiresInSeconds: DAY_IN_SECONDS,
 				} }
 				svg={ {
 					desktop: GatheringDataSVG,
