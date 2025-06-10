@@ -1,6 +1,6 @@
 {
 	"scripts": {
-		"test:visualtest": "npm run backstopjs -- test --filter='Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4'",
+		"test:visualtest": "npm run backstopjs -- test --filter='Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/Long Data Values'",
 		"test:visualapprove": "npm run backstopjs -- approve",
 		"backstopjs": "./bin/backstop"
 	},
