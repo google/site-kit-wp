@@ -30,9 +30,9 @@ import {
 	commonActions,
 	combineStores,
 	createRegistrySelector,
+	createReducer,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createReducer } from '../../../googlesitekit/data/create-reducer';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getDateString } from '../../../util';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';

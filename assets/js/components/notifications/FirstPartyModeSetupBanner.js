@@ -32,10 +32,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { useShowTooltip } from '../AdminMenuTooltip';
-import {
-	CORE_NOTIFICATIONS,
-	NOTIFICATION_AREAS,
-} from '../../googlesitekit/notifications/datastore/constants';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { DAY_IN_SECONDS } from '../../util';
@@ -85,7 +83,7 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 
 		registerNotification( FIRST_PARTY_MODE_SETUP_SUCCESS_NOTIFICATION, {
 			Component: FirstPartyModeSetupSuccessSubtleNotification,
-			areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+			areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 			isDismissible: false,
 			featureFlag: 'firstPartyMode',
 		} );

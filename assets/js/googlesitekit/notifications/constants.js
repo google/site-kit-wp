@@ -33,3 +33,14 @@ export const PRIORITY = {
 export const TYPES = {
 	INFO: 'info',
 };
+
+export const NOTIFICATION_AREAS = {
+	HEADER: 'notification-area-header',
+	DASHBOARD_TOP: 'notification-area-dashboard-top',
+	OVERLAYS: 'notification-area-overlays',
+};
+
+export const NOTIFICATION_GROUPS = {
+	DEFAULT: 'default',
+	SETUP_CTAS: 'setup-ctas',
+};
