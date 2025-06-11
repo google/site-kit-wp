@@ -58,6 +58,7 @@ jest.mock( '../../../../hooks/useActivateModuleCallback' );
 describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	let registry;
 	let activateModuleMock;
+	let activateModuleCallbackMock;
 
 	const ReaderRevenueManagerSetupCTABannerComponent =
 		withNotificationComponentProps( 'rrm-setup-notification' )(
@@ -68,7 +69,8 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		activateModuleMock = jest.fn( () => jest.fn() );
+		activateModuleCallbackMock = jest.fn();
+		activateModuleMock = jest.fn( () => activateModuleCallbackMock );
 
 		provideUserAuthentication( registry );
 
@@ -143,7 +145,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			);
 		} );
 
-		expect( activateModuleMock ).toHaveBeenCalledTimes( 1 );
+		expect( activateModuleCallbackMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {
