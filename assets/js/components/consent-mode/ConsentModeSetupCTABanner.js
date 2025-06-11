@@ -42,6 +42,7 @@ import SetupCTA from '../../googlesitekit/notifications/components/layout/SetupC
 
 export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 	const [ saveError, setSaveError ] = useState( null );
+	const [ isSaving, setIsSaving ] = useState( false );
 
 	const viewContext = useViewContext();
 	const gaTrackingEventArgs = {
@@ -87,6 +88,7 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 	const handleCTAClick = async () => {
 		setSaveError( null );
 		setConsentModeEnabled( true );
+		setIsSaving( true );
 
 		const promises = [ saveConsentModeSettings() ];
 
@@ -101,6 +103,7 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 		if ( error ) {
 			setSaveError( error );
 			setConsentModeEnabled( false );
+			setIsSaving( false );
 		}
 	};
 
@@ -120,6 +123,7 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 					label: __( 'Enable consent mode', 'google-site-kit' ),
 					href: `${ settingsURL }#/admin-settings`,
 					onClick: handleCTAClick,
+					inProgress: isSaving,
 				} }
 				dismissButton={ {
 					label: isDismissalFinal
