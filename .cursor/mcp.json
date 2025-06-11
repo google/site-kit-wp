@@ -1,0 +1,9 @@
+{
+	"mcpServers": {
+		"github-issues": {
+			"command": "node",
+			"args": ["./packages/mcp/github/src/index.js"],
+			"env": {}
+		}
+	}
+}
