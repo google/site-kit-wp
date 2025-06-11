@@ -82,6 +82,12 @@ export default function DataBlockGroup( { className, children } ) {
 				return;
 			}
 
+			// Console log innerText for debugging purposes.
+			console.log(
+				`🚀 ${ bodyWidth } ~ blocks.forEach ~ dataPoint.innerText:`,
+				dataPoint.innerText
+			);
+
 			const parentWidth = dataPoint?.parentElement?.offsetWidth;
 
 			if ( dataPoint.scrollWidth > parentWidth ) {
@@ -150,17 +156,17 @@ export default function DataBlockGroup( { className, children } ) {
 	useMount( () => {
 		debouncedAdjustFontSize();
 
-		global.addEventListener( 'resize', debouncedAdjustFontSize );
-		global.addEventListener( 'resize', () => {
-			console.log(
-				`🚀 ${ bodyWidth } ~ DataBlockGroup ~ resize event triggered`
-			);
-		} );
+		// global.addEventListener( 'resize', debouncedAdjustFontSize );
+		// global.addEventListener( 'resize', () => {
+		// 	console.log(
+		// 		`🚀 ${ bodyWidth } ~ DataBlockGroup ~ resize event triggered`
+		// 	);
+		// } );
 	} );
 
-	useUnmount( () =>
-		global.removeEventListener( 'resize', debouncedAdjustFontSize )
-	);
+	// useUnmount( () =>
+	// 	global.removeEventListener( 'resize', debouncedAdjustFontSize )
+	// );
 
 	return (
 		<div ref={ ref } className={ className }>
