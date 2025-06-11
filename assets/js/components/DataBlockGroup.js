@@ -94,6 +94,10 @@ export default function DataBlockGroup( { className, children } ) {
 				// Calculate the exact scale factor needed to resize the content to the parent.
 				const scaleFactor = parentWidth / dataPoint.scrollWidth;
 				console.log(
+					`🚀 ${ bodyWidth } ~ blocks.forEach ~ scaleFactor:`,
+					scaleFactor
+				);
+				console.log(
 					`🚀 ${ bodyWidth } ~ blocks.forEach ~ dataPoint.scrollWidth:`,
 					dataPoint.scrollWidth
 				);
@@ -154,19 +158,19 @@ export default function DataBlockGroup( { className, children } ) {
 	const debouncedAdjustFontSize = useDebounce( adjustFontSize, 50 );
 
 	useMount( () => {
-		debouncedAdjustFontSize();
+		adjustFontSize();
 
-		// global.addEventListener( 'resize', debouncedAdjustFontSize );
-		// global.addEventListener( 'resize', () => {
-		// 	console.log(
-		// 		`🚀 ${ bodyWidth } ~ DataBlockGroup ~ resize event triggered`
-		// 	);
-		// } );
+		global.addEventListener( 'resize', debouncedAdjustFontSize );
+		global.addEventListener( 'resize', () => {
+			console.log(
+				`🚀 ${ bodyWidth } ~ DataBlockGroup ~ resize event triggered`
+			);
+		} );
 	} );
 
-	// useUnmount( () =>
-	// 	global.removeEventListener( 'resize', debouncedAdjustFontSize )
-	// );
+	useUnmount( () =>
+		global.removeEventListener( 'resize', debouncedAdjustFontSize )
+	);
 
 	return (
 		<div ref={ ref } className={ className }>

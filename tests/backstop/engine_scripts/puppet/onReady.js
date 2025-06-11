@@ -35,6 +35,47 @@
 module.exports = async ( page, scenario, viewport ) => {
 	// NOTE: We can implement waitForRegistry or other not arbitrary time based delays here to improve test stability.
 
+	// await page.evaluate( () => {
+	// 	const dataBlocks = document.querySelectorAll(
+	// 		'.googlesitekit-data-block__datapoint'
+	// 	);
+	// 	dataBlocks.forEach( ( block ) => {
+	// 		console.log( '🚀 ~ onReady.js ~ block resetting.' );
+	// 		block.style.fontSize = '';
+	// 	} );
+	// } );
+
+	// await page.waitForFunction(
+	// 	() => {
+	// 		const dataBlocks = document.querySelectorAll(
+	// 			'.googlesitekit-data-block__datapoint'
+	// 		);
+	// 		return dataBlocks.every( ( block ) => {
+	// 			const computedSize = window.getComputedStyle( block ).fontSize;
+	// 			// Convert "43px" to 43
+	// 			const fontSize = parseInt( computedSize, 10 );
+	// 			return fontSize > 0; // Ensure font size is set
+	// 		} );
+	// 	},
+	// 	{
+	// 		timeout: 5000,
+	// 		polling: 100,
+	// 	}
+	// );
+
+	// await page.setViewport( {
+	// 	width: viewport.width,
+	// 	height: viewport.height,
+	// 	deviceScaleFactor: 1,
+	// } );
+	// // Log the viewport label for debugging
+	// console.log( `🚀 ${ viewport.label } ~ onReady.js ~ scenario:`, scenario );
+
+	// await new Promise( ( resolve ) => {
+	// 	// Wait for a short time to ensure the page is fully loaded and styles are applied.
+	// 	setTimeout( resolve, 500 );
+	// } );
+
 	// Wait font size in selectors to match the expected size for the current viewport.
 	// Currently used for the DashboardOverallPageMetricsWidgetGA4 story which uses the DataBlockGroup component.
 	if ( scenario.waitForFontSizeToMatch && scenario.fontSizeSelector ) {
@@ -60,9 +101,12 @@ module.exports = async ( page, scenario, viewport ) => {
 
 				// Get current font sizes of all data blocks
 				const currentFontSizes = Array.from( elements ).map( ( el ) => {
-					const computedSize = window.getComputedStyle( el ).fontSize;
-					// Convert "43px" to 43
-					return parseInt( computedSize, 10 );
+					// const computedSize = window.getComputedStyle( el ).fontSize;
+					// // Convert "43px" to 43
+					// return parseInt( computedSize, 10 );
+
+					const fontSize = el.style.fontSize;
+					return fontSize ? parseInt( fontSize, 10 ) : 0;
 				} );
 
 				console.log(
