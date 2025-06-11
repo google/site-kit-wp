@@ -35,80 +35,65 @@
 module.exports = async ( page, scenario, viewport ) => {
 	// NOTE: We can implement waitForRegistry or other not arbitrary time based delays here to improve test stability.
 
-	await new Promise( ( resolve ) => {
-		setTimeout( resolve, 2000 );
-	} );
+	// Wait font size in selectors to match the expected size for the current viewport.
+	// Currently used for the DashboardOverallPageMetricsWidgetGA4 story which uses the DataBlockGroup component.
+	if ( scenario.waitForFontSizeToMatch && scenario.fontSizeSelector ) {
+		const expectedFontSizes = {
+			large: scenario.fontSizeLarge || false,
+			medium: scenario.fontSizeMedium || false,
+			small: scenario.fontSizeSmall || false,
+		};
+		const expectedFontSize = expectedFontSizes[ viewport.label ];
 
-	// // Wait font size in selectors to match the expected size for the current viewport.
-	// // Currently used for the DashboardOverallPageMetricsWidgetGA4 story which uses the DataBlockGroup component.
-	// if ( scenario.waitForFontSizeToMatch && scenario.fontSizeSelector ) {
-	// 	const expectedFontSizes = {
-	// 		large: scenario.fontSizeLarge || false,
-	// 		medium: scenario.fontSizeMedium || false,
-	// 		small: scenario.fontSizeSmall || false,
-	// 	};
-	// 	const expectedFontSize = expectedFontSizes[ viewport.label ];
+		if ( expectedFontSize === false ) {
+			return;
+		}
 
-	// 	if ( expectedFontSize === false ) {
-	// 		return;
-	// 	}
+		await page.waitForFunction(
+			( selector, targetFontSize, viewportLabel ) => {
+				const elements = document.querySelectorAll( selector );
 
-	// 	await page.evaluate(
-	// 		( selector, targetFontSize, viewportLabel ) => {
-	// 			return new Promise( ( resolve ) => {
-	// 				const checkFontSizes = () => {
-	// 					const elements = document.querySelectorAll( selector );
+				if ( ! elements.length ) {
+					console.log( 'No data block elements found, retrying...' );
+					return false;
+				}
 
-	// 					if ( ! elements.length ) {
-	// 						console.log(
-	// 							'No data block elements found, retrying...'
-	// 						);
-	// 						setTimeout( checkFontSizes, 100 );
-	// 						return;
-	// 					}
+				// Get current font sizes of all data blocks
+				const currentFontSizes = Array.from( elements ).map( ( el ) => {
+					const computedSize = window.getComputedStyle( el ).fontSize;
+					// Convert "43px" to 43
+					return parseInt( computedSize, 10 );
+				} );
 
-	// 					// Get current font sizes of all data blocks
-	// 					const currentFontSizes = Array.from( elements ).map(
-	// 						( el ) => {
-	// 							const computedSize =
-	// 								window.getComputedStyle( el ).fontSize;
-	// 							// Convert "43px" to 43
-	// 							return parseInt( computedSize, 10 );
-	// 						}
-	// 					);
+				console.log(
+					`Current font sizes for ${ viewportLabel }:`,
+					JSON.stringify( currentFontSizes )
+				);
+				console.log( `Expected font size: ${ targetFontSize }px` );
 
-	// 					console.log(
-	// 						`Current font sizes for ${ viewportLabel }:`,
-	// 						JSON.stringify( currentFontSizes )
-	// 					);
-	// 					console.log(
-	// 						`Expected font size: ${ targetFontSize }px`
-	// 					);
+				// Check if all font sizes match the expected size for this viewport
+				const allMatchExpected = currentFontSizes.every(
+					( size ) => size === targetFontSize
+				);
 
-	// 					// Check if all font sizes match the expected size for this viewport
-	// 					const allMatchExpected = currentFontSizes.every(
-	// 						( size ) => size === targetFontSize
-	// 					);
-
-	// 					if ( allMatchExpected ) {
-	// 						console.log(
-	// 							`✅ All font sizes match expected ${ targetFontSize }px for ${ viewportLabel } viewport`
-	// 						);
-	// 						resolve();
-	// 					} else {
-	// 						console.log(
-	// 							"❌ Font sizes don't match expected size yet, retrying..."
-	// 						);
-	// 						setTimeout( checkFontSizes, 100 );
-	// 					}
-	// 				};
-
-	// 				checkFontSizes();
-	// 			} );
-	// 		},
-	// 		scenario.fontSizeSelector,
-	// 		expectedFontSize,
-	// 		viewport.label
-	// 	);
-	// }
+				if ( allMatchExpected ) {
+					console.log(
+						`✅ All font sizes match expected ${ targetFontSize }px for ${ viewportLabel } viewport`
+					);
+					return true;
+				}
+				console.log(
+					"❌ Font sizes don't match expected size yet, retrying..."
+				);
+				return false;
+			},
+			{
+				timeout: 5000,
+				polling: 100,
+			},
+			scenario.fontSizeSelector,
+			expectedFontSize,
+			viewport.label
+		);
+	}
 };
