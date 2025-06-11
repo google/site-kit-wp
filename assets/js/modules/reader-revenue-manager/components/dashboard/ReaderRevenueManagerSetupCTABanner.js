@@ -24,37 +24,27 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, useEffect } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import {
-	BREAKPOINT_SMALL,
-	BREAKPOINT_TABLET,
-	useBreakpoint,
-} from '../../../../hooks/useBreakpoint';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
-import SetupSVG from '../../../../../svg/graphics/reader-revenue-manager-setup.svg';
-import SetupTabletSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-tablet.svg';
-import SetupMobileSVG from '../../../../../svg/graphics/reader-revenue-manager-setup-mobile.svg';
 import { useShowTooltip } from '../../../../components/AdminMenuTooltip';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import NotificationWithSVG from '../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
-import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
-import ActionsCTALinkDismiss from '../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 import { WEEK_IN_SECONDS } from '../../../../util';
+import SetupCTA from '../../../../googlesitekit/notifications/components/layout/SetupCTA';
+import BannerSVGDesktop from '@/svg/graphics/banner-rrm-setup-cta.svg?url';
+import BannerSVGMobile from '@/svg/graphics/banner-rrm-setup-cta-mobile.svg?url';
 
 export default function ReaderRevenueManagerSetupCTABanner( {
 	id,
 	Notification,
 } ) {
-	const breakpoint = useBreakpoint();
-
 	const onSetupActivate = useActivateModuleCallback(
 		MODULE_SLUG_READER_REVENUE_MANAGER
 	);
@@ -79,62 +69,44 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 		triggerSurvey( 'view_reader_revenue_manager_cta' );
 	}, [ triggerSurvey ] );
 
-	const breakpointSVGMap = {
-		[ BREAKPOINT_SMALL ]: SetupMobileSVG,
-		[ BREAKPOINT_TABLET ]: SetupTabletSVG,
-	};
-
 	return (
 		<Notification>
-			<NotificationWithSVG
-				id={ id }
+			<SetupCTA
+				notificationID={ id }
 				title={ __(
 					'Grow your revenue and deepen reader engagement',
 					'google-site-kit'
 				) }
-				description={
-					<div className="googlesitekit-setup-cta-banner__description">
-						<p>
-							{ createInterpolateElement(
-								__(
-									'Turn casual visitors into loyal readers and earn more from your content with paywalls, contributions, surveys, newsletter sign-ups and reader insight tools. <a>Learn more</a>',
-									'google-site-kit'
-								),
-								{
-									a: (
-										<LearnMoreLink
-											id={ id }
-											label={ __(
-												'Learn more',
-												'google-site-kit'
-											) }
-											url="https://readerrevenue.withgoogle.com"
-										/>
-									),
-								}
-							) }
-						</p>
-					</div>
-				}
-				actions={
-					<ActionsCTALinkDismiss
-						id={ id }
-						className="googlesitekit-setup-cta-banner__actions-wrapper"
-						ctaLabel={ __(
-							'Set up Reader Revenue Manager',
-							'google-site-kit'
-						) }
-						onCTAClick={ onSetupActivate }
-						dismissLabel={
-							isDismissalFinal
-								? __( 'Don’t show again', 'google-site-kit' )
-								: __( 'Maybe later', 'google-site-kit' )
-						}
-						onDismiss={ showTooltip }
-						dismissExpires={ 2 * WEEK_IN_SECONDS }
-					/>
-				}
-				SVG={ breakpointSVGMap[ breakpoint ] || SetupSVG }
+				description={ __(
+					'Turn casual visitors into loyal readers and earn more from your content with paywalls, contributions, surveys, newsletter sign-ups and reader insight tools.',
+					'google-site-kit'
+				) }
+				ctaButton={ {
+					label: __(
+						'Set up Reader Revenue Manager',
+						'google-site-kit'
+					),
+					onClick: onSetupActivate,
+				} }
+				dismissButton={ {
+					label: isDismissalFinal
+						? __( 'Don’t show again', 'google-site-kit' )
+						: __( 'Maybe later', 'google-site-kit' ),
+					onClick: showTooltip,
+				} }
+				dismissOptions={ {
+					expiresInSeconds: isDismissalFinal
+						? 0
+						: 2 * WEEK_IN_SECONDS,
+				} }
+				svg={ {
+					desktop: BannerSVGDesktop,
+					mobile: BannerSVGMobile,
+					verticalPosition: 'center',
+				} }
+				learnMoreLink={ {
+					href: 'https://readerrevenue.withgoogle.com',
+				} }
 			/>
 		</Notification>
 	);
