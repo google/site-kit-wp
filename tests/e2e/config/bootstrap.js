@@ -87,7 +87,7 @@ const IGNORE_CONSOLE_MESSAGES = [
 		pattern:
 			'Failed to load resource: the server responded with a status of',
 	},
-	// WordPress font loading warnings
+	// WordPress font loading warnings.
 	{
 		matcher: 'startsWith',
 		pattern: 'Failed to decode downloaded font:',
