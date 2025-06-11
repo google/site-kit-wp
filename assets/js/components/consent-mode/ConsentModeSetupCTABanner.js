@@ -32,26 +32,16 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
-import BannerGraphicsSVG from '../../../svg/graphics/consent-mode-setup.svg';
-import BannerGraphicsTabletSVG from '../../../svg/graphics/consent-mode-setup-tablet.svg';
+import BannerSVGDesktop from '@/svg/graphics/banner-consent-mode-setup-cta.svg?url';
+import BannerSVGMobile from '@/svg/graphics/banner-consent-mode-setup-cta-mobile.svg?url';
 import { useShowTooltip } from '../AdminMenuTooltip';
 import { DAY_IN_SECONDS, WEEK_IN_SECONDS } from '../../util';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
-import {
-	BREAKPOINT_SMALL,
-	BREAKPOINT_XLARGE,
-	useBreakpoint,
-} from '../../hooks/useBreakpoint';
-import SingleColumnNotificationWithSVG from '../../googlesitekit/notifications/components/layout/SingleColumnNotificationWithSVG';
-import Description from '../../googlesitekit/notifications/components/common/Description';
-import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
-import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
 import useViewContext from '../../hooks/useViewContext';
+import SetupCTA from '../../googlesitekit/notifications/components/layout/SetupCTA';
 
-export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
+export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 	const [ saveError, setSaveError ] = useState( null );
-
-	const breakpoint = useBreakpoint();
 
 	const viewContext = useViewContext();
 	const gaTrackingEventArgs = {
@@ -116,65 +106,48 @@ export default function ConsentModeSetupCTAWidget( { id, Notification } ) {
 
 	return (
 		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
-			<SingleColumnNotificationWithSVG
-				id={ id }
+			<SetupCTA
+				notificationID={ id }
 				title={ __(
 					'Enable Consent Mode to preserve tracking for your Ads campaigns',
 					'google-site-kit'
 				) }
-				description={
-					<Description
-						className="googlesitekit-setup-cta-banner__description"
-						text={ __(
-							'Consent mode interacts with your Consent Management Platform (CMP) or custom implementation for obtaining visitor consent, such as a cookie consent banner.',
-							'google-site-kit'
-						) }
-						learnMoreLink={
-							<LearnMoreLink
-								id={ id }
-								label={ __( 'Learn more', 'google-site-kit' ) }
-								url={ consentModeDocumentationURL }
-								ariaLabel={ __(
-									'Learn more about consent mode',
-									'google-site-kit'
-								) }
-							/>
-						}
-						errorText={ saveError?.message }
-					/>
-				}
-				actions={
-					<ActionsCTALinkDismiss
-						id={ id }
-						className="googlesitekit-setup-cta-banner__actions-wrapper"
-						ctaLabel={ __(
-							'Enable consent mode',
-							'google-site-kit'
-						) }
-						ctaLink={ `${ settingsURL }#/admin-settings` }
-						onCTAClick={ handleCTAClick }
-						dismissLabel={
-							isDismissalFinal
-								? __( 'Don’t show again', 'google-site-kit' )
-								: __( 'Maybe later', 'google-site-kit' )
-						}
-						onDismiss={ showTooltip }
-						dismissExpires={ 2 * WEEK_IN_SECONDS }
-						gaTrackingEventArgs={ gaTrackingEventArgs }
-					/>
-				}
-				SVG={
-					breakpoint !== BREAKPOINT_SMALL &&
-					breakpoint !== BREAKPOINT_XLARGE
-						? BannerGraphicsTabletSVG
-						: BannerGraphicsSVG
-				}
+				description={ __(
+					'Consent mode interacts with your Consent Management Platform (CMP) or custom implementation for obtaining visitor consent, such as a cookie consent banner.',
+					'google-site-kit'
+				) }
+				ctaButton={ {
+					label: __( 'Enable consent mode', 'google-site-kit' ),
+					href: `${ settingsURL }#/admin-settings`,
+					onClick: handleCTAClick,
+				} }
+				dismissButton={ {
+					label: isDismissalFinal
+						? __( 'Don’t show again', 'google-site-kit' )
+						: __( 'Maybe later', 'google-site-kit' ),
+					onClick: showTooltip,
+				} }
+				dismissOptions={ {
+					expiresInSeconds: isDismissalFinal
+						? 0
+						: 2 * WEEK_IN_SECONDS,
+				} }
+				svg={ {
+					desktop: BannerSVGDesktop,
+					mobile: BannerSVGMobile,
+					verticalPosition: 'center',
+				} }
+				learnMoreLink={ {
+					href: consentModeDocumentationURL,
+				} }
+				errorText={ saveError?.message }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
 			/>
 		</Notification>
 	);
 }
 
-ConsentModeSetupCTAWidget.propTypes = {
+ConsentModeSetupCTABanner.propTypes = {
 	id: PropTypes.string,
 	Notification: PropTypes.elementType,
 };

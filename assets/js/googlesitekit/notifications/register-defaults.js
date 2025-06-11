@@ -70,7 +70,7 @@ import SetupErrorMessageNotification from '../../components/notifications/SetupE
 import FirstPartyModeWarningNotification from '../../components/notifications/FirstPartyModeWarningNotification';
 import FirstPartyModeSetupBanner from '../../components/notifications/FirstPartyModeSetupBanner';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '../../components/consent-mode/constants';
-import ConsentModeSetupCTAWidget from '../../components/consent-mode/ConsentModeSetupCTAWidget';
+import ConsentModeSetupCTABanner from '../../components/consent-mode/ConsentModeSetupCTABanner';
 import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
 } from '../../components/notifications/EnableAutoUpdateBannerNotification';
@@ -637,7 +637,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 	},
 	[ CONSENT_MODE_SETUP_CTA_WIDGET_SLUG ]: {
-		Component: ConsentModeSetupCTAWidget,
+		Component: ConsentModeSetupCTABanner,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
