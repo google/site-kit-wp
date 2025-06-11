@@ -195,7 +195,6 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 					disabled: isSaving,
 				} }
 				dismissOptions={ {
-					skipHidingFromQueue: true,
 					expiresInSeconds: isDismissalFinal
 						? 0
 						: 2 * WEEK_IN_SECONDS,
