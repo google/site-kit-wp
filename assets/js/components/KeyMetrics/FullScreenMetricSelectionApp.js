@@ -78,7 +78,7 @@ export default function FullScreenMetricSelectionApp() {
 	);
 
 	const showSelectionPanel =
-		( hasFinishedGettingInputSettings && isKeyMetricsSetupCompleted ) ||
+		( hasFinishedGettingInputSettings && ! isKeyMetricsSetupCompleted ) ||
 		( ! previousIsKeyMetricsCompleted && isKeyMetricsSetupCompleted );
 
 	useEffect( () => {
