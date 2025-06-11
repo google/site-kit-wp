@@ -93,7 +93,7 @@ export default function GatheringDataNotification( { id, Notification } ) {
 					href: `${ settingsAdminURL }#/connect-more-services`,
 				} }
 				dismissButton={ {
-					label: __( 'Maybe later', 'google-site-kit' ),
+					label: __( 'Got it', 'google-site-kit' ),
 				} }
 				dismissOptions={ {
 					expiresInSeconds: DAY_IN_SECONDS,
