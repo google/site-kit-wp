@@ -34,6 +34,54 @@ docker run --rm --tty \
 	$IMAGE \
 	"$@" \
 	--config=/src/tests/backstop/config.js
+docker run --rm --tty \
+	--shm-size=512m \
+	--mount "type=bind,source=$ROOT_DIR,target=/src" \
+	$IMAGE \
+	"$@" \
+	--config=/src/tests/backstop/config.js
+docker run --rm --tty \
+	--shm-size=512m \
+	--mount "type=bind,source=$ROOT_DIR,target=/src" \
+	$IMAGE \
+	"$@" \
+	--config=/src/tests/backstop/config.js
+docker run --rm --tty \
+	--shm-size=512m \
+	--mount "type=bind,source=$ROOT_DIR,target=/src" \
+	$IMAGE \
+	"$@" \
+	--config=/src/tests/backstop/config.js
+docker run --rm --tty \
+	--shm-size=512m \
+	--mount "type=bind,source=$ROOT_DIR,target=/src" \
+	$IMAGE \
+	"$@" \
+	--config=/src/tests/backstop/config.js
+docker run --rm --tty \
+	--shm-size=512m \
+	--mount "type=bind,source=$ROOT_DIR,target=/src" \
+	$IMAGE \
+	"$@" \
+	--config=/src/tests/backstop/config.js
+docker run --rm --tty \
+	--shm-size=512m \
+	--mount "type=bind,source=$ROOT_DIR,target=/src" \
+	$IMAGE \
+	"$@" \
+	--config=/src/tests/backstop/config.js
+docker run --rm --tty \
+	--shm-size=512m \
+	--mount "type=bind,source=$ROOT_DIR,target=/src" \
+	$IMAGE \
+	"$@" \
+	--config=/src/tests/backstop/config.js
+docker run --rm --tty \
+	--shm-size=512m \
+	--mount "type=bind,source=$ROOT_DIR,target=/src" \
+	$IMAGE \
+	"$@" \
+	--config=/src/tests/backstop/config.js
 
 DOCKER_EXIT_CODE=$?
 

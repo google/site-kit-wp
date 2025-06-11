@@ -395,10 +395,7 @@ LongDataValues.args = {
 			.receiveGetReport( extremeReport, { options: reportOptions[ 0 ] } );
 	},
 };
-LongDataValues.scenario = {
-	readySelector: '.googlesitekit-data-blocks--scaled',
-	delay: 5000,
-};
+LongDataValues.scenario = {};
 
 export const NoDataInComparisonDateRange = Template.bind( {} );
 NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
