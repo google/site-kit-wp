@@ -21,6 +21,7 @@
  */
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -82,7 +83,7 @@ const reportOptions = [
 		endDate: '2020-09-07',
 	},
 ];
-const currentEntityURL = 'https://www.example.com/example-page-3/';
+const currentEntityURL = 'https://www.example.com/example-page/';
 const reportOptionsWithEntity = reportOptions.map( ( options ) => {
 	return {
 		...options,
@@ -372,6 +373,31 @@ ErrorEntityURL.args = {
 	},
 };
 
+export const LongDataValues = Template.bind( {} );
+LongDataValues.storyName = 'Long Data Values';
+LongDataValues.args = {
+	setupRegistry: ( registry ) => {
+		const extremeReport = getAnalytics4MockResponse( reportOptions[ 0 ] );
+
+		if ( extremeReport.rows && extremeReport.rows.length ) {
+			// Set extremely large values for metrics to test limits of the DataBlockGroup resizing logic.
+			extremeReport.totals[ 0 ].metricValues = [
+				{ value: '9876543210' },
+				{ value: '8765432109' },
+				{ value: '0.9999' },
+				{ value: '54321.9876' },
+			];
+		}
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( extremeReport, { options: reportOptions[ 0 ] } );
+	},
+};
+LongDataValues.scenario = {
+	delay: 300, // Delay required to allow time to wait for the font sizes to be resized.
+};
+
 export default {
 	title: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4',
 	decorators: [
@@ -379,7 +405,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

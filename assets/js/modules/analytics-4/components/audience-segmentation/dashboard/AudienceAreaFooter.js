@@ -30,6 +30,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import SourceLink from '../../../../../components/SourceLink';
 import useViewOnly from '../../../../../hooks/useViewOnly';
@@ -54,7 +55,7 @@ export default function AudienceAreaFooter() {
 	} );
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	if ( ! isAnalyticsConnected ) {

@@ -29,24 +29,25 @@ import {
 	ERROR_CODE_NON_HTTPS_SITE,
 	MODULES_SIGN_IN_WITH_GOOGLE,
 } from './datastore/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from './constants';
 import Icon from '../../../svg/graphics/sign-in-with-google.svg';
 import SetupMain from './components/setup/SetupMain';
 import SettingsEdit from './components/settings/SettingsEdit';
 import SettingsView from './components/settings/SettingsView';
 import SignInWithGoogleSetupCTABanner from './components/dashboard/SignInWithGoogleSetupCTABanner';
 import {
-	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/datastore/constants';
+	NOTIFICATION_AREAS,
+	PRIORITY,
+} from '../../googlesitekit/notifications/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import SetupSuccessSubtleNotification from './components/dashboard/SetupSuccessSubtleNotification';
 import { isURLUsingHTTPS } from '../../util/is-url-using-https';
-import { PRIORITY } from '../../googlesitekit/notifications/constants';
 
 export { registerStore } from './datastore';
 
 export function registerModule( modules ) {
-	modules.registerModule( 'sign-in-with-google', {
+	modules.registerModule( MODULE_SLUG_SIGN_IN_WITH_GOOGLE, {
 		storeName: MODULES_SIGN_IN_WITH_GOOGLE,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
@@ -102,7 +103,7 @@ export const registerNotifications = ( notifications ) => {
 	notifications.registerNotification( 'sign-in-with-google-setup-cta', {
 		Component: SignInWithGoogleSetupCTABanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -115,7 +116,7 @@ export const registerNotifications = ( notifications ) => {
 			] );
 
 			const isConnected = select( CORE_MODULES ).isModuleConnected(
-				'sign-in-with-google'
+				MODULE_SLUG_SIGN_IN_WITH_GOOGLE
 			);
 			if ( isConnected ) {
 				return false;
@@ -132,7 +133,7 @@ export const registerNotifications = ( notifications ) => {
 	} );
 	notifications.registerNotification( 'setup-success-notification-siwg', {
 		Component: SetupSuccessSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: () => {
 			const notification = getQueryArg( location.href, 'notification' );
@@ -140,7 +141,7 @@ export const registerNotifications = ( notifications ) => {
 
 			if (
 				'authentication_success' === notification &&
-				slug === 'sign-in-with-google'
+				slug === MODULE_SLUG_SIGN_IN_WITH_GOOGLE
 			) {
 				return true;
 			}

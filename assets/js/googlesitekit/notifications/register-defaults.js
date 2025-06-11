@@ -33,12 +33,10 @@ import {
 	VIEW_CONTEXT_SETTINGS,
 	VIEW_CONTEXT_SPLASH,
 } from '../constants';
+import { CORE_NOTIFICATIONS } from './datastore/constants';
 import {
-	CORE_NOTIFICATIONS,
-	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from './datastore/constants';
-import {
+	NOTIFICATION_AREAS,
 	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 	FPM_SETUP_CTA_BANNER_NOTIFICATION,
 	PRIORITY,
@@ -50,14 +48,16 @@ import {
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 	PERMISSION_UPDATE_PLUGINS,
 } from '../datastore/user/constants';
-import { CORE_UI } from '../datastore/ui/constants';
 import { CORE_MODULES } from '../modules/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
 import { isZeroReport } from '../../modules/analytics-4/utils';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/constants';
+import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
 import AuthError from '../../components/notifications/AuthError';
 import UnsatisfiedScopesAlert from '../../components/notifications/UnsatisfiedScopesAlert';
@@ -68,10 +68,7 @@ import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSe
 import SetupErrorNotification from '../../components/notifications/SetupErrorNotification';
 import SetupErrorMessageNotification from '../../components/notifications/SetupErrorMessageNotification';
 import FirstPartyModeWarningNotification from '../../components/notifications/FirstPartyModeWarningNotification';
-import FirstPartyModeSetupBanner, {
-	FPM_SHOW_SETUP_SUCCESS_NOTIFICATION,
-} from '../../components/notifications/FirstPartyModeSetupBanner';
-import FirstPartyModeSetupSuccessSubtleNotification from '../../components/notifications/FirstPartyModeSetupSuccessSubtleNotification';
+import FirstPartyModeSetupBanner from '../../components/notifications/FirstPartyModeSetupBanner';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '../../components/consent-mode/constants';
 import ConsentModeSetupCTAWidget from '../../components/consent-mode/ConsentModeSetupCTAWidget';
 import EnableAutoUpdateBannerNotification, {
@@ -86,7 +83,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
 		Component: UnsatisfiedScopesAlert,
 		priority: PRIORITY.ERROR_LOW,
-		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -112,8 +109,9 @@ export const DEFAULT_NOTIFICATIONS = {
 
 			const isAuthenticated = select( CORE_USER ).isAuthenticated();
 
-			const ga4ModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const ga4ModuleConnected = select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			);
 
 			const hasTagManagerReadScope = select( CORE_USER ).hasScope(
 				TAGMANAGER_READ_SCOPE
@@ -139,7 +137,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error-gte': {
 		Component: UnsatisfiedScopesAlertGTE,
 		priority: PRIORITY.ERROR_LOW,
-		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -165,8 +163,9 @@ export const DEFAULT_NOTIFICATIONS = {
 
 			const isAuthenticated = select( CORE_USER ).isAuthenticated();
 
-			const ga4ModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const ga4ModuleConnected = select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			);
 
 			const hasTagManagerReadScope = select( CORE_USER ).hasScope(
 				TAGMANAGER_READ_SCOPE
@@ -186,7 +185,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	setup_error: {
 		Component: SetupErrorNotification,
 		priority: PRIORITY.ERROR_HIGH,
-		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [ VIEW_CONTEXT_SPLASH ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			// The getSetupErrorMessage selector relies on the resolution
@@ -217,7 +216,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	setup_plugin_error: {
 		Component: SetupErrorMessageNotification,
 		priority: PRIORITY.ERROR_HIGH,
-		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -252,7 +251,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	'auth-error': {
 		Component: AuthError,
 		priority: PRIORITY.ERROR_HIGH,
-		areaSlug: NOTIFICATION_AREAS.ERRORS,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -267,7 +266,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'top-earning-pages-success-notification': {
 		Component: GA4AdSenseLinkedNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -275,11 +274,11 @@ export const DEFAULT_NOTIFICATIONS = {
 		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
 			const adSenseModuleConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( 'adsense' );
+			).isModuleConnected( MODULE_SLUG_ADSENSE );
 
 			const analyticsModuleConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( 'analytics-4' );
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 
 			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
 				return false;
@@ -340,7 +339,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'setup-success-notification-site-kit': {
 		Component: SiteKitSetupSuccessNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: () => {
 			const notification = getQueryArg( location.href, 'notification' );
@@ -355,7 +354,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'setup-success-notification-module': {
 		Component: ModuleSetupSuccessNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			await Promise.all( [
@@ -382,7 +381,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	[ ENABLE_AUTO_UPDATES_BANNER_SLUG ]: {
 		Component: EnableAutoUpdateBannerNotification,
 		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -443,7 +442,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	'gathering-data-notification': {
 		Component: GatheringDataNotification,
 		priority: PRIORITY.INFO,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -463,16 +462,21 @@ export const DEFAULT_NOTIFICATIONS = {
 					: Promise.resolve( [] ),
 			] );
 
-			const isAnalyticsConnected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const isAnalyticsConnected = select(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 
 			const canViewSharedAnalytics = ! viewOnly
 				? true
-				: select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+				: select( CORE_USER ).canViewSharedModule(
+						MODULE_SLUG_ANALYTICS_4
+				  );
 
 			const canViewSharedSearchConsole = ! viewOnly
 				? true
-				: select( CORE_USER ).canViewSharedModule( 'search-console' );
+				: select( CORE_USER ).canViewSharedModule(
+						MODULE_SLUG_SEARCH_CONSOLE
+				  );
 
 			const showRecoverableAnalytics = await ( () => {
 				if ( ! viewOnly ) {
@@ -483,7 +487,7 @@ export const DEFAULT_NOTIFICATIONS = {
 					select( CORE_MODULES ).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
-					'analytics-4'
+					MODULE_SLUG_ANALYTICS_4
 				);
 			} )();
 			const showRecoverableSearchConsole = await ( () => {
@@ -495,7 +499,7 @@ export const DEFAULT_NOTIFICATIONS = {
 					select( CORE_MODULES ).getRecoverableModules();
 
 				return Object.keys( recoverableModules ).includes(
-					'search-console'
+					MODULE_SLUG_SEARCH_CONSOLE
 				);
 			} )();
 
@@ -521,7 +525,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	'zero-data-notification': {
 		Component: ZeroDataNotification,
 		priority: PRIORITY.INFO,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -588,12 +592,12 @@ export const DEFAULT_NOTIFICATIONS = {
 
 			// Get Analytics-4 and Search Console states.
 			const analyticsState = await getModuleState(
-				'analytics-4',
+				MODULE_SLUG_ANALYTICS_4,
 				MODULES_ANALYTICS_4
 			);
 
 			const searchConsoleState = await getModuleState(
-				'search-console',
+				MODULE_SLUG_SEARCH_CONSOLE,
 				MODULES_SEARCH_CONSOLE
 			);
 
@@ -616,7 +620,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	'module-recovery-alert': {
 		Component: ModuleRecoveryAlert,
 		priority: PRIORITY.ERROR_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: false,
 		checkRequirements: async ( { resolveSelect } ) => {
@@ -635,7 +639,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	[ CONSENT_MODE_SETUP_CTA_WIDGET_SLUG ]: {
 		Component: ConsentModeSetupCTAWidget,
 		priority: PRIORITY.SETUP_CTA_HIGH,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
@@ -658,7 +662,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]: {
 		Component: FirstPartyModeSetupBanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
@@ -696,7 +700,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	[ FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID ]: {
 		Component: FirstPartyModeWarningNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			const isFPMModuleConnected =
@@ -720,18 +724,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			);
 		},
 		isDismissible: true,
-		featureFlag: 'firstPartyMode',
-	},
-	'setup-success-notification-fpm': {
-		Component: FirstPartyModeSetupSuccessSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		isDismissible: false,
-		checkRequirements: ( { select } ) => {
-			return !! select( CORE_UI ).getValue(
-				FPM_SHOW_SETUP_SUCCESS_NOTIFICATION
-			);
-		},
 		featureFlag: 'firstPartyMode',
 	},
 };

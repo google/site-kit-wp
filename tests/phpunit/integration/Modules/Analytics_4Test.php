@@ -51,12 +51,12 @@ use Google\Site_Kit\Tests\UserAuthenticationTrait;
 use Google\Site_Kit_Dependencies\Google\Service\Exception;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaListAudiencesResponse;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaConversionEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaCustomDimension;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListConversionEventsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaKeyEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListCustomDimensionsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListKeyEventsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
@@ -1244,7 +1244,7 @@ class Analytics_4Test extends TestCase {
 				'container-lookup',
 				'container-destinations',
 				'google-tag-settings',
-				'conversion-events',
+				'key-events',
 				'create-property',
 				'create-webdatastream',
 				'pivot-report',
@@ -1279,7 +1279,7 @@ class Analytics_4Test extends TestCase {
 				'container-lookup',
 				'container-destinations',
 				'google-tag-settings',
-				'conversion-events',
+				'key-events',
 				'create-property',
 				'create-webdatastream',
 				'pivot-report',
@@ -2477,7 +2477,7 @@ class Analytics_4Test extends TestCase {
 	 *
 	 * @param string $access_token Access token, or empty string if none.
 	 */
-	public function test_get_conversion_events( $access_token ) {
+	public function test_get_key_events( $access_token ) {
 		$this->setup_user_authentication( $access_token );
 
 		$property_id = '123456789';
@@ -2495,9 +2495,9 @@ class Analytics_4Test extends TestCase {
 
 		$this->fake_handler_and_invoke_register_method( $property_id );
 
-		// Fetch conversion events.
+		// Fetch key events.
 		$data = $this->analytics->get_data(
-			'conversion-events',
+			'key-events',
 			array(
 				'propertyID' => $property_id,
 			)
@@ -2505,7 +2505,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertNotWPError( $data );
 
-		// Verify the conversion events are returned by checking an event name.
+		// Verify the key events are returned by checking an event name.
 		$this->assertEquals( 'some-event', $data[0]['eventName'] );
 
 		// Verify the request URL and params were correctly generated.
@@ -2514,7 +2514,7 @@ class Analytics_4Test extends TestCase {
 		$request_url = $this->request_handler_calls[0]['url'];
 
 		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
-		$this->assertEquals( "/v1beta/properties/$property_id/conversionEvents", $request_url['path'] );
+		$this->assertEquals( "/v1beta/properties/$property_id/keyEvents", $request_url['path'] );
 	}
 
 	public function test_get_enhanced_measurement_settings__required_params() {
@@ -3102,19 +3102,19 @@ class Analytics_4Test extends TestCase {
 						)
 					);
 
-				case "/v1beta/properties/$property_id/conversionEvents":
-					$conversion_event = new GoogleAnalyticsAdminV1betaConversionEvent();
-					$conversion_event->setName( "properties/$property_id/conversionEvents/some-name" );
-					$conversion_event->setEventName( 'some-event' );
+				case "/v1beta/properties/$property_id/keyEvents":
+					$key_event = new GoogleAnalyticsAdminV1betaKeyEvent();
+					$key_event->setName( "properties/$property_id/keyEvents/some-name" );
+					$key_event->setEventName( 'some-event' );
 
-					$conversion_events = new GoogleAnalyticsAdminV1betaListConversionEventsResponse();
-					$conversion_events->setConversionEvents( array( $conversion_event ) );
+					$key_events = new GoogleAnalyticsAdminV1betaListKeyEventsResponse();
+					$key_events->setKeyEvents( array( $key_event ) );
 
 					return new FulfilledPromise(
 						new Response(
 							200,
 							array(),
-							json_encode( $conversion_events )
+							json_encode( $key_events )
 						)
 					);
 

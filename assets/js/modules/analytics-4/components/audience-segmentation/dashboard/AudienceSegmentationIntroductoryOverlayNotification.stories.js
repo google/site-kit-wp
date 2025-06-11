@@ -29,10 +29,18 @@ import { Provider as ViewContextProvider } from '../../../../../components/Root/
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import AudienceSegmentationIntroductoryOverlayNotification from './AudienceSegmentationIntroductoryOverlayNotification';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
+import AudienceSegmentationIntroductoryOverlayNotification, {
+	AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
+} from './AudienceSegmentationIntroductoryOverlayNotification';
+import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
+
+const NotificationWithComponentProps = withNotificationComponentProps(
+	AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
+)( AudienceSegmentationIntroductoryOverlayNotification );
 
 function Template() {
-	return <AudienceSegmentationIntroductoryOverlayNotification />;
+	return <NotificationWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
@@ -47,7 +55,7 @@ export default {
 				provideUserInfo( registry );
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 						setupComplete: true,

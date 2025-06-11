@@ -47,6 +47,7 @@ import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from './datastore/constants';
+import { MODULE_SLUG_ADSENSE } from './constants';
 import { TopEarningContentWidget } from './components/widgets';
 import {
 	CORE_USER,
@@ -54,14 +55,15 @@ import {
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../analytics-4/datastore/constants';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../analytics-4/constants';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import AdBlockingRecoverySetupSuccessNotification from './components/dashboard/AdBlockingRecoverySetupSuccessNotification';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	modules.registerModule( 'adsense', {
+	modules.registerModule( MODULE_SLUG_ADSENSE, {
 		storeName: MODULES_ADSENSE,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
@@ -112,7 +114,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'adsense' ],
+			modules: [ MODULE_SLUG_ADSENSE ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
@@ -127,7 +129,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'adsense', 'analytics-4' ],
+			modules: [ MODULE_SLUG_ADSENSE, MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) => {
 				const isViewOnly = ! select( CORE_USER ).isAuthenticated();
 
@@ -159,7 +161,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'adsense' ],
+			modules: [ MODULE_SLUG_ADSENSE ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
@@ -171,7 +173,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 2,
 			wrapWidget: false,
-			modules: [ 'adsense' ],
+			modules: [ MODULE_SLUG_ADSENSE ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
@@ -183,7 +185,7 @@ export const registerWidgets = ( widgets ) => {
 			width: [ widgets.WIDGET_WIDTHS.FULL ],
 			priority: 2,
 			wrapWidget: false,
-			modules: [ 'adsense' ],
+			modules: [ MODULE_SLUG_ADSENSE ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
@@ -196,7 +198,7 @@ export const registerWidgets = ( widgets ) => {
 			width: [ widgets.WIDGET_WIDTHS.HALF, widgets.WIDGET_WIDTHS.FULL ],
 			priority: 3,
 			wrapWidget: false,
-			modules: [ 'adsense', 'analytics-4' ],
+			modules: [ MODULE_SLUG_ADSENSE, MODULE_SLUG_ANALYTICS_4 ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
@@ -206,7 +208,7 @@ export const ADSENSE_NOTIFICATIONS = {
 	'adsense-abr-success-notification': {
 		Component: AdBlockingRecoverySetupSuccessNotification,
 		priority: 10,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			// Check the query arg first as the simplest condition using global location.
@@ -216,7 +218,7 @@ export const ADSENSE_NOTIFICATIONS = {
 			}
 
 			const { isModuleConnected } = resolveSelect( CORE_MODULES );
-			if ( ! ( await isModuleConnected( 'adsense' ) ) ) {
+			if ( ! ( await isModuleConnected( MODULE_SLUG_ADSENSE ) ) ) {
 				return false;
 			}
 

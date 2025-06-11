@@ -29,6 +29,9 @@ import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from './constants';
 import FIXTURES from '../../modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../modules/datastore/constants';
 import fetchMock from 'fetch-mock';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 describe( 'core/user authentication', () => {
 	const capabilities = {
@@ -249,11 +252,11 @@ describe( 'core/user authentication', () => {
 					.select( CORE_USER )
 					.hasCapability(
 						'unavailable_capability',
-						'search-console'
+						MODULE_SLUG_SEARCH_CONSOLE
 					);
 
 				expect( stringifySpy ).toHaveBeenCalledWith( [
-					'search-console',
+					MODULE_SLUG_SEARCH_CONSOLE,
 				] );
 				expect( hasCapability ).toBe( false );
 			} );
@@ -269,11 +272,11 @@ describe( 'core/user authentication', () => {
 					.select( CORE_USER )
 					.hasCapability(
 						'googlesitekit_manage_module_sharing_options',
-						'search-console'
+						MODULE_SLUG_SEARCH_CONSOLE
 					);
 
 				expect( stringifySpy ).toHaveBeenCalledWith( [
-					'search-console',
+					MODULE_SLUG_SEARCH_CONSOLE,
 				] );
 				expect( hasCapability ).toBe( true );
 			} );
@@ -355,8 +358,8 @@ describe( 'core/user authentication', () => {
 					.getViewableModules();
 
 				expect( viewableModules ).toEqual( [
-					'search-console',
-					'pagespeed-insights',
+					MODULE_SLUG_SEARCH_CONSOLE,
+					MODULE_SLUG_PAGESPEED_INSIGHTS,
 				] );
 			} );
 		} );
@@ -370,7 +373,7 @@ describe( 'core/user authentication', () => {
 
 				const canViewSharedModule = registry
 					.select( CORE_USER )
-					.canViewSharedModule( 'search-console' );
+					.canViewSharedModule( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( canViewSharedModule ).toBeUndefined();
 
@@ -378,11 +381,12 @@ describe( 'core/user authentication', () => {
 			} );
 
 			it( 'should return FALSE if the module does not exist', () => {
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetModules( [
-						{ slug: 'search-console', name: 'Search Console' },
-					] );
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+						name: 'Search Console',
+					},
+				] );
 
 				const canViewSharedModule = registry
 					.select( CORE_USER )
@@ -394,7 +398,7 @@ describe( 'core/user authentication', () => {
 			it( 'should return FALSE if the module is not shared', () => {
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
-						slug: 'search-console',
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
 						name: 'Search Console',
 						shareable: false,
 					},
@@ -402,7 +406,7 @@ describe( 'core/user authentication', () => {
 
 				const canViewSharedModule = registry
 					.select( CORE_USER )
-					.canViewSharedModule( 'search-console' );
+					.canViewSharedModule( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( canViewSharedModule ).toBe( false );
 			} );
@@ -420,7 +424,7 @@ describe( 'core/user authentication', () => {
 
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
-						slug: 'search-console',
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
 						name: 'Search Console',
 						shareable: true,
 					},
@@ -428,7 +432,7 @@ describe( 'core/user authentication', () => {
 
 				const canViewSharedModule = registry
 					.select( CORE_USER )
-					.canViewSharedModule( 'search-console' );
+					.canViewSharedModule( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( canViewSharedModule ).toBeUndefined();
 
@@ -442,7 +446,7 @@ describe( 'core/user authentication', () => {
 
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
-						slug: 'search-console',
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
 						name: 'Search Console',
 						shareable: true,
 					},
@@ -450,7 +454,7 @@ describe( 'core/user authentication', () => {
 
 				const canViewSharedModule = registry
 					.select( CORE_USER )
-					.canViewSharedModule( 'search-console' );
+					.canViewSharedModule( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( canViewSharedModule ).toBe( false );
 			} );
@@ -464,7 +468,7 @@ describe( 'core/user authentication', () => {
 
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
-						slug: 'search-console',
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
 						name: 'Search Console',
 						shareable: true,
 					},
@@ -472,7 +476,7 @@ describe( 'core/user authentication', () => {
 
 				const canViewSharedModule = registry
 					.select( CORE_USER )
-					.canViewSharedModule( 'search-console' );
+					.canViewSharedModule( MODULE_SLUG_SEARCH_CONSOLE );
 
 				expect( canViewSharedModule ).toBe( true );
 			} );
@@ -487,7 +491,7 @@ describe( 'core/user authentication', () => {
 
 				const canViewSharedModule = registry
 					.select( CORE_USER )
-					.hasAccessToShareableModule( 'analytics-4' );
+					.hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
 
 				expect( canViewSharedModule ).toBeUndefined();
 
@@ -495,31 +499,35 @@ describe( 'core/user authentication', () => {
 			} );
 
 			it( 'should return FALSE if the module is not available', () => {
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetModules( [
-						{ slug: 'search-console', name: 'Search Console' },
-					] );
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+						name: 'Search Console',
+					},
+				] );
 
 				const canViewSharedModule = registry
 					.select( CORE_USER )
-					.hasAccessToShareableModule( 'analytics-4' );
+					.hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
 
 				expect( canViewSharedModule ).toBe( false );
 			} );
 
 			it( 'should return TRUE if the user is authenticated', () => {
 				provideUserAuthentication( registry );
-				registry
-					.dispatch( CORE_MODULES )
-					.receiveGetModules( [
-						{ slug: 'search-console', name: 'Search Console' },
-					] );
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [
+					{
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+						name: 'Search Console',
+					},
+				] );
 
 				expect(
 					registry
 						.select( CORE_USER )
-						.hasAccessToShareableModule( 'search-console' )
+						.hasAccessToShareableModule(
+							MODULE_SLUG_SEARCH_CONSOLE
+						)
 				).toBe( true );
 			} );
 
@@ -530,7 +538,7 @@ describe( 'core/user authentication', () => {
 					.receiveGetCapabilities( capabilities.permissions );
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
-						slug: 'search-console',
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
 						name: 'Search Console',
 						shareable: true,
 					},
@@ -539,7 +547,9 @@ describe( 'core/user authentication', () => {
 				expect(
 					registry
 						.select( CORE_USER )
-						.hasAccessToShareableModule( 'search-console' )
+						.hasAccessToShareableModule(
+							MODULE_SLUG_SEARCH_CONSOLE
+						)
 				).toBe( false );
 			} );
 
@@ -552,7 +562,7 @@ describe( 'core/user authentication', () => {
 					);
 				registry.dispatch( CORE_MODULES ).receiveGetModules( [
 					{
-						slug: 'search-console',
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
 						name: 'Search Console',
 						shareable: true,
 					},
@@ -561,7 +571,9 @@ describe( 'core/user authentication', () => {
 				expect(
 					registry
 						.select( CORE_USER )
-						.hasAccessToShareableModule( 'search-console' )
+						.hasAccessToShareableModule(
+							MODULE_SLUG_SEARCH_CONSOLE
+						)
 				).toBe( true );
 			} );
 		} );

@@ -29,15 +29,16 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
 import * as fixtures from '../../datastore/__fixtures__';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import {
-	CORE_NOTIFICATIONS,
+	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../../../../googlesitekit/notifications/datastore/constants';
+} from '../../../../googlesitekit/notifications/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import * as tracking from '../../../../util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
@@ -102,7 +103,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 		provideModules( registry, [
 			{
-				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 				active: true,
 				connected: true,
 			},
@@ -113,7 +114,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				case 'notification':
 					return [ 'authentication_success', setValueMock ];
 				case 'slug':
-					return [ READER_REVENUE_MANAGER_MODULE_SLUG, setValueMock ];
+					return [ MODULE_SLUG_READER_REVENUE_MANAGER, setValueMock ];
 			}
 		} );
 
@@ -190,7 +191,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				.dispatch( CORE_NOTIFICATIONS )
 				.registerNotification( id, {
 					Component: NotificationWithComponentProps,
-					areaSlug: 'notification-area-banners-above-nav',
+					areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 					viewContexts: [ 'mainDashboard' ],
 					isDismissible: false,
 				} );
@@ -432,7 +433,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				.dispatch( CORE_NOTIFICATIONS )
 				.registerNotification( id, {
 					Component: NotificationWithComponentProps,
-					areaSlug: 'notification-area-banners-above-nav',
+					areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 					viewContexts: [ 'mainDashboard' ],
 					isDismissible: false,
 				} );
