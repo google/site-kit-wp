@@ -78,8 +78,12 @@ export default function DataBlockGroup( { className, children } ) {
 				10
 			);
 
+			// Calculate the new size based on the scale factor as a factor of 3,
+			// to prevent minor size changes in VRT caused by timing of the resize events.
 			const newSize = Math.floor( fontSize * smallestScaleFactor );
-			const clampedNewSize = Math.max( newSize, 14 ); // Don't allow the font size to go below 14px.
+			const roundedSize = Math.floor( newSize / 3 ) * 3;
+			const clampedNewSize = Math.max( roundedSize, 15 );
+
 			setFontSizes( blocks, `${ clampedNewSize }px` );
 		}
 	}, [] );
