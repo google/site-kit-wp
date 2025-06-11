@@ -68,17 +68,20 @@ const OBSERVED_CONSOLE_MESSAGE_TYPES = {
  * Array of console messages to ignore.
  */
 const IGNORE_CONSOLE_MESSAGES = [
-	// An exception is made for _blanket_ deprecation warnings
+	// An exception is made for _blanket_ deprecation warnings: Those
+	// which log regardless of whether a deprecated feature is in use.
 	{
 		matcher: 'includes',
 		pattern: 'This is a global warning',
 	},
-	// Viewing posts on the front end can result in this error
+	// Viewing posts on the front end can result in this error, which
+	// has nothing to do with Gutenberg.
 	{
 		matcher: 'includes',
 		pattern: 'net::ERR_UNKNOWN_URL_SCHEME',
 	},
-	// Failed to load resource messages are logged separately
+	// We log this separately now in a way which includes the URL
+	// which is much more useful than this message.
 	{
 		matcher: 'startsWith',
 		pattern:
@@ -93,7 +96,12 @@ const IGNORE_CONSOLE_MESSAGES = [
 		matcher: 'startsWith',
 		pattern: 'OTS parsing error:',
 	},
-	// React development messages
+	// A bug present in WordPress 5.2 will produce console warnings when
+	// loading the Dashicons font. These can be safely ignored, as they do
+	// not otherwise regress on application behavior. This logic should be
+	// removed once the associated ticket has been closed.
+	//
+	// See: https://core.trac.wordpress.org/ticket/47183
 	{
 		matcher: 'includes',
 		pattern:
@@ -111,7 +119,8 @@ const IGNORE_CONSOLE_MESSAGES = [
 		matcher: 'includes',
 		pattern: 'https://fb.me/react-strict-mode-',
 	},
-	// AMP and analytics messages
+	// Some error messages which don't impact test results can
+	// be safely ignored.
 	{
 		matcher: 'startsWith',
 		pattern: 'Powered by AMP',
@@ -243,7 +252,7 @@ function observeConsoleLogging() {
 
 		let text = message.text();
 
-		// Check if the message should be ignored
+		// Check if the message should be ignored.
 		if (
 			IGNORE_CONSOLE_MESSAGES.some( ( { matcher, pattern } ) => {
 				switch ( matcher ) {
@@ -263,7 +272,9 @@ function observeConsoleLogging() {
 
 		let logFunction = OBSERVED_CONSOLE_MESSAGE_TYPES[ type ];
 
-		// Check if it's raised by the AMP plugin
+		// At this point, any unexpected message will result in a test failure.
+
+		// Check if it's raised by the AMP plugin.
 		if ( isPluginConsoleMessage( 'amp', message ) ) {
 			// Convert console messages originating from AMP to debug statements.
 			// This avoids failing tests from console errors we don't have control of.
@@ -382,6 +393,7 @@ async function observeRestResponse( res ) {
 	if ( res.url().match( 'wp-json' ) ) {
 		const data = [ res.status(), res.request().method(), res.url() ];
 
+		// The response may fail to resolve if the test ends before it completes.
 		try {
 			data.push( await res.text() );
 			console.debug( ...data ); // eslint-disable-line no-console
@@ -389,7 +401,9 @@ async function observeRestResponse( res ) {
 	}
 }
 
-// Before every test suite run, delete all content created by the test.
+// Before every test suite run, delete all content created by the test. This ensures
+// other posts/comments/etc. aren't dirtying tests and tests don't depend on
+// each other's side-effects.
 beforeAll( async () => {
 	capturePageEventsForTearDown();
 	optOutOfEventTracking();
