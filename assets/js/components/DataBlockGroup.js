@@ -19,27 +19,19 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import { useMount, useUnmount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { useRef, useState } from '@wordpress/element';
+import { useRef, useCallback } from '@wordpress/element';
 import { useDebounce } from '../hooks/useDebounce';
 
 export default function DataBlockGroup( { className, children } ) {
 	const ref = useRef();
-	const [ scalingComplete, setScalingComplete ] = useState( false );
+	const lastViewportWidthRef = useRef( 0 );
 
-	// Get body width:
-	const bodyWidth = global?.document?.body?.offsetWidth || 0;
-	console.log(
-		`🚀 ${ bodyWidth } ~ DataBlockGroup ~ scalingComplete:`,
-		scalingComplete
-	);
-
-	const adjustFontSize = () => {
+	const adjustFontSize = useCallback( () => {
 		const blocks = ref?.current?.querySelectorAll(
 			'.googlesitekit-data-block'
 		);
@@ -47,10 +39,6 @@ export default function DataBlockGroup( { className, children } ) {
 		if ( ! blocks?.length ) {
 			return;
 		}
-		console.log(
-			`🚀 ${ bodyWidth } ~ adjustFontSize ~ blocks?.length:`,
-			blocks?.length
-		);
 
 		// Reset font sizes first to get accurate measurement, specifically on resize.
 		setFontSizes( blocks, '' );
@@ -61,10 +49,6 @@ export default function DataBlockGroup( { className, children } ) {
 		blocks.forEach( ( block ) => {
 			const dataPoint = block.querySelector(
 				'.googlesitekit-data-block__datapoint'
-			);
-			console.log(
-				`🚀 ${ bodyWidth } ~ blocks.forEach ~ dataPoint:`,
-				dataPoint
 			);
 
 			if ( ! dataPoint ) {
@@ -84,10 +68,6 @@ export default function DataBlockGroup( { className, children } ) {
 		} );
 
 		// Apply the smallest font size to all blocks if adjustment is needed.
-		console.log(
-			'🚀 ~ adjustFontSize ~ smallestScaleFactor < 1 :',
-			smallestScaleFactor < 1
-		);
 		if ( smallestScaleFactor < 1 ) {
 			const fontSize = parseInt(
 				global?.getComputedStyle(
@@ -99,63 +79,47 @@ export default function DataBlockGroup( { className, children } ) {
 			);
 
 			const newSize = Math.floor( fontSize * smallestScaleFactor );
-			console.log(
-				`🚀 ${ bodyWidth } ~ adjustFontSize ~ newSize:`,
-				newSize
-			);
 			const clampedNewSize = Math.max( newSize, 14 ); // Don't allow the font size to go below 14px.
 			setFontSizes( blocks, `${ clampedNewSize }px` );
-		} else {
-			setScalingComplete( true );
 		}
-	};
+	}, [] );
 
 	const setFontSizes = ( blocks, adjustedSize ) => {
-		console.log(
-			`🚀 ${ bodyWidth } ~ setFontSizes ~ adjustedSize:`,
-			adjustedSize
-		);
-		let blockCount = 0;
 		blocks.forEach( ( block ) => {
 			const dataPoint = block?.querySelector(
 				'.googlesitekit-data-block__datapoint'
 			);
 			if ( ! dataPoint ) {
-				blockCount++;
 				return;
 			}
 
 			dataPoint.style.fontSize = adjustedSize;
-
-			blockCount++;
-			console.log(
-				`🚀 ${ bodyWidth } ~ blocks.forEach ~ blockCount === blocks.length:`,
-				blockCount === blocks.length
-			);
-			setScalingComplete( blockCount === blocks.length );
 		} );
 	};
 
-	// Debounce the adjustFontSize function to prevent excessive calls on resize.
-	const debouncedAdjustFontSize = useDebounce( adjustFontSize, 50 );
+	const handleResize = useDebounce( () => {
+		// Only adjust font size if the width has changed.
+		if ( global.innerWidth !== lastViewportWidthRef.current ) {
+			lastViewportWidthRef.current = global.innerWidth;
+			adjustFontSize();
+		}
+	}, 100 );
 
 	useMount( () => {
+		lastViewportWidthRef.current = global.innerWidth;
+
+		// Initial font size adjustment
 		adjustFontSize();
 
-		global.addEventListener( 'resize', debouncedAdjustFontSize );
+		global.addEventListener( 'resize', handleResize );
 	} );
 
-	useUnmount( () =>
-		global.removeEventListener( 'resize', debouncedAdjustFontSize )
-	);
+	useUnmount( () => {
+		global.removeEventListener( 'resize', handleResize );
+	} );
 
 	return (
-		<div
-			ref={ ref }
-			className={ classnames( className, {
-				'googlesitekit-data-blocks--scaled': scalingComplete,
-			} ) }
-		>
+		<div ref={ ref } className={ className }>
 			{ children }
 		</div>
 	);
