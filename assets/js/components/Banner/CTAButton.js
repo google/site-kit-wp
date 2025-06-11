@@ -38,7 +38,7 @@ export default function CTAButton( {
 	return (
 		<SpinnerButton
 			className="googlesitekit-banner__cta"
-			disabled={ disabled }
+			disabled={ disabled || inProgress }
 			isSaving={ inProgress }
 			onClick={ onClick }
 			href={ href }
