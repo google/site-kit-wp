@@ -5,7 +5,7 @@ const { z } = require( 'zod' );
  *
  * @since n.e.x.t
  */
-const GetIssueArgsSchema = z.object( {
+const GetIssueArgsSchema = {
 	issue_number: z
 		.number()
 		.int()
@@ -15,6 +15,6 @@ const GetIssueArgsSchema = z.object( {
 		.string()
 		.optional()
 		.describe( 'Optional GitHub API token for higher rate limits' ),
-} );
+};
 
 module.exports = { GetIssueArgsSchema };
