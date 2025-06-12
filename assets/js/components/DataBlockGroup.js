@@ -58,10 +58,10 @@ export default function DataBlockGroup( { className, children } ) {
 		if ( ! blocks?.length ) {
 			return;
 		}
-		console.log(
-			`🚀 ${ bodyWidth } ~ adjustFontSize ~ blocks?.length:`,
-			blocks?.length
-		);
+		// console.log(
+		// 	`🚀 ${ bodyWidth } ~ adjustFontSize ~ blocks?.length:`,
+		// 	blocks?.length
+		// );
 
 		// Reset font sizes first to get accurate measurement, specifically on resize.
 		// setFontSizes( blocks, '' );
@@ -73,20 +73,20 @@ export default function DataBlockGroup( { className, children } ) {
 			const dataPoint = block.querySelector(
 				'.googlesitekit-data-block__datapoint'
 			);
-			console.log(
-				`🚀 ${ bodyWidth } ~ blocks.forEach ~ dataPoint:`,
-				dataPoint
-			);
+			// console.log(
+			// 	`🚀 ${ bodyWidth } ~ blocks.forEach ~ dataPoint:`,
+			// 	dataPoint
+			// );
 
 			if ( ! dataPoint ) {
 				return;
 			}
 
-			// Console log innerText for debugging purposes.
-			console.log(
-				`🚀 ${ bodyWidth } ~ blocks.forEach ~ dataPoint.innerText:`,
-				dataPoint.innerText
-			);
+			// // Console log innerText for debugging purposes.
+			// console.log(
+			// 	`🚀 ${ bodyWidth } ~ blocks.forEach ~ dataPoint.innerText:`,
+			// 	dataPoint.innerText
+			// );
 
 			const parentWidth = dataPoint?.parentElement?.offsetWidth;
 
@@ -108,10 +108,10 @@ export default function DataBlockGroup( { className, children } ) {
 				// 	dataPoint.parentElement
 				// );
 
-				console.log(
-					`🚀 ${ bodyWidth } ~ blocks.forEach ~ scaleFactor:`,
-					scaleFactor
-				);
+				// console.log(
+				// 	`🚀 ${ bodyWidth } ~ blocks.forEach ~ scaleFactor:`,
+				// 	scaleFactor
+				// );
 				// console.log(
 				// 	`🚀 ${ bodyWidth } ~ blocks.forEach ~ dataPoint.scrollWidth:`,
 				// 	dataPoint.scrollWidth
@@ -148,10 +148,10 @@ export default function DataBlockGroup( { className, children } ) {
 			);
 
 			const newSize = Math.floor( fontSize * smallestScaleFactor );
-			console.log(
-				`🚀 ${ bodyWidth } ~ adjustFontSize ~ newSize:`,
-				newSize
-			);
+			// console.log(
+			// 	`🚀 ${ bodyWidth } ~ adjustFontSize ~ newSize:`,
+			// 	newSize
+			// );
 			const clampedNewSize = Math.max( newSize, 14 ); // Don't allow the font size to go below 14px.
 			setFontSizes( blocks, `${ clampedNewSize }px` );
 		}
@@ -178,14 +178,9 @@ export default function DataBlockGroup( { className, children } ) {
 	const debouncedAdjustFontSize = useDebounce( adjustFontSize, 50 );
 
 	useMount( () => {
-		adjustFontSize();
+		debouncedAdjustFontSize();
 
 		global.addEventListener( 'resize', debouncedAdjustFontSize );
-		global.addEventListener( 'resize', () => {
-			console.log(
-				`🚀 ${ bodyWidth } ~ DataBlockGroup ~ resize event triggered`
-			);
-		} );
 	} );
 
 	useUnmount( () =>
