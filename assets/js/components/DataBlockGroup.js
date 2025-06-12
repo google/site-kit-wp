@@ -86,7 +86,6 @@ export default function DataBlockGroup( { className, children } ) {
 	};
 
 	const setFontSizes = ( blocks, adjustedSize ) => {
-		console.log( '🚀 ~ setFontSizes ~ adjustedSize:', adjustedSize );
 		blocks.forEach( ( block ) => {
 			const dataPoint = block?.querySelector(
 				'.googlesitekit-data-block__datapoint'

@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-const viewPorts = require( '../../viewports' );
-
 /**
  * Executes custom waiting logic before taking screenshots.
  *
@@ -50,7 +48,6 @@ module.exports = async ( page, scenario, viewport ) => {
 			height: viewport.height + 1,
 			deviceScaleFactor: 1,
 		} );
-		console.log( `Forcing resize event for viewport ${ viewport.label }` );
 		await new Promise( ( resolve ) => {
 			setTimeout( resolve, 100 );
 		} );
@@ -59,13 +56,9 @@ module.exports = async ( page, scenario, viewport ) => {
 			height: viewport.height,
 			deviceScaleFactor: 1,
 		} );
-		console.log(
-			`Forcing resize event for viewport 2 ${ viewport.label }`
-		);
 		await new Promise( ( resolve ) => {
 			setTimeout( resolve, 100 );
 		} );
-		console.log( `Force resize cmplete for viewport ${ viewport.label }` );
 	}
 
 	// Wait font size in selectors to match the expected size for the current viewport.
