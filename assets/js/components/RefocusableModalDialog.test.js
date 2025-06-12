@@ -1,5 +1,5 @@
 /**
- * ModalDialog component tests.
+ * RefocusableModalDialog component tests.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -24,13 +24,13 @@ import {
 	render,
 	fireEvent,
 } from '../../../tests/js/test-utils';
-import ModalDialog from './ModalDialog';
+import RefocusableModalDialog from './RefocusableModalDialog';
 import { Button } from 'googlesitekit-components';
 import { Fragment } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
 import { waitFor } from '@testing-library/react';
 
-describe( 'ModalDialog', () => {
+describe( 'RefocusableModalDialog', () => {
 	let registry;
 	const onClose = jest.fn();
 	const onHandleConfirm = jest.fn();
@@ -46,13 +46,29 @@ describe( 'ModalDialog', () => {
 			dialogActive = ! dialogActive;
 		} );
 
-		const { container } = render(
+		const { container, rerender } = render(
+			<RefocusableModalDialog
+				title="Test Dialog"
+				dialogActive={ false }
+				handleDialog={ handleDialog }
+				handleConfirm={ onHandleConfirm }
+				onClose={ onClose }
+				refocusQuerySelector="button.refocus-test-button"
+			/>,
+			{
+				registry,
+			}
+		);
+
+		// Rerender with modal being active, to allow fo the modal buttons to populate the DOM,
+		// otherwise test env will throw error for focus trap not having elements to focus.
+		rerender(
 			<Fragment>
 				<Button className="refocus-test-button">
 					Refocus Test Button
 				</Button>
 
-				<ModalDialog
+				<RefocusableModalDialog
 					title="Test Dialog"
 					dialogActive={ dialogActive }
 					handleDialog={ handleDialog }
