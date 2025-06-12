@@ -35,15 +35,15 @@
 module.exports = async ( page, scenario, viewport ) => {
 	// NOTE: We can implement waitForRegistry or other not arbitrary time based delays here to improve test stability.
 
-	// await page.evaluate( () => {
-	// 	const dataBlocks = document.querySelectorAll(
-	// 		'.googlesitekit-data-block__datapoint'
-	// 	);
-	// 	dataBlocks.forEach( ( block ) => {
-	// 		console.log( '🚀 ~ onReady.js ~ block resetting.' );
-	// 		block.style.fontSize = '';
-	// 	} );
-	// } );
+	await page.evaluate( () => {
+		const dataBlocks = document.querySelectorAll(
+			'.googlesitekit-data-block__datapoint'
+		);
+		dataBlocks.forEach( ( block ) => {
+			console.log( '🚀 ~ onReady.js ~ block resetting.' );
+			block.style.fontSize = '';
+		} );
+	} );
 
 	// await page.waitForFunction(
 	// 	() => {
@@ -63,18 +63,24 @@ module.exports = async ( page, scenario, viewport ) => {
 	// 	}
 	// );
 
-	// await page.setViewport( {
-	// 	width: viewport.width,
-	// 	height: viewport.height,
-	// 	deviceScaleFactor: 1,
-	// } );
+	await page.setViewport( {
+		width: viewport.width + 1,
+		height: viewport.height + 1,
+		deviceScaleFactor: 1,
+	} );
 	// // Log the viewport label for debugging
 	// console.log( `🚀 ${ viewport.label } ~ onReady.js ~ scenario:`, scenario );
 
-	// await new Promise( ( resolve ) => {
-	// 	// Wait for a short time to ensure the page is fully loaded and styles are applied.
-	// 	setTimeout( resolve, 500 );
-	// } );
+	await new Promise( ( resolve ) => {
+		// Wait for a short time to ensure the page is fully loaded and styles are applied.
+		setTimeout( resolve, 500 );
+	} );
+
+	await page.setViewport( {
+		width: viewport.width,
+		height: viewport.height,
+		deviceScaleFactor: 1,
+	} );
 
 	// Wait font size in selectors to match the expected size for the current viewport.
 	// Currently used for the DashboardOverallPageMetricsWidgetGA4 story which uses the DataBlockGroup component.
