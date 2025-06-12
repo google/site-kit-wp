@@ -28,11 +28,11 @@ import Tooltip from '../Tooltip';
 
 export default function MaybeTooltip( {
 	children,
-	disabled,
-	tooltip,
-	tooltipTitle,
-	hasIconOnly,
-	tooltipEnterDelayInMS,
+	disabled = false,
+	tooltip = false,
+	tooltipTitle = null,
+	hasIconOnly = false,
+	tooltipEnterDelayInMS = 100,
 } ) {
 	if (
 		! disabled &&
@@ -61,12 +61,4 @@ MaybeTooltip.propTypes = {
 	] ),
 	hasIconOnly: PropTypes.bool,
 	tooltipEnterDelayInMS: PropTypes.number,
-};
-
-MaybeTooltip.defaultProps = {
-	disabled: false,
-	tooltip: false,
-	tooltipTitle: null,
-	hasIconOnly: false,
-	tooltipEnterDelayInMS: 100,
 };

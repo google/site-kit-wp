@@ -39,24 +39,24 @@ const Button = forwardRef(
 	(
 		{
 			children,
-			href,
-			text,
-			className,
-			danger,
-			disabled,
+			href = null,
+			text = false,
+			className = '',
+			danger = false,
+			disabled = false,
 			target,
-			icon,
-			trailingIcon,
+			icon = null,
+			trailingIcon = null,
 			'aria-label': ariaLabel,
-			title,
-			customizedTooltip,
-			tooltip,
-			inverse,
+			title = null,
+			customizedTooltip = null,
+			tooltip = false,
+			inverse = false,
 			hideTooltipTitle = false,
 			tooltipEnterDelayInMS = 100,
 			tertiary = false,
-			callout,
-			calloutStyle,
+			callout = false,
+			calloutStyle = null,
 			...extraProps
 		},
 		ref
@@ -130,8 +130,6 @@ const Button = forwardRef(
 	}
 );
 
-Button.displayName = 'Button';
-
 Button.propTypes = {
 	onClick: PropTypes.func,
 	children: PropTypes.node,
@@ -149,23 +147,6 @@ Button.propTypes = {
 	hideTooltipTitle: PropTypes.bool,
 	callout: PropTypes.bool,
 	calloutStyle: PropTypes.oneOf( [ 'primary', 'warning', 'error' ] ),
-};
-
-Button.defaultProps = {
-	onClick: null,
-	href: null,
-	text: false,
-	className: '',
-	danger: false,
-	disabled: false,
-	icon: null,
-	trailingIcon: null,
-	title: null,
-	customizedTooltip: null,
-	tooltip: false,
-	inverse: false,
-	calloutStyle: null,
-	callout: null,
 };
 
 export default Button;

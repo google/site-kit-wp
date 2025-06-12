@@ -76,8 +76,6 @@ const SemanticButton = forwardRef(
 	}
 );
 
-SemanticButton.displayName = 'SemanticButton';
-
 SemanticButton.propTypes = {
 	children: PropTypes.node,
 	href: PropTypes.string,
@@ -86,18 +84,11 @@ SemanticButton.propTypes = {
 	danger: PropTypes.bool,
 	disabled: PropTypes.bool,
 	target: PropTypes.string,
-	icon: PropTypes.element,
-	trailingIcon: PropTypes.element,
 	'aria-label': PropTypes.string,
 	inverse: PropTypes.bool,
 	tertiary: PropTypes.bool,
 	callout: PropTypes.bool,
 	calloutStyle: PropTypes.oneOf( [ 'primary', 'warning', 'error' ] ),
-	title: PropTypes.string,
-	customizedTooltip: PropTypes.element,
-	tooltip: PropTypes.bool,
-	hideTooltipTitle: PropTypes.bool,
-	tooltipEnterDelayInMS: PropTypes.number,
 };
 
 export default SemanticButton;
