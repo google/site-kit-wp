@@ -128,7 +128,7 @@ function AuthenticatedPermissionsModal() {
 				confirmButton={ __( 'Proceed', 'google-site-kit' ) }
 				dialogActive
 				handleConfirm={ onConfirm }
-				handleDialog={ onCancel }
+				handleCancel={ onCancel }
 				onClose={ onCancel }
 				medium
 			/>

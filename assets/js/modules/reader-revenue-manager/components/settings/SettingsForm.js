@@ -133,6 +133,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 							),
 							publicationID
 						) }
+						skipRetryMessage
 					/>
 				) }
 
@@ -146,6 +147,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 							),
 							getProductIDLabel( missingProductID )
 						) }
+						skipRetryMessage
 					/>
 				) }
 
