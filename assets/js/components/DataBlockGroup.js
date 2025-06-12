@@ -94,29 +94,24 @@ export default function DataBlockGroup( { className, children } ) {
 				// Calculate the exact scale factor needed to resize the content to the parent.
 				const scaleFactor = parentWidth / dataPoint.scrollWidth;
 
-				// Round scaling factor **down* to the nearest .05 to account for variations in font rendering.
+				// Round scaling factor **down* to the nearest .1 to account for variations in font rendering.
 				// const roundedScaleFactor = scaleFactor;
-				const roundedScaleFactor = Math.floor( scaleFactor * 20 ) / 20;
-				console.log(
-					`🚀 ${ bodyWidth } ~ blocks.forEach ~ roundedScaleFactor:`,
-					roundedScaleFactor
-				);
+				const roundedScaleFactor = Math.floor( scaleFactor * 10 ) / 10;
+				// console.log(
+				// 	`🚀 ${ bodyWidth } ~ blocks.forEach ~ roundedScaleFactor:`,
+				// 	roundedScaleFactor
+				// );
 
 				//console log the parent for debugging purposes.
 				// console.log(
 				// 	`🚀 ${ bodyWidth } ~ blocks.forEach ~ parent:`,
 				// 	dataPoint.parentElement
 				// );
-				// Console log the full computed styles as json string for debugging purposes.
-				// console.log(
-				// 	`🚀 ${ bodyWidth } ~ blocks.forEach ~ dataPoint.computedStyle:`,
-				// 	JSON.stringify( global?.getComputedStyle( dataPoint ) )
-				// );
 
-				// console.log(
-				// 	`🚀 ${ bodyWidth } ~ blocks.forEach ~ scaleFactor:`,
-				// 	scaleFactor
-				// );
+				console.log(
+					`🚀 ${ bodyWidth } ~ blocks.forEach ~ scaleFactor:`,
+					scaleFactor
+				);
 				// console.log(
 				// 	`🚀 ${ bodyWidth } ~ blocks.forEach ~ dataPoint.scrollWidth:`,
 				// 	dataPoint.scrollWidth
@@ -124,6 +119,11 @@ export default function DataBlockGroup( { className, children } ) {
 				// console.log(
 				// 	`🚀 ${ bodyWidth } ~ blocks.forEach ~ parentWidth:`,
 				// 	parentWidth
+				// );
+				// // Console log the full computed styles as json string for debugging purposes.
+				// console.log(
+				// 	`🚀 ${ bodyWidth } ~ blocks.forEach ~ dataPoint.computedStyle:`,
+				// 	JSON.stringify( global?.getComputedStyle( dataPoint ) )
 				// );
 
 				if ( roundedScaleFactor < smallestScaleFactor ) {
@@ -137,7 +137,7 @@ export default function DataBlockGroup( { className, children } ) {
 			'🚀 ~ adjustFontSize ~ smallestScaleFactor < 1 :',
 			smallestScaleFactor < 1
 		);
-		if ( smallestScaleFactor < 1 ) {
+		if ( smallestScaleFactor < 1 && smallestScaleFactor > 0 ) {
 			const fontSize = parseInt(
 				global?.getComputedStyle(
 					blocks[ 0 ].querySelector(

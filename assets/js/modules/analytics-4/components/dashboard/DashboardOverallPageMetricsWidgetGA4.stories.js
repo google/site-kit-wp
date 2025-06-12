@@ -398,8 +398,8 @@ LongDataValues.args = {
 LongDataValues.scenario = {
 	waitForFontSizeToMatch: true,
 	fontSizeSelector: '.googlesitekit-data-block__datapoint',
-	fontSizeLarge: 41,
-	fontSizeMedium: false, // The font does not need to be resized for medium viewport.
+	fontSizeLarge: false, // The font size is only resized on mobile.
+	fontSizeMedium: false,
 	fontSizeSmall: 27,
 };
 
