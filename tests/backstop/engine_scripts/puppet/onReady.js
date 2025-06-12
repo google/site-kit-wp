@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-const viewPorts = require("../../viewports");
+const viewPorts = require( '../../viewports' );
 
 /**
  * Executes custom waiting logic before taking screenshots.
@@ -61,14 +61,11 @@ module.exports = async ( page, scenario, viewport ) => {
 	// Wait font size in selectors to match the expected size for the current viewport.
 	// Currently used for the DashboardOverallPageMetricsWidgetGA4 story which uses the DataBlockGroup component.
 	if ( scenario.waitForFontSizeToMatch && scenario.fontSizeSelector ) {
-		const expectedFontSizes = viewPorts.map( ( vp ) => {
-			if(! scenario.[`fontSize${ vp.label }`]) {
-				return false;
-			}
-			return {
-				label: vp.label,
-			size: scenario.[`fontSize${ vp.label }`] = scenario.[`fontSize${ vp.label }`] || false;
-		}
+		const expectedFontSizes = {
+			small: scenario.expectedFontSizeSmall || false,
+			medium: scenario.expectedFontSizeMedium || false,
+			large: scenario.expectedFontSizeLarge || false,
+		};
 		const expectedFontSize = expectedFontSizes[ viewport.label ];
 
 		if ( expectedFontSize === false ) {
