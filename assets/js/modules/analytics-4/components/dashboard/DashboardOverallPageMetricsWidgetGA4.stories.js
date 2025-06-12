@@ -398,10 +398,10 @@ LongDataValues.args = {
 LongDataValues.scenario = {
 	resetDataBlockGroup: true,
 	waitForFontSizeToMatch: '.googlesitekit-data-block__datapoint',
-	// Once #10798 is implemented we can have story level viewports and we can remove these unused sizes and create
-	// new viewports that test the font size resizing logic more completely.
-	fontSizeLarge: false, // The font size is only resized on mobile.
-	fontSizeMedium: false,
+	// Once #10798 is implemented we can have story level viewports which better
+	// capture sizes at each flexbox reflow that cause font size changes.
+	fontSizeLarge: 41,
+	fontSizeMedium: false, // No resizing occurs at this viewport.
 	fontSizeSmall: 27,
 };
 
