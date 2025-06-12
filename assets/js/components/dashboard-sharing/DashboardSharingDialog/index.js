@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useWindowScroll } from 'react-use';
+import { useKey, useWindowScroll } from 'react-use';
 import classnames from 'classnames';
 
 /**
@@ -48,7 +48,6 @@ import {
 	SETTINGS_DIALOG,
 } from '../DashboardSharingSettings/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
-import useDialogEscapeAndScrim from '../../../hooks/useDialogEscapeAndScrim';
 import Portal from '../../Portal';
 import {
 	Dialog,
@@ -146,7 +145,7 @@ export default function DashboardSharingDialog() {
 	}, [ closeResetDialog, closeSettingsDialog, resetDialogOpen ] );
 
 	// Handle escape key and scrim click for reset dialog.
-	useDialogEscapeAndScrim( closeResetDialog, resetDialogOpen );
+	useKey( 'Escape', closeResetDialog );
 
 	return (
 		<Portal>
