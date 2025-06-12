@@ -95,30 +95,38 @@ export default function DataBlockGroup( { className, children } ) {
 				const scaleFactor = parentWidth / dataPoint.scrollWidth;
 
 				// Round scaling factor **down* to the nearest .05 to account for variations in font rendering.
-				const roundedScaleFactor = Math.floor( scaleFactor * 20 ) / 20;
+				// const roundedScaleFactor = scaleFactor;
+				// const roundedScaleFactor = Math.floor( scaleFactor * 20 ) / 20;
+				const roundedScaleFactor =
+					Math.floor( scaleFactor * 100 ) / 100;
 				console.log(
 					`🚀 ${ bodyWidth } ~ blocks.forEach ~ roundedScaleFactor:`,
 					roundedScaleFactor
 				);
 
 				//console log the parent for debugging purposes.
-				console.log(
-					`🚀 ${ bodyWidth } ~ blocks.forEach ~ parent:`,
-					dataPoint.parentElement
-				);
+				// console.log(
+				// 	`🚀 ${ bodyWidth } ~ blocks.forEach ~ parent:`,
+				// 	dataPoint.parentElement
+				// );
+				// Console log the full computed styles as json string for debugging purposes.
+				// console.log(
+				// 	`🚀 ${ bodyWidth } ~ blocks.forEach ~ dataPoint.computedStyle:`,
+				// 	JSON.stringify( global?.getComputedStyle( dataPoint ) )
+				// );
 
-				console.log(
-					`🚀 ${ bodyWidth } ~ blocks.forEach ~ scaleFactor:`,
-					scaleFactor
-				);
-				console.log(
-					`🚀 ${ bodyWidth } ~ blocks.forEach ~ dataPoint.scrollWidth:`,
-					dataPoint.scrollWidth
-				);
-				console.log(
-					`🚀 ${ bodyWidth } ~ blocks.forEach ~ parentWidth:`,
-					parentWidth
-				);
+				// console.log(
+				// 	`🚀 ${ bodyWidth } ~ blocks.forEach ~ scaleFactor:`,
+				// 	scaleFactor
+				// );
+				// console.log(
+				// 	`🚀 ${ bodyWidth } ~ blocks.forEach ~ dataPoint.scrollWidth:`,
+				// 	dataPoint.scrollWidth
+				// );
+				// console.log(
+				// 	`🚀 ${ bodyWidth } ~ blocks.forEach ~ parentWidth:`,
+				// 	parentWidth
+				// );
 
 				if ( roundedScaleFactor < smallestScaleFactor ) {
 					smallestScaleFactor = roundedScaleFactor;
