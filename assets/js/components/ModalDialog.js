@@ -41,54 +41,6 @@ import {
 	SpinnerButton,
 } from 'googlesitekit-components';
 import ExclamationIcon from '../../svg/icons/warning.svg';
-import useDialogEscapeAndScrim from '../hooks/useDialogEscapeAndScrim';
-
-// Use a singleton variable to store the clicked element before any dialog opens.
-// We need to do this at the module level since the component may not be mounted
-// when the user initiates an action that will open the dialog.
-let previouslyClickedElement = null;
-
-// Set up a global event listener to capture the clicked element before any dialog opens.
-// This needs to happen at the module level to ensure it's set up before any user interaction.
-function setupFocusTracker() {
-	if (
-		typeof global === 'undefined' ||
-		! global.document ||
-		global._googlesitekitModalFocusTrackerInitialized
-	) {
-		return;
-	}
-
-	const captureActiveElementOnClick = ( event ) => {
-		// Store the clicked (or keyboard-activated) element when user clicks.
-		// This will be the element that was clicked right before the dialog opens.
-		const nearestParentButtonOrAnchor =
-			event.target.closest( 'button, a, input' );
-		if (
-			nearestParentButtonOrAnchor &&
-			! nearestParentButtonOrAnchor.classList.contains(
-				'mdc-dialog__cancel-button'
-			)
-		) {
-			previouslyClickedElement = nearestParentButtonOrAnchor;
-		}
-	};
-
-	global.document.addEventListener(
-		'mousedown',
-		captureActiveElementOnClick
-	);
-
-	global.document.addEventListener( 'keydown', ( event ) => {
-		if ( event.key === 'Enter' || event.key === ' ' ) {
-			captureActiveElementOnClick( event );
-		}
-	} );
-
-	global._googlesitekitModalFocusTrackerInitialized = true;
-}
-
-setupFocusTracker();
 
 function ModalDialog( {
 	className = '',
@@ -107,54 +59,10 @@ function ModalDialog( {
 	small = false,
 	medium = false,
 	buttonLink = null,
-	refocusPreviousElement = false,
-	refocusQuerySelector = null,
 } ) {
 	const instanceID = useInstanceId( ModalDialog );
 	const describedByID = `googlesitekit-dialog-description-${ instanceID }`;
 	const hasProvides = !! ( provides && provides.length );
-
-	const handleElementRefocus = () => {
-		setTimeout( () => {
-			const elementToFocus = refocusPreviousElement
-				? previouslyClickedElement
-				: document.querySelector( refocusQuerySelector );
-
-			if ( elementToFocus && document.body.contains( elementToFocus ) ) {
-				elementToFocus.focus();
-			}
-
-			if ( refocusPreviousElement ) {
-				previouslyClickedElement = null;
-			}
-		} );
-	};
-
-	const shouldRefocus = refocusQuerySelector || refocusPreviousElement;
-
-	const onCancel = () => {
-		handleDialog?.();
-
-		if ( shouldRefocus ) {
-			handleElementRefocus();
-		}
-	};
-
-	const handleEscapeOrScrim = () => {
-		if ( ! shouldRefocus ) {
-			return;
-		}
-
-		// Handle onClose as setting key action props on Dialog prevents these from being called.
-		onClose?.();
-		handleElementRefocus();
-	};
-
-	// Override the escape and scrim click actions if shouldRefocus is set.
-	useDialogEscapeAndScrim(
-		handleEscapeOrScrim,
-		dialogActive && shouldRefocus
-	);
 
 	return (
 		<Dialog
@@ -167,9 +75,6 @@ function ModalDialog( {
 				'googlesitekit-dialog-sm': small,
 				'googlesitekit-dialog-md': medium,
 			} ) }
-			// Prevent default modal behavior if we are capturing the escape key and scrim click.
-			escapeKeyAction={ shouldRefocus ? '' : 'close' }
-			scrimClickAction={ shouldRefocus ? '' : 'close' }
 		>
 			<DialogTitle>
 				{ danger && <ExclamationIcon width={ 28 } height={ 28 } /> }
@@ -218,7 +123,7 @@ function ModalDialog( {
 				<Button
 					className="mdc-dialog__cancel-button"
 					tertiary
-					onClick={ onCancel }
+					onClick={ handleDialog }
 					disabled={ inProgress }
 				>
 					{ __( 'Cancel', 'google-site-kit' ) }
@@ -263,8 +168,6 @@ ModalDialog.propTypes = {
 	small: PropTypes.bool,
 	medium: PropTypes.bool,
 	buttonLink: PropTypes.string,
-	refocusPreviousElement: PropTypes.bool,
-	refocusQuerySelector: PropTypes.string,
 };
 
 export default ModalDialog;
