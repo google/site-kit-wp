@@ -30,7 +30,7 @@ import { useDebounce } from '../hooks/useDebounce';
 export default function DataBlockGroup( { className, children } ) {
 	const ref = useRef();
 
-	const adjustFontSize = () => {
+	const adjustFontSize = async () => {
 		const blocks = ref?.current?.querySelectorAll(
 			'.googlesitekit-data-block'
 		);
@@ -41,6 +41,8 @@ export default function DataBlockGroup( { className, children } ) {
 
 		// Find the smallest font size needed across all blocks to fit without overflow.
 		let smallestScaleFactor = 1;
+
+		await resetFontSizes( blocks );
 
 		blocks.forEach( ( block ) => {
 			const dataPoint = block.querySelector(
@@ -84,6 +86,7 @@ export default function DataBlockGroup( { className, children } ) {
 	};
 
 	const setFontSizes = ( blocks, adjustedSize ) => {
+		console.log( '🚀 ~ setFontSizes ~ adjustedSize:', adjustedSize );
 		blocks.forEach( ( block ) => {
 			const dataPoint = block?.querySelector(
 				'.googlesitekit-data-block__datapoint'
@@ -96,8 +99,27 @@ export default function DataBlockGroup( { className, children } ) {
 		} );
 	};
 
+	const resetFontSizes = async ( blocks ) => {
+		await Promise.all(
+			[ ...blocks ].map( ( block ) => {
+				return new Promise( ( resolve ) => {
+					const dataPoint = block?.querySelector(
+						'.googlesitekit-data-block__datapoint'
+					);
+					if ( ! dataPoint ) {
+						resolve();
+						return;
+					}
+
+					dataPoint.style.fontSize = '';
+					resolve();
+				} );
+			} )
+		);
+	};
+
 	// Debounce the adjustFontSize function to prevent excessive calls on resize.
-	const debouncedAdjustFontSize = useDebounce( adjustFontSize, 50 );
+	const debouncedAdjustFontSize = useDebounce( adjustFontSize, 100 );
 
 	useMount( () => {
 		debouncedAdjustFontSize();
