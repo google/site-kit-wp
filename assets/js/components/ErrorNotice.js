@@ -98,17 +98,15 @@ export default function ErrorNotice( {
 	const reconnectURL = error?.data?.reconnectURL;
 
 	if ( reconnectURL && isURL( reconnectURL ) ) {
-		errorMessageWithModifications =
-			errorMessageWithModifications +
-			' ' +
-			sprintf(
-				/* translators: %s: Reconnect URL */
-				__(
-					'To fix this, <a href="%s">redo the plugin setup</a>.',
-					'google-site-kit'
-				),
-				reconnectURL
-			);
+		errorMessageWithModifications = sprintf(
+			/* translators: 1: Original error message 2: Reconnect URL */
+			__(
+				'%1$s To fix this, <a href="%2$s">redo the plugin setup</a>.',
+				'google-site-kit'
+			),
+			errorMessageWithModifications,
+			reconnectURL
+		);
 	}
 
 	const sanitizeArgs = {
