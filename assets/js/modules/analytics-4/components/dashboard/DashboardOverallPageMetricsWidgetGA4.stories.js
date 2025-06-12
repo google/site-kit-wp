@@ -398,9 +398,9 @@ LongDataValues.args = {
 LongDataValues.scenario = {
 	waitForFontSizeToMatch: true,
 	fontSizeSelector: '.googlesitekit-data-block__datapoint',
-	fontSizeLarge: 43,
+	fontSizeLarge: 41,
 	fontSizeMedium: false, // The font does not need to be resized for medium viewport.
-	fontSizeSmall: 29,
+	fontSizeSmall: 27,
 };
 
 export const NoDataInComparisonDateRange = Template.bind( {} );
