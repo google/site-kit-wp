@@ -1029,7 +1029,7 @@ export function provideAnalytics4MockPivotReport( registry, options ) {
 /**
  * Provides a GA4 report with data for a specified date range removed.
  *
- * @since n.e.x.t
+ * @since 1.155.0
  *
  * @param {Object} registry                   The registry instance to dispatch the report to.
  * @param {Object} reportOptions              Options used to generate the mock GA4 report.

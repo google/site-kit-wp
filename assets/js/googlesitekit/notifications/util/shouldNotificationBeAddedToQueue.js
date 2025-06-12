@@ -23,7 +23,7 @@ import { isFeatureEnabled } from '../../../features';
  * Checks if a notification should be added to the queue based on
  * its feature flags, groupID, viewContext, etc.
  *
- * @since n.e.x.t
+ * @since 1.155.0
  *
  * @param {Object}  notification                Notification object.
  * @param {Object}  params                      Parameters.

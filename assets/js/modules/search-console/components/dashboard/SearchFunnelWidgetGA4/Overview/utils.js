@@ -26,7 +26,7 @@ import { calculateChange } from '../../../../../../util';
  * These props define the cell sizes for different screen breakpoints.
  *
  * @since 1.153.0
- * @since n.e.x.t Renamed `showConversionsCTA` prop to `showKeyEventsCTA`.
+ * @since 1.155.0 Renamed `showConversionsCTA` prop to `showKeyEventsCTA`.
  *
  * @param {boolean} showKeyEventsCTA Whether to show the Key Events CTA.
  * @return {Object} Object with the cell props for the DataBlocks.
