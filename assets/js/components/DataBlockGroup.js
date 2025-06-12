@@ -119,7 +119,7 @@ export default function DataBlockGroup( { className, children } ) {
 	};
 
 	// Debounce the adjustFontSize function to prevent excessive calls on resize.
-	const debouncedAdjustFontSize = useDebounce( adjustFontSize, 100 );
+	const debouncedAdjustFontSize = useDebounce( adjustFontSize, 50 );
 
 	useMount( () => {
 		debouncedAdjustFontSize();
