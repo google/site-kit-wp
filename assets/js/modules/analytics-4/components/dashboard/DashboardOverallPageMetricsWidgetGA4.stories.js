@@ -396,8 +396,10 @@ LongDataValues.args = {
 	},
 };
 LongDataValues.scenario = {
-	waitForFontSizeToMatch: true,
-	fontSizeSelector: '.googlesitekit-data-block__datapoint',
+	resetDataBlockGroup: true,
+	waitForFontSizeToMatch: '.googlesitekit-data-block__datapoint',
+	// Once #10798 is implemented we can have story level viewports and we can remove these unused sizes and create
+	// new viewports that test the font size resizing logic more completely.
 	fontSizeLarge: false, // The font size is only resized on mobile.
 	fontSizeMedium: false,
 	fontSizeSmall: 27,
