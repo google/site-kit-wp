@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { isURL } from '@wordpress/url';
 
@@ -34,7 +34,7 @@ import { isURL } from '@wordpress/url';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { isPermissionScopeError, isErrorRetryable } from '../util/errors';
 import Notice from './Notice';
-import Link from './Link';
+import { sanitizeHTML } from '../util';
 
 export default function ErrorNotice( {
 	className,
@@ -98,26 +98,36 @@ export default function ErrorNotice( {
 	const reconnectURL = error?.data?.reconnectURL;
 
 	if ( reconnectURL && isURL( reconnectURL ) ) {
-		errorMessageWithModifications = createInterpolateElement(
+		errorMessageWithModifications =
+			errorMessageWithModifications +
+			' ' +
 			sprintf(
-				/* translators: %1$s: Original error message */
+				/* translators: %s: Reconnect URL */
 				__(
-					'%1$s To fix this, <a>redo the plugin setup</a>.',
+					'To fix this, <a href="%s">redo the plugin setup</a>.',
 					'google-site-kit'
 				),
-				errorMessageWithModifications
-			),
-			{
-				a: <Link href={ reconnectURL } />,
-			}
-		);
+				reconnectURL
+			);
 	}
+
+	const sanitizeArgs = {
+		ALLOWED_TAGS: [ 'a' ],
+		ALLOWED_ATTR: [ 'href' ],
+	};
 
 	return (
 		<Notice
 			className={ className }
 			type={ Notice.TYPES.ERROR }
-			description={ errorMessageWithModifications }
+			description={
+				<span
+					dangerouslySetInnerHTML={ sanitizeHTML(
+						errorMessageWithModifications,
+						sanitizeArgs
+					) }
+				/>
+			}
 			ctaButton={
 				shouldDisplayRetry
 					? {
