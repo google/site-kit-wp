@@ -21,6 +21,11 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import {
@@ -35,62 +40,83 @@ import LearnMoreLink from './LearnMoreLink';
 import CTAButton from './CTAButton';
 import DismissButton from './DismissButton';
 import Footer from './Footer';
+import Notice from '../Notice';
 
-export default function Banner( {
-	className,
-	title,
-	description,
-	helpText,
-	learnMoreLink,
-	dismissButton,
-	ctaButton,
-	svg, // NOTE: SVGs must be imported with the ?url suffix for use as a backgroundImage in this component.
-	footer,
-} ) {
-	const breakpoint = useBreakpoint();
-	const isMobileOrTablet =
-		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
+const Banner = forwardRef(
+	(
+		{
+			className,
+			title,
+			description,
+			errorText,
+			helpText,
+			learnMoreLink,
+			dismissButton,
+			ctaButton,
+			svg, // NOTE: SVGs must be imported with the ?url suffix for use as a backgroundImage in this component.
+			footer,
+		},
+		ref
+	) => {
+		const breakpoint = useBreakpoint();
+		const isMobileOrTablet =
+			breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
-	const SVGData = isMobileOrTablet && svg?.mobile ? svg.mobile : svg?.desktop;
+		const SVGData =
+			isMobileOrTablet && svg?.mobile ? svg.mobile : svg?.desktop;
 
-	const svgMode = svg?.verticalPosition ? svg.verticalPosition : 'center';
+		const svgMode = svg?.verticalPosition ? svg.verticalPosition : 'center';
 
-	return (
-		<div className={ classnames( 'googlesitekit-banner', className ) }>
-			<div className="googlesitekit-banner__content">
-				<Title>{ title }</Title>
-
-				<Description>
-					{ description }{ ' ' }
-					{ learnMoreLink?.href && (
-						<LearnMoreLink { ...learnMoreLink } />
-					) }
-				</Description>
-
-				{ helpText && <HelpText>{ helpText }</HelpText> }
-
-				<div className="googlesitekit-notice__action">
-					<CTAButton { ...ctaButton } />
-					<DismissButton { ...dismissButton } />
-				</div>
-			</div>
-
+		return (
 			<div
-				className={ classnames( 'googlesitekit-banner__svg-wrapper', {
-					[ `googlesitekit-banner__svg-wrapper--${ svgMode }` ]:
-						svgMode,
-				} ) }
-				style={ { backgroundImage: `url(${ SVGData })` } }
-			/>
+				ref={ ref }
+				className={ classnames( 'googlesitekit-banner', className ) }
+			>
+				<div className="googlesitekit-banner__content">
+					<Title>{ title }</Title>
 
-			{ footer && <Footer>{ footer }</Footer> }
-		</div>
-	);
-}
+					<Description>
+						{ description }{ ' ' }
+						{ learnMoreLink?.href && (
+							<LearnMoreLink { ...learnMoreLink } />
+						) }
+					</Description>
+
+					{ helpText && <HelpText>{ helpText }</HelpText> }
+
+					{ errorText && (
+						<Notice type="error" description={ errorText } />
+					) }
+
+					<div className="googlesitekit-notice__action">
+						<CTAButton { ...ctaButton } />
+						{ dismissButton?.onClick && (
+							<DismissButton { ...dismissButton } />
+						) }
+					</div>
+				</div>
+
+				<div
+					className={ classnames(
+						'googlesitekit-banner__svg-wrapper',
+						{
+							[ `googlesitekit-banner__svg-wrapper--${ svgMode }` ]:
+								svgMode,
+						}
+					) }
+					style={ { backgroundImage: `url(${ SVGData })` } }
+				/>
+
+				{ footer && <Footer>{ footer }</Footer> }
+			</div>
+		);
+	}
+);
 
 Banner.propTypes = {
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
+	errorText: PropTypes.string,
 	helpText: PropTypes.string,
 	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
@@ -102,3 +128,5 @@ Banner.propTypes = {
 	} ),
 	footer: PropTypes.node,
 };
+
+export default Banner;

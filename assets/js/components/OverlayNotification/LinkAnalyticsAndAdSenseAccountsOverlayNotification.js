@@ -32,6 +32,8 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import AnalyticsAdsenseConnectGraphicDesktop from '../../../svg/graphics/analytics-adsense-connect-desktop.svg';
 import AnalyticsAdsenseConnectGraphicMobile from '../../../svg/graphics/analytics-adsense-connect-mobile.svg';
 import OverlayNotification from './OverlayNotification';
@@ -72,7 +74,9 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 			return null;
 		}
 
-		return select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+		return select( CORE_MODULES ).isModuleConnected(
+			MODULE_SLUG_ANALYTICS_4
+		);
 	} );
 
 	const adSenseModuleConnected = useSelect( ( select ) => {
@@ -80,7 +84,7 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 			return null;
 		}
 
-		return select( CORE_MODULES ).isModuleConnected( 'adsense' );
+		return select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
 	} );
 
 	const isAdSenseLinked = useSelect( ( select ) => {
@@ -160,6 +164,6 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 }
 
 export default compose(
-	whenActive( { moduleName: 'analytics-4' } ),
-	whenActive( { moduleName: 'adsense' } )
+	whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } ),
+	whenActive( { moduleName: MODULE_SLUG_ADSENSE } )
 )( LinkAnalyticsAndAdSenseAccountsOverlayNotification );

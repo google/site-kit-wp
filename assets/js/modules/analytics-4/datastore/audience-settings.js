@@ -32,6 +32,7 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {
 	combineStores,
@@ -74,7 +75,7 @@ const fetchGetAudienceSettingsStore = createFetchStore( {
 	controlCallback() {
 		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'audience-settings',
 			{},
 			{
@@ -88,7 +89,7 @@ const fetchGetAudienceSettingsStore = createFetchStore( {
 const fetchSaveAudienceSettingsStore = createFetchStore( {
 	baseName: 'saveAudienceSettings',
 	controlCallback: ( settings ) =>
-		set( 'modules', 'analytics-4', 'save-audience-settings', {
+		set( 'modules', MODULE_SLUG_ANALYTICS_4, 'save-audience-settings', {
 			settings,
 		} ),
 	reducerCallback: fetchStoreReducerCallback,
@@ -98,7 +99,8 @@ const fetchSaveAudienceSettingsStore = createFetchStore( {
 
 const fetchSyncAvailableAudiencesStore = createFetchStore( {
 	baseName: 'syncAvailableAudiences',
-	controlCallback: () => set( 'modules', 'analytics-4', 'sync-audiences' ),
+	controlCallback: () =>
+		set( 'modules', MODULE_SLUG_ANALYTICS_4, 'sync-audiences' ),
 	reducerCallback: createReducer( ( state, audiences ) => {
 		if ( ! state.audienceSettings ) {
 			state.audienceSettings = {};
@@ -248,13 +250,23 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|null|undefined)} Available audiences, `null` if not set, or `undefined` if not loaded.
 	 */
-	getAvailableAudiences( state ) {
-		return state.audienceSettings?.availableAudiences;
-	},
+	getAvailableAudiences: createRegistrySelector( ( select ) => () => {
+		const audienceSettings =
+			select( MODULES_ANALYTICS_4 ).getAudienceSettings() || {};
+		return audienceSettings.availableAudiences;
+	} ),
 
-	getOrSyncAvailableAudiences( state ) {
-		return state.audienceSettings?.availableAudiences;
-	},
+	/**
+	 * Gets the available audiences.
+	 *
+	 * @since 1.152.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array|null|undefined)} Available audiences, `null` if not set, or `undefined` if not loaded.
+	 */
+	getOrSyncAvailableAudiences: createRegistrySelector( ( select ) => () => {
+		return select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+	} ),
 
 	/**
 	 * Gets the audience settings.

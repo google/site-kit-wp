@@ -31,12 +31,12 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { WEEK_IN_SECONDS } from '../../util';
 import FirstPartyModeSetupBanner from './FirstPartyModeSetupBanner';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 import {
-	CORE_NOTIFICATIONS,
 	NOTIFICATION_AREAS,
-} from '../../googlesitekit/notifications/datastore/constants';
+	FPM_SETUP_CTA_BANNER_NOTIFICATION,
+} from '../../googlesitekit/notifications/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../googlesitekit/notifications/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	FPM_SETUP_CTA_BANNER_NOTIFICATION
@@ -61,8 +61,8 @@ ErrorOnCTAClick.args = {
 				message: 'Test Error',
 				data: {},
 			},
-			'notificationAction',
-			[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]
+			'saveFirstPartyModeSettings',
+			[ {} ]
 		);
 	},
 };
@@ -84,7 +84,7 @@ export default {
 					.dispatch( CORE_NOTIFICATIONS )
 					.registerNotification( FPM_SETUP_CTA_BANNER_NOTIFICATION, {
 						Component: FirstPartyModeSetupBanner,
-						areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+						areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						isDismissible: true,
 					} );

@@ -26,14 +26,15 @@ import { calculateChange } from '../../../../../../util';
  * These props define the cell sizes for different screen breakpoints.
  *
  * @since 1.153.0
+ * @since 1.155.0 Renamed `showConversionsCTA` prop to `showKeyEventsCTA`.
  *
- * @param {boolean} showConversionsCTA Whether to show the conversions CTA.
+ * @param {boolean} showKeyEventsCTA Whether to show the Key Events CTA.
  * @return {Object} Object with the cell props for the DataBlocks.
  */
-export function getCellProps( showConversionsCTA ) {
+export function getCellProps( showKeyEventsCTA ) {
 	const quarterCellProps = {
 		smSize: 2,
-		mdSize: showConversionsCTA ? 4 : 2,
+		mdSize: showKeyEventsCTA ? 4 : 2,
 		lgSize: 3,
 	};
 

@@ -32,6 +32,7 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
+import { MODULE_SLUG_ADSENSE } from '../constants';
 import { isValidAccountID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
@@ -44,7 +45,7 @@ const fetchGetClientsStore = createFetchStore( {
 	controlCallback: ( { accountID } ) => {
 		return get(
 			'modules',
-			'adsense',
+			MODULE_SLUG_ADSENSE,
 			'clients',
 			{ accountID },
 			{

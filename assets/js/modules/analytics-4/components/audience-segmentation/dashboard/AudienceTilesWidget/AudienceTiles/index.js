@@ -86,11 +86,11 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		siteKitAudiencesReportError,
 		totalPageviewsReportLoaded,
 		totalPageviewsReportError,
-		topCitiesReportLoaded,
+		topCitiesReportsLoaded,
 		topCitiesReportErrors,
-		topContentReportLoaded,
+		topContentReportsLoaded,
 		topContentReportErrors,
-		topContentPageTitlesReportLoaded,
+		topContentPageTitlesReportsLoaded,
 		topContentPageTitlesReportErrors,
 	} = useAudienceTilesReports( {
 		isSiteKitAudiencePartialData,
@@ -272,9 +272,9 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		! reportLoaded ||
 		! siteKitAudiencesReportLoaded ||
 		! totalPageviewsReportLoaded ||
-		! topCitiesReportLoaded ||
-		! topContentReportLoaded ||
-		! topContentPageTitlesReportLoaded ||
+		! topCitiesReportsLoaded ||
+		! topContentReportsLoaded ||
+		! topContentPageTitlesReportsLoaded ||
 		isSyncingAvailableCustomDimensions;
 
 	return (
@@ -294,6 +294,11 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 				allTilesError={ allTilesError }
 				individualTileErrors={ individualTileErrors }
 				loading={ loading }
+				topCitiesReportsLoaded={ topCitiesReportsLoaded }
+				topContentReportsLoaded={ topContentReportsLoaded }
+				topContentPageTitlesReportsLoaded={
+					topContentPageTitlesReportsLoaded
+				}
 				visibleAudiences={ visibleAudiences }
 				Widget={ Widget }
 			/>

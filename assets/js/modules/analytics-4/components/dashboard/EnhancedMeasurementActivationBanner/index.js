@@ -47,7 +47,7 @@ import {
 	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
 } from '../../../constants';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
-import InProgressBanner from './InProgressBanner';
+import ProcessingBanner from './ProcessingBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
 
@@ -131,7 +131,13 @@ export default function EnhancedMeasurementActivationBanner( {
 	}
 
 	if ( step === ACTIVATION_STEP_IN_PROGRESS ) {
-		return <InProgressBanner id={ id } Notification={ Notification } />;
+		return (
+			<ProcessingBanner
+				id={ id }
+				Notification={ Notification }
+				onDismiss={ showTooltip }
+			/>
+		);
 	}
 
 	if ( step === ACTIVATION_STEP_SUCCESS ) {

@@ -28,7 +28,7 @@ import {
 	freezeFetch,
 	subscribeUntil,
 	muteFetch,
-	waitForTimeouts,
+	createWaitForRegistry,
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
 import { DAY_IN_SECONDS } from '../../../util';
@@ -37,6 +37,7 @@ import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 report', () => {
 	let registry;
+	let waitForRegistry;
 
 	beforeAll( () => {
 		setUsingCache( false );
@@ -44,6 +45,7 @@ describe( 'modules/analytics-4 report', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		waitForRegistry = createWaitForRegistry( registry );
 	} );
 
 	afterAll( () => {
@@ -220,7 +222,7 @@ describe( 'modules/analytics-4 report', () => {
 				expect( isGatheringData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForTimeouts( 30 );
+				await waitForRegistry();
 
 				expect( fetchMock ).toHaveFetched( analytics4ReportRegexp );
 			} );
@@ -263,7 +265,7 @@ describe( 'modules/analytics-4 report', () => {
 				expect( isGatheringData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForTimeouts( 30 );
+				await waitForRegistry();
 
 				expect( isGatheringData() ).toBe( true );
 				expect( console ).toHaveErrored();
@@ -336,13 +338,13 @@ describe( 'modules/analytics-4 report', () => {
 					expect( hasZeroData() ).toBeUndefined();
 
 					// Wait for resolvers to run.
-					await waitForTimeouts( 30 );
+					await waitForRegistry();
 
 					// Verify that isGatheringData still returns undefined due to getSettings not being resolved yet, while hasZeroData now returns true.
 					expect( isGatheringData() ).toBeUndefined();
 					expect( hasZeroData() ).toBe( true );
 
-					await waitForTimeouts( 30 );
+					await waitForRegistry();
 				} );
 
 				it( 'should return TRUE if the connnected GA4 property is under three days old', async () => {
@@ -442,13 +444,13 @@ describe( 'modules/analytics-4 report', () => {
 					expect( hasZeroData() ).toBeUndefined();
 
 					// Wait for resolvers to run.
-					await waitForTimeouts( 30 );
+					await waitForRegistry();
 
 					// Verify that isGatheringData now returns TRUE if hasZeroData now returns true but the user is not authenticated.
 					expect( isGatheringData() ).toBe( true );
 					expect( hasZeroData() ).toBe( true );
 
-					await waitForTimeouts( 30 );
+					await waitForRegistry();
 				} );
 
 				it( 'should return undefined if getAuthentication is not resolved yet', async () => {
@@ -542,7 +544,7 @@ describe( 'modules/analytics-4 report', () => {
 						expect( hasZeroData( reportArgs ) ).toBeUndefined();
 
 						// Wait for resolvers to run.
-						await waitForTimeouts( 30 );
+						await waitForRegistry();
 					} );
 
 					it( 'should make a request for the correct report', async () => {
@@ -556,7 +558,7 @@ describe( 'modules/analytics-4 report', () => {
 						expect( hasZeroData( reportArgs ) ).toBeUndefined();
 
 						// Wait for resolvers to run.
-						await waitForTimeouts( 30 );
+						await waitForRegistry();
 
 						expect( fetchMock ).toHaveFetchedTimes( 1 );
 						expect( fetchMock ).toHaveFetched(
@@ -585,7 +587,7 @@ describe( 'modules/analytics-4 report', () => {
 						expect( hasZeroData( reportArgs ) ).toBeUndefined();
 
 						// Wait for resolvers to run.
-						await waitForTimeouts( 30 );
+						await waitForRegistry();
 
 						expect( hasZeroData( reportArgs ) ).toBe( true );
 						expect( console ).toHaveErrored();

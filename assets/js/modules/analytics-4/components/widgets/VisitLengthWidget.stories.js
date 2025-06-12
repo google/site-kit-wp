@@ -27,8 +27,12 @@ import {
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import VisitLengthWidget from './VisitLengthWidget';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { getAnalytics4MockResponse } from '../../utils/data-mock';
+import {
+	getAnalytics4MockResponse,
+	provideAnalyticsReportWithoutDateRangeData,
+} from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import {
 	CORE_USER,
@@ -158,6 +162,15 @@ InsufficientPermissions.args = {
 	},
 };
 
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideAnalyticsReportWithoutDateRangeData( registry, reportOptions );
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
+
 export default {
 	title: 'Key Metrics/VisitLength',
 	decorators: [
@@ -165,7 +178,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
