@@ -20,25 +20,16 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-/**
- * Internal dependencies
- */
-import { sanitizeHTML } from '../../util/sanitize';
-
 export default function Description( { className, children } ) {
-	const sanitizeArgs = {
-		ALLOWED_TAGS: [ 'a' ],
-		ALLOWED_ATTR: [ 'href' ],
-	};
-
 	return (
 		<p
 			className={ classnames(
 				'googlesitekit-notice__description',
 				className
 			) }
-			dangerouslySetInnerHTML={ sanitizeHTML( children, sanitizeArgs ) }
-		/>
+		>
+			{ children }
+		</p>
 	);
 }
 
