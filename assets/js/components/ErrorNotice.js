@@ -98,6 +98,16 @@ export default function ErrorNotice( {
 	const reconnectURL = error?.data?.reconnectURL;
 
 	if ( reconnectURL && isURL( reconnectURL ) ) {
+		/**
+		 * This error message uses HTML tags without using
+		 * `createInterpolateElement` because the error messages
+		 * that come from the server/API can also contain HTML (eg. links)
+		 * we want to render.
+		 *
+		 * Instead of creating a React node using `createInterpolateElement`,
+		 * we use `dangerouslySetInnerHTML` to allow the HTML we create and from
+		 * the server/API to be rendered as-intended.
+		 */
 		errorMessageWithModifications = sprintf(
 			/* translators: 1: Original error message 2: Reconnect URL */
 			__(
@@ -119,8 +129,12 @@ export default function ErrorNotice( {
 			className={ className }
 			type={ Notice.TYPES.ERROR }
 			description={
-				// Use `dangerouslySetInnerHTML` to allow HTML links to be rendered as links
-				// in error messages that come directly from a server / API response.
+				// The error messages that come from the server/API can contain
+				// HTML (eg. links), so we use `dangerouslySetInnerHTML` and sanitize
+				// the HTML to render these links.
+				//
+				// We tried to use `createInterpolateElement` but it does not work
+				// with HTML tags that come from the server/API.
 				<span
 					dangerouslySetInnerHTML={ sanitizeHTML(
 						errorMessageWithModifications,
