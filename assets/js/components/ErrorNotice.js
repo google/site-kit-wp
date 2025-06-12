@@ -119,6 +119,8 @@ export default function ErrorNotice( {
 			className={ className }
 			type={ Notice.TYPES.ERROR }
 			description={
+				// Use `dangerouslySetInnerHTML` to allow HTML links to be rendered as links
+				// in error messages that come directly from a server / API response.
 				<span
 					dangerouslySetInnerHTML={ sanitizeHTML(
 						errorMessageWithModifications,
