@@ -36,25 +36,36 @@ module.exports = async ( page, scenario, viewport ) => {
 
 	// Reset the font size of the specific selector and retrigger resize events.
 	if ( scenario.resetDataBlockGroup ) {
-		// await page.evaluate( () => {
-		// 	const dataBlocks = document.querySelectorAll(
-		// 		'.googlesitekit-data-block__datapoint'
-		// 	);
-		// 	dataBlocks.forEach( ( block ) => {
-		// 		block.style.fontSize = '';
-		// 	} );
-		// } );
-		// // Force resize event to trigger new font size calculations.
-		// await page.setViewport( {
-		// 	width: viewport.width + 1,
-		// 	height: viewport.height + 1,
-		// 	deviceScaleFactor: 1,
-		// } );
-		// await page.setViewport( {
-		// 	width: viewport.width,
-		// 	height: viewport.height,
-		// 	deviceScaleFactor: 1,
-		// } );
+		await page.evaluate( () => {
+			const dataBlocks = document.querySelectorAll(
+				'.googlesitekit-data-block__datapoint'
+			);
+			dataBlocks.forEach( ( block ) => {
+				block.style.fontSize = '';
+			} );
+		} );
+		// Force resize event to trigger new font size calculations.
+		await page.setViewport( {
+			width: viewport.width + 1,
+			height: viewport.height + 1,
+			deviceScaleFactor: 1,
+		} );
+		console.log( `Forcing resize event for viewport ${ viewport.label }` );
+		await new Promise( ( resolve ) => {
+			setTimeout( resolve, 100 );
+		} );
+		await page.setViewport( {
+			width: viewport.width,
+			height: viewport.height,
+			deviceScaleFactor: 1,
+		} );
+		console.log(
+			`Forcing resize event for viewport 2 ${ viewport.label }`
+		);
+		await new Promise( ( resolve ) => {
+			setTimeout( resolve, 100 );
+		} );
+		console.log( `Force resize cmplete for viewport ${ viewport.label }` );
 	}
 
 	// Wait font size in selectors to match the expected size for the current viewport.
