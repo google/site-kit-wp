@@ -96,9 +96,7 @@ export default function DataBlockGroup( { className, children } ) {
 
 				// Round scaling factor **down* to the nearest .05 to account for variations in font rendering.
 				// const roundedScaleFactor = scaleFactor;
-				// const roundedScaleFactor = Math.floor( scaleFactor * 20 ) / 20;
-				const roundedScaleFactor =
-					Math.floor( scaleFactor * 100 ) / 100;
+				const roundedScaleFactor = Math.floor( scaleFactor * 20 ) / 20;
 				console.log(
 					`🚀 ${ bodyWidth } ~ blocks.forEach ~ roundedScaleFactor:`,
 					roundedScaleFactor
