@@ -163,9 +163,11 @@ export default function WPConsentAPIRequirements() {
 												<Fragment>
 													{ !! apiInstallResponse?.error && (
 														<ErrorNotice
-															error={
+															message={
 																apiInstallResponse?.error
 															}
+															skipRetryMessage
+															hideIcon
 														/>
 													) }
 													<SpinnerButton
@@ -200,9 +202,11 @@ export default function WPConsentAPIRequirements() {
 												<Fragment>
 													{ apiInstallHasError && (
 														<ErrorNotice
-															error={
+															message={
 																apiInstallHasError
 															}
+															skipRetryMessage
+															hideIcon
 														/>
 													) }
 													<SpinnerButton
