@@ -28,4 +28,5 @@ module.exports = {
 	'no-yield-dispatch': require( './no-yield-dispatch' ),
 	'no-direct-date': require( './no-direct-date' ),
 	'no-storybook-scenario-label': require( './no-storybook-scenario-label' ),
+	'jsdoc-no-unnamed-boolean-params': require( './jsdoc-no-unnamed-boolean-params' ),
 };
