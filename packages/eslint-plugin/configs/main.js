@@ -28,5 +28,6 @@ module.exports = {
 		'sitekit/jsdoc-tag-order': [ 'error' ],
 		'sitekit/no-yield-dispatch': [ 'error' ],
 		'sitekit/no-direct-date': [ 'error' ],
+		'sitekit/jsdoc-no-unnamed-boolean-params': [ 'error' ],
 	},
 };
