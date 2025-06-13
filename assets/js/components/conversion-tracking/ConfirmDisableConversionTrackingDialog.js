@@ -70,6 +70,7 @@ export default function ConfirmDisableConversionTrackingDialog( {
 			provides={ provides }
 			confirmButton={ __( 'Disable', 'google-site-kit' ) }
 			danger
+			refocusQuerySelector=".googlesitekit-conversion-tracking-toggle .mdc-switch input"
 		/>
 	);
 }
