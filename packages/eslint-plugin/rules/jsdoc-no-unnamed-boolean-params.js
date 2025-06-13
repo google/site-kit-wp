@@ -34,23 +34,20 @@ module.exports = iterateJsdoc(
 				return;
 			}
 
-			// Check if the parameter's type string contains 'boolean' (case-insensitive)
-			// and if its name does NOT contain a period '.', indicating it's not a named parameter.
-			// `tag.type` holds the raw type string from the JSDoc (e.g., "boolean", "{boolean}").
-			// `tag.name` holds the parameter name (e.g., "isEnabled", "options.someFlag").
+			const lowercasedType = tag.type ? tag.type.toLowerCase() : '';
+			const isProblematicBooleanType = lowercasedType === 'boolean';
+
+			// Check if the parameter's type is a plain boolean type AND
+			// if its name does NOT contain a period '.', indicating it's NOT a named parameter.
 			if (
-				tag.type &&
-				tag.type.toLowerCase().includes( 'boolean' ) &&
+				isProblematicBooleanType &&
 				tag.name &&
 				! tag.name.includes( '.' )
 			) {
-				// If both conditions are true, report a violation.
-				// `jsdocNode` refers to the AST node (e.g., function declaration)
-				// that the JSDoc comment is attached to.
 				context.report( {
 					node: jsdocNode,
 					// eslint-disable-next-line sitekit/acronym-case
-					messageId: 'unexpectedBooleanParam', // Use the defined message ID.
+					messageId: 'unexpectedBooleanParam',
 				} );
 			}
 		} );
@@ -61,7 +58,7 @@ module.exports = iterateJsdoc(
 			type: 'suggestion',
 			docs: {
 				description:
-					'Disallow JSDoc `@param` tags with `boolean` type, unless for named parameters (e.g., `options.someFlag`).',
+					'Disallow JSDoc `@param` tags with plain `boolean` type, unless for named parameters (e.g., `options.someFlag`).',
 				category: 'Best Practices',
 				recommended: false,
 				url: 'https://example.com/no-boolean-param-rule',
@@ -69,7 +66,7 @@ module.exports = iterateJsdoc(
 			schema: [],
 			messages: {
 				unexpectedBooleanParam:
-					'Avoid using `boolean` type directly in JSDoc `@param` tags. Consider using named parameters (e.g., `options.someFlag`) or refactoring to separate functions for clarity.',
+					'Avoid using plain `boolean` type directly in JSDoc `@param` tags. Consider using named parameters (e.g., `options.someFlag`), nullable/non-nullable variants (`?boolean`/`!boolean`), or refactoring to separate functions for clarity.',
 			},
 		},
 	}
