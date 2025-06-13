@@ -144,7 +144,26 @@ export default function DashboardSharingDialog() {
 		closeSettingsDialog();
 	}, [ closeResetDialog, closeSettingsDialog, resetDialogOpen ] );
 
-	// Handle escape key and scrim click for reset dialog.
+	// Handle scrim click for reset dialog.
+	useEffect( () => {
+		if ( ! resetDialogOpen ) {
+			return;
+		}
+
+		const handleScrimClick = ( event ) => {
+			if ( event.target.classList.contains( 'mdc-dialog__scrim' ) ) {
+				closeResetDialog();
+			}
+		};
+
+		document.addEventListener( 'click', handleScrimClick );
+
+		return () => {
+			document.removeEventListener( 'click', handleScrimClick );
+		};
+	}, [ resetDialogOpen, closeResetDialog ] );
+
+	// Handle escape key for reset dialog.
 	useKey( 'Escape', closeResetDialog );
 
 	return (
