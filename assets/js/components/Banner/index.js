@@ -62,8 +62,12 @@ const Banner = forwardRef(
 		const isMobileOrTablet =
 			breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
-		const SVGData =
+		let SVGData =
 			isMobileOrTablet && svg?.mobile ? svg.mobile : svg?.desktop;
+
+		if ( svg?.hideOnMobile && breakpoint === BREAKPOINT_SMALL ) {
+			SVGData = null;
+		}
 
 		const svgMode = svg?.verticalPosition ? svg.verticalPosition : 'center';
 
@@ -96,16 +100,18 @@ const Banner = forwardRef(
 					</div>
 				</div>
 
-				<div
-					className={ classnames(
-						'googlesitekit-banner__svg-wrapper',
-						{
-							[ `googlesitekit-banner__svg-wrapper--${ svgMode }` ]:
-								svgMode,
-						}
-					) }
-					style={ { backgroundImage: `url(${ SVGData })` } }
-				/>
+				{ SVGData && (
+					<div
+						className={ classnames(
+							'googlesitekit-banner__svg-wrapper',
+							{
+								[ `googlesitekit-banner__svg-wrapper--${ svgMode }` ]:
+									svgMode,
+							}
+						) }
+						style={ { backgroundImage: `url(${ SVGData })` } }
+					/>
+				) }
 
 				{ footer && <Footer>{ footer }</Footer> }
 			</div>
