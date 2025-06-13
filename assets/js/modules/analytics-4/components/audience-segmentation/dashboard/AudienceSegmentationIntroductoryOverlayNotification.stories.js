@@ -30,10 +30,17 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/consta
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
-import AudienceSegmentationIntroductoryOverlayNotification from './AudienceSegmentationIntroductoryOverlayNotification';
+import AudienceSegmentationIntroductoryOverlayNotification, {
+	AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
+} from './AudienceSegmentationIntroductoryOverlayNotification';
+import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
+
+const NotificationWithComponentProps = withNotificationComponentProps(
+	AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
+)( AudienceSegmentationIntroductoryOverlayNotification );
 
 function Template() {
-	return <AudienceSegmentationIntroductoryOverlayNotification />;
+	return <NotificationWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
