@@ -45,7 +45,6 @@ import {
 	SpinnerButton,
 } from 'googlesitekit-components';
 import ExclamationIcon from '../../svg/icons/warning.svg';
-import { useKey } from 'react-use';
 
 // Use a singleton variable to store the clicked element before any dialog opens.
 // We need to do this at the module level since the component may not be mounted
@@ -133,8 +132,6 @@ function RefocusableModalDialog( {
 		} );
 	}, [ refocusQuerySelector ] );
 
-	useKey( 'Escape', handleDialog );
-
 	// Handle re-focus of the button which triggered the modal.
 	useEffect( () => {
 		if ( ! dialogActive ) {
@@ -160,8 +157,6 @@ function RefocusableModalDialog( {
 				'googlesitekit-dialog-md': medium,
 			} ) }
 			// Prevent default modal behavior since we are capturing the escape key and scrim click.
-			escapeKeyAction=""
-			scrimClickAction=""
 		>
 			<DialogTitle>
 				{ danger && <ExclamationIcon width={ 28 } height={ 28 } /> }
