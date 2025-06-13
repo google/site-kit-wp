@@ -93,7 +93,7 @@ export default function AudienceErrorModal( {
 		} );
 	}
 
-	function handleDialog() {
+	function handleCancel() {
 		let action;
 
 		if ( hasOAuthError ) {
@@ -167,7 +167,7 @@ export default function AudienceErrorModal( {
 				subtitle={ errorDescription }
 				handleConfirm={ handleConfirm }
 				confirmButton={ confirmButton }
-				handleDialog={ handleDialog }
+				handleCancel={ handleCancel }
 				onOpen={ () => {
 					let action;
 
