@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Technical Stack Overview
+
+- **Backend:** PHP and WordPress API.
+- **Frontend:** React.js with WordPress Gutenberg's libraries, plus SCSS for styles.
+- **Tests:** PHPUnit for backend tests and Jest for frontend tests.
