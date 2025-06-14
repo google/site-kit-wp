@@ -37,6 +37,7 @@ import { trackEvent } from '../../../../../util';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 
 export default function SuccessBanner( { id, Notification } ) {
 	const viewContext = useViewContext();
@@ -59,8 +60,17 @@ export default function SuccessBanner( { id, Notification } ) {
 		);
 	}, [ viewContext ] );
 
+	const trackEvents = useNotificationEvents( id );
+
 	const gaTrackingEventArgs = {
 		category: `${ viewContext }_enhanced-measurement-success`,
+	};
+
+	const learnMoreTrackEvent = () => {
+		trackEvents.clickLearnMore(
+			gaTrackingEventArgs.label,
+			gaTrackingEventArgs.value
+		);
 	};
 
 	return (
@@ -78,7 +88,13 @@ export default function SuccessBanner( { id, Notification } ) {
 						'google-site-kit'
 					),
 					{
-						a: <Link href={ documentationURL } external />,
+						a: (
+							<Link
+								href={ documentationURL }
+								onClick={ learnMoreTrackEvent }
+								external
+							/>
+						),
 					}
 				) }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
