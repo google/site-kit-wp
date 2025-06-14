@@ -97,6 +97,7 @@ export default function SetupAccountSite( { site, finishSetup } ) {
 						__( 'Invalid site state %s', 'google-site-kit' ),
 						state
 					) }
+					skipRetryMessage
 				/>
 			);
 	}
