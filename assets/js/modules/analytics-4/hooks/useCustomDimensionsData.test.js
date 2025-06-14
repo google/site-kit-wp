@@ -1,5 +1,5 @@
 /**
- * UseCustomDimensionsData hook tests.
+ * Analytics useCustomDimensionsData hook tests.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
