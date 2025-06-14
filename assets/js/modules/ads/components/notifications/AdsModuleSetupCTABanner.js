@@ -187,7 +187,8 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 				ctaButton={ {
 					label: __( 'Set up Ads', 'google-site-kit' ),
 					onClick: onSetupCallback,
-					disabled: isAdBlockerActive || isSaving,
+					disabled: isAdBlockerActive || isSaving || openDialog,
+					inProgress: isSaving,
 				} }
 				dismissButton={ {
 					label: dismissLabel,
@@ -195,7 +196,6 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 					disabled: isSaving,
 				} }
 				dismissOptions={ {
-					skipHidingFromQueue: true,
 					expiresInSeconds: isDismissalFinal
 						? 0
 						: 2 * WEEK_IN_SECONDS,

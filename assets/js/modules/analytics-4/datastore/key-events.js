@@ -66,7 +66,7 @@ const baseSelectors = {
 	 *
 	 * @since 1.96.0
 	 * @since 1.99.0 Removed the `propertyID` parameter.
-	 * @since n.e.x.t Renamed from `getConversionEvents` to `getKeyEvents`.
+	 * @since 1.155.0 Renamed from `getConversionEvents` to `getKeyEvents`.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array.<Object>|undefined)} GA4 key events; `undefined` if not loaded.

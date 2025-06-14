@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -45,9 +45,16 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 	id,
 	Notification,
 } ) {
+	const [ isSaving, setIsSaving ] = useState( false );
+
 	const onSetupActivate = useActivateModuleCallback(
 		MODULE_SLUG_READER_REVENUE_MANAGER
 	);
+
+	const onSetupCallback = useCallback( () => {
+		setIsSaving( true );
+		onSetupActivate();
+	}, [ onSetupActivate, setIsSaving ] );
 
 	const tooltipSettings = {
 		tooltipSlug: 'rrm-setup-notification',
@@ -86,7 +93,8 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 						'Set up Reader Revenue Manager',
 						'google-site-kit'
 					),
-					onClick: onSetupActivate,
+					onClick: onSetupCallback,
+					inProgress: isSaving,
 				} }
 				dismissButton={ {
 					label: isDismissalFinal

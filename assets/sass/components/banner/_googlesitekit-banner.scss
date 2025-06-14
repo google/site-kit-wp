@@ -115,6 +115,7 @@
 		font-size: $fs-body-sm;
 		letter-spacing: $ls-xs;
 		line-height: $lh-body-sm;
+		margin-bottom: 0;
 	}
 
 	// Errors are shown using a Notice component.
@@ -147,6 +148,9 @@
 	}
 
 	@media (min-width: $width-desktop + 1 + px) {
+		.googlesitekit-notice__action {
+			margin-bottom: 10px;
+		}
 		.googlesitekit-banner__svg-wrapper--top {
 			background-position-y: top;
 		}
