@@ -39,12 +39,12 @@ import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../hooks/useDashboardType';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
 import { getNavigationalScrollTop } from '../../util/scroll';
 import OverlayNotification from './OverlayNotification';
 import { isZeroReport } from '../../modules/analytics-4/utils/is-zero-report';
@@ -63,12 +63,6 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 
 	const viewContext = useViewContext();
 
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
-		)
-	);
-
 	const isDismissing = useSelect( ( select ) =>
 		select( CORE_USER ).isDismissingItem(
 			ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
@@ -76,7 +70,7 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 	);
 
 	const analyticsModuleConnected = useSelect( ( select ) => {
-		if ( ! isMainDashboard || isDismissed ) {
+		if ( ! isMainDashboard ) {
 			return null;
 		}
 		return select( CORE_MODULES ).isModuleConnected(
@@ -85,14 +79,14 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 	} );
 
 	const adSenseModuleConnected = useSelect( ( select ) => {
-		if ( ! isMainDashboard || isDismissed ) {
+		if ( ! isMainDashboard ) {
 			return null;
 		}
 		return select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
 	} );
 
 	const canViewSharedAnalytics = useSelect( ( select ) => {
-		if ( ! isMainDashboard || isDismissed ) {
+		if ( ! isMainDashboard ) {
 			return null;
 		}
 		return select( CORE_USER ).hasAccessToShareableModule(
@@ -100,7 +94,7 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 		);
 	} );
 	const canViewSharedAdSense = useSelect( ( select ) => {
-		if ( ! isMainDashboard || isDismissed ) {
+		if ( ! isMainDashboard ) {
 			return null;
 		}
 		return select( CORE_USER ).hasAccessToShareableModule(
@@ -109,7 +103,7 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 	} );
 
 	const isAdSenseLinked = useSelect( ( select ) => {
-		if ( ! isMainDashboard || isDismissed ) {
+		if ( ! isMainDashboard ) {
 			return null;
 		}
 
@@ -145,7 +139,6 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 	const reportData = useSelect( ( select ) => {
 		if (
 			isMainDashboard &&
-			isDismissed === false &&
 			isAdSenseLinked &&
 			adSenseModuleConnected &&
 			analyticsModuleConnected &&
@@ -162,7 +155,6 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 
 	const shouldShowNotification =
 		isMainDashboard &&
-		isDismissed === false &&
 		analyticsModuleConnected &&
 		adSenseModuleConnected &&
 		canViewSharedAnalytics &&
