@@ -62,17 +62,6 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 		)
 	);
 
-	const canViewSharedAnalytics = useSelect( ( select ) => {
-		return select( CORE_USER ).hasAccessToShareableModule(
-			MODULE_SLUG_ANALYTICS_4
-		);
-	} );
-	const canViewSharedAdSense = useSelect( ( select ) => {
-		return select( CORE_USER ).hasAccessToShareableModule(
-			MODULE_SLUG_ADSENSE
-		);
-	} );
-
 	const isAdSenseLinked = useSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 	} );
@@ -100,11 +89,7 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 	};
 
 	const reportData = useSelect( ( select ) => {
-		if (
-			isAdSenseLinked &&
-			canViewSharedAdSense &&
-			canViewSharedAnalytics
-		) {
+		if ( isAdSenseLinked ) {
 			return select( MODULES_ANALYTICS_4 ).getReport( reportArgs );
 		}
 
@@ -113,11 +98,7 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 
 	const reportDataAvailable = isZeroReport( reportData ) === false;
 
-	const shouldShowNotification =
-		canViewSharedAnalytics &&
-		canViewSharedAdSense &&
-		isAdSenseLinked &&
-		reportDataAvailable;
+	const shouldShowNotification = isAdSenseLinked && reportDataAvailable;
 
 	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 
