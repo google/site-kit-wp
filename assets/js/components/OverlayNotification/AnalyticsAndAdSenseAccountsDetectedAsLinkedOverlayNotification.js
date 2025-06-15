@@ -45,7 +45,10 @@ import whenActive from '../../util/when-active';
 export const ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION =
 	'AnalyticsAndAdSenseLinkedOverlayNotification';
 
-function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
+function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification( {
+	id,
+	Notification,
+} ) {
 	const breakpoint = useBreakpoint();
 
 	const viewContext = useViewContext();
@@ -95,56 +98,61 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 	};
 
 	return (
-		<OverlayNotification
-			shouldShowNotification
-			GraphicDesktop={ AnalyticsAdsenseLinkedGraphicDesktop }
-			GraphicMobile={ AnalyticsAdsenseLinkedGraphicMobile }
-			notificationID={ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION }
-			onShow={ trackEventOnView }
-		>
-			<div className="googlesitekit-overlay-notification__body">
-				<h3>
-					{ __( 'See your top earning content', 'google-site-kit' ) }
-				</h3>
-				<p>
-					{ __(
-						'Data is now available for the pages that earn the most AdSense revenue.',
-						'google-site-kit'
-					) }
-				</p>
-			</div>
+		<Notification>
+			<OverlayNotification
+				notificationID={ id }
+				shouldShowNotification
+				GraphicDesktop={ AnalyticsAdsenseLinkedGraphicDesktop }
+				GraphicMobile={ AnalyticsAdsenseLinkedGraphicMobile }
+				onShow={ trackEventOnView }
+			>
+				<div className="googlesitekit-overlay-notification__body">
+					<h3>
+						{ __(
+							'See your top earning content',
+							'google-site-kit'
+						) }
+					</h3>
+					<p>
+						{ __(
+							'Data is now available for the pages that earn the most AdSense revenue.',
+							'google-site-kit'
+						) }
+					</p>
+				</div>
 
-			<div className="googlesitekit-overlay-notification__actions">
-				<Button
-					tertiary
-					disabled={ isDismissing }
-					onClick={ () => {
-						dismissNotification();
+				<div className="googlesitekit-overlay-notification__actions">
+					<Button
+						tertiary
+						disabled={ isDismissing }
+						onClick={ () => {
+							dismissNotification();
 
-						trackEvent(
-							`${ viewContext }_top-earning-pages-widget`,
-							'dismiss_overlay_CTA'
-						);
-					} }
-				>
-					{ __( 'Maybe later', 'google-site-kit' ) }
-				</Button>
+							trackEvent(
+								`${ viewContext }_top-earning-pages-widget`,
+								'dismiss_overlay_CTA'
+							);
+						} }
+					>
+						{ __( 'Maybe later', 'google-site-kit' ) }
+					</Button>
 
-				<Button
-					disabled={ isDismissing }
-					onClick={ ( event ) => {
-						scrollToWidgetAndDismissNotification( event );
+					<Button
+						disabled={ isDismissing }
+						onClick={ ( event ) => {
+							scrollToWidgetAndDismissNotification( event );
 
-						trackEvent(
-							`${ viewContext }_top-earning-pages-widget`,
-							'confirm_overlay_CTA'
-						);
-					} }
-				>
-					{ __( 'Show me', 'google-site-kit' ) }
-				</Button>
-			</div>
-		</OverlayNotification>
+							trackEvent(
+								`${ viewContext }_top-earning-pages-widget`,
+								'confirm_overlay_CTA'
+							);
+						} }
+					>
+						{ __( 'Show me', 'google-site-kit' ) }
+					</Button>
+				</div>
+			</OverlayNotification>
+		</Notification>
 	);
 }
 
