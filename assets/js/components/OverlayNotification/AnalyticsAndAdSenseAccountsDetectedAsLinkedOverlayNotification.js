@@ -25,19 +25,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import AnalyticsAdsenseLinkedGraphicDesktop from '../../../svg/graphics/analytics-adsense-linked-desktop.svg';
 import AnalyticsAdsenseLinkedGraphicMobile from '../../../svg/graphics/analytics-adsense-linked-mobile.svg';
 import { ANCHOR_ID_MONETIZATION } from '../../googlesitekit/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
 import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
 import { getNavigationalScrollTop } from '../../util/scroll';
 import OverlayNotification from '../../googlesitekit/notifications/components/layout/OverlayNotification';
-import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import whenActive from '../../util/when-active';
 
@@ -51,12 +48,6 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification( {
 	const breakpoint = useBreakpoint();
 
 	const viewContext = useViewContext();
-
-	const isDismissing = useSelect( ( select ) =>
-		select( CORE_USER ).isDismissingItem(
-			ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
-		)
-	);
 
 	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 
@@ -93,6 +84,7 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification( {
 		category: `${ viewContext }_top-earning-pages-widget`,
 		viewAction: 'view_overlay_CTA',
 		dismissAction: 'dismiss_overlay_CTA',
+		confirmAction: 'confirm_overlay_CTA',
 	};
 
 	return (
@@ -110,23 +102,12 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification( {
 				GraphicDesktop={ AnalyticsAdsenseLinkedGraphicDesktop }
 				GraphicMobile={ AnalyticsAdsenseLinkedGraphicMobile }
 				dismissButton
-			>
-				<div className="googlesitekit-overlay-notification__actions">
-					<Button
-						disabled={ isDismissing }
-						onClick={ ( event ) => {
-							scrollToWidgetAndDismissNotification( event );
-
-							trackEvent(
-								`${ viewContext }_top-earning-pages-widget`,
-								'confirm_overlay_CTA'
-							);
-						} }
-					>
-						{ __( 'Show me', 'google-site-kit' ) }
-					</Button>
-				</div>
-			</OverlayNotification>
+				ctaButton={ {
+					label: __( 'Show me', 'google-site-kit' ),
+					onClick: scrollToWidgetAndDismissNotification,
+				} }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
+			/>
 		</Notification>
 	);
 }
