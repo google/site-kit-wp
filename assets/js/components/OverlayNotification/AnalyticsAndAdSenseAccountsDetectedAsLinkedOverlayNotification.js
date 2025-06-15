@@ -35,9 +35,6 @@ import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
-import useDashboardType, {
-	DASHBOARD_TYPE_MAIN,
-} from '../../hooks/useDashboardType';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
 import {
@@ -58,9 +55,6 @@ export const ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION =
 function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 	const breakpoint = useBreakpoint();
 
-	const dashboardType = useDashboardType();
-	const isMainDashboard = dashboardType === DASHBOARD_TYPE_MAIN;
-
 	const viewContext = useViewContext();
 
 	const isDismissing = useSelect( ( select ) =>
@@ -70,43 +64,27 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 	);
 
 	const analyticsModuleConnected = useSelect( ( select ) => {
-		if ( ! isMainDashboard ) {
-			return null;
-		}
 		return select( CORE_MODULES ).isModuleConnected(
 			MODULE_SLUG_ANALYTICS_4
 		);
 	} );
 
 	const adSenseModuleConnected = useSelect( ( select ) => {
-		if ( ! isMainDashboard ) {
-			return null;
-		}
 		return select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
 	} );
 
 	const canViewSharedAnalytics = useSelect( ( select ) => {
-		if ( ! isMainDashboard ) {
-			return null;
-		}
 		return select( CORE_USER ).hasAccessToShareableModule(
 			MODULE_SLUG_ANALYTICS_4
 		);
 	} );
 	const canViewSharedAdSense = useSelect( ( select ) => {
-		if ( ! isMainDashboard ) {
-			return null;
-		}
 		return select( CORE_USER ).hasAccessToShareableModule(
 			MODULE_SLUG_ADSENSE
 		);
 	} );
 
 	const isAdSenseLinked = useSelect( ( select ) => {
-		if ( ! isMainDashboard ) {
-			return null;
-		}
-
 		return select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 	} );
 
@@ -138,7 +116,6 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 
 	const reportData = useSelect( ( select ) => {
 		if (
-			isMainDashboard &&
 			isAdSenseLinked &&
 			adSenseModuleConnected &&
 			analyticsModuleConnected &&
@@ -154,7 +131,6 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 	const reportDataAvailable = isZeroReport( reportData ) === false;
 
 	const shouldShowNotification =
-		isMainDashboard &&
 		analyticsModuleConnected &&
 		adSenseModuleConnected &&
 		canViewSharedAnalytics &&
