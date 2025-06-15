@@ -27,14 +27,16 @@ import {
 } from '../../../../tests/js/utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
 import { provideAnalytics4MockReport } from '../../modules/analytics-4/utils/data-mock';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
-
-import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
+import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
+	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
+} from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 
 const adSenseAccountID = 'pub-1234567890';
 
@@ -50,8 +52,12 @@ const reportOptions = {
 	limit: 1,
 };
 
+const NotificationWithComponentProps = withNotificationComponentProps(
+	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
+)( AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification );
+
 function Template() {
-	return <AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />;
+	return <NotificationWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
