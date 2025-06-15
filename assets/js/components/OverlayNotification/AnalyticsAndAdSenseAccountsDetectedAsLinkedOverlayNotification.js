@@ -33,7 +33,6 @@ import AnalyticsAdsenseLinkedGraphicMobile from '../../../svg/graphics/analytics
 import { ANCHOR_ID_MONETIZATION } from '../../googlesitekit/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
@@ -63,16 +62,6 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 		)
 	);
 
-	const analyticsModuleConnected = useSelect( ( select ) => {
-		return select( CORE_MODULES ).isModuleConnected(
-			MODULE_SLUG_ANALYTICS_4
-		);
-	} );
-
-	const adSenseModuleConnected = useSelect( ( select ) => {
-		return select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
-	} );
-
 	const canViewSharedAnalytics = useSelect( ( select ) => {
 		return select( CORE_USER ).hasAccessToShareableModule(
 			MODULE_SLUG_ANALYTICS_4
@@ -89,11 +78,7 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 	} );
 
 	const adSenseAccountID = useSelect( ( select ) => {
-		if ( adSenseModuleConnected ) {
-			return select( MODULES_ADSENSE ).getAccountID();
-		}
-
-		return null;
+		return select( MODULES_ADSENSE ).getAccountID();
 	} );
 
 	const { startDate, endDate } = useSelect( ( select ) =>
@@ -117,8 +102,6 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 	const reportData = useSelect( ( select ) => {
 		if (
 			isAdSenseLinked &&
-			adSenseModuleConnected &&
-			analyticsModuleConnected &&
 			canViewSharedAdSense &&
 			canViewSharedAnalytics
 		) {
@@ -131,8 +114,6 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 	const reportDataAvailable = isZeroReport( reportData ) === false;
 
 	const shouldShowNotification =
-		analyticsModuleConnected &&
-		adSenseModuleConnected &&
 		canViewSharedAnalytics &&
 		canViewSharedAdSense &&
 		isAdSenseLinked &&
