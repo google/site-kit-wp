@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useWindowScroll, useKey } from 'react-use';
+import { useKey, useWindowScroll } from 'react-use';
 import classnames from 'classnames';
 
 /**
@@ -48,7 +48,6 @@ import {
 	SETTINGS_DIALOG,
 } from '../DashboardSharingSettings/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
-import { ESCAPE } from '@wordpress/keycodes';
 import Portal from '../../Portal';
 import {
 	Dialog,
@@ -63,6 +62,7 @@ import Footer from './Footer';
 export default function DashboardSharingDialog() {
 	const [ shouldFocusResetButton, setShouldFocusResetButton ] =
 		useState( false );
+
 	const breakpoint = useBreakpoint();
 	const { y } = useWindowScroll();
 
@@ -144,19 +144,14 @@ export default function DashboardSharingDialog() {
 		closeSettingsDialog();
 	}, [ closeResetDialog, closeSettingsDialog, resetDialogOpen ] );
 
-	// Handle escape key for reset dialog
-	useKey(
-		( event ) => resetDialogOpen && ESCAPE === event.keyCode,
-		closeResetDialog
-	);
-
-	// Handle clicking on the scrim (outside the dialog)
+	// Handle scrim click for reset dialog.
 	useEffect( () => {
+		if ( ! resetDialogOpen ) {
+			return;
+		}
+
 		const handleScrimClick = ( event ) => {
-			if (
-				resetDialogOpen &&
-				event.target.classList.contains( 'mdc-dialog__scrim' )
-			) {
+			if ( event.target.classList.contains( 'mdc-dialog__scrim' ) ) {
 				closeResetDialog();
 			}
 		};
@@ -167,6 +162,9 @@ export default function DashboardSharingDialog() {
 			document.removeEventListener( 'click', handleScrimClick );
 		};
 	}, [ resetDialogOpen, closeResetDialog ] );
+
+	// Handle escape key for reset dialog.
+	useKey( 'Escape', closeResetDialog );
 
 	return (
 		<Portal>

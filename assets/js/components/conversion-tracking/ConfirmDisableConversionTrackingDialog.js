@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ModalDialog from '../ModalDialog';
+import RefocusableModalDialog from '../RefocusableModalDialog';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 
@@ -56,7 +56,7 @@ export default function ConfirmDisableConversionTrackingDialog( {
 	} );
 
 	return (
-		<ModalDialog
+		<RefocusableModalDialog
 			className="googlesitekit-settings-module__confirm-disconnect-modal"
 			dialogActive
 			title={ __(
@@ -70,6 +70,7 @@ export default function ConfirmDisableConversionTrackingDialog( {
 			provides={ provides }
 			confirmButton={ __( 'Disable', 'google-site-kit' ) }
 			danger
+			refocusPreviousElement
 		/>
 	);
 }
