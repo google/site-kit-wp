@@ -49,6 +49,7 @@ import {
 	PERMISSION_UPDATE_PLUGINS,
 } from '../datastore/user/constants';
 import { CORE_MODULES } from '../modules/datastore/constants';
+import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -787,7 +788,35 @@ export const DEFAULT_NOTIFICATIONS = {
 				return false;
 			}
 
-			return true;
+			// The getAccountID() selector has already been resolved
+			// in the getSettings() resolver above.
+			const adSenseAccountID = select( MODULES_ADSENSE ).getAccountID();
+
+			const { startDate, endDate } = select(
+				CORE_USER
+			).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} );
+
+			const reportArgs = {
+				startDate,
+				endDate,
+				dimensions: [ 'pagePath', 'adSourceName' ],
+				metrics: [ { name: 'totalAdRevenue' } ],
+				dimensionFilters: {
+					adSourceName: `Google AdSense account (${ adSenseAccountID })`,
+				},
+				orderby: [
+					{ metric: { metricName: 'totalAdRevenue' }, desc: true },
+				],
+				limit: 1,
+			};
+
+			const reportData = await resolveSelect(
+				MODULES_ANALYTICS_4
+			).getReport( reportArgs );
+
+			return isZeroReport( reportData ) === false;
 		},
 	},
 };
