@@ -55,7 +55,7 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 	const scrollToWidgetAndDismissNotification = ( event ) => {
 		event.preventDefault();
 
-		dismissNotification( ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION );
+		dismissNotification( id );
 
 		setTimeout( () => {
 			const widgetClass =
