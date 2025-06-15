@@ -37,7 +37,7 @@ import { trackEvent } from '../../../../../util';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
-import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import useNotificationEvents from '../../../../../googlesitekit/notifications/hooks/useNotificationEvents';
 
 export default function SuccessBanner( { id, Notification } ) {
 	const viewContext = useViewContext();
