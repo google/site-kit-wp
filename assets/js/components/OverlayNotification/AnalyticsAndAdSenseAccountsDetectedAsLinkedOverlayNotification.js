@@ -34,16 +34,10 @@ import { ANCHOR_ID_MONETIZATION } from '../../googlesitekit/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
-import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
 import { getNavigationalScrollTop } from '../../util/scroll';
 import OverlayNotification from './OverlayNotification';
-import { isZeroReport } from '../../modules/analytics-4/utils/is-zero-report';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import whenActive from '../../util/when-active';
@@ -61,36 +55,6 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 			ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
 		)
 	);
-
-	const adSenseAccountID = useSelect( ( select ) => {
-		return select( MODULES_ADSENSE ).getAccountID();
-	} );
-
-	const { startDate, endDate } = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
-
-	const reportArgs = {
-		startDate,
-		endDate,
-		dimensions: [ 'pagePath', 'adSourceName' ],
-		metrics: [ { name: 'totalAdRevenue' } ],
-		dimensionFilters: {
-			adSourceName: `Google AdSense account (${ adSenseAccountID })`,
-		},
-		orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
-		limit: 1,
-	};
-
-	const reportData = useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getReport( reportArgs );
-	} );
-
-	const reportDataAvailable = isZeroReport( reportData ) === false;
-
-	const shouldShowNotification = reportDataAvailable;
 
 	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 
@@ -132,7 +96,7 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 
 	return (
 		<OverlayNotification
-			shouldShowNotification={ shouldShowNotification }
+			shouldShowNotification
 			GraphicDesktop={ AnalyticsAdsenseLinkedGraphicDesktop }
 			GraphicMobile={ AnalyticsAdsenseLinkedGraphicMobile }
 			notificationID={ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION }
