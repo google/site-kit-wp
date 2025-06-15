@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { compose } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -31,17 +30,14 @@ import AnalyticsAdsenseLinkedGraphicMobile from '../../../svg/graphics/analytics
 import { ANCHOR_ID_MONETIZATION } from '../../googlesitekit/constants';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
-import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
 import { getNavigationalScrollTop } from '../../util/scroll';
 import OverlayNotification from '../../googlesitekit/notifications/components/layout/OverlayNotification';
 import useViewContext from '../../hooks/useViewContext';
-import whenActive from '../../util/when-active';
 
 export const ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION =
 	'AnalyticsAndAdSenseLinkedOverlayNotification';
 
-function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification( {
+export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification( {
 	id,
 	Notification,
 } ) {
@@ -103,8 +99,3 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification( {
 		</Notification>
 	);
 }
-
-export default compose(
-	whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } ),
-	whenActive( { moduleName: MODULE_SLUG_ADSENSE } )
-)( AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification );
