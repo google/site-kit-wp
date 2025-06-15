@@ -92,6 +92,7 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification( {
 	const gaTrackingEventArgs = {
 		category: `${ viewContext }_top-earning-pages-widget`,
 		viewAction: 'view_overlay_CTA',
+		dismissAction: 'dismiss_overlay_CTA',
 	};
 
 	return (
@@ -108,23 +109,9 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification( {
 				) }
 				GraphicDesktop={ AnalyticsAdsenseLinkedGraphicDesktop }
 				GraphicMobile={ AnalyticsAdsenseLinkedGraphicMobile }
+				dismissButton
 			>
 				<div className="googlesitekit-overlay-notification__actions">
-					<Button
-						tertiary
-						disabled={ isDismissing }
-						onClick={ () => {
-							dismissNotification();
-
-							trackEvent(
-								`${ viewContext }_top-earning-pages-widget`,
-								'dismiss_overlay_CTA'
-							);
-						} }
-					>
-						{ __( 'Maybe later', 'google-site-kit' ) }
-					</Button>
-
 					<Button
 						disabled={ isDismissing }
 						onClick={ ( event ) => {
