@@ -29,7 +29,7 @@ import { useDispatch } from 'googlesitekit-data';
 import AnalyticsAdsenseLinkedGraphicDesktop from '../../../svg/graphics/analytics-adsense-linked-desktop.svg';
 import AnalyticsAdsenseLinkedGraphicMobile from '../../../svg/graphics/analytics-adsense-linked-mobile.svg';
 import { ANCHOR_ID_MONETIZATION } from '../../googlesitekit/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
 import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
@@ -49,20 +49,12 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification( {
 
 	const viewContext = useViewContext();
 
-	const { dismissOverlayNotification } = useDispatch( CORE_UI );
-
-	const dismissNotification = () => {
-		// Dismiss the notification, which also dismisses it from
-		// the current user's profile with the `dismissItem` action.
-		dismissOverlayNotification(
-			ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
-		);
-	};
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const scrollToWidgetAndDismissNotification = ( event ) => {
 		event.preventDefault();
 
-		dismissNotification();
+		dismissNotification( ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION );
 
 		setTimeout( () => {
 			const widgetClass =
