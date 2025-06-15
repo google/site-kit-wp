@@ -30,6 +30,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Existing_Tag;
+use Google\Site_Kit\Core\Modules\Module_With_Existing_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -109,7 +111,7 @@ use WP_Post;
  * @access private
  * @ignore
  */
-final class Analytics_4 extends Module implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State, Module_With_Tag {
+final class Analytics_4 extends Module implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State, Module_With_Tag, Module_With_Existing_Tag {
 
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
@@ -118,6 +120,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	use Module_With_Settings_Trait;
 	use Module_With_Data_Available_State_Trait;
 	use Module_With_Tag_Trait;
+	use Module_With_Existing_Tag_Trait;
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
@@ -2712,5 +2715,66 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$modules_data['analytics-4']['newBadgeEvents'] = is_array( $new_events_badge ) ? $new_events_badge['events'] : array();
 
 		return $modules_data;
+	}
+
+	/**
+	 * Returns the existing tag.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The existing tag.
+	 */
+	public function get_existing_tag() {
+		$tag = $this->fetch_existing_tag();
+
+		// TODO: Implement extra GTE logic.
+		// See https://github.com/google/site-kit-wp/blob/093aa51aa539cad7df31402f271da492293e8271/assets/js/modules/analytics-4/datastore/tags.js#L35-L62.
+
+		return $tag;
+	}
+
+	/**
+	 * Returns GA4 tag matchers.
+	 *
+	 * TODO: This could return e.g. an Existing_Tag_Matchers instance, following the get_tag_matchers() pattern.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Array of regular expression patterns.
+	 */
+	public function get_existing_tag_matchers() {
+		$tag_matchers = array(
+			'/__gaTracker\s*\(\s*[\'|"]create[\'|"]\s*,\s*[\'|"](G-[a-zA-Z0-9]+)[\'|"], ?[\'|"]auto[\'|"]\s*\)/i',
+			'/_gaq\.push\s*\(\s*\[\s*[\'|"][^_]*_setAccount[\'|"]\s*,\s*[\'|"](G-[a-zA-Z0-9]+)[\'|"]\s*],?\s*\)/i',
+			'/<amp-analytics\s+[^>]*type="gtag"[^>]*>[^<]*<script\s+type="application\/json">[^<]*"gtag_id"\s*:\s*"(G-[a-zA-Z0-9]+)"/i',
+			'/<amp-analytics\s+[^>]*type="googleanalytics"[^>]*>[^<]*<script\s+type="application\/json">[^<]*"account"\s*:\s*"(G-[a-zA-Z0-9]+)"/i',
+		);
+
+		foreach ( array( '', 'www\.' ) as $subdomain ) {
+			$tag_matchers[] = '/<script\s+[^>]*src=[\'|"]https?:\/\/' . $subdomain . 'googletagmanager\.com\/gtag\/js\?id=(G-[a-zA-Z0-9]+)[\'|"][^>]*><\/script>/i';
+			$tag_matchers[] = '/<script\s+[^>]*src=[\'|"]https?:\/\/' . $subdomain . 'googletagmanager\.com\/gtag\/js\?id=(G-[a-zA-Z0-9]+)[\'|"][^\/]*\/>/i';
+		}
+
+		foreach ( array( '__gaTracker', 'ga', 'gtag' ) as $func ) {
+			$tag_matchers[] = '/' . $func . '\s*\(\s*[\'|"]create[\'|"]\s*,\s*[\'|"](G-[a-zA-Z0-9]+)[\'|"],\s*[\'|"]auto[\'|"]\s*\)/i';
+			$tag_matchers[] = '/' . $func . '\s*\(\s*[\'|"]config[\'|"]\s*,\s*[\'|"](G-[a-zA-Z0-9]+)[\'|"]\s*\)/i';
+		}
+
+		return $tag_matchers;
+	}
+
+	/**
+	 * Validates if the given tag (a measurement ID) is valid.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $tag The tag to validate.
+	 * @return bool Whether the tag is valid.
+	 */
+	public function is_valid_existing_tag( $tag ) {
+		return (
+			is_string( $tag ) &&
+			preg_match( '/^G-[a-zA-Z0-9]+$/', $tag )
+		);
 	}
 }
