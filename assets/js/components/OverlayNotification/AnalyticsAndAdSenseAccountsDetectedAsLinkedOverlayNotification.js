@@ -37,7 +37,7 @@ import { useBreakpoint } from '../../hooks/useBreakpoint';
 import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
 import { getNavigationalScrollTop } from '../../util/scroll';
-import OverlayNotification from './OverlayNotification';
+import OverlayNotification from '../../googlesitekit/notifications/components/layout/OverlayNotification';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import whenActive from '../../util/when-active';
