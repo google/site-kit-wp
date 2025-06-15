@@ -740,16 +740,40 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
-		checkRequirements: async ( { resolveSelect } ) => {
-			const adSenseModuleConnected = await resolveSelect(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_ADSENSE );
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The hasAccessToShareableModule() selector relies on
+				// the resolution of getAuthentication().
+				resolveSelect( CORE_USER ).getAuthentication(),
+				// The isModuleConnected() and hasAccessToShareableModule() selectors
+				// rely on the resolution of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
 
-			const analyticsModuleConnected = await resolveSelect(
+			const adSenseModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
+
+			const analyticsModuleConnected = select(
 				CORE_MODULES
 			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 
-			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
+			const canViewSharedAdsense =
+				select( CORE_USER ).hasAccessToShareableModule(
+					MODULE_SLUG_ADSENSE
+				);
+
+			const canViewSharedAnalytics = select(
+				CORE_USER
+			).hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
+
+			if (
+				! (
+					adSenseModuleConnected &&
+					analyticsModuleConnected &&
+					canViewSharedAdsense &&
+					canViewSharedAnalytics
+				)
+			) {
 				return false;
 			}
 
