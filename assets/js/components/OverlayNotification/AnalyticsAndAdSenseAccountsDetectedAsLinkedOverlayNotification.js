@@ -98,7 +98,6 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification( {
 		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			<OverlayNotification
 				notificationID={ id }
-				shouldShowNotification
 				GraphicDesktop={ AnalyticsAdsenseLinkedGraphicDesktop }
 				GraphicMobile={ AnalyticsAdsenseLinkedGraphicMobile }
 			>
