@@ -98,24 +98,17 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification( {
 		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			<OverlayNotification
 				notificationID={ id }
+				title={ __(
+					'See your top earning content',
+					'google-site-kit'
+				) }
+				description={ __(
+					'Data is now available for the pages that earn the most AdSense revenue.',
+					'google-site-kit'
+				) }
 				GraphicDesktop={ AnalyticsAdsenseLinkedGraphicDesktop }
 				GraphicMobile={ AnalyticsAdsenseLinkedGraphicMobile }
 			>
-				<div className="googlesitekit-overlay-notification__body">
-					<h3>
-						{ __(
-							'See your top earning content',
-							'google-site-kit'
-						) }
-					</h3>
-					<p>
-						{ __(
-							'Data is now available for the pages that earn the most AdSense revenue.',
-							'google-site-kit'
-						) }
-					</p>
-				</div>
-
 				<div className="googlesitekit-overlay-notification__actions">
 					<Button
 						tertiary
