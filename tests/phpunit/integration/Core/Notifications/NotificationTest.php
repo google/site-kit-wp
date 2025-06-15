@@ -8,6 +8,8 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 namespace Google\Site_Kit\Tests\Core\Notifications;
 
 use Google\Site_Kit\Core\Notifications\Notification;

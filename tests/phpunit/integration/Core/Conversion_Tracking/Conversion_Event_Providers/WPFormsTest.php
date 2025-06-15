@@ -5,6 +5,8 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 
 namespace Google\Tests\Core\Conversion_Tracking\Conversion_Event_Providers;
 

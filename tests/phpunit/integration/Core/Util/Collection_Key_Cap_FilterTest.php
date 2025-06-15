@@ -10,6 +10,8 @@ class Collection_Key_Cap_FilterTest extends TestCase {
 	/**
 	 * @dataProvider data_filter_key_by_cap
 	 */
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 	public function test_filter_key_by_cap( $role, $cap, $key, $input, $expected ) {
 		$user_id = $this->factory()->user->create( array( 'role' => $role ) );
 		wp_set_current_user( $user_id );
