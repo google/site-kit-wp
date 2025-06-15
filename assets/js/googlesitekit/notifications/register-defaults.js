@@ -78,6 +78,9 @@ import { MINUTE_IN_SECONDS } from '../../util';
 import ModuleRecoveryAlert from '../../components/dashboard-sharing/ModuleRecoveryAlert';
 import SiteKitSetupSuccessNotification from '../../components/notifications/SiteKitSetupSuccessNotification';
 import ModuleSetupSuccessNotification from '../../components/notifications/ModuleSetupSuccessNotification';
+import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
+	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
+} from '../../components/OverlayNotification/AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -725,6 +728,18 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 		featureFlag: 'firstPartyMode',
+	},
+	[ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ]: {
+		Component:
+			AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		isDismissible: true,
 	},
 };
 
