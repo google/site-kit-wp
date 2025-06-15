@@ -740,6 +740,21 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
+		checkRequirements: async ( { resolveSelect } ) => {
+			const adSenseModuleConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ADSENSE );
+
+			const analyticsModuleConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+
+			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
+				return false;
+			}
+
+			return true;
+		},
 	},
 };
 
