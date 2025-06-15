@@ -62,10 +62,6 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 		)
 	);
 
-	const isAdSenseLinked = useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
-	} );
-
 	const adSenseAccountID = useSelect( ( select ) => {
 		return select( MODULES_ADSENSE ).getAccountID();
 	} );
@@ -89,16 +85,12 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 	};
 
 	const reportData = useSelect( ( select ) => {
-		if ( isAdSenseLinked ) {
-			return select( MODULES_ANALYTICS_4 ).getReport( reportArgs );
-		}
-
-		return null;
+		return select( MODULES_ANALYTICS_4 ).getReport( reportArgs );
 	} );
 
 	const reportDataAvailable = isZeroReport( reportData ) === false;
 
-	const shouldShowNotification = isAdSenseLinked && reportDataAvailable;
+	const shouldShowNotification = reportDataAvailable;
 
 	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 
