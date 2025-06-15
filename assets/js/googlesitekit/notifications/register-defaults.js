@@ -777,6 +777,16 @@ export const DEFAULT_NOTIFICATIONS = {
 				return false;
 			}
 
+			// The getAdSenseLinked() selector relies on the resolution
+			// of the getSettings() resolver.
+			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+			const isAdSenseLinked =
+				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+
+			if ( ! isAdSenseLinked ) {
+				return false;
+			}
+
 			return true;
 		},
 	},
