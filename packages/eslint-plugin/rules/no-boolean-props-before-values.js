@@ -61,35 +61,52 @@ module.exports = {
 							},
 							fix( fixer ) {
 								const sourceCode = context.getSourceCode();
-								const booleanText =
-									sourceCode.getText( attribute );
-
-								// Find the range to remove: attribute + any trailing whitespace
-								let [ removeStart, removeEnd ] =
-									attribute.range;
-								const afterAttr =
-									sourceCode.text.slice( removeEnd );
-								const whitespaceMatch =
-									afterAttr.match( /^\s+/ );
-								if ( whitespaceMatch ) {
-									removeEnd += whitespaceMatch[ 0 ].length;
-								}
-								const removeFix = fixer.removeRange( [
-									removeStart,
-									removeEnd,
-								] );
-
 								const lastAttribute =
 									node.attributes[
 										node.attributes.length - 1
 									];
 								const insertIndex = lastAttribute.range[ 1 ];
-								const insertFix = fixer.insertTextAfterRange(
-									[ insertIndex, insertIndex ],
-									` ${ booleanText }`
+
+								// Get all boolean props that need to be moved
+								const booleanPropsToMove = booleanProps
+									.filter(
+										( { index: propIndex } ) =>
+											propIndex < firstValuedIndex
+									)
+									.sort( ( a, b ) => a.index - b.index );
+
+								// Create fixes to remove all boolean props
+								const removeFixes = booleanPropsToMove.map(
+									( { attribute: attr } ) => {
+										let [ removeStart, removeEnd ] =
+											attr.range;
+										const afterAttr =
+											sourceCode.text.slice( removeEnd );
+										const whitespaceMatch =
+											afterAttr.match( /^\s+/ );
+										if ( whitespaceMatch ) {
+											removeEnd +=
+												whitespaceMatch[ 0 ].length;
+										}
+										return fixer.removeRange( [
+											removeStart,
+											removeEnd,
+										] );
+									}
 								);
 
-								return [ removeFix, insertFix ];
+								// Create fix to insert all boolean props at the end
+								const booleanPropsText = booleanPropsToMove
+									.map( ( { attribute: attr } ) =>
+										sourceCode.getText( attr )
+									)
+									.join( ' ' );
+								const insertFix = fixer.insertTextAfterRange(
+									[ insertIndex, insertIndex ],
+									` ${ booleanPropsText }`
+								);
+
+								return [ ...removeFixes, insertFix ];
 							},
 						} );
 					}
