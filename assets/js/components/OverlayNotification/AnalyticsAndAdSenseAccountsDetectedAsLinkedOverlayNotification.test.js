@@ -307,6 +307,43 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		);
 	} );
 
+	it( 'clicking the `Maybe later` button dismisses the notification', async () => {
+		provideAnalytics4MockReport( registry, reportOptions );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+		fetchMock.getOnce( fetchGetDismissedItemsRegExp, { body: [] } );
+		fetchMock.postOnce( fetchDismissItemRegExp, {
+			body: [ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ],
+		} );
+
+		const { container, getByRole, waitForRegistry } = render(
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toHaveTextContent(
+			'Data is now available for the pages that earn the most AdSense revenue'
+		);
+
+		await act( async () => {
+			await fireEvent.click(
+				getByRole( 'button', { name: /maybe later/i } )
+			);
+		} );
+
+		expect( container ).not.toHaveTextContent(
+			'Data is now available for the pages that earn the most AdSense revenue'
+		);
+	} );
+
 	describe( 'checkRequirements', () => {
 		it( 'is active when all the conditions are met', async () => {
 			provideAnalytics4MockReport( registry, reportOptions );
@@ -477,37 +514,5 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			);
 			expect( isActive ).toBe( true );
 		} );
-	} );
-
-	it( 'clicking the `Maybe later` button dismisses the notification', async () => {
-		provideAnalytics4MockReport( registry, reportOptions );
-		fetchMock.getOnce( fetchGetDismissedItemsRegExp, { body: [] } );
-		fetchMock.postOnce( fetchDismissItemRegExp, {
-			body: [ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ],
-		} );
-
-		const { container, getByRole, waitForRegistry } = render(
-			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toHaveTextContent(
-			'Data is now available for the pages that earn the most AdSense revenue'
-		);
-
-		await act( async () => {
-			await fireEvent.click(
-				getByRole( 'button', { name: /maybe later/i } )
-			);
-		} );
-
-		expect( container ).not.toHaveTextContent(
-			'Data is now available for the pages that earn the most AdSense revenue'
-		);
 	} );
 } );
