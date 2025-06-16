@@ -65,11 +65,11 @@ export default function FirstPartyModeWarningNotification( {
 										'click_learn_more_link'
 									);
 								} }
-								external
 								aria-label={ __(
 									'Learn more about First-party mode server requirements',
 									'google-site-kit'
 								) }
+								external
 							/>
 						),
 					}

@@ -218,13 +218,13 @@ class SearchConsole extends Component {
 			<Fragment>
 				<div className="googlesitekit-setup-module__inputs">
 					<Select
-						enhanced
 						name="siteProperty"
 						label={ __( 'Choose URL', 'google-site-kit' ) }
-						outlined
 						onEnhancedChange={ this.handleURLSelect }
 						options={ sitesList }
 						value={ selectedURL }
+						enhanced
+						outlined
 					/>
 				</div>
 				<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
@@ -271,8 +271,8 @@ class SearchConsole extends Component {
 					<TextField
 						label={ __( 'Website Address', 'google-site-kit' ) }
 						name="siteProperty"
-						outlined
 						value={ siteURL }
+						outlined
 					/>
 				</div>
 				<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">

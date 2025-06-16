@@ -139,9 +139,9 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 
 			<div className="googlesitekit-overlay-notification__actions">
 				<Button
-					tertiary
 					disabled={ isDismissing }
 					onClick={ dismissNotification }
+					tertiary
 				>
 					{ __( 'Maybe later', 'google-site-kit' ) }
 				</Button>

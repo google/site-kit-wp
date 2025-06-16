@@ -147,7 +147,7 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 					) }
 
 				<div className="googlesitekit-dashboard-sharing-settings__footer-actions-right">
-					<Button tertiary onClick={ onCancel }>
+					<Button onClick={ onCancel } tertiary>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Button>
 

@@ -143,7 +143,6 @@ export default function ConfirmDisconnect( { slug } ) {
 	return (
 		<ModalDialog
 			className="googlesitekit-settings-module__confirm-disconnect-modal"
-			dialogActive
 			handleCancel={ onClose }
 			onClose={ onClose }
 			title={ title }
@@ -151,6 +150,7 @@ export default function ConfirmDisconnect( { slug } ) {
 			handleConfirm={ handleDisconnect }
 			dependentModules={ dependentModulesText }
 			inProgress={ isDeactivating }
+			dialogActive
 			danger
 		/>
 	);

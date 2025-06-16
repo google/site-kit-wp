@@ -161,7 +161,6 @@ export default function AudienceErrorModal( {
 	return (
 		<Portal>
 			<ModalDialog
-				dialogActive
 				buttonLink={ buttonLink }
 				title={ errorTitle }
 				subtitle={ errorDescription }
@@ -182,8 +181,9 @@ export default function AudienceErrorModal( {
 					trackEvent( trackEventCategory, action );
 				} }
 				onClose={ onCancel }
-				danger
 				inProgress={ inProgress }
+				dialogActive
+				danger
 			/>
 		</Portal>
 	);

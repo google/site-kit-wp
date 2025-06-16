@@ -137,9 +137,9 @@ function EntitySearchInput() {
 						trailingIcon={ <CloseDark width="30" height="20" /> }
 						className="googlesitekit-entity-search__close"
 						title={ __( 'Close', 'google-site-kit' ) }
+						tooltipEnterDelayInMS={ 500 }
 						text
 						tooltip
-						tooltipEnterDelayInMS={ 500 }
 					/>
 				</div>
 			</div>
@@ -151,12 +151,12 @@ function EntitySearchInput() {
 			<Button
 				className="googlesitekit-border-radius-round--phone googlesitekit-button-icon--phone"
 				onClick={ onOpen }
-				text
 				ref={ buttonRef }
 				title={ __( 'Search', 'google-site-kit' ) }
 				trailingIcon={ <MagnifyingGlass width="20" height="20" /> }
-				tooltip
 				tooltipEnterDelayInMS={ 500 }
+				text
+				tooltip
 			>
 				{ __( 'URL Search', 'google-site-kit' ) }
 			</Button>

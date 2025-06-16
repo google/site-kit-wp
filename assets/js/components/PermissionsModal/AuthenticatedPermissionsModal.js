@@ -126,10 +126,10 @@ function AuthenticatedPermissionsModal() {
 				) }
 				subtitle={ permissionsError.message }
 				confirmButton={ __( 'Proceed', 'google-site-kit' ) }
-				dialogActive
 				handleConfirm={ onConfirm }
 				handleCancel={ onCancel }
 				onClose={ onCancel }
+				dialogActive
 				medium
 			/>
 		</Portal>

@@ -230,7 +230,6 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 
 			<div className="googlesitekit-overlay-notification__actions">
 				<Button
-					tertiary
 					disabled={ isDismissing }
 					onClick={ () => {
 						dismissNotification();
@@ -240,6 +239,7 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 							'dismiss_overlay_CTA'
 						);
 					} }
+					tertiary
 				>
 					{ __( 'Maybe later', 'google-site-kit' ) }
 				</Button>
