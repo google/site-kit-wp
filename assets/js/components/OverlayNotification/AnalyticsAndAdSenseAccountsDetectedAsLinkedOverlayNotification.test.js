@@ -52,12 +52,16 @@ import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
 	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
 } from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
 
 describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () => {
 	const AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotificationComponent =
 		withNotificationComponentProps(
 			ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
 		)( AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification );
+
+	const notification =
+		DEFAULT_NOTIFICATIONS[ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ];
 
 	let registry;
 
@@ -150,6 +154,18 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		expect( container ).toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
+	} );
+
+	describe( 'checkRequirements', () => {
+		it( 'is active when all the conditions are met', async () => {
+			provideAnalytics4MockReport( registry, reportOptions );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
+		} );
 	} );
 
 	it( 'does not render when Analytics module is not connected', async () => {
