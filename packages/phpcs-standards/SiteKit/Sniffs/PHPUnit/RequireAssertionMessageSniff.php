@@ -102,17 +102,29 @@ class RequireAssertionMessageSniff implements Sniff {
 		$close_parenthesis = $tokens[ $open_parenthesis ]['parenthesis_closer'];
 
 		// Count the number of parameters passed to the function.
-		$param_count = 0;
-		$current_ptr = $open_parenthesis + 1;
+		$param_count   = 0;
+		$current_ptr   = $open_parenthesis + 1;
+		$nesting_level = 0;
 
 		while ( $current_ptr < $close_parenthesis ) {
-			if ( T_COMMA === $tokens[ $current_ptr ]['code'] ) {
+			if ( in_array( $tokens[ $current_ptr ]['code'], array( T_OPEN_PARENTHESIS, T_OPEN_SHORT_ARRAY, T_OPEN_CURLY_BRACKET ), true ) ) {
+				++$nesting_level;
+				if ( isset( $tokens[ $current_ptr ]['parenthesis_closer'] ) ) {
+					$current_ptr = $tokens[ $current_ptr ]['parenthesis_closer'];
+					--$nesting_level;
+					++$current_ptr;
+					continue;
+				}
+			} elseif ( in_array( $tokens[ $current_ptr ]['code'], array( T_CLOSE_PARENTHESIS, T_CLOSE_SHORT_ARRAY, T_CLOSE_CURLY_BRACKET ), true ) ) {
+				--$nesting_level;
+			} elseif ( T_COMMA === $tokens[ $current_ptr ]['code'] && 0 === $nesting_level ) {
+				// Only count commas at the top level of the function call.
 				++$param_count;
 			}
 			++$current_ptr;
 		}
 
-		// The number of parameters is the number of commas plus 1.
+		// The number of parameters is the number of top-level commas plus 1.
 		++$param_count;
 
 		// Determine the required number of parameters for the assertion method.
