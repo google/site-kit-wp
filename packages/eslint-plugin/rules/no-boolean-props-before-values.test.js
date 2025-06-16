@@ -72,7 +72,7 @@ ruleTester.run( 'no-boolean-props-before-values', rule, {
 			code: '<Component prop="value" disabled={isDisabled || false} />',
 		},
 
-		// Props with spread operator.
+		// With spread properties. The position of spread props does not affect the rule.
 		{
 			code: '<Component {...props} disabled />',
 		},
@@ -81,6 +81,18 @@ ruleTester.run( 'no-boolean-props-before-values', rule, {
 		},
 		{
 			code: '<Component {...props} prop="value" disabled />',
+		},
+		{
+			code: '<Component prop="value" {...props} disabled required />',
+		},
+		{
+			code: '<Component propA="a" {...props} propB="b" disabled />',
+		},
+		{
+			code: '<Component prop="value" disabled {...props} required />',
+		},
+		{
+			code: '<Component {...props} prop="value" {...moreProps} disabled />',
 		},
 
 		// Multiple boolean props.
@@ -117,6 +129,18 @@ ruleTester.run( 'no-boolean-props-before-values', rule, {
 			output: '<Component prop="value" anotherProp={value} disabled />',
 		},
 
+		// A boolean prop between two valued props is invalid.
+		{
+			code: '<Component propA="a" disabled propB="b" />',
+			errors: [
+				{
+					message:
+						'Boolean prop "disabled" should appear after props with values.',
+				},
+			],
+			output: '<Component propA="a" propB="b" disabled />',
+		},
+
 		// Multiple boolean props.
 		{
 			code: '<Component disabled required prop="value" />',
@@ -133,7 +157,7 @@ ruleTester.run( 'no-boolean-props-before-values', rule, {
 			output: '<Component prop="value" disabled required />',
 		},
 
-		// Props with spread operator.
+		// With spread properties. The position of spread props is preserved on fix.
 		{
 			code: '<Component disabled {...props} prop="value" />',
 			errors: [
