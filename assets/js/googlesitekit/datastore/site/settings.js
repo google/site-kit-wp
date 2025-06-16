@@ -199,7 +199,7 @@ const baseSelectors = {
 		const baseURL = select( CORE_SITE ).getAdminURL(
 			'googlesitekit-settings'
 		);
-		return `${ baseURL }#/connect-more-services`;
+		return `${ baseURL }#connect-more-services`;
 	} ),
 
 	/**
