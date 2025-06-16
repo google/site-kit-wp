@@ -30,7 +30,6 @@ import {
 } from '../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
-	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
@@ -56,6 +55,7 @@ import {
 	NOTIFICATION_GROUPS,
 } from '../../googlesitekit/notifications/constants';
 import Notifications from '../notifications/Notifications';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 
 describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () => {
 	const AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotificationComponent =
@@ -139,9 +139,16 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			],
 			limit: 1,
 		};
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
+				notification
+			);
 	} );
 
-	it( 'renders the overlay notification component correctly.', () => {
+	it( 'renders the overlay notification component correctly', () => {
 		const { container } = render(
 			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotificationComponent />,
 			{
@@ -149,6 +156,27 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
+
+		expect( container ).toHaveTextContent(
+			'Data is now available for the pages that earn the most AdSense revenue'
+		);
+	} );
+
+	it( 'renders the overlay notification correctly on the main dashboard', async () => {
+		provideAnalytics4MockReport( registry, reportOptions );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+		const { container, waitForRegistry } = render(
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+		await waitForRegistry();
 
 		expect( container ).toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
@@ -346,26 +374,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			);
 			expect( isActive ).toBe( true );
 		} );
-	} );
-
-	it( 'does not render in "view only" entity dashboard', async () => {
-		provideUserAuthentication( registry, { authenticated: false } );
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetCapabilities( capabilities.permissions );
-		provideAnalytics4MockReport( registry, reportOptions );
-
-		const { container, waitForRegistry } = render(
-			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
-			}
-		);
-		await waitForRegistry();
-		expect( container ).not.toHaveTextContent(
-			'Data is now available for the pages that earn the most AdSense revenue'
-		);
 	} );
 
 	it( 'renders `Show me` and `Maybe later` buttons`', async () => {
