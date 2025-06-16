@@ -247,19 +247,64 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		);
 	} );
 
-	it( 'renders `Show me` and `Maybe later` buttons`', () => {
+	it( 'renders `Show me` and `Maybe later` buttons`', async () => {
 		provideAnalytics4MockReport( registry, reportOptions );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
-		const { container } = render(
-			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotificationComponent />,
+		const { container, waitForRegistry } = render(
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toHaveTextContent(
+			'Data is now available for the pages that earn the most AdSense revenue'
+		);
+		expect( container ).toHaveTextContent( 'Show me' );
+		expect( container ).toHaveTextContent( 'Maybe later' );
+	} );
+
+	it( 'clicking the `Show me` button dismisses the notification', async () => {
+		provideAnalytics4MockReport( registry, reportOptions );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+		fetchMock.getOnce( fetchGetDismissedItemsRegExp, { body: [] } );
+		fetchMock.postOnce( fetchDismissItemRegExp, {
+			body: [ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ],
+		} );
+
+		const { container, getByRole, waitForRegistry } = render(
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
-		expect( container ).toHaveTextContent( 'Show me' );
-		expect( container ).toHaveTextContent( 'Maybe later' );
+		await waitForRegistry();
+
+		expect( container ).toHaveTextContent(
+			'Data is now available for the pages that earn the most AdSense revenue'
+		);
+
+		act( () => {
+			fireEvent.click( getByRole( 'button', { name: /show me/i } ) );
+		} );
+
+		await waitForRegistry();
+
+		expect( container ).not.toHaveTextContent(
+			'Data is now available for the pages that earn the most AdSense revenue'
+		);
 	} );
 
 	describe( 'checkRequirements', () => {
@@ -432,38 +477,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			);
 			expect( isActive ).toBe( true );
 		} );
-	} );
-
-	it( 'clicking the `Show me` button dismisses the notification', async () => {
-		provideAnalytics4MockReport( registry, reportOptions );
-		fetchMock.getOnce( fetchGetDismissedItemsRegExp, { body: [] } );
-		fetchMock.postOnce( fetchDismissItemRegExp, {
-			body: [ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ],
-		} );
-
-		const { container, getByRole, waitForRegistry } = render(
-			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toHaveTextContent(
-			'Data is now available for the pages that earn the most AdSense revenue'
-		);
-
-		act( () => {
-			fireEvent.click( getByRole( 'button', { name: /show me/i } ) );
-		} );
-
-		await waitForRegistry();
-
-		expect( container ).not.toHaveTextContent(
-			'Data is now available for the pages that earn the most AdSense revenue'
-		);
 	} );
 
 	it( 'clicking the `Maybe later` button dismisses the notification', async () => {
