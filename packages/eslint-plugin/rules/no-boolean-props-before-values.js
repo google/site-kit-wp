@@ -32,7 +32,7 @@ module.exports = {
 	create( context ) {
 		return {
 			JSXOpeningElement( node ) {
-				let firstValuedIndex = -1;
+				let lastValuedIndex = -1;
 				const booleanProps = [];
 
 				for (
@@ -52,19 +52,19 @@ module.exports = {
 							attribute,
 							index: attributeIndex,
 						} );
+					} else {
 						// If this is the first valued attribute, set the index.
-					} else if ( firstValuedIndex === -1 ) {
-						firstValuedIndex = attributeIndex;
+						lastValuedIndex = attributeIndex;
 					}
 				}
 
 				// If there are no boolean props or no valued props, there's nothing to do.
-				if ( firstValuedIndex === -1 || booleanProps.length === 0 ) {
+				if ( lastValuedIndex === -1 || booleanProps.length === 0 ) {
 					return;
 				}
 
 				const misplacedBooleanProps = booleanProps.filter(
-					( { index } ) => index < firstValuedIndex
+					( { index } ) => index < lastValuedIndex
 				);
 
 				if ( misplacedBooleanProps.length === 0 ) {
