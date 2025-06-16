@@ -247,6 +247,21 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		);
 	} );
 
+	it( 'renders `Show me` and `Maybe later` buttons`', () => {
+		provideAnalytics4MockReport( registry, reportOptions );
+
+		const { container } = render(
+			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotificationComponent />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		expect( container ).toHaveTextContent( 'Show me' );
+		expect( container ).toHaveTextContent( 'Maybe later' );
+	} );
+
 	describe( 'checkRequirements', () => {
 		it( 'is active when all the conditions are met', async () => {
 			provideAnalytics4MockReport( registry, reportOptions );
@@ -417,22 +432,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			);
 			expect( isActive ).toBe( true );
 		} );
-	} );
-
-	it( 'renders `Show me` and `Maybe later` buttons`', async () => {
-		provideAnalytics4MockReport( registry, reportOptions );
-
-		const { container, waitForRegistry } = render(
-			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-		await waitForRegistry();
-
-		expect( container ).toHaveTextContent( 'Show me' );
-		expect( container ).toHaveTextContent( 'Maybe later' );
 	} );
 
 	it( 'clicking the `Show me` button dismisses the notification', async () => {
