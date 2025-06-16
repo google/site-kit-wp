@@ -212,6 +212,18 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			);
 			expect( isActive ).toBe( false );
 		} );
+
+		it( 'does not render when isAdSenseLinked is `false`', async () => {
+			provideAnalytics4MockReport( registry, reportOptions );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( false );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 
 	it( 'does not render when isAdSenseLinked is `false`', async () => {
