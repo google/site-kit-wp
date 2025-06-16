@@ -51,6 +51,11 @@ import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
 } from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/constants';
+import Notifications from '../notifications/Notifications';
 
 describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () => {
 	const AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotificationComponent =
@@ -146,6 +151,27 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		);
 
 		expect( container ).toHaveTextContent(
+			'Data is now available for the pages that earn the most AdSense revenue'
+		);
+	} );
+
+	it( 'does not render on the entity dashboard', async () => {
+		provideAnalytics4MockReport( registry, reportOptions );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+		const { container, waitForRegistry } = render(
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).not.toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
 	} );
@@ -250,23 +276,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			);
 			expect( isActive ).toBe( false );
 		} );
-	} );
-
-	it( 'does not render in entity dashboard', async () => {
-		provideAnalytics4MockReport( registry, reportOptions );
-
-		const { container, waitForRegistry } = render(
-			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
-			}
-		);
-		await waitForRegistry();
-
-		expect( container ).not.toHaveTextContent(
-			'Data is now available for the pages that earn the most AdSense revenue'
-		);
 	} );
 
 	it( 'does not render in "view only" dashboard without Analytics access', async () => {
