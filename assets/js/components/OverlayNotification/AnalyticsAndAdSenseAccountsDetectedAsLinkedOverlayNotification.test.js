@@ -278,11 +278,44 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		} );
 
 		it( 'is not active on a "view only" dashboard without Analytics access', async () => {
+			provideAnalytics4MockReport( registry, reportOptions );
+
+			expect(
+				await notification.checkRequirements(
+					registry,
+					VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+				)
+			).toBe( true );
+
 			provideUserAuthentication( registry, { authenticated: false } );
 			registry
 				.dispatch( CORE_USER )
 				.receiveGetCapabilities(
 					capabilitiesAnalyticsNoAccess.permissions
+				);
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+			);
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when on a "view only" dashboard without AdSense access', async () => {
+			provideAnalytics4MockReport( registry, reportOptions );
+
+			expect(
+				await notification.checkRequirements(
+					registry,
+					VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+				)
+			).toBe( true );
+
+			provideUserAuthentication( registry, { authenticated: false } );
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetCapabilities(
+					capabilitiesAdSenseNoAccess.permissions
 				);
 
 			const isActive = await notification.checkRequirements(
