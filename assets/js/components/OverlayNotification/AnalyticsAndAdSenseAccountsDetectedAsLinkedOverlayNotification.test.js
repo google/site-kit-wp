@@ -234,6 +234,22 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			);
 			expect( isActive ).toBe( false );
 		} );
+
+		it( 'is not active when adSenseLinked is `true` but there is zero data', async () => {
+			const report = getAnalytics4MockResponse( reportOptions );
+			const zeroReport =
+				replaceValuesInAnalytics4ReportWithZeroData( report );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetReport( zeroReport, { options: reportOptions } );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 
 	it( 'does not render if adSenseLinked is `true` but there is zero data', async () => {
