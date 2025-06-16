@@ -19,7 +19,24 @@ ROOT_DIR="$(dirname "$BIN_DIR")/../../"
 
 # Remember to update the version tag in the publish-vrt-docker-image workflow when updating this version.
 VERSION=6.3.25
-IMAGE=ghcr.io/google-site-kit-bot/vrt:$VERSION
+
+# Check if running in GitHub Action.
+if [ -n "$GITHUB_ACTIONS" ]; then
+  # Use the GitHub Container Registry image when running in GitHub Actions.
+  IMAGE=ghcr.io/google-site-kit-bot/vrt:$VERSION
+else
+  # Use the local image name when running locally.
+  IMAGE=googlesitekit/vrt:$VERSION
+  
+  # Only build the Docker image if it doesn't already exist in the local Docker registry.
+  if ! docker image inspect $IMAGE &> /dev/null; then
+    docker build \
+      --pull \
+      --tag $IMAGE \
+      --build-arg BACKSTOPJS_VERSION=$VERSION \
+      "$ROOT_DIR/tests/backstop"
+  fi
+fi
 
 # Run the backstopjs command.
 docker run --rm --tty \
