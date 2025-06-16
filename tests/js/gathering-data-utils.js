@@ -10,6 +10,8 @@ import { getAnalytics4MockResponse } from '../../assets/js/modules/analytics-4/u
 import { getSearchConsoleMockResponse } from '../../assets/js/modules/search-console/util/data-mock';
 import { MODULES_ANALYTICS_4 } from '../../assets/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../assets/js/modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../assets/js/modules/search-console/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../assets/js/modules/analytics-4/constants';
 
 /**
  * Provides the required data to the given registry to ensure the gathering data state is set for the Analytics 4 module.
@@ -59,8 +61,8 @@ function provideSearchConsoleGatheringDataState( registry, isGatheringData ) {
 }
 
 const moduleDataProviderMap = {
-	'analytics-4': provideAnalytics4GatheringDataState,
-	'search-console': provideSearchConsoleGatheringDataState,
+	[ MODULE_SLUG_ANALYTICS_4 ]: provideAnalytics4GatheringDataState,
+	[ MODULE_SLUG_SEARCH_CONSOLE ]: provideSearchConsoleGatheringDataState,
 };
 
 /**
