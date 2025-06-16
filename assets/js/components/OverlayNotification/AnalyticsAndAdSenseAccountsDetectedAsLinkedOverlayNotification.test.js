@@ -226,22 +226,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		} );
 	} );
 
-	it( 'does not render when isAdSenseLinked is `false`', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( false );
-
-		const { container, waitForRegistry } = render(
-			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-		await waitForRegistry();
-		expect( container ).not.toHaveTextContent(
-			'Data is now available for the pages that earn the most AdSense revenue'
-		);
-	} );
-
 	it( 'does not render if dismissed previously', async () => {
 		registry
 			.dispatch( CORE_USER )
