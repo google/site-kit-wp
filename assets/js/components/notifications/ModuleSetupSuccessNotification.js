@@ -45,8 +45,8 @@ export default function ModuleSetupSuccessNotification( { id, Notification } ) {
 		select( CORE_MODULES ).getModule( slug )
 	);
 
-	const settingsAdminURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	const connectMoreServicesURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getConnectMoreServicesURL()
 	);
 
 	const onDismiss = () => {
@@ -85,7 +85,7 @@ export default function ModuleSetupSuccessNotification( { id, Notification } ) {
 				} }
 				ctaButton={ {
 					label: __( 'Go to Settings', 'google-site-kit' ),
-					href: `${ settingsAdminURL }#/connect-more-services`,
+					href: connectMoreServicesURL,
 				} }
 			/>
 		</Notification>
