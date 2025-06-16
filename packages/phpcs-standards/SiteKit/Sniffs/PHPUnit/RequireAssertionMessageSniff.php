@@ -22,9 +22,24 @@ class RequireAssertionMessageSniff implements Sniff {
 	/**
 	 * List of PHPUnit assertion methods.
 	 *
+	 * This is automatically populated from the PHPUnit Assert class.
+	 *
 	 * @var array
 	 */
 	protected $assertion_methods = array();
+
+	/**
+	 * List of custom assertion methods.
+	 *
+	 * This is a list of custom assertion methods from the Site Kit codebase
+	 * which must also be checked. Each method is mapped to the number of
+	 * required parameters used to check if a message is passed.
+	 *
+	 * @var array
+	 */
+	protected $custom_assertion_methods = array(
+		'assertArrayIntersection' => 3,
+	);
 
 	/**
 	 * Constructor.
@@ -72,7 +87,7 @@ class RequireAssertionMessageSniff implements Sniff {
 		$content = $tokens[ $stack_ptr ]['content'];
 
 		// Check if the current token is an assertion method.
-		if ( ! in_array( $content, $this->assertion_methods, true ) ) {
+		if ( ! in_array( $content, $this->assertion_methods, true ) && ! array_key_exists( $content, $this->custom_assertion_methods ) ) {
 			return;
 		}
 
@@ -100,8 +115,14 @@ class RequireAssertionMessageSniff implements Sniff {
 		// The number of parameters is the number of commas plus 1.
 		++$param_count;
 
+		// Determine the required number of parameters for the assertion method.
+		if ( array_key_exists( $content, $this->custom_assertion_methods ) ) {
+			$required_params = $this->custom_assertion_methods[ $content ];
+		} else {
+			$required_params = $this->get_required_assertion_params( $content );
+		}
+
 		// Check if the message parameter is missing.
-		$required_params = $this->get_required_assertion_params( $content );
 		if ( $param_count < $required_params ) {
 			$phpcs_file->addError(
 				'PHPUnit assertion "%s" should have a message parameter',
