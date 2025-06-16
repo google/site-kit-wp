@@ -30,6 +30,7 @@ import {
 } from '../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
@@ -216,6 +217,27 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).not.toHaveTextContent(
+			'Data is now available for the pages that earn the most AdSense revenue'
+		);
+	} );
+
+	it( 'does not render on the entity view only dashboard', async () => {
+		provideAnalytics4MockReport( registry, reportOptions );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+		const { container, waitForRegistry } = render(
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			}
 		);
 		await waitForRegistry();
