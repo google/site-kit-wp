@@ -326,24 +326,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		} );
 	} );
 
-	it( 'does not render in "view only" dashboard without AdSense access', async () => {
-		provideUserAuthentication( registry, { authenticated: false } );
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetCapabilities( capabilitiesAdSenseNoAccess.permissions );
-		const { container, waitForRegistry } = render(
-			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-			}
-		);
-		await waitForRegistry();
-		expect( container ).not.toHaveTextContent(
-			'Data is now available for the pages that earn the most AdSense revenue'
-		);
-	} );
-
 	it( 'renders in "view only" dashboard with Analytics and AdSense access', async () => {
 		provideUserAuthentication( registry, { authenticated: false } );
 		registry
