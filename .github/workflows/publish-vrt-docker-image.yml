@@ -1,0 +1,30 @@
+name: Publish VRT Docker Image
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'tests/backstop/Dockerfile'
+      - '.github/workflows/publish-vrt-docker-image.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          # Update the version number here when updating the Backstop version within the Dockerfile.
+          tags: ghcr.io/google-site-kit-bot/vrt:6.3.25
+          context: ./tests/backstop
+          push: true

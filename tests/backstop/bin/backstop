@@ -17,15 +17,9 @@
 BIN_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 ROOT_DIR="$(dirname "$BIN_DIR")/../../"
 
+# Remember to update the version tag in the publish-vrt-docker-image workflow when updating this version.
 VERSION=6.3.25
-IMAGE=googlesitekit/vrt:$VERSION
-
-# (re)Build the backstopjs image as needed.
-docker build \
-	--pull \
-	--tag $IMAGE \
-	--build-arg BACKSTOPJS_VERSION=$VERSION \
-	"$ROOT_DIR/tests/backstop"
+IMAGE=ghcr.io/google-site-kit-bot/vrt:$VERSION
 
 # Run the backstopjs command.
 docker run --rm --tty \
