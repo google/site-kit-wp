@@ -82,7 +82,7 @@ describe( 'FullScreenMetricSelectionApp', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
-		provideSiteInfo( registry, { keyMetricsSetupCompletedBy: 1 } );
+		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		provideUserInfo( registry, { id: 1 } );
 		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
