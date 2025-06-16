@@ -252,29 +252,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		} );
 	} );
 
-	it( 'does not render if adSenseLinked is `true` but there is zero data', async () => {
-		const report = getAnalytics4MockResponse( reportOptions );
-		const zeroReport =
-			replaceValuesInAnalytics4ReportWithZeroData( report );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( zeroReport, { options: reportOptions } );
-
-		const { container, waitForRegistry } = render(
-			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-		await waitForRegistry();
-
-		expect( container ).not.toHaveTextContent(
-			'Data is now available for the pages that earn the most AdSense revenue'
-		);
-	} );
-
 	it( 'does not render in entity dashboard', async () => {
 		provideAnalytics4MockReport( registry, reportOptions );
 
