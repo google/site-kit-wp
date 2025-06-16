@@ -218,6 +218,22 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			);
 			expect( isActive ).toBe( false );
 		} );
+
+		it( 'is not active if adSenseLinked is `true` but data is in a "gathering data" state', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetReport( {}, { options: reportOptions } );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( true );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 
 	it( 'does not render if adSenseLinked is `true` but data is in a "gathering data" state', async () => {
