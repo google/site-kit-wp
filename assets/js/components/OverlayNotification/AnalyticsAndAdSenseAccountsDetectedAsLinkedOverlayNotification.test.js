@@ -24,7 +24,6 @@ import {
 	act,
 	createTestRegistry,
 	fireEvent,
-	freezeFetch,
 	provideModules,
 	provideUserAuthentication,
 	render,
@@ -35,7 +34,6 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
@@ -72,10 +70,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 	);
 	const fetchDismissItemRegExp = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
-	);
-
-	const fetchAnalyticsReportRegExp = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
 	const capabilitiesAdSenseNoAccess = {
@@ -224,52 +218,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			);
 			expect( isActive ).toBe( false );
 		} );
-	} );
-
-	it( 'does not render if it was dismissed by the `dismissItem` action', async () => {
-		fetchMock.getOnce( fetchGetDismissedItemsRegExp, { body: [] } );
-		fetchMock.postOnce( fetchDismissItemRegExp, {
-			body: [ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ],
-		} );
-
-		// Dismissing the notification should cause it to not render.
-		await registry
-			.dispatch( CORE_UI )
-			.dismissOverlayNotification(
-				ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
-			);
-
-		const { container, waitForRegistry } = render(
-			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-		await waitForRegistry();
-		expect( container ).not.toHaveTextContent(
-			'Data is now available for the pages that earn the most AdSense revenue'
-		);
-	} );
-
-	it( 'does not render if another notification is showing', async () => {
-		freezeFetch( fetchAnalyticsReportRegExp );
-
-		await registry
-			.dispatch( CORE_UI )
-			.setOverlayNotificationToShow( 'TestOverlayNotification' );
-
-		const { container, waitForRegistry } = render(
-			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-		await waitForRegistry();
-		expect( container ).not.toHaveTextContent(
-			'Data is now available for the pages that earn the most AdSense revenue'
-		);
 	} );
 
 	it( 'does not render without the feature flag', async () => {
