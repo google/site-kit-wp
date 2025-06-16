@@ -324,6 +324,28 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			);
 			expect( isActive ).toBe( false );
 		} );
+
+		it( 'is active on a "view only" dashboard with Analytics and AdSense access', async () => {
+			provideAnalytics4MockReport( registry, reportOptions );
+
+			expect(
+				await notification.checkRequirements(
+					registry,
+					VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+				)
+			).toBe( true );
+
+			provideUserAuthentication( registry, { authenticated: false } );
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetCapabilities( capabilities.permissions );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+			);
+			expect( isActive ).toBe( true );
+		} );
 	} );
 
 	it( 'renders in "view only" dashboard with Analytics and AdSense access', async () => {
