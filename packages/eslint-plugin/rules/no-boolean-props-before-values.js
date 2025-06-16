@@ -35,82 +35,101 @@ module.exports = {
 				let firstValuedIndex = -1;
 				const booleanProps = [];
 
-				for ( let i = 0; i < node.attributes.length; i++ ) {
-					const attribute = node.attributes[ i ];
+				for (
+					let attributeIndex = 0;
+					attributeIndex < node.attributes.length;
+					attributeIndex++
+				) {
+					const attribute = node.attributes[ attributeIndex ];
 
 					if ( attribute.type !== 'JSXAttribute' ) {
 						continue;
 					}
 
-					// If the attribute has no value, it is a boolean prop.
+					// If the attribute has no value, it's a boolean prop.
 					if ( attribute.value === null ) {
-						booleanProps.push( { attribute, index: i } );
-					} else {
-						firstValuedIndex = i;
-					}
-				}
-
-				for ( const { attribute, index } of booleanProps ) {
-					if ( index < firstValuedIndex ) {
-						context.report( {
-							node: attribute,
-							// eslint-disable-next-line sitekit/acronym-case
-							messageId: 'booleanPropBeforeValue',
-							data: {
-								name: attribute.name.name,
-							},
-							fix( fixer ) {
-								const sourceCode = context.getSourceCode();
-								const lastAttribute =
-									node.attributes[
-										node.attributes.length - 1
-									];
-								const insertIndex = lastAttribute.range[ 1 ];
-
-								// Get all boolean props that need to be moved
-								const booleanPropsToMove = booleanProps
-									.filter(
-										( { index: propIndex } ) =>
-											propIndex < firstValuedIndex
-									)
-									.sort( ( a, b ) => a.index - b.index );
-
-								// Create fixes to remove all boolean props
-								const removeFixes = booleanPropsToMove.map(
-									( { attribute: attr } ) => {
-										let [ removeStart, removeEnd ] =
-											attr.range;
-										const afterAttr =
-											sourceCode.text.slice( removeEnd );
-										const whitespaceMatch =
-											afterAttr.match( /^\s+/ );
-										if ( whitespaceMatch ) {
-											removeEnd +=
-												whitespaceMatch[ 0 ].length;
-										}
-										return fixer.removeRange( [
-											removeStart,
-											removeEnd,
-										] );
-									}
-								);
-
-								// Create fix to insert all boolean props at the end
-								const booleanPropsText = booleanPropsToMove
-									.map( ( { attribute: attr } ) =>
-										sourceCode.getText( attr )
-									)
-									.join( ' ' );
-								const insertFix = fixer.insertTextAfterRange(
-									[ insertIndex, insertIndex ],
-									` ${ booleanPropsText }`
-								);
-
-								return [ ...removeFixes, insertFix ];
-							},
+						booleanProps.push( {
+							attribute,
+							index: attributeIndex,
 						} );
+						// If this is the first valued attribute, set the index.
+					} else if ( firstValuedIndex === -1 ) {
+						firstValuedIndex = attributeIndex;
 					}
 				}
+
+				// If there are no boolean props or no valued props, there's nothing to do.
+				if ( firstValuedIndex === -1 || booleanProps.length === 0 ) {
+					return;
+				}
+
+				const misplacedBooleanProps = booleanProps.filter(
+					( { index } ) => index < firstValuedIndex
+				);
+
+				if ( misplacedBooleanProps.length === 0 ) {
+					return;
+				}
+
+				const fix = ( fixer ) => {
+					const sourceCode = context.getSourceCode();
+
+					const allBooleanAttributes = node.attributes.filter(
+						( attribute ) =>
+							attribute.type === 'JSXAttribute' &&
+							attribute.value === null
+					);
+
+					const lastNonBooleanAttribute = [ ...node.attributes ]
+						.reverse()
+						.find(
+							( attribute ) =>
+								! (
+									attribute.type === 'JSXAttribute' &&
+									attribute.value === null
+								)
+						);
+
+					const booleanPropsText = allBooleanAttributes
+						.map( ( attribute ) => sourceCode.getText( attribute ) )
+						.join( ' ' );
+
+					// Create fixes to remove all boolean props from their original positions.
+					const removeFixes = allBooleanAttributes.map( ( attr ) => {
+						let [ removeStart, removeEnd ] = attr.range;
+						const afterAttr = sourceCode.text.slice( removeEnd );
+						const whitespaceMatch = afterAttr.match( /^\s+/ );
+						if ( whitespaceMatch ) {
+							removeEnd += whitespaceMatch[ 0 ].length;
+						}
+						return fixer.removeRange( [ removeStart, removeEnd ] );
+					} );
+
+					// Insert the boolean props after the last non-boolean attribute.
+					const insertFix = fixer.insertTextAfter(
+						lastNonBooleanAttribute,
+						` ${ booleanPropsText }`
+					);
+
+					return [ ...removeFixes, insertFix ];
+				};
+
+				misplacedBooleanProps.forEach( ( { attribute }, index ) => {
+					const report = {
+						node: attribute,
+						// eslint-disable-next-line sitekit/acronym-case
+						messageId: 'booleanPropBeforeValue',
+						data: {
+							name: attribute.name.name,
+						},
+					};
+
+					if ( index === 0 ) {
+						report.fix = fix;
+					}
+
+					context.report( report );
+				} );
 			},
 		};
 	},
