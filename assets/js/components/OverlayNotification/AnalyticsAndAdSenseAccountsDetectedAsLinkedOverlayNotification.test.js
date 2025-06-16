@@ -276,6 +276,21 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			);
 			expect( isActive ).toBe( false );
 		} );
+
+		it( 'is not active on a "view only" dashboard without Analytics access', async () => {
+			provideUserAuthentication( registry, { authenticated: false } );
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetCapabilities(
+					capabilitiesAnalyticsNoAccess.permissions
+				);
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 
 	it( 'does not render in "view only" dashboard without Analytics access', async () => {
