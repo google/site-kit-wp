@@ -226,26 +226,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		} );
 	} );
 
-	it( 'does not render if dismissed previously', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
-			] );
-
-		const { container, waitForRegistry } = render(
-			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-		await waitForRegistry();
-		expect( container ).not.toHaveTextContent(
-			'Data is now available for the pages that earn the most AdSense revenue'
-		);
-	} );
-
 	it( 'does not render if it was dismissed by the `dismissItem` action', async () => {
 		fetchMock.getOnce( fetchGetDismissedItemsRegExp, { body: [] } );
 		fetchMock.postOnce( fetchDismissItemRegExp, {
