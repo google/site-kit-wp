@@ -38,12 +38,12 @@ import {
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
@@ -51,8 +51,14 @@ import {
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
 	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
 } from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 
 describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () => {
+	const AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotificationComponent =
+		withNotificationComponentProps(
+			ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
+		)( AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification );
+
 	let registry;
 
 	const adSenseAccountID = 'pub-1234567890';
@@ -130,6 +136,20 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			],
 			limit: 1,
 		};
+	} );
+
+	it( 'renders the overlay notification component correctly.', () => {
+		const { container } = render(
+			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotificationComponent />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		expect( container ).toHaveTextContent(
+			'Data is now available for the pages that earn the most AdSense revenue'
+		);
 	} );
 
 	it( 'does not render when Analytics module is not connected', async () => {
@@ -328,23 +348,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		await waitForRegistry();
 
 		expect( container ).not.toHaveTextContent(
-			'Data is now available for the pages that earn the most AdSense revenue'
-		);
-	} );
-
-	it( 'renders if adSenseLinked is `true` and data is available', async () => {
-		provideAnalytics4MockReport( registry, reportOptions );
-
-		const { container, waitForRegistry } = render(
-			<AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-		await waitForRegistry();
-
-		expect( container ).toHaveTextContent(
 			'Data is now available for the pages that earn the most AdSense revenue'
 		);
 	} );
