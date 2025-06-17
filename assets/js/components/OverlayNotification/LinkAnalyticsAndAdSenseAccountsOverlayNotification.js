@@ -29,7 +29,6 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import AnalyticsAdsenseConnectGraphicDesktop from '../../../svg/graphics/analytics-adsense-connect-desktop.svg';
 import AnalyticsAdsenseConnectGraphicMobile from '../../../svg/graphics/analytics-adsense-connect-mobile.svg';
 import OverlayNotification from './OverlayNotification';
@@ -50,12 +49,6 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 		)
 	);
 
-	const isAdSenseLinked = useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
-	} );
-
-	const shouldShowNotification = isAdSenseLinked === false;
-
 	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 
 	const dismissNotification = () => {
@@ -68,7 +61,7 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 
 	return (
 		<OverlayNotification
-			shouldShowNotification={ shouldShowNotification }
+			shouldShowNotification
 			GraphicDesktop={ AnalyticsAdsenseConnectGraphicDesktop }
 			GraphicMobile={ AnalyticsAdsenseConnectGraphicMobile }
 			notificationID={ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION }
