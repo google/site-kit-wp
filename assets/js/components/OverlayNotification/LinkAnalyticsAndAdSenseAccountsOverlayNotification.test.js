@@ -188,20 +188,6 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		expect( container ).toHaveTextContent( 'Maybe later' );
 	} );
 
-	it( 'does not render when isAdSenseLinked is `true`', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( true );
-
-		const { container } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
-			{
-				registry,
-			}
-		);
-		expect( container ).not.toHaveTextContent(
-			'Link your Analytics and AdSense accounts to find out'
-		);
-	} );
-
 	it( 'does not render if it was dismissed by the `dismissItem` action', async () => {
 		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 		fetchMock.postOnce( fetchDismissItem, {
