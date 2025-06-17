@@ -40,13 +40,9 @@ export default function BannerNotification( {
 	type = TYPES.INFO,
 	title,
 	description,
-	errorText,
-	helpText,
 	learnMoreLink,
 	dismissButton,
 	ctaButton,
-	svg,
-	footer,
 	dismissOptions,
 	gaTrackingEventArgs,
 	...props
@@ -98,8 +94,6 @@ export default function BannerNotification( {
 						<Banner
 							title={ title }
 							description={ description }
-							errorText={ errorText }
-							helpText={ helpText }
 							learnMoreLink={
 								learnMoreLink && {
 									...learnMoreLink,
@@ -118,8 +112,6 @@ export default function BannerNotification( {
 									onClick: handleCTAClickWithTrackEvent,
 								}
 							}
-							svg={ svg }
-							footer={ footer }
 							{ ...props }
 						/>
 					</Cell>
@@ -134,17 +126,9 @@ BannerNotification.propTypes = {
 	type: PropTypes.oneOf( Object.values( TYPES ) ),
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
-	errorText: PropTypes.string,
-	helpText: PropTypes.string,
 	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
 	ctaButton: PropTypes.shape( CTAButton.propTypes ),
-	svg: PropTypes.shape( {
-		desktop: PropTypes.elementType,
-		mobile: PropTypes.elementType,
-		verticalPosition: PropTypes.oneOf( [ 'top', 'center', 'bottom' ] ),
-	} ),
-	footer: PropTypes.node,
 	dismissOptions: PropTypes.object,
 	gaTrackingEventArgs: PropTypes.shape( {
 		category: PropTypes.string,
