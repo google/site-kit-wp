@@ -36,12 +36,18 @@ import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constan
 import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
+import Notifications from '../notifications/Notifications';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '../../googlesitekit/notifications/constants';
 
 describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 	const LinkAnalyticsAndAdSenseAccountsOverlayNotificationComponent =
@@ -76,6 +82,7 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			},
 		] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			adSenseLinked: false,
 		} );
@@ -98,6 +105,42 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		);
 
 		expect( container ).toHaveTextContent(
+			'Link your Analytics and AdSense accounts to find out'
+		);
+	} );
+
+	it( 'renders the overlay notification correctly on the main dashboard', async () => {
+		const { container, waitForRegistry } = render(
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toHaveTextContent(
+			'Link your Analytics and AdSense accounts to find out'
+		);
+	} );
+
+	it( 'does not render on the entity dashboard', async () => {
+		const { container, waitForRegistry } = render(
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).not.toHaveTextContent(
 			'Link your Analytics and AdSense accounts to find out'
 		);
 	} );
