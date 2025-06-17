@@ -31,7 +31,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import AnalyticsAdsenseConnectGraphicDesktop from '../../../svg/graphics/analytics-adsense-connect-desktop.svg';
 import AnalyticsAdsenseConnectGraphicMobile from '../../../svg/graphics/analytics-adsense-connect-mobile.svg';
-import OverlayNotification from './OverlayNotification';
+import OverlayNotification from '../../googlesitekit/notifications/components/layout/OverlayNotification';
 
 export const LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION =
 	'LinkAnalyticsAndAdSenseAccountsOverlayNotification';
@@ -61,7 +61,6 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 
 	return (
 		<OverlayNotification
-			shouldShowNotification
 			GraphicDesktop={ AnalyticsAdsenseConnectGraphicDesktop }
 			GraphicMobile={ AnalyticsAdsenseConnectGraphicMobile }
 			notificationID={ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION }
