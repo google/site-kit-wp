@@ -114,7 +114,6 @@ function Template() {
 }
 
 export const DefaultTypography = Template.bind( {} );
-DefaultTypography.scenario = {};
 
 export default {
 	title: 'Typography',
