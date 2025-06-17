@@ -263,5 +263,26 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			);
 			expect( isActive ).toBe( true );
 		} );
+
+		it( 'is not active when the Analytics module is not connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ADSENSE,
+					active: true,
+					connected: true,
+				},
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: false,
+				},
+			] );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
