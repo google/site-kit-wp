@@ -37,15 +37,12 @@ import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
 import AnalyticsAdsenseConnectGraphicDesktop from '../../../svg/graphics/analytics-adsense-connect-desktop.svg';
 import AnalyticsAdsenseConnectGraphicMobile from '../../../svg/graphics/analytics-adsense-connect-mobile.svg';
 import OverlayNotification from './OverlayNotification';
-import useViewOnly from '../../hooks/useViewOnly';
 import whenActive from '../../util/when-active';
 
 export const LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION =
 	'LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
 function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
-	const isViewOnly = useViewOnly();
-
 	const supportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/adsense/answer/6084409',
@@ -65,7 +62,7 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	);
 
 	const analyticsModuleConnected = useSelect( ( select ) => {
-		if ( isViewOnly || isDismissed ) {
+		if ( isDismissed ) {
 			return null;
 		}
 
@@ -75,7 +72,7 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	} );
 
 	const adSenseModuleConnected = useSelect( ( select ) => {
-		if ( isViewOnly || isDismissed ) {
+		if ( isDismissed ) {
 			return null;
 		}
 
@@ -83,7 +80,7 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	} );
 
 	const isAdSenseLinked = useSelect( ( select ) => {
-		if ( isViewOnly || isDismissed ) {
+		if ( isDismissed ) {
 			return null;
 		}
 
@@ -94,7 +91,6 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 		analyticsModuleConnected && adSenseModuleConnected;
 
 	const shouldShowNotification =
-		! isViewOnly &&
 		analyticsAndAdSenseAreConnected &&
 		isAdSenseLinked === false &&
 		isDismissed === false;
