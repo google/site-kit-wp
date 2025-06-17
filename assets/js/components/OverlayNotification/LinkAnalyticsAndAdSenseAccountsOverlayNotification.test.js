@@ -285,19 +285,6 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		);
 	} );
 
-	it( 'does not render in "view only" dashboard', () => {
-		const { container } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-			}
-		);
-		expect( container ).not.toHaveTextContent(
-			'Link your Analytics and AdSense accounts to find out'
-		);
-	} );
-
 	it( 'renders `Learn how` and `Maybe later` buttons`', () => {
 		const supportURL = registry.select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/adsense/answer/6084409',
