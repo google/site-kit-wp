@@ -34,7 +34,6 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -186,30 +185,6 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			supportURL
 		);
 		expect( container ).toHaveTextContent( 'Maybe later' );
-	} );
-
-	it( 'does not render if it was dismissed by the `dismissItem` action', async () => {
-		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
-		fetchMock.postOnce( fetchDismissItem, {
-			body: [ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ],
-		} );
-
-		// Dismissing the notification should cause it to not render.
-		await registry
-			.dispatch( CORE_UI )
-			.dismissOverlayNotification(
-				LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
-			);
-
-		const { container } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
-			{
-				registry,
-			}
-		);
-		expect( container ).not.toHaveTextContent(
-			'Link your Analytics and AdSense accounts to find out'
-		);
 	} );
 
 	it( 'clicking the `Learn how` button dismisses the notification', async () => {
