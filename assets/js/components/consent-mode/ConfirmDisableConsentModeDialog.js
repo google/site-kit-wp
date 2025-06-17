@@ -113,7 +113,6 @@ export default function ConfirmDisableConsentModeDialog( {
 			dependentModules={ dependentModulesText }
 			confirmButton={ __( 'Disable', 'google-site-kit' ) }
 			danger
-			refocusPreviousElement
 		/>
 	);
 }

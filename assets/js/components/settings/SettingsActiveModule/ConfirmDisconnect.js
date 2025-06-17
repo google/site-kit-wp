@@ -152,7 +152,6 @@ export default function ConfirmDisconnect( { slug } ) {
 			dependentModules={ dependentModulesText }
 			inProgress={ isDeactivating }
 			danger
-			refocusPreviousElement
 		/>
 	);
 }

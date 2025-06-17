@@ -70,7 +70,6 @@ export default function ConfirmDisableConversionTrackingDialog( {
 			provides={ provides }
 			confirmButton={ __( 'Disable', 'google-site-kit' ) }
 			danger
-			refocusPreviousElement
 		/>
 	);
 }

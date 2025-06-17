@@ -131,7 +131,6 @@ function AuthenticatedPermissionsModal() {
 				handleCancel={ onCancel }
 				onClose={ onCancel }
 				medium
-				refocusPreviousElement
 			/>
 		</Portal>
 	);
