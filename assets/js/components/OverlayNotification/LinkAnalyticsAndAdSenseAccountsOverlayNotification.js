@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { compose } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -31,17 +30,14 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
-import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
 import AnalyticsAdsenseConnectGraphicDesktop from '../../../svg/graphics/analytics-adsense-connect-desktop.svg';
 import AnalyticsAdsenseConnectGraphicMobile from '../../../svg/graphics/analytics-adsense-connect-mobile.svg';
 import OverlayNotification from './OverlayNotification';
-import whenActive from '../../util/when-active';
 
 export const LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION =
 	'LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
-function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
+export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	const supportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/adsense/answer/6084409',
@@ -117,8 +113,3 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 		</OverlayNotification>
 	);
 }
-
-export default compose(
-	whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } ),
-	whenActive( { moduleName: MODULE_SLUG_ADSENSE } )
-)( LinkAnalyticsAndAdSenseAccountsOverlayNotification );
