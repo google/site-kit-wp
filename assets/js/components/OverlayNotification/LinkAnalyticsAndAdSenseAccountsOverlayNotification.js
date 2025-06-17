@@ -75,18 +75,13 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification( {
 					'See which content earns you the most',
 					'google-site-kit'
 				) }
+				description={ __(
+					'Link your Analytics and AdSense accounts to find out which content brings you the most revenue.',
+					'google-site-kit'
+				) }
 				GraphicDesktop={ AnalyticsAdsenseConnectGraphicDesktop }
 				GraphicMobile={ AnalyticsAdsenseConnectGraphicMobile }
 			>
-				<div className="googlesitekit-overlay-notification__body">
-					<p>
-						{ __(
-							'Link your Analytics and AdSense accounts to find out which content brings you the most revenue.',
-							'google-site-kit'
-						) }
-					</p>
-				</div>
-
 				<div className="googlesitekit-overlay-notification__actions">
 					<Button
 						tertiary
