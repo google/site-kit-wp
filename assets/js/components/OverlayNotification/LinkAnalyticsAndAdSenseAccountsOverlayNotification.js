@@ -79,18 +79,11 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification( {
 					'Link your Analytics and AdSense accounts to find out which content brings you the most revenue.',
 					'google-site-kit'
 				) }
+				dismissButton
 				GraphicDesktop={ AnalyticsAdsenseConnectGraphicDesktop }
 				GraphicMobile={ AnalyticsAdsenseConnectGraphicMobile }
 			>
 				<div className="googlesitekit-overlay-notification__actions">
-					<Button
-						tertiary
-						disabled={ isDismissing }
-						onClick={ dismissNotification }
-					>
-						{ __( 'Maybe later', 'google-site-kit' ) }
-					</Button>
-
 					<Button
 						disabled={ isDismissing }
 						href={ supportURL }
