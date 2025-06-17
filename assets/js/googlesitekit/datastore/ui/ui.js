@@ -181,21 +181,6 @@ export const selectors = {
 	getIsOnline( state ) {
 		return state.isOnline;
 	},
-
-	/**
-	 * Returns `true` if the overlay notification name passed is currently
-	 * active, `false` otherwise.
-	 *
-	 * @since 1.123.0
-	 * @private
-	 *
-	 * @param {Object} state               Data store's state.
-	 * @param {string} overlayNotification Overlay notification name.
-	 * @return {boolean} `true` if the overlay notification is currently active.
-	 */
-	isShowingOverlayNotification( state, overlayNotification ) {
-		return state.activeOverlayNotification === overlayNotification;
-	},
 };
 
 export default {
