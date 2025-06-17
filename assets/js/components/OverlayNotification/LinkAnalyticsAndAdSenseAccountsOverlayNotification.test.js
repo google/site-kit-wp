@@ -40,12 +40,17 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
 
 describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 	const LinkAnalyticsAndAdSenseAccountsOverlayNotificationComponent =
 		withNotificationComponentProps(
 			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
 		)( LinkAnalyticsAndAdSenseAccountsOverlayNotification );
+
+	const notification =
+		DEFAULT_NOTIFICATIONS[ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ];
 
 	let registry;
 
@@ -74,6 +79,13 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			adSenseLinked: false,
 		} );
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
+				notification
+			);
 	} );
 
 	it( 'renders the overlay notification component correctly', () => {
