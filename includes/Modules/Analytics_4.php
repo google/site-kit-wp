@@ -121,9 +121,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
-	const READONLY_SCOPE  = 'https://www.googleapis.com/auth/analytics.readonly';
-	const PROVISION_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
-	const EDIT_SCOPE      = 'https://www.googleapis.com/auth/analytics.edit';
+	const READONLY_SCOPE = 'https://www.googleapis.com/auth/analytics.readonly';
+	const EDIT_SCOPE     = 'https://www.googleapis.com/auth/analytics.edit';
 
 	/**
 	 * Module slug name.

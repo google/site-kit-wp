@@ -16,12 +16,9 @@
  * limitations under the License.
  */
 
-/* eslint complexity: [ "error", 19 ] */
-
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import useMergedRef from '@react-hook/merged-ref';
 
@@ -34,31 +31,32 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { MDCRipple } from '../../material-components';
-import Tooltip from './Tooltip';
+import { MDCRipple } from '../../../material-components';
+import SemanticButton from './SemanticButton';
+import MaybeTooltip from './MaybeTooltip';
 
 const Button = forwardRef(
 	(
 		{
 			children,
-			href,
-			text,
-			className,
-			danger,
-			disabled,
+			href = null,
+			text = false,
+			className = '',
+			danger = false,
+			disabled = false,
 			target,
-			icon,
-			trailingIcon,
+			icon = null,
+			trailingIcon = null,
 			'aria-label': ariaLabel,
-			title,
-			customizedTooltip,
-			tooltip,
-			inverse,
+			title = null,
+			customizedTooltip = null,
+			tooltip = false,
+			inverse = false,
 			hideTooltipTitle = false,
 			tooltipEnterDelayInMS = 100,
 			tertiary = false,
-			callout,
-			calloutStyle,
+			callout = false,
+			calloutStyle = null,
 			...extraProps
 		},
 		ref
@@ -69,9 +67,6 @@ const Button = forwardRef(
 			}
 		}, [] );
 		const mergedRefs = useMergedRef( ref, buttonRef );
-
-		// Use a button if disabled, even if a href is provided to ensure expected behavior.
-		const SemanticButton = href && ! disabled ? 'a' : 'button';
 
 		const getAriaLabel = () => {
 			let label = ariaLabel;
@@ -97,59 +92,43 @@ const Button = forwardRef(
 			return newTabText;
 		};
 
-		const ButtonComponent = (
-			<SemanticButton
-				className={ classnames( 'mdc-button', className, {
-					'mdc-button--raised': ! text && ! tertiary && ! callout,
-					'mdc-button--danger': danger,
-					'mdc-button--inverse': inverse,
-					'mdc-button--tertiary': tertiary,
-					'mdc-button--callout': callout,
-					'mdc-button--callout-primary':
-						callout || calloutStyle === 'primary',
-					'mdc-button--callout-warning': calloutStyle === 'warning',
-					'mdc-button--callout-error': calloutStyle === 'error',
-				} ) }
-				href={ disabled ? undefined : href }
-				ref={ mergedRefs }
-				disabled={ !! disabled }
-				aria-label={ getAriaLabel() }
-				target={ target || '_self' }
-				role={ 'a' === SemanticButton ? 'button' : undefined }
-				{ ...extraProps }
-			>
-				{ icon }
-				{ children && (
-					<span className="mdc-button__label">{ children }</span>
-				) }
-				{ trailingIcon }
-			</SemanticButton>
-		);
-
 		const tooltipTitle = ! hideTooltipTitle
 			? title || customizedTooltip || ariaLabel
 			: null;
 
-		if (
-			! disabled &&
-			( ( tooltip && tooltipTitle ) ||
-				( icon && tooltipTitle && children === undefined ) )
-		) {
-			return (
-				<Tooltip
-					title={ tooltipTitle }
-					enterDelay={ tooltipEnterDelayInMS }
+		return (
+			<MaybeTooltip
+				disabled={ disabled }
+				tooltip={ tooltip }
+				tooltipTitle={ tooltipTitle }
+				hasIconOnly={ !! icon && children === undefined }
+				tooltipEnterDelayInMS={ tooltipEnterDelayInMS }
+			>
+				<SemanticButton
+					href={ href }
+					disabled={ disabled }
+					className={ className }
+					danger={ danger }
+					text={ text }
+					tertiary={ tertiary }
+					inverse={ inverse }
+					callout={ callout }
+					calloutStyle={ calloutStyle }
+					ref={ mergedRefs }
+					aria-label={ getAriaLabel() }
+					target={ target || '_self' }
+					{ ...extraProps }
 				>
-					{ ButtonComponent }
-				</Tooltip>
-			);
-		}
-
-		return ButtonComponent;
+					{ icon }
+					{ children && (
+						<span className="mdc-button__label">{ children }</span>
+					) }
+					{ trailingIcon }
+				</SemanticButton>
+			</MaybeTooltip>
+		);
 	}
 );
-
-Button.displayName = 'Button';
 
 Button.propTypes = {
 	onClick: PropTypes.func,
@@ -168,23 +147,6 @@ Button.propTypes = {
 	hideTooltipTitle: PropTypes.bool,
 	callout: PropTypes.bool,
 	calloutStyle: PropTypes.oneOf( [ 'primary', 'warning', 'error' ] ),
-};
-
-Button.defaultProps = {
-	onClick: null,
-	href: null,
-	text: false,
-	className: '',
-	danger: false,
-	disabled: false,
-	icon: null,
-	trailingIcon: null,
-	title: null,
-	customizedTooltip: null,
-	tooltip: false,
-	inverse: false,
-	calloutStyle: null,
-	callout: null,
 };
 
 export default Button;

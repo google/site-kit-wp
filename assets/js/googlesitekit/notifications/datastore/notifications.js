@@ -73,7 +73,7 @@ export const actions = {
 	 * This action is internal and should not be used directly outside of the
 	 * `registerNotification()` action.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.155.0
 	 * @private
 	 *
 	 * @param {string} id Notification's slug/ID.
@@ -90,7 +90,7 @@ export const actions = {
 	 *
 	 * @since 1.132.0
 	 * @since 1.146.0 Added `featureFlag` parameter.
-	 * @since n.e.x.t Changed to a generator function to allow for state interaction.
+	 * @since 1.155.0 Changed to a generator function to allow for state interaction.
 	 *
 	 * @param {string}         id                           Notification's slug.
 	 * @param {Object}         settings                     Notification's settings.

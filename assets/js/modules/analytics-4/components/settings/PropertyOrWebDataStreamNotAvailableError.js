@@ -114,6 +114,7 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 					),
 					measurementID
 				) }
+				skipRetryMessage
 			/>
 		);
 	}
@@ -129,6 +130,7 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 					),
 					propertyID
 				) }
+				skipRetryMessage
 			/>
 		);
 	}

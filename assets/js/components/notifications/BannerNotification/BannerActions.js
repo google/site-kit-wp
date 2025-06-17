@@ -84,7 +84,9 @@ export default function BannerActions( props ) {
 
 			{ dismissLabel && (
 				<Button
-					tertiary={ ctaLink || ctaComponent || dismissIsTertiary }
+					tertiary={ Boolean(
+						ctaLink || ctaComponent || dismissIsTertiary
+					) }
 					onClick={ dismissCallback }
 					disabled={ isAwaitingCTAResponse || isNavigatingToCTALink }
 				>
