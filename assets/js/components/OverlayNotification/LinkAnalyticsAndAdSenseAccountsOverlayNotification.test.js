@@ -127,6 +127,24 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		);
 	} );
 
+	it( 'does not render on the main view only dashboard', async () => {
+		const { container, waitForRegistry } = render(
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).not.toHaveTextContent(
+			'Link your Analytics and AdSense accounts to find out'
+		);
+	} );
+
 	it( 'does not render on the entity dashboard', async () => {
 		const { container, waitForRegistry } = render(
 			<Notifications
