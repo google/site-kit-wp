@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+/*
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
 /**
  * WordPress dependencies
  */
@@ -36,7 +41,10 @@ import OverlayNotification from '../../googlesitekit/notifications/components/la
 export const LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION =
 	'LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
-export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
+export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification( {
+	id,
+	Notification,
+} ) {
 	const supportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/adsense/answer/6084409',
@@ -60,48 +68,55 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	};
 
 	return (
-		<OverlayNotification
-			GraphicDesktop={ AnalyticsAdsenseConnectGraphicDesktop }
-			GraphicMobile={ AnalyticsAdsenseConnectGraphicMobile }
-			notificationID={ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION }
-		>
-			<div className="googlesitekit-overlay-notification__body">
-				<h3>
-					{ __(
-						'See which content earns you the most',
-						'google-site-kit'
-					) }
-				</h3>
-				<p>
-					{ __(
-						'Link your Analytics and AdSense accounts to find out which content brings you the most revenue.',
-						'google-site-kit'
-					) }
-				</p>
-			</div>
+		<Notification>
+			<OverlayNotification
+				notificationID={ id }
+				GraphicDesktop={ AnalyticsAdsenseConnectGraphicDesktop }
+				GraphicMobile={ AnalyticsAdsenseConnectGraphicMobile }
+			>
+				<div className="googlesitekit-overlay-notification__body">
+					<h3>
+						{ __(
+							'See which content earns you the most',
+							'google-site-kit'
+						) }
+					</h3>
+					<p>
+						{ __(
+							'Link your Analytics and AdSense accounts to find out which content brings you the most revenue.',
+							'google-site-kit'
+						) }
+					</p>
+				</div>
 
-			<div className="googlesitekit-overlay-notification__actions">
-				<Button
-					tertiary
-					disabled={ isDismissing }
-					onClick={ dismissNotification }
-				>
-					{ __( 'Maybe later', 'google-site-kit' ) }
-				</Button>
+				<div className="googlesitekit-overlay-notification__actions">
+					<Button
+						tertiary
+						disabled={ isDismissing }
+						onClick={ dismissNotification }
+					>
+						{ __( 'Maybe later', 'google-site-kit' ) }
+					</Button>
 
-				<Button
-					disabled={ isDismissing }
-					href={ supportURL }
-					target="_blank"
-					onClick={ dismissNotification }
-					aria-label={ __(
-						'Learn how (opens in a new tab)',
-						'google-site-kit'
-					) }
-				>
-					{ __( 'Learn how', 'google-site-kit' ) }
-				</Button>
-			</div>
-		</OverlayNotification>
+					<Button
+						disabled={ isDismissing }
+						href={ supportURL }
+						target="_blank"
+						onClick={ dismissNotification }
+						aria-label={ __(
+							'Learn how (opens in a new tab)',
+							'google-site-kit'
+						) }
+					>
+						{ __( 'Learn how', 'google-site-kit' ) }
+					</Button>
+				</div>
+			</OverlayNotification>
+		</Notification>
 	);
 }
+
+LinkAnalyticsAndAdSenseAccountsOverlayNotification.propTypes = {
+	id: PropTypes.string.isRequired,
+	Notification: PropTypes.elementType.isRequired,
+};
