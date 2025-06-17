@@ -1,5 +1,5 @@
 /**
- * ESLint rules: No unnamed boolean parameters in JSDoc.
+ * ESLint rules: No unnamed boolean parameters in JSDoc (including nullable/non-nullable variants).
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -34,16 +34,13 @@ module.exports = iterateJsdoc(
 				return;
 			}
 
-			const lowercasedType = tag.type ? tag.type.toLowerCase() : '';
-			const isProblematicBooleanType = lowercasedType === 'boolean';
+			const type = tag.type || '';
+			const lowercasedType = type.toLowerCase();
 
-			// Check if the parameter's type is a plain boolean type AND
-			// if its name does NOT contain a period '.', indicating it's NOT a named parameter.
-			if (
-				isProblematicBooleanType &&
-				tag.name &&
-				! tag.name.includes( '.' )
-			) {
+			// Check for any form of boolean type (plain, nullable, non-nullable)
+			const isBooleanType = /^\??!?boolean$/.test( lowercasedType );
+
+			if ( isBooleanType && tag.name && ! tag.name.includes( '.' ) ) {
 				context.report( {
 					node: jsdocNode,
 					// eslint-disable-next-line sitekit/acronym-case
@@ -58,7 +55,7 @@ module.exports = iterateJsdoc(
 			type: 'suggestion',
 			docs: {
 				description:
-					'Disallow JSDoc `@param` tags with plain `boolean` type, unless for named parameters (e.g., `options.someFlag`).',
+					'Disallow JSDoc `@param` tags with any form of `boolean` type (including `?boolean` and `!boolean`), unless for named parameters (e.g., `options.someFlag`).',
 				category: 'Best Practices',
 				recommended: false,
 				url: 'https://example.com/no-boolean-param-rule',
@@ -66,7 +63,7 @@ module.exports = iterateJsdoc(
 			schema: [],
 			messages: {
 				unexpectedBooleanParam:
-					'Avoid using plain `boolean` type directly in JSDoc `@param` tags. Consider using named parameters (e.g., `options.someFlag`), nullable/non-nullable variants (`?boolean`/`!boolean`), or refactoring to separate functions for clarity.',
+					'Avoid using `boolean` type (including `?boolean` and `!boolean`) directly in JSDoc `@param` tags. Use named parameters (e.g., `options.someFlag`) or refactor to separate functions.',
 			},
 		},
 	}

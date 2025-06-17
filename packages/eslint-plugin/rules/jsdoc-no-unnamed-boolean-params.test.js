@@ -109,28 +109,6 @@ function isValid( input ) {
 }
       `,
 		},
-		{
-			code: `
-/**
- * A function with an optional boolean parameter (allowed via '?' prefix).
- * @param {?boolean} isOptional Whether it is optional.
- */
-function handleOptional(isOptional) {
-  // ...
-}
-      `,
-		},
-		{
-			code: `
-/**
- * A function with a non-nullable boolean parameter (allowed via '!' prefix).
- * @param {!boolean} isNotNull Whether it is not null.
- */
-function handleNotNull(isNotNull) {
-  // ...
-}
-      `,
-		},
 	],
 	invalid: [
 		{
@@ -217,6 +195,32 @@ function setValue(value) {
   this._value = value;
 }
       `,
+			// eslint-disable-next-line sitekit/acronym-case
+			errors: [ { messageId: 'unexpectedBooleanParam' } ],
+		},
+		{
+			code: `
+	  /**
+	   * A function with an optional boolean parameter (now invalid).
+	   * @param {?boolean} isOptional Whether it is optional.
+	   */
+	  function handleOptional(isOptional) {
+		// ...
+	  }
+			`,
+			// eslint-disable-next-line sitekit/acronym-case
+			errors: [ { messageId: 'unexpectedBooleanParam' } ],
+		},
+		{
+			code: `
+	  /**
+	   * A function with a non-nullable boolean parameter (now invalid).
+	   * @param {!boolean} isNotNull Whether it is not null.
+	   */
+	  function handleNotNull(isNotNull) {
+		// ...
+	  }
+			`,
 			// eslint-disable-next-line sitekit/acronym-case
 			errors: [ { messageId: 'unexpectedBooleanParam' } ],
 		},
