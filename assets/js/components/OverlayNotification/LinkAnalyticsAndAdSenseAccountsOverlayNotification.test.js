@@ -163,6 +163,31 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		);
 	} );
 
+	it( 'renders `Learn how` and `Maybe later` buttons`', async () => {
+		const supportURL = registry.select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/adsense/answer/6084409',
+		} );
+
+		const { container, getByRole, waitForRegistry } = render(
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toHaveTextContent( 'Learn how' );
+		expect( getByRole( 'button', { name: /learn how/i } ) ).toHaveAttribute(
+			'href',
+			supportURL
+		);
+		expect( container ).toHaveTextContent( 'Maybe later' );
+	} );
+
 	it( 'does not render when Analytics module is not connected', () => {
 		provideModules( registry, [
 			{
@@ -249,27 +274,6 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		expect( container ).not.toHaveTextContent(
 			'Link your Analytics and AdSense accounts to find out'
 		);
-	} );
-
-	it( 'renders `Learn how` and `Maybe later` buttons`', () => {
-		const supportURL = registry.select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/adsense/answer/6084409',
-		} );
-
-		const { container, getByRole } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		expect( container ).toHaveTextContent( 'Learn how' );
-		expect( getByRole( 'button', { name: /learn how/i } ) ).toHaveAttribute(
-			'href',
-			supportURL
-		);
-		expect( container ).toHaveTextContent( 'Maybe later' );
 	} );
 
 	it( 'clicking the `Learn how` button dismisses the notification', async () => {
