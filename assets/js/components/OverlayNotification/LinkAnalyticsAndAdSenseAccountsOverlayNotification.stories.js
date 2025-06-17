@@ -38,5 +38,4 @@ Default.scenario = {};
 
 export default {
 	title: 'Components/LinkAnalyticsAndAdSenseAccountsOverlayNotification',
-	component: LinkAnalyticsAndAdSenseAccountsOverlayNotification,
 };
