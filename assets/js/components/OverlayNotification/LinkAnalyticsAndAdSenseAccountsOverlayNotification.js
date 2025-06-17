@@ -32,15 +32,12 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
+import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
 import AnalyticsAdsenseConnectGraphicDesktop from '../../../svg/graphics/analytics-adsense-connect-desktop.svg';
 import AnalyticsAdsenseConnectGraphicMobile from '../../../svg/graphics/analytics-adsense-connect-mobile.svg';
 import OverlayNotification from './OverlayNotification';
 import useViewOnly from '../../hooks/useViewOnly';
-import useDashboardType, {
-	DASHBOARD_TYPE_MAIN,
-} from '../../hooks/useDashboardType';
 import whenActive from '../../util/when-active';
 
 export const LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION =
@@ -48,8 +45,6 @@ export const LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION =
 
 function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	const isViewOnly = useViewOnly();
-	const dashboardType = useDashboardType();
-	const isMainDashboard = dashboardType === DASHBOARD_TYPE_MAIN;
 
 	const supportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
@@ -70,7 +65,7 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	);
 
 	const analyticsModuleConnected = useSelect( ( select ) => {
-		if ( isViewOnly || ! isMainDashboard || isDismissed ) {
+		if ( isViewOnly || isDismissed ) {
 			return null;
 		}
 
@@ -80,7 +75,7 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	} );
 
 	const adSenseModuleConnected = useSelect( ( select ) => {
-		if ( isViewOnly || ! isMainDashboard || isDismissed ) {
+		if ( isViewOnly || isDismissed ) {
 			return null;
 		}
 
@@ -88,7 +83,7 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	} );
 
 	const isAdSenseLinked = useSelect( ( select ) => {
-		if ( isViewOnly || ! isMainDashboard || isDismissed ) {
+		if ( isViewOnly || isDismissed ) {
 			return null;
 		}
 
@@ -100,7 +95,6 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 
 	const shouldShowNotification =
 		! isViewOnly &&
-		isMainDashboard &&
 		analyticsAndAdSenseAreConnected &&
 		isAdSenseLinked === false &&
 		isDismissed === false;
