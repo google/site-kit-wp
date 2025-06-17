@@ -39,8 +39,14 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 
 describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
+	const LinkAnalyticsAndAdSenseAccountsOverlayNotificationComponent =
+		withNotificationComponentProps(
+			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+		)( LinkAnalyticsAndAdSenseAccountsOverlayNotification );
+
 	let registry;
 
 	const fetchGetDismissedItems = new RegExp(
@@ -68,6 +74,20 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			adSenseLinked: false,
 		} );
+	} );
+
+	it( 'renders the overlay notification component correctly', () => {
+		const { container } = render(
+			<LinkAnalyticsAndAdSenseAccountsOverlayNotificationComponent />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		expect( container ).toHaveTextContent(
+			'Link your Analytics and AdSense accounts to find out'
+		);
 	} );
 
 	it( 'does not render when Analytics module is not connected', () => {
