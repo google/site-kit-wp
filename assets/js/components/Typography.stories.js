@@ -21,7 +21,6 @@
  */
 import { Cell, Grid, Row } from '../material-components';
 import Widget from '../googlesitekit/widgets/components/Widget';
-import { Fragment } from '@wordpress/element';
 import Typography from './Typography';
 
 function GroupWrapper( { size = 6, header, children } ) {
@@ -45,74 +44,72 @@ function GroupWrapper( { size = 6, header, children } ) {
 
 function Template() {
 	return (
-		<Fragment>
-			<Grid className="googlesitekit-widget-area googlesitekit-widget-area--boxes">
-				<Row className="googlesitekit-widget-area-widgets">
-					<Cell size={ 12 }>
-						<h1>Typography</h1>
-					</Cell>
-					<GroupWrapper size={ 12 } header="Display">
-						<Typography type="display" size="large">
-							Display Large 58/64
-						</Typography>
-						<Typography type="display" size="medium">
-							Display Medium 46/52
-						</Typography>
-						<Typography type="display" size="small">
-							Display Small 38/44
-						</Typography>
-					</GroupWrapper>
+		<Grid className="googlesitekit-widget-area googlesitekit-widget-area--boxes">
+			<Row className="googlesitekit-widget-area-widgets">
+				<Cell size={ 12 }>
+					<h1>Typography</h1>
+				</Cell>
+				<GroupWrapper size={ 12 } header="Display">
+					<Typography type="display" size="large">
+						Display Large 58/64
+					</Typography>
+					<Typography type="display" size="medium">
+						Display Medium 46/52
+					</Typography>
+					<Typography type="display" size="small">
+						Display Small 38/44
+					</Typography>
+				</GroupWrapper>
 
-					<GroupWrapper header="Headline">
-						<Typography type="headline" size="large">
-							Headline Large 32/40
-						</Typography>
-						<Typography type="headline" size="medium">
-							Headline Medium 28/36
-						</Typography>
-						<Typography type="headline" size="small">
-							Headline Small 22/28
-						</Typography>
-					</GroupWrapper>
+				<GroupWrapper header="Headline">
+					<Typography type="headline" size="large">
+						Headline Large 32/40
+					</Typography>
+					<Typography type="headline" size="medium">
+						Headline Medium 28/36
+					</Typography>
+					<Typography type="headline" size="small">
+						Headline Small 22/28
+					</Typography>
+				</GroupWrapper>
 
-					<GroupWrapper header="Title">
-						<Typography type="title" size="large">
-							Title Large 18/24
-						</Typography>
-						<Typography type="title" size="medium">
-							Title Medium 16/20
-						</Typography>
-						<Typography type="title" size="small">
-							Title Small 14/16
-						</Typography>
-					</GroupWrapper>
+				<GroupWrapper header="Title">
+					<Typography type="title" size="large">
+						Title Large 18/24
+					</Typography>
+					<Typography type="title" size="medium">
+						Title Medium 16/20
+					</Typography>
+					<Typography type="title" size="small">
+						Title Small 14/16
+					</Typography>
+				</GroupWrapper>
 
-					<GroupWrapper header="Label">
-						<Typography type="label" size="large">
-							Label Large 16/24
-						</Typography>
-						<Typography type="label" size="medium">
-							Label Medium 14/20
-						</Typography>
-						<Typography type="label" size="small">
-							Label Small 12/16
-						</Typography>
-					</GroupWrapper>
+				<GroupWrapper header="Label">
+					<Typography type="label" size="large">
+						Label Large 16/24
+					</Typography>
+					<Typography type="label" size="medium">
+						Label Medium 14/20
+					</Typography>
+					<Typography type="label" size="small">
+						Label Small 12/16
+					</Typography>
+				</GroupWrapper>
 
-					<GroupWrapper header="Body">
-						<Typography type="body" size="large">
-							Body Large 16/24
-						</Typography>
-						<Typography type="body" size="medium">
-							Body Medium 14/20
-						</Typography>
-						<Typography type="body" size="small">
-							Body Small 12/16
-						</Typography>
-					</GroupWrapper>
-				</Row>
-			</Grid>
-		</Fragment>
+				<GroupWrapper header="Body">
+					<Typography type="body" size="large">
+						Body Large 16/24
+					</Typography>
+					<Typography type="body" size="medium">
+						Body Medium 14/20
+					</Typography>
+					<Typography type="body" size="small">
+						Body Small 12/16
+					</Typography>
+				</GroupWrapper>
+			</Row>
+		</Grid>
 	);
 }
 
