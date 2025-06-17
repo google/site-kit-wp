@@ -254,4 +254,14 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			'Link your Analytics and AdSense accounts to find out'
 		);
 	} );
+
+	describe( 'checkRequirements', () => {
+		it( 'is active when all the conditions are met', async () => {
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
+		} );
+	} );
 } );
