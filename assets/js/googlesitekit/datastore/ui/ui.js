@@ -27,7 +27,6 @@ import { isPlainObject, isBoolean } from 'lodash';
  */
 import { commonActions } from 'googlesitekit-data';
 import { CORE_UI } from './constants';
-import { CORE_USER } from '../user/constants';
 
 const SET_VALUES = 'SET_VALUES';
 const SET_VALUE = 'SET_VALUE';
@@ -101,39 +100,6 @@ export const actions = {
 			'activeOverlayNotification',
 			overlayNotification
 		);
-	},
-
-	/**
-	 * Resets the `activeOverlayNotification` state and dismiss the overlay from
-	 * the user's profile.
-	 *
-	 * @since 1.123.0
-	 * @private
-	 *
-	 * @param {string} overlayNotification Overlay notification component name.
-	 * @return {Object} Redux-style action.
-	 */
-	*dismissOverlayNotification( overlayNotification ) {
-		invariant( overlayNotification, 'overlayNotification is required.' );
-
-		const registry = yield commonActions.getRegistry();
-
-		const activeOverlayNotification = registry
-			.select( CORE_UI )
-			.getValue( 'activeOverlayNotification' );
-
-		yield commonActions.await(
-			registry.dispatch( CORE_USER ).dismissItem( overlayNotification )
-		);
-
-		if (
-			activeOverlayNotification &&
-			overlayNotification === activeOverlayNotification
-		) {
-			return yield actions.setValues( {
-				activeOverlayNotification: undefined,
-			} );
-		}
 	},
 
 	/**
