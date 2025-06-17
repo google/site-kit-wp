@@ -43,10 +43,19 @@ $typography-settings: (
 	)
 );
 
+$typography-font-families: (
+	display: $f-secondary,
+	headline: $f-secondary,
+	title: $f-primary,
+	body: $f-primary,
+	label: $f-primary
+);
+
 .googlesitekit-typography {
 
 	@each $type, $sizes in $typography-settings {
 		&.googlesitekit-typography--#{$type} {
+			font-family: map-get($typography-font-families, $type);
 
 			@each $size, $styles in $sizes {
 				&.googlesitekit-typography--#{$size} {
