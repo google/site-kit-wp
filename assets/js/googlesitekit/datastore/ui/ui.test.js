@@ -19,13 +19,8 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	untilResolved,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { CORE_UI } from './constants';
-import { LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION } from '../../../components/OverlayNotification/LinkAnalyticsAndAdSenseAccountsOverlayNotification';
-import { CORE_USER } from '../user/constants';
 
 describe( 'core/ui store', () => {
 	let registry;
@@ -68,126 +63,6 @@ describe( 'core/ui store', () => {
 					.getIsOnline();
 
 				expect( updatedIsOnline ).toBe( false );
-			} );
-		} );
-
-		describe( 'setOverlayNotificationToShow', () => {
-			const fetchGetDismissedItems = new RegExp(
-				'^/google-site-kit/v1/core/user/data/dismissed-items'
-			);
-			const fetchDismissItem = new RegExp(
-				'^/google-site-kit/v1/core/user/data/dismiss-item'
-			);
-
-			it( 'sets the activeOverlayNotification value', async () => {
-				const activeOverlayNotification = registry
-					.select( CORE_UI )
-					.getValue( 'activeOverlayNotification' );
-
-				expect( activeOverlayNotification ).toBe( undefined );
-
-				await registry
-					.dispatch( CORE_UI )
-					.setOverlayNotificationToShow(
-						LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
-					);
-
-				const updatedactiveOverlayNotification = registry
-					.select( CORE_UI )
-					.getValue( 'activeOverlayNotification' );
-
-				expect( updatedactiveOverlayNotification ).toBe(
-					LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
-				);
-			} );
-
-			it( 'it does not set the activeOverlayNotification value if it is already set', () => {
-				const activeOverlayNotification = registry
-					.select( CORE_UI )
-					.getValue( 'activeOverlayNotification' );
-
-				expect( activeOverlayNotification ).toBe( undefined );
-
-				// Awaiting is itentionally omitted to simulate race condition.
-				registry
-					.dispatch( CORE_UI )
-					.setOverlayNotificationToShow(
-						LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
-					);
-
-				registry
-					.dispatch( CORE_UI )
-					.setOverlayNotificationToShow( 'TestNotification' );
-
-				const updatedactiveOverlayNotification = registry
-					.select( CORE_UI )
-					.getValue( 'activeOverlayNotification' );
-
-				expect( updatedactiveOverlayNotification ).toBe(
-					LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
-				);
-			} );
-
-			describe( 'dismissOverlayNotification', () => {
-				it( 'resets the activeOverlayNotification value and dismisses the item from the current user profile', async () => {
-					fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
-					fetchMock.postOnce( fetchDismissItem, {
-						body: [ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ],
-					} );
-
-					await registry
-						.dispatch( CORE_UI )
-						.setOverlayNotificationToShow(
-							LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
-						);
-
-					const activeOverlayNotification = registry
-						.select( CORE_UI )
-						.getValue( 'activeOverlayNotification' );
-
-					registry
-						.select( CORE_USER )
-						.isItemDismissed(
-							LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
-						);
-
-					await untilResolved(
-						registry,
-						CORE_USER
-					).getDismissedItems();
-
-					const isDimissed = registry
-						.select( CORE_USER )
-						.isItemDismissed(
-							LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
-						);
-
-					expect( activeOverlayNotification ).toBe(
-						LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
-					);
-					expect( isDimissed ).toBe( false );
-
-					await registry
-						.dispatch( CORE_UI )
-						.dismissOverlayNotification(
-							LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
-						);
-
-					const updatedActiveOverlayNotification = registry
-						.select( CORE_UI )
-						.getValue( 'activeOverlayNotification' );
-
-					const updatedIsDimissed = registry
-						.select( CORE_USER )
-						.isItemDismissed(
-							LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
-						);
-
-					expect( updatedActiveOverlayNotification ).toBe(
-						undefined
-					);
-					expect( updatedIsDimissed ).toBe( true );
-				} );
 			} );
 		} );
 
