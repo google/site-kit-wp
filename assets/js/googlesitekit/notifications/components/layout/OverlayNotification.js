@@ -38,7 +38,11 @@ export default function OverlayNotification( {
 } ) {
 	const trackEvents = useNotificationEvents(
 		notificationID,
-		gaTrackingEventArgs?.category
+		gaTrackingEventArgs?.category,
+		{
+			confirmAction: gaTrackingEventArgs?.confirmAction,
+			dismissAction: gaTrackingEventArgs?.dismissAction,
+		}
 	);
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );

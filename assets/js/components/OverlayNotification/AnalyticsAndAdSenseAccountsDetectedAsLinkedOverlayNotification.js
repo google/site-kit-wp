@@ -17,180 +17,45 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
-import { compose } from '@wordpress/compose';
-import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import AnalyticsAdsenseLinkedGraphicDesktop from '../../../svg/graphics/analytics-adsense-linked-desktop.svg';
 import AnalyticsAdsenseLinkedGraphicMobile from '../../../svg/graphics/analytics-adsense-linked-mobile.svg';
 import { ANCHOR_ID_MONETIZATION } from '../../googlesitekit/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
-import useDashboardType, {
-	DASHBOARD_TYPE_MAIN,
-} from '../../hooks/useDashboardType';
-import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { getNavigationalScrollTop } from '../../util/scroll';
-import OverlayNotification from './OverlayNotification';
-import { isZeroReport } from '../../modules/analytics-4/utils/is-zero-report';
-import { trackEvent } from '../../util';
+import OverlayNotification from '../../googlesitekit/notifications/components/layout/OverlayNotification';
 import useViewContext from '../../hooks/useViewContext';
-import whenActive from '../../util/when-active';
 
 export const ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION =
 	'AnalyticsAndAdSenseLinkedOverlayNotification';
 
-function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
+export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification( {
+	id,
+	Notification,
+} ) {
 	const breakpoint = useBreakpoint();
-
-	const dashboardType = useDashboardType();
-	const isMainDashboard = dashboardType === DASHBOARD_TYPE_MAIN;
 
 	const viewContext = useViewContext();
 
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
-		)
-	);
-
-	const isDismissing = useSelect( ( select ) =>
-		select( CORE_USER ).isDismissingItem(
-			ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
-		)
-	);
-
-	const analyticsModuleConnected = useSelect( ( select ) => {
-		if ( ! isMainDashboard || isDismissed ) {
-			return null;
-		}
-		return select( CORE_MODULES ).isModuleConnected(
-			MODULE_SLUG_ANALYTICS_4
-		);
-	} );
-
-	const adSenseModuleConnected = useSelect( ( select ) => {
-		if ( ! isMainDashboard || isDismissed ) {
-			return null;
-		}
-		return select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
-	} );
-
-	const canViewSharedAnalytics = useSelect( ( select ) => {
-		if ( ! isMainDashboard || isDismissed ) {
-			return null;
-		}
-		return select( CORE_USER ).hasAccessToShareableModule(
-			MODULE_SLUG_ANALYTICS_4
-		);
-	} );
-	const canViewSharedAdSense = useSelect( ( select ) => {
-		if ( ! isMainDashboard || isDismissed ) {
-			return null;
-		}
-		return select( CORE_USER ).hasAccessToShareableModule(
-			MODULE_SLUG_ADSENSE
-		);
-	} );
-
-	const isAdSenseLinked = useSelect( ( select ) => {
-		if ( ! isMainDashboard || isDismissed ) {
-			return null;
-		}
-
-		return select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
-	} );
-
-	const adSenseAccountID = useSelect( ( select ) => {
-		if ( adSenseModuleConnected ) {
-			return select( MODULES_ADSENSE ).getAccountID();
-		}
-
-		return null;
-	} );
-
-	const { startDate, endDate } = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
-
-	const reportArgs = {
-		startDate,
-		endDate,
-		dimensions: [ 'pagePath', 'adSourceName' ],
-		metrics: [ { name: 'totalAdRevenue' } ],
-		dimensionFilters: {
-			adSourceName: `Google AdSense account (${ adSenseAccountID })`,
-		},
-		orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
-		limit: 1,
-	};
-
-	const reportData = useSelect( ( select ) => {
-		if (
-			isMainDashboard &&
-			isDismissed === false &&
-			isAdSenseLinked &&
-			adSenseModuleConnected &&
-			analyticsModuleConnected &&
-			canViewSharedAdSense &&
-			canViewSharedAnalytics
-		) {
-			return select( MODULES_ANALYTICS_4 ).getReport( reportArgs );
-		}
-
-		return null;
-	} );
-
-	const reportDataAvailable = isZeroReport( reportData ) === false;
-
-	const shouldShowNotification =
-		isMainDashboard &&
-		isDismissed === false &&
-		analyticsModuleConnected &&
-		adSenseModuleConnected &&
-		canViewSharedAnalytics &&
-		canViewSharedAdSense &&
-		isAdSenseLinked &&
-		reportDataAvailable;
-
-	const { dismissOverlayNotification } = useDispatch( CORE_UI );
-
-	const trackEventOnView = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_top-earning-pages-widget`,
-			'view_overlay_CTA'
-		);
-	}, [ viewContext ] );
-
-	const dismissNotification = () => {
-		// Dismiss the notification, which also dismisses it from
-		// the current user's profile with the `dismissItem` action.
-		dismissOverlayNotification(
-			ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION
-		);
-	};
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const scrollToWidgetAndDismissNotification = ( event ) => {
 		event.preventDefault();
 
-		dismissNotification();
+		dismissNotification( id );
 
 		setTimeout( () => {
 			const widgetClass =
@@ -208,61 +73,39 @@ function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification() {
 		}, 50 );
 	};
 
+	const gaTrackingEventArgs = {
+		category: `${ viewContext }_top-earning-pages-widget`,
+		viewAction: 'view_overlay_CTA',
+		dismissAction: 'dismiss_overlay_CTA',
+		confirmAction: 'confirm_overlay_CTA',
+	};
+
 	return (
-		<OverlayNotification
-			shouldShowNotification={ shouldShowNotification }
-			GraphicDesktop={ AnalyticsAdsenseLinkedGraphicDesktop }
-			GraphicMobile={ AnalyticsAdsenseLinkedGraphicMobile }
-			notificationID={ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION }
-			onShow={ trackEventOnView }
-		>
-			<div className="googlesitekit-overlay-notification__body">
-				<h3>
-					{ __( 'See your top earning content', 'google-site-kit' ) }
-				</h3>
-				<p>
-					{ __(
-						'Data is now available for the pages that earn the most AdSense revenue.',
-						'google-site-kit'
-					) }
-				</p>
-			</div>
-
-			<div className="googlesitekit-overlay-notification__actions">
-				<Button
-					disabled={ isDismissing }
-					onClick={ () => {
-						dismissNotification();
-
-						trackEvent(
-							`${ viewContext }_top-earning-pages-widget`,
-							'dismiss_overlay_CTA'
-						);
-					} }
-					tertiary
-				>
-					{ __( 'Maybe later', 'google-site-kit' ) }
-				</Button>
-
-				<Button
-					disabled={ isDismissing }
-					onClick={ ( event ) => {
-						scrollToWidgetAndDismissNotification( event );
-
-						trackEvent(
-							`${ viewContext }_top-earning-pages-widget`,
-							'confirm_overlay_CTA'
-						);
-					} }
-				>
-					{ __( 'Show me', 'google-site-kit' ) }
-				</Button>
-			</div>
-		</OverlayNotification>
+		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
+			<OverlayNotification
+				notificationID={ id }
+				title={ __(
+					'See your top earning content',
+					'google-site-kit'
+				) }
+				description={ __(
+					'Data is now available for the pages that earn the most AdSense revenue.',
+					'google-site-kit'
+				) }
+				GraphicDesktop={ AnalyticsAdsenseLinkedGraphicDesktop }
+				GraphicMobile={ AnalyticsAdsenseLinkedGraphicMobile }
+				ctaButton={ {
+					label: __( 'Show me', 'google-site-kit' ),
+					onClick: scrollToWidgetAndDismissNotification,
+				} }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
+				dismissButton
+			/>
+		</Notification>
 	);
 }
 
-export default compose(
-	whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } ),
-	whenActive( { moduleName: MODULE_SLUG_ADSENSE } )
-)( AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification );
+AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification.propTypes = {
+	id: PropTypes.string.isRequired,
+	Notification: PropTypes.elementType.isRequired,
+};
