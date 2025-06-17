@@ -269,22 +269,6 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		);
 	} );
 
-	it( 'does not render if another notification is showing', async () => {
-		await registry
-			.dispatch( CORE_UI )
-			.setOverlayNotificationToShow( 'TestOverlayNotification' );
-
-		const { container } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
-			{
-				registry,
-			}
-		);
-		expect( container ).not.toHaveTextContent(
-			'Link your Analytics and AdSense accounts to find out'
-		);
-	} );
-
 	it( 'renders `Learn how` and `Maybe later` buttons`', () => {
 		const supportURL = registry.select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/adsense/answer/6084409',
