@@ -19,17 +19,6 @@
 /**
  * Internal dependencies
  */
-
-import {
-	provideModules,
-	provideUserInfo,
-} from '../../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { Provider as ViewContextProvider } from '../../../../../components/Root/ViewContextContext';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import AudienceSegmentationIntroductoryOverlayNotification, {
 	AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from './AudienceSegmentationIntroductoryOverlayNotification';
@@ -44,44 +33,9 @@ function Template() {
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'Default';
+Default.storyName = 'AudienceSegmentationIntroductoryOverlayNotification';
 Default.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationIntroductoryOverlayNotification',
-	decorators: [
-		( Story ) => {
-			const setupRegistry = ( registry ) => {
-				provideUserInfo( registry );
-				provideModules( registry, [
-					{
-						slug: MODULE_SLUG_ANALYTICS_4,
-						active: true,
-						connected: true,
-						setupComplete: true,
-					},
-				] );
-
-				const userID = registry.select( CORE_USER ).getID();
-
-				// User ID should be other than the one who setup the module.
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setAudienceSegmentationSetupCompletedBy( userID + 1 );
-
-				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
-					configuredAudiences: [],
-					isAudienceSegmentationWidgetHidden: false,
-					didSetAudiences: true,
-				} );
-			};
-			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
-						<Story />
-					</ViewContextProvider>
-				</WithRegistrySetup>
-			);
-		},
-	],
 };
