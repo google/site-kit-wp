@@ -30,7 +30,6 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
 import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
@@ -55,25 +54,11 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 		)
 	);
 
-	const analyticsModuleConnected = useSelect( ( select ) => {
-		return select( CORE_MODULES ).isModuleConnected(
-			MODULE_SLUG_ANALYTICS_4
-		);
-	} );
-
-	const adSenseModuleConnected = useSelect( ( select ) => {
-		return select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
-	} );
-
 	const isAdSenseLinked = useSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 	} );
 
-	const analyticsAndAdSenseAreConnected =
-		analyticsModuleConnected && adSenseModuleConnected;
-
-	const shouldShowNotification =
-		analyticsAndAdSenseAreConnected && isAdSenseLinked === false;
+	const shouldShowNotification = isAdSenseLinked === false;
 
 	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 
