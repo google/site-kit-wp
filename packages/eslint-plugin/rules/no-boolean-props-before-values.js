@@ -16,6 +16,18 @@
  * limitations under the License.
  */
 
+/**
+ * Checks if an attribute is a boolean prop.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} attribute The attribute to check.
+ * @return {boolean} True if the attribute is a boolean prop, false otherwise.
+ */
+function isBooleanProp( attribute ) {
+	return attribute.type === 'JSXAttribute' && attribute.value === null;
+}
+
 module.exports = {
 	meta: {
 		type: 'suggestion',
@@ -74,21 +86,12 @@ module.exports = {
 				const fix = ( fixer ) => {
 					const sourceCode = context.getSourceCode();
 
-					const allBooleanAttributes = node.attributes.filter(
-						( attribute ) =>
-							attribute.type === 'JSXAttribute' &&
-							attribute.value === null
-					);
+					const allBooleanAttributes =
+						node.attributes.filter( isBooleanProp );
 
 					const lastNonBooleanAttribute = [ ...node.attributes ]
 						.reverse()
-						.find(
-							( attribute ) =>
-								! (
-									attribute.type === 'JSXAttribute' &&
-									attribute.value === null
-								)
-						);
+						.find( ( attribute ) => ! isBooleanProp( attribute ) );
 
 					const booleanPropsText = allBooleanAttributes
 						.map( ( attribute ) => sourceCode.getText( attribute ) )
@@ -124,6 +127,8 @@ module.exports = {
 						},
 					};
 
+					// The fix is applied only to the first misplaced prop to avoid conflicts that may arise from multiple fixes.
+					// The `fix` function corrects all boolean props for the element at once.
 					if ( index === 0 ) {
 						report.fix = fix;
 					}
