@@ -829,6 +829,26 @@ export const DEFAULT_NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
+
+			const adSenseModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
+
+			const analyticsModuleConnected = select(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+
+			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
+				return false;
+			}
+
+			return true;
+		},
 	},
 };
 
