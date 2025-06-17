@@ -305,5 +305,14 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 			);
 			expect( isActive ).toBe( false );
 		} );
+
+		it( 'is not active when adSenseLinked is `true`', async () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( true );
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );
