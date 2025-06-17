@@ -853,11 +853,7 @@ export const DEFAULT_NOTIFICATIONS = {
 			const isAdSenseLinked =
 				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 
-			if ( ! isAdSenseLinked ) {
-				return false;
-			}
-
-			return true;
+			return isAdSenseLinked === false;
 		},
 	},
 };
