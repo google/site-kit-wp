@@ -49,12 +49,6 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 		} )
 	);
 
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
-		)
-	);
-
 	const isDismissing = useSelect( ( select ) =>
 		select( CORE_USER ).isDismissingItem(
 			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
@@ -62,28 +56,16 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 	);
 
 	const analyticsModuleConnected = useSelect( ( select ) => {
-		if ( isDismissed ) {
-			return null;
-		}
-
 		return select( CORE_MODULES ).isModuleConnected(
 			MODULE_SLUG_ANALYTICS_4
 		);
 	} );
 
 	const adSenseModuleConnected = useSelect( ( select ) => {
-		if ( isDismissed ) {
-			return null;
-		}
-
 		return select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
 	} );
 
 	const isAdSenseLinked = useSelect( ( select ) => {
-		if ( isDismissed ) {
-			return null;
-		}
-
 		return select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 	} );
 
@@ -91,9 +73,7 @@ function LinkAnalyticsAndAdSenseAccountsOverlayNotification() {
 		analyticsModuleConnected && adSenseModuleConnected;
 
 	const shouldShowNotification =
-		analyticsAndAdSenseAreConnected &&
-		isAdSenseLinked === false &&
-		isDismissed === false;
+		analyticsAndAdSenseAreConnected && isAdSenseLinked === false;
 
 	const { dismissOverlayNotification } = useDispatch( CORE_UI );
 
