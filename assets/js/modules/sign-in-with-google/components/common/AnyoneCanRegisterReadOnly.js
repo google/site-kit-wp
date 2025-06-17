@@ -17,7 +17,7 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { createInterpolateElement } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -80,12 +80,7 @@ export default function AnyoneCanRegisterReadOnly() {
 										href={ generalSettingsURL }
 									/>
 								),
-							br:
-								breakpoint !== BREAKPOINT_SMALL ? (
-									<br />
-								) : (
-									<Fragment />
-								),
+							br: breakpoint !== BREAKPOINT_SMALL ? <br /> : null,
 						}
 					) }
 				</HelperText>

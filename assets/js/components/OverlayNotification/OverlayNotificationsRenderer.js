@@ -17,19 +17,10 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
 export default function OverlayNotificationsRenderer() {
-	return (
-		<Fragment>
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />
-		</Fragment>
-	);
+	return <LinkAnalyticsAndAdSenseAccountsOverlayNotification />;
 }

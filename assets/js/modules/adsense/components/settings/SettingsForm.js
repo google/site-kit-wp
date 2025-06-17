@@ -148,10 +148,8 @@ export default function SettingsForm() {
 
 			<AutoAdExclusionSwitches />
 
-			<Fragment>
-				<AdBlockingRecoverySetupCTANotice />
-				<AdBlockingRecoveryToggle />
-			</Fragment>
+			<AdBlockingRecoverySetupCTANotice />
+			<AdBlockingRecoveryToggle />
 		</div>
 	);
 }
