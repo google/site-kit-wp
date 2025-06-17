@@ -401,7 +401,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			expect( isActive ).toBe( false );
 		} );
 
-		it( 'does not render when isAdSenseLinked is `false`', async () => {
+		it( 'is not active when isAdSenseLinked is `false`', async () => {
 			provideAnalytics4MockReport( registry, reportOptions );
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( false );
