@@ -82,6 +82,9 @@ import ModuleSetupSuccessNotification from '../../components/notifications/Modul
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
 	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
 } from '../../components/OverlayNotification/AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
+import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
+	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
+} from '../../components/OverlayNotification/LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -818,6 +821,14 @@ export const DEFAULT_NOTIFICATIONS = {
 
 			return isZeroReport( reportData ) === false;
 		},
+	},
+	[ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ]: {
+		Component: LinkAnalyticsAndAdSenseAccountsOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
 	},
 };
 
