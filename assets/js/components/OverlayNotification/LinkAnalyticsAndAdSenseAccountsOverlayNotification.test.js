@@ -283,7 +283,10 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		} );
 
 		const { container, getByRole, rerender, waitForRegistry } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
