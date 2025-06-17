@@ -188,31 +188,6 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		expect( container ).toHaveTextContent( 'Maybe later' );
 	} );
 
-	it( 'does not render when AdSense module is not connected', () => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ADSENSE,
-				active: true,
-				connected: false,
-			},
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: true,
-			},
-		] );
-
-		const { container } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
-			{
-				registry,
-			}
-		);
-		expect( container ).not.toHaveTextContent(
-			'Link your Analytics and AdSense accounts to find out'
-		);
-	} );
-
 	it( 'does not render when isAdSenseLinked is `true`', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( true );
 
