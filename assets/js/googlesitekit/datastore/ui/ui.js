@@ -74,35 +74,6 @@ export const actions = {
 	},
 
 	/**
-	 * Sets `activeOverlayNotification` state.
-	 *
-	 * @since 1.123.0
-	 * @private
-	 *
-	 * @param {string} overlayNotification Overlay notification component name.
-	 * @return {Object} Redux-style action.
-	 */
-	*setOverlayNotificationToShow( overlayNotification ) {
-		invariant( overlayNotification, 'overlayNotification is required.' );
-
-		const registry = yield commonActions.getRegistry();
-
-		const activeOverlayNotification = registry
-			.select( CORE_UI )
-			.getValue( 'activeOverlayNotification' );
-
-		// If `activeOverlayNotification` is already set, don't override it.
-		if ( activeOverlayNotification ) {
-			return;
-		}
-
-		return yield actions.setValue(
-			'activeOverlayNotification',
-			overlayNotification
-		);
-	},
-
-	/**
 	 * Stores site ui information.
 	 *
 	 * @since 1.27.0
