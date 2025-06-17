@@ -29,14 +29,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import AnalyticsAdsenseConnectGraphicDesktop from '../../../svg/graphics/analytics-adsense-connect-desktop.svg';
 import AnalyticsAdsenseConnectGraphicMobile from '../../../svg/graphics/analytics-adsense-connect-mobile.svg';
 import OverlayNotification from '../../googlesitekit/notifications/components/layout/OverlayNotification';
+import ExternalIcon from '../../../svg/icons/external.svg';
 
 export const LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION =
 	'LinkAnalyticsAndAdSenseAccountsOverlayNotification';
@@ -49,12 +48,6 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification( {
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/adsense/answer/6084409',
 		} )
-	);
-
-	const isDismissing = useSelect( ( select ) =>
-		select( CORE_USER ).isDismissingItem(
-			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
-		)
 	);
 
 	const { dismissOverlayNotification } = useDispatch( CORE_UI );
@@ -79,25 +72,17 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification( {
 					'Link your Analytics and AdSense accounts to find out which content brings you the most revenue.',
 					'google-site-kit'
 				) }
-				dismissButton
 				GraphicDesktop={ AnalyticsAdsenseConnectGraphicDesktop }
 				GraphicMobile={ AnalyticsAdsenseConnectGraphicMobile }
-			>
-				<div className="googlesitekit-overlay-notification__actions">
-					<Button
-						disabled={ isDismissing }
-						href={ supportURL }
-						target="_blank"
-						onClick={ dismissNotification }
-						aria-label={ __(
-							'Learn how (opens in a new tab)',
-							'google-site-kit'
-						) }
-					>
-						{ __( 'Learn how', 'google-site-kit' ) }
-					</Button>
-				</div>
-			</OverlayNotification>
+				dismissButton
+				ctaButton={ {
+					href: supportURL,
+					target: '_blank',
+					label: __( 'Learn how', 'google-site-kit' ),
+					trailingIcon: <ExternalIcon width={ 13 } height={ 13 } />,
+					onClick: dismissNotification,
+				} }
+			/>
 		</Notification>
 	);
 }
