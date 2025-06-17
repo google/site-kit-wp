@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 import AnalyticsAdsenseConnectGraphicDesktop from '../../../svg/graphics/analytics-adsense-connect-desktop.svg';
 import AnalyticsAdsenseConnectGraphicMobile from '../../../svg/graphics/analytics-adsense-connect-mobile.svg';
 import OverlayNotification from '../../googlesitekit/notifications/components/layout/OverlayNotification';
@@ -50,15 +50,7 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification( {
 		} )
 	);
 
-	const { dismissOverlayNotification } = useDispatch( CORE_UI );
-
-	const dismissNotification = () => {
-		// Dismiss the notification, which also dismisses it from
-		// the current user's profile with the `dismissItem` action.
-		dismissOverlayNotification(
-			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
-		);
-	};
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	return (
 		<Notification>
@@ -80,7 +72,7 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification( {
 					target: '_blank',
 					label: __( 'Learn how', 'google-site-kit' ),
 					trailingIcon: <ExternalIcon width={ 13 } height={ 13 } />,
-					onClick: dismissNotification,
+					onClick: () => dismissNotification( id ),
 				} }
 			/>
 		</Notification>
