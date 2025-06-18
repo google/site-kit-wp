@@ -31,36 +31,6 @@
 
 		.googlesitekit-banner {
 			background-color: unset;
-
-			@media (min-width: $bp-nonMobile) {
-				grid-template-columns: 1fr 40%;
-			}
-
-			.googlesitekit-banner__content {
-				min-height: unset;
-				padding: var(--mdc-layout-grid-margin-desktop, 24px);
-			}
-
-			.googlesitekit-banner__title {
-				font-size: $fs-headline-sm;
-
-				@media (min-width: $bp-nonTablet) {
-					font-size: $fs-headline-md;
-				}
-			}
-
-			.googlesitekit-banner__description {
-				font-size: $fs-body-sm;
-				letter-spacing: $ls-xs;
-				line-height: $lh-body-sm;
-			}
-
-			.googlesitekit-notice__action {
-
-				& > .mdc-button {
-					margin-top: 24px;
-				}
-			}
 		}
 
 		.googlesitekit-banner__svg-wrapper {
