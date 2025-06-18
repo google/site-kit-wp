@@ -48,36 +48,9 @@ export default function RecoverableActions( {
 	const [ inProgress, setInProgress ] = useState( false );
 	const isMounted = useMountedState();
 
-	// TODO: Extract to selector.
-	const recoveryErrors = useSelect( ( select ) => {
-		if ( ! recoverableModules ) {
-			return undefined;
-		}
-
-		const recoveredModules = select( CORE_MODULES ).getRecoveredModules();
-
-		if ( ! recoveredModules ) {
-			return {};
-		}
-
-		const modules = Object.keys( recoverableModules );
-
-		const getRecoveryError = ( module ) =>
-			recoveredModules?.error?.[ module ];
-
-		return modules
-			.filter( ( module ) => !! getRecoveryError( module ) )
-			.reduce(
-				( acc, module ) => ( {
-					...acc,
-					[ module ]: {
-						name: recoverableModules[ module ].name,
-						...getRecoveryError( module ),
-					},
-				} ),
-				{}
-			);
-	} );
+	const recoveryErrors = useSelect( ( select ) =>
+		select( CORE_MODULES ).getRecoveryErrors()
+	);
 
 	const { recoverModules, clearRecoveredModules } =
 		useDispatch( CORE_MODULES );
