@@ -48,6 +48,7 @@ const Banner = forwardRef(
 			className,
 			title,
 			description,
+			additionalDescription,
 			errorText,
 			helpText,
 			learnMoreLink,
@@ -79,6 +80,7 @@ const Banner = forwardRef(
 						{ learnMoreLink?.href && (
 							<LearnMoreLink { ...learnMoreLink } />
 						) }
+						{ additionalDescription }
 					</Description>
 
 					{ helpText && <HelpText>{ helpText }</HelpText> }
@@ -117,6 +119,10 @@ const Banner = forwardRef(
 Banner.propTypes = {
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
+	additionalDescription: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.node,
+	] ),
 	errorText: PropTypes.string,
 	helpText: PropTypes.string,
 	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),
