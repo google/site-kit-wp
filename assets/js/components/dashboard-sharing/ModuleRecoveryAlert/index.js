@@ -25,7 +25,7 @@ import { useMountedState } from 'react-use';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,11 +34,11 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import ProgressBar from '../../../googlesitekit/components-gm2/ProgressBar';
 import Description from './Description';
-import RecoverableActions from './RecoverableActions';
-import UnrecoverableActions from './UnrecoverableActions';
 import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import { TYPES } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import AdditionalDescription from './AdditionalDescription';
 
 export default function ModuleRecoveryAlert( { id, Notification } ) {
 	const [ selectedModuleSlugs, setSelectedModuleSlugs ] = useState( null );
@@ -52,6 +52,12 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 	const userRecoverableModuleSlugs = useSelect( ( select ) =>
 		select( CORE_MODULES ).getUserRecoverableModuleSlugs()
 	);
+
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'dashboard-sharing'
+		);
+	} );
 
 	// The alert renders conditional copy and actions based on:
 	// 1. If there is one or more than one module to recover.
@@ -127,48 +133,41 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 					isLoading ? (
 						<ProgressBar />
 					) : (
-						<Fragment>
-							<Description
-								id={ id }
-								recoverableModules={ recoverableModules }
-								userRecoverableModuleSlugs={
-									userRecoverableModuleSlugs
-								}
-								hasUserRecoverableModules={
-									hasUserRecoverableModules
-								}
-								hasMultipleRecoverableModules={
-									hasMultipleRecoverableModules
-								}
-							/>
-							{ hasUserRecoverableModules ? (
-								<RecoverableActions
-									inProgress={ inProgress }
-									selectedModuleSlugs={ selectedModuleSlugs }
-									recoverableModules={ recoverableModules }
-									userRecoverableModuleSlugs={
-										userRecoverableModuleSlugs
-									}
-									hasMultipleRecoverableModules={
-										hasMultipleRecoverableModules
-									}
-									setSelectedModuleSlugs={
-										setSelectedModuleSlugs
-									}
-								/>
-							) : (
-								<UnrecoverableActions
-									id={ id }
-									recoverableModules={ recoverableModules }
-									userRecoverableModuleSlugs={
-										userRecoverableModuleSlugs
-									}
-									hasMultipleRecoverableModules={
-										hasMultipleRecoverableModules
-									}
-								/>
-							) }
-						</Fragment>
+						<Description
+							recoverableModules={ recoverableModules }
+							userRecoverableModuleSlugs={
+								userRecoverableModuleSlugs
+							}
+							hasUserRecoverableModules={
+								hasUserRecoverableModules
+							}
+							hasMultipleRecoverableModules={
+								hasMultipleRecoverableModules
+							}
+						/>
+					)
+				}
+				learnMoreLink={ {
+					label: __( 'Learn more', 'google-site-kit' ),
+					href: ! isLoading ? documentationURL : null,
+				} }
+				additionalDescription={
+					! isLoading && (
+						<AdditionalDescription
+							selectedModuleSlugs={ selectedModuleSlugs }
+							hasUserRecoverableModules={
+								hasUserRecoverableModules
+							}
+							hasMultipleRecoverableModules={
+								hasMultipleRecoverableModules
+							}
+							recoverableModules={ recoverableModules }
+							userRecoverableModuleSlugs={
+								userRecoverableModuleSlugs
+							}
+							inProgress={ inProgress }
+							setSelectedModuleSlugs={ setSelectedModuleSlugs }
+						/>
 					)
 				}
 				ctaButton={
