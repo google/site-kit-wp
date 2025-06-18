@@ -120,8 +120,6 @@ function RefocusableModalDialog( {
 	);
 }
 
-RefocusableModalDialog.displayName = 'Dialog';
-
 RefocusableModalDialog.propTypes = {
 	dialogActive: PropTypes.bool,
 	refocusQuerySelector: PropTypes.string,
