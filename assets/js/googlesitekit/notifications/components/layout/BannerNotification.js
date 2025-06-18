@@ -27,13 +27,14 @@ import PropTypes from 'prop-types';
  */
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../datastore/constants';
+import { TYPES } from '../../constants';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
 import Banner from '../../../../components/Banner';
 import LearnMoreLink from '../../../../components/Banner/LearnMoreLink';
 import CTAButton from '../../../../components/Banner/CTAButton';
 import DismissButton from '../../../../components/Banner/DismissButton';
 import { Cell, Grid, Row } from '../../../../material-components';
-import { TYPES } from '../../constants';
+import InfoSVG from '@/svg/graphics/info-banner.svg?url';
 
 export default function BannerNotification( {
 	notificationID,
@@ -79,6 +80,16 @@ export default function BannerNotification( {
 		await learnMoreLink?.onClick?.( event );
 	};
 
+	let SVGData = props.svg;
+
+	if ( ! SVGData ) {
+		SVGData = {
+			desktop: InfoSVG,
+			mobile: false,
+			verticalPosition: 'center',
+		};
+	}
+
 	return (
 		<div
 			className={ classnames(
@@ -108,6 +119,7 @@ export default function BannerNotification( {
 									onClick: handleCTAClickWithTrackEvent,
 								}
 							}
+							svg={ SVGData }
 							{ ...props }
 						/>
 					</Cell>
