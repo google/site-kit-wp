@@ -26,44 +26,21 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import SimpleNotification from '../../../googlesitekit/notifications/components/layout/SimpleNotification';
 import ProgressBar from '../../../googlesitekit/components-gm2/ProgressBar';
 import Description from './Description';
 import RecoverableActions from './RecoverableActions';
 import UnrecoverableActions from './UnrecoverableActions';
+import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import { TYPES } from '@/js/googlesitekit/notifications/constants';
 
 export default function ModuleRecoveryAlert( { id, Notification } ) {
 	const recoverableModules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getRecoverableModules()
 	);
 
-	// TODO: Extract to selector.
-	const userRecoverableModuleSlugs = useSelect( ( select ) => {
-		const { getRecoverableModules, hasModuleAccess } =
-			select( CORE_MODULES );
-		const modules = getRecoverableModules();
-
-		if ( modules === undefined ) {
-			return undefined;
-		}
-
-		const slugAccessEntries = Object.keys( modules ).map( ( slug ) => [
-			slug,
-			hasModuleAccess( slug ),
-		] );
-
-		if (
-			slugAccessEntries.some(
-				( [ , hasAccess ] ) => hasAccess === undefined
-			)
-		) {
-			return undefined;
-		}
-
-		return slugAccessEntries
-			.filter( ( [ , hasAccess ] ) => hasAccess )
-			.map( ( [ slug ] ) => slug );
-	} );
+	const userRecoverableModuleSlugs = useSelect( ( select ) =>
+		select( CORE_MODULES ).getUserRecoverableModuleSlugs()
+	);
 
 	// The alert renders conditional copy and actions based on:
 	// 1. If there is one or more than one module to recover.
@@ -79,7 +56,9 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 
 	return (
 		<Notification className="googlesitekit-publisher-win">
-			<SimpleNotification
+			<BannerNotification
+				notificationID={ id }
+				type={ TYPES.ERROR }
 				title={ __(
 					'Dashboard data for some services has been interrupted',
 					'google-site-kit'
@@ -103,6 +82,12 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 						/>
 					)
 				}
+				ctaButton={ {
+					label: __( 'Recover', 'google-site-kit' ),
+					onClick: () => {
+						// Handle recover action
+					},
+				} }
 				actions={
 					! isLoading &&
 					( hasUserRecoverableModules ? (
