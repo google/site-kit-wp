@@ -35,6 +35,7 @@ import CTAButton from '../../../../components/Banner/CTAButton';
 import DismissButton from '../../../../components/Banner/DismissButton';
 import { Cell, Grid, Row } from '../../../../material-components';
 import InfoSVG from '@/svg/graphics/info-banner.svg?url';
+import ErrorSVG from '@/svg/graphics/error-banner.svg?url';
 
 export default function BannerNotification( {
 	notificationID,
@@ -88,6 +89,10 @@ export default function BannerNotification( {
 			mobile: false,
 			verticalPosition: 'center',
 		};
+
+		if ( type === TYPES.ERROR ) {
+			SVGData.desktop = ErrorSVG;
+		}
 	}
 
 	return (
