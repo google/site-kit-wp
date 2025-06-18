@@ -19,64 +19,23 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import {
-	provideModules,
-	provideUserAuthentication,
-} from '../../../../tests/js/utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
-import LinkAnalyticsAndAdSenseAccountsOverlayNotification from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
+import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
+	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
+} from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
+import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+
+const NotificationWithComponentProps = withNotificationComponentProps(
+	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+)( LinkAnalyticsAndAdSenseAccountsOverlayNotification );
 
 function Template() {
-	return <LinkAnalyticsAndAdSenseAccountsOverlayNotification />;
+	return <NotificationWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'Default';
+Default.storyName = 'LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 Default.scenario = {};
 
 export default {
 	title: 'Components/LinkAnalyticsAndAdSenseAccountsOverlayNotification',
-	component: LinkAnalyticsAndAdSenseAccountsOverlayNotification,
-	parameters: {
-		viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-	},
-	decorators: [
-		( Story, { parameters } ) => {
-			const { viewContext } = parameters;
-
-			const setupRegistry = ( registry ) => {
-				provideUserAuthentication( registry );
-
-				provideModules( registry, [
-					{
-						slug: MODULE_SLUG_ANALYTICS_4,
-						active: true,
-						connected: true,
-					},
-					{
-						slug: MODULE_SLUG_ADSENSE,
-						active: true,
-						connected: true,
-					},
-				] );
-
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					adSenseLinked: false,
-				} );
-			};
-
-			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<ViewContextProvider value={ viewContext }>
-						<Story />
-					</ViewContextProvider>
-				</WithRegistrySetup>
-			);
-		},
-	],
 };
