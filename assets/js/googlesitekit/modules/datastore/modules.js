@@ -1448,6 +1448,51 @@ const baseSelectors = {
 		}, {} );
 	} ),
 
+	/**
+	 * Gets recovery errors for recoverable modules.
+	 *
+	 * Returns an object keyed by module slug, containing error details and module name,
+	 * for all recoverable modules that have a corresponding recovery error.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state (unused in this selector).
+	 * @return {(Object|undefined)} Object of recovery errors keyed by module slug,
+	 *                               or `undefined` if recoverable modules are not yet available.
+	 */
+	getRecoveryErrors: createRegistrySelector( ( select ) => () => {
+		const recoverableModules =
+			select( CORE_MODULES ).getRecoverableModules();
+
+		if ( ! recoverableModules ) {
+			return undefined;
+		}
+
+		const recoveredModules = select( CORE_MODULES ).getRecoveredModules();
+
+		if ( ! recoveredModules ) {
+			return {};
+		}
+
+		const modules = Object.keys( recoverableModules );
+
+		const getRecoveryError = ( module ) =>
+			recoveredModules?.error?.[ module ];
+
+		return modules
+			.filter( ( module ) => !! getRecoveryError( module ) )
+			.reduce(
+				( acc, module ) => ( {
+					...acc,
+					[ module ]: {
+						name: recoverableModules[ module ].name,
+						...getRecoveryError( module ),
+					},
+				} ),
+				{}
+			);
+	} ),
+
 	getRecoveredModules( state ) {
 		return state.recoveredModules;
 	},
