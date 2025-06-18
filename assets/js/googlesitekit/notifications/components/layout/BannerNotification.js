@@ -38,8 +38,6 @@ import { TYPES } from '../../constants';
 export default function BannerNotification( {
 	notificationID,
 	type = TYPES.INFO,
-	title,
-	description,
 	learnMoreLink,
 	dismissButton,
 	ctaButton,
@@ -92,8 +90,6 @@ export default function BannerNotification( {
 				<Row>
 					<Cell size={ 12 }>
 						<Banner
-							title={ title }
-							description={ description }
 							learnMoreLink={
 								learnMoreLink && {
 									...learnMoreLink,
