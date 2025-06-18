@@ -32,6 +32,7 @@ export const PRIORITY = {
 
 export const TYPES = {
 	INFO: 'info',
+	ERROR: 'error',
 };
 
 export const NOTIFICATION_AREAS = {
