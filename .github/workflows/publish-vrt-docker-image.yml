@@ -3,7 +3,6 @@ name: Publish VRT Docker Image
 on:
   push:
     branches:
-      - main
       - develop
     paths:
       - 'tests/backstop/Dockerfile'
