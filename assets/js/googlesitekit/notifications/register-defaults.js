@@ -82,6 +82,9 @@ import ModuleSetupSuccessNotification from '../../components/notifications/Modul
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
 	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
 } from '../../components/OverlayNotification/AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
+import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
+	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
+} from '../../components/OverlayNotification/LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -817,6 +820,40 @@ export const DEFAULT_NOTIFICATIONS = {
 			).getReport( reportArgs );
 
 			return isZeroReport( reportData ) === false;
+		},
+	},
+	[ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ]: {
+		Component: LinkAnalyticsAndAdSenseAccountsOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
+
+			const adSenseModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
+
+			const analyticsModuleConnected = select(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+
+			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
+				return false;
+			}
+
+			// The getAdSenseLinked() selector relies on the resolution
+			// of the getSettings() resolver.
+			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+			const isAdSenseLinked =
+				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+
+			return isAdSenseLinked === false;
 		},
 	},
 };
