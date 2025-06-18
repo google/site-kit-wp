@@ -17,10 +17,23 @@
  */
 
 /**
+ * External dependencies
+ */
+import { without } from 'lodash';
+
+/**
+ * WordPress dependencies.
+ */
+import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies.
  */
-import UnrecoverableActions from './UnrecoverableActions';
-import RecoverableActions from './RecoverableActions';
+import { useSelect } from 'googlesitekit-data';
+import { Checkbox } from 'googlesitekit-components';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import Errors from './Errors';
 
 export default function AdditionalDescription( {
 	inProgress,
@@ -31,24 +44,91 @@ export default function AdditionalDescription( {
 	hasMultipleRecoverableModules,
 	setSelectedModuleSlugs,
 } ) {
+	const recoveryErrors = useSelect( ( select ) =>
+		select( CORE_MODULES ).getRecoveryErrors()
+	);
+
 	if ( ! hasUserRecoverableModules ) {
+		// List of unrecoverable modules.
 		return (
-			<UnrecoverableActions
-				recoverableModules={ recoverableModules }
-				userRecoverableModuleSlugs={ userRecoverableModuleSlugs }
-				hasMultipleRecoverableModules={ hasMultipleRecoverableModules }
-			/>
+			<Fragment>
+				{ hasMultipleRecoverableModules && (
+					<ul className="mdc-list mdc-list--non-interactive">
+						{ Object.values( recoverableModules || {} ).map(
+							( module ) => (
+								<li
+									className="mdc-list-item"
+									key={ module.slug }
+								>
+									<span className="mdc-list-item__text">
+										{ module.name }
+									</span>
+								</li>
+							)
+						) }
+					</ul>
+				) }
+			</Fragment>
 		);
 	}
 
 	return (
-		<RecoverableActions
-			inProgress={ inProgress }
-			selectedModuleSlugs={ selectedModuleSlugs }
-			recoverableModules={ recoverableModules }
-			userRecoverableModuleSlugs={ userRecoverableModuleSlugs }
-			hasMultipleRecoverableModules={ hasMultipleRecoverableModules }
-			setSelectedModuleSlugs={ setSelectedModuleSlugs }
-		/>
+		// List recoverable modules with checkboxes.
+		<Fragment>
+			{ hasMultipleRecoverableModules && (
+				<Fragment>
+					{ selectedModuleSlugs &&
+						userRecoverableModuleSlugs.map( ( slug ) => (
+							<div key={ slug }>
+								<Checkbox
+									checked={ selectedModuleSlugs.includes(
+										slug
+									) }
+									name="module-recovery-alert-checkbox"
+									id={ `module-recovery-alert-checkbox-${ slug }` }
+									onChange={ () => {
+										if (
+											selectedModuleSlugs.includes( slug )
+										) {
+											setSelectedModuleSlugs(
+												without(
+													selectedModuleSlugs,
+													slug
+												)
+											);
+										} else {
+											setSelectedModuleSlugs( [
+												...selectedModuleSlugs,
+												slug,
+											] );
+										}
+									} }
+									disabled={ inProgress }
+									value={ slug }
+								>
+									{ recoverableModules[ slug ].name }
+								</Checkbox>
+							</div>
+						) ) }
+					<p className="googlesitekit-publisher-win__desc">
+						{ __(
+							'By recovering the selected modules, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
+							'google-site-kit'
+						) }
+					</p>
+				</Fragment>
+			) }
+			{ ! hasMultipleRecoverableModules && (
+				<p className="googlesitekit-publisher-win__desc">
+					{ __(
+						'By recovering the module, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
+						'google-site-kit'
+					) }
+				</p>
+			) }
+			{ Object.keys( recoveryErrors ).length > 0 && (
+				<Errors recoveryErrors={ recoveryErrors } />
+			) }
+		</Fragment>
 	);
 }
