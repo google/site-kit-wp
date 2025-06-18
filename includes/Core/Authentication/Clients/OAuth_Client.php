@@ -530,6 +530,8 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$this->owner_id->set( $current_user_id );
 		}
 
+		// HERE, the `redirect_url` is set in the `Setup::handle_action_setup_start` method.
+		// TODO, it's also set in the `get_authentication_url()` method. Check what the execution path is for that.
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
 
 		if ( $redirect_url ) {

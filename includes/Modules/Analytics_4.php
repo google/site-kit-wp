@@ -378,6 +378,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				if ( $oauth_client->has_sufficient_scopes(
 					array(
 						self::READONLY_SCOPE,
+						self::EDIT_SCOPE,
 						'https://www.googleapis.com/auth/tagmanager.readonly',
 					)
 				) ) {
@@ -390,6 +391,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				} elseif ( ! $oauth_client->has_sufficient_scopes(
 					array(
 						self::READONLY_SCOPE,
+						self::EDIT_SCOPE,
 					)
 				) ) {
 					$needs_tagmanager_scope = true;
@@ -479,7 +481,17 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 * @return array List of Google OAuth scopes.
 	 */
 	public function get_scopes() {
-		return array( self::READONLY_SCOPE );
+		// HERE, we can unconditionally add `analytics.edit` to the scopes,
+		// and remove `analytics.readonly` from the scopes (TBC).
+		// However this would mean we _always_ require the `edit` scope - which may
+		// not be needed if we are keeping the flow for setting up Analytics from
+		// the settings screen the same (let's assume we are for now).
+		// So we need to conditionally include `analytics.edit` in the scopes if we are
+		// setting up Analytics from the splash screen.
+		// _Or_ we just keep it simple and say that we always require the `edit` scope.
+		// Probably the thing to do is always require the `edit` scope as the initial
+		// approach in Phase 1, and then we can refine this as an edge case in Phase 3.
+		return array( self::READONLY_SCOPE, self::EDIT_SCOPE ); // TODO: Confirm whether we still need the `readonly` scope.
 	}
 
 	/**

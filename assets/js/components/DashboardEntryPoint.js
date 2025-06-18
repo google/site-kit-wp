@@ -29,6 +29,7 @@ import DashboardMainApp from './DashboardMainApp';
 
 export default function DashboardEntryPoint( { setupModuleSlug } ) {
 	if ( !! setupModuleSlug ) {
+		// HERE, if `setupModuleSlug` is set, we show the module setup screen.
 		return <ModuleSetup moduleSlug={ setupModuleSlug } />;
 	}
 

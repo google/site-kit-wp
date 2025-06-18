@@ -371,6 +371,8 @@ final class Screens {
 					'render_callback'  => function ( Context $context ) {
 						$is_view_only = ! $this->authentication->is_authenticated();
 
+						// HERE, `slug` is the module slug that is being set up.
+						// `reAuth` is a boolean that is set to true if the user is returning from the proxy.
 						$setup_slug = htmlspecialchars( $context->input()->filter( INPUT_GET, 'slug' ) ?: '' );
 						$reauth = $context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
 						if ( $context->input()->filter( INPUT_GET, 'permaLink' ) ) {
@@ -395,8 +397,51 @@ final class Screens {
 									wp_die( sprintf( '<span class="googlesitekit-notice">%s</span>', esc_html( $message ) ), 403 );
 								}
 							}
+							// HERE, `data-setup-module-slug` is the module slug that is being set up.
+							// This is used to determine which module to show the setup screen for.
 							?>
 							<div id="js-googlesitekit-main-dashboard" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" class="googlesitekit-page"></div>
+							<?php
+						}
+					},
+				)
+			),
+			new Screen(
+				self::PREFIX . 'extended-setup',
+				array(
+					'title'           => __( 'Extended Setup', 'google-site-kit' ), // TODO, Fix this title.
+					'capability'      => Permissions::SETUP, // Or use MANAGE_OPTIONS, or another capability?
+					'render_callback' => function ( Context $context ) {
+						if ( ! $this->authentication->is_authenticated() ) {
+							// TODO: Check if we can avoid this by using `capability` and/or `initialize_callback` instead.
+							wp_die( sprintf( '<span class="googlesitekit-notice">%s</span>', esc_html( 'You must be authenticated to access this page.' ) ), 403 );
+						}
+
+						// HERE, `slug` is the module slug that is being set up.
+						// `reAuth` is a boolean that is set to true if the user is returning from the proxy.
+						$setup_slug = htmlspecialchars( $context->input()->filter( INPUT_GET, 'slug' ) ?: '' );
+						$reauth = $context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
+
+							$setup_module_slug = $setup_slug && $reauth ? $setup_slug : '';
+
+						if ( $setup_module_slug ) {
+							$active_modules = $this->modules->get_active_modules();
+
+							if ( ! array_key_exists( $setup_module_slug, $active_modules ) ) {
+								try {
+									$module_details = $this->modules->get_module( $setup_module_slug );
+									/* translators: %s: The module name */
+									$message        = sprintf( __( 'The %s module cannot be set up as it has not been activated yet.', 'google-site-kit' ), $module_details->name );
+								} catch ( \Exception $e ) {
+									$message = $e->getMessage();
+								}
+
+								wp_die( sprintf( '<span class="googlesitekit-notice">%s</span>', esc_html( $message ) ), 403 );
+							}
+							// HERE, `data-setup-module-slug` is the module slug that is being set up.
+							// This is used to determine which module to show the setup screen for.
+							?>
+							<div id="js-googlesitekit-extended-setup" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" class="googlesitekit-page"></div>
 							<?php
 						}
 					},

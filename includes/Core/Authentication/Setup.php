@@ -149,11 +149,15 @@ class Setup {
 			wp_die( esc_html__( 'Site Kit is not configured to use the authentication proxy.', 'google-site-kit' ) );
 		}
 
+		// HERE, we'll need to ensure `$required_scopes` includes `analytics.edit` as well as `analytics.readonly`
+		// when Analytics is selected.
 		$required_scopes = $this->authentication->get_oauth_client()->get_required_scopes();
 		$this->google_proxy->with_scopes( $required_scopes );
 
 		$oauth_setup_redirect = $this->credentials->has()
 			? $this->google_proxy->sync_site_fields( $this->credentials, 'sync' )
+			// HERE, `register_site` is the method that is called when the user is not already registered with the proxy
+			// that returns the URL to the proxy setup screen.
 			: $this->google_proxy->register_site( 'sync' );
 
 		$oauth_proxy_failed_help_link = $this->get_oauth_proxy_failed_help_link();
@@ -201,6 +205,7 @@ class Setup {
 		}
 
 		if ( $redirect_url ) {
+			// HERE, `redirect_url` is stored on the way from the splash screen to the proxy.
 			$this->user_options->set( OAuth_Client::OPTION_REDIRECT_URL, $redirect_url );
 		}
 
