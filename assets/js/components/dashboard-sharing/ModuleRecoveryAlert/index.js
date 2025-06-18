@@ -25,7 +25,7 @@ import { useMountedState } from 'react-use';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -97,13 +97,26 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		userRecoverableModuleSlugs,
 	] );
 
-	inProgress();
-	handleRecoverModules();
+	useEffect( () => {
+		if (
+			selectedModuleSlugs === null &&
+			Array.isArray( userRecoverableModuleSlugs )
+		) {
+			setSelectedModuleSlugs( userRecoverableModuleSlugs );
+		}
+	}, [ selectedModuleSlugs, userRecoverableModuleSlugs ] );
+
+	// Disable the CTA if no modules are selected to be restored.
+	const disableCTA = ! selectedModuleSlugs?.length;
 
 	// TODO: refactor loading state to use Skeleton components within the sub component.
 	const isLoading =
 		recoverableModules === undefined ||
 		userRecoverableModuleSlugs === undefined;
+
+	disableCTA();
+	inProgress();
+	handleRecoverModules();
 
 	return (
 		<Notification className="googlesitekit-publisher-win">
