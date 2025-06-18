@@ -851,7 +851,9 @@ final class Authentication {
 		$data['updateCoreURL']       = null;
 
 		if ( $this->credentials->using_proxy() ) {
-			$auth_client                 = $this->get_oauth_client();
+			$auth_client = $this->get_oauth_client();
+			// HERE, `proxySetupURL` is what will initially specify the base of the `redirect` URL, the first stage of the
+			// process (splash screen -> proxy).
 			$data['proxySetupURL']       = esc_url_raw( $this->get_proxy_setup_url() );
 			$data['proxyPermissionsURL'] = esc_url_raw( $this->get_proxy_permissions_url() );
 			$data['usingProxy']          = true;

@@ -150,6 +150,8 @@ abstract class OAuth_Client_Base {
 				array(
 					'client_id'                => $credentials['oauth2_client_id'],
 					'client_secret'            => $credentials['oauth2_client_secret'],
+					// HERE, where is this `redirect_uri` used? It also includes `oauth2callback`.
+					// Don't get sidetracked here though, check later.
 					'redirect_uri'             => $this->get_redirect_uri(),
 					'token'                    => $this->get_token(),
 					'token_callback'           => array( $this, 'set_token' ),

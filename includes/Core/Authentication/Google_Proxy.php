@@ -324,6 +324,8 @@ class Google_Proxy {
 		return array(
 			'name'                   => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
 			'url'                    => $this->context->get_canonical_home_url(),
+			// HERE, may need to add something to the `redirect_uri`? Possibly not though, it just includes `oauth2callback`,
+			// the actual redirect to the dashboard is returned from the `redirect_uri` request when it's navigated back to.
 			'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
 			'action_uri'             => admin_url( 'index.php' ),
 			'return_uri'             => $this->context->admin_url( 'splash' ),
@@ -355,6 +357,7 @@ class Google_Proxy {
 		 *
 		 * @param string $mode An initial setup mode.
 		 */
+		// HERE, `analytics-step` is added to the mode when Analytics is selected.
 		$metadata['mode'] = apply_filters( 'googlesitekit_proxy_setup_mode', $metadata['mode'] );
 
 		return $metadata;
@@ -471,11 +474,13 @@ class Google_Proxy {
 			array(
 				'return' => 'response',
 				'mode'   => $mode,
+				// HERE, fields passed to the proxy.
 				'body'   => array_merge(
 					$this->get_site_fields(),
 					$this->get_user_fields(),
 					$this->get_metadata_fields(),
 					array(
+						// HERE, need to add `analytics.edit` scope when Analytics is selected.
 						'scope' => implode( ' ', $this->required_scopes ),
 					)
 				),
