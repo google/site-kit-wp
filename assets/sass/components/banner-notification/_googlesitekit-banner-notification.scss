@@ -25,6 +25,14 @@
 			background-color: $c-site-kit-sk-10;
 		}
 
+		&.googlesitekit-banner-notification--error {
+			background-color: $c-red-r-10;
+
+			.googlesitekit-banner__cta {
+				background-color: $c-red-r-500;
+			}
+		}
+
 		.mdc-layout-grid {
 			padding: 0;
 		}
@@ -40,6 +48,10 @@
 			@media (min-width: $bp-xlarge) {
 				background-size: 75% 100%;
 			}
+		}
+
+		.googlesitekit-banner__additional-description {
+			margin-top: 10px;
 		}
 	}
 }
