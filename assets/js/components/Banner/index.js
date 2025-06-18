@@ -134,7 +134,10 @@ Banner.propTypes = {
 	ctaButton: PropTypes.shape( CTAButton.propTypes ),
 	svg: PropTypes.shape( {
 		desktop: PropTypes.elementType,
-		mobile: PropTypes.elementType,
+		mobile: PropTypes.oneOfType( [
+			PropTypes.elementType,
+			PropTypes.bool,
+		] ),
 		verticalPosition: PropTypes.oneOf( [ 'top', 'center', 'bottom' ] ),
 	} ),
 	footer: PropTypes.node,

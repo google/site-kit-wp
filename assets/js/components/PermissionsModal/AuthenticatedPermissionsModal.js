@@ -26,7 +26,7 @@ import { useEffect, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
-import ModalDialog from '../ModalDialog';
+import RefocusableModalDialog from '../RefocusableModalDialog';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import {
@@ -119,7 +119,7 @@ function AuthenticatedPermissionsModal() {
 
 	return (
 		<Portal>
-			<ModalDialog
+			<RefocusableModalDialog
 				title={ __(
 					'Additional Permissions Required',
 					'google-site-kit'
