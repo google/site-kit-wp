@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import Link from '../../../../../components/Link';
-import ModalDialog from '../../../../../components/ModalDialog';
+import RefocusableModalDialog from '../../../../../components/RefocusableModalDialog';
 import Portal from '../../../../../components/Portal';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
@@ -160,7 +160,7 @@ export default function AudienceErrorModal( {
 
 	return (
 		<Portal>
-			<ModalDialog
+			<RefocusableModalDialog
 				buttonLink={ buttonLink }
 				title={ errorTitle }
 				subtitle={ errorDescription }
@@ -182,8 +182,8 @@ export default function AudienceErrorModal( {
 				} }
 				onClose={ onCancel }
 				inProgress={ inProgress }
+				refocusQuerySelector=".googlesitekit-settings-visitor-groups__setup .googlesitekit-cta-link"
 				dialogActive
-				danger
 			/>
 		</Portal>
 	);
