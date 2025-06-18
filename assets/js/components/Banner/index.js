@@ -94,7 +94,7 @@ const Banner = forwardRef(
 					) }
 
 					<div className="googlesitekit-notice__action">
-						<CTAButton { ...ctaButton } />
+						{ ctaButton && <CTAButton { ...ctaButton } /> }
 						{ dismissButton?.onClick && (
 							<DismissButton { ...dismissButton } />
 						) }
