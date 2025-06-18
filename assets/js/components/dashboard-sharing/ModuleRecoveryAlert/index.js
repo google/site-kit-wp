@@ -25,7 +25,7 @@ import { useMountedState } from 'react-use';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useEffect, useState } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,10 +36,10 @@ import { TYPES } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
-import ProgressBar from '../../../googlesitekit/components-gm2/ProgressBar';
 import Description from './Description';
 import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import AdditionalDescription from './AdditionalDescription';
+import PreviewBlock from '../../PreviewBlock';
 
 export default function ModuleRecoveryAlert( { id, Notification } ) {
 	const [ selectedModuleSlugs, setSelectedModuleSlugs ] = useState( null );
@@ -132,7 +132,13 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 				) }
 				description={
 					isLoading ? (
-						<ProgressBar />
+						<Fragment>
+							<PreviewBlock width="auto" height="50px" />
+							<br />
+							<PreviewBlock width="auto" height="60px" />
+							<br />
+							<PreviewBlock width="220px" height="35px" />
+						</Fragment>
 					) : (
 						<Description
 							recoverableModules={ recoverableModules }
