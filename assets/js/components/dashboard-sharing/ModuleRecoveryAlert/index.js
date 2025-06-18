@@ -32,12 +32,13 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import ProgressBar from '../../../googlesitekit/components-gm2/ProgressBar';
-import Description from './Description';
-import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import { TYPES } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
+import ProgressBar from '../../../googlesitekit/components-gm2/ProgressBar';
+import Description from './Description';
+import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import AdditionalDescription from './AdditionalDescription';
 
 export default function ModuleRecoveryAlert( { id, Notification } ) {
@@ -147,10 +148,14 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 						/>
 					)
 				}
-				learnMoreLink={ {
-					label: __( 'Learn more', 'google-site-kit' ),
-					href: ! isLoading ? documentationURL : null,
-				} }
+				learnMoreLink={
+					! isLoading
+						? {
+								label: __( 'Learn more', 'google-site-kit' ),
+								href: documentationURL,
+						  }
+						: undefined
+				}
 				additionalDescription={
 					! isLoading && (
 						<AdditionalDescription
@@ -172,7 +177,7 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 				}
 				ctaButton={
 					! hasUserRecoverableModules
-						? null
+						? undefined
 						: {
 								label: __( 'Recover', 'google-site-kit' ),
 								onClick: handleRecoverModules,
@@ -182,13 +187,20 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 				}
 				dismissButton={
 					isLoading
-						? null
+						? undefined
 						: {
 								label: __(
 									'Remind me later',
 									'google-site-kit'
 								),
 						  }
+				}
+				dismissOptions={
+					! hasUserRecoverableModules
+						? {
+								dismissExpires: DAY_IN_SECONDS,
+						  }
+						: undefined
 				}
 			/>
 		</Notification>
