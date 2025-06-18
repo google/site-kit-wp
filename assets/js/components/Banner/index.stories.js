@@ -188,8 +188,6 @@ function Template() {
 							svg={ {
 								desktop: notEnoughTrafficDesktopSVG,
 								verticalPosition: 'center',
-								hideOnMobile: true,
-								hideOnTablet: true,
 							} }
 						/>
 					</div>

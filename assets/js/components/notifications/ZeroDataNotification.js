@@ -69,8 +69,6 @@ export default function ZeroDataNotification( { id, Notification } ) {
 				} }
 				svg={ {
 					desktop: notEnoughTrafficDesktopSVG,
-					hideOnMobile: true,
-					hideOnTablet: true,
 					verticalPosition: 'center',
 				} }
 			/>

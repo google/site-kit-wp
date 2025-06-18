@@ -39,6 +39,7 @@
 				}
 			}
 			.googlesitekit-notice__action {
+				margin-bottom: 0;
 				.mdc-button {
 					@include mdc-button-filled-accessible($c-utility-on-warning-container);
 				}
