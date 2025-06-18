@@ -25,7 +25,7 @@ import { useMountedState } from 'react-use';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useEffect, useState } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -114,10 +114,6 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		recoverableModules === undefined ||
 		userRecoverableModuleSlugs === undefined;
 
-	disableCTA();
-	inProgress();
-	handleRecoverModules();
-
 	return (
 		<Notification className="googlesitekit-publisher-win">
 			<BannerNotification
@@ -131,52 +127,69 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 					isLoading ? (
 						<ProgressBar />
 					) : (
-						<Description
-							id={ id }
-							recoverableModules={ recoverableModules }
-							userRecoverableModuleSlugs={
-								userRecoverableModuleSlugs
-							}
-							hasUserRecoverableModules={
-								hasUserRecoverableModules
-							}
-							hasMultipleRecoverableModules={
-								hasMultipleRecoverableModules
-							}
-						/>
+						<Fragment>
+							<Description
+								id={ id }
+								recoverableModules={ recoverableModules }
+								userRecoverableModuleSlugs={
+									userRecoverableModuleSlugs
+								}
+								hasUserRecoverableModules={
+									hasUserRecoverableModules
+								}
+								hasMultipleRecoverableModules={
+									hasMultipleRecoverableModules
+								}
+							/>
+							{ hasUserRecoverableModules ? (
+								<RecoverableActions
+									inProgress={ inProgress }
+									selectedModuleSlugs={ selectedModuleSlugs }
+									recoverableModules={ recoverableModules }
+									userRecoverableModuleSlugs={
+										userRecoverableModuleSlugs
+									}
+									hasMultipleRecoverableModules={
+										hasMultipleRecoverableModules
+									}
+									setSelectedModuleSlugs={
+										setSelectedModuleSlugs
+									}
+								/>
+							) : (
+								<UnrecoverableActions
+									id={ id }
+									recoverableModules={ recoverableModules }
+									userRecoverableModuleSlugs={
+										userRecoverableModuleSlugs
+									}
+									hasMultipleRecoverableModules={
+										hasMultipleRecoverableModules
+									}
+								/>
+							) }
+						</Fragment>
 					)
 				}
-				ctaButton={ {
-					label: __( 'Recover', 'google-site-kit' ),
-					onClick: () => {
-						// Handle recover action
-					},
-				} }
-				actions={
-					! isLoading &&
-					( hasUserRecoverableModules ? (
-						<RecoverableActions
-							id={ id }
-							recoverableModules={ recoverableModules }
-							userRecoverableModuleSlugs={
-								userRecoverableModuleSlugs
-							}
-							hasMultipleRecoverableModules={
-								hasMultipleRecoverableModules
-							}
-						/>
-					) : (
-						<UnrecoverableActions
-							id={ id }
-							recoverableModules={ recoverableModules }
-							userRecoverableModuleSlugs={
-								userRecoverableModuleSlugs
-							}
-							hasMultipleRecoverableModules={
-								hasMultipleRecoverableModules
-							}
-						/>
-					) )
+				ctaButton={
+					! hasUserRecoverableModules
+						? null
+						: {
+								label: __( 'Recover', 'google-site-kit' ),
+								onClick: handleRecoverModules,
+								inProgress,
+								disabled: disableCTA,
+						  }
+				}
+				dismissButton={
+					isLoading
+						? null
+						: {
+								label: __(
+									'Remind me later',
+									'google-site-kit'
+								),
+						  }
 				}
 			/>
 		</Notification>
