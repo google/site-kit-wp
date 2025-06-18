@@ -17,14 +17,20 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMountedState } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import ProgressBar from '../../../googlesitekit/components-gm2/ProgressBar';
 import Description from './Description';
@@ -32,8 +38,13 @@ import RecoverableActions from './RecoverableActions';
 import UnrecoverableActions from './UnrecoverableActions';
 import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import { TYPES } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 export default function ModuleRecoveryAlert( { id, Notification } ) {
+	const [ selectedModuleSlugs, setSelectedModuleSlugs ] = useState( null );
+	const [ inProgress, setInProgress ] = useState( false );
+	const isMounted = useMountedState();
+
 	const recoverableModules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getRecoverableModules()
 	);
@@ -48,6 +59,46 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 	const hasMultipleRecoverableModules =
 		Object.keys( recoverableModules || {} ).length > 1;
 	const hasUserRecoverableModules = !! userRecoverableModuleSlugs?.length;
+
+	const { recoverModules, clearRecoveredModules } =
+		useDispatch( CORE_MODULES );
+
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
+	const handleRecoverModules = useCallback( async () => {
+		setInProgress( true );
+
+		await clearRecoveredModules();
+		const recoveryResponse = await recoverModules( selectedModuleSlugs );
+
+		// Only dismiss the notification if all modules were recovered successfully.
+		const successfullyRecoveredModules = Object.keys(
+			recoveryResponse?.response?.success || {}
+		).filter( ( slug ) => recoveryResponse.response.success[ slug ] );
+		if (
+			userRecoverableModuleSlugs.length ===
+			successfullyRecoveredModules.length
+		) {
+			dismissNotification( id, { skipHidingFromQueue: false } );
+		}
+
+		// Only update state if the component is still mounted
+		if ( isMounted() ) {
+			setSelectedModuleSlugs( null );
+			setInProgress( false );
+		}
+	}, [
+		id,
+		isMounted,
+		clearRecoveredModules,
+		dismissNotification,
+		recoverModules,
+		selectedModuleSlugs,
+		userRecoverableModuleSlugs,
+	] );
+
+	inProgress();
+	handleRecoverModules();
 
 	// TODO: refactor loading state to use Skeleton components within the sub component.
 	const isLoading =
