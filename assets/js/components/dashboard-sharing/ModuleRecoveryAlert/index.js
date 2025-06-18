@@ -116,7 +116,6 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 	// Disable the CTA if no modules are selected to be restored.
 	const disableCTA = ! selectedModuleSlugs?.length;
 
-	// TODO: refactor loading state to use Skeleton components within the sub component.
 	const isLoading =
 		recoverableModules === undefined ||
 		userRecoverableModuleSlugs === undefined;
