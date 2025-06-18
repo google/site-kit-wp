@@ -1493,6 +1493,45 @@ const baseSelectors = {
 			);
 	} ),
 
+	/**
+	 * Gets the list of recoverable module slugs the current user has access to.
+	 *
+	 * Returns an array of module slugs from `getRecoverableModules` that the user
+	 * has access to based on `hasModuleAccess`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state (unused in this selector).
+	 * @return {(Array<string>|undefined)} Array of accessible recoverable module slugs,
+	 *                                     or `undefined` if data is not ready.
+	 */
+	getUserRecoverableModuleSlugs: createRegistrySelector( ( select ) => () => {
+		const { getRecoverableModules, hasModuleAccess } =
+			select( CORE_MODULES );
+		const modules = getRecoverableModules();
+
+		if ( modules === undefined ) {
+			return undefined;
+		}
+
+		const slugAccessEntries = Object.keys( modules ).map( ( slug ) => [
+			slug,
+			hasModuleAccess( slug ),
+		] );
+
+		if (
+			slugAccessEntries.some(
+				( [ , hasAccess ] ) => hasAccess === undefined
+			)
+		) {
+			return undefined;
+		}
+
+		return slugAccessEntries
+			.filter( ( [ , hasAccess ] ) => hasAccess )
+			.map( ( [ slug ] ) => slug );
+	} ),
+
 	getRecoveredModules( state ) {
 		return state.recoveredModules;
 	},
