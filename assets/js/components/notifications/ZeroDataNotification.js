@@ -29,7 +29,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { DAY_IN_SECONDS } from '../../util';
 import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import { TYPES } from '@/js/googlesitekit/notifications/constants';
-import notEnoughTrafficDesktopSVG from '@/svg/graphics/banner-not-enough-traffic.svg?url';
+import notEnoughTrafficDesktopSVG from '@/svg/graphics/banner-warning.svg?url';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 export default function ZeroDataNotification( { id, Notification } ) {
