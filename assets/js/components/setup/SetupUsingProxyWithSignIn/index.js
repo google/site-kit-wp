@@ -68,7 +68,25 @@ export default function SetupUsingProxyWithSignIn() {
 
 			let moduleReauthURL;
 
+			// HERE, if Analytics is selected, we need to activate the module and get the reAuth URL.
+			// This is then added to the `redirect` query arg when we navigate to the proxy.
+			// We may want to change this approach in order to ensure a new screen is shown to the user
+			// when returning from the proxy, because we need to continue the setup process, showing the
+			// Analytics and then Key Metrics screens with the progress bar. The existing reAuth URL is used
+			// both for initial setup and for a subsequent module connection.
+			// Maybe we should be providing a new `page` arg in the `redirect` URL (instead of `googlesitekit-dashboard`),
+			// rather than `reAuth`.
+			// Bear in mind if Analytics is _not_ selected we will just want to land on the dashboard as we do now.
+			// Also, think about how to indicate we'll show the Welcome modal (although this is Phase 2 so not too urgent).
+			//
+			// Maybe we don't have to specify whether we use a new screen or not, but mention both options and leave it to
+			// the implementation to decide.
 			if ( connectAnalytics ) {
+				// Thinking more... Although needs proper investigation - could it be easier to add an additional
+				// param to provide an extra screen to proceed to following the module setup?
+				// _Probably not_, if we have to add a new screen anyway it would make sense to have it encompass both steps (leaving
+				// it open for future expansion). Just need to refactor/reuse the existing module setup.
+				// This is the next part of the PoC to focus on.
 				const { error, response } = await activateModule(
 					MODULE_SLUG_ANALYTICS_4
 				);
