@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="363px" height="239px" viewBox="0 0 363 239" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>banner-not-enough-traffic</title>
+    <defs>
+        <rect id="path-1" x="0" y="-3.55271368e-15" width="128" height="130.133" rx="6.98252"></rect>
+    </defs>
+    <g id="banner-not-enough-traffic" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(64.000000, 46.000000)">
+            <path d="M10.1302276,126.66801 C26.3718276,145.99001 52.4759276,151.11001 68.8648276,145.99101 C90.2458276,139.31201 103.671428,118.96601 122.502428,116.54401 C141.333428,114.12101 152.406428,124.70601 172.897428,126.23301 C193.389428,127.76001 218.231428,123.63001 229.790428,93.9347103 C241.349428,64.2394103 230.947428,34.2321103 207.214428,20.3614103 C183.481428,6.49076027 170.270428,22.7694103 147.564428,24.1237103 C124.858428,25.4779103 115.023428,1.85281027 98.0234276,0.352780271 C81.0234276,-1.14724973 71.5234276,1.85301027 61.5234276,14.8529103 C51.5234276,27.8528103 57.3712276,41.7641103 26.5235276,55.8530103 C-4.32420243,69.9419103 -6.11150243,107.34501 10.1302276,126.66801 Z" id="Path" fill="#FFE4B1" fill-rule="nonzero"></path>
+            <g id="Group" transform="translate(53.523428, 13.919910)">
+                <rect id="Rectangle" fill="#EBEEF0" fill-rule="nonzero" x="0" y="-3.55271368e-15" width="128" height="128.533" rx="6.98252"></rect>
+                <g id="Clipped">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <g id="Rectangle"></g>
+                    <g id="Group" mask="url(#mask-2)" fill="#F3F5F7" fill-rule="nonzero">
+                        <g transform="translate(8.000000, 18.758500)" id="Rectangle">
+                            <rect x="0.5337" y="40.9747" width="110.4" height="30.9333" rx="3.75128"></rect>
+                            <rect x="0.5334" y="26.5746" width="110.4" height="30.9333" rx="3.75128"></rect>
+                            <rect x="0.5337" y="79.3746" width="110.4" height="30.9333" rx="3.75128"></rect>
+                            <rect transform="translate(94.933000, 9.473250) scale(-1, 1) rotate(-180.000000) translate(-94.933000, -9.473250) " x="78.933" y="0" width="32" height="18.9465" rx="2.31569"></rect>
+                            <rect transform="translate(55.467000, 9.474150) scale(-1, 1) rotate(-180.000000) translate(-55.467000, -9.474150) " x="39.467" y="0.0009" width="32" height="18.9465" rx="2.31569"></rect>
+                            <rect transform="translate(16.000000, 9.474150) scale(-1, 1) rotate(-180.000000) translate(-16.000000, -9.474150) " x="0" y="0.0009" width="32" height="18.9465" rx="2.31569"></rect>
+                        </g>
+                    </g>
+                </g>
+                <path d="M0,7.0156 C0,3.1593 3.1262,0.0331 6.9825,0.0331 L120.859,0.0331 C124.716,0.0331 127.842,3.1593 127.842,7.0156 L127.842,10.6131 L0,10.6131 L0,7.0156 Z" id="Path" fill="#FFFFFF" fill-rule="nonzero"></path>
+                <rect id="Rectangle" fill="#F3F5F7" fill-rule="nonzero" x="5.2896" y="3.5597" width="3.52667" height="3.52667" rx="1.76333"></rect>
+                <rect id="Rectangle" fill="#F3F5F7" fill-rule="nonzero" x="10.5803" y="3.5597" width="3.52667" height="3.52667" rx="1.76333"></rect>
+                <rect id="Rectangle" fill="#F3F5F7" fill-rule="nonzero" x="15.9136" y="3.5597" width="3.52667" height="3.52667" rx="1.76333"></rect>
+            </g>
+            <circle id="Oval" stroke="#FFFFFF" stroke-width="2.75862" fill="#4E3300" fill-rule="nonzero" cx="117.523428" cy="76.8530103" r="17.3793"></circle>
+            <circle id="Oval" fill="#FFE4B1" fill-rule="nonzero" transform="translate(117.523598, 71.335740) scale(-1, 1) rotate(-180.000000) translate(-117.523598, -71.335740) " cx="117.523598" cy="71.3357403" r="1.65517"></circle>
+            <rect id="Rectangle" fill="#FFE4B1" fill-rule="nonzero" transform="translate(117.523598, 79.887455) scale(-1, 1) rotate(-180.000000) translate(-117.523598, -79.887455) " x="115.868428" y="75.1978003" width="3.31034" height="9.37931" rx="1.65517"></rect>
+        </g>
+    </g>
+</svg>

@@ -126,6 +126,8 @@ Banner.propTypes = {
 		desktop: PropTypes.elementType,
 		mobile: PropTypes.elementType,
 		verticalPosition: PropTypes.oneOf( [ 'top', 'center', 'bottom' ] ),
+		hideOnMobile: PropTypes.bool,
+		hideOnTablet: PropTypes.bool,
 	} ),
 	footer: PropTypes.node,
 };

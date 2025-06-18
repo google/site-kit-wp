@@ -32,6 +32,8 @@ export const PRIORITY = {
 
 export const TYPES = {
 	INFO: 'info',
+	WARNING: 'warning',
+	SETUP_CTA: 'setup-cta',
 };
 
 export const NOTIFICATION_AREAS = {
