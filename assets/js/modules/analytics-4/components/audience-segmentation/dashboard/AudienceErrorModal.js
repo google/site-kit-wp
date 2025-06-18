@@ -184,6 +184,7 @@ export default function AudienceErrorModal( {
 				onClose={ onCancel }
 				danger
 				inProgress={ inProgress }
+				refocusQuerySelector=".googlesitekit-settings-visitor-groups__setup .googlesitekit-cta-link"
 			/>
 		</Portal>
 	);

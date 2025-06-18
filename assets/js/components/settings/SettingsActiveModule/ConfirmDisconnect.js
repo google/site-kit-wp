@@ -152,6 +152,7 @@ export default function ConfirmDisconnect( { slug } ) {
 			dependentModules={ dependentModulesText }
 			inProgress={ isDeactivating }
 			danger
+			refocusQuerySelector=".googlesitekit-settings-module__footer .googlesitekit-settings-module__remove-button"
 		/>
 	);
 }

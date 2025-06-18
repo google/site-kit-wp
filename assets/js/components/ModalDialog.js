@@ -41,6 +41,52 @@ import {
 	SpinnerButton,
 } from 'googlesitekit-components';
 import ExclamationIcon from '../../svg/icons/warning.svg';
+import useDialogEscapeAndScrim from '../hooks/useDialogEscapeAndScrim';
+
+// eslint-disable-next-line no-console
+const log = console.log;
+
+// Use a singleton variable to store the clicked element before any dialog opens.
+// We need to do this at the module level since the component may not be mounted
+// when the user initiates an action that will open the dialog.
+// Using WeakRef to prevent memory leaks if the element is removed from the DOM.
+let previouslyClickedElementRef = null;
+
+// Set up a global event listener to capture the clicked element before any dialog opens
+// This needs to happen at the module level to ensure it's set up before any user interaction
+if (
+	typeof global !== 'undefined' &&
+	global.document &&
+	! global._googlesitekitModalFocusTrackerInitialized
+) {
+	const captureActiveElementOnClick = ( event ) => {
+		log( 'event', event );
+
+		// Store the clicked (or keyboard-activated) element when user clicks.
+		// This will be the element that was clicked right before the dialog opens.
+		// We'll assume that the user will always click a button or anchor, although
+		// may need to revisit this assumption.
+		const nearestParentButtonOrAnchor = event.target.closest( 'button, a' );
+		if ( nearestParentButtonOrAnchor ) {
+			// eslint-disable-next-line no-undef
+			previouslyClickedElementRef = new WeakRef(
+				nearestParentButtonOrAnchor
+			);
+		}
+		log( 'previouslyActiveElement', previouslyClickedElementRef?.deref() );
+	};
+
+	global.document.addEventListener(
+		'mousedown',
+		captureActiveElementOnClick
+	);
+	global.document.addEventListener( 'keydown', ( event ) => {
+		if ( event.key === 'Enter' || event.key === ' ' ) {
+			captureActiveElementOnClick( event );
+		}
+	} );
+	global._googlesitekitModalFocusTrackerInitialized = true;
+}
 
 function ModalDialog( {
 	className = '',
@@ -59,10 +105,48 @@ function ModalDialog( {
 	small = false,
 	medium = false,
 	buttonLink = null,
+	refocusPreviousElement = false,
+	refocusQuerySelector = null,
 } ) {
 	const instanceID = useInstanceId( ModalDialog );
 	const describedByID = `googlesitekit-dialog-description-${ instanceID }`;
 	const hasProvides = !! ( provides && provides.length );
+
+	const shouldRefocus = refocusQuerySelector || refocusPreviousElement;
+
+	const handleEscapeOrScrim = () => {
+		if ( shouldRefocus ) {
+			// Handle onClose as setting key action props on Dialog prevents these from being called.
+			onClose?.();
+			// Refocus the passed querySelector.
+			setTimeout( () => {
+				if ( refocusPreviousElement ) {
+					const previouslyClickedElement =
+						previouslyClickedElementRef?.deref();
+					if (
+						previouslyClickedElement &&
+						document.body.contains( previouslyClickedElement )
+					) {
+						previouslyClickedElement.focus();
+					}
+					// Clear the reference so it doesn't persist indefinitely.
+					previouslyClickedElementRef = null;
+				} else {
+					const element =
+						document.querySelector( refocusQuerySelector );
+					if ( element ) {
+						element.focus();
+					}
+				}
+			} );
+		}
+	};
+
+	// Override the escape and scrim click actions if refocusQuerySelector is set.
+	useDialogEscapeAndScrim(
+		handleEscapeOrScrim,
+		dialogActive && shouldRefocus
+	);
 
 	return (
 		<Dialog
@@ -75,6 +159,9 @@ function ModalDialog( {
 				'googlesitekit-dialog-sm': small,
 				'googlesitekit-dialog-md': medium,
 			} ) }
+			// Prevent default modal behavior if we are capturing the escape key and scrim click.
+			escapeKeyAction={ shouldRefocus ? '' : 'close' }
+			scrimClickAction={ shouldRefocus ? '' : 'close' }
 		>
 			<DialogTitle>
 				{ danger && <ExclamationIcon width={ 28 } height={ 28 } /> }
@@ -168,6 +255,8 @@ ModalDialog.propTypes = {
 	small: PropTypes.bool,
 	medium: PropTypes.bool,
 	buttonLink: PropTypes.string,
+	refocusPreviousElement: PropTypes.bool,
+	refocusQuerySelector: PropTypes.string,
 };
 
 export default ModalDialog;

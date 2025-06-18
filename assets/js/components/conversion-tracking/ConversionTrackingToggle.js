@@ -49,7 +49,7 @@ export default function ConversionTrackingToggle( { children, loading } ) {
 	const { setConversionTrackingEnabled } = useDispatch( CORE_SITE );
 
 	return (
-		<div>
+		<div className="googlesitekit-conversion-tracking-toggle">
 			<LoadingWrapper loading={ loading } width="180px" height="21.3px">
 				<div className="googlesitekit-module-settings-group__switch">
 					<Switch
