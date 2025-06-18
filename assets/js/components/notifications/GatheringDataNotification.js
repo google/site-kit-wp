@@ -100,8 +100,8 @@ export default function GatheringDataNotification( { id, Notification } ) {
 				} }
 				svg={ {
 					desktop: GatheringDataSVG,
+					mobile: false,
 					verticalPosition: 'center',
-					hideOnMobile: true,
 				} }
 			/>
 		</Notification>
