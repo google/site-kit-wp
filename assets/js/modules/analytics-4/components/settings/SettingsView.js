@@ -47,7 +47,7 @@ import {
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 export default function SettingsView() {
-	const fpmEnabled = useFeature( 'googleTagGateway' );
+	const gtgEnabled = useFeature( 'googleTagGateway' );
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
@@ -95,17 +95,20 @@ export default function SettingsView() {
 		select( CORE_SITE ).isConversionTrackingEnabled()
 	);
 
-	const isFPMEnabled = useSelect( ( select ) => {
-		if ( ! fpmEnabled ) {
+	const isGTGEnabled = useSelect( ( select ) => {
+		if ( ! gtgEnabled ) {
 			return false;
 		}
 
-		const { isFirstPartyModeEnabled, isFPMHealthy, isScriptAccessEnabled } =
-			select( CORE_SITE );
+		const {
+			isGoogleTagGatewayEnabled,
+			isGTGHealthy,
+			isScriptAccessEnabled,
+		} = select( CORE_SITE );
 
 		return (
-			isFirstPartyModeEnabled() &&
-			isFPMHealthy() &&
+			isGoogleTagGatewayEnabled() &&
+			isGTGHealthy() &&
 			isScriptAccessEnabled()
 		);
 	} );
@@ -241,14 +244,14 @@ export default function SettingsView() {
 						),
 						status: isConversionTrackingEnabled,
 					},
-					...( fpmEnabled
+					...( gtgEnabled
 						? [
 								{
 									label: __(
-										'First-party mode',
+										'Google tag gateway',
 										'google-site-kit'
 									),
-									status: isFPMEnabled,
+									status: isGTGEnabled,
 								},
 						  ]
 						: [] ),
