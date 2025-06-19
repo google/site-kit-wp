@@ -1,13 +1,13 @@
 <?php
 
 /**
- * FirstPartyServing redirect file
+ * GoogleTagGatewayServing redirect file
  *
- * @package   Google\FirstPartyLibrary
+ * @package   Google\GoogleTagGatewayLibrary
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  *
- * @version   288a45a
+ * @version   e0c6ff8
  *
  * NOTICE: This file has been modified from its original version in accordance with the Apache License, Version 2.0.
  */
@@ -19,7 +19,7 @@
 // phpcs:disable PSR1.Files.SideEffects.FoundWithSymbols
 // phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses
 
-namespace Google\FirstPartyLibrary;
+namespace Google\GoogleTagGatewayLibrary;
 
 /* Start of Site Kit modified code. */
 if ( isset( $_GET['healthCheck'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
@@ -33,7 +33,7 @@ final class Measurement
 {
     private const TAG_ID_QUERY = '?id=';
     private const PATH_QUERY = '&s=';
-    private const FPS_PATH = 'PHP_FPM_REPLACE_PATH';
+    private const FPS_PATH = 'PHP_GTG_REPLACE_PATH';
 
     private RequestHelper $helper;
 
@@ -66,13 +66,14 @@ final class Measurement
             return "";
         }
 
-        if (!self::isScriptRequest($path)) {
+        if (!self::isScriptRequest($path) && !self::isHealthCheck($path)) {
             $path = self::appendRequestIP($path);
         }
 
         $fpsUrl = 'https://' . $tagId . '.fps.goog/' . self::FPS_PATH . $path;
 
-        $response = $this->helper->sendRequest($fpsUrl);
+        $requestHeaders = $this->helper->getRequestHeaders();
+        $response = $this->helper->sendRequest($fpsUrl, $requestHeaders);
         if (self::isScriptResponse($response['headers'])) {
             $response['body'] = str_replace(
                 '/' . self::FPS_PATH . '/',
@@ -96,8 +97,8 @@ final class Measurement
         }
         $requestIP = urlencode($requestIP);
 
-        $gaPath = "/g/collect";
-        if (false !== strpos($path, $gaPath)) {
+        $isGaPath = strpos($path, '/g/collect') !== false;
+        if ($isGaPath) {
             return $path . '&_uip=' . $requestIP;
         } else {
             return $path . '&uip=' . $requestIP;
@@ -115,6 +116,18 @@ final class Measurement
         return substr($requestPath, 0, 7) === "/gtm.js"
             || substr($requestPath, 0, 8) === "/gtag.js"
             || substr($requestPath, 0, 8) === "/gtag/js";
+    }
+
+    /**
+     * Use best effort for determining if a request path is a health check
+     * request.
+     *
+     * @param string $requestPath
+     * @return bool
+     */
+    private static function isHealthCheck(string $requestPath): bool
+    {
+        return substr($requestPath, 0, 8) === "/healthy";
     }
 
     /**
@@ -187,6 +200,18 @@ final class Measurement
  */
 class RequestHelper
 {
+    private static $reservedHeaders = [
+        # PHP managed headers which will be auto populated by curl or file_get_contents.
+        'HTTP_ACCEPT_ENCODING' => true,
+        'HTTP_CONNECTION' => true,
+        'HTTP_CONTENT_LENGTH' => true,
+        'HTTP_EXPECT' => true,
+        'HTTP_HOST' => true,
+        'HTTP_TRANSFER_ENCODING' => true,
+        # Sensitive headers to exclude from all requests.
+        'HTTP_COOKIE' => true,
+    ];
+
     /**
      * Helper method to exit the script early and send back a status code.
      *
@@ -213,39 +238,79 @@ class RequestHelper
     }
 
     /**
+     * Get headers from the current request as an array of strings.
+     * Similar to how you set headers using the `headers` function.
+     */
+    public function getRequestHeaders(): array
+    {
+        $headers = [];
+        foreach ($_SERVER as $key => $value) {
+            # Skip reserved headers
+            if (isset(self::$reservedHeaders[$key])) {
+                continue;
+            }
+
+            # All PHP request headers are available under the $_SERVER variable
+            # and have a key prefixed with `HTTP_` according to:
+            # https://www.php.net/manual/en/reserved.variables.server.php#refsect1-reserved.variables.server-description
+            if (substr($key, 0, 5) !== 'HTTP_') {
+                continue;
+            }
+
+            # PHP defaults to every header key being all capitalized.
+            # Format header key as lowercase with `-` as word seperator.
+            # For example: cache-control
+            $headerKey = strtolower(str_replace('_', '-', substr($key, 5)));
+
+            if (empty($headerKey) || empty($value)) {
+                continue;
+            }
+
+            $headers[] = "$headerKey: $value";
+        }
+        return $headers;
+    }
+
+    /**
      * Helper method to send requests depending on the PHP environment.
      *
      * @param string $url
+     * @param array $headers - as a 2 dimmensional array
      * @return array{
      *      body: string,
      *      headers: string[],
      *      statusCode: int,
      * }
      */
-    public function sendRequest(string $url): array
+    public function sendRequest(string $url, array $headers = []): array
     {
         if ($this->isCurlInstalled()) {
-            $response = $this->sendCurlRequest($url);
+            $response = $this->sendCurlRequest($url, $headers);
         } else {
-            $response = $this->sendFileGetContents($url);
+            $response = $this->sendFileGetContents($url, $headers);
         }
         return $response;
     }
 
     /**
      * @param string $url
+     * @param array $headers
      * @return array{
      *      body: string,
      *      headers: string[],
      *      statusCode: int,
      * }
      */
-    protected function sendCurlRequest(string $url): array
+    protected function sendCurlRequest(string $url, array $headers): array
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_URL, $url);
+
+        if (!empty($headers)) {
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        }
 
         $result = curl_exec($ch);
 
@@ -269,19 +334,21 @@ class RequestHelper
 
     /**
      * @param string $url
+     * @param array $headers
      * @return array{
      *      body: string,
      *      headers: string[],
      *      statusCode: int,
      * }
      */
-    protected function sendFileGetContents(string $url): array
+    protected function sendFileGetContents(string $url, array $headers): array
     {
-        $streamContext = stream_context_create(array(
-            'http' => array(
-                'method' => 'GET',
-            )
-        ));
+        $httpContext = array('method' => 'GET');
+        if (!empty($headers)) {
+            $httpContext['header'] = implode("\r\n", $headers);
+        }
+
+        $streamContext = stream_context_create(array('http' => $httpContext));
 
         // Calling file_get_contents will set the variable $http_response_header
         // within the local scope.
@@ -328,7 +395,7 @@ class RequestHelper
 // REQUEST_HELPER_END
 
 // Skip initial run for testing
-if (!defined('IS_FIRST_PARTY_MODE_TEST')) {
+if (!defined('IS_GOOGLE_TAG_GATEWAY_TEST')) {
     $requestHelper = new RequestHelper();
     $response = (new Measurement($requestHelper))->run();
 
