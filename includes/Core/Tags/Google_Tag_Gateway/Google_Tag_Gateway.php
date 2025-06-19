@@ -163,7 +163,7 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields {
 	 */
 	public function healthcheck() {
 		$is_gtg_healthy           = $this->is_endpoint_healthy( 'https://g-1234.fps.goog/mpath/healthy' );
-		$is_script_access_enabled = $this->is_endpoint_healthy( add_query_arg( 'healthCheck', '1', plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$is_script_access_enabled = $this->is_endpoint_healthy( add_query_arg( 'healthCheck', '1', plugins_url( 'gtg/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 
 		$this->google_tag_gateway_settings->merge(
 			array(
@@ -200,7 +200,7 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields {
 			define( 'IS_GOOGLE_TAG_GATEWAY_TEST', true );
 		}
 
-		require_once GOOGLESITEKIT_PLUGIN_DIR_PATH . 'fpm/measurement.php';
+		require_once GOOGLESITEKIT_PLUGIN_DIR_PATH . 'gtg/measurement.php';
 
 		$request_helper = new \Google\GoogleTagGatewayLibrary\RequestHelper();
 

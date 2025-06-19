@@ -235,7 +235,7 @@ class GTag {
 					'id' => $tag_id,
 					's'  => '/gtag/js',
 				),
-				plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE )
+				plugins_url( 'gtg/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE )
 			);
 		}
 

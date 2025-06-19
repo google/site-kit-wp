@@ -241,7 +241,7 @@ const baseSelectors = {
 	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|null|undefined} True if the `fpm/measurement.php` proxy script is accessible, otherwise false. Returns undefined if the state is not loaded.
+	 * @return {boolean|null|undefined} True if the `gtg/measurement.php` proxy script is accessible, otherwise false. Returns undefined if the state is not loaded.
 	 */
 	isScriptAccessEnabled: createRegistrySelector( ( select ) => () => {
 		const { isScriptAccessEnabled } =

@@ -293,7 +293,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 	}
 
 	public function provider_gtg_server_requirement_status_data() {
-		$measurement_health_check_url = plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?healthCheck=1';
+		$measurement_health_check_url = plugins_url( 'gtg/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?healthCheck=1';
 
 		return array(
 			'FPS service healthy, proxy script healthy'   => array(
