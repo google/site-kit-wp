@@ -23,6 +23,7 @@ import { CORE_SITE } from './constants';
 import {
 	createTestRegistry,
 	muteFetch,
+	provideSiteInfo,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 
@@ -35,6 +36,9 @@ describe( 'core/site urls', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		provideSiteInfo( registry, {
+			adminURL: 'https://settings-test.com/wp-admin/',
+		} );
 	} );
 
 	describe( 'actions', () => {
@@ -154,6 +158,83 @@ describe( 'core/site urls', () => {
 				expect( registry.select( CORE_SITE ).getShowAdminBar() ).toBe(
 					enabled
 				);
+			} );
+		} );
+
+		describe( 'getModuleSettingsURL', () => {
+			it( 'should return the URL for the module settings page', () => {
+				const moduleSlug = 'example-module';
+				const expectedURL =
+					'https://settings-test.com/wp-admin/admin.php?page=googlesitekit-settings#connected-services/example-module';
+
+				expect(
+					registry
+						.select( CORE_SITE )
+						.getModuleSettingsURL( moduleSlug )
+				).toBe( expectedURL );
+			} );
+
+			it( 'should throw an error if moduleSlug is not provided', () => {
+				expect( () =>
+					registry.select( CORE_SITE ).getModuleSettingsURL()
+				).toThrow(
+					'moduleSlug is required to get module settings URL'
+				);
+			} );
+		} );
+
+		describe( 'getModuleSettingsEditURL', () => {
+			it( 'should return the URL for the module settings edit page', () => {
+				const moduleSlug = 'example-module';
+				const expectedURL =
+					'https://settings-test.com/wp-admin/admin.php?page=googlesitekit-settings#connected-services/example-module/edit';
+
+				expect(
+					registry
+						.select( CORE_SITE )
+						.getModuleSettingsEditURL( moduleSlug )
+				).toBe( expectedURL );
+			} );
+
+			it( 'should throw an error if moduleSlug is not provided', () => {
+				expect( () =>
+					registry.select( CORE_SITE ).getModuleSettingsEditURL()
+				).toThrow(
+					'moduleSlug is required to get module settings edit URL'
+				);
+			} );
+		} );
+		describe( 'getConnectMoreServicesURL', () => {
+			it( 'should return the URL for the "Connect More Services" page', () => {
+				const expectedURL =
+					'https://settings-test.com/wp-admin/admin.php?page=googlesitekit-settings#connect-more-services';
+
+				expect(
+					registry.select( CORE_SITE ).getConnectMoreServicesURL()
+				).toBe( expectedURL );
+			} );
+
+			it( 'should not throw an error if no parameters are provided', () => {
+				expect( () =>
+					registry.select( CORE_SITE ).getConnectMoreServicesURL()
+				).not.toThrow();
+			} );
+		} );
+
+		describe( 'getSiteKitAdminSettingsURL', () => {
+			it( 'should return the URL for the admin settings page', () => {
+				const expectedURL =
+					'https://settings-test.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings';
+
+				expect(
+					registry.select( CORE_SITE ).getSiteKitAdminSettingsURL()
+				).toBe( expectedURL );
+			} );
+
+			it( 'should not throw an error if no parameters are provided', () => {
+				expect( () =>
+					registry.select( CORE_SITE ).getSiteKitAdminSettingsURL()
+				).not.toThrow();
 			} );
 		} );
 	} );

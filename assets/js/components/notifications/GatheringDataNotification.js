@@ -39,8 +39,8 @@ import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/
 import GatheringDataIcon from '../../../svg/graphics/zero-state-red.svg';
 
 export default function GatheringDataNotification( { id, Notification } ) {
-	const settingsAdminURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	const connectMoreServicesURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getConnectMoreServicesURL()
 	);
 
 	const { analyticsGatheringData, searchConsoleGatheringData } =
@@ -98,7 +98,7 @@ export default function GatheringDataNotification( { id, Notification } ) {
 							'See other services',
 							'google-site-kit'
 						) }
-						ctaLink={ `${ settingsAdminURL }#/connect-more-services` }
+						ctaLink={ connectMoreServicesURL }
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 						dismissExpires={ DAY_IN_SECONDS }
 					/>

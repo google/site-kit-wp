@@ -46,6 +46,7 @@ import {
 import Content from './Content';
 import CreateMessageStep from './steps/CreateMessageStep';
 import PlaceTagsStep from './steps/PlaceTagsStep';
+import { MODULE_SLUG_ADSENSE } from '../../../constants';
 
 export default function SetupMain() {
 	const viewContext = useViewContext();
@@ -53,7 +54,10 @@ export default function SetupMain() {
 	const settingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
-	const adSenseSettingsURL = `${ settingsURL }#/connected-services/adsense`;
+
+	const adSenseSettingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getModuleSettingsURL( MODULE_SLUG_ADSENSE )
+	);
 	const createMessageCTAClicked = useSelect(
 		( select ) =>
 			!! select( CORE_UI ).getValue(

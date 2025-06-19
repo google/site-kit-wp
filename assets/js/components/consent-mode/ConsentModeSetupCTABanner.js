@@ -49,8 +49,8 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 		category: `${ viewContext }_CoMo-ads-setup-notification`,
 	};
 
-	const settingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	const adminSettingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getSiteKitAdminSettingsURL()
 	);
 
 	const consentModeDocumentationURL = useSelect( ( select ) =>
@@ -121,7 +121,7 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 				) }
 				ctaButton={ {
 					label: __( 'Enable consent mode', 'google-site-kit' ),
-					href: `${ settingsURL }#/admin-settings`,
+					href: adminSettingsURL,
 					onClick: handleCTAClick,
 					inProgress: isSaving,
 				} }

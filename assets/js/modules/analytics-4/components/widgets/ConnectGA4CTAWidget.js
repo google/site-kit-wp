@@ -89,11 +89,9 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 		)
 	);
 	const connectGA4URL = useSelect( ( select ) => {
-		const settingsURL = select( CORE_SITE ).getAdminURL(
-			'googlesitekit-settings'
+		return select( CORE_SITE ).getModuleSettingsEditURL(
+			MODULE_SLUG_ANALYTICS_4
 		);
-
-		return `${ settingsURL }#connected-services/analytics-4/edit`;
 	} );
 	const isNavigatingToGA4URL = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo( connectGA4URL )

@@ -51,8 +51,8 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 	const Icon = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleIcon( MODULE_SLUG_ANALYTICS_4 )
 	);
-	const settingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	const adminSettingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getSiteKitAdminSettingsURL()
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
@@ -127,9 +127,7 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 											'change_settings',
 											eventLabel
 										).finally( () => {
-											navigateTo(
-												`${ settingsURL }#/admin-settings`
-											);
+											navigateTo( adminSettingsURL );
 										} );
 									} }
 									secondary

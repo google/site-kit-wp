@@ -27,6 +27,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import NotificationError from '../../googlesitekit/notifications/components/layout/NotificationError';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MINUTE_IN_SECONDS } from '../../util';
 import Description from '../../googlesitekit/notifications/components/common/Description';
@@ -43,8 +44,8 @@ export default function WebDataStreamNotAvailableNotification( {
 		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
 
-	const settingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	const analyticsSettingsEditURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getModuleSettingsEditURL( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	return (
@@ -73,7 +74,7 @@ export default function WebDataStreamNotAvailableNotification( {
 							'Update Analytics settings',
 							'google-site-kit'
 						) }
-						ctaLink={ `${ settingsURL }#connected-services/analytics-4/edit` }
+						ctaLink={ analyticsSettingsEditURL }
 						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
 						dismissExpires={ MINUTE_IN_SECONDS * 55 }
 					/>
