@@ -27,16 +27,18 @@ import PropTypes from 'prop-types';
  */
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../datastore/constants';
-import { TYPES } from '../../constants';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
 import Banner from '../../../../components/Banner';
 import LearnMoreLink from '../../../../components/Banner/LearnMoreLink';
 import CTAButton from '../../../../components/Banner/CTAButton';
 import DismissButton from '../../../../components/Banner/DismissButton';
 import { Cell, Grid, Row } from '../../../../material-components';
-import InfoSVG from '@/svg/graphics/info-banner.svg?url';
 import ErrorSVG from '@/svg/graphics/error-banner.svg?url';
 
+export const TYPES = {
+	INFO: 'info',
+	ERROR: 'error',
+};
 export default function BannerNotification( {
 	notificationID,
 	type = TYPES.INFO,
@@ -81,12 +83,11 @@ export default function BannerNotification( {
 		await learnMoreLink?.onClick?.( event );
 	};
 
-	let SVGData = props.svg;
+	let SVGData = props?.svg;
 
-	if ( ! SVGData ) {
+	if ( ! SVGData && type !== TYPES.INFO ) {
 		SVGData = {
-			desktop: InfoSVG,
-			mobile: false,
+			mobile: undefined,
 			verticalPosition: 'center',
 		};
 

@@ -31,10 +31,12 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { TYPES } from '../Notice/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
 import useModuleGatheringZeroData from '../../hooks/useModuleGatheringZeroData';
-import BannerNotification from '../../googlesitekit/notifications/components/layout/BannerNotification';
+import BannerNotification, {
+	TYPES,
+} from '../../googlesitekit/notifications/components/layout/BannerNotification';
+import SVGGraphic from '@/svg/graphics/gathering-data.svg?url';
 
 export default function GatheringDataNotification( { id, Notification } ) {
 	const settingsAdminURL = useSelect( ( select ) =>
@@ -96,6 +98,11 @@ export default function GatheringDataNotification( { id, Notification } ) {
 				} }
 				dismissOptions={ {
 					expiresInSeconds: DAY_IN_SECONDS,
+				} }
+				svg={ {
+					desktop: SVGGraphic,
+					mobile: undefined,
+					verticalPosition: 'center',
 				} }
 			/>
 		</Notification>
