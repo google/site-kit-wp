@@ -49,7 +49,7 @@ describe( 'FirstPartyModeToggle', () => {
 	let registry;
 
 	const serverRequirementStatusEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+		'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 	);
 
 	beforeEach( () => {

@@ -55,7 +55,7 @@ const settingsReducerCallback = createReducer(
 const fetchGetFirstPartyModeSettingsStore = createFetchStore( {
 	baseName: 'getFirstPartyModeSettings',
 	controlCallback: () =>
-		get( 'core', 'site', 'fpm-settings', undefined, {
+		get( 'core', 'site', 'gtg-settings', undefined, {
 			useCache: false,
 		} ),
 	reducerCallback: settingsReducerCallback,
@@ -64,7 +64,7 @@ const fetchGetFirstPartyModeSettingsStore = createFetchStore( {
 const fetchSaveFirstPartyModeSettingsStore = createFetchStore( {
 	baseName: 'saveFirstPartyModeSettings',
 	controlCallback: ( { settings } ) => {
-		return set( 'core', 'site', 'fpm-settings', { settings } );
+		return set( 'core', 'site', 'gtg-settings', { settings } );
 	},
 	reducerCallback: settingsReducerCallback,
 	argsToParams: ( settings ) => {
@@ -92,7 +92,7 @@ const fetchSaveFirstPartyModeSettingsStore = createFetchStore( {
 const fetchGetFPMServerRequirementStatusStore = createFetchStore( {
 	baseName: 'getFPMServerRequirementStatus',
 	controlCallback: () =>
-		get( 'core', 'site', 'fpm-server-requirement-status', undefined, {
+		get( 'core', 'site', 'gtg-server-requirement-status', undefined, {
 			useCache: false,
 		} ),
 	reducerCallback: settingsReducerCallback,

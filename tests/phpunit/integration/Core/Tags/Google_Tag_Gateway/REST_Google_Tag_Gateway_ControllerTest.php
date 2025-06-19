@@ -96,7 +96,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 		$this->settings->register();
 		$this->settings->set( $original_settings );
 
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/fpm-settings' );
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/gtg-settings' );
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEqualSetsWithIndex( $original_settings, $response->get_data() );
@@ -116,7 +116,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 		$this->settings->register();
 		$this->settings->set( $original_settings );
 
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/fpm-settings' );
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/gtg-settings' );
 		$response = rest_get_server()->dispatch( $request );
 
 		// This request is made by a user who is not authenticated with dashboard
@@ -146,7 +146,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 		$this->settings->register();
 		$this->settings->set( $original_settings );
 
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/fpm-settings' );
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/gtg-settings' );
 		$request->set_body_params(
 			array(
 				'data' => array(
@@ -175,7 +175,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 		$this->settings->register();
 		$this->settings->set( $original_settings );
 
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/fpm-settings' );
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/gtg-settings' );
 		$request->set_body_params(
 			array(
 				'data' => array(
@@ -201,7 +201,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/fpm-settings' );
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/gtg-settings' );
 		$request->set_body_params(
 			array(
 				'data' => array(
@@ -279,7 +279,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 
 		$this->settings->register();
 
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/fpm-server-requirement-status' );
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/gtg-server-requirement-status' );
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEqualSetsWithIndex(
@@ -352,7 +352,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/fpm-server-requirement-status' );
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/gtg-server-requirement-status' );
 		$response = rest_get_server()->dispatch( $request );
 
 		// This request is made by a user who is not authenticated with dashboard

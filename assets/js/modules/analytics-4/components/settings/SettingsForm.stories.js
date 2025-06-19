@@ -105,7 +105,7 @@ WithFirstPartyModeAvailable.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			const fpmServerRequirementsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
 
 			const fpmSettings = {
@@ -141,7 +141,7 @@ WithFirstPartyModeUnavailable.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			const fpmServerRequirementsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
 
 			const fpmSettings = {

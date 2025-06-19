@@ -60,7 +60,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 	)( FirstPartyModeSetupBanner );
 
 	const fpmSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/site/data/fpm-settings'
+		'^/google-site-kit/v1/core/site/data/gtg-settings'
 	);
 
 	const dismissItemEndpoint = new RegExp(

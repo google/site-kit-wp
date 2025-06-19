@@ -93,7 +93,7 @@ describe( 'modules/analytics-4 settings', () => {
 				'^/google-site-kit/v1/modules/analytics-4/data/settings'
 			);
 			const fpmSettingsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/fpm-settings'
+				'^/google-site-kit/v1/core/site/data/gtg-settings'
 			);
 			const dismissItemEndpoint = new RegExp(
 				'^/google-site-kit/v1/core/user/data/dismiss-item'

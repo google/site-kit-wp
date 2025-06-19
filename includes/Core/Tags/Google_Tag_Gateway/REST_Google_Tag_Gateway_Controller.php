@@ -76,7 +76,7 @@ class REST_Google_Tag_Gateway_Controller {
 				return array_merge(
 					$paths,
 					array(
-						'/' . REST_Routes::REST_ROOT . '/core/site/data/fpm-settings',
+						'/' . REST_Routes::REST_ROOT . '/core/site/data/gtg-settings',
 					)
 				);
 			}
@@ -97,7 +97,7 @@ class REST_Google_Tag_Gateway_Controller {
 
 		return array(
 			new REST_Route(
-				'core/site/data/fpm-settings',
+				'core/site/data/gtg-settings',
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
@@ -141,7 +141,7 @@ class REST_Google_Tag_Gateway_Controller {
 			),
 
 			new REST_Route(
-				'core/site/data/fpm-server-requirement-status',
+				'core/site/data/gtg-server-requirement-status',
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
