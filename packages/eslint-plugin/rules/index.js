@@ -29,4 +29,5 @@ module.exports = {
 	'no-direct-date': require( './no-direct-date' ),
 	'no-boolean-props-before-values': require( './no-boolean-props-before-values' ),
 	'no-storybook-scenario-label': require( './no-storybook-scenario-label' ),
+	'jsdoc-no-unnamed-boolean-params': require( './jsdoc-no-unnamed-boolean-params' ),
 };
