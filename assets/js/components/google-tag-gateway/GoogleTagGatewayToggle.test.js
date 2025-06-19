@@ -60,9 +60,9 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		registry = createTestRegistry();
 
-		registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+		registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 			isEnabled: false,
-			isFPMHealthy: null,
+			isGTGHealthy: null,
 			isScriptAccessEnabled: null,
 		} );
 	} );
@@ -104,7 +104,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 		fetchMock.getOnce( serverRequirementStatusEndpoint, {
 			body: {
 				isEnabled: false,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			},
 			status: 200,
@@ -119,7 +119,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		await waitForRegistry();
 
-		expect( getByLabelText( 'First-party mode' ) ).toBeInTheDocument();
+		expect( getByLabelText( 'Google tag gateway' ) ).toBeInTheDocument();
 
 		expect( container ).toMatchSnapshot();
 	} );
@@ -128,7 +128,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 		fetchMock.getOnce( serverRequirementStatusEndpoint, {
 			body: {
 				isEnabled: false,
-				isFPMHealthy: false,
+				isGTGHealthy: false,
 				isScriptAccessEnabled: false,
 			},
 			status: 200,
@@ -143,10 +143,10 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		await waitForRegistry();
 
-		expect( getByLabelText( 'First-party mode' ) ).toBeDisabled();
+		expect( getByLabelText( 'Google tag gateway' ) ).toBeDisabled();
 
 		expect( container ).toHaveTextContent(
-			'Your server’s current settings prevent First-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
+			'Your server’s current settings prevent Google tag gateway from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
 		);
 
 		expect( container ).toMatchSnapshot();
@@ -156,7 +156,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 		fetchMock.getOnce( serverRequirementStatusEndpoint, {
 			body: {
 				isEnabled: false,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			},
 			status: 200,
@@ -170,11 +170,11 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		await waitForRegistry();
 
-		expect( getByLabelText( 'First-party mode' ) ).toBeInTheDocument();
+		expect( getByLabelText( 'Google tag gateway' ) ).toBeInTheDocument();
 
 		expect(
 			queryByText(
-				'Your server’s current settings prevent First-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
+				'Your server’s current settings prevent Google tag gateway from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
 			)
 		).not.toBeInTheDocument();
 
@@ -193,7 +193,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 		fetchMock.getOnce( serverRequirementStatusEndpoint, {
 			body: {
 				isEnabled: false,
-				isFPMHealthy: false,
+				isGTGHealthy: false,
 				isScriptAccessEnabled: false,
 			},
 			status: 200,
@@ -209,11 +209,11 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		await waitForRegistry();
 
-		expect( getByLabelText( 'First-party mode' ) ).toBeInTheDocument();
+		expect( getByLabelText( 'Google tag gateway' ) ).toBeInTheDocument();
 
 		expect(
 			getByText(
-				'Your server’s current settings prevent First-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
+				'Your server’s current settings prevent Google tag gateway from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
 			)
 		).toBeInTheDocument();
 
@@ -227,7 +227,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'mainDashboard_fpm-settings-toggle-disabled',
+			'mainDashboard_gtg-settings-toggle-disabled',
 			'view_notice'
 		);
 	} );
@@ -236,7 +236,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 		fetchMock.getOnce( serverRequirementStatusEndpoint, {
 			body: {
 				isEnabled: false,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			},
 			status: 200,
@@ -255,14 +255,14 @@ describe( 'GoogleTagGatewayToggle', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 		const learnMoreLink = getByRole( 'link', {
-			name: 'Learn more about First-party mode (opens in a new tab)',
+			name: 'Learn more about Google tag gateway (opens in a new tab)',
 		} );
 
 		learnMoreLink.click();
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'mainDashboard_fpm-settings-toggle',
+			'mainDashboard_gtg-settings-toggle',
 			'click_learn_more_link'
 		);
 	} );
@@ -271,7 +271,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 		fetchMock.getOnce( serverRequirementStatusEndpoint, {
 			body: {
 				isEnabled: false,
-				isFPMHealthy: false,
+				isGTGHealthy: false,
 				isScriptAccessEnabled: false,
 			},
 			status: 200,
@@ -290,24 +290,24 @@ describe( 'GoogleTagGatewayToggle', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 		const learnMoreLink = getByRole( 'link', {
-			name: 'Learn more about First-party mode server requirements (opens in a new tab)',
+			name: 'Learn more about Google tag gateway server requirements (opens in a new tab)',
 		} );
 
 		learnMoreLink.click();
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'mainDashboard_fpm-settings-toggle-disabled',
+			'mainDashboard_gtg-settings-toggle-disabled',
 			'click_learn_more_link'
 		);
 	} );
 
-	it.each( [ 'isFPMHealthy', 'isScriptAccessEnabled' ] )(
+	it.each( [ 'isGTGHealthy', 'isScriptAccessEnabled' ] )(
 		'should not render in disabled state unless %s is explicitly false',
 		async ( requirement ) => {
 			const response = {
 				isEnabled: false,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			};
 
@@ -327,16 +327,16 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 			await waitForRegistry();
 
-			expect( getByLabelText( 'First-party mode' ) ).not.toBeDisabled();
+			expect( getByLabelText( 'Google tag gateway' ) ).not.toBeDisabled();
 		}
 	);
 
-	it.each( [ 'isFPMHealthy', 'isScriptAccessEnabled' ] )(
+	it.each( [ 'isGTGHealthy', 'isScriptAccessEnabled' ] )(
 		'should render in disabled state if %s is false',
 		async ( requirement ) => {
 			const response = {
 				isEnabled: false,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			};
 
@@ -356,15 +356,15 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 			await waitForRegistry();
 
-			expect( getByLabelText( 'First-party mode' ) ).toBeDisabled();
+			expect( getByLabelText( 'Google tag gateway' ) ).toBeDisabled();
 		}
 	);
 
-	it( 'should toggle first party mode on click', async () => {
+	it( 'should toggle Google tag gateway on click', async () => {
 		fetchMock.getOnce( serverRequirementStatusEndpoint, {
 			body: {
 				isEnabled: false,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			},
 			status: 200,
@@ -379,11 +379,11 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		await waitForRegistry();
 
-		const switchControl = getByLabelText( 'First-party mode' );
+		const switchControl = getByLabelText( 'Google tag gateway' );
 
 		expect( switchControl ).not.toBeChecked();
 
-		expect( registry.select( CORE_SITE ).isFirstPartyModeEnabled() ).toBe(
+		expect( registry.select( CORE_SITE ).isGoogleTagGatewayEnabled() ).toBe(
 			false
 		);
 
@@ -394,7 +394,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		expect( switchControl ).toBeChecked();
 
-		expect( registry.select( CORE_SITE ).isFirstPartyModeEnabled() ).toBe(
+		expect( registry.select( CORE_SITE ).isGoogleTagGatewayEnabled() ).toBe(
 			true
 		);
 
@@ -406,7 +406,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		expect( switchControl ).not.toBeChecked();
 
-		expect( registry.select( CORE_SITE ).isFirstPartyModeEnabled() ).toBe(
+		expect( registry.select( CORE_SITE ).isGoogleTagGatewayEnabled() ).toBe(
 			false
 		);
 	} );
@@ -415,7 +415,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 		fetchMock.getOnce( serverRequirementStatusEndpoint, {
 			body: {
 				isEnabled: false,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			},
 			status: 200,
@@ -431,7 +431,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		await waitForRegistry();
 
-		const switchControl = getByLabelText( 'First-party mode' );
+		const switchControl = getByLabelText( 'Google tag gateway' );
 
 		switchControl.click();
 
@@ -440,8 +440,8 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'mainDashboard_fpm-settings-toggle',
-			'activate_first_party_mode'
+			'mainDashboard_gtg-settings-toggle',
+			'activate_google_tag_gateway'
 		);
 
 		switchControl.click();
@@ -451,8 +451,8 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'mainDashboard_fpm-settings-toggle',
-			'deactivate_first_party_mode'
+			'mainDashboard_gtg-settings-toggle',
+			'deactivate_google_tag_gateway'
 		);
 	} );
 
@@ -460,7 +460,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 		fetchMock.getOnce( serverRequirementStatusEndpoint, {
 			body: {
 				isEnabled: false,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			},
 			status: 200,

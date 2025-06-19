@@ -51,7 +51,7 @@ ServerRequirementsFail.args = {
 		fetchMock.getOnce( serverRequirementStatusEndpoint, {
 			body: {
 				isEnabled: false,
-				isFPMHealthy: false,
+				isGTGHealthy: false,
 				isScriptAccessEnabled: false,
 			},
 			status: 200,

@@ -3,7 +3,7 @@
 exports[`GoogleTagGatewayToggle should render in default state 1`] = `
 <div>
   <div
-    class="googlesitekit-first-party-mode-toggle"
+    class="googlesitekit-google-tag-gateway-toggle"
   >
     <div
       class="googlesitekit-module-settings-group__switch"
@@ -39,10 +39,10 @@ exports[`GoogleTagGatewayToggle should render in default state 1`] = `
         class=""
         for="googlesitekit-switch-4"
       >
-        First-party mode
+        Google tag gateway
       </label>
       <div
-        class="googlesitekit-first-party-mode-toggle__switch-badge"
+        class="googlesitekit-google-tag-gateway-toggle__switch-badge"
       >
         <span
           class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
@@ -56,9 +56,9 @@ exports[`GoogleTagGatewayToggle should render in default state 1`] = `
     >
       Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. 
       <a
-        aria-label="Learn more about First-party mode (opens in a new tab)"
+        aria-label="Learn more about Google tag gateway (opens in a new tab)"
         class="googlesitekit-cta-link"
-        href="undefined?doc=first-party-mode-introduction"
+        href="undefined?doc=google-tag-gateway-introduction"
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -82,7 +82,7 @@ exports[`GoogleTagGatewayToggle should render in default state 1`] = `
 exports[`GoogleTagGatewayToggle should render in disabled state if server requirements are not met 1`] = `
 <div>
   <div
-    class="googlesitekit-first-party-mode-toggle"
+    class="googlesitekit-google-tag-gateway-toggle"
   >
     <div
       class="googlesitekit-module-settings-group__switch"
@@ -119,10 +119,10 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
         class=""
         for="googlesitekit-switch-6"
       >
-        First-party mode
+        Google tag gateway
       </label>
       <div
-        class="googlesitekit-first-party-mode-toggle__switch-badge"
+        class="googlesitekit-google-tag-gateway-toggle__switch-badge"
       >
         <span
           class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
@@ -136,9 +136,9 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
     >
       Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. 
       <a
-        aria-label="Learn more about First-party mode (opens in a new tab)"
+        aria-label="Learn more about Google tag gateway (opens in a new tab)"
         class="googlesitekit-cta-link"
-        href="undefined?doc=first-party-mode-introduction"
+        href="undefined?doc=google-tag-gateway-introduction"
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -169,11 +169,11 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
         <p
           class="googlesitekit-notice__title"
         >
-          Your server’s current settings prevent First-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. 
+          Your server’s current settings prevent Google tag gateway from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. 
           <a
-            aria-label="Learn more about First-party mode server requirements (opens in a new tab)"
+            aria-label="Learn more about Google tag gateway server requirements (opens in a new tab)"
             class="googlesitekit-cta-link"
-            href="undefined?doc=first-party-mode-server-requirements"
+            href="undefined?doc=google-tag-gateway-server-requirements"
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -199,10 +199,10 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
 exports[`GoogleTagGatewayToggle should render in loading state if the server requirement status is still loading 1`] = `
 <div>
   <div
-    class="googlesitekit-first-party-mode-toggle"
+    class="googlesitekit-google-tag-gateway-toggle"
   >
     <div
-      class="mdc-linear-progress googlesitekit-first-party-mode-toggle__progress mdc-linear-progress--indeterminate mdc-linear-progress--small"
+      class="mdc-linear-progress googlesitekit-google-tag-gateway-toggle__progress mdc-linear-progress--indeterminate mdc-linear-progress--small"
       role="progressbar"
     >
       <div
@@ -231,9 +231,9 @@ exports[`GoogleTagGatewayToggle should render in loading state if the server req
     >
       Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. 
       <a
-        aria-label="Learn more about First-party mode (opens in a new tab)"
+        aria-label="Learn more about Google tag gateway (opens in a new tab)"
         class="googlesitekit-cta-link"
-        href="undefined?doc=first-party-mode-introduction"
+        href="undefined?doc=google-tag-gateway-introduction"
         rel="noopener noreferrer"
         target="_blank"
       >
