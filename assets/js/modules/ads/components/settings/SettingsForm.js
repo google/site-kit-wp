@@ -35,7 +35,7 @@ import DisplaySetting from '../../../../components/DisplaySetting';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
 import SettingsGroup from '../../../../components/settings/SettingsGroup';
-import FirstPartyModeToggle from '../../../../components/first-party-mode/FirstPartyModeToggle';
+import GoogleTagGatewayToggle from '../../../../components/google-tag-gateway/GoogleTagGatewayToggle';
 
 export default function SettingsForm() {
 	const paxEnabled = useFeature( 'adsPax' );
@@ -144,7 +144,7 @@ export default function SettingsForm() {
 							}
 						) }
 					</ConversionTrackingToggle>
-					{ fpmEnabled && <FirstPartyModeToggle /> }
+					{ fpmEnabled && <GoogleTagGatewayToggle /> }
 				</SettingsGroup>
 			</div>
 		</Fragment>

@@ -1,5 +1,5 @@
 /**
- * First Party Mode Toggle component.
+ * Google Tag Gateway Toggle component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -44,7 +44,7 @@ import Notice from '../Notice';
 const SubtleNotificationWithIntersectionObserver =
 	withIntersectionObserver( Notice );
 
-export default function FirstPartyModeToggle( { className } ) {
+export default function GoogleTagGatewayToggle( { className } ) {
 	const viewContext = useViewContext();
 
 	const isFirstPartyModeEnabled = useSelect( ( select ) =>

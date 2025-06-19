@@ -1,5 +1,5 @@
 /**
- * First Party Mode Toggle component stories.
+ * Google Tag Gateway Toggle component stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -25,13 +25,13 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { freezeFetch } from '../../../../tests/js/utils';
-import FirstPartyModeToggle from './FirstPartyModeToggle';
+import GoogleTagGatewayToggle from './GoogleTagGatewayToggle';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 
 function Template() {
 	return (
 		<div className="googlesitekit-module-settings-group">
-			<FirstPartyModeToggle />
+			<GoogleTagGatewayToggle />
 		</div>
 	);
 }
@@ -69,8 +69,8 @@ ServerRequirementsLoading.args = {
 };
 
 export default {
-	title: 'Components/First Party Mode/FirstPartyModeToggle',
-	component: FirstPartyModeToggle,
+	title: 'Components/Google Tag Gateway/GoogleTagGatewayToggle',
+	component: GoogleTagGatewayToggle,
 	decorators: [
 		( Story, { args } ) => {
 			fetchMock.reset();

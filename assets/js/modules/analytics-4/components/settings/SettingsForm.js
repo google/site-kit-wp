@@ -38,7 +38,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import SettingsControls from './SettingsControls';
 import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
-import FirstPartyModeToggle from '../../../../components/first-party-mode/FirstPartyModeToggle';
+import GoogleTagGatewayToggle from '../../../../components/google-tag-gateway/GoogleTagGatewayToggle';
 import Link from '../../../../components/Link';
 import SettingsGroup from '../../../../components/settings/SettingsGroup';
 import { isValidAccountID } from '../../utils/validation';
@@ -96,7 +96,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 						}
 					) }
 				</ConversionTrackingToggle>
-				{ fpmEnabled && <FirstPartyModeToggle /> }
+				{ fpmEnabled && <GoogleTagGatewayToggle /> }
 			</SettingsGroup>
 		</Fragment>
 	);

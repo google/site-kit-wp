@@ -1,5 +1,5 @@
 /**
- * First Party Mode Toggle component tests.
+ * Google Tag Gateway Toggle component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -35,7 +35,7 @@ import {
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import * as tracking from '../../util/tracking';
-import FirstPartyModeToggle from './FirstPartyModeToggle';
+import GoogleTagGatewayToggle from './GoogleTagGatewayToggle';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -45,7 +45,7 @@ jest.mock( 'react-use', () => ( {
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-describe( 'FirstPartyModeToggle', () => {
+describe( 'GoogleTagGatewayToggle', () => {
 	let registry;
 
 	const serverRequirementStatusEndpoint = new RegExp(
@@ -74,7 +74,7 @@ describe( 'FirstPartyModeToggle', () => {
 	it( 'should make a request to fetch the server requirement status', async () => {
 		muteFetch( serverRequirementStatusEndpoint );
 
-		const { waitForRegistry } = render( <FirstPartyModeToggle />, {
+		const { waitForRegistry } = render( <GoogleTagGatewayToggle />, {
 			registry,
 		} );
 
@@ -87,7 +87,7 @@ describe( 'FirstPartyModeToggle', () => {
 		freezeFetch( serverRequirementStatusEndpoint );
 
 		const { container, getByRole, waitForRegistry } = render(
-			<FirstPartyModeToggle />,
+			<GoogleTagGatewayToggle />,
 			{
 				registry,
 			}
@@ -111,7 +111,7 @@ describe( 'FirstPartyModeToggle', () => {
 		} );
 
 		const { container, getByLabelText, waitForRegistry } = render(
-			<FirstPartyModeToggle />,
+			<GoogleTagGatewayToggle />,
 			{
 				registry,
 			}
@@ -135,7 +135,7 @@ describe( 'FirstPartyModeToggle', () => {
 		} );
 
 		const { container, getByLabelText, waitForRegistry } = render(
-			<FirstPartyModeToggle />,
+			<GoogleTagGatewayToggle />,
 			{
 				registry,
 			}
@@ -163,7 +163,7 @@ describe( 'FirstPartyModeToggle', () => {
 		} );
 
 		const { getByLabelText, queryByText, rerender, waitForRegistry } =
-			render( <FirstPartyModeToggle />, {
+			render( <GoogleTagGatewayToggle />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			} );
@@ -184,7 +184,7 @@ describe( 'FirstPartyModeToggle', () => {
 			intersectionRatio: 1,
 		} ) );
 
-		rerender( <FirstPartyModeToggle /> );
+		rerender( <GoogleTagGatewayToggle /> );
 
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
@@ -200,7 +200,7 @@ describe( 'FirstPartyModeToggle', () => {
 		} );
 
 		const { getByLabelText, getByText, rerender, waitForRegistry } = render(
-			<FirstPartyModeToggle />,
+			<GoogleTagGatewayToggle />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -223,7 +223,7 @@ describe( 'FirstPartyModeToggle', () => {
 		} ) );
 
 		// Simulate the warning notice becoming visible.
-		rerender( <FirstPartyModeToggle /> );
+		rerender( <GoogleTagGatewayToggle /> );
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -243,7 +243,7 @@ describe( 'FirstPartyModeToggle', () => {
 		} );
 
 		const { getByRole, waitForRegistry } = render(
-			<FirstPartyModeToggle />,
+			<GoogleTagGatewayToggle />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -278,7 +278,7 @@ describe( 'FirstPartyModeToggle', () => {
 		} );
 
 		const { getByRole, waitForRegistry } = render(
-			<FirstPartyModeToggle />,
+			<GoogleTagGatewayToggle />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -319,7 +319,7 @@ describe( 'FirstPartyModeToggle', () => {
 			} );
 
 			const { getByLabelText, waitForRegistry } = render(
-				<FirstPartyModeToggle />,
+				<GoogleTagGatewayToggle />,
 				{
 					registry,
 				}
@@ -348,7 +348,7 @@ describe( 'FirstPartyModeToggle', () => {
 			} );
 
 			const { getByLabelText, waitForRegistry } = render(
-				<FirstPartyModeToggle />,
+				<GoogleTagGatewayToggle />,
 				{
 					registry,
 				}
@@ -371,7 +371,7 @@ describe( 'FirstPartyModeToggle', () => {
 		} );
 
 		const { getByLabelText, waitForRegistry } = render(
-			<FirstPartyModeToggle />,
+			<GoogleTagGatewayToggle />,
 			{
 				registry,
 			}
@@ -422,7 +422,7 @@ describe( 'FirstPartyModeToggle', () => {
 		} );
 
 		const { getByLabelText, waitForRegistry } = render(
-			<FirstPartyModeToggle />,
+			<GoogleTagGatewayToggle />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -467,7 +467,7 @@ describe( 'FirstPartyModeToggle', () => {
 		} );
 
 		const { container, waitForRegistry } = render(
-			<FirstPartyModeToggle />,
+			<GoogleTagGatewayToggle />,
 			{
 				registry,
 			}
