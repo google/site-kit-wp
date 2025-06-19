@@ -87,6 +87,7 @@ export default function BannerNotification( {
 
 	if ( ! SVGData && type !== TYPES.INFO ) {
 		SVGData = {
+			desktop: undefined,
 			mobile: undefined,
 			verticalPosition: 'center',
 		};
