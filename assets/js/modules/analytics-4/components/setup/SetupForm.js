@@ -80,6 +80,10 @@ export default function SetupForm( { finishSetup } ) {
 		)
 	);
 
+	const userInputLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
+	);
+
 	const submitForm = useCallback(
 		async ( event ) => {
 			event.preventDefault();
@@ -103,7 +107,7 @@ export default function SetupForm( { finishSetup } ) {
 						'ga4_setup_enhanced_measurement_enabled'
 					);
 				}
-				finishSetup();
+				finishSetup( userInputLink );
 			}
 		},
 		[
@@ -114,6 +118,7 @@ export default function SetupForm( { finishSetup } ) {
 			setValues,
 			submitChanges,
 			viewContext,
+			userInputLink,
 		]
 	);
 
