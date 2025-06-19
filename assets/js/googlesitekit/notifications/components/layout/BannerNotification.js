@@ -27,7 +27,6 @@ import PropTypes from 'prop-types';
  */
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../datastore/constants';
-import { TYPES } from '../../constants';
 import useNotificationEvents from '../../hooks/useNotificationEvents';
 import Banner from '../../../../components/Banner';
 import LearnMoreLink from '../../../../components/Banner/LearnMoreLink';
@@ -35,6 +34,9 @@ import CTAButton from '../../../../components/Banner/CTAButton';
 import DismissButton from '../../../../components/Banner/DismissButton';
 import { Cell, Grid, Row } from '../../../../material-components';
 
+export const TYPES = {
+	INFO: 'info',
+};
 export default function BannerNotification( {
 	notificationID,
 	type = TYPES.INFO,

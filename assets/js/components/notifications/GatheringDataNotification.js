@@ -32,9 +32,10 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
-import { TYPES } from '@/js/googlesitekit/notifications/constants';
 import useModuleGatheringZeroData from '../../hooks/useModuleGatheringZeroData';
-import BannerNotification from '../../googlesitekit/notifications/components/layout/BannerNotification';
+import BannerNotification, {
+	TYPES,
+} from '../../googlesitekit/notifications/components/layout/BannerNotification';
 import SVGGraphic from '@/svg/graphics/gathering-data.svg?url';
 
 export default function GatheringDataNotification( { id, Notification } ) {
