@@ -47,74 +47,74 @@ const SubtleNotificationWithIntersectionObserver =
 export default function GoogleTagGatewayToggle( { className } ) {
 	const viewContext = useViewContext();
 
-	const isFirstPartyModeEnabled = useSelect( ( select ) =>
-		select( CORE_SITE ).isFirstPartyModeEnabled()
+	const isGoogleTagGatewayEnabled = useSelect( ( select ) =>
+		select( CORE_SITE ).isGoogleTagGatewayEnabled()
 	);
 	const isLoading = useSelect( ( select ) =>
-		select( CORE_SITE ).isFetchingGetFPMServerRequirementStatus()
+		select( CORE_SITE ).isFetchingGetGTGServerRequirementStatus()
 	);
 	const hasMetServerRequirements = useSelect( ( select ) => {
-		const { isFPMHealthy, isScriptAccessEnabled } = select( CORE_SITE );
+		const { isGTGHealthy, isScriptAccessEnabled } = select( CORE_SITE );
 
-		return isFPMHealthy() !== false && isScriptAccessEnabled() !== false;
+		return isGTGHealthy() !== false && isScriptAccessEnabled() !== false;
 	} );
 
-	const { fetchGetFPMServerRequirementStatus, setFirstPartyModeEnabled } =
+	const { fetchGetGTGServerRequirementStatus, setGoogleTagGatewayEnabled } =
 		useDispatch( CORE_SITE );
 
 	const learnMoreURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
-			'first-party-mode-introduction'
+			'google-tag-gateway-introduction'
 		);
 	} );
 
 	const serverRequirementsLearnMoreURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
-			'first-party-mode-server-requirements'
+			'google-tag-gateway-server-requirements'
 		);
 	} );
 
 	// Fetch the server requirement status on mount.
-	useMount( fetchGetFPMServerRequirementStatus );
+	useMount( fetchGetGTGServerRequirementStatus );
 
 	const handleClick = useCallback( () => {
-		const action = isFirstPartyModeEnabled
-			? 'deactivate_first_party_mode'
-			: 'activate_first_party_mode';
+		const action = isGoogleTagGatewayEnabled
+			? 'deactivate_google_tag_gateway'
+			: 'activate_google_tag_gateway';
 
-		trackEvent( `${ viewContext }_fpm-settings-toggle`, action ).finally(
+		trackEvent( `${ viewContext }_gtg-settings-toggle`, action ).finally(
 			() => {
-				setFirstPartyModeEnabled( ! isFirstPartyModeEnabled );
+				setGoogleTagGatewayEnabled( ! isGoogleTagGatewayEnabled );
 			}
 		);
-	}, [ isFirstPartyModeEnabled, setFirstPartyModeEnabled, viewContext ] );
+	}, [ isGoogleTagGatewayEnabled, setGoogleTagGatewayEnabled, viewContext ] );
 
 	return (
 		<div
 			className={ classnames(
-				'googlesitekit-first-party-mode-toggle',
+				'googlesitekit-google-tag-gateway-toggle',
 				className
 			) }
 		>
 			{ isLoading && (
 				<ProgressBar
-					className="googlesitekit-first-party-mode-toggle__progress"
+					className="googlesitekit-google-tag-gateway-toggle__progress"
 					small
 				/>
 			) }
 			{ ! isLoading && (
 				<div className="googlesitekit-module-settings-group__switch">
 					<Switch
-						label={ __( 'First-party mode', 'google-site-kit' ) }
+						label={ __( 'Google tag gateway', 'google-site-kit' ) }
 						checked={
-							!! isFirstPartyModeEnabled &&
+							!! isGoogleTagGatewayEnabled &&
 							hasMetServerRequirements
 						}
 						disabled={ ! hasMetServerRequirements }
 						onClick={ handleClick }
 						hideLabel={ false }
 					/>
-					<div className="googlesitekit-first-party-mode-toggle__switch-badge">
+					<div className="googlesitekit-google-tag-gateway-toggle__switch-badge">
 						<Badge
 							className="googlesitekit-badge--beta"
 							label={ __( 'Beta', 'google-site-kit' ) }
@@ -135,12 +135,12 @@ export default function GoogleTagGatewayToggle( { className } ) {
 								href={ learnMoreURL }
 								onClick={ () => {
 									trackEvent(
-										`${ viewContext }_fpm-settings-toggle`,
+										`${ viewContext }_gtg-settings-toggle`,
 										'click_learn_more_link'
 									);
 								} }
 								aria-label={ __(
-									'Learn more about First-party mode',
+									'Learn more about Google tag gateway',
 									'google-site-kit'
 								) }
 								external
@@ -154,7 +154,7 @@ export default function GoogleTagGatewayToggle( { className } ) {
 					type={ Notice.TYPES.WARNING }
 					title={ createInterpolateElement(
 						__(
-							'Your server’s current settings prevent First-party mode from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. <a>Learn more</a>',
+							'Your server’s current settings prevent Google tag gateway from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. <a>Learn more</a>',
 							'google-site-kit'
 						),
 						{
@@ -163,12 +163,12 @@ export default function GoogleTagGatewayToggle( { className } ) {
 									href={ serverRequirementsLearnMoreURL }
 									onClick={ () => {
 										trackEvent(
-											`${ viewContext }_fpm-settings-toggle-disabled`,
+											`${ viewContext }_gtg-settings-toggle-disabled`,
 											'click_learn_more_link'
 										);
 									} }
 									aria-label={ __(
-										'Learn more about First-party mode server requirements',
+										'Learn more about Google tag gateway server requirements',
 										'google-site-kit'
 									) }
 									external
@@ -179,7 +179,7 @@ export default function GoogleTagGatewayToggle( { className } ) {
 					variant="warning"
 					onInView={ () => {
 						trackEvent(
-							`${ viewContext }_fpm-settings-toggle-disabled`,
+							`${ viewContext }_gtg-settings-toggle-disabled`,
 							'view_notice'
 						);
 					} }
