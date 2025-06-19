@@ -201,7 +201,7 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 
 		require_once GOOGLESITEKIT_PLUGIN_DIR_PATH . 'fpm/measurement.php';
 
-		$request_helper = new \Google\FirstPartyLibrary\RequestHelper();
+		$request_helper = new \Google\GoogleTagGatewayLibrary\RequestHelper();
 
 		$response = $request_helper->sendRequest( $endpoint );
 
