@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -34,6 +35,7 @@ import PageHeader from '../PageHeader';
 import UserInputQuestionnaire from './UserInputQuestionnaire';
 import Layout from '../layout/Layout';
 import { getUserInputQuestions } from './util/constants';
+import ProgressSegments from '../ProgressSegments';
 
 export default function UserInputApp() {
 	const questions = getUserInputQuestions();
@@ -52,11 +54,18 @@ export default function UserInputApp() {
 		);
 	} );
 
+	// const slug = getQueryArg( location.href, 'slug' );
+	// Could check slug is `analytics-4` to be on the safe side.
+	const showProgress = getQueryArg( location.href, 'showProgress' );
+
 	return (
 		<Fragment>
 			<Header>
 				<HelpMenu />
 			</Header>
+			{ showProgress && (
+				<ProgressSegments currentSegment={ 5 } totalSegments={ 6 } />
+			) }
 			<div className="googlesitekit-user-input">
 				<div className="googlesitekit-module-page">
 					{ ! hasFinishedGettingInputSettings && (
