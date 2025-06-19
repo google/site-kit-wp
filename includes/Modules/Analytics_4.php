@@ -491,7 +491,11 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		// _Or_ we just keep it simple and say that we always require the `edit` scope.
 		// Probably the thing to do is always require the `edit` scope as the initial
 		// approach in Phase 1, and then we can refine this as an edge case in Phase 3.
-		return array( self::READONLY_SCOPE, self::EDIT_SCOPE ); // TODO: Confirm whether we still need the `readonly` scope.
+		//
+		// UPDATE: We are (TBC with Mariya) always going setup KM/AS when connecting
+		// Analytics, so we do need the `edit` scope. Have confirmed we also need the
+		// `readonly` scope for viewing GA4 data.
+		return array( self::READONLY_SCOPE, self::EDIT_SCOPE );
 	}
 
 	/**

@@ -406,6 +406,11 @@ final class Screens {
 					},
 				)
 			),
+			// NOTE: Looks like we will _always_ have the two stage process for Analytics setup, so maybe we should _not_ have a separate screen for setup,
+			// but instead extend the existing module setup flow to allow for a multiple stage setup process. Or in fact just the Analytics setup flow.
+			// See which makes more sense for Phase 1, can always add a new screen later. Remember the progress bar will need to be optional/configurable.
+			// Ref, https://fueled.slack.com/archives/CFFRMC5DE/p1750231752719509
+			// Need to update the DD with this direction.
 			new Screen(
 				self::PREFIX . 'extended-setup',
 				array(
@@ -441,7 +446,7 @@ final class Screens {
 							// HERE, `data-setup-module-slug` is the module slug that is being set up.
 							// This is used to determine which module to show the setup screen for.
 							?>
-							<div id="js-googlesitekit-extended-setup" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" class="googlesitekit-page"></div>
+							<div id="js-googlesitekit-extended-setup" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" class="googlesitekit-page"></div>
 							<?php
 						}
 					},

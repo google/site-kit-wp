@@ -37,7 +37,7 @@ import {
 } from '../../datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import * as fixtures from '../../datastore/__fixtures__';
-import SetupForm from './SetupForm';
+import SetupForm from './SetupForm/SetupForm';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 const {
