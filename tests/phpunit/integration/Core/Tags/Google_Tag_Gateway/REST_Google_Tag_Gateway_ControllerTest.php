@@ -1,8 +1,8 @@
 <?php
 /**
- * REST_First_Party_Mode_ControllerTest
+ * REST_Google_Tag_Gateway_ControllerTest
  *
- * @package   Google\Site_Kit\Tests\Core\Tags\First_Party_Mode
+ * @package   Google\Site_Kit\Tests\Core\Tags\Google_Tag_Gateway
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
@@ -10,36 +10,36 @@
 // phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
 
 
-namespace Google\Site_Kit\Tests\Core\Tags\First_Party_Mode;
+namespace Google\Site_Kit\Tests\Core\Tags\Google_Tag_Gateway;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode_Settings;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\REST_First_Party_Mode_Controller;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\REST_Google_Tag_Gateway_Controller;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
 
-class REST_First_Party_Mode_ControllerTest extends TestCase {
+class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 
 	use Fake_Site_Connection_Trait;
 	use RestTestTrait;
 
 	/**
-	 * First_Party_Mode_Settings instance.
+	 * Google_Tag_Gateway_Settings instance.
 	 *
-	 * @var First_Party_Mode_Settings
+	 * @var Google_Tag_Gateway_Settings
 	 */
 	private $settings;
 
 	/**
-	 * REST_First_Party_Mode_Controller instance.
+	 * REST_Google_Tag_Gateway_Controller instance.
 	 *
-	 * @var REST_First_Party_Mode_Controller
+	 * @var REST_Google_Tag_Gateway_Controller
 	 */
 	private $controller;
 
@@ -59,9 +59,9 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options       = new Options( $this->context );
 
-		$first_party_mode = new First_Party_Mode( $this->context );
-		$this->settings   = new First_Party_Mode_Settings( $options );
-		$this->controller = new REST_First_Party_Mode_Controller( $first_party_mode, $this->settings );
+		$google_tag_gateway = new Google_Tag_Gateway( $this->context );
+		$this->settings     = new Google_Tag_Gateway_Settings( $options );
+		$this->controller   = new REST_Google_Tag_Gateway_Controller( $google_tag_gateway, $this->settings );
 	}
 
 	public function tear_down() {
@@ -89,7 +89,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 
 		$original_settings = array(
 			'isEnabled'             => false,
-			'isFPMHealthy'          => null,
+			'isGTGHealthy'          => null,
 			'isScriptAccessEnabled' => null,
 		);
 
@@ -109,7 +109,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 
 		$original_settings = array(
 			'isEnabled'             => false,
-			'isFPMHealthy'          => null,
+			'isGTGHealthy'          => null,
 			'isScriptAccessEnabled' => null,
 		);
 
@@ -133,13 +133,13 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 
 		$original_settings = array(
 			'isEnabled'             => false,
-			'isFPMHealthy'          => null,
+			'isGTGHealthy'          => null,
 			'isScriptAccessEnabled' => null,
 		);
 
 		$changed_settings = array(
 			'isEnabled'             => true,
-			'isFPMHealthy'          => null,
+			'isGTGHealthy'          => null,
 			'isScriptAccessEnabled' => null,
 		);
 
@@ -168,7 +168,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 
 		$original_settings = array(
 			'isEnabled'             => false,
-			'isFPMHealthy'          => null,
+			'isGTGHealthy'          => null,
 			'isScriptAccessEnabled' => null,
 		);
 
@@ -230,16 +230,16 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider provider_fpm_server_requirement_status_data
+	 * @dataProvider provider_gtg_server_requirement_status_data
 	 */
-	public function test_get_fpm_server_requirement_status( $data ) {
+	public function test_get_gtg_server_requirement_status( $data ) {
 		$endpoint_responses = $data['endpoint_responses'];
 		$expected_settings  = $data['expected_settings'];
 
 		// Here we mock the `is_endpoint_healthy()` method of the controller. This is necessary because, although we could
 		// mock `file_get_contents()`, it's not possible to mock the `$http_response_header` variable used within the scope
 		// of the `is_endpoint_healthy()` method. The rest of the controller's behaviour remains unmocked.
-		$mock_controller = $this->getMockBuilder( First_Party_Mode::class )
+		$mock_controller = $this->getMockBuilder( Google_Tag_Gateway::class )
 			->setConstructorArgs( array( $this->context ) )
 			->setMethods( array( 'is_endpoint_healthy' ) )
 			->getMock();
@@ -270,7 +270,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		/**
-		 * @var REST_First_Party_Mode_Controller $mock_controller
+		 * @var REST_Google_Tag_Gateway_Controller $mock_controller
 		 */
 		$mock_controller->register();
 		$this->register_rest_routes();
@@ -285,14 +285,14 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 		$this->assertEqualSetsWithIndex(
 			array(
 				'isEnabled'             => false,
-				'isFPMHealthy'          => $expected_settings['isFPMHealthy'],
+				'isGTGHealthy'          => $expected_settings['isGTGHealthy'],
 				'isScriptAccessEnabled' => $expected_settings['isScriptAccessEnabled'],
 			),
 			$response->get_data()
 		);
 	}
 
-	public function provider_fpm_server_requirement_status_data() {
+	public function provider_gtg_server_requirement_status_data() {
 		$measurement_health_check_url = plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?healthCheck=1';
 
 		return array(
@@ -303,7 +303,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 						$measurement_health_check_url => true,
 					),
 					'expected_settings'  => array(
-						'isFPMHealthy'          => true,
+						'isGTGHealthy'          => true,
 						'isScriptAccessEnabled' => true,
 					),
 				),
@@ -315,7 +315,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 						$measurement_health_check_url => false,
 					),
 					'expected_settings'  => array(
-						'isFPMHealthy'          => true,
+						'isGTGHealthy'          => true,
 						'isScriptAccessEnabled' => false,
 					),
 				),
@@ -327,7 +327,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 						$measurement_health_check_url => true,
 					),
 					'expected_settings'  => array(
-						'isFPMHealthy'          => false,
+						'isGTGHealthy'          => false,
 						'isScriptAccessEnabled' => true,
 					),
 				),
@@ -339,7 +339,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 						$measurement_health_check_url => false,
 					),
 					'expected_settings'  => array(
-						'isFPMHealthy'          => false,
+						'isGTGHealthy'          => false,
 						'isScriptAccessEnabled' => false,
 					),
 				),
@@ -347,7 +347,7 @@ class REST_First_Party_Mode_ControllerTest extends TestCase {
 		);
 	}
 
-	public function test_get_fpm_server_requirement_status__requires_authenticated_admin() {
+	public function test_get_gtg_server_requirement_status__requires_authenticated_admin() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();

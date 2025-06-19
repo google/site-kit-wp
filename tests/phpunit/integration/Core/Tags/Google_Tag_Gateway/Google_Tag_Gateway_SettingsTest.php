@@ -1,26 +1,26 @@
 <?php
 /**
- * First_Party_Mode_SettingsTest
+ * Google_Tag_Gateway_SettingsTest
  *
- * @package   Google\Site_Kit\Tests\Core\Tags\First_Party_Mode
+ * @package   Google\Site_Kit\Tests\Core\Tags\Google_Tag_Gateway
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\Core\Tags\First_Party_Mode;
+namespace Google\Site_Kit\Tests\Core\Tags\Google_Tag_Gateway;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode_Settings;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
-class First_Party_Mode_SettingsTest extends SettingsTestCase {
+class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 
 	/**
-	 * First Party Mode Settings instance.
+	 * Google Tag Gateway Settings instance.
 	 *
-	 * @var First_Party_Mode_Settings
+	 * @var Google_Tag_Gateway_Settings
 	 */
 	private $settings;
 
@@ -36,12 +36,12 @@ class First_Party_Mode_SettingsTest extends SettingsTestCase {
 
 		$this->context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options        = new Options( $this->context );
-		$this->settings = new First_Party_Mode_Settings( $options );
+		$this->settings = new Google_Tag_Gateway_Settings( $options );
 		$this->settings->register();
 	}
 
 	protected function get_option_name() {
-		return First_Party_Mode_Settings::OPTION;
+		return Google_Tag_Gateway_Settings::OPTION;
 	}
 
 	public function test_get_default() {
@@ -49,24 +49,24 @@ class First_Party_Mode_SettingsTest extends SettingsTestCase {
 		$this->assertEqualSetsWithIndex(
 			array(
 				'isEnabled'             => false,
-				'isFPMHealthy'          => null,
+				'isGTGHealthy'          => null,
 				'isScriptAccessEnabled' => null,
 			),
 			$default_settings
 		);
 	}
 
-	public function data_first_party_mode_settings() {
+	public function data_google_tag_gateway_settings() {
 		return array(
 			'all properties false'  => array(
 				array(
 					'isEnabled'             => false,
-					'isFPMHealthy'          => false,
+					'isGTGHealthy'          => false,
 					'isScriptAccessEnabled' => false,
 				),
 				array(
 					'isEnabled'             => false,
-					'isFPMHealthy'          => false,
+					'isGTGHealthy'          => false,
 					'isScriptAccessEnabled' => false,
 				),
 			),
@@ -74,19 +74,19 @@ class First_Party_Mode_SettingsTest extends SettingsTestCase {
 				array(),
 				array(
 					'isEnabled'             => false,
-					'isFPMHealthy'          => null,
+					'isGTGHealthy'          => null,
 					'isScriptAccessEnabled' => null,
 				),
 			),
 			'all properties true'   => array(
 				array(
 					'isEnabled'             => true,
-					'isFPMHealthy'          => true,
+					'isGTGHealthy'          => true,
 					'isScriptAccessEnabled' => true,
 				),
 				array(
 					'isEnabled'             => true,
-					'isFPMHealthy'          => true,
+					'isGTGHealthy'          => true,
 					'isScriptAccessEnabled' => true,
 				),
 			),
@@ -96,7 +96,7 @@ class First_Party_Mode_SettingsTest extends SettingsTestCase {
 				),
 				array(
 					'isEnabled'             => false,
-					'isFPMHealthy'          => null,
+					'isGTGHealthy'          => null,
 					'isScriptAccessEnabled' => null,
 				),
 			),
@@ -106,7 +106,7 @@ class First_Party_Mode_SettingsTest extends SettingsTestCase {
 				),
 				array(
 					'isEnabled'             => true,
-					'isFPMHealthy'          => null,
+					'isGTGHealthy'          => null,
 					'isScriptAccessEnabled' => null,
 				),
 			),
@@ -116,7 +116,7 @@ class First_Party_Mode_SettingsTest extends SettingsTestCase {
 				),
 				array(
 					'isEnabled'             => true,
-					'isFPMHealthy'          => null,
+					'isGTGHealthy'          => null,
 					'isScriptAccessEnabled' => null,
 				),
 			),
@@ -124,7 +124,7 @@ class First_Party_Mode_SettingsTest extends SettingsTestCase {
 	}
 
 	/**
-	 * @dataProvider data_first_party_mode_settings
+	 * @dataProvider data_google_tag_gateway_settings
 	 *
 	 * @param mixed $input    Values to pass to the `set()` method.
 	 * @param array $expected The expected sanitized array.
@@ -137,13 +137,13 @@ class First_Party_Mode_SettingsTest extends SettingsTestCase {
 	public function test_merge() {
 		$original_settings = array(
 			'isEnabled'             => false,
-			'isFPMHealthy'          => false,
+			'isGTGHealthy'          => false,
 			'isScriptAccessEnabled' => false,
 		);
 
 		$changed_settings = array(
 			'isEnabled'             => true,
-			'isFPMHealthy'          => true,
+			'isGTGHealthy'          => true,
 			'isScriptAccessEnabled' => true,
 		);
 
@@ -157,11 +157,11 @@ class First_Party_Mode_SettingsTest extends SettingsTestCase {
 
 		// Make sure that we can update settings partially.
 		$this->settings->set( $original_settings );
-		$this->settings->merge( array( 'isFPMHealthy' => true ) );
+		$this->settings->merge( array( 'isGTGHealthy' => true ) );
 		$this->assertEqualSetsWithIndex(
 			array(
 				'isEnabled'             => false,
-				'isFPMHealthy'          => true,
+				'isGTGHealthy'          => true,
 				'isScriptAccessEnabled' => false,
 			),
 			$this->settings->get()
@@ -172,9 +172,9 @@ class First_Party_Mode_SettingsTest extends SettingsTestCase {
 		$this->settings->merge( $changed_settings );
 		$this->assertEqualSetsWithIndex( $changed_settings, $this->settings->get() );
 
-		// Make sure that we can't set null for the isFPMHealthy property.
+		// Make sure that we can't set null for the isGTGHealthy property.
 		$this->settings->set( $original_settings );
-		$this->settings->merge( array( 'isFPMHealthy' => null ) );
+		$this->settings->merge( array( 'isGTGHealthy' => null ) );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
 
 		// Make sure that we can't set null for the isScriptAccessEnabled property.
