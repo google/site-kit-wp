@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`FirstPartyModeSetupSuccessSubtleNotification should render correctly 1`] = `
+exports[`GoogleTagGatewaySetupSuccessSubtleNotification should render correctly 1`] = `
 <div>
   <section
-    id="setup-success-notification-fpm"
+    id="setup-success-notification-gtg"
   >
     <div
       class="mdc-layout-grid"
@@ -28,7 +28,7 @@ exports[`FirstPartyModeSetupSuccessSubtleNotification should render correctly 1`
               <p
                 class="googlesitekit-notice__title"
               >
-                You successfully enabled First-party mode!
+                You successfully enabled Google tag gateway!
               </p>
               <p
                 class="googlesitekit-notice__description"

@@ -1,5 +1,5 @@
 /**
- * FirstPartyModeWarningNotification component.
+ * GoogleTagGatewayWarningNotification component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -33,7 +33,7 @@ import useViewContext from '../../hooks/useViewContext';
 import NoticeNotification from '../../googlesitekit/notifications/components/layout/NoticeNotification';
 import Notice from '../Notice';
 
-export default function FirstPartyModeWarningNotification( {
+export default function GoogleTagGatewayWarningNotification( {
 	id,
 	Notification,
 } ) {
@@ -41,7 +41,7 @@ export default function FirstPartyModeWarningNotification( {
 
 	const serverRequirementsLearnMoreURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
-			'first-party-mode-server-requirements'
+			'google-tag-gateway-server-requirements'
 		);
 	} );
 
@@ -52,7 +52,7 @@ export default function FirstPartyModeWarningNotification( {
 				type={ Notice.TYPES.WARNING }
 				description={ createInterpolateElement(
 					__(
-						'First-party mode has been disabled due to server configuration issues. Measurement data is now being routed through the default Google server. Please contact your hosting provider to resolve the issue. <a>Learn more</a>',
+						'Google tag gateway has been disabled due to server configuration issues. Measurement data is now being routed through the default Google server. Please contact your hosting provider to resolve the issue. <a>Learn more</a>',
 						'google-site-kit'
 					),
 					{
@@ -61,12 +61,12 @@ export default function FirstPartyModeWarningNotification( {
 								href={ serverRequirementsLearnMoreURL }
 								onClick={ () => {
 									trackEvent(
-										`${ viewContext }_warning-notification-fpm`,
+										`${ viewContext }_warning-notification-gtg`,
 										'click_learn_more_link'
 									);
 								} }
 								aria-label={ __(
-									'Learn more about First-party mode server requirements',
+									'Learn more about Google tag gateway server requirements',
 									'google-site-kit'
 								) }
 								external

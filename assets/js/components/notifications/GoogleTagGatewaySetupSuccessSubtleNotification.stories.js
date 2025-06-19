@@ -1,5 +1,5 @@
 /**
- * FirstPartyModeSetupSuccessSubtleNotification component tests.
+ * GoogleTagGatewaySetupSuccessSubtleNotification Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -19,33 +19,21 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry, render } from '../../../../tests/js/test-utils';
-import FirstPartyModeSetupSuccessSubtleNotification from './FirstPartyModeSetupSuccessSubtleNotification';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import GoogleTagGatewaySetupSuccessSubtleNotification from './GoogleTagGatewaySetupSuccessSubtleNotification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
-	'setup-success-notification-fpm'
-)( FirstPartyModeSetupSuccessSubtleNotification );
+	'setup-success-notification-gtg'
+)( GoogleTagGatewaySetupSuccessSubtleNotification );
 
-describe( 'FirstPartyModeSetupSuccessSubtleNotification', () => {
-	let registry;
+function Template() {
+	return <NotificationWithComponentProps />;
+}
 
-	beforeEach( () => {
-		registry = createTestRegistry();
-	} );
+export const Default = Template.bind( {} );
+Default.storyName = 'GoogleTagGatewaySetupSuccessSubtleNotification';
+Default.scenario = {};
 
-	it( 'should render correctly', () => {
-		const { container, getByText } = render(
-			<NotificationWithComponentProps />,
-			{ registry }
-		);
-
-		expect(
-			getByText(
-				'You can always disable it in Analytics or Ads settings'
-			)
-		).toBeInTheDocument();
-
-		expect( container ).toMatchSnapshot();
-	} );
-} );
+export default {
+	title: 'Modules/GoogleTagGateway/Dashboard/GoogleTagGatewaySetupSuccessSubtleNotification',
+};

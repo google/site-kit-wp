@@ -1,5 +1,5 @@
 /**
- * FirstPartyModeSetupBanner component.
+ * GoogleTagGatewaySetupBanner component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -38,20 +38,20 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { DAY_IN_SECONDS } from '../../util';
 import SetupCTA from '../../googlesitekit/notifications/components/layout/SetupCTA';
-import BannerSVGDesktop from '@/svg/graphics/banner-first-party-mode-setup-cta.svg?url';
-import BannerSVGMobile from '@/svg/graphics/banner-first-party-mode-setup-cta-mobile.svg?url';
-import FirstPartyModeSetupSuccessSubtleNotification, {
-	FIRST_PARTY_MODE_SETUP_SUCCESS_NOTIFICATION,
-} from './FirstPartyModeSetupSuccessSubtleNotification';
+import BannerSVGDesktop from '@/svg/graphics/banner-google-tag-gateway-setup-cta.svg?url';
+import BannerSVGMobile from '@/svg/graphics/banner-google-tag-gateway-setup-cta-mobile.svg?url';
+import GoogleTagGatewaySetupSuccessSubtleNotification, {
+	GOOGLE_TAG_GATEWAY_SETUP_SUCCESS_NOTIFICATION,
+} from './GoogleTagGatewaySetupSuccessSubtleNotification';
 
-export default function FirstPartyModeSetupBanner( { id, Notification } ) {
-	const { setFirstPartyModeEnabled, saveFirstPartyModeSettings } =
+export default function GoogleTagGatewaySetupBanner( { id, Notification } ) {
+	const { setGoogleTagGatewayEnabled, saveGoogleTagGatewaySettings } =
 		useDispatch( CORE_SITE );
 
 	const tooltipSettings = {
 		tooltipSlug: id,
 		content: __(
-			'You can always enable First-party mode in Settings later',
+			'You can always enable Google tag gateway in Settings later',
 			'google-site-kit'
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
@@ -67,13 +67,13 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 
 	const learnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL(
-			'first-party-mode-introduction'
+			'google-tag-gateway-introduction'
 		)
 	);
 
 	const onCTAClick = async () => {
-		setFirstPartyModeEnabled( true );
-		const { error } = await saveFirstPartyModeSettings();
+		setGoogleTagGatewayEnabled( true );
+		const { error } = await saveGoogleTagGatewaySettings();
 
 		if ( error ) {
 			return;
@@ -81,8 +81,8 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 
 		dismissNotification( id );
 
-		registerNotification( FIRST_PARTY_MODE_SETUP_SUCCESS_NOTIFICATION, {
-			Component: FirstPartyModeSetupSuccessSubtleNotification,
+		registerNotification( GOOGLE_TAG_GATEWAY_SETUP_SUCCESS_NOTIFICATION, {
+			Component: GoogleTagGatewaySetupSuccessSubtleNotification,
 			areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 			isDismissible: false,
 			featureFlag: 'googleTagGateway',
@@ -90,18 +90,18 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 	};
 
 	const ctaError = useSelect( ( select ) => {
-		const firstPartyModeSettings =
-			select( CORE_SITE ).getFirstPartyModeSettings();
+		const googleTagGatewaySettings =
+			select( CORE_SITE ).getGoogleTagGatewaySettings();
 		return select( CORE_SITE ).getErrorForAction(
-			'saveFirstPartyModeSettings',
-			[ firstPartyModeSettings ]
+			'saveGoogleTagGatewaySettings',
+			[ googleTagGatewaySettings ]
 		);
 	} );
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 	const handleView = useCallback( () => {
 		if ( usingProxy ) {
-			triggerSurvey( 'view_fpm_setup_cta', { ttl: DAY_IN_SECONDS } );
+			triggerSurvey( 'view_gtg_setup_cta', { ttl: DAY_IN_SECONDS } );
 		}
 	}, [ triggerSurvey, usingProxy ] );
 
@@ -115,7 +115,7 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 				) }
 				description={ createInterpolateElement(
 					__(
-						'Enable First-party mode (<em>beta</em>) to send measurement through your own domain - this helps improve the quality and completeness of Analytics or Ads metrics.',
+						'Enable Google tag gateway (<em>beta</em>) to send measurement through your own domain - this helps improve the quality and completeness of Analytics or Ads metrics.',
 						'google-site-kit'
 					),
 					{
@@ -126,7 +126,7 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 					href: learnMoreURL,
 				} }
 				ctaButton={ {
-					label: __( 'Enable First-party mode', 'google-site-kit' ),
+					label: __( 'Enable Google tag gateway', 'google-site-kit' ),
 					onClick: onCTAClick,
 				} }
 				dismissButton={ {
@@ -144,7 +144,7 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 	);
 }
 
-FirstPartyModeSetupBanner.propTypes = {
+GoogleTagGatewaySetupBanner.propTypes = {
 	id: PropTypes.string,
 	Notification: PropTypes.elementType,
 };

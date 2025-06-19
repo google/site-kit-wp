@@ -1,5 +1,5 @@
 /**
- * FirstPartyModeSetupBanner Component Stories.
+ * GoogleTagGatewaySetupBanner Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -30,24 +30,24 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { WEEK_IN_SECONDS } from '../../util';
-import FirstPartyModeSetupBanner from './FirstPartyModeSetupBanner';
+import GoogleTagGatewaySetupBanner from './GoogleTagGatewaySetupBanner';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 import {
+	GTG_SETUP_CTA_BANNER_NOTIFICATION,
 	NOTIFICATION_AREAS,
-	FPM_SETUP_CTA_BANNER_NOTIFICATION,
 } from '../../googlesitekit/notifications/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
-	FPM_SETUP_CTA_BANNER_NOTIFICATION
-)( FirstPartyModeSetupBanner );
+	GTG_SETUP_CTA_BANNER_NOTIFICATION
+)( GoogleTagGatewaySetupBanner );
 
 function Template() {
 	return <NotificationWithComponentProps />;
 }
 
 export const Default = Template.bind();
-Default.storyName = 'FirstPartyModeSetupBanner';
+Default.storyName = 'GoogleTagGatewaySetupBanner';
 Default.scenario = {};
 
 export const ErrorOnCTAClick = Template.bind();
@@ -61,20 +61,20 @@ ErrorOnCTAClick.args = {
 				message: 'Test Error',
 				data: {},
 			},
-			'saveFirstPartyModeSettings',
+			'saveGoogleTagGatewaySettings',
 			[ {} ]
 		);
 	},
 };
 
 export default {
-	title: 'Modules/FirstPartyMode/Dashboard/FirstPartyModeSetupBanner',
+	title: 'Modules/GoogleTagGateway/Dashboard/GoogleTagGatewaySetupBanner',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: FPM_SETUP_CTA_BANNER_NOTIFICATION,
+						slug: GTG_SETUP_CTA_BANNER_NOTIFICATION,
 						active: false,
 					},
 				] );
@@ -82,8 +82,8 @@ export default {
 				// Register the notification to avoid errors in console.
 				registry
 					.dispatch( CORE_NOTIFICATIONS )
-					.registerNotification( FPM_SETUP_CTA_BANNER_NOTIFICATION, {
-						Component: FirstPartyModeSetupBanner,
+					.registerNotification( GTG_SETUP_CTA_BANNER_NOTIFICATION, {
+						Component: GoogleTagGatewaySetupBanner,
 						areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						isDismissible: true,
@@ -97,7 +97,7 @@ export default {
 					),
 					{
 						body: {
-							[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]: {
+							[ GTG_SETUP_CTA_BANNER_NOTIFICATION ]: {
 								expires: Date.now() / 1000 + WEEK_IN_SECONDS,
 								count: 1,
 							},

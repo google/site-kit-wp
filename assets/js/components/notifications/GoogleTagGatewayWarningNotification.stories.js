@@ -1,5 +1,5 @@
 /**
- * FirstPartyModeSetupSuccessSubtleNotification Component Stories.
+ * GoogleTagGatewayWarningNotification Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -20,20 +20,21 @@
  * Internal dependencies
  */
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
-import FirstPartyModeSetupSuccessSubtleNotification from './FirstPartyModeSetupSuccessSubtleNotification';
+import GoogleTagGatewayWarningNotification from './GoogleTagGatewayWarningNotification';
+import { GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID } from '../../googlesitekit/notifications/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
-	'setup-success-notification-fpm'
-)( FirstPartyModeSetupSuccessSubtleNotification );
+	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID
+)( GoogleTagGatewayWarningNotification );
 
 function Template() {
 	return <NotificationWithComponentProps />;
 }
 
-export const Default = Template.bind( {} );
-Default.storyName = 'FirstPartyModeSetupSuccessSubtleNotification';
+export const Default = Template.bind();
+Default.storyName = 'GoogleTagGatewayWarningNotification';
 Default.scenario = {};
 
 export default {
-	title: 'Modules/FirstPartyMode/Dashboard/FirstPartyModeSetupSuccessSubtleNotification',
+	title: 'Modules/GoogleTagGateway/Dashboard/GoogleTagGatewayWarningNotification',
 };

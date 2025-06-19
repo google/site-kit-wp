@@ -1,5 +1,5 @@
 /**
- * FirstPartyModeWarningNotification component tests.
+ * GoogleTagGatewayWarningNotification component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -38,32 +38,32 @@ import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/registe
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
-import { FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID } from '../../googlesitekit/notifications/constants';
+import { GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID } from '../../googlesitekit/notifications/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import * as tracking from '../../util/tracking';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { enabledFeatures } from '../../features';
-import FirstPartyModeWarningNotification from './FirstPartyModeWarningNotification';
+import GoogleTagGatewayWarningNotification from './GoogleTagGatewayWarningNotification';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-describe( 'FirstPartyModeWarningNotification', () => {
+describe( 'GoogleTagGatewayWarningNotification', () => {
 	let registry;
 
 	const notification =
-		DEFAULT_NOTIFICATIONS[ FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID ];
+		DEFAULT_NOTIFICATIONS[ GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID ];
 
-	const fpmSettings = {
+	const gtgSettings = {
 		isEnabled: true,
-		isFPMHealthy: false,
+		isGTGHealthy: false,
 		isScriptAccessEnabled: false,
 	};
 
-	const FPMWarningNotificationComponent = withNotificationComponentProps(
-		FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID
-	)( FirstPartyModeWarningNotification );
+	const GTGWarningNotificationComponent = withNotificationComponentProps(
+		GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID
+	)( GoogleTagGatewayWarningNotification );
 
 	const dismissItemEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
@@ -92,13 +92,13 @@ describe( 'FirstPartyModeWarningNotification', () => {
 		registry
 			.dispatch( CORE_NOTIFICATIONS )
 			.registerNotification(
-				FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
+				GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 				notification
 			);
 
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetFirstPartyModeSettings( fpmSettings );
+			.receiveGetGoogleTagGatewaySettings( gtgSettings );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
@@ -117,10 +117,10 @@ describe( 'FirstPartyModeWarningNotification', () => {
 			expect( isActive ).toBe( true );
 		} );
 
-		it( 'is not active when server requirements are met and FPM is enabled', async () => {
-			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
-				...fpmSettings,
-				isFPMHealthy: true,
+		it( 'is not active when server requirements are met and GTG is enabled', async () => {
+			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
+				...gtgSettings,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			} );
 
@@ -132,9 +132,9 @@ describe( 'FirstPartyModeWarningNotification', () => {
 			expect( isActive ).toBe( false );
 		} );
 
-		it( 'is not active when server requirements are not met, but FPM is disabled', async () => {
-			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
-				...fpmSettings,
+		it( 'is not active when server requirements are not met, but GTG is disabled', async () => {
+			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
+				...gtgSettings,
 				isEnabled: false,
 			} );
 
@@ -148,20 +148,20 @@ describe( 'FirstPartyModeWarningNotification', () => {
 	} );
 
 	it( 'should render the notification', () => {
-		const { getByText } = render( <FPMWarningNotificationComponent />, {
+		const { getByText } = render( <GTGWarningNotificationComponent />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		expect(
 			getByText(
-				/First-party mode has been disabled due to server configuration issues/i
+				/Google tag gateway has been disabled due to server configuration issues/i
 			)
 		).toBeInTheDocument();
 	} );
 
 	it( 'should track an event when the `Learn more` link is clicked', () => {
-		const { getByRole } = render( <FPMWarningNotificationComponent />, {
+		const { getByRole } = render( <GTGWarningNotificationComponent />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
@@ -176,13 +176,13 @@ describe( 'FirstPartyModeWarningNotification', () => {
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'mainDashboard_warning-notification-fpm',
+			'mainDashboard_warning-notification-gtg',
 			'click_learn_more_link'
 		);
 	} );
 
 	it( 'should dismiss the notification when dismiss button is clicked', async () => {
-		const { getByRole } = render( <FPMWarningNotificationComponent />, {
+		const { getByRole } = render( <GTGWarningNotificationComponent />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
@@ -193,7 +193,7 @@ describe( 'FirstPartyModeWarningNotification', () => {
 
 		fetchMock.post( dismissItemEndpoint, {
 			body: JSON.stringify( [
-				FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
+				GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 			] ),
 			status: 200,
 		} );

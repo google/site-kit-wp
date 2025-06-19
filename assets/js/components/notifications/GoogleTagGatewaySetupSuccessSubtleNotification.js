@@ -1,5 +1,5 @@
 /**
- * FirstPartyModeSetupSuccessSubtleNotification component.
+ * GoogleTagGatewaySetupSuccessSubtleNotification component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -32,10 +32,10 @@ import { __ } from '@wordpress/i18n';
 import NoticeNotification from '../../googlesitekit/notifications/components/layout/NoticeNotification';
 import { TYPES } from '../Notice/constants';
 
-export const FIRST_PARTY_MODE_SETUP_SUCCESS_NOTIFICATION =
-	'setup-success-notification-fpm';
+export const GOOGLE_TAG_GATEWAY_SETUP_SUCCESS_NOTIFICATION =
+	'setup-success-notification-gtg';
 
-export default function FirstPartyModeSetupSuccessSubtleNotification( {
+export default function GoogleTagGatewaySetupSuccessSubtleNotification( {
 	id,
 	Notification,
 } ) {
@@ -45,7 +45,7 @@ export default function FirstPartyModeSetupSuccessSubtleNotification( {
 				notificationID={ id }
 				type={ TYPES.SUCCESS }
 				title={ __(
-					'You successfully enabled First-party mode!',
+					'You successfully enabled Google tag gateway!',
 					'google-site-kit'
 				) }
 				description={ __(
@@ -58,7 +58,7 @@ export default function FirstPartyModeSetupSuccessSubtleNotification( {
 	);
 }
 
-FirstPartyModeSetupSuccessSubtleNotification.propTypes = {
+GoogleTagGatewaySetupSuccessSubtleNotification.propTypes = {
 	id: PropTypes.string.isRequired,
 	Notification: PropTypes.elementType.isRequired,
 };

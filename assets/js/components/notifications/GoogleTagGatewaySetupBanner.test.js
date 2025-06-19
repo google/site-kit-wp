@@ -1,5 +1,5 @@
 /**
- * FirstPartyModeSetupBanner component tests.
+ * GoogleTagGatewaySetupBanner component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -21,7 +21,7 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import FirstPartyModeSetupBanner from './FirstPartyModeSetupBanner';
+import GoogleTagGatewaySetupBanner from './GoogleTagGatewaySetupBanner';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -34,7 +34,7 @@ import {
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
 import {
-	FPM_SETUP_CTA_BANNER_NOTIFICATION,
+	GTG_SETUP_CTA_BANNER_NOTIFICATION,
 	NOTIFICATION_GROUPS,
 } from '../../googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
@@ -49,17 +49,17 @@ import { enabledFeatures } from '../../features';
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-describe( 'FirstPartyModeSetupBanner', () => {
+describe( 'GoogleTagGatewaySetupBanner', () => {
 	let registry;
 
 	const notification =
-		DEFAULT_NOTIFICATIONS[ FPM_SETUP_CTA_BANNER_NOTIFICATION ];
+		DEFAULT_NOTIFICATIONS[ GTG_SETUP_CTA_BANNER_NOTIFICATION ];
 
-	const FPMBannerComponent = withNotificationComponentProps(
-		FPM_SETUP_CTA_BANNER_NOTIFICATION
-	)( FirstPartyModeSetupBanner );
+	const GTGBannerComponent = withNotificationComponentProps(
+		GTG_SETUP_CTA_BANNER_NOTIFICATION
+	)( GoogleTagGatewaySetupBanner );
 
-	const fpmSettingsEndpoint = new RegExp(
+	const gtgSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/site/data/gtg-settings'
 	);
 
@@ -87,16 +87,16 @@ describe( 'FirstPartyModeSetupBanner', () => {
 			},
 		] );
 
-		registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+		registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 			isEnabled: false,
-			isFPMHealthy: true,
+			isGTGHealthy: true,
 			isScriptAccessEnabled: true,
 		} );
 
 		registry
 			.dispatch( CORE_NOTIFICATIONS )
 			.registerNotification(
-				FPM_SETUP_CTA_BANNER_NOTIFICATION,
+				GTG_SETUP_CTA_BANNER_NOTIFICATION,
 				notification
 			);
 
@@ -117,10 +117,10 @@ describe( 'FirstPartyModeSetupBanner', () => {
 			expect( isActive ).toBe( true );
 		} );
 
-		it( 'is not active when FPM is enabled', async () => {
-			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+		it( 'is not active when GTG is enabled', async () => {
+			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 				isEnabled: true,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			} );
 
@@ -132,10 +132,10 @@ describe( 'FirstPartyModeSetupBanner', () => {
 			expect( isActive ).toBe( false );
 		} );
 
-		it( 'is not active when FPM is not healthy', async () => {
-			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+		it( 'is not active when GTG is not healthy', async () => {
+			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 				isEnabled: false,
-				isFPMHealthy: false,
+				isGTGHealthy: false,
 				isScriptAccessEnabled: true,
 			} );
 
@@ -148,9 +148,9 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		} );
 
 		it( 'is not active when script access is not enabled', async () => {
-			registry.dispatch( CORE_SITE ).receiveGetFirstPartyModeSettings( {
+			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 				isEnabled: false,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: false,
 			} );
 
@@ -165,7 +165,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 
 	it( 'should render the banner', async () => {
 		const { getByRole, getByText, waitForRegistry } = render(
-			<FPMBannerComponent />,
+			<GTGBannerComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -181,7 +181,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		).toBeInTheDocument();
 
 		expect(
-			getByRole( 'button', { name: 'Enable First-party mode' } )
+			getByRole( 'button', { name: 'Enable Google tag gateway' } )
 		).toBeInTheDocument();
 
 		expect(
@@ -190,16 +190,16 @@ describe( 'FirstPartyModeSetupBanner', () => {
 	} );
 
 	it( 'should call onCTAClick when the CTA button is clicked', async () => {
-		fetchMock.postOnce( fpmSettingsEndpoint, {
+		fetchMock.postOnce( gtgSettingsEndpoint, {
 			body: JSON.stringify( {
 				isEnabled: true,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			} ),
 			status: 200,
 		} );
 
-		const { getByRole, waitForRegistry } = render( <FPMBannerComponent />, {
+		const { getByRole, waitForRegistry } = render( <GTGBannerComponent />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
@@ -207,33 +207,33 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		await waitForRegistry();
 
 		expect(
-			registry.select( CORE_SITE ).getFirstPartyModeSettings().isEnabled
+			registry.select( CORE_SITE ).getGoogleTagGatewaySettings().isEnabled
 		).toBe( false );
 
 		fetchMock.post( dismissItemEndpoint, {
-			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
+			body: JSON.stringify( [ GTG_SETUP_CTA_BANNER_NOTIFICATION ] ),
 			status: 200,
 		} );
 
 		fireEvent.click(
 			getByRole( 'button', {
-				name: 'Enable First-party mode',
+				name: 'Enable Google tag gateway',
 			} )
 		);
 
 		await waitFor( () => {
 			expect(
-				registry.select( CORE_SITE ).getFirstPartyModeSettings()
+				registry.select( CORE_SITE ).getGoogleTagGatewaySettings()
 					.isEnabled
 			).toBe( true );
 
-			expect( fetchMock ).toHaveFetched( fpmSettingsEndpoint );
+			expect( fetchMock ).toHaveFetched( gtgSettingsEndpoint );
 			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 		} );
 	} );
 
 	it( 'should display the error message when the CTA button is clicked and the request fails', async () => {
-		fetchMock.postOnce( fpmSettingsEndpoint, {
+		fetchMock.postOnce( gtgSettingsEndpoint, {
 			body: JSON.stringify( {
 				code: 'test_error',
 				message: 'Test Error',
@@ -244,7 +244,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 			status: 500,
 		} );
 
-		const { getByRole, waitForRegistry } = render( <FPMBannerComponent />, {
+		const { getByRole, waitForRegistry } = render( <GTGBannerComponent />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
@@ -252,18 +252,18 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		await waitForRegistry();
 
 		fetchMock.post( dismissItemEndpoint, {
-			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
+			body: JSON.stringify( [ GTG_SETUP_CTA_BANNER_NOTIFICATION ] ),
 			status: 200,
 		} );
 
 		fireEvent.click(
 			getByRole( 'button', {
-				name: 'Enable First-party mode',
+				name: 'Enable Google tag gateway',
 			} )
 		);
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetched( fpmSettingsEndpoint );
+			expect( fetchMock ).toHaveFetched( gtgSettingsEndpoint );
 			expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
 		} );
 
@@ -274,8 +274,8 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		).toContain( 'Test Error' );
 	} );
 
-	it( 'should register the FPM setup success notification when the CTA button is clicked', async () => {
-		const { getByRole, waitForRegistry } = render( <FPMBannerComponent />, {
+	it( 'should register the GTG setup success notification when the CTA button is clicked', async () => {
+		const { getByRole, waitForRegistry } = render( <GTGBannerComponent />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			features: [ 'googleTagGateway' ],
@@ -283,17 +283,17 @@ describe( 'FirstPartyModeSetupBanner', () => {
 
 		await waitForRegistry();
 
-		fetchMock.postOnce( fpmSettingsEndpoint, {
+		fetchMock.postOnce( gtgSettingsEndpoint, {
 			body: JSON.stringify( {
 				isEnabled: true,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			} ),
 			status: 200,
 		} );
 
 		fetchMock.post( dismissItemEndpoint, {
-			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
+			body: JSON.stringify( [ GTG_SETUP_CTA_BANNER_NOTIFICATION ] ),
 			status: 200,
 		} );
 
@@ -309,18 +309,18 @@ describe( 'FirstPartyModeSetupBanner', () => {
 			] );
 
 		fireEvent.click(
-			getByRole( 'button', { name: 'Enable First-party mode' } )
+			getByRole( 'button', { name: 'Enable Google tag gateway' } )
 		);
 
 		await waitForRegistry();
 
 		await waitFor( () => {
 			expect(
-				registry.select( CORE_SITE ).getFirstPartyModeSettings()
+				registry.select( CORE_SITE ).getGoogleTagGatewaySettings()
 					.isEnabled
 			).toBe( true );
 
-			expect( fetchMock ).toHaveFetched( fpmSettingsEndpoint );
+			expect( fetchMock ).toHaveFetched( gtgSettingsEndpoint );
 			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 		} );
 
@@ -332,7 +332,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 					NOTIFICATION_GROUPS.DEFAULT
 				)
 				.map( ( notificationInQueue ) => notificationInQueue.id )
-		).toContain( 'setup-success-notification-fpm' );
+		).toContain( 'setup-success-notification-gtg' );
 	} );
 
 	it( 'should track events when the CTA is dismissed and the tooltip is viewed', async () => {
@@ -343,7 +343,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 						Settings
 					</a>
 				</div>
-				<FPMBannerComponent />
+				<GTGBannerComponent />
 			</div>,
 			{
 				registry,
@@ -354,7 +354,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		await waitForRegistry();
 
 		fetchMock.post( dismissItemEndpoint, {
-			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
+			body: JSON.stringify( [ GTG_SETUP_CTA_BANNER_NOTIFICATION ] ),
 			status: 200,
 		} );
 
@@ -368,7 +368,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'mainDashboard_fpm-setup-cta',
+			'mainDashboard_gtg-setup-cta',
 			'dismiss_notification',
 			undefined,
 			undefined
