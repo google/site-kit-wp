@@ -1,29 +1,30 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode
+ * Class Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway
  *
- * @package   Google\Site_Kit\Core\Tags\First_Party_Mode
+ * @package   Google\Site_Kit\Core\Tags\Google_Tag_Gateway
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Tags\First_Party_Mode;
+namespace Google\Site_Kit\Core\Tags\Google_Tag_Gateway;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode_Cron;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Cron;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
- * Class for handling First Party Mode.
+ * Class for handling Google Tag Gateway.
  *
  * @since 1.141.0
+ * @since n.e.x.t Renamed from First_Party_Mode to Google_Tag_Gateway.
  * @access private
  * @ignore
  */
-class First_Party_Mode implements Module_With_Debug_Fields {
+class Google_Tag_Gateway implements Module_With_Debug_Fields {
 	use Method_Proxy_Trait;
 
 	/**
@@ -35,26 +36,26 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	protected $context;
 
 	/**
-	 * First_Party_Mode_Settings instance.
+	 * Google_Tag_Gateway_Settings instance.
 	 *
 	 * @since 1.141.0
-	 * @var First_Party_Mode_Settings
+	 * @var Google_Tag_Gateway_Settings
 	 */
-	protected $first_party_mode_settings;
+	protected $google_tag_gateway_settings;
 
 	/**
-	 * REST_First_Party_Mode_Controller instance.
+	 * REST_Google_Tag_Gateway_Controller instance.
 	 *
 	 * @since 1.141.0
-	 * @var REST_First_Party_Mode_Controller
+	 * @var REST_Google_Tag_Gateway_Controller
 	 */
 	protected $rest_controller;
 
 	/**
-	 * First_Party_Mode_Cron instance.
+	 * Google_Tag_Gateway_Cron instance.
 	 *
 	 * @since 1.142.0
-	 * @var First_Party_Mode_Cron
+	 * @var Google_Tag_Gateway_Cron
 	 */
 	private $cron;
 
@@ -67,12 +68,12 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	 * @param Options $options Optional. Option API instance. Default is a new instance.
 	 */
 	public function __construct( Context $context, Options $options = null ) {
-		$this->context                   = $context;
-		$options                         = $options ?: new Options( $context );
-		$this->first_party_mode_settings = new First_Party_Mode_Settings( $options );
-		$this->rest_controller           = new REST_First_Party_Mode_Controller( $this, $this->first_party_mode_settings );
-		$this->cron                      = new First_Party_Mode_Cron(
-			$this->first_party_mode_settings,
+		$this->context                     = $context;
+		$options                           = $options ?: new Options( $context );
+		$this->google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $options );
+		$this->rest_controller             = new REST_Google_Tag_Gateway_Controller( $this, $this->google_tag_gateway_settings );
+		$this->cron                        = new Google_Tag_Gateway_Cron(
+			$this->google_tag_gateway_settings,
 			array( $this, 'healthcheck' )
 		);
 	}
@@ -83,7 +84,7 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	 * @since 1.141.0
 	 */
 	public function register() {
-		$this->first_party_mode_settings->register();
+		$this->google_tag_gateway_settings->register();
 		$this->rest_controller->register();
 		$this->cron->register();
 
@@ -132,7 +133,7 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	 * @return array
 	 */
 	public function get_debug_fields() {
-		$settings = $this->first_party_mode_settings->get();
+		$settings = $this->google_tag_gateway_settings->get();
 
 		return array(
 			'first_party_mode_is_enabled'               => array(
@@ -142,8 +143,8 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 			),
 			'first_party_mode_is_fpm_healthy'           => array(
 				'label' => __( 'First-party mode: Service healthy', 'google-site-kit' ),
-				'value' => $this->health_check_debug_field_value( $settings['isFPMHealthy'] ),
-				'debug' => $this->health_check_debug_field_debug( $settings['isFPMHealthy'] ),
+				'value' => $this->health_check_debug_field_value( $settings['isGTGHealthy'] ),
+				'debug' => $this->health_check_debug_field_debug( $settings['isGTGHealthy'] ),
 			),
 			'first_party_mode_is_script_access_enabled' => array(
 				'label' => __( 'First-party mode: Script accessible', 'google-site-kit' ),
@@ -154,19 +155,19 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	}
 
 	/**
-	 * Checks the health of First Party Mode server requirements.
+	 * Checks the health of Google Tag Gateway server requirements.
 	 *
 	 * @since 1.142.0
 	 *
 	 * @return void
 	 */
 	public function healthcheck() {
-		$is_fpm_healthy           = $this->is_endpoint_healthy( 'https://g-1234.fps.goog/mpath/healthy' );
+		$is_gtg_healthy           = $this->is_endpoint_healthy( 'https://g-1234.fps.goog/mpath/healthy' );
 		$is_script_access_enabled = $this->is_endpoint_healthy( add_query_arg( 'healthCheck', '1', plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 
-		$this->first_party_mode_settings->merge(
+		$this->google_tag_gateway_settings->merge(
 			array(
-				'isFPMHealthy'          => $is_fpm_healthy,
+				'isGTGHealthy'          => $is_gtg_healthy,
 				'isScriptAccessEnabled' => $is_script_access_enabled,
 			)
 		);
@@ -185,23 +186,23 @@ class First_Party_Mode implements Module_With_Debug_Fields {
 	 * Checks if an endpoint is healthy. The endpoint must return a `200 OK` response with the body `ok`.
 	 *
 	 * @since 1.141.0
-	 * @since 1.142.0 Relocated from REST_First_Party_Mode_Controller.
-	 * @since 1.144.0 Uses Google\FirstPartyLibrary\RequestHelper to send requests.
+	 * @since 1.142.0 Relocated from REST_Google_Tag_Gateway_Controller.
+	 * @since 1.144.0 Uses Google\GoogleTagGatewayLibrary\RequestHelper to send requests.
 	 *
 	 * @param string $endpoint The endpoint to check.
 	 * @return bool True if the endpoint is healthy, false otherwise.
 	 */
 	protected function is_endpoint_healthy( $endpoint ) {
-		if ( ! defined( 'IS_FIRST_PARTY_MODE_TEST' ) ) {
+		if ( ! defined( 'IS_GOOGLE_TAG_GATEWAY_TEST' ) ) {
 			// TODO: This is a workaround to allow the measurement.php file to be loaded without making a
 			// request, in order to use the RequestHelper class that it defines. We should find a better
 			// solution in the future, but this will involve changes to the measurement.php file.
-			define( 'IS_FIRST_PARTY_MODE_TEST', true );
+			define( 'IS_GOOGLE_TAG_GATEWAY_TEST', true );
 		}
 
 		require_once GOOGLESITEKIT_PLUGIN_DIR_PATH . 'fpm/measurement.php';
 
-		$request_helper = new \Google\FirstPartyLibrary\RequestHelper();
+		$request_helper = new \Google\GoogleTagGatewayLibrary\RequestHelper();
 
 		$response = $request_helper->sendRequest( $endpoint );
 

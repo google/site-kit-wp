@@ -1,30 +1,31 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode_Settings
+ * Class Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings
  *
- * @package   Google\Site_Kit\Core\Tags\First_Party_Mode
+ * @package   Google\Site_Kit\Core\Tags\Google_Tag_Gateway
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Tags\First_Party_Mode;
+namespace Google\Site_Kit\Core\Tags\Google_Tag_Gateway;
 
 use Google\Site_Kit\Core\Storage\Setting;
 
 /**
- * Class to store user First Party Mode settings.
+ * Class to store user Google Tag Gateway settings.
  *
  * @since 1.141.0
+ * @since n.e.x.t Renamed from First_Party_Mode_Settings to Google_Tag_Gateway_Settings.
  * @access private
  * @ignore
  */
-class First_Party_Mode_Settings extends Setting {
+class Google_Tag_Gateway_Settings extends Setting {
 
 	/**
 	 * The user option name for this setting.
 	 */
-	const OPTION = 'googlesitekit_first_party_mode';
+	const OPTION = 'googlesitekit_google_tag_gateway';
 
 	/**
 	 * Gets the expected value type.
@@ -47,7 +48,7 @@ class First_Party_Mode_Settings extends Setting {
 	protected function get_default() {
 		return array(
 			'isEnabled'             => false,
-			'isFPMHealthy'          => null,
+			'isGTGHealthy'          => null,
 			'isScriptAccessEnabled' => null,
 		);
 	}
@@ -67,8 +68,8 @@ class First_Party_Mode_Settings extends Setting {
 				$new_value['isEnabled'] = (bool) $value['isEnabled'];
 			}
 
-			if ( isset( $value['isFPMHealthy'] ) ) {
-				$new_value['isFPMHealthy'] = (bool) $value['isFPMHealthy'];
+			if ( isset( $value['isGTGHealthy'] ) ) {
+				$new_value['isGTGHealthy'] = (bool) $value['isGTGHealthy'];
 			}
 
 			if ( isset( $value['isScriptAccessEnabled'] ) ) {
@@ -98,7 +99,7 @@ class First_Party_Mode_Settings extends Setting {
 
 		$allowed_settings = array(
 			'isEnabled'             => true,
-			'isFPMHealthy'          => true,
+			'isGTGHealthy'          => true,
 			'isScriptAccessEnabled' => true,
 		);
 
