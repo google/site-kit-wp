@@ -39,7 +39,7 @@ import GoogleTagGatewayToggle from '../../../../components/google-tag-gateway/Go
 
 export default function SettingsForm() {
 	const paxEnabled = useFeature( 'adsPax' );
-	const fpmEnabled = useFeature( 'googleTagGateway' );
+	const gtgEnabled = useFeature( 'googleTagGateway' );
 
 	const conversionID = useSelect( ( select ) =>
 		select( MODULES_ADS ).getConversionID()
@@ -144,7 +144,7 @@ export default function SettingsForm() {
 							}
 						) }
 					</ConversionTrackingToggle>
-					{ fpmEnabled && <GoogleTagGatewayToggle /> }
+					{ gtgEnabled && <GoogleTagGatewayToggle /> }
 				</SettingsGroup>
 			</div>
 		</Fragment>
