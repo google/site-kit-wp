@@ -85,7 +85,7 @@ export default function FirstPartyModeSetupBanner( { id, Notification } ) {
 			Component: FirstPartyModeSetupSuccessSubtleNotification,
 			areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 			isDismissible: false,
-			featureFlag: 'firstPartyMode',
+			featureFlag: 'googleTagGateway',
 		} );
 	};
 

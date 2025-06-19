@@ -47,7 +47,7 @@ import {
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
 export default function SettingsView() {
-	const fpmEnabled = useFeature( 'firstPartyMode' );
+	const fpmEnabled = useFeature( 'googleTagGateway' );
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()

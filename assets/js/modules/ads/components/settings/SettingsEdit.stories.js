@@ -198,7 +198,7 @@ FirstPartyModeEnabled.decorators = [
 		return (
 			<WithTestRegistry
 				callback={ setupRegistry }
-				features={ [ 'firstPartyMode' ] }
+				features={ [ 'googleTagGateway' ] }
 			>
 				<Story />
 			</WithTestRegistry>
@@ -234,7 +234,7 @@ FirstPartyModeDisabledWithWarning.decorators = [
 		return (
 			<WithTestRegistry
 				callback={ setupRegistry }
-				features={ [ 'firstPartyMode' ] }
+				features={ [ 'googleTagGateway' ] }
 			>
 				<Story />
 			</WithTestRegistry>

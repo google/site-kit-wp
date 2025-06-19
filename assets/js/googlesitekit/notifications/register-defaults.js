@@ -703,7 +703,7 @@ export const DEFAULT_NOTIFICATIONS = {
 			return isHealthy && isAccessEnabled;
 		},
 		isDismissible: true,
-		featureFlag: 'firstPartyMode',
+		featureFlag: 'googleTagGateway',
 	},
 	[ FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID ]: {
 		Component: FirstPartyModeWarningNotification,
@@ -731,7 +731,7 @@ export const DEFAULT_NOTIFICATIONS = {
 			);
 		},
 		isDismissible: true,
-		featureFlag: 'firstPartyMode',
+		featureFlag: 'googleTagGateway',
 	},
 	[ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ]: {
 		Component:

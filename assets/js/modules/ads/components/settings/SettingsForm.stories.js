@@ -73,7 +73,7 @@ export const FirstPartyModeEnabled = Template.bind( null );
 FirstPartyModeEnabled.storyName = 'FirstPartyModeEnabled';
 FirstPartyModeEnabled.scenario = {};
 FirstPartyModeEnabled.args = {
-	features: [ 'firstPartyMode' ],
+	features: [ 'googleTagGateway' ],
 	setupRegistry: ( registry ) => {
 		const fpmServerRequirementsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
@@ -100,7 +100,7 @@ FirstPartyModeDisabledWithWarning.storyName =
 	'FirstPartyModeDisabledWithWarning';
 FirstPartyModeDisabledWithWarning.scenario = {};
 FirstPartyModeDisabledWithWarning.args = {
-	features: [ 'firstPartyMode' ],
+	features: [ 'googleTagGateway' ],
 	setupRegistry: ( registry ) => {
 		const fpmServerRequirementsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'

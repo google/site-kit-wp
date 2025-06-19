@@ -229,7 +229,7 @@ class GTag {
 		$tag_id = rawurlencode( $this->tags[0]['tag_id'] );
 
 		// If Google tag gateway is active, use the proxy URL to load the GTag script.
-		if ( Feature_Flags::enabled( 'firstPartyMode' ) && $this->is_google_tag_gateway_active() ) {
+		if ( Feature_Flags::enabled( 'googleTagGateway' ) && $this->is_google_tag_gateway_active() ) {
 			return add_query_arg(
 				array(
 					'id' => $tag_id,

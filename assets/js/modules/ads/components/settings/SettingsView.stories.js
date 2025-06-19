@@ -49,7 +49,7 @@ export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.scenario = {};
 Default.parameters = {
-	features: [ 'firstPartyMode' ],
+	features: [ 'googleTagGateway' ],
 };
 
 export const IceEnabled = Template.bind( null );
@@ -58,7 +58,7 @@ IceEnabled.args = {
 	enhancedConversionTracking: true,
 };
 IceEnabled.parameters = {
-	features: [ 'firstPartyMode' ],
+	features: [ 'googleTagGateway' ],
 };
 
 export const FPMEnabled = Template.bind( null );
@@ -67,7 +67,7 @@ FPMEnabled.args = {
 	firstPartyMode: true,
 };
 FPMEnabled.parameters = {
-	features: [ 'firstPartyMode' ],
+	features: [ 'googleTagGateway' ],
 };
 
 export default {
@@ -115,7 +115,7 @@ export const PaxConnected = Template.bind( null );
 PaxConnected.storyName = 'With PAX onboarding';
 PaxConnected.scenario = {};
 PaxConnected.parameters = {
-	features: [ 'adsPax', 'firstPartyMode' ],
+	features: [ 'adsPax', 'googleTagGateway' ],
 };
 PaxConnected.decorators = [
 	( Story ) => {

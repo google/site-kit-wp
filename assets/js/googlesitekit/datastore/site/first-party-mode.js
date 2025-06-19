@@ -266,7 +266,7 @@ const baseSelectors = {
 
 	isAnyFirstPartyModeModuleConnected: createRegistrySelector(
 		( select ) => () => {
-			if ( ! isFeatureEnabled( 'firstPartyMode' ) ) {
+			if ( ! isFeatureEnabled( 'googleTagGateway' ) ) {
 				return false;
 			}
 

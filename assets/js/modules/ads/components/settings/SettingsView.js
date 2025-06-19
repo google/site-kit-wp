@@ -40,7 +40,7 @@ import SettingsStatuses from '../../../../components/settings/SettingsStatuses';
 
 export default function SettingsView() {
 	const paxEnabled = useFeature( 'adsPax' );
-	const fpmEnabled = useFeature( 'firstPartyMode' );
+	const fpmEnabled = useFeature( 'googleTagGateway' );
 
 	const conversionID = useSelect( ( select ) =>
 		select( MODULES_ADS ).getConversionID()

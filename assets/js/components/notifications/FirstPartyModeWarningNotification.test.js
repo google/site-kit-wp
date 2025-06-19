@@ -72,7 +72,7 @@ describe( 'FirstPartyModeWarningNotification', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
-		enabledFeatures.add( 'firstPartyMode' );
+		enabledFeatures.add( 'googleTagGateway' );
 
 		provideSiteInfo( registry );
 		provideUserInfo( registry );

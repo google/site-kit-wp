@@ -46,7 +46,7 @@ import { useFeature } from '../../../../hooks/useFeature';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 
 export default function SettingsForm( { hasModuleAccess } ) {
-	const fpmEnabled = useFeature( 'firstPartyMode' );
+	const fpmEnabled = useFeature( 'googleTagGateway' );
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()

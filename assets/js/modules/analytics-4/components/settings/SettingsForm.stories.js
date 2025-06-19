@@ -99,7 +99,7 @@ EnhancedMeasurementSwitch.decorators = [
 export const WithFirstPartyModeAvailable = Template.bind( null );
 WithFirstPartyModeAvailable.storyName = 'With first party mode available';
 WithFirstPartyModeAvailable.parameters = {
-	features: [ 'firstPartyMode' ],
+	features: [ 'googleTagGateway' ],
 };
 WithFirstPartyModeAvailable.decorators = [
 	( Story ) => {
@@ -135,7 +135,7 @@ WithFirstPartyModeAvailable.scenario = {};
 export const WithFirstPartyModeUnavailable = Template.bind( null );
 WithFirstPartyModeUnavailable.storyName = 'With first party mode unavailable';
 WithFirstPartyModeUnavailable.parameters = {
-	features: [ 'firstPartyMode' ],
+	features: [ 'googleTagGateway' ],
 };
 WithFirstPartyModeUnavailable.decorators = [
 	( Story ) => {

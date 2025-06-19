@@ -70,7 +70,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
-		enabledFeatures.add( 'firstPartyMode' );
+		enabledFeatures.add( 'googleTagGateway' );
 
 		provideSiteInfo( registry );
 		provideUserInfo( registry );
@@ -278,7 +278,7 @@ describe( 'FirstPartyModeSetupBanner', () => {
 		const { getByRole, waitForRegistry } = render( <FPMBannerComponent />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			features: [ 'firstPartyMode' ],
+			features: [ 'googleTagGateway' ],
 		} );
 
 		await waitForRegistry();
