@@ -406,52 +406,6 @@ final class Screens {
 					},
 				)
 			),
-			// NOTE: Looks like we will _always_ have the two stage process for Analytics setup, so maybe we should _not_ have a separate screen for setup,
-			// but instead extend the existing module setup flow to allow for a multiple stage setup process. Or in fact just the Analytics setup flow.
-			// See which makes more sense for Phase 1, can always add a new screen later. Remember the progress bar will need to be optional/configurable.
-			// Ref, https://fueled.slack.com/archives/CFFRMC5DE/p1750231752719509
-			// Need to update the DD with this direction.
-			new Screen(
-				self::PREFIX . 'extended-setup',
-				array(
-					'title'           => __( 'Extended Setup', 'google-site-kit' ), // TODO, Fix this title.
-					'capability'      => Permissions::SETUP, // Or use MANAGE_OPTIONS, or another capability?
-					'render_callback' => function ( Context $context ) {
-						if ( ! $this->authentication->is_authenticated() ) {
-							// TODO: Check if we can avoid this by using `capability` and/or `initialize_callback` instead.
-							wp_die( sprintf( '<span class="googlesitekit-notice">%s</span>', esc_html( 'You must be authenticated to access this page.' ) ), 403 );
-						}
-
-						// HERE, `slug` is the module slug that is being set up.
-						// `reAuth` is a boolean that is set to true if the user is returning from the proxy.
-						$setup_slug = htmlspecialchars( $context->input()->filter( INPUT_GET, 'slug' ) ?: '' );
-						$reauth = $context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
-
-							$setup_module_slug = $setup_slug && $reauth ? $setup_slug : '';
-
-						if ( $setup_module_slug ) {
-							$active_modules = $this->modules->get_active_modules();
-
-							if ( ! array_key_exists( $setup_module_slug, $active_modules ) ) {
-								try {
-									$module_details = $this->modules->get_module( $setup_module_slug );
-									/* translators: %s: The module name */
-									$message        = sprintf( __( 'The %s module cannot be set up as it has not been activated yet.', 'google-site-kit' ), $module_details->name );
-								} catch ( \Exception $e ) {
-									$message = $e->getMessage();
-								}
-
-								wp_die( sprintf( '<span class="googlesitekit-notice">%s</span>', esc_html( $message ) ), 403 );
-							}
-							// HERE, `data-setup-module-slug` is the module slug that is being set up.
-							// This is used to determine which module to show the setup screen for.
-							?>
-							<div id="js-googlesitekit-extended-setup" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" class="googlesitekit-page"></div>
-							<?php
-						}
-					},
-				)
-			),
 			new Screen(
 				self::PREFIX . 'splash',
 				array(
