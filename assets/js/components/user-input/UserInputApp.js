@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -34,23 +33,11 @@ import HelpMenu from '../help/HelpMenu';
 import PageHeader from '../PageHeader';
 import UserInputQuestionnaire from './UserInputQuestionnaire';
 import Layout from '../layout/Layout';
-import {
-	FORM_USER_INPUT_QUESTION_NUMBER,
-	getUserInputQuestions,
-} from './util/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { getUserInputQuestions } from './util/constants';
 
 export default function UserInputApp() {
-	const questionNumber =
-		useSelect( ( select ) =>
-			select( CORE_FORMS ).getValue(
-				FORM_USER_INPUT_QUESTION_NUMBER,
-				'questionNumber'
-			)
-		) || 1;
-
 	const questions = getUserInputQuestions();
-	const questionTitle = questions[ questionNumber - 1 ]?.title || '';
+	const questionTitle = questions[ 0 ]?.title || '';
 
 	const hasFinishedGettingInputSettings = useSelect( ( select ) => {
 		// This needs to be called here to check on its resolution,
@@ -85,22 +72,6 @@ export default function UserInputApp() {
 						<Grid>
 							<Layout rounded>
 								<Grid className="googlesitekit-user-input__header">
-									<Row>
-										<Cell
-											size={ 12 }
-											className="googlesitekit-user-input__question-number"
-										>
-											{ sprintf(
-												/*  translators: %d is replaced with the current page number (1, 2, or 3 etc.). */
-												__(
-													'%d / 3',
-													'google-site-kit'
-												),
-												questionNumber
-											) }
-										</Cell>
-									</Row>
-
 									<Row>
 										<Cell lgSize={ 12 }>
 											<PageHeader

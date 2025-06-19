@@ -28,47 +28,23 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import UserInputQuestionWrapper from './UserInputQuestionWrapper';
 import UserInputSelectOptions from './UserInputSelectOptions';
 import {
-	USER_INPUT_QUESTIONS_LIST,
 	USER_INPUT_QUESTIONS_PURPOSE,
-	USER_INPUT_QUESTION_POST_FREQUENCY,
-	USER_INPUT_QUESTIONS_GOALS,
 	USER_INPUT_MAX_ANSWERS,
 	getUserInputAnswers,
-	FORM_USER_INPUT_QUESTION_NUMBER,
 	getUserInputAnswersDescription,
 } from './util/constants';
-import useQueryArg from '../../hooks/useQueryArg';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import ProgressSegments from '../ProgressSegments';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 export default function UserInputQuestionnaire() {
 	const viewContext = useViewContext();
-	const [ activeSlug, setActiveSlug ] = useQueryArg(
-		'question',
-		USER_INPUT_QUESTIONS_LIST[ 0 ]
-	);
 
-	const activeSlugIndex = USER_INPUT_QUESTIONS_LIST.indexOf( activeSlug );
-	if ( activeSlugIndex === -1 ) {
-		setActiveSlug( USER_INPUT_QUESTIONS_LIST[ 0 ] );
-	}
-
-	const { setValues } = useDispatch( CORE_FORMS );
-	const questionNumber =
-		useSelect( ( select ) =>
-			select( CORE_FORMS ).getValue(
-				FORM_USER_INPUT_QUESTION_NUMBER,
-				'questionNumber'
-			)
-		) || 1;
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
@@ -83,78 +59,14 @@ export default function UserInputQuestionnaire() {
 	const gaEventCategory = `${ viewContext }_kmw`;
 
 	useEffect( () => {
-		// Set the event name to track based on the active slug.
-		let eventActionName;
-		if ( activeSlug === USER_INPUT_QUESTIONS_PURPOSE ) {
-			eventActionName = 'site_purpose_question_view';
-		}
-		if ( activeSlug === USER_INPUT_QUESTION_POST_FREQUENCY ) {
-			eventActionName = 'content_frequency_question_view';
-		}
-		if ( activeSlug === USER_INPUT_QUESTIONS_GOALS ) {
-			eventActionName = 'site_goals_question_view';
-		}
+		trackEvent( gaEventCategory, 'site_purpose_question_view' );
+	}, [ gaEventCategory, viewContext ] );
 
-		if ( eventActionName ) {
-			trackEvent( gaEventCategory, eventActionName );
-		}
-	}, [ activeSlug, gaEventCategory, viewContext ] );
-
-	const {
-		USER_INPUT_ANSWERS_PURPOSE,
-		USER_INPUT_ANSWERS_GOALS,
-		USER_INPUT_ANSWERS_POST_FREQUENCY,
-	} = getUserInputAnswers();
+	const { USER_INPUT_ANSWERS_PURPOSE } = getUserInputAnswers();
 
 	const {
 		USER_INPUT_ANSWERS_PURPOSE: USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS,
 	} = getUserInputAnswersDescription();
-
-	const scrollToQuestion = () => {
-		global.scrollTo( {
-			top: 0,
-			left: 0,
-			behavior: 'smooth',
-		} );
-	};
-
-	const nextCallback = useCallback( () => {
-		trackEvent(
-			gaEventCategory,
-			'question_advance',
-			USER_INPUT_QUESTIONS_LIST[ activeSlugIndex ]
-		);
-		setActiveSlug( USER_INPUT_QUESTIONS_LIST[ activeSlugIndex + 1 ] );
-		setValues( FORM_USER_INPUT_QUESTION_NUMBER, {
-			questionNumber: questionNumber + 1,
-		} );
-		scrollToQuestion();
-	}, [
-		activeSlugIndex,
-		gaEventCategory,
-		setActiveSlug,
-		setValues,
-		questionNumber,
-	] );
-
-	const backCallback = useCallback( () => {
-		trackEvent(
-			gaEventCategory,
-			'question_return',
-			USER_INPUT_QUESTIONS_LIST[ activeSlugIndex ]
-		);
-		setActiveSlug( USER_INPUT_QUESTIONS_LIST[ activeSlugIndex - 1 ] );
-		setValues( FORM_USER_INPUT_QUESTION_NUMBER, {
-			questionNumber: questionNumber - 1,
-		} );
-		scrollToQuestion();
-	}, [
-		activeSlugIndex,
-		gaEventCategory,
-		setActiveSlug,
-		setValues,
-		questionNumber,
-	] );
 
 	const userInputPurposeConversionEvents = useSelect( ( select ) => {
 		const isGA4Connected = select( CORE_MODULES ).isModuleConnected(
@@ -217,92 +129,25 @@ export default function UserInputQuestionnaire() {
 		submitChanges();
 	}, [ isScreenLoading, submitChanges ] );
 
-	const settingsProgress = (
-		<ProgressSegments
-			currentSegment={ activeSlugIndex + 1 }
-			totalSegments={ USER_INPUT_QUESTIONS_LIST.length }
-			className="googlesitekit-user-input__question--progress"
-		/>
-	);
-
 	return (
 		<div>
-			<div className="googlesitekit-user-input__question-progress">
-				{ settingsProgress }
-			</div>
-
-			{ activeSlugIndex ===
-				USER_INPUT_QUESTIONS_LIST.indexOf(
-					USER_INPUT_QUESTIONS_PURPOSE
-				) && (
-				<UserInputQuestionWrapper
+			<UserInputQuestionWrapper
+				slug={ USER_INPUT_QUESTIONS_PURPOSE }
+				questionNumber={ 1 }
+				complete={ onSaveClick }
+				error={ error }
+			>
+				<UserInputSelectOptions
 					slug={ USER_INPUT_QUESTIONS_PURPOSE }
-					questionNumber={ 1 }
-					next={ nextCallback }
-					error={ error }
-				>
-					<UserInputSelectOptions
-						slug={ USER_INPUT_QUESTIONS_PURPOSE }
-						max={
-							USER_INPUT_MAX_ANSWERS[
-								USER_INPUT_QUESTIONS_PURPOSE
-							]
-						}
-						options={ USER_INPUT_ANSWERS_PURPOSE }
-						descriptions={ USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS }
-						next={ nextCallback }
-						showInstructions
-					/>
-				</UserInputQuestionWrapper>
-			) }
-
-			{ activeSlugIndex ===
-				USER_INPUT_QUESTIONS_LIST.indexOf(
-					USER_INPUT_QUESTION_POST_FREQUENCY
-				) && (
-				<UserInputQuestionWrapper
-					slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
-					questionNumber={ 2 }
-					next={ nextCallback }
-					back={ backCallback }
-					error={ error }
-				>
-					<UserInputSelectOptions
-						slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
-						max={
-							USER_INPUT_MAX_ANSWERS[
-								USER_INPUT_QUESTION_POST_FREQUENCY
-							]
-						}
-						options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
-						next={ nextCallback }
-						showInstructions
-					/>
-				</UserInputQuestionWrapper>
-			) }
-
-			{ activeSlugIndex ===
-				USER_INPUT_QUESTIONS_LIST.indexOf(
-					USER_INPUT_QUESTIONS_GOALS
-				) && (
-				<UserInputQuestionWrapper
-					slug={ USER_INPUT_QUESTIONS_GOALS }
-					questionNumber={ 3 }
-					complete={ onSaveClick }
-					back={ backCallback }
-					error={ error }
-				>
-					<UserInputSelectOptions
-						slug={ USER_INPUT_QUESTIONS_GOALS }
-						max={
-							USER_INPUT_MAX_ANSWERS[ USER_INPUT_QUESTIONS_GOALS ]
-						}
-						options={ USER_INPUT_ANSWERS_GOALS }
-						next={ onSaveClick }
-						showInstructions
-					/>
-				</UserInputQuestionWrapper>
-			) }
+					max={
+						USER_INPUT_MAX_ANSWERS[ USER_INPUT_QUESTIONS_PURPOSE ]
+					}
+					options={ USER_INPUT_ANSWERS_PURPOSE }
+					descriptions={ USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS }
+					next={ onSaveClick }
+					showInstructions
+				/>
+			</UserInputQuestionWrapper>
 		</div>
 	);
 }
