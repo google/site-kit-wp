@@ -61,12 +61,12 @@ IceEnabled.parameters = {
 	features: [ 'googleTagGateway' ],
 };
 
-export const FPMEnabled = Template.bind( null );
-FPMEnabled.storyName = 'With First-party mode Enabled';
-FPMEnabled.args = {
-	firstPartyMode: true,
+export const GTGEnabled = Template.bind( null );
+GTGEnabled.storyName = 'With Google tag gateway Enabled';
+GTGEnabled.args = {
+	googleTagGateway: true,
 };
-FPMEnabled.parameters = {
+GTGEnabled.parameters = {
 	features: [ 'googleTagGateway' ],
 };
 
@@ -95,10 +95,10 @@ export default {
 
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
-						isEnabled: args.firstPartyMode || false,
-						isFPMHealthy: args.firstPartyMode || false,
-						isScriptAccessEnabled: args.firstPartyMode || false,
+					.receiveGetGoogleTagGatewaySettings( {
+						isEnabled: args.googleTagGateway || false,
+						isGTGHealthy: args.googleTagGateway || false,
+						isScriptAccessEnabled: args.googleTagGateway || false,
 					} );
 			};
 

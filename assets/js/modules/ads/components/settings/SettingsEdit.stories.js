@@ -171,28 +171,28 @@ IcePaxEnabled.decorators = [
 	},
 ];
 
-export const FirstPartyModeEnabled = Template.bind( null );
-FirstPartyModeEnabled.storyName = 'FirstPartyModeEnabled';
-FirstPartyModeEnabled.decorators = [
+export const GTGEnabled = Template.bind( null );
+GTGEnabled.storyName = 'With Google tag gateway Enabled';
+GTGEnabled.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			const fpmServerRequirementsEndpoint = new RegExp(
+			const gtgServerRequirementsEndpoint = new RegExp(
 				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
 
-			const fpmSettings = {
+			const gtgSettings = {
 				isEnabled: true,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			};
 
-			fetchMock.getOnce( fpmServerRequirementsEndpoint, {
-				body: fpmSettings,
+			fetchMock.getOnce( gtgServerRequirementsEndpoint, {
+				body: gtgSettings,
 			} );
 
 			registry
 				.dispatch( CORE_SITE )
-				.receiveGetFirstPartyModeSettings( fpmSettings );
+				.receiveGetGoogleTagGatewaySettings( gtgSettings );
 		};
 
 		return (
@@ -206,29 +206,29 @@ FirstPartyModeEnabled.decorators = [
 	},
 ];
 
-export const FirstPartyModeDisabledWithWarning = Template.bind( null );
-FirstPartyModeDisabledWithWarning.storyName =
-	'FirstPartyModeDisabledWithWarning';
-FirstPartyModeDisabledWithWarning.decorators = [
+export const GTGDisabledWithWarning = Template.bind( null );
+GTGDisabledWithWarning.storyName =
+	'With Google tag gateway Disabled with warning';
+GTGDisabledWithWarning.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			const fpmServerRequirementsEndpoint = new RegExp(
+			const gtgServerRequirementsEndpoint = new RegExp(
 				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
 
-			const fpmSettings = {
+			const gtgSettings = {
 				isEnabled: true,
-				isFPMHealthy: false,
+				isGTGHealthy: false,
 				isScriptAccessEnabled: false,
 			};
 
-			fetchMock.getOnce( fpmServerRequirementsEndpoint, {
-				body: fpmSettings,
+			fetchMock.getOnce( gtgServerRequirementsEndpoint, {
+				body: gtgSettings,
 			} );
 
 			registry
 				.dispatch( CORE_SITE )
-				.receiveGetFirstPartyModeSettings( fpmSettings );
+				.receiveGetGoogleTagGatewaySettings( gtgSettings );
 		};
 
 		return (
