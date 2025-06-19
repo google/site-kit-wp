@@ -1,59 +1,60 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Tags\First_Party_Mode\REST_First_Party_Mode_Controller
+ * Class Google\Site_Kit\Core\Tags\Google_Tag_Gateway\REST_Google_Tag_Gateway_Controller
  *
- * @package   Google\Site_Kit\Core\Tags\First_Party_Mode
+ * @package   Google\Site_Kit\Core\Tags\Google_Tag_Gateway
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Tags\First_Party_Mode;
+namespace Google\Site_Kit\Core\Tags\Google_Tag_Gateway;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
 
 /**
- * Class for handling First Party Mode settings via REST API.
+ * Class for handling Google Tag Gateway settings via REST API.
  *
  * @since 1.141.0
+ * @since n.e.x.t Renamed from REST_First_Party_Mode_Controller to REST_Google_Tag_Gateway_Controller.
  * @access private
  * @ignore
  */
-class REST_First_Party_Mode_Controller {
+class REST_Google_Tag_Gateway_Controller {
 
 	/**
-	 * First_Party_Mode instance.
+	 * Google_Tag_Gateway instance.
 	 *
 	 * @since 1.142.0
-	 * @var First_Party_Mode
+	 * @var Google_Tag_Gateway
 	 */
-	private $first_party_mode;
+	private $google_tag_gateway;
 
 	/**
-	 * First_Party_Mode_Settings instance.
+	 * Google_Tag_Gateway_Settings instance.
 	 *
 	 * @since 1.141.0
-	 * @var First_Party_Mode_Settings
+	 * @var Google_Tag_Gateway_Settings
 	 */
-	private $first_party_mode_settings;
+	private $google_tag_gateway_settings;
 
 	/**
 	 * Constructor.
 	 *
 	 * @since 1.141.0
 	 *
-	 * @param First_Party_Mode          $first_party_mode          First_Party_Mode instance.
-	 * @param First_Party_Mode_Settings $first_party_mode_settings First_Party_Mode_Settings instance.
+	 * @param Google_Tag_Gateway          $google_tag_gateway          Google_Tag_Gateway instance.
+	 * @param Google_Tag_Gateway_Settings $google_tag_gateway_settings Google_Tag_Gateway_Settings instance.
 	 */
-	public function __construct( First_Party_Mode $first_party_mode, First_Party_Mode_Settings $first_party_mode_settings ) {
-		$this->first_party_mode          = $first_party_mode;
-		$this->first_party_mode_settings = $first_party_mode_settings;
+	public function __construct( Google_Tag_Gateway $google_tag_gateway, Google_Tag_Gateway_Settings $google_tag_gateway_settings ) {
+		$this->google_tag_gateway          = $google_tag_gateway;
+		$this->google_tag_gateway_settings = $google_tag_gateway_settings;
 	}
 
 	/**
@@ -101,18 +102,18 @@ class REST_First_Party_Mode_Controller {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function () {
-							return new WP_REST_Response( $this->first_party_mode_settings->get() );
+							return new WP_REST_Response( $this->google_tag_gateway_settings->get() );
 						},
 						'permission_callback' => $can_manage_options,
 					),
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function ( WP_REST_Request $request ) {
-							$this->first_party_mode_settings->set(
+							$this->google_tag_gateway_settings->set(
 								$request['data']['settings']
 							);
 
-							return new WP_REST_Response( $this->first_party_mode_settings->get() );
+							return new WP_REST_Response( $this->google_tag_gateway_settings->get() );
 						},
 						'permission_callback' => $can_manage_options,
 						'args'                => array(
@@ -145,8 +146,8 @@ class REST_First_Party_Mode_Controller {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function () {
-							$this->first_party_mode->healthcheck();
-							return new WP_REST_Response( $this->first_party_mode_settings->get() );
+							$this->google_tag_gateway->healthcheck();
+							return new WP_REST_Response( $this->google_tag_gateway_settings->get() );
 						},
 						'permission_callback' => $can_manage_options,
 					),
