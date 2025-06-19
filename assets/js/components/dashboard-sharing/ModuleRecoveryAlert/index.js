@@ -32,12 +32,13 @@ import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { TYPES } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
 import Description from './Description';
-import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import BannerNotification, {
+	TYPES,
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import AdditionalDescription from './AdditionalDescription';
 import PreviewBlock from '../../PreviewBlock';
 
