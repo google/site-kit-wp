@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,31 +33,42 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import {
+	FORM_SETUP,
+	EDIT_SCOPE,
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	MODULES_ANALYTICS_4,
-} from '../../../datastore/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
-import SetupFormFields from '../SetupFormFields';
-import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
+} from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import { isPermissionScopeError } from '../../../../util/errors';
+import SetupFormFields from './SetupFormFields';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
-import useViewContext from '../../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../../util';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import SetupEnhancedConversionTrackingNotice from '../../../../components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
 
-export default function SetupKeyMetricsStep( { finishSetup } ) {
-	const viewContext = useViewContext();
-
+export default function SetupForm( { finishSetup } ) {
+	const hasEditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' )
+	);
+	const canSubmitChanges = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).canSubmitChanges()
+	);
 	const isSaving = useSelect(
 		( select ) =>
 			select( MODULES_ANALYTICS_4 ).isDoingSubmitChanges() ||
 			select( CORE_LOCATION ).isNavigating()
 	);
+	const viewContext = useViewContext();
 
-	const canSubmitChanges = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).canSubmitChanges()
-	);
+	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
 	const { setConversionTrackingEnabled, saveConversionTrackingSettings } =
 		useDispatch( CORE_SITE );
@@ -72,8 +83,15 @@ export default function SetupKeyMetricsStep( { finishSetup } ) {
 	const submitForm = useCallback(
 		async ( event ) => {
 			event.preventDefault();
+			// Disable autoSubmit unconditionally to prevent
+			// automatic invocation more than once.
+			setValues( FORM_SETUP, { autoSubmit: false } );
 
 			const { error } = await submitChanges();
+
+			if ( isPermissionScopeError( error ) ) {
+				setValues( FORM_SETUP, { autoSubmit: true } );
+			}
 
 			if ( ! error ) {
 				setConversionTrackingEnabled( true );
@@ -93,10 +111,19 @@ export default function SetupKeyMetricsStep( { finishSetup } ) {
 			isEnhancedMeasurementEnabled,
 			setConversionTrackingEnabled,
 			saveConversionTrackingSettings,
+			setValues,
 			submitChanges,
 			viewContext,
 		]
 	);
+
+	// If the user lands back on this component with autoSubmit and the edit scope,
+	// resubmit the form.
+	useEffect( () => {
+		if ( autoSubmit && hasEditScope ) {
+			submitForm( { preventDefault: () => {} } );
+		}
+	}, [ hasEditScope, autoSubmit, submitForm ] );
 
 	return (
 		<form
@@ -108,6 +135,13 @@ export default function SetupKeyMetricsStep( { finishSetup } ) {
 				storeName={ MODULES_ANALYTICS_4 }
 			/>
 			<SetupFormFields />
+
+			<SetupEnhancedConversionTrackingNotice
+				message={ __(
+					'To track how visitors interact with your site, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
+					'google-site-kit'
+				) }
+			/>
 
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton
@@ -121,10 +155,10 @@ export default function SetupKeyMetricsStep( { finishSetup } ) {
 	);
 }
 
-SetupKeyMetricsStep.propTypes = {
+SetupForm.propTypes = {
 	finishSetup: PropTypes.func,
 };
 
-SetupKeyMetricsStep.defaultProps = {
+SetupForm.defaultProps = {
 	finishSetup: () => {},
 };
