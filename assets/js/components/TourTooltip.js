@@ -102,11 +102,11 @@ export default function TourTooltip( {
 				</CardActions>
 				<Button
 					className="googlesitekit-tooltip-close"
-					text
-					hideTooltipTitle
 					icon={ <CloseIcon width="14" height="14" /> }
 					onClick={ closeProps.onClick }
 					aria-label={ __( 'Close', 'google-site-kit' ) }
+					text
+					hideTooltipTitle
 				/>
 			</Card>
 		</div>

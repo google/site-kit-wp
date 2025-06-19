@@ -29,5 +29,6 @@ module.exports = {
 		'sitekit/no-yield-dispatch': [ 'error' ],
 		'sitekit/no-direct-date': [ 'error' ],
 		'sitekit/jsdoc-no-unnamed-boolean-params': [ 'error' ],
+		'sitekit/no-boolean-props-before-values': [ 'error' ],
 	},
 };

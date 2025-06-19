@@ -198,7 +198,6 @@ export default function SettingsEnhancedMeasurementSwitch( {
 
 	return (
 		<EnhancedMeasurementSwitch
-			showTick
 			disabled={ ! hasModuleAccess }
 			loading={ isLoading }
 			isEnhancedMeasurementAlreadyEnabled={
@@ -220,6 +219,7 @@ export default function SettingsEnhancedMeasurementSwitch( {
 					! isEnhancedMeasurementEnabled
 				);
 			} }
+			showTick
 		/>
 	);
 }

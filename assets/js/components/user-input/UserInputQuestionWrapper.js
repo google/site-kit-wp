@@ -88,9 +88,9 @@ export default function UserInputQuestionWrapper( props ) {
 				<div className="googlesitekit-user-input__footer-nav">
 					{ back && (
 						<Button
-							tertiary
 							className="googlesitekit-user-input__buttons--back"
 							onClick={ back }
+							tertiary
 						>
 							{ __( 'Back', 'google-site-kit' ) }
 						</Button>
