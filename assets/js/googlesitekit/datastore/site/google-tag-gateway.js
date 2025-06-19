@@ -1,5 +1,5 @@
 /**
- * `core/site` data store: first-party-mode.
+ * `core/site` data store: google-tag-gateway.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -42,18 +42,18 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { isFeatureEnabled } from '../../../features';
 
-const SET_FIRST_PARTY_MODE_ENABLED = 'SET_FIRST_PARTY_MODE_ENABLED';
-const RESET_FIRST_PARTY_MODE_SETTINGS = 'RESET_FIRST_PARTY_MODE_SETTINGS';
+const SET_GOOGLE_TAG_GATEWAY_ENABLED = 'SET_GOOGLE_TAG_GATEWAY_ENABLED';
+const RESET_GOOGLE_TAG_GATEWAY_SETTINGS = 'RESET_GOOGLE_TAG_GATEWAY_SETTINGS';
 
 const settingsReducerCallback = createReducer(
-	( state, firstPartyModeSettings ) => {
-		state.firstPartyModeSettings = firstPartyModeSettings;
-		state.firstPartyModeSavedSettings = firstPartyModeSettings;
+	( state, googleTagGatewaySettings ) => {
+		state.googleTagGatewaySettings = googleTagGatewaySettings;
+		state.googleTagGatewaySavedSettings = googleTagGatewaySettings;
 	}
 );
 
-const fetchGetFirstPartyModeSettingsStore = createFetchStore( {
-	baseName: 'getFirstPartyModeSettings',
+const fetchGetGoogleTagGatewaySettingsStore = createFetchStore( {
+	baseName: 'getGoogleTagGatewaySettings',
 	controlCallback: () =>
 		get( 'core', 'site', 'gtg-settings', undefined, {
 			useCache: false,
@@ -61,8 +61,8 @@ const fetchGetFirstPartyModeSettingsStore = createFetchStore( {
 	reducerCallback: settingsReducerCallback,
 } );
 
-const fetchSaveFirstPartyModeSettingsStore = createFetchStore( {
-	baseName: 'saveFirstPartyModeSettings',
+const fetchSaveGoogleTagGatewaySettingsStore = createFetchStore( {
+	baseName: 'saveGoogleTagGatewaySettings',
 	controlCallback: ( { settings } ) => {
 		return set( 'core', 'site', 'gtg-settings', { settings } );
 	},
@@ -89,8 +89,8 @@ const fetchSaveFirstPartyModeSettingsStore = createFetchStore( {
 	},
 } );
 
-const fetchGetFPMServerRequirementStatusStore = createFetchStore( {
-	baseName: 'getFPMServerRequirementStatus',
+const fetchGetGTGServerRequirementStatusStore = createFetchStore( {
+	baseName: 'getGTGServerRequirementStatus',
 	controlCallback: () =>
 		get( 'core', 'site', 'gtg-server-requirement-status', undefined, {
 			useCache: false,
@@ -99,31 +99,31 @@ const fetchGetFPMServerRequirementStatusStore = createFetchStore( {
 } );
 
 const baseInitialState = {
-	firstPartyModeSettings: undefined,
-	firstPartyModeSavedSettings: undefined,
+	googleTagGatewaySettings: undefined,
+	googleTagGatewaySavedSettings: undefined,
 };
 
 const baseActions = {
 	/**
-	 * Saves the First-party mode settings.
+	 * Saves the Google tag gateway settings.
 	 *
 	 * @since 1.141.0
 	 * @since 1.145.0 Added the survey trigger.
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*saveFirstPartyModeSettings() {
+	*saveGoogleTagGatewaySettings() {
 		const { dispatch, select } = yield commonActions.getRegistry();
-		const settings = select( CORE_SITE ).getFirstPartyModeSettings();
+		const settings = select( CORE_SITE ).getGoogleTagGatewaySettings();
 
 		const results =
-			yield fetchSaveFirstPartyModeSettingsStore.actions.fetchSaveFirstPartyModeSettings(
+			yield fetchSaveGoogleTagGatewaySettingsStore.actions.fetchSaveGoogleTagGatewaySettings(
 				settings
 			);
 
 		if ( results?.response?.isEnabled ) {
 			yield commonActions.await(
-				dispatch( CORE_USER ).triggerSurvey( 'fpm_setup_completed' )
+				dispatch( CORE_USER ).triggerSurvey( 'gtg_setup_completed' )
 			);
 		}
 
@@ -131,16 +131,16 @@ const baseActions = {
 	},
 
 	/**
-	 * Sets the First-party mode enabled status.
+	 * Sets the Google tag gateway enabled status.
 	 *
 	 * @since 1.141.0
 	 *
-	 * @param {boolean} isEnabled First-party mode enabled status.
+	 * @param {boolean} isEnabled Google tag gateway enabled status.
 	 * @return {Object} Redux-style action.
 	 */
-	setFirstPartyModeEnabled( isEnabled ) {
+	setGoogleTagGatewayEnabled( isEnabled ) {
 		return {
-			type: SET_FIRST_PARTY_MODE_ENABLED,
+			type: SET_GOOGLE_TAG_GATEWAY_ENABLED,
 			payload: { isEnabled },
 		};
 	},
@@ -152,10 +152,10 @@ const baseActions = {
 	 *
 	 * @return {Object} Redux-style action.
 	 */
-	resetFirstPartyModeSettings() {
+	resetGoogleTagGatewaySettings() {
 		return {
 			payload: {},
-			type: RESET_FIRST_PARTY_MODE_SETTINGS,
+			type: RESET_GOOGLE_TAG_GATEWAY_SETTINGS,
 		};
 	},
 };
@@ -164,14 +164,16 @@ const baseControls = {};
 
 const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_FIRST_PARTY_MODE_ENABLED: {
-			state.firstPartyModeSettings = state.firstPartyModeSettings || {};
-			state.firstPartyModeSettings.isEnabled = !! payload.isEnabled;
+		case SET_GOOGLE_TAG_GATEWAY_ENABLED: {
+			state.googleTagGatewaySettings =
+				state.googleTagGatewaySettings || {};
+			state.googleTagGatewaySettings.isEnabled = !! payload.isEnabled;
 			break;
 		}
 
-		case RESET_FIRST_PARTY_MODE_SETTINGS: {
-			state.firstPartyModeSettings = state.firstPartyModeSavedSettings;
+		case RESET_GOOGLE_TAG_GATEWAY_SETTINGS: {
+			state.googleTagGatewaySettings =
+				state.googleTagGatewaySavedSettings;
 			break;
 		}
 
@@ -181,58 +183,58 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 } );
 
 const baseResolvers = {
-	*getFirstPartyModeSettings() {
+	*getGoogleTagGatewaySettings() {
 		const { select } = yield commonActions.getRegistry();
 
-		const settings = select( CORE_SITE ).getFirstPartyModeSettings();
+		const settings = select( CORE_SITE ).getGoogleTagGatewaySettings();
 
 		if ( settings === undefined ) {
-			yield fetchGetFirstPartyModeSettingsStore.actions.fetchGetFirstPartyModeSettings();
+			yield fetchGetGoogleTagGatewaySettingsStore.actions.fetchGetGoogleTagGatewaySettings();
 		}
 	},
 };
 
 const baseSelectors = {
 	/**
-	 * Gets the First-party mode settings.
+	 * Gets the Google tag gateway settings.
 	 *
 	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object|undefined} First-party mode settings, or undefined if not loaded.
+	 * @return {Object|undefined} Google tag gateway settings, or undefined if not loaded.
 	 */
-	getFirstPartyModeSettings: ( state ) => {
-		return state.firstPartyModeSettings;
+	getGoogleTagGatewaySettings: ( state ) => {
+		return state.googleTagGatewaySettings;
 	},
 
 	/**
-	 * Checks if First-party mode is enabled.
+	 * Checks if Google tag gateway is enabled.
 	 *
 	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|undefined} True if First-party mode is enabled, otherwise false. Returns undefined if the state is not loaded.
+	 * @return {boolean|undefined} True if Google tag gateway is enabled, otherwise false. Returns undefined if the state is not loaded.
 	 */
-	isFirstPartyModeEnabled: createRegistrySelector( ( select ) => () => {
+	isGoogleTagGatewayEnabled: createRegistrySelector( ( select ) => () => {
 		const { isEnabled } =
-			select( CORE_SITE ).getFirstPartyModeSettings() || {};
+			select( CORE_SITE ).getGoogleTagGatewaySettings() || {};
 
 		return isEnabled;
 	} ),
 
 	/**
-	 * Checks if the FPFE service is determined to be healthy.
+	 * Checks if the GTG service is determined to be healthy.
 	 *
 	 * @since 1.141.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|null|undefined} True if the FPFE service is healthy, otherwise false. Returns undefined if the state is not loaded.
+	 * @return {boolean|null|undefined} True if the GTG service is healthy, otherwise false. Returns undefined if the state is not loaded.
 	 */
-	isFPMHealthy: createRegistrySelector( ( select ) => () => {
-		const { isFPMHealthy } =
-			select( CORE_SITE ).getFirstPartyModeSettings() || {};
+	isGTGHealthy: createRegistrySelector( ( select ) => () => {
+		const { isGTGHealthy } =
+			select( CORE_SITE ).getGoogleTagGatewaySettings() || {};
 
-		return isFPMHealthy;
+		return isGTGHealthy;
 	} ),
 
 	/**
@@ -245,26 +247,30 @@ const baseSelectors = {
 	 */
 	isScriptAccessEnabled: createRegistrySelector( ( select ) => () => {
 		const { isScriptAccessEnabled } =
-			select( CORE_SITE ).getFirstPartyModeSettings() || {};
+			select( CORE_SITE ).getGoogleTagGatewaySettings() || {};
 
 		return isScriptAccessEnabled;
 	} ),
 
 	/**
-	 * Indicates whether the current First-party mode settings have changed from what is saved.
+	 * Indicates whether the current Google tag gateway settings have changed from what is saved.
 	 *
 	 * @since 1.142.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if the settings have changed, false otherwise.
 	 */
-	haveFirstPartyModeSettingsChanged( state ) {
-		const { firstPartyModeSettings, firstPartyModeSavedSettings } = state;
+	haveGoogleTagGatewaySettingsChanged( state ) {
+		const { googleTagGatewaySettings, googleTagGatewaySavedSettings } =
+			state;
 
-		return ! isEqual( firstPartyModeSettings, firstPartyModeSavedSettings );
+		return ! isEqual(
+			googleTagGatewaySettings,
+			googleTagGatewaySavedSettings
+		);
 	},
 
-	isAnyFirstPartyModeModuleConnected: createRegistrySelector(
+	isAnyGoogleTagGatewayModuleConnected: createRegistrySelector(
 		( select ) => () => {
 			if ( ! isFeatureEnabled( 'googleTagGateway' ) ) {
 				return false;
@@ -281,9 +287,9 @@ const baseSelectors = {
 };
 
 const store = combineStores(
-	fetchGetFirstPartyModeSettingsStore,
-	fetchSaveFirstPartyModeSettingsStore,
-	fetchGetFPMServerRequirementStatusStore,
+	fetchGetGoogleTagGatewaySettingsStore,
+	fetchSaveGoogleTagGatewaySettingsStore,
+	fetchGetGTGServerRequirementStatusStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

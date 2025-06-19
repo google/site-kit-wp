@@ -35,10 +35,10 @@ import { CORE_SITE } from './constants';
 import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
 import { CORE_USER } from '../user/constants';
 
-describe( 'core/site First-party mode', () => {
+describe( 'core/site Google tag gateway', () => {
 	let registry;
 
-	const firstPartyModeSettingsEndpointRegExp = new RegExp(
+	const googleTagGatewaySettingsEndpointRegExp = new RegExp(
 		'^/google-site-kit/v1/core/site/data/gtg-settings'
 	);
 
@@ -55,7 +55,7 @@ describe( 'core/site First-party mode', () => {
 	} );
 
 	describe( 'actions', () => {
-		describe( 'saveFirstPartyModeSettings', () => {
+		describe( 'saveGoogleTagGatewaySettings', () => {
 			it( 'saves the settings and returns the response', async () => {
 				provideUserAuthentication( registry );
 
@@ -68,31 +68,33 @@ describe( 'core/site First-party mode', () => {
 
 				const updatedSettings = {
 					isEnabled: true,
-					isFPMHealthy: false,
+					isGTGHealthy: false,
 					isScriptAccessEnabled: false,
 				};
 
-				fetchMock.postOnce( firstPartyModeSettingsEndpointRegExp, {
+				fetchMock.postOnce( googleTagGatewaySettingsEndpointRegExp, {
 					body: updatedSettings,
 					status: 200,
 				} );
 
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
+					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isFPMHealthy: false,
+						isGTGHealthy: false,
 						isScriptAccessEnabled: false,
 					} );
 
-				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( true );
 
 				const { response } = await registry
 					.dispatch( CORE_SITE )
-					.saveFirstPartyModeSettings();
+					.saveGoogleTagGatewaySettings();
 
 				expect( fetchMock ).toHaveFetched(
-					firstPartyModeSettingsEndpointRegExp,
+					googleTagGatewaySettingsEndpointRegExp,
 					{
 						body: {
 							data: {
@@ -117,27 +119,29 @@ describe( 'core/site First-party mode', () => {
 					data: { status: 500 },
 				};
 
-				fetchMock.postOnce( firstPartyModeSettingsEndpointRegExp, {
+				fetchMock.postOnce( googleTagGatewaySettingsEndpointRegExp, {
 					body: errorResponse,
 					status: 500,
 				} );
 
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
+					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isFPMHealthy: false,
+						isGTGHealthy: false,
 						isScriptAccessEnabled: false,
 					} );
 
-				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( true );
 
 				const { error } = await registry
 					.dispatch( CORE_SITE )
-					.saveFirstPartyModeSettings();
+					.saveGoogleTagGatewaySettings();
 
 				expect( fetchMock ).toHaveFetched(
-					firstPartyModeSettingsEndpointRegExp,
+					googleTagGatewaySettingsEndpointRegExp,
 					{
 						body: {
 							data: {
@@ -155,20 +159,20 @@ describe( 'core/site First-party mode', () => {
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'should trigger the FPM setup completed survey when FPM setting is enabled', async () => {
+			it( 'should trigger the GTG setup completed survey when GTG setting is enabled', async () => {
 				provideUserAuthentication( registry );
 
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 				fetchMock.postOnce( surveyTriggerEndpoint, {
 					status: 200,
-					body: { triggerID: 'fpm_setup_completed' },
+					body: { triggerID: 'gtg_setup_completed' },
 				} );
 
-				fetchMock.postOnce( firstPartyModeSettingsEndpointRegExp, {
+				fetchMock.postOnce( googleTagGatewaySettingsEndpointRegExp, {
 					body: {
 						isEnabled: true,
-						isFPMHealthy: true,
+						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
 					},
 					status: 200,
@@ -176,33 +180,35 @@ describe( 'core/site First-party mode', () => {
 
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
+					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isFPMHealthy: true,
+						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
 					} );
 
-				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( true );
 
 				await registry
 					.dispatch( CORE_SITE )
-					.saveFirstPartyModeSettings();
+					.saveGoogleTagGatewaySettings();
 
-				// Verify survey was triggered when FPM setting is set to true.
+				// Verify survey was triggered when GTG setting is set to true.
 				await waitFor( () =>
 					expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 						body: {
-							data: { triggerID: 'fpm_setup_completed' },
+							data: { triggerID: 'gtg_setup_completed' },
 						},
 					} )
 				);
 			} );
 
-			it( 'should not trigger the FPM setup completed survey when FPM setting is disabled', async () => {
-				fetchMock.postOnce( firstPartyModeSettingsEndpointRegExp, {
+			it( 'should not trigger the GTG setup completed survey when GTG setting is disabled', async () => {
+				fetchMock.postOnce( googleTagGatewaySettingsEndpointRegExp, {
 					body: {
 						isEnabled: false,
-						isFPMHealthy: true,
+						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
 					},
 					status: 200,
@@ -210,74 +216,76 @@ describe( 'core/site First-party mode', () => {
 
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
+					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: true,
-						isFPMHealthy: true,
+						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
 					} );
 
 				registry
 					.dispatch( CORE_SITE )
-					.setFirstPartyModeEnabled( false );
+					.setGoogleTagGatewayEnabled( false );
 
 				await registry
 					.dispatch( CORE_SITE )
-					.saveFirstPartyModeSettings();
+					.saveGoogleTagGatewaySettings();
 
-				// Verify survey was not triggered when FPM setting is set to false.
+				// Verify survey was not triggered when GTG setting is set to false.
 				expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint, {
 					body: {
-						data: { triggerID: 'fpm_setup_completed' },
+						data: { triggerID: 'gtg_setup_completed' },
 					},
 				} );
 			} );
 		} );
 
-		describe( 'setFirstPartyModeEnabled', () => {
+		describe( 'setGoogleTagGatewayEnabled', () => {
 			it( 'sets the enabled status', () => {
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
+					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isFPMHealthy: true,
+						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
 					} );
 
 				expect(
-					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+					registry.select( CORE_SITE ).isGoogleTagGatewayEnabled()
 				).toBe( false );
 
-				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( true );
 
 				expect(
-					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+					registry.select( CORE_SITE ).isGoogleTagGatewayEnabled()
 				).toBe( true );
 
 				registry
 					.dispatch( CORE_SITE )
-					.setFirstPartyModeEnabled( false );
+					.setGoogleTagGatewayEnabled( false );
 
 				expect(
-					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+					registry.select( CORE_SITE ).isGoogleTagGatewayEnabled()
 				).toBe( false );
 			} );
 		} );
 
-		describe( 'resetFirstPartyModeSettings', () => {
+		describe( 'resetGoogleTagGatewaySettings', () => {
 			it( 'resets the settings', () => {
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
+					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: true,
-						isFPMHealthy: true,
+						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
 					} );
 
 				expect(
-					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+					registry.select( CORE_SITE ).isGoogleTagGatewayEnabled()
 				).toBe( true );
 
-				expect( registry.select( CORE_SITE ).isFPMHealthy() ).toBe(
+				expect( registry.select( CORE_SITE ).isGTGHealthy() ).toBe(
 					true
 				);
 
@@ -288,102 +296,102 @@ describe( 'core/site First-party mode', () => {
 				// Change the settings.
 				registry
 					.dispatch( CORE_SITE )
-					.setFirstPartyModeEnabled( false );
+					.setGoogleTagGatewayEnabled( false );
 
 				expect(
-					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+					registry.select( CORE_SITE ).isGoogleTagGatewayEnabled()
 				).toBe( false );
 
-				registry.dispatch( CORE_SITE ).resetFirstPartyModeSettings();
+				registry.dispatch( CORE_SITE ).resetGoogleTagGatewaySettings();
 
 				// Reset to the original settings.
 				expect(
-					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+					registry.select( CORE_SITE ).isGoogleTagGatewayEnabled()
 				).toBe( true );
 			} );
 		} );
 	} );
 
 	describe( 'selectors', () => {
-		describe( 'getFirstPartyModeSettings', () => {
+		describe( 'getGoogleTagGatewaySettings', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				const firstPartyModeSettings = {
+				const googleTagGatewaySettings = {
 					isEnabled: false,
-					isFPMHealthy: false,
+					isGTGHealthy: false,
 					isScriptAccessEnabled: false,
 				};
 
-				fetchMock.getOnce( firstPartyModeSettingsEndpointRegExp, {
-					body: firstPartyModeSettings,
+				fetchMock.getOnce( googleTagGatewaySettingsEndpointRegExp, {
+					body: googleTagGatewaySettings,
 					status: 200,
 				} );
 
 				const initialSettings = registry
 					.select( CORE_SITE )
-					.getFirstPartyModeSettings();
+					.getGoogleTagGatewaySettings();
 
 				expect( initialSettings ).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					CORE_SITE
-				).getFirstPartyModeSettings();
+				).getGoogleTagGatewaySettings();
 
 				const settings = registry
 					.select( CORE_SITE )
-					.getFirstPartyModeSettings();
+					.getGoogleTagGatewaySettings();
 
-				expect( settings ).toEqual( firstPartyModeSettings );
+				expect( settings ).toEqual( googleTagGatewaySettings );
 
 				expect( fetchMock ).toHaveFetched(
-					firstPartyModeSettingsEndpointRegExp
+					googleTagGatewaySettingsEndpointRegExp
 				);
 			} );
 
 			it( 'returns undefined if the request fails', async () => {
-				fetchMock.getOnce( firstPartyModeSettingsEndpointRegExp, {
+				fetchMock.getOnce( googleTagGatewaySettingsEndpointRegExp, {
 					body: { error: 'something went wrong' },
 					status: 500,
 				} );
 
 				const initialSettings = registry
 					.select( CORE_SITE )
-					.getFirstPartyModeSettings();
+					.getGoogleTagGatewaySettings();
 
 				expect( initialSettings ).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					CORE_SITE
-				).getFirstPartyModeSettings();
+				).getGoogleTagGatewaySettings();
 
 				const settings = registry
 					.select( CORE_SITE )
-					.getFirstPartyModeSettings();
+					.getGoogleTagGatewaySettings();
 
 				// Verify the settings are still undefined after the selector is resolved.
 				expect( settings ).toBeUndefined();
 
 				expect( fetchMock ).toHaveFetched(
-					firstPartyModeSettingsEndpointRegExp
+					googleTagGatewaySettingsEndpointRegExp
 				);
 
 				expect( console ).toHaveErrored();
 			} );
 		} );
 
-		describe( 'isFirstPartyModeEnabled', () => {
+		describe( 'isGoogleTagGatewayEnabled', () => {
 			it( 'returns undefined if the state is not loaded', async () => {
-				muteFetch( firstPartyModeSettingsEndpointRegExp );
+				muteFetch( googleTagGatewaySettingsEndpointRegExp );
 
 				expect(
-					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+					registry.select( CORE_SITE ).isGoogleTagGatewayEnabled()
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					CORE_SITE
-				).getFirstPartyModeSettings();
+				).getGoogleTagGatewaySettings();
 			} );
 
 			it.each( [ true, false ] )(
@@ -391,46 +399,46 @@ describe( 'core/site First-party mode', () => {
 				( isEnabled ) => {
 					registry
 						.dispatch( CORE_SITE )
-						.receiveGetFirstPartyModeSettings( {
+						.receiveGetGoogleTagGatewaySettings( {
 							isEnabled,
-							isFPMHealthy: false,
+							isGTGHealthy: false,
 							isScriptAccessEnabled: false,
 						} );
 
 					expect(
-						registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+						registry.select( CORE_SITE ).isGoogleTagGatewayEnabled()
 					).toBe( isEnabled );
 				}
 			);
 		} );
 
-		describe( 'isFPMHealthy', () => {
+		describe( 'isGTGHealthy', () => {
 			it( 'returns undefined if the state is not loaded', async () => {
-				muteFetch( firstPartyModeSettingsEndpointRegExp );
+				muteFetch( googleTagGatewaySettingsEndpointRegExp );
 
 				expect(
-					registry.select( CORE_SITE ).isFPMHealthy()
+					registry.select( CORE_SITE ).isGTGHealthy()
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					CORE_SITE
-				).getFirstPartyModeSettings();
+				).getGoogleTagGatewaySettings();
 			} );
 
 			it.each( [ true, false ] )(
-				'returns the FPM healthy status: %s',
-				( isFPMHealthy ) => {
+				'returns the GTG healthy status: %s',
+				( isGTGHealthy ) => {
 					registry
 						.dispatch( CORE_SITE )
-						.receiveGetFirstPartyModeSettings( {
+						.receiveGetGoogleTagGatewaySettings( {
 							isEnabled: false,
-							isFPMHealthy,
+							isGTGHealthy,
 							isScriptAccessEnabled: false,
 						} );
 
-					expect( registry.select( CORE_SITE ).isFPMHealthy() ).toBe(
-						isFPMHealthy
+					expect( registry.select( CORE_SITE ).isGTGHealthy() ).toBe(
+						isGTGHealthy
 					);
 				}
 			);
@@ -438,7 +446,7 @@ describe( 'core/site First-party mode', () => {
 
 		describe( 'isScriptAccessEnabled', () => {
 			it( 'returns undefined if the state is not loaded', async () => {
-				muteFetch( firstPartyModeSettingsEndpointRegExp );
+				muteFetch( googleTagGatewaySettingsEndpointRegExp );
 
 				expect(
 					registry.select( CORE_SITE ).isScriptAccessEnabled()
@@ -447,7 +455,7 @@ describe( 'core/site First-party mode', () => {
 				await untilResolved(
 					registry,
 					CORE_SITE
-				).getFirstPartyModeSettings();
+				).getGoogleTagGatewaySettings();
 			} );
 
 			it.each( [ true, false ] )(
@@ -455,9 +463,9 @@ describe( 'core/site First-party mode', () => {
 				( isScriptAccessEnabled ) => {
 					registry
 						.dispatch( CORE_SITE )
-						.receiveGetFirstPartyModeSettings( {
+						.receiveGetGoogleTagGatewaySettings( {
 							isEnabled: false,
-							isFPMHealthy: false,
+							isGTGHealthy: false,
 							isScriptAccessEnabled,
 						} );
 
@@ -468,11 +476,11 @@ describe( 'core/site First-party mode', () => {
 			);
 		} );
 
-		describe( 'haveFirstPartyModeSettingsChanged', () => {
+		describe( 'haveGoogleTagGatewaySettingsChanged', () => {
 			it( 'informs whether client-side settings differ from server-side ones', async () => {
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
+					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
 					} );
 
@@ -480,51 +488,51 @@ describe( 'core/site First-party mode', () => {
 				expect(
 					registry
 						.select( CORE_SITE )
-						.haveFirstPartyModeSettingsChanged()
+						.haveGoogleTagGatewaySettingsChanged()
 				).toEqual( false );
 
 				const serverValues = { isEnabled: false };
 				const clientValues = { isEnabled: true };
 
-				fetchMock.getOnce( firstPartyModeSettingsEndpointRegExp, {
+				fetchMock.getOnce( googleTagGatewaySettingsEndpointRegExp, {
 					body: serverValues,
 					status: 200,
 				} );
 
-				registry.select( CORE_SITE ).getFirstPartyModeSettings();
+				registry.select( CORE_SITE ).getGoogleTagGatewaySettings();
 				await subscribeUntil(
 					registry,
 					() =>
 						registry
 							.select( CORE_SITE )
-							.getFirstPartyModeSettings() !== undefined
+							.getGoogleTagGatewaySettings() !== undefined
 				);
 
 				// Still false after fetching settings from server.
 				expect(
 					registry
 						.select( CORE_SITE )
-						.haveFirstPartyModeSettingsChanged()
+						.haveGoogleTagGatewaySettingsChanged()
 				).toEqual( false );
 
 				// True after updating settings on client.
 				registry
 					.dispatch( CORE_SITE )
-					.setFirstPartyModeEnabled( clientValues.isEnabled );
+					.setGoogleTagGatewayEnabled( clientValues.isEnabled );
 				expect(
 					registry
 						.select( CORE_SITE )
-						.haveFirstPartyModeSettingsChanged()
+						.haveGoogleTagGatewaySettingsChanged()
 				).toEqual( true );
 
 				// False after updating settings back to original server value on client.
 				registry
 					.dispatch( CORE_SITE )
-					.setFirstPartyModeEnabled( serverValues.isEnabled );
+					.setGoogleTagGatewayEnabled( serverValues.isEnabled );
 				expect(
 					registry
 						.select( CORE_SITE )
-						.haveFirstPartyModeSettingsChanged()
+						.haveGoogleTagGatewaySettingsChanged()
 				).toEqual( false );
 			} );
 		} );
