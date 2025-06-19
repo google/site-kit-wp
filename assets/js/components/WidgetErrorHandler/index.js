@@ -97,10 +97,10 @@ class WidgetErrorHandler extends Component {
 							/>
 						</Fragment>
 					}
-					error
 					onErrorClick={ this.onErrorClick }
 					onClick={ this.onErrorClick }
 					title={ __( 'Error in Widget', 'google-site-kit' ) }
+					error
 				/>
 			</div>
 		);
