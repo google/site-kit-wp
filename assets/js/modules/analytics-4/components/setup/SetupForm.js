@@ -26,6 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -84,6 +85,10 @@ export default function SetupForm( { finishSetup } ) {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
 
+	const userInputLinkWithProgress = addQueryArgs( userInputLink, {
+		showProgress: true,
+	} );
+
 	const submitForm = useCallback(
 		async ( event ) => {
 			event.preventDefault();
@@ -107,7 +112,7 @@ export default function SetupForm( { finishSetup } ) {
 						'ga4_setup_enhanced_measurement_enabled'
 					);
 				}
-				finishSetup( userInputLink );
+				finishSetup( userInputLinkWithProgress );
 			}
 		},
 		[
@@ -118,7 +123,7 @@ export default function SetupForm( { finishSetup } ) {
 			setValues,
 			submitChanges,
 			viewContext,
-			userInputLink,
+			userInputLinkWithProgress,
 		]
 	);
 

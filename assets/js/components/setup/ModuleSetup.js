@@ -42,6 +42,8 @@ import HelpMenu from '../help/HelpMenu';
 import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
 import ModuleSetupFooter from './ModuleSetupFooter';
+import { getQueryArg } from '@wordpress/url';
+import ProgressSegments from '../ProgressSegments';
 
 export default function ModuleSetup( { moduleSlug } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -107,6 +109,10 @@ export default function ModuleSetup( { moduleSlug } ) {
 		return null;
 	}
 
+	// const slug = getQueryArg( location.href, 'slug' );
+	// Could check slug is `analytics-4` to be on the safe side.
+	const showProgress = getQueryArg( location.href, 'showProgress' );
+
 	const { SetupComponent } = module;
 
 	return (
@@ -114,6 +120,9 @@ export default function ModuleSetup( { moduleSlug } ) {
 			<Header>
 				<HelpMenu />
 			</Header>
+			{ showProgress && (
+				<ProgressSegments currentSegment={ 4 } totalSegments={ 6 } />
+			) }
 			<div className="googlesitekit-setup">
 				<Grid>
 					<Row>
