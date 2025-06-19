@@ -97,7 +97,9 @@ export default function SetupUsingProxyWithSignIn() {
 						'start_setup_with_analytics'
 					);
 
-					moduleReauthURL = response.moduleReauthURL;
+					moduleReauthURL = addQueryArgs( response.moduleReauthURL, {
+						showProgress: true,
+					} );
 				}
 			}
 
