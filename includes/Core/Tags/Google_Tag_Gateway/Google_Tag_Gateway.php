@@ -136,18 +136,18 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields {
 		$settings = $this->google_tag_gateway_settings->get();
 
 		return array(
-			'first_party_mode_is_enabled'               => array(
-				'label' => __( 'First-party mode', 'google-site-kit' ),
+			'google_tag_gateway_is_enabled'               => array(
+				'label' => __( 'Google tag gateway for advertisers', 'google-site-kit' ),
 				'value' => ( true === $settings['isEnabled'] ) ? __( 'Enabled', 'google-site-kit' ) : __( 'Disabled', 'google-site-kit' ),
 				'debug' => $this->health_check_debug_field_debug( $settings['isEnabled'] ),
 			),
-			'first_party_mode_is_fpm_healthy'           => array(
-				'label' => __( 'First-party mode: Service healthy', 'google-site-kit' ),
+			'google_tag_gateway_is_gtg_healthy'           => array(
+				'label' => __( 'Google tag gateway for advertisers: Service healthy', 'google-site-kit' ),
 				'value' => $this->health_check_debug_field_value( $settings['isGTGHealthy'] ),
 				'debug' => $this->health_check_debug_field_debug( $settings['isGTGHealthy'] ),
 			),
-			'first_party_mode_is_script_access_enabled' => array(
-				'label' => __( 'First-party mode: Script accessible', 'google-site-kit' ),
+			'google_tag_gateway_is_script_access_enabled' => array(
+				'label' => __( 'Google tag gateway for advertisers: Script accessible', 'google-site-kit' ),
 				'value' => $this->health_check_debug_field_value( $settings['isScriptAccessEnabled'] ),
 				'debug' => $this->health_check_debug_field_debug( $settings['isScriptAccessEnabled'] ),
 			),
