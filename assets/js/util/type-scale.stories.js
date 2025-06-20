@@ -21,7 +21,6 @@
  */
 import { Cell, Grid, Row } from '../material-components';
 import Widget from '../googlesitekit/widgets/components/Widget';
-import { Fragment } from '@wordpress/element';
 
 function TypeScaleWidget( { name, label, sizes } ) {
 	return (
@@ -47,69 +46,67 @@ function TypeScaleWidget( { name, label, sizes } ) {
 
 function Template() {
 	return (
-		<Fragment>
-			<Grid className="googlesitekit-widget-area googlesitekit-widget-area--boxes">
-				<Row className="googlesitekit-widget-area-widgets">
-					<Cell size={ 12 }>
-						<h1>Type Scale</h1>
-					</Cell>
-					<TypeScaleWidget
-						name="display"
-						label="Display"
-						sizes={ {
-							lg: 'Large 58/64',
-							md: 'Medium 46/52',
-							sm: 'Small 38/44',
-						} }
-					/>
-					<TypeScaleWidget
-						name="headline"
-						label="Headline"
-						sizes={ {
-							lg: 'Large 32/40',
-							md: 'Medium 28/36',
-							sm: 'Small 22/28',
-						} }
-					/>
-					<TypeScaleWidget
-						name="title"
-						label="Title"
-						sizes={ {
-							lg: 'Large 18/24',
-							md: 'Medium 16/20',
-							sm: 'Small 14/16',
-						} }
-					/>
-					<TypeScaleWidget
-						name="label"
-						label="Label"
-						sizes={ {
-							lg: 'Large 16/24',
-							md: 'Medium 14/20',
-							sm: 'Small 12/16',
-						} }
-					/>
-					<TypeScaleWidget
-						name="body"
-						label="Body"
-						sizes={ {
-							lg: 'Large 16/24',
-							md: 'Medium 14/20',
-							sm: 'Small 12/16',
-						} }
-					/>
-					<TypeScaleWidget
-						name="link"
-						label="Link"
-						sizes={ {
-							lg: 'Large 16/24',
-							md: 'Medium 14/20',
-							sm: 'Small 12/16',
-						} }
-					/>
-				</Row>
-			</Grid>
-		</Fragment>
+		<Grid className="googlesitekit-widget-area googlesitekit-widget-area--boxes">
+			<Row className="googlesitekit-widget-area-widgets">
+				<Cell size={ 12 }>
+					<h1>Type Scale</h1>
+				</Cell>
+				<TypeScaleWidget
+					name="display"
+					label="Display"
+					sizes={ {
+						lg: 'Large 58/64',
+						md: 'Medium 46/52',
+						sm: 'Small 38/44',
+					} }
+				/>
+				<TypeScaleWidget
+					name="headline"
+					label="Headline"
+					sizes={ {
+						lg: 'Large 32/40',
+						md: 'Medium 28/36',
+						sm: 'Small 22/28',
+					} }
+				/>
+				<TypeScaleWidget
+					name="title"
+					label="Title"
+					sizes={ {
+						lg: 'Large 18/24',
+						md: 'Medium 16/20',
+						sm: 'Small 14/16',
+					} }
+				/>
+				<TypeScaleWidget
+					name="label"
+					label="Label"
+					sizes={ {
+						lg: 'Large 16/24',
+						md: 'Medium 14/20',
+						sm: 'Small 12/16',
+					} }
+				/>
+				<TypeScaleWidget
+					name="body"
+					label="Body"
+					sizes={ {
+						lg: 'Large 16/24',
+						md: 'Medium 14/20',
+						sm: 'Small 12/16',
+					} }
+				/>
+				<TypeScaleWidget
+					name="link"
+					label="Link"
+					sizes={ {
+						lg: 'Large 16/24',
+						md: 'Medium 14/20',
+						sm: 'Small 12/16',
+					} }
+				/>
+			</Row>
+		</Grid>
 	);
 }
 

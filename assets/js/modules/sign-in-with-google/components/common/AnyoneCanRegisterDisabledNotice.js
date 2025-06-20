@@ -100,6 +100,7 @@ export default function AnyoneCanRegisterDisabledNotice() {
 							breakpoint === BREAKPOINT_DESKTOP ? (
 								<br />
 							) : (
+								// eslint-disable-next-line react/jsx-no-useless-fragment
 								<Fragment />
 							),
 					}
