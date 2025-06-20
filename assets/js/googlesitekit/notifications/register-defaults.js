@@ -791,8 +791,9 @@ export const DEFAULT_NOTIFICATIONS = {
 				return false;
 			}
 
-			// The getAccountID() selector has already been resolved
-			// in the getSettings() resolver above.
+			// The getAccountID() selector relies on the resolution
+			// of the getSettings() resolver.
+			await resolveSelect( MODULES_ADSENSE ).getSettings();
 			const adSenseAccountID = select( MODULES_ADSENSE ).getAccountID();
 
 			const { startDate, endDate } = select(
