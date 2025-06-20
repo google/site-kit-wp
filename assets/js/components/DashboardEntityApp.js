@@ -61,7 +61,6 @@ import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharing
 import useViewOnly from '../hooks/useViewOnly';
 import OfflineNotification from './notifications/OfflineNotification';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
-import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 
 function DashboardEntityApp() {
@@ -221,8 +220,6 @@ function DashboardEntityApp() {
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
-
-			<OverlayNotificationsRenderer />
 
 			<WidgetContextRenderer
 				id={ ANCHOR_ID_TRAFFIC }

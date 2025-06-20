@@ -94,12 +94,12 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 				) }
 				GraphicDesktop={ AnalyticsAdsenseLinkedGraphicDesktop }
 				GraphicMobile={ AnalyticsAdsenseLinkedGraphicMobile }
-				dismissButton
 				ctaButton={ {
 					label: __( 'Show me', 'google-site-kit' ),
 					onClick: scrollToWidgetAndDismissNotification,
 				} }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
+				dismissButton
 			/>
 		</Notification>
 	);

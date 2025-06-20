@@ -65,7 +65,6 @@ import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import useViewOnly from '../hooks/useViewOnly';
 import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
 import OfflineNotification from './notifications/OfflineNotification';
-import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 import { useBreakpoint } from '../hooks/useBreakpoint';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
@@ -267,8 +266,6 @@ export default function DashboardMainApp() {
 				areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP }
 				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
 			/>
-
-			<OverlayNotificationsRenderer />
 
 			<Notifications
 				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }

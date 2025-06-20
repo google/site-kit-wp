@@ -125,11 +125,11 @@ export default function SettingsForm() {
 							a: (
 								<Link
 									href={ conversionTrackingDocumentationURL }
-									external
 									aria-label={ __(
 										'Learn more about conversion tracking',
 										'google-site-kit'
 									) }
+									external
 								/>
 							),
 						}

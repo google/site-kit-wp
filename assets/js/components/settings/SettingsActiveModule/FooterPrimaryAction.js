@@ -91,9 +91,9 @@ export default function FooterPrimaryAction( {
 
 				{ hasSettings && (
 					<Button
-						tertiary
 						className="googlesitekit-settings-module__footer-cancel"
 						onClick={ handleClose }
+						tertiary
 					>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Button>

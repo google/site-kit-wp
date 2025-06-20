@@ -59,11 +59,11 @@ export default function ChangeGroupsLink() {
 
 	return (
 		<Link
-			secondary
-			linkButton
 			className="googlesitekit-widget-area__cta-link"
 			onClick={ openAudiencesSelectionPanel }
 			leadingIcon={ <PencilIcon width={ 22 } height={ 22 } /> }
+			secondary
+			linkButton
 		>
 			{ __( 'Change groups', 'google-site-kit' ) }
 		</Link>

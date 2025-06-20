@@ -35,7 +35,7 @@ export default function DismissButton( {
 	disabled,
 } ) {
 	return (
-		<Button onClick={ onClick } tertiary disabled={ disabled }>
+		<Button onClick={ onClick } disabled={ disabled } tertiary>
 			{ label }
 		</Button>
 	);

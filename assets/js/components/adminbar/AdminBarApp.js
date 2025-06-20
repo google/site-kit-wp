@@ -66,7 +66,7 @@ export default function AdminBarApp() {
 		<Fragment>
 			<Grid>
 				<Row>
-					<Cell alignMiddle size={ 3 }>
+					<Cell size={ 3 } alignMiddle>
 						<div className="googlesitekit-adminbar__subtitle">
 							{ __( 'Stats for', 'google-site-kit' ) }
 						</div>
@@ -89,11 +89,11 @@ export default function AdminBarApp() {
 						</div>
 					</Cell>
 
-					<Cell alignMiddle mdSize={ 8 } lgSize={ 7 }>
+					<Cell mdSize={ 8 } lgSize={ 7 } alignMiddle>
 						<AdminBarWidgets />
 					</Cell>
 
-					<Cell alignMiddle size={ 2 }>
+					<Cell size={ 2 } alignMiddle>
 						<Link
 							className="googlesitekit-adminbar__link"
 							href="#"
