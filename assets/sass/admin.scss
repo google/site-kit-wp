@@ -218,9 +218,6 @@
 // User Feedback
 @import "components/surveys";
 
-// Overlay Notification
-@import "components/overlay-notification/googlesitekit-overlay-notification";
-
 // Banner
 @import "components/banner/googlesitekit-banner";
 
@@ -229,6 +226,9 @@
 
 // Overlay Card
 @import "components/overlay-card/googlesitekit-overlay-card";
+
+// Banner Notification
+@import "components/banner-notification/googlesitekit-banner-notification";
 
 // Widget Styles
 @import "widgets/widget-area";

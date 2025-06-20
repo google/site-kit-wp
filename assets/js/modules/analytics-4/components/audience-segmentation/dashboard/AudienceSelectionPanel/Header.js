@@ -70,9 +70,9 @@ export default function Header( { closePanel } ) {
 						{
 							link: (
 								<Link
-									secondary
 									onClick={ onSettingsClick }
 									disabled={ isSavingSettings }
+									secondary
 								/>
 							),
 							strong: <strong />,

@@ -91,8 +91,6 @@ export default function SnippetModeSelect( props ) {
 			value={ snippetMode }
 			onEnhancedChange={ onSnippetModeChange }
 			disabled={ isDisabled }
-			enhanced
-			outlined
 			helperText={ createInterpolateElement(
 				__(
 					'Use the new settings in the block editor to customize where your CTAs appear. <a>Learn more</a>',
@@ -112,6 +110,8 @@ export default function SnippetModeSelect( props ) {
 					),
 				}
 			) }
+			enhanced
+			outlined
 		>
 			{ Object.keys( SNIPPET_MODES ).map( ( mode ) => (
 				<Option key={ mode } value={ mode }>

@@ -166,7 +166,6 @@ export default function JoyrideTooltip( props ) {
 			<Joyride
 				callback={ callback }
 				disableOverlay={ disableOverlay }
-				disableScrolling
 				spotlightPadding={ 0 }
 				floaterProps={ floaterProps }
 				locale={ joyrideLocale }
@@ -185,6 +184,7 @@ export default function JoyrideTooltip( props ) {
 				} }
 				tooltipComponent={ TourTooltip }
 				run={ shouldRun }
+				disableScrolling
 			/>
 		</Portal>
 	);

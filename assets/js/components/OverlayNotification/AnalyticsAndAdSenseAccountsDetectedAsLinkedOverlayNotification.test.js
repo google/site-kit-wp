@@ -118,6 +118,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		] );
 		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			adSenseLinked: true,
@@ -165,7 +166,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 
 	it( 'renders the overlay notification correctly on the main dashboard', async () => {
 		provideAnalytics4MockReport( registry, reportOptions );
-		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
 		const { container, waitForRegistry } = render(
 			<Notifications
@@ -186,7 +186,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 
 	it( 'renders the overlay notification correctly on the main view only dashboard', async () => {
 		provideAnalytics4MockReport( registry, reportOptions );
-		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
 		const { container, waitForRegistry } = render(
 			<Notifications
@@ -207,7 +206,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 
 	it( 'does not render on the entity dashboard', async () => {
 		provideAnalytics4MockReport( registry, reportOptions );
-		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
 		const { container, waitForRegistry } = render(
 			<Notifications
@@ -228,7 +226,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 
 	it( 'does not render on the entity view only dashboard', async () => {
 		provideAnalytics4MockReport( registry, reportOptions );
-		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
 		const { container, waitForRegistry } = render(
 			<Notifications
@@ -249,7 +246,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 
 	it( 'renders `Show me` and `Maybe later` buttons`', async () => {
 		provideAnalytics4MockReport( registry, reportOptions );
-		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
 		const { container, waitForRegistry } = render(
 			<Notifications
@@ -272,7 +268,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 
 	it( 'clicking the `Show me` button dismisses the notification', async () => {
 		provideAnalytics4MockReport( registry, reportOptions );
-		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
 		fetchMock.getOnce( fetchGetDismissedItemsRegExp, { body: [] } );
 		fetchMock.postOnce( fetchDismissItemRegExp, {
@@ -309,7 +304,6 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 
 	it( 'clicking the `Maybe later` button dismisses the notification', async () => {
 		provideAnalytics4MockReport( registry, reportOptions );
-		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
 		fetchMock.getOnce( fetchGetDismissedItemsRegExp, { body: [] } );
 		fetchMock.postOnce( fetchDismissItemRegExp, {
@@ -401,7 +395,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 			expect( isActive ).toBe( false );
 		} );
 
-		it( 'does not render when isAdSenseLinked is `false`', async () => {
+		it( 'is not active when isAdSenseLinked is `false`', async () => {
 			provideAnalytics4MockReport( registry, reportOptions );
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( false );
