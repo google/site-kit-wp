@@ -155,7 +155,7 @@ describe( 'GoogleTagGatewayWarningNotification', () => {
 
 		expect(
 			getByText(
-				/Google tag gateway has been disabled due to server configuration issues/i
+				/Google tag gateway for advertisers has been disabled due to server configuration issues/i
 			)
 		).toBeInTheDocument();
 	} );

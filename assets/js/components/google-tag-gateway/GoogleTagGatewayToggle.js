@@ -105,7 +105,10 @@ export default function GoogleTagGatewayToggle( { className } ) {
 			{ ! isLoading && (
 				<div className="googlesitekit-module-settings-group__switch">
 					<Switch
-						label={ __( 'Google tag gateway', 'google-site-kit' ) }
+						label={ __(
+							'Google tag gateway for advertisers',
+							'google-site-kit'
+						) }
 						checked={
 							!! isGoogleTagGatewayEnabled &&
 							hasMetServerRequirements
@@ -140,7 +143,7 @@ export default function GoogleTagGatewayToggle( { className } ) {
 									);
 								} }
 								aria-label={ __(
-									'Learn more about Google tag gateway',
+									'Learn more about Google tag gateway for advertisers',
 									'google-site-kit'
 								) }
 								external
@@ -154,7 +157,7 @@ export default function GoogleTagGatewayToggle( { className } ) {
 					type={ Notice.TYPES.WARNING }
 					title={ createInterpolateElement(
 						__(
-							'Your server’s current settings prevent Google tag gateway from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. <a>Learn more</a>',
+							'Your server’s current settings prevent Google tag gateway for advertisers from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. <a>Learn more</a>',
 							'google-site-kit'
 						),
 						{
@@ -168,7 +171,7 @@ export default function GoogleTagGatewayToggle( { className } ) {
 										);
 									} }
 									aria-label={ __(
-										'Learn more about Google tag gateway server requirements',
+										'Learn more about Google tag gateway for advertisers server requirements',
 										'google-site-kit'
 									) }
 									external

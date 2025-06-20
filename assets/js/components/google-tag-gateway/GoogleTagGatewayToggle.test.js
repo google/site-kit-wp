@@ -119,7 +119,9 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		await waitForRegistry();
 
-		expect( getByLabelText( 'Google tag gateway' ) ).toBeInTheDocument();
+		expect(
+			getByLabelText( 'Google tag gateway for advertisers' )
+		).toBeInTheDocument();
 
 		expect( container ).toMatchSnapshot();
 	} );
@@ -143,10 +145,12 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		await waitForRegistry();
 
-		expect( getByLabelText( 'Google tag gateway' ) ).toBeDisabled();
+		expect(
+			getByLabelText( 'Google tag gateway for advertisers' )
+		).toBeDisabled();
 
 		expect( container ).toHaveTextContent(
-			'Your server’s current settings prevent Google tag gateway from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
+			'Your server’s current settings prevent Google tag gateway for advertisers from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
 		);
 
 		expect( container ).toMatchSnapshot();
@@ -170,11 +174,13 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		await waitForRegistry();
 
-		expect( getByLabelText( 'Google tag gateway' ) ).toBeInTheDocument();
+		expect(
+			getByLabelText( 'Google tag gateway for advertisers' )
+		).toBeInTheDocument();
 
 		expect(
 			queryByText(
-				'Your server’s current settings prevent Google tag gateway from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
+				'Your server’s current settings prevent Google tag gateway for advertisers from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
 			)
 		).not.toBeInTheDocument();
 
@@ -209,11 +215,13 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		await waitForRegistry();
 
-		expect( getByLabelText( 'Google tag gateway' ) ).toBeInTheDocument();
+		expect(
+			getByLabelText( 'Google tag gateway for advertisers' )
+		).toBeInTheDocument();
 
 		expect(
 			getByText(
-				'Your server’s current settings prevent Google tag gateway from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
+				'Your server’s current settings prevent Google tag gateway for advertisers from working. To enable it, please contact your hosting provider and request access to external resources and plugin files.'
 			)
 		).toBeInTheDocument();
 
@@ -255,7 +263,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 		const learnMoreLink = getByRole( 'link', {
-			name: 'Learn more about Google tag gateway (opens in a new tab)',
+			name: 'Learn more about Google tag gateway for advertisers (opens in a new tab)',
 		} );
 
 		learnMoreLink.click();
@@ -290,7 +298,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 		const learnMoreLink = getByRole( 'link', {
-			name: 'Learn more about Google tag gateway server requirements (opens in a new tab)',
+			name: 'Learn more about Google tag gateway for advertisers server requirements (opens in a new tab)',
 		} );
 
 		learnMoreLink.click();
@@ -327,7 +335,9 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 			await waitForRegistry();
 
-			expect( getByLabelText( 'Google tag gateway' ) ).not.toBeDisabled();
+			expect(
+				getByLabelText( 'Google tag gateway for advertisers' )
+			).not.toBeDisabled();
 		}
 	);
 
@@ -356,11 +366,13 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 			await waitForRegistry();
 
-			expect( getByLabelText( 'Google tag gateway' ) ).toBeDisabled();
+			expect(
+				getByLabelText( 'Google tag gateway for advertisers' )
+			).toBeDisabled();
 		}
 	);
 
-	it( 'should toggle Google tag gateway on click', async () => {
+	it( 'should toggle Google tag gateway for advertisers on click', async () => {
 		fetchMock.getOnce( serverRequirementStatusEndpoint, {
 			body: {
 				isEnabled: false,
@@ -379,7 +391,9 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		await waitForRegistry();
 
-		const switchControl = getByLabelText( 'Google tag gateway' );
+		const switchControl = getByLabelText(
+			'Google tag gateway for advertisers'
+		);
 
 		expect( switchControl ).not.toBeChecked();
 
@@ -431,7 +445,9 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		await waitForRegistry();
 
-		const switchControl = getByLabelText( 'Google tag gateway' );
+		const switchControl = getByLabelText(
+			'Google tag gateway for advertisers'
+		);
 
 		switchControl.click();
 

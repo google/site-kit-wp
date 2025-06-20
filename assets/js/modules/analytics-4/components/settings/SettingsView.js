@@ -248,7 +248,7 @@ export default function SettingsView() {
 						? [
 								{
 									label: __(
-										'Google tag gateway',
+										'Google tag gateway for advertisers',
 										'google-site-kit'
 									),
 									status: isGTGEnabled,

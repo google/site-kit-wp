@@ -52,7 +52,7 @@ export default function GoogleTagGatewayWarningNotification( {
 				type={ Notice.TYPES.WARNING }
 				description={ createInterpolateElement(
 					__(
-						'Google tag gateway has been disabled due to server configuration issues. Measurement data is now being routed through the default Google server. Please contact your hosting provider to resolve the issue. <a>Learn more</a>',
+						'Google tag gateway for advertisers has been disabled due to server configuration issues. Measurement data is now being routed through the default Google server. Please contact your hosting provider to resolve the issue. <a>Learn more</a>',
 						'google-site-kit'
 					),
 					{
@@ -66,7 +66,7 @@ export default function GoogleTagGatewayWarningNotification( {
 									);
 								} }
 								aria-label={ __(
-									'Learn more about Google tag gateway server requirements',
+									'Learn more about Google tag gateway for advertisers server requirements',
 									'google-site-kit'
 								) }
 								external

@@ -45,7 +45,7 @@ export default function GoogleTagGatewaySetupSuccessSubtleNotification( {
 				notificationID={ id }
 				type={ TYPES.SUCCESS }
 				title={ __(
-					'You successfully enabled Google tag gateway!',
+					'You successfully enabled Google tag gateway for advertisers!',
 					'google-site-kit'
 				) }
 				description={ __(

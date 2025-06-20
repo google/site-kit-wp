@@ -28,7 +28,7 @@ exports[`GoogleTagGatewaySetupSuccessSubtleNotification should render correctly 
               <p
                 class="googlesitekit-notice__title"
               >
-                You successfully enabled Google tag gateway!
+                You successfully enabled Google tag gateway for advertisers!
               </p>
               <p
                 class="googlesitekit-notice__description"

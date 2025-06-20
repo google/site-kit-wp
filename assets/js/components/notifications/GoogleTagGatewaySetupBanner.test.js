@@ -181,7 +181,9 @@ describe( 'GoogleTagGatewaySetupBanner', () => {
 		).toBeInTheDocument();
 
 		expect(
-			getByRole( 'button', { name: 'Enable Google tag gateway' } )
+			getByRole( 'button', {
+				name: 'Enable Google tag gateway for advertisers',
+			} )
 		).toBeInTheDocument();
 
 		expect(
@@ -217,7 +219,7 @@ describe( 'GoogleTagGatewaySetupBanner', () => {
 
 		fireEvent.click(
 			getByRole( 'button', {
-				name: 'Enable Google tag gateway',
+				name: 'Enable Google tag gateway for advertisers',
 			} )
 		);
 
@@ -258,7 +260,7 @@ describe( 'GoogleTagGatewaySetupBanner', () => {
 
 		fireEvent.click(
 			getByRole( 'button', {
-				name: 'Enable Google tag gateway',
+				name: 'Enable Google tag gateway for advertisers',
 			} )
 		);
 
@@ -309,7 +311,9 @@ describe( 'GoogleTagGatewaySetupBanner', () => {
 			] );
 
 		fireEvent.click(
-			getByRole( 'button', { name: 'Enable Google tag gateway' } )
+			getByRole( 'button', {
+				name: 'Enable Google tag gateway for advertisers',
+			} )
 		);
 
 		await waitForRegistry();

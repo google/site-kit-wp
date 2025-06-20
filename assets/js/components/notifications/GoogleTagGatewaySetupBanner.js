@@ -51,7 +51,7 @@ export default function GoogleTagGatewaySetupBanner( { id, Notification } ) {
 	const tooltipSettings = {
 		tooltipSlug: id,
 		content: __(
-			'You can always enable Google tag gateway in Settings later',
+			'You can always enable Google tag gateway for advertisers in Settings later',
 			'google-site-kit'
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
@@ -115,7 +115,7 @@ export default function GoogleTagGatewaySetupBanner( { id, Notification } ) {
 				) }
 				description={ createInterpolateElement(
 					__(
-						'Enable Google tag gateway (<em>beta</em>) to send measurement through your own domain - this helps improve the quality and completeness of Analytics or Ads metrics.',
+						'Enable Google tag gateway for advertisers (<em>beta</em>) to send measurement through your own domain - this helps improve the quality and completeness of Analytics or Ads metrics.',
 						'google-site-kit'
 					),
 					{
@@ -126,7 +126,10 @@ export default function GoogleTagGatewaySetupBanner( { id, Notification } ) {
 					href: learnMoreURL,
 				} }
 				ctaButton={ {
-					label: __( 'Enable Google tag gateway', 'google-site-kit' ),
+					label: __(
+						'Enable Google tag gateway for advertisers',
+						'google-site-kit'
+					),
 					onClick: onCTAClick,
 				} }
 				dismissButton={ {
