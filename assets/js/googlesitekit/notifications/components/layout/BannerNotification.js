@@ -33,9 +33,11 @@ import LearnMoreLink from '../../../../components/Banner/LearnMoreLink';
 import CTAButton from '../../../../components/Banner/CTAButton';
 import DismissButton from '../../../../components/Banner/DismissButton';
 import { Cell, Grid, Row } from '../../../../material-components';
+import ErrorSVG from '@/svg/graphics/error-banner.svg?url';
 
 export const TYPES = {
 	INFO: 'info',
+	ERROR: 'error',
 };
 export default function BannerNotification( {
 	notificationID,
@@ -81,7 +83,19 @@ export default function BannerNotification( {
 		await learnMoreLink?.onClick?.( event );
 	};
 
-	const SVGData = props?.svg;
+	let SVGData = props?.svg;
+
+	if ( ! SVGData && type !== TYPES.INFO ) {
+		SVGData = {
+			desktop: undefined,
+			mobile: undefined,
+			verticalPosition: 'center',
+		};
+
+		if ( type === TYPES.ERROR ) {
+			SVGData.desktop = ErrorSVG;
+		}
+	}
 
 	return (
 		<div
