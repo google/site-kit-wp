@@ -21,27 +21,23 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import FirstPartyModeSetupBanner, {
-	FPM_SHOW_SETUP_SUCCESS_NOTIFICATION,
-} from './FirstPartyModeSetupBanner';
+import FirstPartyModeSetupBanner from './FirstPartyModeSetupBanner';
 import {
 	createTestRegistry,
 	fireEvent,
-	muteFetch,
 	provideModules,
 	provideSiteInfo,
 	provideUserInfo,
 	render,
 	waitFor,
 } from '../../../../tests/js/test-utils';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
-import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../googlesitekit/notifications/constants';
 import {
-	CORE_NOTIFICATIONS,
+	FPM_SETUP_CTA_BANNER_NOTIFICATION,
 	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/datastore/constants';
+} from '../../googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -275,18 +271,26 @@ describe( 'FirstPartyModeSetupBanner', () => {
 			document.querySelector(
 				'.googlesitekit-notice--error .googlesitekit-notice__content p.googlesitekit-notice__description'
 			).textContent
-		).toContain( 'Error: Test Error' );
+		).toContain( 'Test Error' );
 	} );
 
-	it( 'should set FPM_SHOW_SETUP_SUCCESS_NOTIFICATION to true and invalidate the notifications queue resolution when the CTA button is clicked', async () => {
+	it( 'should register the FPM setup success notification when the CTA button is clicked', async () => {
 		const { getByRole, waitForRegistry } = render( <FPMBannerComponent />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			features: [ 'firstPartyMode' ],
 		} );
 
 		await waitForRegistry();
 
-		muteFetch( fpmSettingsEndpoint );
+		fetchMock.postOnce( fpmSettingsEndpoint, {
+			body: JSON.stringify( {
+				isEnabled: true,
+				isFPMHealthy: true,
+				isScriptAccessEnabled: true,
+			} ),
+			status: 200,
+		} );
 
 		fetchMock.post( dismissItemEndpoint, {
 			body: JSON.stringify( [ FPM_SETUP_CTA_BANNER_NOTIFICATION ] ),
@@ -308,24 +312,27 @@ describe( 'FirstPartyModeSetupBanner', () => {
 			getByRole( 'button', { name: 'Enable First-party mode' } )
 		);
 
+		await waitForRegistry();
+
 		await waitFor( () => {
+			expect(
+				registry.select( CORE_SITE ).getFirstPartyModeSettings()
+					.isEnabled
+			).toBe( true );
+
+			expect( fetchMock ).toHaveFetched( fpmSettingsEndpoint );
 			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 		} );
 
 		expect(
 			registry
-				.select( CORE_UI )
-				.getValue( FPM_SHOW_SETUP_SUCCESS_NOTIFICATION )
-		).toBe( true );
-
-		expect(
-			registry
 				.select( CORE_NOTIFICATIONS )
-				.hasFinishedResolution( 'getQueuedNotifications', [
+				.getQueuedNotifications(
 					VIEW_CONTEXT_MAIN_DASHBOARD,
-					NOTIFICATION_GROUPS.DEFAULT,
-				] )
-		).toBe( false );
+					NOTIFICATION_GROUPS.DEFAULT
+				)
+				.map( ( notificationInQueue ) => notificationInQueue.id )
+		).toContain( 'setup-success-notification-fpm' );
 	} );
 
 	it( 'should track events when the CTA is dismissed and the tooltip is viewed', async () => {

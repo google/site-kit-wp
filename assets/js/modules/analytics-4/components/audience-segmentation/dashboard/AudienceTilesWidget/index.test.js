@@ -687,7 +687,7 @@ describe( 'AudienceTilesWidget', () => {
 			)
 		).toBeInTheDocument();
 
-		await act( () => waitForTimeouts( 150 ) );
+		await waitForRegistry();
 	} );
 
 	it( 'should track an event when the tooltip for an audience tab is viewed', async () => {
@@ -725,6 +725,7 @@ describe( 'AudienceTilesWidget', () => {
 		);
 
 		// Wait for the tooltip to appear, its delay is 100ms.
+		// waitForRegistry() is not suitable to use here as no state changes occur.
 		await waitForTimeouts( 100 );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(

@@ -100,6 +100,7 @@ import {
 } from './components/dashboard';
 import { ModulePopularPagesWidgetGA4 } from './components/module';
 import {
+	AudienceSegmentationIntroductoryOverlayNotification,
 	AudienceTilesWidget,
 	ConnectAnalyticsCTAWidget,
 	InfoNoticeWidget,
@@ -107,17 +108,19 @@ import {
 } from './components/audience-segmentation/dashboard';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import AudienceSegmentationSetupSuccessSubtleNotification, {
-	AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
-} from './components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
+import {
+	SITE_KIT_VIEW_ONLY_CONTEXTS,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../googlesitekit/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import AudienceSegmentationSetupCTAWidget, {
+	PRIORITY,
+} from '../../googlesitekit/notifications/constants';
+import AudienceSegmentationSetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
-} from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTAWidget';
+} from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTABanner';
 import WebDataStreamNotAvailableNotification, {
 	WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
 } from '../../components/notifications/WebDataStreamNotAvailableNotification';
@@ -127,8 +130,8 @@ import {
 	LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
 	MODULE_SLUG_ANALYTICS_4,
 } from './constants';
-import { PRIORITY } from '../../googlesitekit/notifications/constants';
 import ConversionReportingNotificationCTAWidget from './components/widgets/ConversionReportingNotificationCTAWidget';
+import { AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION } from './components/audience-segmentation/dashboard/AudienceSegmentationIntroductoryOverlayNotification';
 
 export { registerStore } from './datastore';
 
@@ -721,47 +724,10 @@ export const registerWidgets = ( widgets ) => {
 };
 
 export const ANALYTICS_4_NOTIFICATIONS = {
-	[ AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION ]: {
-		Component: AudienceSegmentationSetupSuccessSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			const analyticsConnected = await resolveSelect(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
-
-			if ( ! analyticsConnected ) {
-				return false;
-			}
-
-			await resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings();
-			await resolveSelect( CORE_USER ).getUserAudienceSettings();
-
-			const currentUserID = select( CORE_USER ).getID();
-
-			const audienceSegmentationSetupCompletedByUserID =
-				select(
-					MODULES_ANALYTICS_4
-				).getAudienceSegmentationSetupCompletedBy();
-
-			if (
-				currentUserID !== audienceSegmentationSetupCompletedByUserID
-			) {
-				return false;
-			}
-
-			const configuredAudiences =
-				select( CORE_USER ).getConfiguredAudiences();
-
-			// Only show this notification if the user has a set of configured audiences.
-			return Array.isArray( configuredAudiences );
-		},
-		isDismissible: true,
-	},
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
-		Component: AudienceSegmentationSetupCTAWidget,
-		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		Component: AudienceSegmentationSetupCTABanner,
+		priority: 130, // TODO: Revert this back to PRIORITY.SETUP_CTA_LOW after fixing https://github.com/google/site-kit-wp/issues/10890.
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -816,7 +782,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	[ WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION ]: {
 		Component: WebDataStreamNotAvailableNotification,
 		priority: PRIORITY.ERROR_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
@@ -862,7 +828,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	'google-tag-id-mismatch': {
 		Component: GoogleTagIDMismatchNotification,
 		priority: PRIORITY.ERROR_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: false,
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -905,8 +871,8 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 	'enhanced-measurement-notification': {
 		Component: EnhancedMeasurementActivationBanner,
-		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		priority: 140, // TODO: Revert this back to PRIORITY.SETUP_CTA_LOW after fixing https://github.com/google/site-kit-wp/issues/10890.
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
@@ -967,6 +933,77 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			).isEnhancedMeasurementStreamEnabled( propertyID, webDataStreamID );
 
 			return isEnhancedMeasurementStreamEnabled === false;
+		},
+	},
+	[ AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION ]: {
+		Component: AudienceSegmentationIntroductoryOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
+			const ga4ModuleConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+			const ga4ModuleActive = await resolveSelect(
+				CORE_MODULES
+			).isModuleActive( MODULE_SLUG_ANALYTICS_4 );
+
+			// If the module is not connected or not active, we can return early
+			// to prevent additional audience settings being requested.
+			if ( ! ga4ModuleConnected || ! ga4ModuleActive ) {
+				return false;
+			}
+
+			const isViewOnly =
+				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
+
+			await Promise.all( [
+				// The isAudienceSegmentationWidgetHidden() selector relies on
+				// the resolution of the getUserAudienceSettings() resolver.
+				resolveSelect( CORE_USER ).getUserAudienceSettings(),
+				// The getAudienceSegmentationSetupCompletedBy() selector relies
+				// on the resolution of the getAudienceSettings() resolver.
+				resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings(),
+				// The getID() selector relies on the resolution
+				// of the getUser() resolver.
+				resolveSelect( CORE_USER ).getUser(),
+				// The canViewSharedModule() selector relies on the resolution
+				// of the getCapabilities() resolver.
+				isViewOnly
+					? resolveSelect( CORE_USER ).getCapabilities()
+					: Promise.resolve( [] ),
+			] );
+
+			const canViewModule =
+				! isViewOnly ||
+				select( CORE_USER ).canViewSharedModule(
+					MODULE_SLUG_ANALYTICS_4
+				);
+
+			const isAudienceSegmentationWidgetHidden =
+				select( CORE_USER ).isAudienceSegmentationWidgetHidden();
+
+			const audienceSegmentationSetupCompletedBy =
+				select(
+					MODULES_ANALYTICS_4
+				).getAudienceSegmentationSetupCompletedBy();
+			const userID = select( CORE_USER ).getID();
+
+			if (
+				canViewModule &&
+				isAudienceSegmentationWidgetHidden === false &&
+				Number.isInteger( audienceSegmentationSetupCompletedBy ) &&
+				audienceSegmentationSetupCompletedBy !== userID
+			) {
+				return true;
+			}
+
+			return false;
 		},
 	},
 };

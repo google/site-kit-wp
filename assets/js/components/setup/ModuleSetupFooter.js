@@ -73,7 +73,7 @@ export default function ModuleSetupFooter( { module, onCancel, onComplete } ) {
 		>
 			<Grid>
 				<Row>
-					<Cell alignMiddle smSize={ 2 } mdSize={ 4 } lgSize={ 6 }>
+					<Cell smSize={ 2 } mdSize={ 4 } lgSize={ 6 } alignMiddle>
 						<Link
 							id={ `setup-${ module.slug }-cancel` }
 							href={ settingsPageURL }
@@ -85,7 +85,7 @@ export default function ModuleSetupFooter( { module, onCancel, onComplete } ) {
 						</Link>
 					</Cell>
 					{ onComplete && (
-						<Cell alignRight smSize={ 2 } mdSize={ 4 } lgSize={ 6 }>
+						<Cell smSize={ 2 } mdSize={ 4 } lgSize={ 6 } alignRight>
 							<SpinnerButton
 								id={ `setup-${ module.slug }-complete` }
 								onClick={ onCompleteSubmit }

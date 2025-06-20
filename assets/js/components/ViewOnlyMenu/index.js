@@ -84,7 +84,6 @@ export default function ViewOnlyMenu() {
 		>
 			<Button
 				className="googlesitekit-header__dropdown mdc-button--dropdown googlesitekit-border-radius-round--phone googlesitekit-button-icon"
-				text
 				onClick={ toggleMenu }
 				icon={
 					<span className="mdc-button__icon" aria-hidden="true">
@@ -95,16 +94,17 @@ export default function ViewOnlyMenu() {
 				aria-expanded={ menuOpen }
 				aria-controls="view-only-menu"
 				aria-label={ __( 'View only', 'google-site-kit' ) }
-				tooltip
 				tooltipEnterDelayInMS={ 500 }
+				text
+				tooltip
 			>
 				{ __( 'View only', 'google-site-kit' ) }
 			</Button>
 			<Menu
 				menuOpen={ menuOpen }
-				nonInteractive
 				onSelected={ toggleMenu }
 				id="view-only-menu"
+				nonInteractive
 			>
 				<Description />
 				<SharedServices />

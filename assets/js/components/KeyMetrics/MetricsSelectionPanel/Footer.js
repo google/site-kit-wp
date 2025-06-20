@@ -136,6 +136,13 @@ export default function Footer( {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
 
+	const isNavigatingToMainDashboard = useSelect( ( select ) => {
+		return (
+			!! mainDashboardURL &&
+			select( CORE_LOCATION ).isNavigatingTo( mainDashboardURL )
+		);
+	} );
+
 	const { saveKeyMetricsSettings, setPermissionScopeError } =
 		useDispatch( CORE_USER );
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -255,7 +262,11 @@ export default function Footer( {
 			saveSettings={ saveSettings }
 			minSelectedItemCount={ MIN_SELECTED_METRICS_COUNT }
 			maxSelectedItemCount={ MAX_SELECTED_METRICS_COUNT }
-			isBusy={ isSavingSettings || isNavigatingToOAuthURL }
+			isBusy={
+				isSavingSettings ||
+				isNavigatingToOAuthURL ||
+				( isNavigatingToMainDashboard && isFullScreen )
+			}
 			onSaveSuccess={ () => {
 				onSaveSuccess( selectedMetrics );
 			} }

@@ -30,6 +30,7 @@ import {
 	STRATEGY_ZIP,
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
 } from '../../modules/analytics-4/utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../tests/js/utils/zeroReports';
 import { DAY_IN_SECONDS } from '../../util';
@@ -176,6 +177,17 @@ export const setupAnalytics4MockReports = (
 	} );
 };
 
+export const setupAnalytics4MockReportsWithNoDataInComparisonDateRange = (
+	registry,
+	mockOptions = wpDashboardAnalytics4OptionSets
+) => {
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+
+	mockOptions.forEach( ( options ) =>
+		provideAnalyticsReportWithoutDateRangeData( registry, options )
+	);
+};
+
 export const setupSearchConsoleMockReports = ( registry, data ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
@@ -198,10 +210,22 @@ export const setupSearchConsoleGatheringData = ( registry ) => {
 	} );
 };
 
-export const setupAnalytics4GatheringData = ( registry ) => {
+export const setupAnalytics4GatheringData = (
+	registry,
+	mockOptionSets = wpDashboardAnalytics4OptionSets
+) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
+
+	mockOptionSets.forEach( ( options ) => {
+		const report = getAnalytics4MockResponse( options );
+		const zeroReport =
+			replaceValuesInAnalytics4ReportWithZeroData( report );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
+			options,
+		} );
+	} );
 };
 
 export function setupAnalytics4ZeroData(

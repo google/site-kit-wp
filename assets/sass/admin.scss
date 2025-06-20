@@ -154,7 +154,6 @@
 @import "components/dashboard/googlesitekit-ReportMetric";
 @import "components/dashboard/googlesitekit-subtle-notification";
 @import "components/dashboard/googlesitekit-setup-cta-banner";
-@import "components/dashboard/googlesitekit-consent-mode-setup-cta";
 
 // Dashboard Wizard
 @import "components/dashboard/wizard/googlesitekit-wizard";
@@ -209,7 +208,6 @@
 @import "components/analytics-4";
 @import "components/reader-revenue-manager";
 @import "components/sign-in-with-google";
-@import "components/first-party-mode";
 
 // Key Metric Widgets Styles
 @import "components/key-metrics/googlesitekit-km-widget-tile";
@@ -219,9 +217,6 @@
 // User Feedback
 @import "components/surveys";
 
-// Overlay Notification
-@import "components/overlay-notification/googlesitekit-overlay-notification";
-
 // Banner
 @import "components/banner/googlesitekit-banner";
 
@@ -230,6 +225,9 @@
 
 // Overlay Card
 @import "components/overlay-card/googlesitekit-overlay-card";
+
+// Banner Notification
+@import "components/banner-notification/googlesitekit-banner-notification";
 
 // Widget Styles
 @import "widgets/widget-area";

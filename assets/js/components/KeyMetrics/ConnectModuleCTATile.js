@@ -114,7 +114,7 @@ export default function ConnectModuleCTATile( { moduleSlug } ) {
 										module.name
 								  ) }
 						</p>
-						<Link secondary onClick={ handleConnectModule }>
+						<Link onClick={ handleConnectModule } secondary>
 							{ sprintf(
 								/* translators: %s: module name */
 								__( 'Connect %s', 'google-site-kit' ),

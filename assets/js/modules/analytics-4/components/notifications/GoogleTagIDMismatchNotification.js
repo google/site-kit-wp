@@ -205,7 +205,6 @@ export default function GoogleTagIDMismatchNotification( {
 								'google-site-kit'
 							) }
 							onCTAClick={ updateToNewAnalyticsConfig }
-							dismissOnCTAClick
 							isSaving={ isDoingSubmitChanges }
 							dismissLabel={ __(
 								'Keep existing property',
@@ -214,6 +213,7 @@ export default function GoogleTagIDMismatchNotification( {
 							onDismiss={ updateGoogleTagConfig }
 							dismissExpires={ 1 } // Expire the dismissal in a second to allow the notification to be shown on page reload if necessary.
 							dismissOptions={ { skipHidingFromQueue: false } }
+							dismissOnCTAClick
 						/>
 					}
 				/>
@@ -256,9 +256,9 @@ export default function GoogleTagIDMismatchNotification( {
 								newGoogleTagID
 							) }
 							onCTAClick={ updateGoogleTagConfig }
-							dismissOnCTAClick
 							dismissExpires={ 1 } // Expire the dismissal in a second to allow the notification to be shown on page reload if necessary.
 							dismissOptions={ { skipHidingFromQueue: false } }
+							dismissOnCTAClick
 						/>
 					}
 				/>

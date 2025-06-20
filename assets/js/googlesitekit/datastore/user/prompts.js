@@ -101,7 +101,7 @@ const baseActions = {
 
 			const registry = yield commonActions.getRegistry();
 
-			registry.dispatch( CORE_USER ).setIsPromptDimissing( slug, true );
+			registry.dispatch( CORE_USER ).setIsPromptDismissing( slug, true );
 
 			const { response, error } =
 				yield fetchDismissPromptStore.actions.fetchDismissPrompt(
@@ -109,12 +109,12 @@ const baseActions = {
 					expiresInSeconds
 				);
 
-			registry.dispatch( CORE_USER ).setIsPromptDimissing( slug, false );
+			registry.dispatch( CORE_USER ).setIsPromptDismissing( slug, false );
 
 			return { response, error };
 		}
 	),
-	setIsPromptDimissing( slug, isDismissing ) {
+	setIsPromptDismissing( slug, isDismissing ) {
 		return {
 			payload: { slug, isDismissing },
 			type: 'SET_IS_PROMPT_DISMISSING',
