@@ -24,10 +24,9 @@ import classnames from 'classnames';
 
 const VALID_TYPES = [ 'display', 'headline', 'title', 'body', 'label' ];
 const VALID_SIZES = [ 'small', 'medium', 'large' ];
-const VALID_TAGS = [ 'span', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' ];
 
 function Typography( { className, type, size, as, children } ) {
-	const Component = as && VALID_TAGS.includes( as ) ? as : 'span';
+	const Component = as || 'span';
 
 	return (
 		<Component
@@ -47,7 +46,7 @@ Typography.propTypes = {
 	className: PropTypes.string,
 	type: PropTypes.oneOf( VALID_TYPES ),
 	size: PropTypes.oneOf( VALID_SIZES ),
-	as: PropTypes.oneOf( VALID_TAGS ),
+	as: PropTypes.oneOfType( [ PropTypes.string, PropTypes.elementType ] ),
 };
 
 export default Typography;
