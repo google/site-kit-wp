@@ -86,7 +86,7 @@ describe( 'DashboardSharingDialog', () => {
 			screen.queryByText( 'Dashboard sharing & permissions' )
 		).not.toBeInTheDocument();
 		expect(
-			screen.queryByText( 'Reset Dashboard Sharing permissions' )
+			screen.queryByText( 'Reset dashboard sharing permissions' )
 		).not.toBeInTheDocument();
 	} );
 
@@ -99,7 +99,7 @@ describe( 'DashboardSharingDialog', () => {
 			screen.getByText( 'Dashboard sharing & permissions' )
 		).toBeInTheDocument();
 		expect(
-			screen.queryByText( 'Reset Dashboard Sharing permissions' )
+			screen.queryByText( 'Reset dashboard sharing permissions' )
 		).not.toBeInTheDocument();
 	} );
 
@@ -112,7 +112,7 @@ describe( 'DashboardSharingDialog', () => {
 			screen.queryByText( 'Dashboard sharing & permissions' )
 		).not.toBeInTheDocument();
 		expect(
-			screen.getByText( 'Reset Dashboard Sharing permissions' )
+			screen.getByText( 'Reset dashboard sharing permissions' )
 		).toBeInTheDocument();
 	} );
 
@@ -153,7 +153,7 @@ describe( 'DashboardSharingDialog', () => {
 				registry.select( CORE_UI ).getValue( RESET_SETTINGS_DIALOG )
 			).toBe( true );
 			expect(
-				screen.getByText( 'Reset Dashboard Sharing permissions' )
+				screen.getByText( 'Reset dashboard sharing permissions' )
 			).toBeInTheDocument();
 		} );
 	} );
@@ -164,7 +164,7 @@ describe( 'DashboardSharingDialog', () => {
 		render( <DashboardSharingDialog />, { registry } );
 
 		expect(
-			screen.getByText( 'Reset Dashboard Sharing permissions' )
+			screen.getByText( 'Reset dashboard sharing permissions' )
 		).toBeInTheDocument();
 
 		fireEvent.click( screen.getByText( 'Cancel' ) );
@@ -213,7 +213,7 @@ describe( 'DashboardSharingDialog', () => {
 		render( <DashboardSharingDialog />, { registry } );
 
 		expect(
-			screen.getByText( 'Reset Dashboard Sharing permissions' )
+			screen.getByText( 'Reset dashboard sharing permissions' )
 		).toBeInTheDocument();
 
 		// Simulate pressing the Escape key.
@@ -264,7 +264,7 @@ describe( 'DashboardSharingDialog', () => {
 		render( <DashboardSharingDialog />, { registry } );
 
 		expect(
-			screen.getByText( 'Reset Dashboard Sharing permissions' )
+			screen.getByText( 'Reset dashboard sharing permissions' )
 		).toBeInTheDocument();
 
 		// Find the scrim element and click it.

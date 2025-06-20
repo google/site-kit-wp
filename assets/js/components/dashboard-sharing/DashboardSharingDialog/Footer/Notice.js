@@ -45,7 +45,7 @@ export default function Notice() {
 				canSubmitSharingChanges &&
 				createInterpolateElement(
 					__(
-						'By clicking <strong>Apply</strong>, you will give other authenticated admins of your site permission to manage view-only access to Site Kit Dashboard data from the chosen Google service',
+						'By clicking <strong>Apply</strong>, you will give other authenticated admins of your site permission to manage view-only access to Site Kit dashboard data from the chosen Google service',
 						'google-site-kit'
 					),
 					{

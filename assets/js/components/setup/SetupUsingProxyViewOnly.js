@@ -150,7 +150,7 @@ export default function SetupUsingProxyViewOnly() {
 														}
 													>
 														{ __(
-															'Go to Dashboard',
+															'Go to dashboard',
 															'google-site-kit'
 														) }
 													</Button>
