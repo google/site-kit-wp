@@ -34,7 +34,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Core\Util\Plugin_Status;
 use Google\Site_Kit\Modules\Ads\PAX_Config;
 use Google\Site_Kit\Modules\Ads\Settings;
@@ -417,13 +417,13 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 			),
 		);
 
-		// Add fields from First-party mode.
+		// Add fields from Google tag gateway.
 		// Note: fields are added in both Analytics and Ads so that the debug fields will show if either module is enabled.
-		if ( Feature_Flags::enabled( 'firstPartyMode' ) ) {
-			$first_party_mode             = new First_Party_Mode( $this->context );
-			$fields_from_first_party_mode = $first_party_mode->get_debug_fields();
+		if ( Feature_Flags::enabled( 'googleTagGateway' ) ) {
+			$google_tag_gateway             = new Google_Tag_Gateway( $this->context );
+			$fields_from_google_tag_gateway = $google_tag_gateway->get_debug_fields();
 
-			$debug_fields = array_merge( $debug_fields, $fields_from_first_party_mode );
+			$debug_fields = array_merge( $debug_fields, $fields_from_google_tag_gateway );
 		}
 
 		return $debug_fields;

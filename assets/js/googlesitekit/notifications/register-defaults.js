@@ -37,8 +37,8 @@ import { CORE_NOTIFICATIONS } from './datastore/constants';
 import {
 	NOTIFICATION_GROUPS,
 	NOTIFICATION_AREAS,
-	FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
-	FPM_SETUP_CTA_BANNER_NOTIFICATION,
+	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
+	GTG_SETUP_CTA_BANNER_NOTIFICATION,
 	PRIORITY,
 } from './constants';
 import { CORE_FORMS } from '../datastore/forms/constants';
@@ -68,8 +68,8 @@ import ZeroDataNotification from '../../components/notifications/ZeroDataNotific
 import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSenseLinkedNotification';
 import SetupErrorNotification from '../../components/notifications/SetupErrorNotification';
 import SetupErrorMessageNotification from '../../components/notifications/SetupErrorMessageNotification';
-import FirstPartyModeWarningNotification from '../../components/notifications/FirstPartyModeWarningNotification';
-import FirstPartyModeSetupBanner from '../../components/notifications/FirstPartyModeSetupBanner';
+import GoogleTagGatewayWarningNotification from '../../components/notifications/GoogleTagGatewayWarningNotification';
+import GoogleTagGatewaySetupBanner from '../../components/notifications/GoogleTagGatewaySetupBanner';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '../../components/consent-mode/constants';
 import ConsentModeSetupCTABanner from '../../components/consent-mode/ConsentModeSetupCTABanner';
 import EnableAutoUpdateBannerNotification, {
@@ -666,72 +666,72 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		dismissRetries: 2,
 	},
-	[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]: {
-		Component: FirstPartyModeSetupBanner,
+	[ GTG_SETUP_CTA_BANNER_NOTIFICATION ]: {
+		Component: GoogleTagGatewaySetupBanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
-			const isFPMModuleConnected =
-				select( CORE_SITE ).isAnyFirstPartyModeModuleConnected();
+			const isGTGModuleConnected =
+				select( CORE_SITE ).isAnyGoogleTagGatewayModuleConnected();
 
-			if ( ! isFPMModuleConnected ) {
+			if ( ! isGTGModuleConnected ) {
 				return false;
 			}
 
-			await resolveSelect( CORE_SITE ).getFirstPartyModeSettings();
+			await resolveSelect( CORE_SITE ).getGoogleTagGatewaySettings();
 
 			const {
-				isFirstPartyModeEnabled,
-				isFPMHealthy,
+				isGoogleTagGatewayEnabled,
+				isGTGHealthy,
 				isScriptAccessEnabled,
 			} = select( CORE_SITE );
 
-			if ( isFirstPartyModeEnabled() ) {
+			if ( isGoogleTagGatewayEnabled() ) {
 				return false;
 			}
 
-			const isHealthy = isFPMHealthy();
+			const isHealthy = isGTGHealthy();
 			const isAccessEnabled = isScriptAccessEnabled();
 
 			if ( [ isHealthy, isAccessEnabled ].includes( null ) ) {
-				dispatch( CORE_SITE ).fetchGetFPMServerRequirementStatus();
+				dispatch( CORE_SITE ).fetchGetGTGServerRequirementStatus();
 				return false;
 			}
 
 			return isHealthy && isAccessEnabled;
 		},
 		isDismissible: true,
-		featureFlag: 'firstPartyMode',
+		featureFlag: 'googleTagGateway',
 	},
-	[ FPM_HEALTH_CHECK_WARNING_NOTIFICATION_ID ]: {
-		Component: FirstPartyModeWarningNotification,
+	[ GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID ]: {
+		Component: GoogleTagGatewayWarningNotification,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
-			const isFPMModuleConnected =
-				select( CORE_SITE ).isAnyFirstPartyModeModuleConnected();
+			const isGTGModuleConnected =
+				select( CORE_SITE ).isAnyGoogleTagGatewayModuleConnected();
 
-			if ( ! isFPMModuleConnected ) {
+			if ( ! isGTGModuleConnected ) {
 				return false;
 			}
 
-			await resolveSelect( CORE_SITE ).getFirstPartyModeSettings();
+			await resolveSelect( CORE_SITE ).getGoogleTagGatewaySettings();
 
 			const {
-				isFirstPartyModeEnabled,
-				isFPMHealthy,
+				isGoogleTagGatewayEnabled,
+				isGTGHealthy,
 				isScriptAccessEnabled,
 			} = select( CORE_SITE );
 
 			return (
-				isFirstPartyModeEnabled() &&
-				( ! isFPMHealthy() || ! isScriptAccessEnabled() )
+				isGoogleTagGatewayEnabled() &&
+				( ! isGTGHealthy() || ! isScriptAccessEnabled() )
 			);
 		},
 		isDismissible: true,
-		featureFlag: 'firstPartyMode',
+		featureFlag: 'googleTagGateway',
 	},
 	[ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ]: {
 		Component:
