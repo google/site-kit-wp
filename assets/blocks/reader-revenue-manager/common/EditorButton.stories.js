@@ -1,5 +1,5 @@
 /**
- * EditorButton component Stories.
+ * EditorButton component stories.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
