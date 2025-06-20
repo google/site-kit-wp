@@ -17,7 +17,7 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -99,7 +99,10 @@ export default function AnyoneCanRegisterDisabledNotice() {
 							breakpoint === BREAKPOINT_XLARGE ||
 							breakpoint === BREAKPOINT_DESKTOP ? (
 								<br />
-							) : null,
+							) : (
+								// eslint-disable-next-line react/jsx-no-useless-fragment
+								<Fragment />
+							),
 					}
 				) }
 				dismissButton={ {

@@ -17,7 +17,7 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -80,7 +80,13 @@ export default function AnyoneCanRegisterReadOnly() {
 										href={ generalSettingsURL }
 									/>
 								),
-							br: breakpoint !== BREAKPOINT_SMALL ? <br /> : null,
+							br:
+								breakpoint !== BREAKPOINT_SMALL ? (
+									<br />
+								) : (
+									// eslint-disable-next-line react/jsx-no-useless-fragment
+									<Fragment />
+								),
 						}
 					) }
 				</HelperText>
