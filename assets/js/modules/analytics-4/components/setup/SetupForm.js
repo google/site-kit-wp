@@ -158,7 +158,7 @@ export default function SetupForm( { finishSetup } ) {
 					disabled={ ! canSubmitChanges || isSaving }
 					isSaving={ isSaving }
 				>
-					{ __( 'Complete setup', 'google-site-kit' ) }
+					{ __( 'Set up', 'google-site-kit' ) }
 				</SpinnerButton>
 			</div>
 		</form>
