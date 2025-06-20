@@ -981,6 +981,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$error = $input->filter( INPUT_GET, 'error' );
 		if ( ! empty( $error ) ) {
 			wp_safe_redirect(
+				// HERE, no need to try to continue user input flow if there's an error.
 				$this->context->admin_url( 'dashboard', array( 'error_code' => htmlspecialchars( $error ) ) )
 			);
 			exit;
@@ -990,6 +991,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		if ( empty( $account_id ) ) {
 			wp_safe_redirect(
+				// HERE, no need to try to continue user input flow if there's an error.
 				$this->context->admin_url( 'dashboard', array( 'error_code' => 'callback_missing_parameter' ) )
 			);
 			exit;
@@ -1005,11 +1007,11 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$this->provision_property_webdatastream( $account_id, $account_ticket );
 
 		wp_safe_redirect(
+			// HERE, we redirect to the user input screen instead of the dashboard.
 			$this->context->admin_url(
-				'dashboard',
+				'user-input',
 				array(
-					'notification' => 'authentication_success',
-					'slug'         => 'analytics-4',
+					'showProgress' => true,
 				)
 			)
 		);
@@ -1236,6 +1238,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				$account_ticket_request = new Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest();
 				$account_ticket_request->setSiteId( $credentials['oauth2_client_id'] );
 				$account_ticket_request->setSiteSecret( $credentials['oauth2_client_secret'] );
+				// HERE, this sets the redirect_uri for account creation, we need to ensure that
+				// we redirect to the user input screen instead of the dashboard.
 				$account_ticket_request->setRedirectUri( $this->get_provisioning_redirect_uri() );
 				$account_ticket_request->setAccount( $account );
 

@@ -329,6 +329,8 @@ class Google_Proxy {
 			'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
 			'action_uri'             => admin_url( 'index.php' ),
 			'return_uri'             => $this->context->admin_url( 'splash' ),
+			// HERE, this sets the redirect_uri for account creation, we need to update the
+			// gatoscallback handler to redirect to the user input screen instead of the dashboard.
 			'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
 		);
 	}
