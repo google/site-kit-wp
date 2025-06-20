@@ -43,6 +43,7 @@ import useViewContext from '../../../hooks/useViewContext';
 import Header from './Header';
 import Splash from './Splash';
 import Actions from './Actions';
+import ProgressSegments from '../../ProgressSegments';
 
 export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
@@ -146,6 +147,7 @@ export default function SetupUsingProxyWithSignIn() {
 	return (
 		<Fragment>
 			<Header />
+			<ProgressSegments currentSegment={ 0 } totalSegments={ 6 } />
 			<div className="googlesitekit-setup">
 				<Grid>
 					<Row>
