@@ -100,8 +100,8 @@ class ReportParsers {
 			$date_ranges[] = Date::parse_date_range( 'last-28-days', 1 );
 		}
 
-		// Get date range names if provided
-		$date_range_name = $data['dateRangeName'] ?? '';
+		// Get date range names if provided.
+		$date_range_name         = $data['dateRangeName'] ?? '';
 		$compare_date_range_name = $data['compareDateRangeName'] ?? '';
 
 		$date_ranges = array_map(
@@ -112,10 +112,10 @@ class ReportParsers {
 				$date_range_obj->setStartDate( $start_date );
 				$date_range_obj->setEndDate( $end_date );
 
-				// Set date range names if provided
-				if ( $index === 0 && ! empty( $date_range_name ) ) {
+				// Set date range names if provided.
+				if ( 0 === $index && ! empty( $date_range_name ) ) {
 					$date_range_obj->setName( $date_range_name );
-				} elseif ( $index === 1 && ! empty( $compare_date_range_name ) ) {
+				} elseif ( 1 === $index && ! empty( $compare_date_range_name ) ) {
 					$date_range_obj->setName( $compare_date_range_name );
 				}
 
