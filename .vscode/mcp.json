@@ -1,0 +1,10 @@
+{
+	"servers": {
+		"github": {
+			"command": "node",
+			"args": [
+				"${workspaceFolder}/packages/mcp/github/src/index.js"
+			]
+		}
+	}
+}
