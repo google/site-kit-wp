@@ -97,7 +97,7 @@ class ReportParsersTest extends TestCase {
 	 * @dataProvider data_parse_dateranges_with_names
 	 */
 	public function test_parse_dateranges_with_names( $request_data, $expected_names ) {
-		$data_request = new Data_Request( array(), array(), $request_data );
+		$data_request = new Data_Request( '', '', '', '', $request_data );
 		$date_ranges  = $this->report_parsers->parse_dateranges( $data_request );
 
 		foreach ( $expected_names as $expected_name ) {
