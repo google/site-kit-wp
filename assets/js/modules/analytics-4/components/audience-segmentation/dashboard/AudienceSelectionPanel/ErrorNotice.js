@@ -147,10 +147,10 @@ export default function ErrorNotice() {
 				<ReportErrorActions
 					moduleSlug="analytics-4"
 					error={ errors }
-					hideGetHelpLink
 					buttonVariant="danger"
 					RequestAccessButton={ RequestAccessButton }
 					RetryButton={ RetryButton }
+					hideGetHelpLink
 				/>
 			) : (
 				<RetryButton handleRetry={ retrySyncAvailableAudiences } />

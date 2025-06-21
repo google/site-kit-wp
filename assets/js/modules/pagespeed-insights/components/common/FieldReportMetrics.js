@@ -170,7 +170,6 @@ export default function FieldReportMetrics( { data, error } ) {
 						category={
 							interactionToNextPaint?.category || CATEGORY_AVERAGE
 						}
-						isLast
 						isUnavailable={ ! interactionToNextPaint }
 						hintText={ createInterpolateElement(
 							__(
@@ -181,6 +180,7 @@ export default function FieldReportMetrics( { data, error } ) {
 								LearnMoreLink: <INPLearnMoreLink />,
 							}
 						) }
+						isLast
 					/>
 				</tbody>
 			</table>

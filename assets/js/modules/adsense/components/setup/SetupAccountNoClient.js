@@ -63,11 +63,11 @@ export default function SetupAccountNoClient() {
 						a: (
 							<SupportLink
 								path="/adsense/answer/6023158"
-								external
 								aria-label={ __(
 									'Learn more about updating your AdSense account',
 									'google-site-kit'
 								) }
+								external
 							/>
 						),
 					}
