@@ -29,14 +29,15 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { DAY_IN_SECONDS } from '@/js/util';
+import { DAY_IN_SECONDS } from '../../../js/util';
 import useModuleGatheringZeroData from '../../hooks/useModuleGatheringZeroData';
 import BannerNotification, {
 	TYPES,
 } from '../../googlesitekit/notifications/components/layout/BannerNotification';
 import SVGGraphic from '@/svg/graphics/gathering-data.svg?url';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 
 export default function GatheringDataNotification( { id, Notification } ) {
 	const settingsAdminURL = useSelect( ( select ) =>
@@ -45,6 +46,8 @@ export default function GatheringDataNotification( { id, Notification } ) {
 
 	const { analyticsGatheringData, searchConsoleGatheringData } =
 		useModuleGatheringZeroData();
+
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	let gatheringDataTitle;
 	// Analytics requires up to 72 hours to gather data.
@@ -92,6 +95,11 @@ export default function GatheringDataNotification( { id, Notification } ) {
 				ctaButton={ {
 					label: __( 'Connect more services', 'google-site-kit' ),
 					href: `${ settingsAdminURL }#/connect-more-services`,
+					onClick: () => {
+						dismissNotification( id, {
+							expiresInSeconds: DAY_IN_SECONDS,
+						} );
+					},
 				} }
 				dismissButton={ {
 					label: __( 'Got it', 'google-site-kit' ),
