@@ -27,8 +27,9 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { DAY_IN_SECONDS } from '../../util';
-import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
-import { TYPES } from '@/js/googlesitekit/notifications/constants';
+import BannerNotification, {
+	TYPES,
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import notEnoughTrafficDesktopSVG from '@/svg/graphics/banner-warning.svg?url';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
