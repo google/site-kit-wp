@@ -84,6 +84,7 @@ export default function AnyoneCanRegisterReadOnly() {
 								breakpoint !== BREAKPOINT_SMALL ? (
 									<br />
 								) : (
+									// eslint-disable-next-line react/jsx-no-useless-fragment
 									<Fragment />
 								),
 						}
