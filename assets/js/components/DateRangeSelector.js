@@ -98,15 +98,15 @@ export default function DateRangeSelector() {
 					'googlesitekit-border-radius-round--phone',
 					'googlesitekit-button-icon--phone'
 				) }
-				text
 				onClick={ handleMenu }
 				icon={ <DateRangeIcon width="20" height="20" /> }
 				aria-haspopup="menu"
 				aria-expanded={ menuOpen }
 				aria-controls="date-range-selector-menu"
 				title={ __( 'Date range', 'google-site-kit' ) }
-				tooltip
 				tooltipEnterDelayInMS={ 500 }
+				text
+				tooltip
 			>
 				{ currentDateRangeLabel }
 			</Button>

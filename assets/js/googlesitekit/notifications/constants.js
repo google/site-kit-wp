@@ -30,12 +30,6 @@ export const PRIORITY = {
 	SETUP_CTA_LOW: 200,
 };
 
-export const TYPES = {
-	INFO: 'info',
-	WARNING: 'warning',
-	SETUP_CTA: 'setup-cta',
-};
-
 export const NOTIFICATION_AREAS = {
 	HEADER: 'notification-area-header',
 	DASHBOARD_TOP: 'notification-area-dashboard-top',

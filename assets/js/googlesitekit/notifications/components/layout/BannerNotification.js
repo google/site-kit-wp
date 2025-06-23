@@ -33,8 +33,10 @@ import LearnMoreLink from '../../../../components/Banner/LearnMoreLink';
 import CTAButton from '../../../../components/Banner/CTAButton';
 import DismissButton from '../../../../components/Banner/DismissButton';
 import { Cell, Grid, Row } from '../../../../material-components';
-import { TYPES } from '../../constants';
 
+export const TYPES = {
+	INFO: 'info',
+};
 export default function BannerNotification( {
 	notificationID,
 	type = TYPES.INFO,
@@ -79,6 +81,8 @@ export default function BannerNotification( {
 		await learnMoreLink?.onClick?.( event );
 	};
 
+	const SVGData = props?.svg;
+
 	return (
 		<div
 			className={ classnames(
@@ -108,6 +112,7 @@ export default function BannerNotification( {
 									onClick: handleCTAClickWithTrackEvent,
 								}
 							}
+							svg={ SVGData }
 							{ ...props }
 						/>
 					</Cell>

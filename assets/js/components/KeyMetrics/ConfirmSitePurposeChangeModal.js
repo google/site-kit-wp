@@ -290,8 +290,8 @@ function ConfirmSitePurposeChangeModal( {
 			<DialogFooter>
 				<Button
 					className="mdc-dialog__cancel-button"
-					tertiary
 					onClick={ onClose }
+					tertiary
 				>
 					{ __( 'Keep current selection', 'google-site-kit' ) }
 				</Button>

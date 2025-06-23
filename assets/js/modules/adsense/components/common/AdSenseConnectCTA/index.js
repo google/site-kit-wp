@@ -167,7 +167,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 								</SpinnerButton>
 							) }
 
-							<Button tertiary onClick={ handleDismissModule }>
+							<Button onClick={ handleDismissModule } tertiary>
 								{ __( 'Maybe later', 'google-site-kit' ) }
 							</Button>
 						</div>

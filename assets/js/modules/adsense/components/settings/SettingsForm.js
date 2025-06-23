@@ -128,11 +128,11 @@ export default function SettingsForm() {
 								LearnMoreLink: (
 									<Link
 										href={ supportURL }
-										external
 										aria-label={ __(
 											'Learn more about Ad Sense Web Stories.',
 											'google-site-kit'
 										) }
+										external
 									>
 										{ __(
 											'Learn more',

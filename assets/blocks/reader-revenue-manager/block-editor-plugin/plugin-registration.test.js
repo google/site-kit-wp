@@ -36,6 +36,9 @@ jest.mock( '@wordpress-core/components', () => ( {} ), {
 	virtual: true,
 } );
 jest.mock( '@wordpress-core/element', () => ( {} ), { virtual: true } );
+jest.mock( './tracking', () => ( {
+	initializeTracking: jest.fn(),
+} ) );
 
 import Data from 'googlesitekit-data';
 import SettingPanel from './SettingPanel';

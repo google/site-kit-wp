@@ -98,11 +98,11 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 								a: (
 									<SupportLink
 										path="/news/publisher-center/answer/11449914"
-										external
 										aria-label={ __(
 											'Learn more about setting up Reader Revenue Manager',
 											'google-site-kit'
 										) }
+										external
 									/>
 								),
 							}

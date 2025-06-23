@@ -88,8 +88,8 @@ export default function HelpMenu( { children } ) {
 				className="googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon googlesitekit-help-menu__button mdc-button--dropdown"
 				icon={ <HelpIcon width="20" height="20" /> }
 				onClick={ handleMenu }
-				text
 				tooltipEnterDelayInMS={ 500 }
+				text
 			/>
 			<Menu
 				className="googlesitekit-width-auto"

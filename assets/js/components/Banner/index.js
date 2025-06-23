@@ -62,7 +62,12 @@ const Banner = forwardRef(
 		const isMobileOrTablet =
 			breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
-		const SVGData = isMobileOrTablet ? svg?.mobile || null : svg?.desktop;
+		let SVGData = null;
+		if ( isMobileOrTablet && svg?.mobile ) {
+			SVGData = svg.mobile;
+		} else if ( ! isMobileOrTablet && svg?.desktop ) {
+			SVGData = svg.desktop;
+		}
 
 		const svgMode = svg?.verticalPosition ? svg.verticalPosition : 'center';
 

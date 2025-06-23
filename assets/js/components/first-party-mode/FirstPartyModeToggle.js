@@ -98,8 +98,8 @@ export default function FirstPartyModeToggle( { className } ) {
 		>
 			{ isLoading && (
 				<ProgressBar
-					small
 					className="googlesitekit-first-party-mode-toggle__progress"
+					small
 				/>
 			) }
 			{ ! isLoading && (
@@ -117,8 +117,8 @@ export default function FirstPartyModeToggle( { className } ) {
 					<div className="googlesitekit-first-party-mode-toggle__switch-badge">
 						<Badge
 							className="googlesitekit-badge--beta"
-							hasLeftSpacing
 							label={ __( 'Beta', 'google-site-kit' ) }
+							hasLeftSpacing
 						/>
 					</div>
 				</div>
@@ -139,11 +139,11 @@ export default function FirstPartyModeToggle( { className } ) {
 										'click_learn_more_link'
 									);
 								} }
-								external
 								aria-label={ __(
 									'Learn more about First-party mode',
 									'google-site-kit'
 								) }
+								external
 							/>
 						),
 					}
@@ -167,11 +167,11 @@ export default function FirstPartyModeToggle( { className } ) {
 											'click_learn_more_link'
 										);
 									} }
-									external
 									aria-label={ __(
 										'Learn more about First-party mode server requirements',
 										'google-site-kit'
 									) }
+									external
 								/>
 							),
 						}
