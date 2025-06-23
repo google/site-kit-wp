@@ -124,7 +124,7 @@ function ResetButton( { children } ) {
 				<ModalDialog
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
-					handleDialog={ closeDialog }
+					handleCancel={ closeDialog }
 					onClose={ closeDialog }
 					title={ __( 'Reset Site Kit', 'google-site-kit' ) }
 					subtitle={ createInterpolateElement(
@@ -137,9 +137,9 @@ function ResetButton( { children } ) {
 						}
 					) }
 					confirmButton={ __( 'Reset', 'google-site-kit' ) }
+					inProgress={ inProgress }
 					danger
 					small
-					inProgress={ inProgress }
 				/>
 			</Portal>
 		</Fragment>

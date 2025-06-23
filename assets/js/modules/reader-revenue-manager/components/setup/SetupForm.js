@@ -148,9 +148,9 @@ export default function SetupForm( { onCompleteSetup } ) {
 			</div>
 			<PublicationOnboardingStateNotice />
 			<Link
-				external
 				href={ managePublicationsURL }
 				onClick={ handleLinkClick }
+				external
 			>
 				{ __(
 					'Manage publications in Publisher Center',

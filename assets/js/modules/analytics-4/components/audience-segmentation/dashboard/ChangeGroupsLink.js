@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, Fragment } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -58,16 +58,14 @@ export default function ChangeGroupsLink() {
 	}
 
 	return (
-		<Fragment>
-			<Link
-				secondary
-				linkButton
-				className="googlesitekit-widget-area__cta-link"
-				onClick={ openAudiencesSelectionPanel }
-				leadingIcon={ <PencilIcon width={ 22 } height={ 22 } /> }
-			>
-				{ __( 'Change groups', 'google-site-kit' ) }
-			</Link>
-		</Fragment>
+		<Link
+			className="googlesitekit-widget-area__cta-link"
+			onClick={ openAudiencesSelectionPanel }
+			leadingIcon={ <PencilIcon width={ 22 } height={ 22 } /> }
+			secondary
+			linkButton
+		>
+			{ __( 'Change groups', 'google-site-kit' ) }
+		</Link>
 	);
 }

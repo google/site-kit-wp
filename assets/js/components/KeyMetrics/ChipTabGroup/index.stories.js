@@ -92,8 +92,8 @@ function Template() {
 
 	return (
 		<SelectionPanel
-			isOpen
 			className="googlesitekit-km-selection-panel googlesitekit-acr-km-selection-panel"
+			isOpen
 		>
 			<Header closePanel={ () => null } />
 			<SelectionPanelItems
@@ -103,10 +103,10 @@ function Template() {
 			<CustomDimensionsNotice />
 			<KeyMetricsError savedMetrics={ savedViewableMetrics } />
 			<Footer
-				isOpen
 				closePanel={ () => null }
 				savedMetrics={ savedViewableMetrics }
 				onNavigationToOAuthURL={ () => null }
+				isOpen
 			/>
 		</SelectionPanel>
 	);

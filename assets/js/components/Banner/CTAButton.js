@@ -22,22 +22,29 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
+import { SpinnerButton } from 'googlesitekit-components';
 
-export default function CTAButton( { label, disabled, onClick, href } ) {
+export default function CTAButton( {
+	label,
+	disabled,
+	inProgress,
+	onClick,
+	href,
+} ) {
 	if ( ! label || ( ! onClick && ! href ) ) {
 		return null;
 	}
 
 	return (
-		<Button
+		<SpinnerButton
 			className="googlesitekit-banner__cta"
-			disabled={ disabled }
+			disabled={ disabled || inProgress }
+			isSaving={ inProgress }
 			onClick={ onClick }
 			href={ href }
 		>
 			{ label }
-		</Button>
+		</SpinnerButton>
 	);
 }
 
@@ -45,6 +52,7 @@ export default function CTAButton( { label, disabled, onClick, href } ) {
 CTAButton.propTypes = {
 	label: PropTypes.string.isRequired,
 	disabled: PropTypes.bool,
+	inProgress: PropTypes.bool,
 	onClick: PropTypes.func,
 	href: PropTypes.string,
 };

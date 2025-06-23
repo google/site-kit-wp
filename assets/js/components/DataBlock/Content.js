@@ -78,7 +78,10 @@ export default function Content( {
 
 				{ ! gatheringData && (
 					<div className="googlesitekit-data-block__datapoint">
-						{ datapointFormatted }
+						{ /* Span required for DataBlockGroup dynamic font resizing. */ }
+						<span className="googlesitekit-data-block__datapoint--resize">
+							{ datapointFormatted }
+						</span>
 					</div>
 				) }
 			</div>

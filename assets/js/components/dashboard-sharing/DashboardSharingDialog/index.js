@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useWindowScroll, useKey } from 'react-use';
+import { useKey, useWindowScroll } from 'react-use';
 import classnames from 'classnames';
 
 /**
@@ -49,7 +49,6 @@ import {
 	SETTINGS_DIALOG,
 } from '../DashboardSharingSettings/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
-import { ESCAPE } from '@wordpress/keycodes';
 import Portal from '../../Portal';
 import {
 	Dialog,
@@ -146,15 +145,9 @@ export default function DashboardSharingDialog() {
 		closeSettingsDialog();
 	}, [ closeResetDialog, closeSettingsDialog, resetDialogOpen ] );
 
-	// Handle escape key for reset dialog
-	useKey(
-		( event ) => resetDialogOpen && ESCAPE === event.keyCode,
-		closeResetDialog
-	);
-
-	// Handle clicking on the scrim (outside the dialog)
+	// Handle scrim click for reset dialog.
 	useEffect( () => {
-		if ( ! ref.current ) {
+		if ( ! resetDialogOpen || ! ref.current ) {
 			return;
 		}
 
@@ -163,10 +156,7 @@ export default function DashboardSharingDialog() {
 		} = ref;
 
 		const handleScrimClick = ( event ) => {
-			if (
-				resetDialogOpen &&
-				event.target.classList.contains( 'mdc-dialog__scrim' )
-			) {
+			if ( event.target.classList.contains( 'mdc-dialog__scrim' ) ) {
 				closeResetDialog();
 			}
 		};
@@ -177,6 +167,9 @@ export default function DashboardSharingDialog() {
 			ownerDocument.removeEventListener( 'click', handleScrimClick );
 		};
 	}, [ ref, resetDialogOpen, closeResetDialog ] );
+
+	// Handle escape key for reset dialog.
+	useKey( 'Escape', closeResetDialog );
 
 	return (
 		<Portal>
@@ -233,7 +226,7 @@ export default function DashboardSharingDialog() {
 
 								{ resetDialogOpen &&
 									__(
-										'Reset Dashboard Sharing permissions',
+										'Reset dashboard sharing permissions',
 										'google-site-kit'
 									) }
 							</h2>
@@ -269,7 +262,7 @@ export default function DashboardSharingDialog() {
 
 								{ resetDialogOpen &&
 									__(
-										'Warning: Resetting these permissions will remove view-only access for all users. Are you sure you want to reset all Dashboard Sharing permissions?',
+										'Warning: Resetting these permissions will remove view-only access for all users. Are you sure you want to reset all dashboard Sharing permissions?',
 										'google-site-kit'
 									) }
 							</p>

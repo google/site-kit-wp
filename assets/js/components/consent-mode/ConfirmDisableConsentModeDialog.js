@@ -34,7 +34,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { listFormat, trackEvent } from '../../util';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import ModalDialog from '../ModalDialog';
+import RefocusableModalDialog from '../RefocusableModalDialog';
 import useViewContext from '../../hooks/useViewContext';
 
 export default function ConfirmDisableConsentModeDialog( {
@@ -101,17 +101,17 @@ export default function ConfirmDisableConsentModeDialog( {
 	}
 
 	return (
-		<ModalDialog
+		<RefocusableModalDialog
 			className="googlesitekit-settings-module__confirm-disconnect-modal"
-			dialogActive
 			title={ __( 'Disable consent mode?', 'google-site-kit' ) }
 			subtitle={ subtitle }
 			handleConfirm={ onConfirm }
-			handleDialog={ onCancel }
+			handleCancel={ onCancel }
 			onClose={ onCancel }
 			provides={ provides }
 			dependentModules={ dependentModulesText }
 			confirmButton={ __( 'Disable', 'google-site-kit' ) }
+			dialogActive
 			danger
 		/>
 	);

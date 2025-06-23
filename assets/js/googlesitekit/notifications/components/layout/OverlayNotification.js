@@ -38,7 +38,11 @@ export default function OverlayNotification( {
 } ) {
 	const trackEvents = useNotificationEvents(
 		notificationID,
-		gaTrackingEventArgs?.category
+		gaTrackingEventArgs?.category,
+		{
+			confirmAction: gaTrackingEventArgs?.confirmAction,
+			dismissAction: gaTrackingEventArgs?.dismissAction,
+		}
 	);
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
@@ -64,7 +68,6 @@ export default function OverlayNotification( {
 
 	return (
 		<OverlayCard
-			visible
 			ctaButton={ {
 				...ctaButton,
 				onClick: handleCTAClickWithTrackEvent,
@@ -74,6 +77,7 @@ export default function OverlayNotification( {
 				onClick: handleDismissWithTrackEvent,
 			} }
 			{ ...props }
+			visible
 		/>
 	);
 }

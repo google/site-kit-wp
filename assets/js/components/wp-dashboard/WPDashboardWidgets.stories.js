@@ -40,6 +40,7 @@ import {
 	setupSearchConsoleGatheringData,
 	setupAnalytics4GatheringData,
 	widgetDecorators,
+	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
 } from './common-GA4-stories';
 import { VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY } from '../../googlesitekit/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -226,6 +227,22 @@ ZeroDataGA4.args = {
 			.receiveIsGatheringData( false );
 	},
 };
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		provideAnalytics4ReportTitles( registry );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReportsWithNoDataInComparisonDateRange( registry );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
 
 export default {
 	title: 'Views/WPDashboardApp/WPDashboardWidgets',

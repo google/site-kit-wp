@@ -67,7 +67,10 @@ const siteKitPackageAliases = mapValues(
 
 module.exports = {
 	framework: getModuleAbsolutePath( '@storybook/react-webpack5' ),
-	stories: [ path.resolve( rootDir, 'assets/js/**/*.stories.js' ) ],
+	stories: [
+		path.resolve( rootDir, 'assets/js/**/*.stories.js' ),
+		path.resolve( rootDir, 'assets/blocks/**/*.stories.js' ),
+	],
 	addons: [
 		getModuleAbsolutePath( '@storybook/addon-webpack5-compiler-babel' ),
 		getModuleAbsolutePath( '@storybook/addon-viewport' ),

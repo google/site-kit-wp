@@ -28,19 +28,15 @@ import {
 	commonActions,
 	createRegistryControl,
 	createRegistrySelector,
+	createReducer,
 } from 'googlesitekit-data';
 import { getStorage } from '../../../util/storage';
-import { createReducer } from '../../../../js/googlesitekit/data/create-reducer';
-import {
-	CORE_NOTIFICATIONS,
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-	NOTIFICATION_VIEW_CONTEXTS,
-} from './constants';
+import { CORE_NOTIFICATIONS, NOTIFICATION_VIEW_CONTEXTS } from './constants';
 import { CORE_USER } from '../../datastore/user/constants';
 import { createValidatedAction } from '../../data/utils';
 import { racePrioritizedAsyncTasks } from '../../../util/async';
 import { shouldNotificationBeAddedToQueue } from '../util/shouldNotificationBeAddedToQueue';
+import { NOTIFICATION_AREAS, NOTIFICATION_GROUPS } from '../constants';
 
 const INSERT_NOTIFICATION_INTO_RESOLVED_QUEUE =
 	'INSERT_NOTIFICATION_INTO_RESOLVED_QUEUE';
@@ -77,7 +73,7 @@ export const actions = {
 	 * This action is internal and should not be used directly outside of the
 	 * `registerNotification()` action.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.155.0
 	 * @private
 	 *
 	 * @param {string} id Notification's slug/ID.
@@ -94,7 +90,7 @@ export const actions = {
 	 *
 	 * @since 1.132.0
 	 * @since 1.146.0 Added `featureFlag` parameter.
-	 * @since n.e.x.t Changed to a generator function to allow for state interaction.
+	 * @since 1.155.0 Changed to a generator function to allow for state interaction.
 	 *
 	 * @param {string}         id                           Notification's slug.
 	 * @param {Object}         settings                     Notification's settings.

@@ -20,11 +20,14 @@
  * Internal dependencies
  */
 import { get } from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createReducer } from '../../../googlesitekit/data/create-reducer';
 
 const fetchGetKeyEventsStore = createFetchStore( {
 	baseName: 'getKeyEvents',
@@ -63,7 +66,7 @@ const baseSelectors = {
 	 *
 	 * @since 1.96.0
 	 * @since 1.99.0 Removed the `propertyID` parameter.
-	 * @since n.e.x.t Renamed from `getConversionEvents` to `getKeyEvents`.
+	 * @since 1.155.0 Renamed from `getConversionEvents` to `getKeyEvents`.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array.<Object>|undefined)} GA4 key events; `undefined` if not loaded.

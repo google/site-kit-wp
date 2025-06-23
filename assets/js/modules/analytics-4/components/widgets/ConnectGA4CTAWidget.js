@@ -17,18 +17,20 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useEffect, useState } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { SpinnerButton } from 'googlesitekit-components';
-import KeyMetricsCTAContent from '../../../../components/KeyMetrics/KeyMetricsCTAContent';
-import KeyMetricsCTAFooter from '../../../../components/KeyMetrics/KeyMetricsCTAFooter';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '../../../../googlesitekit/widgets/datastore/constants';
@@ -36,6 +38,7 @@ import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../../../googlesitek
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { WEEK_IN_SECONDS } from '../../../../../js/util';
 import {
 	KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY,
 	MODULE_SLUG_ANALYTICS_4,
@@ -43,8 +46,13 @@ import {
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '../../../../hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '../../../../hooks/useDebounce';
+import Link from '../../../../components/Link';
+import Banner from '../../../../components/Banner';
+import BannerSVGDesktop from '@/svg/graphics/banner-conversions-setup-cta.svg?url';
+import BannerSVGMobile from '@/svg/graphics/banner-conversions-setup-cta-mobile.svg?url';
 
 export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
+	const trackingRef = useRef();
 	const ga4DependantKeyMetrics = useSelect( ( select ) => {
 		const keyMetrics = select( CORE_USER ).getKeyMetrics();
 		const widgets = select( CORE_WIDGETS ).getWidgets(
@@ -108,6 +116,30 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 		activateAnalytics();
 	}, [ activateAnalytics, completeAnalyticsActivation, isAnalyticsActive ] );
 
+	const intersectionEntry = useIntersection( trackingRef, {
+		threshold: 0.25,
+	} );
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const inView = !! intersectionEntry?.intersectionRatio;
+
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+
+	useEffect( () => {
+		if ( ! inView || hasBeenInView ) {
+			return;
+		}
+
+		if ( usingProxy ) {
+			triggerSurvey( 'view_kmw_setup_cta', { ttl: WEEK_IN_SECONDS } );
+		}
+
+		setHasBeenInView( true );
+	}, [ inView, hasBeenInView, usingProxy, triggerSurvey ] );
+
 	const [ inProgress, setInProgress ] = useState( false );
 
 	/*
@@ -145,34 +177,36 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 	}
 
 	return (
-		<Widget
-			noPadding
-			Footer={ () => (
-				<KeyMetricsCTAFooter
-					onActionClick={ () =>
-						dismissItem(
-							KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY
-						)
-					}
-					showDismiss
-				/>
-			) }
-		>
-			<KeyMetricsCTAContent
-				className="googlesitekit-km-connect-ga4-cta"
+		<Widget noPadding>
+			<Banner
+				ref={ trackingRef }
+				className="googlesitekit-banner--setup-cta googlesitekit-km-connect-ga4-cta"
 				title={ __( 'Analytics is disconnected', 'google-site-kit' ) }
 				description={ __(
 					'Metrics cannot be displayed without Analytics',
 					'google-site-kit'
 				) }
-				actions={
-					<SpinnerButton
-						onClick={ handleCTAClick }
-						isSaving={ inProgress }
-						disabled={ inProgress }
+				ctaButton={ {
+					label: __( 'Connect Analytics', 'google-site-kit' ),
+					onClick: handleCTAClick,
+					disabled: inProgress,
+					inProgress,
+				} }
+				svg={ {
+					desktop: BannerSVGDesktop,
+					mobile: BannerSVGMobile,
+					verticalPosition: 'top',
+				} }
+				footer={
+					<Link
+						onClick={ () =>
+							dismissItem(
+								KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY
+							)
+						}
 					>
-						{ __( 'Connect Analytics', 'google-site-kit' ) }
-					</SpinnerButton>
+						{ __( 'Maybe later', 'google-site-kit' ) }
+					</Link>
 				}
 			/>
 		</Widget>

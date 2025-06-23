@@ -85,7 +85,6 @@ const SettingsNotice = forwardRef( ( props, ref ) => {
 			{ dismiss && (
 				<div className="googlesitekit-settings-notice__button">
 					<Button
-						tertiary
 						onClick={ () => {
 							if ( typeof dismiss === 'string' ) {
 								dismissItem( dismiss );
@@ -93,6 +92,7 @@ const SettingsNotice = forwardRef( ( props, ref ) => {
 
 							dismissCallback?.();
 						} }
+						tertiary
 					>
 						{ dismissLabel }
 					</Button>
