@@ -77,7 +77,7 @@ export default function GatheringDataNotification( { id, Notification } ) {
 	}
 
 	return (
-		<Notification className="googlesitekit-publisher-win">
+		<Notification>
 			<BannerNotification
 				notificationID={ id }
 				type={ TYPES.INFO }
