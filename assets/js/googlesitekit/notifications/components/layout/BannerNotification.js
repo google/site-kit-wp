@@ -124,7 +124,7 @@ export default function BannerNotification( {
 }
 
 BannerNotification.propTypes = {
-	notificationID: PropTypes.string.required,
+	notificationID: PropTypes.string.isRequired,
 	type: PropTypes.oneOf( Object.values( TYPES ) ),
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
