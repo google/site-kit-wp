@@ -32,6 +32,7 @@ import enhancedMeasurementDesktopSVG from '@/svg/graphics/banner-enhanced-measur
 import enhancedMeasurementMobileSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta-mobile.svg?url';
 import signInWithGoogleDesktopSVG from '@/svg/graphics/banner-sign-in-with-google-setup-cta.svg?url';
 import signInWithGoogleMobileSVG from '@/svg/graphics/banner-sign-in-with-google-setup-cta-mobile.svg?url';
+import warningDesktopSVG from '@/svg/graphics/banner-warning.svg?url';
 import Link from '../Link';
 
 function Template() {
@@ -170,6 +171,26 @@ function Template() {
 							verticalPosition: 'bottom',
 						} }
 					/>
+
+					<h3>Warning Banners</h3>
+
+					<div className="googlesitekit-banner-notification googlesitekit-banner-notification--warning">
+						<Banner
+							title="Not enough traffic yet to display stats"
+							description="Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors."
+							learnMoreLink={ {
+								href: 'https://example.com',
+							} }
+							ctaButton={ {
+								label: 'Ok, got it',
+								onClick: () => {},
+							} }
+							svg={ {
+								desktop: warningDesktopSVG,
+								verticalPosition: 'center',
+							} }
+						/>
+					</div>
 				</Cell>
 			</Row>
 		</Grid>

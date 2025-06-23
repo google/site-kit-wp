@@ -25,6 +25,34 @@
 			background-color: $c-site-kit-sk-10;
 		}
 
+		&.googlesitekit-banner-notification--warning {
+			background-color: $c-yellow-y-10;
+
+			.googlesitekit-banner__description {
+				font-size: $fs-body-sm;
+				letter-spacing: $ls-xs;
+				line-height: $lh-body-sm;
+
+				a {
+					color: $c-site-kit-sk-1000;
+				}
+			}
+			.googlesitekit-notice__action {
+				margin-bottom: 0;
+				.mdc-button {
+					@include mdc-button-filled-accessible($c-utility-on-warning-container);
+				}
+
+				.mdc-button--tertiary {
+					@include mdc-button-tertiary-styles(
+						$c-utility-on-warning-container,
+						$c-interactive-callout-warning-hover,
+						$c-interactive-callout-warning-focus
+					);
+				}
+			}
+		}
+
 		.mdc-layout-grid {
 			padding: 0;
 		}

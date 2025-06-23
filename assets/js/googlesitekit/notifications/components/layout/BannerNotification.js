@@ -36,6 +36,7 @@ import { Cell, Grid, Row } from '../../../../material-components';
 
 export const TYPES = {
 	INFO: 'info',
+	WARNING: 'warning',
 };
 export default function BannerNotification( {
 	notificationID,
@@ -123,7 +124,7 @@ export default function BannerNotification( {
 }
 
 BannerNotification.propTypes = {
-	notificationID: PropTypes.string,
+	notificationID: PropTypes.string.required,
 	type: PropTypes.oneOf( Object.values( TYPES ) ),
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
