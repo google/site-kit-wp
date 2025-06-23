@@ -220,7 +220,7 @@ export default function DashboardSharingDialog() {
 
 								{ resetDialogOpen &&
 									__(
-										'Reset Dashboard Sharing permissions',
+										'Reset dashboard sharing permissions',
 										'google-site-kit'
 									) }
 							</h2>
@@ -256,7 +256,7 @@ export default function DashboardSharingDialog() {
 
 								{ resetDialogOpen &&
 									__(
-										'Warning: Resetting these permissions will remove view-only access for all users. Are you sure you want to reset all Dashboard Sharing permissions?',
+										'Warning: Resetting these permissions will remove view-only access for all users. Are you sure you want to reset all dashboard Sharing permissions?',
 										'google-site-kit'
 									) }
 							</p>
