@@ -17,6 +17,6 @@ Any kind of contribution to Site Kit by Google is welcome. Head over to the [Con
 
 PHPStorm does not support our VSCode config that prefers relative imports. To make sure you are using relative imports in your automatic imports, go to **Preferences/Settings > Editor > Code Style > JavaScript (or TypeScript if needed) > Imports** tab and perform the following steps:
 
-1. ✅ Set "Use paths relative to" → Current file
-2. 🚫 Uncheck "Use paths from tsconfig.json/jsconfig.json" if alias imports like @ are being preferred
+1. 🚫 Uncheck "Use paths relative to the project, resource or sources roots"
+2. ✅ Select "Never" for the "Use path aliases" option 
 3. 🔁 Optionally turn off "Use directory imports" if enabled
