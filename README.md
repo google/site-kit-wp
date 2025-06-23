@@ -12,3 +12,11 @@ Any kind of contribution to Site Kit by Google is welcome. Head over to the [Con
 
 * WordPress >= 5.2
 * PHP >= 7.4
+
+## Relative imports in PHPStorm
+
+PHPStorm does not support our VSCode config that prefers relative imports. To make sure you are using relative imports in your automatic imports, go to **Preferences/Settings > Editor > Code Style > JavaScript (or TypeScript if needed) > Imports** tab and perform the following steps:
+
+1. ✅ Set "Use paths relative to" → Current file
+2. 🚫 Uncheck "Use paths from tsconfig.json/jsconfig.json" if alias imports like @ are being preferred
+3. 🔁 Optionally turn off "Use directory imports" if enabled
