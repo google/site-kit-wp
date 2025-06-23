@@ -39,6 +39,12 @@
 		}
 	}
 
+	.googlesitekit-ad-blocking-recovery__steps {
+		.googlesitekit-stepper__step-title {
+			letter-spacing: 0.1px;
+		}
+	}
+
 	.googlesitekit-ad-blocking-recovery__complete-actions {
 		.mdc-button {
 			margin-right: 10px;
@@ -78,6 +84,7 @@
 			}
 
 			> p:first-child {
+				letter-spacing: $ls-m;
 				margin-top: 0;
 
 				@media (min-width: $bp-tablet) {
