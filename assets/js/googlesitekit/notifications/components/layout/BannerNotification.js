@@ -36,6 +36,7 @@ import { Cell, Grid, Row } from '../../../../material-components';
 
 export const TYPES = {
 	INFO: 'info',
+	WARNING: 'warning',
 };
 export default function BannerNotification( {
 	notificationID,
