@@ -53,6 +53,7 @@ export default function EnhancedMeasurementSwitch( {
 	formName = ENHANCED_MEASUREMENT_FORM,
 	isEnhancedMeasurementAlreadyEnabled = false,
 	showTick = false,
+	trackGAEvent = trackEvent,
 } ) {
 	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( formName, ENHANCED_MEASUREMENT_ENABLED )
@@ -66,7 +67,7 @@ export default function EnhancedMeasurementSwitch( {
 			[ ENHANCED_MEASUREMENT_ENABLED ]: ! isEnhancedMeasurementEnabled,
 		} );
 
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_analytics`,
 			// If the current status of enhanced measurement is enabled,
 			// then it means that we disabled it, otherwise enabled it.
@@ -82,6 +83,7 @@ export default function EnhancedMeasurementSwitch( {
 		onClick,
 		setValues,
 		viewContext,
+		trackGAEvent,
 	] );
 
 	useMount( () => {
@@ -160,4 +162,5 @@ EnhancedMeasurementSwitch.propTypes = {
 	loading: PropTypes.bool,
 	isEnhancedMeasurementAlreadyEnabled: PropTypes.bool,
 	showTick: PropTypes.bool,
+	trackGAEvent: PropTypes.func,
 };

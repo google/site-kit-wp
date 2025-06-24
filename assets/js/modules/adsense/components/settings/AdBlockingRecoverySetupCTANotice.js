@@ -25,6 +25,7 @@ import {
 	useEffect,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
@@ -42,7 +43,9 @@ import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 import SurveyViewTrigger from '../../../../components/surveys/SurveyViewTrigger';
 import Notice from '../../../../components/Notice';
 
-export default function AdBlockingRecoverySetupCTANotice() {
+export default function AdBlockingRecoverySetupCTANotice( {
+	trackGAEvent = trackEvent,
+} ) {
 	const inView = useInView();
 	const viewContext = useViewContext();
 
@@ -76,15 +79,15 @@ export default function AdBlockingRecoverySetupCTANotice() {
 
 	useEffect( () => {
 		if ( inView && ! isCTAHidden ) {
-			trackEvent(
+			trackGAEvent(
 				`${ viewContext }_adsense-abr-cta-widget`,
 				'view_notification'
 			);
 		}
-	}, [ inView, isCTAHidden, viewContext ] );
+	}, [ inView, isCTAHidden, viewContext, trackGAEvent ] );
 
 	const handleCTAClick = async () => {
-		await trackEvent(
+		await trackGAEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'confirm_notification'
 		);
@@ -92,7 +95,7 @@ export default function AdBlockingRecoverySetupCTANotice() {
 	};
 
 	const handleLearnMoreClick = () => {
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'click_learn_more_link'
 		);
@@ -143,3 +146,7 @@ export default function AdBlockingRecoverySetupCTANotice() {
 		</Notice>
 	);
 }
+
+AdBlockingRecoverySetupCTANotice.propTypes = {
+	trackGAEvent: PropTypes.func,
+};

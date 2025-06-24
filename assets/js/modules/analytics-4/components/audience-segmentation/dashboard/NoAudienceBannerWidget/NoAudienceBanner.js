@@ -83,7 +83,7 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 				{ didSetAudiences &&
 					createInterpolateElement(
 						__(
-							'It looks like your visitor groups aren’t available anymore. <a>Select other groups</a>.',
+							"It looks like your visitor groups aren't available anymore. <a>Select other groups</a>.",
 							'google-site-kit'
 						),
 						{
@@ -98,7 +98,7 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 				{ ! didSetAudiences &&
 					createInterpolateElement(
 						__(
-							'You don’t have any visitor groups selected. <a>Select groups</a>.',
+							"You don't have any visitor groups selected. <a>Select groups</a>.",
 							'google-site-kit'
 						),
 						{

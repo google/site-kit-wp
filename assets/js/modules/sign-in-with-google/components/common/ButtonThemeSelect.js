@@ -35,7 +35,7 @@ import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 import { useDebounce } from '../../../../hooks/useDebounce';
 
-export default function ButtonThemeSelect() {
+export default function ButtonThemeSelect( { trackGAEvent = trackEvent } ) {
 	const viewContext = useViewContext();
 	const theme = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getTheme()
@@ -43,11 +43,11 @@ export default function ButtonThemeSelect() {
 	const { setTheme } = useDispatch( MODULES_SIGN_IN_WITH_GOOGLE );
 
 	const trackButtonClick = useCallback( () => {
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_sign-in-with-google-settings`,
 			'change_button_theme'
 		);
-	}, [ viewContext ] );
+	}, [ viewContext, trackGAEvent ] );
 
 	const debounceTrackButtonClick = useDebounce( trackButtonClick, 500 );
 

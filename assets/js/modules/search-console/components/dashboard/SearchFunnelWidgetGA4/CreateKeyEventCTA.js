@@ -38,7 +38,7 @@ import { trackEvent } from '../../../../../util';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 
-export default function CreateKeyEventCTA() {
+export default function CreateKeyEventCTA( { trackGAEvent = trackEvent } ) {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_search-traffic-widget`;
 
@@ -49,11 +49,11 @@ export default function CreateKeyEventCTA() {
 	);
 
 	const handleOnClick = useCallback( () => {
-		trackEvent( eventCategory, 'click_ga4_keyEvents_cta' );
-	}, [ eventCategory ] );
+		trackGAEvent( eventCategory, 'click_ga4_keyEvents_cta' );
+	}, [ eventCategory, trackGAEvent ] );
 
 	useMount( () => {
-		trackEvent( eventCategory, 'view_ga4_keyEvents_cta' );
+		trackGAEvent( eventCategory, 'view_ga4_keyEvents_cta' );
 	} );
 
 	return (

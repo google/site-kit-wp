@@ -58,6 +58,7 @@ import useViewContext from '../../hooks/useViewContext';
 function ConfirmSitePurposeChangeModal( {
 	dialogActive = false,
 	handleDialog = null,
+	trackGAEvent = trackEvent,
 } ) {
 	const viewContext = useViewContext();
 	const [ isSaving, setIsSaving ] = useState( false );
@@ -168,7 +169,7 @@ function ConfirmSitePurposeChangeModal( {
 		if ( prevDialogActive === true && dialogActive === false ) {
 			if ( isSaving ) {
 				// Handle internal tracking when confirmation CTA is clicked.
-				trackEvent(
+				trackGAEvent(
 					`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
 					'confirm_update_metrics_selection',
 					'conversion_reporting'
@@ -176,14 +177,20 @@ function ConfirmSitePurposeChangeModal( {
 			} else {
 				// Handle internal tracking when keep existing metrics CTA is clicked
 				// or the modal is closed via other means.
-				trackEvent(
+				trackGAEvent(
 					`${ viewContext }_kmw-settings-tailored-metrics-suggestions`,
 					'cancel_update_metrics_selection',
 					'conversion_reporting'
 				);
 			}
 		}
-	}, [ prevDialogActive, dialogActive, isSaving, viewContext ] );
+	}, [
+		prevDialogActive,
+		dialogActive,
+		isSaving,
+		viewContext,
+		trackGAEvent,
+	] );
 
 	useEffect( () => {
 		// Preserve current metrics list in a snapshot, so after site purpose is updated in the modal
@@ -306,6 +313,7 @@ function ConfirmSitePurposeChangeModal( {
 ConfirmSitePurposeChangeModal.propTypes = {
 	dialogActive: PropTypes.bool,
 	handleDialog: PropTypes.func,
+	trackGAEvent: PropTypes.func,
 };
 
 export default ConfirmSitePurposeChangeModal;

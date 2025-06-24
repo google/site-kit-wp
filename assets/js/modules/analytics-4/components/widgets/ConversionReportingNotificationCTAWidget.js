@@ -58,7 +58,11 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
 import whenHasChangedConversionEvents from '../util/whenHasChangedConversionEvents';
 
-function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
+function ConversionReportingNotificationCTAWidget( {
+	Widget,
+	WidgetNull,
+	trackGAEvent = trackEvent,
+} ) {
 	const viewContext = useViewContext();
 
 	const [ isSaving, setIsSaving ] = useState( false );
@@ -166,7 +170,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 
 				// Handle internal tracking for lost events banner dismissal.
 				if ( trackDismissalRef.current ) {
-					trackEvent(
+					trackGAEvent(
 						`${ viewContext }_kmw-lost-conversion-events-detected-notification`,
 						'dismiss_notification',
 						'conversion_reporting'
@@ -189,6 +193,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 			viewContext,
 			conversionReportingDetectedEventsTrackingArgs,
 			saveConversionReportingSettings,
+			trackGAEvent,
 		]
 	);
 
@@ -238,7 +243,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 			// Handle internal tracking of lost events variant.
 			if ( 'lostEvents' === clickContext ) {
 				if ( shouldShowCalloutForLostEvents ) {
-					trackEvent(
+					trackGAEvent(
 						`${ viewContext }_kmw-lost-conversion-events-detected-notification`,
 						'confirm_get_select_metrics',
 						'conversion_reporting'
@@ -272,6 +277,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 			setValue,
 			shouldShowCalloutForLostEvents,
 			shouldShowCalloutForNewEvents,
+			trackGAEvent,
 		]
 	);
 
@@ -342,7 +348,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 
 			// Handle internal tracking for lost events banner.
 			if ( shouldShowCalloutForLostEvents ) {
-				trackEvent(
+				trackGAEvent(
 					`${ viewContext }_kmw-lost-conversion-events-detected-notification`,
 					'view_notification',
 					'conversion_reporting'
@@ -357,6 +363,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 		viewContext,
 		conversionReportingDetectedEventsTrackingArgs,
 		shouldShowCalloutForLostEvents,
+		trackGAEvent,
 	] );
 
 	const documentationURL = useSelect( ( select ) =>

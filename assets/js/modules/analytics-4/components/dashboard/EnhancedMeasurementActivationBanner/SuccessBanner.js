@@ -39,7 +39,11 @@ import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import useNotificationEvents from '../../../../../googlesitekit/notifications/hooks/useNotificationEvents';
 
-export default function SuccessBanner( { id, Notification } ) {
+export default function SuccessBanner( {
+	id,
+	Notification,
+	trackGAEvent = trackEvent,
+} ) {
 	const viewContext = useViewContext();
 
 	const documentationURL = useSelect( ( select ) =>
@@ -54,11 +58,11 @@ export default function SuccessBanner( { id, Notification } ) {
 	// It considers the EnhancedMeasurementActivationBanner as already viewed when SetupBanner is
 	// rendered and doesn't track the view again when the SuccessBanner variant is rendered.
 	const handleView = useCallback( () => {
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_enhanced-measurement-success`,
 			'view_notification'
 		);
-	}, [ viewContext ] );
+	}, [ viewContext, trackGAEvent ] );
 
 	const trackEvents = useNotificationEvents( id );
 
@@ -106,4 +110,5 @@ export default function SuccessBanner( { id, Notification } ) {
 SuccessBanner.propTypes = {
 	id: PropTypes.string.isRequired,
 	Notification: PropTypes.elementType,
+	trackGAEvent: PropTypes.func,
 };

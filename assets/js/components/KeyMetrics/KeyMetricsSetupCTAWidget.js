@@ -47,7 +47,11 @@ import Link from '../Link';
 import BannerSVGDesktop from '@/svg/graphics/banner-conversions-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-conversions-setup-cta-mobile.svg?url';
 
-function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
+function KeyMetricsSetupCTAWidget( {
+	Widget,
+	WidgetNull,
+	trackGAEvent = trackEvent,
+} ) {
 	const trackingRef = useRef();
 	const viewContext = useViewContext();
 	const trackEventCategory = `${ viewContext }_kmw-cta-notification`;
@@ -76,7 +80,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 			return;
 		}
 
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_kmw-cta-notification`,
 			'view_notification'
 		);
@@ -86,7 +90,14 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		}
 
 		setHasBeenInView( true );
-	}, [ inView, hasBeenInView, viewContext, usingProxy, triggerSurvey ] );
+	}, [
+		inView,
+		hasBeenInView,
+		viewContext,
+		usingProxy,
+		triggerSurvey,
+		trackGAEvent,
+	] );
 
 	const tooltipSettings = {
 		tooltipSlug: KEY_METRICS_SETUP_CTA_WIDGET_SLUG,
@@ -104,21 +115,26 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const { dismissItem } = useDispatch( CORE_USER );
 
 	const handleDismiss = useCallback( async () => {
-		await trackEvent( trackEventCategory, 'dismiss_notification' );
+		await trackGAEvent( trackEventCategory, 'dismiss_notification' );
 		showTooltip();
 		await dismissItem( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
-	}, [ trackEventCategory, showTooltip, dismissItem ] );
+	}, [ trackEventCategory, showTooltip, dismissItem, trackGAEvent ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const openMetricsSelectionPanel = useCallback( async () => {
-		await trackEvent( trackEventCategory, 'confirm_pick_own_metrics' );
+		await trackGAEvent( trackEventCategory, 'confirm_pick_own_metrics' );
 
 		navigateTo( fullScreenSelectionLink );
-	}, [ trackEventCategory, navigateTo, fullScreenSelectionLink ] );
+	}, [
+		trackEventCategory,
+		navigateTo,
+		fullScreenSelectionLink,
+		trackGAEvent,
+	] );
 
 	const onGetTailoredMetricsClick = useCallback( () => {
-		trackEvent( trackEventCategory, 'confirm_get_tailored_metrics' );
-	}, [ trackEventCategory ] );
+		trackGAEvent( trackEventCategory, 'confirm_get_tailored_metrics' );
+	}, [ trackEventCategory, trackGAEvent ] );
 
 	if ( ! displayCTAWidget ) {
 		return <WidgetNull />;

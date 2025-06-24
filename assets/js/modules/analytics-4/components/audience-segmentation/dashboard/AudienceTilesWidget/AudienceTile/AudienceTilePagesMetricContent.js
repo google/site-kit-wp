@@ -59,6 +59,7 @@ export default function AudienceTilePagesMetricContent( {
 	hasCustomDimension,
 	onCreateCustomDimension,
 	isSaving,
+	trackGAEvent = trackEvent,
 } ) {
 	const viewContext = useViewContext();
 	const viewOnlyDashboard = useViewOnly();
@@ -79,7 +80,7 @@ export default function AudienceTilePagesMetricContent( {
 	);
 
 	function handleCreateCustomDimension() {
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_audiences-top-content-cta`,
 			'create_custom_dimension'
 		).finally( onCreateCustomDimension );
@@ -129,7 +130,7 @@ export default function AudienceTilePagesMetricContent( {
 					onClick={ handleCreateCustomDimension }
 					isSaving={ isSaving }
 					onInView={ () => {
-						trackEvent(
+						trackGAEvent(
 							`${ viewContext }_audiences-top-content-cta`,
 							'view_cta'
 						);
@@ -175,4 +176,5 @@ AudienceTilePagesMetricContent.propTypes = {
 	hasCustomDimension: PropTypes.bool,
 	onCreateCustomDimension: PropTypes.func,
 	isSaving: PropTypes.bool,
+	trackGAEvent: PropTypes.func,
 };
