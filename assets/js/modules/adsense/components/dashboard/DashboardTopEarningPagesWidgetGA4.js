@@ -209,7 +209,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 
 	if ( loading || isGatheringData === undefined ) {
 		return (
-			<Widget noPadding Footer={ Footer }>
+			<Widget Footer={ Footer } noPadding>
 				<PreviewTable rows={ 5 } padding />
 			</Widget>
 		);
@@ -302,7 +302,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 	];
 
 	return (
-		<Widget noPadding Footer={ Footer } ref={ updateTrackingRef }>
+		<Widget Footer={ Footer } ref={ updateTrackingRef } noPadding>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ data?.rows || [] }

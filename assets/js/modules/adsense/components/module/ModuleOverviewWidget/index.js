@@ -172,7 +172,7 @@ function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 	}
 
 	return (
-		<Widget noPadding Header={ Header } Footer={ Footer }>
+		<Widget Header={ Header } Footer={ Footer } noPadding>
 			{ ! viewOnlyDashboard && legacyStatus && <StatusMigration /> }
 			<Overview
 				metrics={ ModuleOverviewWidget.metrics }

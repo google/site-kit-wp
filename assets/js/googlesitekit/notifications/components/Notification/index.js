@@ -44,7 +44,8 @@ export default function Notification( {
 	const viewed = useHasBeenViewed( id );
 	const trackEvents = useNotificationEvents(
 		id,
-		gaTrackingEventArgs?.category
+		gaTrackingEventArgs?.category,
+		{ viewAction: gaTrackingEventArgs?.viewAction }
 	);
 
 	const [ isViewedOnce, setIsViewedOnce ] = useState( false );
@@ -104,6 +105,7 @@ Notification.propTypes = {
 	className: PropTypes.string,
 	gaTrackingEventArgs: PropTypes.shape( {
 		category: PropTypes.string,
+		viewAction: PropTypes.string,
 		label: PropTypes.string,
 		value: PropTypes.string,
 	} ),

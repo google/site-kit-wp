@@ -49,6 +49,7 @@ import {
 	PERMISSION_UPDATE_PLUGINS,
 } from '../datastore/user/constants';
 import { CORE_MODULES } from '../modules/datastore/constants';
+import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -78,6 +79,12 @@ import { MINUTE_IN_SECONDS } from '../../util';
 import ModuleRecoveryAlert from '../../components/dashboard-sharing/ModuleRecoveryAlert';
 import SiteKitSetupSuccessNotification from '../../components/notifications/SiteKitSetupSuccessNotification';
 import ModuleSetupSuccessNotification from '../../components/notifications/ModuleSetupSuccessNotification';
+import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
+	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
+} from '../../components/OverlayNotification/AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
+import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
+	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
+} from '../../components/OverlayNotification/LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -725,6 +732,130 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 		featureFlag: 'firstPartyMode',
+	},
+	[ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ]: {
+		Component:
+			AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The hasAccessToShareableModule() selector relies on
+				// the resolution of getAuthentication().
+				resolveSelect( CORE_USER ).getAuthentication(),
+				// The isModuleConnected() and hasAccessToShareableModule() selectors
+				// rely on the resolution of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
+
+			const adSenseModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
+
+			const analyticsModuleConnected = select(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+
+			const canViewSharedAdsense =
+				select( CORE_USER ).hasAccessToShareableModule(
+					MODULE_SLUG_ADSENSE
+				);
+
+			const canViewSharedAnalytics = select(
+				CORE_USER
+			).hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
+
+			if (
+				! (
+					adSenseModuleConnected &&
+					analyticsModuleConnected &&
+					canViewSharedAdsense &&
+					canViewSharedAnalytics
+				)
+			) {
+				return false;
+			}
+
+			// The getAdSenseLinked() selector relies on the resolution
+			// of the getSettings() resolver.
+			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+			const isAdSenseLinked =
+				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+
+			if ( ! isAdSenseLinked ) {
+				return false;
+			}
+
+			// The getAccountID() selector relies on the resolution
+			// of the getSettings() resolver.
+			await resolveSelect( MODULES_ADSENSE ).getSettings();
+			const adSenseAccountID = select( MODULES_ADSENSE ).getAccountID();
+
+			const { startDate, endDate } = select(
+				CORE_USER
+			).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} );
+
+			const reportArgs = {
+				startDate,
+				endDate,
+				dimensions: [ 'pagePath', 'adSourceName' ],
+				metrics: [ { name: 'totalAdRevenue' } ],
+				dimensionFilters: {
+					adSourceName: `Google AdSense account (${ adSenseAccountID })`,
+				},
+				orderby: [
+					{ metric: { metricName: 'totalAdRevenue' }, desc: true },
+				],
+				limit: 1,
+			};
+
+			const reportData = await resolveSelect(
+				MODULES_ANALYTICS_4
+			).getReport( reportArgs );
+
+			return isZeroReport( reportData ) === false;
+		},
+	},
+	[ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ]: {
+		Component: LinkAnalyticsAndAdSenseAccountsOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
+
+			const adSenseModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
+
+			const analyticsModuleConnected = select(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+
+			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
+				return false;
+			}
+
+			// The getAdSenseLinked() selector relies on the resolution
+			// of the getSettings() resolver.
+			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+			const isAdSenseLinked =
+				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+
+			return isAdSenseLinked === false;
+		},
 	},
 };
 
