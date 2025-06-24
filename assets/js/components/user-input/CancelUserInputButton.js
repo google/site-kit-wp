@@ -43,10 +43,10 @@ export default function CancelUserInputButton( { disabled } ) {
 
 	return (
 		<Button
-			tertiary
 			className="googlesitekit-user-input__buttons--cancel"
 			onClick={ () => navigateTo( dashboardURL ) }
 			disabled={ disabled }
+			tertiary
 		>
 			{ __( 'Cancel', 'google-site-kit' ) }
 		</Button>

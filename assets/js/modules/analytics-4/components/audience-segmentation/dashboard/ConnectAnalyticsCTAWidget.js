@@ -64,7 +64,7 @@ export default function ConnectAnalyticsCTAWidget( { Widget } ) {
 					'google-site-kit'
 				),
 				{
-					a: <Link secondary onClick={ handleConnectModule } />,
+					a: <Link onClick={ handleConnectModule } secondary />,
 				}
 			) }
 		</p>
@@ -76,7 +76,7 @@ export default function ConnectAnalyticsCTAWidget( { Widget } ) {
 					'google-site-kit'
 				) }
 			</p>
-			<Link secondary onClick={ handleConnectModule }>
+			<Link onClick={ handleConnectModule } secondary>
 				{ __( 'Connect Google Analytics', 'google-site-kit' ) }
 			</Link>
 		</Fragment>

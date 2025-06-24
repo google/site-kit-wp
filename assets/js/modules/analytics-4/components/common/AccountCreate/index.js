@@ -294,9 +294,9 @@ export default function AccountCreate() {
 
 				{ accounts && !! accounts.length && (
 					<Button
-						tertiary
 						className="googlesitekit-setup-module__sub-action"
 						onClick={ handleBack }
+						tertiary
 					>
 						{ __( 'Back', 'google-site-kit' ) }
 					</Button>

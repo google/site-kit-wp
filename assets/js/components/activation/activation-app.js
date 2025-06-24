@@ -56,7 +56,7 @@ export function ActivationApp() {
 
 	const buttonURL = canViewDashboard ? dashboardURL : splashURL;
 	const buttonLabel = canViewDashboard
-		? __( 'Go to Dashboard', 'google-site-kit' )
+		? __( 'Go to dashboard', 'google-site-kit' )
 		: __( 'Start setup', 'google-site-kit' );
 
 	useEffect( () => {

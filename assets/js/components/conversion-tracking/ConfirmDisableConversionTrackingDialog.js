@@ -58,7 +58,6 @@ export default function ConfirmDisableConversionTrackingDialog( {
 	return (
 		<RefocusableModalDialog
 			className="googlesitekit-settings-module__confirm-disconnect-modal"
-			dialogActive
 			title={ __(
 				'Disable enhanced conversion tracking',
 				'google-site-kit'
@@ -69,6 +68,7 @@ export default function ConfirmDisableConversionTrackingDialog( {
 			onClose={ onCancel }
 			provides={ provides }
 			confirmButton={ __( 'Disable', 'google-site-kit' ) }
+			dialogActive
 			danger
 		/>
 	);

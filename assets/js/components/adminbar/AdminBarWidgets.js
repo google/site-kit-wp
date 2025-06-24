@@ -85,54 +85,49 @@ export default function AdminBarWidgets() {
 		: { lg: 6, md: 4 };
 
 	return (
-		<Fragment>
-			<Row>
-				{ canViewSharedSearchConsole && (
+		<Row>
+			{ canViewSharedSearchConsole && (
+				<Fragment>
+					<Cell
+						lgSize={ searchConsoleSize.lg }
+						mdSize={ searchConsoleSize.md }
+					>
+						<AdminBarImpressionsWidget />
+					</Cell>
+					<Cell
+						lgSize={ searchConsoleSize.lg }
+						mdSize={ searchConsoleSize.md }
+					>
+						<AdminBarClicksWidget />
+					</Cell>
+				</Fragment>
+			) }
+
+			{ analyticsModuleConnected &&
+				analyticsModuleActive &&
+				canViewSharedAnalytics && (
 					<Fragment>
 						<Cell
-							lgSize={ searchConsoleSize.lg }
-							mdSize={ searchConsoleSize.md }
+							lgSize={ analyticsSize.lg }
+							mdSize={ analyticsSize.md }
 						>
-							<AdminBarImpressionsWidget />
+							<AdminBarUniqueVisitorsGA4Widget />
 						</Cell>
 						<Cell
-							lgSize={ searchConsoleSize.lg }
-							mdSize={ searchConsoleSize.md }
+							lgSize={ analyticsSize.lg }
+							mdSize={ analyticsSize.md }
 						>
-							<AdminBarClicksWidget />
+							<AdminBarSessionsGA4Widget />
 						</Cell>
 					</Fragment>
 				) }
 
-				{ analyticsModuleConnected &&
-					analyticsModuleActive &&
-					canViewSharedAnalytics && (
-						<Fragment>
-							<Fragment>
-								<Cell
-									lgSize={ analyticsSize.lg }
-									mdSize={ analyticsSize.md }
-								>
-									<AdminBarUniqueVisitorsGA4Widget />
-								</Cell>
-								<Cell
-									lgSize={ analyticsSize.lg }
-									mdSize={ analyticsSize.md }
-								>
-									<AdminBarSessionsGA4Widget />
-								</Cell>
-							</Fragment>
-						</Fragment>
-					) }
-
-				{ analyticsModuleAvailable &&
-					( ! analyticsModuleConnected ||
-						! analyticsModuleActive ) && (
-						<Cell lgSize={ 6 } mdSize={ 4 }>
-							<AdminBarActivateAnalyticsCTA />
-						</Cell>
-					) }
-			</Row>
-		</Fragment>
+			{ analyticsModuleAvailable &&
+				( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
+					<Cell lgSize={ 6 } mdSize={ 4 }>
+						<AdminBarActivateAnalyticsCTA />
+					</Cell>
+				) }
+		</Row>
 	);
 }

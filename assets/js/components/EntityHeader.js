@@ -130,9 +130,9 @@ function EntityHeader() {
 			>
 				<p>{ currentEntityTitle }</p>
 				<Link
-					secondary
 					href={ entityURL }
 					aria-label={ entityURL }
+					secondary
 					external
 				>
 					{ url }

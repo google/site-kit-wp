@@ -38,6 +38,7 @@ import ErrorSVG from '@/svg/graphics/error-banner.svg?url';
 export const TYPES = {
 	INFO: 'info',
 	ERROR: 'error',
+	WARNING: 'warning',
 };
 export default function BannerNotification( {
 	notificationID,
@@ -137,7 +138,7 @@ export default function BannerNotification( {
 }
 
 BannerNotification.propTypes = {
-	notificationID: PropTypes.string,
+	notificationID: PropTypes.string.isRequired,
 	type: PropTypes.oneOf( Object.values( TYPES ) ),
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),

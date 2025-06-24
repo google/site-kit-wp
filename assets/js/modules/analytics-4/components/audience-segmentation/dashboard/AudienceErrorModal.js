@@ -161,7 +161,6 @@ export default function AudienceErrorModal( {
 	return (
 		<Portal>
 			<RefocusableModalDialog
-				dialogActive
 				buttonLink={ buttonLink }
 				title={ errorTitle }
 				subtitle={ errorDescription }
@@ -182,9 +181,10 @@ export default function AudienceErrorModal( {
 					trackEvent( trackEventCategory, action );
 				} }
 				onClose={ onCancel }
-				danger
 				inProgress={ inProgress }
 				refocusQuerySelector=".googlesitekit-settings-visitor-groups__setup .googlesitekit-cta-link"
+				danger
+				dialogActive
 			/>
 		</Portal>
 	);
