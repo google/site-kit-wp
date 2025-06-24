@@ -121,6 +121,8 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		recoverableModules === undefined ||
 		userRecoverableModuleSlugs === undefined;
 
+	const hideCTAButton = ! hasUserRecoverableModules;
+
 	return (
 		<Notification className="googlesitekit-publisher-win">
 			<BannerNotification
@@ -182,7 +184,7 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 					)
 				}
 				ctaButton={
-					! hasUserRecoverableModules
+					hideCTAButton
 						? undefined
 						: {
 								label: __( 'Recover', 'google-site-kit' ),
@@ -199,10 +201,14 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 									'Remind me later',
 									'google-site-kit'
 								),
+								primary: hideCTAButton,
+								className: hideCTAButton
+									? 'googlesitekit-banner__cta'
+									: undefined,
 						  }
 				}
 				dismissOptions={
-					! hasUserRecoverableModules
+					hideCTAButton
 						? {
 								dismissExpires: DAY_IN_SECONDS,
 						  }
