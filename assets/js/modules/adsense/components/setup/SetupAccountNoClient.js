@@ -35,12 +35,12 @@ import { ErrorNotices } from '../common';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 
-export default function SetupAccountNoClient() {
+export default function SetupAccountNoClient( { trackGAEvent = trackEvent } ) {
 	const viewContext = useViewContext();
 
 	const onButtonClick = useCallback( () => {
-		trackEvent( `${ viewContext }_adsense`, 'apply_afc' );
-	}, [ viewContext ] );
+		trackGAEvent( `${ viewContext }_adsense`, 'apply_afc' );
+	}, [ viewContext, trackGAEvent ] );
 
 	return (
 		<Fragment>
@@ -56,7 +56,7 @@ export default function SetupAccountNoClient() {
 			<p>
 				{ createInterpolateElement(
 					__(
-						'To start using AdSense on your website, you need to upgrade your account to add “AdSense for content”. <a>Learn more</a>',
+						'To start using AdSense on your website, you need to upgrade your account to add "AdSense for content". <a>Learn more</a>',
 						'google-site-kit'
 					),
 					{

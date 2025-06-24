@@ -39,17 +39,16 @@ import useViewContext from '../../../../hooks/useViewContext';
 import Badge from '../../../../components/Badge';
 import Notice from '../../../../components/Notice';
 
-export default function UseSnippetSwitch( props ) {
-	const {
-		label = __(
-			'Let Site Kit place AdSense code on your site',
-			'google-site-kit'
-		),
-		checkedMessage,
-		uncheckedMessage,
-		saveOnChange,
-	} = props;
-
+export default function UseSnippetSwitch( {
+	label = __(
+		'Let Site Kit place AdSense code on your site',
+		'google-site-kit'
+	),
+	checkedMessage,
+	uncheckedMessage,
+	saveOnChange,
+	trackGAEvent = trackEvent,
+} ) {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_adsense`;
 
@@ -69,8 +68,11 @@ export default function UseSnippetSwitch( props ) {
 	}, [ useSnippet, saveOnChange, setUseSnippet, saveSettings ] );
 
 	useUpdateEffect( () => {
-		trackEvent( eventCategory, useSnippet ? 'enable_tag' : 'disable_tag' );
-	}, [ eventCategory, useSnippet ] );
+		trackGAEvent(
+			eventCategory,
+			useSnippet ? 'enable_tag' : 'disable_tag'
+		);
+	}, [ eventCategory, useSnippet, trackGAEvent ] );
 
 	if ( undefined === useSnippet ) {
 		return null;
@@ -114,6 +116,7 @@ UseSnippetSwitch.propTypes = {
 	checkedMessage: PropTypes.string,
 	uncheckedMessage: PropTypes.string,
 	saveOnChange: PropTypes.bool,
+	trackGAEvent: PropTypes.func,
 };
 
 UseSnippetSwitch.defaultProps = {

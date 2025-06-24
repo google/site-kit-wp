@@ -34,8 +34,10 @@ import { trackEvent } from '../util';
  * Tracks the successful user and site setup.
  *
  * @since 1.132.0
+ *
+ * @param {Function} trackGAEvent The tracking function to use for analytics events.
  */
-export const useGlobalTrackingEffect = () => {
+export function useGlobalTrackingEffect( trackGAEvent = trackEvent ) {
 	const viewContext = useViewContext();
 
 	const isUsingProxy = useSelect( ( select ) =>
@@ -53,7 +55,7 @@ export const useGlobalTrackingEffect = () => {
 
 			if ( startUserSetup.cacheHit ) {
 				await deleteItem( 'start_user_setup' );
-				trackEvent(
+				trackGAEvent(
 					`${ viewContext }_setup`,
 					'complete_user_setup',
 					isUsingProxy ? 'proxy' : 'custom-oauth'
@@ -62,7 +64,7 @@ export const useGlobalTrackingEffect = () => {
 
 			if ( startSiteSetup.cacheHit ) {
 				await deleteItem( 'start_site_setup' );
-				trackEvent(
+				trackGAEvent(
 					`${ viewContext }_setup`,
 					'complete_site_setup',
 					isUsingProxy ? 'proxy' : 'custom-oauth'
@@ -73,5 +75,5 @@ export const useGlobalTrackingEffect = () => {
 		if ( ! setupErrorMessage && isUsingProxy !== undefined ) {
 			trackEvents();
 		}
-	}, [ viewContext, isUsingProxy, setupErrorMessage ] );
-};
+	}, [ viewContext, isUsingProxy, setupErrorMessage, trackGAEvent ] );
+}

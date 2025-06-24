@@ -44,7 +44,7 @@ import {
 	MODULES_ADSENSE,
 } from '../../../../datastore/constants';
 
-export default function CreateMessageStep() {
+export default function CreateMessageStep( { trackGAEvent = trackEvent } ) {
 	const viewContext = useViewContext();
 
 	const adsenseAccountID = useSelect( ( select ) =>
@@ -83,7 +83,7 @@ export default function CreateMessageStep() {
 
 	const onCTAClick = useCallback( async () => {
 		if ( ! createMessageCTAClicked ) {
-			await trackEvent(
+			await trackGAEvent(
 				`${ viewContext }_adsense-abr`,
 				'create_message',
 				'primary_cta'
@@ -102,7 +102,7 @@ export default function CreateMessageStep() {
 		const { error } = await saveSettings();
 
 		if ( ! error ) {
-			await trackEvent(
+			await trackGAEvent(
 				`${ viewContext }_adsense-abr`,
 				'confirm_message_ready'
 			);
@@ -117,6 +117,7 @@ export default function CreateMessageStep() {
 		setValue,
 		setupSuccessURL,
 		viewContext,
+		trackGAEvent,
 	] );
 
 	const onSecondaryCTAClick = useCallback( async () => {
@@ -127,7 +128,7 @@ export default function CreateMessageStep() {
 		const { error } = await saveSettings();
 
 		if ( ! error ) {
-			await trackEvent(
+			await trackGAEvent(
 				`${ viewContext }_adsense-abr`,
 				'confirm_message_ready_secondary_cta'
 			);
@@ -140,20 +141,21 @@ export default function CreateMessageStep() {
 		navigateTo,
 		setupSuccessURL,
 		viewContext,
+		trackGAEvent,
 	] );
 
 	useMount( () => {
-		trackEvent( `${ viewContext }_adsense-abr`, 'setup_create_message' );
+		trackGAEvent( `${ viewContext }_adsense-abr`, 'setup_create_message' );
 	} );
 
 	useEffect( () => {
 		if ( createMessageCTAClicked ) {
-			trackEvent( `${ viewContext }_adsense-abr`, 'setup_final_step' );
+			trackGAEvent( `${ viewContext }_adsense-abr`, 'setup_final_step' );
 		}
-	}, [ createMessageCTAClicked, viewContext ] );
+	}, [ createMessageCTAClicked, viewContext, trackGAEvent ] );
 
 	const handleSecondaryCTAClick = () => {
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_adsense-abr`,
 			'create_message',
 			'secondary_cta'
@@ -222,7 +224,7 @@ export default function CreateMessageStep() {
 				{ createMessageCTAClicked && (
 					<p className="googlesitekit-ad-blocking-recovery__create-message-footer-note">
 						{ __(
-							'Ad blocking recovery only works if you’ve created and published your message in AdSense',
+							"Ad blocking recovery only works if you've created and published your message in AdSense",
 							'google-site-kit'
 						) }
 					</p>

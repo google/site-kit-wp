@@ -35,7 +35,7 @@ import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 import { useDebounce } from '../../../../hooks/useDebounce';
 
-export default function ButtonShapeSelect() {
+export default function ButtonShapeSelect( { trackGAEvent = trackEvent } ) {
 	const viewContext = useViewContext();
 	const shape = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getShape()
@@ -43,11 +43,11 @@ export default function ButtonShapeSelect() {
 	const { setShape } = useDispatch( MODULES_SIGN_IN_WITH_GOOGLE );
 
 	const trackButtonClick = useCallback( () => {
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_sign-in-with-google-settings`,
 			'change_button_shape'
 		);
-	}, [ viewContext ] );
+	}, [ viewContext, trackGAEvent ] );
 
 	const debounceTrackButtonClick = useDebounce( trackButtonClick, 500 );
 

@@ -56,7 +56,7 @@ const TAB_INDEX_LAB = 0;
 const TAB_INDEX_FIELD = 1;
 const TAB_INDEX_RECOMMENDATIONS = 2;
 
-export default function DashboardPageSpeed() {
+export default function DashboardPageSpeed( { trackGAEvent = trackEvent } ) {
 	const trackingRef = useRef();
 
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
@@ -127,15 +127,15 @@ export default function DashboardPageSpeed() {
 
 	useEffect( () => {
 		if ( inView && ! hasBeenInView ) {
-			trackEvent( `${ viewContext }_pagespeed-widget`, 'widget_view' );
-			trackEvent(
+			trackGAEvent( `${ viewContext }_pagespeed-widget`, 'widget_view' );
+			trackGAEvent(
 				`${ viewContext }_pagespeed-widget`,
 				'default_tab_view',
 				dataSrc.replace( 'data_', '' )
 			);
 			setHasBeenInView( true );
 		}
-	}, [ inView, dataSrc, viewContext, hasBeenInView ] );
+	}, [ inView, dataSrc, viewContext, hasBeenInView, trackGAEvent ] );
 
 	// Update the active tab for "In the Lab" or "In The Field".
 	const updateActiveTab = useCallback(
@@ -161,13 +161,13 @@ export default function DashboardPageSpeed() {
 					break;
 			}
 
-			trackEvent(
+			trackGAEvent(
 				`${ viewContext }_pagespeed-widget`,
 				'tab_select',
 				eventLabel
 			);
 		},
-		[ setValues, viewContext ]
+		[ setValues, viewContext, trackGAEvent ]
 	);
 
 	const reportData =

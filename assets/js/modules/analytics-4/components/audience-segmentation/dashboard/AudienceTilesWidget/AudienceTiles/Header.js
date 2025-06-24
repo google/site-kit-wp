@@ -31,6 +31,7 @@ export default function Header( {
 	activeTileIndex,
 	setActiveTile,
 	visibleAudiences,
+	trackGAEvent = trackEvent,
 } ) {
 	const viewContext = useViewContext();
 
@@ -81,7 +82,7 @@ export default function Header( {
 							title={ tooltipMessage }
 							tooltipClassName="googlesitekit-info-tooltip__content--audience"
 							onOpen={ () => {
-								trackEvent(
+								trackGAEvent(
 									`${ viewContext }_audiences-tile`,
 									'view_tile_tooltip',
 									audienceSlug

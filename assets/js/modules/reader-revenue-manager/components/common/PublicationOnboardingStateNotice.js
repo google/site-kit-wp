@@ -41,7 +41,9 @@ import Notice from '../../../../components/Notice';
 const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
 	PUBLICATION_ONBOARDING_STATES;
 
-export default function PublicationOnboardingStateNotice() {
+export default function PublicationOnboardingStateNotice( {
+	trackGAEvent = trackEvent,
+} ) {
 	const viewContext = useViewContext();
 	const onboardingState = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationOnboardingState()
@@ -88,12 +90,12 @@ export default function PublicationOnboardingStateNotice() {
 			[ SYNC_PUBLICATION ]: true,
 		} );
 
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_rrm-onboarding-state-notification`,
 			'confirm_notification',
 			onboardingState
 		);
-	}, [ onboardingState, setValues, viewContext ] );
+	}, [ onboardingState, setValues, viewContext, trackGAEvent ] );
 
 	const syncPublication = useCallback( () => {
 		if ( ! shouldSyncPublication ) {
@@ -108,12 +110,12 @@ export default function PublicationOnboardingStateNotice() {
 			return;
 		}
 
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_rrm-onboarding-state-notification`,
 			'view_notification',
 			onboardingState
 		);
-	}, [ onboardingState, showNotice, viewContext ] );
+	}, [ onboardingState, showNotice, viewContext, trackGAEvent ] );
 
 	// Sync publication data when user re-focuses window.
 	useRefocus( syncPublication, 15000 );

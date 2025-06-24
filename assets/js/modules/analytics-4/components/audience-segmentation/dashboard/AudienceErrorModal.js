@@ -48,6 +48,7 @@ export default function AudienceErrorModal( {
 	trackEventCategory,
 	onCancel = () => {},
 	onRetry = () => {},
+	trackGAEvent = trackEvent,
 } ) {
 	const errors = Array.isArray( apiErrors ) ? apiErrors : [ apiErrors ];
 
@@ -86,7 +87,7 @@ export default function AudienceErrorModal( {
 			action = 'setup_error_retry';
 		}
 
-		trackEvent( trackEventCategory, action ).finally( () => {
+		trackGAEvent( trackEventCategory, action ).finally( () => {
 			if ( ! hasInsufficientPermissionsError ) {
 				onRetry();
 			}
@@ -104,7 +105,7 @@ export default function AudienceErrorModal( {
 			action = 'setup_error_cancel';
 		}
 
-		trackEvent( trackEventCategory, action ).finally( onCancel );
+		trackGAEvent( trackEventCategory, action ).finally( onCancel );
 	}
 
 	let errorTitle, errorDescription, confirmButton, buttonLink;
@@ -133,7 +134,7 @@ export default function AudienceErrorModal( {
 		errorTitle = __( 'Insufficient permissions', 'google-site-kit' );
 		errorDescription = createInterpolateElement(
 			__(
-				'You’ll need to contact your administrator. Trouble getting access? <HelpLink />',
+				"You'll need to contact your administrator. Trouble getting access? <HelpLink />",
 				'google-site-kit'
 			),
 			{
@@ -178,7 +179,7 @@ export default function AudienceErrorModal( {
 						action = 'setup_error';
 					}
 
-					trackEvent( trackEventCategory, action );
+					trackGAEvent( trackEventCategory, action );
 				} }
 				onClose={ onCancel }
 				inProgress={ inProgress }
@@ -203,4 +204,5 @@ AudienceErrorModal.propTypes = {
 	trackEventCategory: PropTypes.string,
 	onCancel: PropTypes.func,
 	onRetry: PropTypes.func,
+	trackGAEvent: PropTypes.func,
 };

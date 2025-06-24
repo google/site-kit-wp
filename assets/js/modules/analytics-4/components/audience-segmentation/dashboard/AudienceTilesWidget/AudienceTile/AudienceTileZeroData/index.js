@@ -40,11 +40,12 @@ export default function AudienceTileZeroData( {
 	isMobileBreakpoint,
 	isTileHideable,
 	onHideTile,
+	trackGAEvent = trackEvent,
 } ) {
 	const viewContext = useViewContext();
 
 	function handleHideTile() {
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_audiences-tile`,
 			'temporarily_hide',
 			audienceSlug
@@ -61,7 +62,7 @@ export default function AudienceTileZeroData( {
 			isTileHideable={ isTileHideable }
 			onHideTile={ handleHideTile }
 			onInView={ () => {
-				trackEvent(
+				trackGAEvent(
 					`${ viewContext }_audiences-tile`,
 					'view_tile_collecting_data',
 					audienceSlug
@@ -79,4 +80,5 @@ AudienceTileZeroData.propTypes = {
 	isMobileBreakpoint: PropTypes.bool,
 	isTileHideable: PropTypes.bool,
 	onHideTile: PropTypes.func,
+	trackGAEvent: PropTypes.func,
 };

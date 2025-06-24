@@ -40,8 +40,12 @@ import MetricTileError from '../../../../components/KeyMetrics/MetricTileError';
 import { trackEvent, trackEventOnce } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 
-export default function AnalyticsUpdateError( props ) {
-	const { onRetry, error, infoTooltip, headerText } = props;
+export default function AnalyticsUpdateError( {
+	error,
+	context,
+	trackGAEvent = trackEvent,
+} ) {
+	const { onRetry, infoTooltip, headerText } = context;
 
 	const viewContext = useViewContext();
 
@@ -54,9 +58,9 @@ export default function AnalyticsUpdateError( props ) {
 	}, [ viewContext ] );
 
 	const retry = useCallback( () => {
-		trackEvent( `${ viewContext }_kmw`, 'analytics_update_error_retry' );
+		trackGAEvent( `${ viewContext }_kmw`, 'analytics_update_error_retry' );
 		onRetry?.();
-	}, [ onRetry, viewContext ] );
+	}, [ onRetry, viewContext, trackGAEvent ] );
 
 	return (
 		<MetricTileError

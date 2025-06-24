@@ -33,7 +33,7 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 
-export default function AccountCreate() {
+export default function AccountCreate( { trackGAEvent = trackEvent } ) {
 	const viewContext = useViewContext();
 
 	const hasResolvedAccounts = useSelect( ( select ) =>
@@ -54,11 +54,11 @@ export default function AccountCreate() {
 	}, [ resetAccounts ] );
 
 	const createAccountHandler = useCallback( () => {
-		trackEvent( `${ viewContext }_tagmanager`, 'create_account' );
+		trackGAEvent( `${ viewContext }_tagmanager`, 'create_account' );
 
 		// Need to use window.open for this to allow for stubbing in E2E.
 		global.window.open( createAccountURL, '_blank' );
-	}, [ createAccountURL, viewContext ] );
+	}, [ createAccountURL, viewContext, trackGAEvent ] );
 
 	if ( ! hasResolvedAccounts || ! hasResolvedGetUser ) {
 		return <ProgressBar />;

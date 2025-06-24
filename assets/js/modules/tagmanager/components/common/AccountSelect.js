@@ -36,7 +36,10 @@ import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 
-export default function AccountSelect( { hasModuleAccess } ) {
+export default function AccountSelect( {
+	hasModuleAccess,
+	trackGAEvent = trackEvent,
+} ) {
 	const viewContext = useViewContext();
 
 	const accounts = useSelect( ( select ) =>
@@ -58,12 +61,12 @@ export default function AccountSelect( { hasModuleAccess } ) {
 					newAccountID === ACCOUNT_CREATE
 						? 'change_account_new'
 						: 'change_account';
-				trackEvent( `${ viewContext }_tagmanager`, eventAction );
+				trackGAEvent( `${ viewContext }_tagmanager`, eventAction );
 
 				selectAccount( newAccountID );
 			}
 		},
-		[ accountID, selectAccount, viewContext ]
+		[ accountID, selectAccount, viewContext, trackGAEvent ]
 	);
 
 	if ( ! hasResolvedAccounts ) {
@@ -117,4 +120,5 @@ export default function AccountSelect( { hasModuleAccess } ) {
 
 AccountSelect.propTypes = {
 	hasModuleAccess: PropTypes.bool,
+	trackGAEvent: PropTypes.func,
 };

@@ -33,8 +33,11 @@ import MetricTileError from '../../../../components/KeyMetrics/MetricTileError';
 import { trackEvent, trackEventOnce } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 
-export default function CustomDimensionsMissingError( props ) {
-	const { onRetry, infoTooltip, headerText } = props;
+export default function CustomDimensionsMissingError( {
+	context,
+	trackGAEvent = trackEvent,
+} ) {
+	const { onRetry, infoTooltip, headerText } = context;
 
 	const viewContext = useViewContext();
 
@@ -46,12 +49,12 @@ export default function CustomDimensionsMissingError( props ) {
 	}, [ viewContext ] );
 
 	const retry = useCallback( () => {
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_kmw`,
 			'custom_dimension_missing_error_retry'
 		);
 		onRetry?.();
-	}, [ onRetry, viewContext ] );
+	}, [ onRetry, viewContext, trackGAEvent ] );
 
 	return (
 		<MetricTileError

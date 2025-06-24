@@ -65,6 +65,7 @@ export default function AudienceTilePagesMetric( {
 	topContent,
 	topContentTitles,
 	isTopContentPartialData,
+	trackGAEvent = trackEvent,
 } ) {
 	const breakpoint = useBreakpoint();
 	const viewContext = useViewContext();
@@ -219,7 +220,7 @@ export default function AudienceTilePagesMetric( {
 							className="googlesitekit-audience-segmentation-partial-data-badge"
 							label={ __( 'Partial data', 'google-site-kit' ) }
 							onTooltipOpen={ () => {
-								trackEvent(
+								trackGAEvent(
 									`${ viewContext }_audiences-tile`,
 									'view_top_content_partial_data_tooltip',
 									audienceSlug
@@ -282,4 +283,5 @@ AudienceTilePagesMetric.propTypes = {
 	topContent: PropTypes.object,
 	topContentTitles: PropTypes.object,
 	isTopContentPartialData: PropTypes.bool,
+	trackGAEvent: PropTypes.func,
 };

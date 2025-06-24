@@ -31,7 +31,10 @@ import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 
-export default function PropertySelect( { hasModuleAccess } ) {
+export default function PropertySelect( {
+	hasModuleAccess,
+	trackGAEvent = trackEvent,
+} ) {
 	const viewContext = useViewContext();
 
 	const propertyID = useSelect( ( select ) =>
@@ -53,13 +56,13 @@ export default function PropertySelect( { hasModuleAccess } ) {
 			if ( propertyID !== newPropertyID ) {
 				setPropertyID( newPropertyID );
 
-				trackEvent(
+				trackGAEvent(
 					`${ viewContext }_search-console`,
 					'change_property'
 				);
 			}
 		},
-		[ propertyID, setPropertyID, viewContext ]
+		[ propertyID, setPropertyID, viewContext, trackGAEvent ]
 	);
 
 	if ( ! hasResolvedProperties ) {

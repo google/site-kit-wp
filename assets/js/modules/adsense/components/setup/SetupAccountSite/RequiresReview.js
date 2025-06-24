@@ -31,7 +31,7 @@ import { trackEvent } from '../../../../../util';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import SetupAccountSiteUI from './SetupAccountSiteUI';
 
-export default function RequiresReview() {
+export default function RequiresReview( { trackGAEvent = trackEvent } ) {
 	const viewContext = useContext( ViewContextContext );
 
 	const reviewSiteURL = useSelect( ( select ) =>
@@ -41,14 +41,14 @@ export default function RequiresReview() {
 	const reviewSiteHandler = useCallback(
 		( event ) => {
 			event.preventDefault();
-			trackEvent(
+			trackGAEvent(
 				`${ viewContext }_adsense`,
 				'review_site_state',
 				'requires_review'
 			);
 			global.open( reviewSiteURL, '_blank' );
 		},
-		[ reviewSiteURL, viewContext ]
+		[ reviewSiteURL, viewContext, trackGAEvent ]
 	);
 
 	const heading = __( 'Your site requires review', 'google-site-kit' );

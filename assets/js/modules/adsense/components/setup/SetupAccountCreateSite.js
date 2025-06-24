@@ -32,7 +32,9 @@ import { ErrorNotices } from '../common';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 
-export default function SetupAccountCreateSite() {
+export default function SetupAccountCreateSite( {
+	trackGAEvent = trackEvent,
+} ) {
 	const viewContext = useViewContext();
 
 	const addSiteURL = useSelect( ( select ) =>
@@ -42,10 +44,10 @@ export default function SetupAccountCreateSite() {
 	const addSiteHandler = useCallback(
 		( event ) => {
 			event.preventDefault();
-			trackEvent( `${ viewContext }_adsense`, 'create_site' );
+			trackGAEvent( `${ viewContext }_adsense`, 'create_site' );
 			global.open( addSiteURL, '_blank' );
 		},
-		[ addSiteURL, viewContext ]
+		[ addSiteURL, viewContext, trackGAEvent ]
 	);
 
 	return (
@@ -61,7 +63,7 @@ export default function SetupAccountCreateSite() {
 
 			<p>
 				{ __(
-					'We’ve detected that you haven’t added this site to your AdSense account yet',
+					"We've detected that you haven't added this site to your AdSense account yet",
 					'google-site-kit'
 				) }
 			</p>

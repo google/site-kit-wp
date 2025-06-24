@@ -35,7 +35,7 @@ import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 import { useDebounce } from '../../../../hooks/useDebounce';
 
-export default function ButtonTextSelect() {
+export default function ButtonTextSelect( { trackGAEvent = trackEvent } ) {
 	const viewContext = useViewContext();
 	const text = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getText()
@@ -43,11 +43,11 @@ export default function ButtonTextSelect() {
 	const { setText } = useDispatch( MODULES_SIGN_IN_WITH_GOOGLE );
 
 	const trackButtonClick = useCallback( () => {
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_sign-in-with-google-settings`,
 			'change_button_text'
 		);
-	}, [ viewContext ] );
+	}, [ viewContext, trackGAEvent ] );
 
 	const debounceTrackButtonClick = useDebounce( trackButtonClick, 500 );
 

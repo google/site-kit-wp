@@ -65,6 +65,7 @@ export default function WooCommerceRedirectModal( {
 	onDismiss = null,
 	onContinue = null,
 	onBeforeSetupCallback = null,
+	trackGAEvent = trackEvent,
 } ) {
 	const [ isSaving, setIsSaving ] = useState( '' );
 	const viewContext = useViewContext();
@@ -82,13 +83,13 @@ export default function WooCommerceRedirectModal( {
 
 	useEffect( () => {
 		if ( dialogActive ) {
-			trackEvent(
+			trackGAEvent(
 				`${ viewContext }_pax_wc-redirect`,
 				'view_modal',
 				trackEventLabel
 			);
 		}
-	}, [ dialogActive, viewContext, trackEventLabel ] );
+	}, [ dialogActive, viewContext, trackEventLabel, trackGAEvent ] );
 
 	const isGoogleForWooCommerceAdsConnected = useSelect( ( select ) => {
 		const hasGoogleForWooCommerceAdsAccount =
@@ -141,7 +142,7 @@ export default function WooCommerceRedirectModal( {
 			dismissNotification( 'account-linked-via-google-for-woocommerce' );
 		}
 
-		await trackEvent(
+		await trackGAEvent(
 			`${ viewContext }_pax_wc-redirect`,
 			'choose_gfw',
 			trackEventLabel
@@ -164,12 +165,13 @@ export default function WooCommerceRedirectModal( {
 		viewContext,
 		trackEventLabel,
 		isGoogleForWooCommerceAdsConnected,
+		trackGAEvent,
 	] );
 
 	const onSetupCallback = useActivateModuleCallback( MODULE_SLUG_ADS );
 
 	const onContinueWithSiteKit = useCallback( () => {
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_pax_wc-redirect`,
 			'choose_sk',
 			trackEventLabel
@@ -198,6 +200,7 @@ export default function WooCommerceRedirectModal( {
 		onContinue,
 		viewContext,
 		trackEventLabel,
+		trackGAEvent,
 	] );
 
 	if ( isModalDismissed && ! isSaving ) {
@@ -315,4 +318,5 @@ WooCommerceRedirectModal.propTypes = {
 	onClose: PropTypes.func.isRequired,
 	onContinue: PropTypes.func,
 	onBeforeSetupCallback: PropTypes.func,
+	trackGAEvent: PropTypes.func,
 };

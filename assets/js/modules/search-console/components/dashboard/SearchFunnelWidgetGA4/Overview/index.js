@@ -56,6 +56,7 @@ export default function Overview( props ) {
 		error,
 		WidgetReportError,
 		showRecoverableAnalytics,
+		trackGAEvent = trackEvent,
 	} = props;
 
 	const dashboardType = useDashboardType();
@@ -101,8 +102,11 @@ export default function Overview( props ) {
 		! showRecoverableAnalytics;
 
 	const onGA4NewBadgeLearnMoreClick = useCallback( () => {
-		trackEvent( `${ viewContext }_ga4-new-badge`, 'click_learn_more_link' );
-	}, [ viewContext ] );
+		trackGAEvent(
+			`${ viewContext }_ga4-new-badge`,
+			'click_learn_more_link'
+		);
+	}, [ viewContext, trackGAEvent ] );
 
 	const showKeyEventsCTA =
 		isAuthenticated &&
