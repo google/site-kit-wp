@@ -132,6 +132,7 @@ import {
 } from './constants';
 import ConversionReportingNotificationCTAWidget from './components/widgets/ConversionReportingNotificationCTAWidget';
 import { AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION } from './components/audience-segmentation/dashboard/AudienceSegmentationIntroductoryOverlayNotification';
+import PrimaryUserSetupWidget from './components/audience-segmentation/dashboard/PrimaryUserSetupWidget';
 
 export { registerStore } from './datastore';
 
@@ -185,6 +186,46 @@ export const registerWidgets = ( widgets ) => {
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
 				return !! configuredAudiences;
+			},
+		},
+		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
+	);
+
+	widgets.registerWidget(
+		'analyticsAudiencePrimaryUserSetup',
+		{
+			Component: PrimaryUserSetupWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			isActive: ( select ) => {
+				const isAnalyticsConnected = select(
+					CORE_MODULES
+				).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+
+				// If Analytics is not connected, we can return early.
+				if ( ! isAnalyticsConnected ) {
+					return false;
+				}
+
+				const availableAudiences =
+					select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+				const configuredAudiences =
+					select( CORE_USER ).getConfiguredAudiences();
+
+				const audienceSegmentationSetupCompletedBy =
+					select(
+						MODULES_ANALYTICS_4
+					).getAudienceSegmentationSetupCompletedBy();
+
+				return (
+					availableAudiences?.length &&
+					configuredAudiences === null &&
+					// This is the key difference between the primary and secondary user setup widgets:
+					audienceSegmentationSetupCompletedBy === null
+				);
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
