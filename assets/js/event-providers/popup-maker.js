@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-( ( jQuery ) => {
-	// eslint-disable-next-line no-undef
+( ( jQuery, PUM ) => {
 	if ( ! jQuery || ! PUM ) {
 		return;
 	}
 
-	// eslint-disable-next-line no-undef
 	PUM.hooks.addAction( 'pum.integration.form.success', function () {
 		global._googlesitekit?.gtagEvent?.( 'submit_lead_form' );
 	} );
-} )( global.jQuery );
+} )( global.jQuery, global.PUM );
