@@ -27,7 +27,11 @@ function GroupWrapper( { size = 6, header, children } ) {
 	return (
 		<Cell size={ size }>
 			<Widget
-				Header={ () => <Typography as="h2">{ header }</Typography> }
+				Header={ () => (
+					<Typography as="h2" size="headline" type="large">
+						{ header }
+					</Typography>
+				) }
 				className="googlesitekit-typography-group"
 			>
 				{ children.map( ( child, index ) => (
@@ -45,7 +49,9 @@ function Template() {
 		<Grid className="googlesitekit-widget-area googlesitekit-widget-area--boxes">
 			<Row className="googlesitekit-widget-area-widgets">
 				<Cell size={ 12 }>
-					<Typography as="h1">Typography</Typography>
+					<Typography as="h1" size="large" type="display">
+						Typography
+					</Typography>
 				</Cell>
 				<GroupWrapper size={ 12 } header="Display">
 					<Typography type="display" size="large">

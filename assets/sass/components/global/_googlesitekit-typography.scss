@@ -51,17 +51,20 @@ $typography-font-families: (
 	label: $f-primary
 );
 
-.googlesitekit-typography {
+.googlesitekit-plugin {
 
-	@each $type, $sizes in $typography-settings {
-		&.googlesitekit-typography--#{$type} {
-			font-family: map-get($typography-font-families, $type);
+	.googlesitekit-typography {
 
-			@each $size, $styles in $sizes {
-				&.googlesitekit-typography--#{$size} {
+		@each $type, $sizes in $typography-settings {
+			&.googlesitekit-typography--#{$type} {
+				font-family: map-get($typography-font-families, $type);
 
-					@each $prop, $value in $styles {
-						#{$prop}: #{$value};
+				@each $size, $styles in $sizes {
+					&.googlesitekit-typography--#{$size} {
+
+						@each $prop, $value in $styles {
+							#{$prop}: #{$value};
+						}
 					}
 				}
 			}
