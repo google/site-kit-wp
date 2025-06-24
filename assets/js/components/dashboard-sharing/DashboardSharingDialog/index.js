@@ -58,6 +58,7 @@ import ShareIcon from '../../../../svg/icons/share.svg';
 import Link from '../../Link';
 import DashboardSharingSettings from '../DashboardSharingSettings';
 import Footer from './Footer';
+import { ESCAPE } from '@wordpress/keycodes';
 
 export default function DashboardSharingDialog() {
 	const [ shouldFocusResetButton, setShouldFocusResetButton ] =
@@ -164,7 +165,10 @@ export default function DashboardSharingDialog() {
 	}, [ resetDialogOpen, closeResetDialog ] );
 
 	// Handle escape key for reset dialog.
-	useKey( 'Escape', closeResetDialog );
+	useKey(
+		( event ) => resetDialogOpen && ESCAPE === event.keyCode,
+		closeResetDialog
+	);
 
 	return (
 		<Portal>
