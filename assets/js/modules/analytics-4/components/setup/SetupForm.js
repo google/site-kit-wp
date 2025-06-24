@@ -89,6 +89,9 @@ export default function SetupForm( { finishSetup } ) {
 		showProgress: true,
 	} );
 
+	const { syncAvailableAudiences, fetchSyncAvailableCustomDimensions } =
+		useDispatch( MODULES_ANALYTICS_4 );
+
 	const submitForm = useCallback(
 		async ( event ) => {
 			event.preventDefault();
@@ -104,6 +107,25 @@ export default function SetupForm( { finishSetup } ) {
 
 			if ( ! error ) {
 				setConversionTrackingEnabled( true );
+
+				// Sync audiences and dimensions, and set the Audience Segmentation form to auto-submit so that
+				// it's setup when the user lands on the dashboard.
+				// eslint-disable-next-line no-unused-vars
+				const { error: syncAudiencesError } =
+					await syncAvailableAudiences();
+
+				// FIXME: Handle errors properly.
+				if ( syncAudiencesError ) {
+					return { error: syncAudiencesError };
+				}
+
+				const { error: syncDimensionsError } =
+					await fetchSyncAvailableCustomDimensions();
+
+				if ( syncDimensionsError ) {
+					return { error: syncDimensionsError };
+				}
+
 				await saveConversionTrackingSettings();
 
 				if ( isEnhancedMeasurementEnabled === true ) {
@@ -116,14 +138,16 @@ export default function SetupForm( { finishSetup } ) {
 			}
 		},
 		[
-			finishSetup,
-			isEnhancedMeasurementEnabled,
-			setConversionTrackingEnabled,
-			saveConversionTrackingSettings,
 			setValues,
 			submitChanges,
-			viewContext,
+			setConversionTrackingEnabled,
+			syncAvailableAudiences,
+			fetchSyncAvailableCustomDimensions,
+			saveConversionTrackingSettings,
+			isEnhancedMeasurementEnabled,
+			finishSetup,
 			userInputLinkWithProgress,
+			viewContext,
 		]
 	);
 
