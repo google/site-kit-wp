@@ -51,24 +51,19 @@ export default function AdditionalDescription( {
 	if ( ! hasUserRecoverableModules ) {
 		// List of unrecoverable modules.
 		return (
-			<Fragment>
-				{ hasMultipleRecoverableModules && (
-					<ul className="mdc-list mdc-list--non-interactive">
-						{ Object.values( recoverableModules || {} ).map(
-							( module ) => (
-								<li
-									className="mdc-list-item"
-									key={ module.slug }
-								>
-									<span className="mdc-list-item__text">
-										{ module.name }
-									</span>
-								</li>
-							)
-						) }
-					</ul>
-				) }
-			</Fragment>
+			hasMultipleRecoverableModules && (
+				<ul className="mdc-list mdc-list--non-interactive">
+					{ Object.values( recoverableModules || {} ).map(
+						( module ) => (
+							<li className="mdc-list-item" key={ module.slug }>
+								<span className="mdc-list-item__text">
+									{ module.name }
+								</span>
+							</li>
+						)
+					) }
+				</ul>
+			)
 		);
 	}
 
