@@ -27,8 +27,8 @@ use WP_Error;
  */
 class Google_Proxy {
 
-	// const PRODUCTION_BASE_URL       = 'https://sitekit.withgoogle.com';
-	const PRODUCTION_BASE_URL       = 'http://sks.local';
+	const PRODUCTION_BASE_URL = 'https://sitekit.withgoogle.com';
+	// const PRODUCTION_BASE_URL       = 'http://sks.local';
 	const STAGING_BASE_URL          = 'https://site-kit-dev.appspot.com';
 	const DEVELOPMENT_BASE_URL      = 'https://site-kit-local.appspot.com';
 	const OAUTH2_SITE_URI           = '/o/oauth2/site/';
@@ -321,7 +321,11 @@ class Google_Proxy {
 	 *
 	 * @return array Associative array of $query_arg => $value pairs.
 	 */
-	public function get_site_fields() {
+	public function get_site_fields( $show_progress = false ) {
+		$analytics_redirect_uri = add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) );
+		if ( $show_progress ) {
+			$analytics_redirect_uri = add_query_arg( 'showProgress', 1, $analytics_redirect_uri );
+		}
 		return array(
 			'name'                   => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
 			'url'                    => $this->context->get_canonical_home_url(),
@@ -332,7 +336,7 @@ class Google_Proxy {
 			'return_uri'             => $this->context->admin_url( 'splash' ),
 			// HERE, this sets the redirect_uri for account creation, we need to update the
 			// gatoscallback handler to redirect to the user input screen instead of the dashboard.
-			'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
+			'analytics_redirect_uri' => $analytics_redirect_uri,
 		);
 	}
 
