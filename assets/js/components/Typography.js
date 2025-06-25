@@ -25,9 +25,13 @@ import classnames from 'classnames';
 const VALID_TYPES = [ 'display', 'headline', 'title', 'body', 'label' ];
 const VALID_SIZES = [ 'small', 'medium', 'large' ];
 
-function Typography( { className, type, size, as, children } ) {
-	const Component = as || 'span';
-
+function Typography( {
+	className,
+	type,
+	size,
+	as: Component = 'span',
+	children,
+} ) {
 	return (
 		<Component
 			className={ classnames( 'googlesitekit-typography', className, {
