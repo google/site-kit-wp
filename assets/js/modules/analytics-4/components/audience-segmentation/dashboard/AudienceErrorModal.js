@@ -182,7 +182,7 @@ export default function AudienceErrorModal( {
 				} }
 				onClose={ onCancel }
 				inProgress={ inProgress }
-				refocusQuerySelector=".googlesitekit-settings-visitor-groups__setup .googlesitekit-cta-link"
+				refocusQuerySelector="#audience_segmentation_setup_cta-notification .googlesitekit-banner__cta"
 				danger
 				dialogActive
 			/>
