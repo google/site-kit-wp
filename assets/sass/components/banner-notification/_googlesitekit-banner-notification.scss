@@ -23,6 +23,17 @@
 
 		&.googlesitekit-banner-notification--info {
 			background-color: $c-site-kit-sk-10;
+
+			.googlesitekit-banner__title {
+				color: $c-black;
+			}
+
+			.googlesitekit-banner__description {
+				color: $c-black;
+				a {
+					color: $c-black;
+				}
+			}
 		}
 
 		&.googlesitekit-banner-notification--warning {
