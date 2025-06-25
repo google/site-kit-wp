@@ -121,7 +121,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 				<HelpMenu />
 			</Header>
 			{ showProgress && (
-				<ProgressSegments currentSegment={ 4 } totalSegments={ 6 } />
+				<ProgressSegments currentSegment={ 5 } totalSegments={ 7 } />
 			) }
 			<div className="googlesitekit-setup">
 				<Grid>
