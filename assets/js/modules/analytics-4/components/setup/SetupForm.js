@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
+import { addQueryArgs, getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -85,9 +85,13 @@ export default function SetupForm( { finishSetup } ) {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
 
-	const userInputLinkWithProgress = addQueryArgs( userInputLink, {
-		showProgress: true,
-	} );
+	const showProgress = getQueryArg( location.href, 'showProgress' );
+
+	const userInputLinkWithProgress = showProgress
+		? addQueryArgs( userInputLink, {
+				showProgress: true,
+		  } )
+		: userInputLink;
 
 	const { syncAvailableAudiences, fetchSyncAvailableCustomDimensions } =
 		useDispatch( MODULES_ANALYTICS_4 );
