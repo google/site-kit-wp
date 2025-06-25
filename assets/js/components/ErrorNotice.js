@@ -65,7 +65,7 @@ export default function ErrorNotice( {
 
 	// Do not display if there is no error and no direct message text is passed as a direct prop.
 	// Also do not display if the error is for missing scopes as these are handled by a popup modal.
-	if ( ( ! error && ! message ) || isPermissionScopeError( error ) ) {
+	if ( ! message || isPermissionScopeError( error ) ) {
 		return null;
 	}
 
