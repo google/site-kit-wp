@@ -147,7 +147,7 @@ export default function SetupUsingProxyWithSignIn() {
 	return (
 		<Fragment>
 			<Header />
-			<ProgressSegments currentSegment={ 0 } totalSegments={ 6 } />
+			<ProgressSegments currentSegment={ 0 } totalSegments={ 7 } />
 			<div className="googlesitekit-setup">
 				<Grid>
 					<Row>

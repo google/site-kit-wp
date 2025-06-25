@@ -64,7 +64,7 @@ export default function UserInputApp() {
 				<HelpMenu />
 			</Header>
 			{ showProgress && (
-				<ProgressSegments currentSegment={ 5 } totalSegments={ 6 } />
+				<ProgressSegments currentSegment={ 6 } totalSegments={ 7 } />
 			) }
 			<div className="googlesitekit-user-input">
 				<div className="googlesitekit-module-page">
