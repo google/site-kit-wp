@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-const WebpackBar = require( 'webpackbar' );
-
-/**
  * Internal dependencies
  */
 const {
@@ -32,6 +27,7 @@ const {
 } = require( '../../webpack/common' );
 
 module.exports = ( mode ) => ( {
+	name: 'Test files',
 	context: rootDir,
 	entry: {
 		'e2e-api-fetch': rootDir + '/tests/e2e/assets/e2e-api-fetch.js',
@@ -46,12 +42,7 @@ module.exports = ( mode ) => ( {
 	module: {
 		rules: createRules( mode ),
 	},
-	plugins: [
-		new WebpackBar( {
-			name: 'Test files',
-			color: '#34a853',
-		} ),
-	],
 	externals,
 	resolve,
+	amd: false,
 } );

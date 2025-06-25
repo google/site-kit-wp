@@ -43,8 +43,8 @@ describe( 'Fake data generation', () => {
 				faker.random.arrayElement(),
 			],
 		} ).toMatchInlineSnapshot( `
-		Object {
-		  "array": Array [
+		{
+		  "array": [
 		    "b",
 		    "b",
 		    "a",
