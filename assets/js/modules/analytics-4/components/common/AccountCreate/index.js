@@ -21,6 +21,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { useCallback, useState, useEffect } from '@wordpress/element';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -131,6 +132,8 @@ export default function AccountCreate() {
 		}
 	}, [ hasAccountCreateForm, siteName, siteURL, timezone, setValues ] );
 
+	const showProgress = getQueryArg( location.href, 'showProgress' );
+
 	const handleSubmit = useCallback( async () => {
 		const scopes = [];
 
@@ -173,7 +176,9 @@ export default function AccountCreate() {
 			'proxy'
 		);
 
-		const { error } = await createAccount();
+		const { error } = await createAccount( {
+			showProgress,
+		} );
 		if ( ! error ) {
 			setConversionTrackingEnabled( true );
 			await saveConversionTrackingSettings();
@@ -185,6 +190,7 @@ export default function AccountCreate() {
 		setValues,
 		viewContext,
 		createAccount,
+		showProgress,
 		setPermissionScopeError,
 		setConversionTrackingEnabled,
 		saveConversionTrackingSettings,
