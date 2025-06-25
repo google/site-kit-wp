@@ -62,7 +62,7 @@ IceEnabled.parameters = {
 };
 
 export const GTGEnabled = Template.bind( null );
-GTGEnabled.storyName = 'With Google tag gateway Enabled';
+GTGEnabled.storyName = 'With Google tag gateway enabled';
 GTGEnabled.args = {
 	googleTagGateway: true,
 };

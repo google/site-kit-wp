@@ -172,7 +172,7 @@ IcePaxEnabled.decorators = [
 ];
 
 export const GTGEnabled = Template.bind( null );
-GTGEnabled.storyName = 'With Google tag gateway Enabled';
+GTGEnabled.storyName = 'With Google tag gateway enabled';
 GTGEnabled.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -208,7 +208,7 @@ GTGEnabled.decorators = [
 
 export const GTGDisabledWithWarning = Template.bind( null );
 GTGDisabledWithWarning.storyName =
-	'With Google tag gateway Disabled with warning';
+	'With Google tag gateway disabled with warning';
 GTGDisabledWithWarning.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
