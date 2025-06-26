@@ -89,10 +89,10 @@ export default function SettingsCardKeyMetrics() {
 							<Row>
 								<Cell size={ 12 }>
 									<UserInputPreview
-										settingsView
 										loading={
 											isGetUserInputSettingsLoading
 										}
+										settingsView
 									/>
 								</Cell>
 							</Row>

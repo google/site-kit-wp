@@ -89,8 +89,8 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 						{
 							a: (
 								<Link
-									secondary
 									onClick={ handleSelectGroups }
+									secondary
 								/>
 							),
 						}
@@ -104,8 +104,8 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 						{
 							a: (
 								<Link
-									secondary
 									onClick={ handleSelectGroups }
+									secondary
 								/>
 							),
 						}
@@ -121,7 +121,6 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 						{
 							a: (
 								<Link
-									secondary
 									onClick={ () => {
 										trackEvent(
 											`${ viewContext }_audiences-no-audiences`,
@@ -131,6 +130,7 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 											navigateTo( adminSettingsURL );
 										} );
 									} }
+									secondary
 								/>
 							),
 						}

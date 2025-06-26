@@ -67,9 +67,9 @@ export const getTooltipHelp = ( url, label, rowLabel ) =>
 		<p>
 			<Link
 				className="googlesitekit-cta-link__tooltip"
-				external
 				href={ url }
 				data-row-label={ rowLabel }
+				external
 			>
 				{ label }
 			</Link>

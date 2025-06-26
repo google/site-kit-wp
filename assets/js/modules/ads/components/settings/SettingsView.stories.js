@@ -49,7 +49,7 @@ export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.scenario = {};
 Default.parameters = {
-	features: [ 'firstPartyMode' ],
+	features: [ 'googleTagGateway' ],
 };
 
 export const IceEnabled = Template.bind( null );
@@ -58,16 +58,16 @@ IceEnabled.args = {
 	enhancedConversionTracking: true,
 };
 IceEnabled.parameters = {
-	features: [ 'firstPartyMode' ],
+	features: [ 'googleTagGateway' ],
 };
 
-export const FPMEnabled = Template.bind( null );
-FPMEnabled.storyName = 'With First-party mode Enabled';
-FPMEnabled.args = {
-	firstPartyMode: true,
+export const GTGEnabled = Template.bind( null );
+GTGEnabled.storyName = 'With Google tag gateway enabled';
+GTGEnabled.args = {
+	googleTagGateway: true,
 };
-FPMEnabled.parameters = {
-	features: [ 'firstPartyMode' ],
+GTGEnabled.parameters = {
+	features: [ 'googleTagGateway' ],
 };
 
 export default {
@@ -95,10 +95,10 @@ export default {
 
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
-						isEnabled: args.firstPartyMode || false,
-						isFPMHealthy: args.firstPartyMode || false,
-						isScriptAccessEnabled: args.firstPartyMode || false,
+					.receiveGetGoogleTagGatewaySettings( {
+						isEnabled: args.googleTagGateway || false,
+						isGTGHealthy: args.googleTagGateway || false,
+						isScriptAccessEnabled: args.googleTagGateway || false,
 					} );
 			};
 
@@ -115,7 +115,7 @@ export const PaxConnected = Template.bind( null );
 PaxConnected.storyName = 'With PAX onboarding';
 PaxConnected.scenario = {};
 PaxConnected.parameters = {
-	features: [ 'adsPax', 'firstPartyMode' ],
+	features: [ 'adsPax', 'googleTagGateway' ],
 };
 PaxConnected.decorators = [
 	( Story ) => {

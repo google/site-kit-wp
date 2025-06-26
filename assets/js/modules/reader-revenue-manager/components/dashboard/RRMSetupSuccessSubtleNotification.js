@@ -298,8 +298,8 @@ export default function RRMSetupSuccessSubtleNotification( {
 								) }
 								label={ __( 'Learn more', 'google-site-kit' ) }
 								url="https://support.google.com/news/publisher-center/answer/12813936"
-								hideExternalIndicator
 								gaTrackingEventArgs={ gaTrackingEventArgs }
+								hideExternalIndicator
 							/>
 						),
 					}

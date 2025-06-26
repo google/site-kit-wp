@@ -29,14 +29,15 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { DAY_IN_SECONDS } from '../../util';
+import { DAY_IN_SECONDS } from '../../../js/util';
 import useModuleGatheringZeroData from '../../hooks/useModuleGatheringZeroData';
-import NotificationWithSmallSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSmallSVG';
-import Description from '../../googlesitekit/notifications/components/common/Description';
-import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
-import GatheringDataIcon from '../../../svg/graphics/zero-state-red.svg';
+import BannerNotification, {
+	TYPES,
+} from '../../googlesitekit/notifications/components/layout/BannerNotification';
+import SVGGraphic from '@/svg/graphics/gathering-data.svg?url';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 
 export default function GatheringDataNotification( { id, Notification } ) {
 	const connectMoreServicesURL = useSelect( ( select ) =>
@@ -45,6 +46,8 @@ export default function GatheringDataNotification( { id, Notification } ) {
 
 	const { analyticsGatheringData, searchConsoleGatheringData } =
 		useModuleGatheringZeroData();
+
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	let gatheringDataTitle;
 	// Analytics requires up to 72 hours to gather data.
@@ -74,36 +77,41 @@ export default function GatheringDataNotification( { id, Notification } ) {
 	}
 
 	return (
-		<Notification className="googlesitekit-publisher-win">
-			<NotificationWithSmallSVG
+		<Notification>
+			<BannerNotification
+				notificationID={ id }
+				type={ TYPES.INFO }
 				title={ gatheringDataTitle }
-				description={
-					<Description
-						text={ sprintf(
-							/* translators: %s: the number of hours the site can be in a gathering data state */
-							_n(
-								'It can take up to %s hour before stats show up for your site. While you’re waiting, connect more services to get more stats.',
-								'It can take up to %s hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
-								gatheringDataWaitTimeInHours,
-								'google-site-kit'
-							),
-							gatheringDataWaitTimeInHours
-						) }
-					/>
-				}
-				actions={
-					<ActionsCTALinkDismiss
-						id={ id }
-						ctaLabel={ __(
-							'See other services',
-							'google-site-kit'
-						) }
-						ctaLink={ connectMoreServicesURL }
-						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
-						dismissExpires={ DAY_IN_SECONDS }
-					/>
-				}
-				SmallImageSVG={ GatheringDataIcon }
+				description={ sprintf(
+					/* translators: %s: the number of hours the site can be in a gathering data state */
+					_n(
+						'It can take up to %s hour before stats show up for your site. While you’re waiting, connect more services to get more stats.',
+						'It can take up to %s hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
+						gatheringDataWaitTimeInHours,
+						'google-site-kit'
+					),
+					gatheringDataWaitTimeInHours
+				) }
+				ctaButton={ {
+					label: __( 'Connect more services', 'google-site-kit' ),
+					href: connectMoreServicesURL,
+					onClick: () => {
+						dismissNotification( id, {
+							expiresInSeconds: DAY_IN_SECONDS,
+						} );
+					},
+				} }
+				dismissButton={ {
+					label: __( 'Got it', 'google-site-kit' ),
+				} }
+				dismissOptions={ {
+					expiresInSeconds: DAY_IN_SECONDS,
+				} }
+				svg={ {
+					desktop: SVGGraphic,
+					mobile: undefined,
+					verticalPosition: 'center',
+				} }
 			/>
 		</Notification>
 	);

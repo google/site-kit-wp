@@ -117,8 +117,8 @@ class WizardStepAuthentication extends Component {
 								{ resetAndRestart && (
 									<Button
 										className="googlesitekit-wizard-step__back"
-										tertiary
 										onClick={ resetAndRestart }
+										tertiary
 									>
 										{ __( 'Back', 'google-site-kit' ) }
 									</Button>

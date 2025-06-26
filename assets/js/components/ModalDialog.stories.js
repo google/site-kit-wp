@@ -24,11 +24,11 @@ import ModalDialog from './ModalDialog';
 function Template( args ) {
 	return (
 		<ModalDialog
-			dialogActive
 			title="Modal Dialog Title"
 			subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed commodo urna vitae commodo sollicitudin."
 			handleConfirm={ () => {} }
 			{ ...args }
+			dialogActive
 		/>
 	);
 }
