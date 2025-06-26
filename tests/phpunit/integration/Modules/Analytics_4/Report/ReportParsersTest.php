@@ -108,7 +108,7 @@ class ReportParsersTest extends TestCase {
 			$this->assertEquals( $name, $date_ranges[ $index ]->getName(), "Expected date range at index {$index} to have name '{$name}'." );
 		}
 
-		// Verify that date ranges without explicitly set names don't have a name set
+		// Verify that date ranges without explicitly set names don't have a name set.
 		foreach ( $date_ranges as $index => $date_range ) {
 			$has_expected_name = false;
 			foreach ( $expected_names as $expected_name ) {
