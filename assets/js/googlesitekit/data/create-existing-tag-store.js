@@ -25,16 +25,13 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import {
+	combineStores,
 	commonActions,
-	createRegistryControl,
+	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { CORE_SITE } from '../datastore/site/constants';
-import { getExistingTagURLs, extractExistingTag } from '../../util/tag';
-
-// Actions
-const FETCH_GET_EXISTING_TAG = 'FETCH_GET_EXISTING_TAG';
-const RECEIVE_GET_EXISTING_TAG = 'RECEIVE_GET_EXISTING_TAG';
+import { createFetchStore } from './create-fetch-store';
+import { get } from 'googlesitekit-api';
 
 /**
  * Creates a store object that includes actions and selectors for getting existing tags.
@@ -43,6 +40,7 @@ const RECEIVE_GET_EXISTING_TAG = 'RECEIVE_GET_EXISTING_TAG';
  * @private
  *
  * @param {Object}   args             Arguments for the store generation.
+ * @param {string}   args.moduleSlug  Module slug to use.
  * @param {string}   args.storeName   Store name to use.
  * @param {Array}    args.tagMatchers The tag matchers used to extract tags from HTML.
  * @param {Function} args.isValidTag  Function to test whether a tag is valid or not.
@@ -50,10 +48,15 @@ const RECEIVE_GET_EXISTING_TAG = 'RECEIVE_GET_EXISTING_TAG';
  * initialState` properties.
  */
 export const createExistingTagStore = ( {
+	moduleSlug,
 	storeName: STORE_NAME,
 	isValidTag,
 	tagMatchers,
 } = {} ) => {
+	invariant(
+		'string' === typeof moduleSlug && moduleSlug,
+		'moduleSlug is required.'
+	);
 	invariant(
 		'string' === typeof STORE_NAME && STORE_NAME,
 		'storeName is required.'
@@ -64,73 +67,27 @@ export const createExistingTagStore = ( {
 	);
 	invariant( Array.isArray( tagMatchers ), 'tagMatchers must be an Array.' );
 
+	const fetchGetExistingTagStore = createFetchStore( {
+		baseName: 'getExistingTag',
+		controlCallback: () => {
+			return get( 'modules', moduleSlug, 'existing-tag', null, {
+				useCache: false,
+			} );
+		},
+		reducerCallback: createReducer( ( state, existingTag ) => {
+			state.existingTag = existingTag;
+		} ),
+	} );
+
 	const initialState = {
 		existingTag: undefined,
 	};
 
-	const actions = {
-		fetchGetExistingTag() {
-			return {
-				payload: {},
-				type: FETCH_GET_EXISTING_TAG,
-			};
-		},
-		receiveGetExistingTag( existingTag ) {
-			invariant(
-				existingTag === null || 'string' === typeof existingTag,
-				'existingTag must be a tag string or null.'
-			);
+	const actions = {};
 
-			return {
-				payload: {
-					existingTag: isValidTag( existingTag ) ? existingTag : null,
-				},
-				type: RECEIVE_GET_EXISTING_TAG,
-			};
-		},
-	};
+	const controls = {};
 
-	const controls = {
-		[ FETCH_GET_EXISTING_TAG ]: createRegistryControl(
-			( registry ) => async () => {
-				const homeURL = registry.select( CORE_SITE ).getHomeURL();
-				const ampMode = registry.select( CORE_SITE ).getAMPMode();
-				const existingTagURLs = await getExistingTagURLs( {
-					homeURL,
-					ampMode,
-				} );
-
-				const { getHTMLForURL } = registry.resolveSelect( CORE_SITE );
-
-				for ( const url of existingTagURLs ) {
-					const html = await getHTMLForURL( url );
-					const tagFound = extractExistingTag( html, tagMatchers );
-					if ( tagFound ) {
-						return tagFound;
-					}
-				}
-
-				return null;
-			}
-		),
-	};
-
-	const reducer = ( state = initialState, { type, payload } ) => {
-		switch ( type ) {
-			case RECEIVE_GET_EXISTING_TAG: {
-				const { existingTag } = payload;
-
-				return {
-					...state,
-					existingTag,
-				};
-			}
-
-			default: {
-				return state;
-			}
-		}
-	};
+	const reducer = ( state ) => state;
 
 	const resolvers = {
 		*getExistingTag() {
@@ -139,10 +96,7 @@ export const createExistingTagStore = ( {
 			if (
 				registry.select( STORE_NAME ).getExistingTag() === undefined
 			) {
-				const existingTag = yield actions.fetchGetExistingTag();
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetExistingTag( existingTag );
+				yield fetchGetExistingTagStore.actions.fetchGetExistingTag();
 			}
 		},
 	};
@@ -178,14 +132,14 @@ export const createExistingTagStore = ( {
 		} ),
 	};
 
-	const store = {
+	const store = combineStores( fetchGetExistingTagStore, {
 		initialState,
 		actions,
 		controls,
 		reducer,
 		resolvers,
 		selectors,
-	};
+	} );
 
 	return {
 		...store,
