@@ -88,11 +88,9 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 			true
 		)
 	);
-	const connectGA4URL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getModuleSettingsEditURL(
-			MODULE_SLUG_ANALYTICS_4
-		);
-	} );
+	const connectGA4URL = useSelect( ( select ) =>
+		select( CORE_SITE ).getModuleSettingsEditURL( MODULE_SLUG_ANALYTICS_4 )
+	);
 	const isNavigatingToGA4URL = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo( connectGA4URL )
 	);
