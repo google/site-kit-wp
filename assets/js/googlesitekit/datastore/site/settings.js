@@ -142,6 +142,82 @@ const baseSelectors = {
 	getShowAdminBar: createRegistrySelector( ( select ) => () => {
 		return select( CORE_SITE ).getAdminBarSettings()?.enabled;
 	} ),
+
+	/**
+	 * Gets the URL for the module settings page.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} moduleSlug The slug of the module.
+	 * @return {string} The URL for the module settings page.
+	 */
+	getModuleSettingsURL: createRegistrySelector(
+		( select ) => ( state, moduleSlug ) => {
+			invariant(
+				moduleSlug,
+				'moduleSlug is required to get module settings URL'
+			);
+
+			const baseURL = select( CORE_SITE ).getAdminURL(
+				'googlesitekit-settings'
+			);
+			return `${ baseURL }#connected-services/${ moduleSlug }`;
+		}
+	),
+
+	/**
+	 * Gets the URL for the module settings edit page.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} moduleSlug The slug of the module.
+	 * @return {string} The URL for the module settings edit page.
+	 */
+	getModuleSettingsEditURL: createRegistrySelector(
+		( select ) => ( state, moduleSlug ) => {
+			invariant(
+				moduleSlug,
+				'moduleSlug is required to get module settings edit URL'
+			);
+
+			const settingsURL =
+				select( CORE_SITE ).getModuleSettingsURL( moduleSlug );
+
+			return `${ settingsURL }/edit`;
+		}
+	),
+
+	/**
+	 * Gets the URL for the "Connect More Services" page.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string} The URL for the "Connect More Services" page.
+	 */
+	getConnectMoreServicesURL: createRegistrySelector( ( select ) => () => {
+		const baseURL = select( CORE_SITE ).getAdminURL(
+			'googlesitekit-settings'
+		);
+		return `${ baseURL }#connect-more-services`;
+	} ),
+
+	/**
+	 * Gets the URL for the admin settings page.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string} The URL for the admin settings page.
+	 */
+	getSiteKitAdminSettingsURL: createRegistrySelector( ( select ) => () => {
+		const baseURL = select( CORE_SITE ).getAdminURL(
+			'googlesitekit-settings'
+		);
+		return `${ baseURL }#/admin-settings`;
+	} ),
 };
 
 const store = combineStores(
