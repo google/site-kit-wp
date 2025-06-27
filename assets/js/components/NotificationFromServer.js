@@ -65,7 +65,7 @@ function NotificationFromServer( {
 	learnMoreURL,
 } ) {
 	return (
-		<Notification>
+		<Notification className="googlesitekit-notification-from-server">
 			<SimpleNotification
 				notificationID={ id }
 				title={ title }
