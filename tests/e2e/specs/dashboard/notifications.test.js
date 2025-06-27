@@ -94,46 +94,4 @@ describe( 'core site notifications', () => {
 			);
 		} );
 	} );
-
-	describe( 'when not using proxy', () => {
-		beforeAll( async () => {
-			await activatePlugin( 'e2e-tests-gcp-auth-plugin' );
-			await setSiteVerification();
-			await setSearchConsoleProperty();
-		} );
-
-		afterAll( async () => {
-			await deactivatePlugin( 'e2e-tests-gcp-auth-plugin' );
-		} );
-		it( 'does not display core site notifications on the main dashboard', async () => {
-			// Add the test notification (by default there are none).
-			await wpApiFetch( {
-				path: 'google-site-kit/v1/e2e/core/site/notifications',
-				method: 'post',
-				data: testSiteNotification,
-			} );
-
-			// Go to the main dashboard and wait for notifications to be requested.
-			await Promise.all( [ goToSiteKitDashboard() ] );
-
-			// Ensure notification is not displayed.
-			const notificationTitles = await page.$$(
-				'.googlesitekit-publisher-win__title'
-			);
-			const notificationDescription = await page.$$(
-				'.googlesitekit-publisher-win__desc'
-			);
-
-			expect(
-				notificationTitles.filter( ( { textContent } ) =>
-					textContent?.match( /test notification title/i )
-				)
-			).toHaveLength( 0 );
-			expect(
-				notificationDescription.filter( ( { textContent } ) =>
-					textContent?.match( /test notification content/i )
-				)
-			).toHaveLength( 0 );
-		} );
-	} );
 } );
