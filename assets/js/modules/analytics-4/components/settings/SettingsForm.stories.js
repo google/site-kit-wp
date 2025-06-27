@@ -96,31 +96,31 @@ EnhancedMeasurementSwitch.decorators = [
 	},
 ];
 
-export const WithFirstPartyModeAvailable = Template.bind( null );
-WithFirstPartyModeAvailable.storyName = 'With first party mode available';
-WithFirstPartyModeAvailable.parameters = {
-	features: [ 'firstPartyMode' ],
+export const WithGoogleTagGatewayAvailable = Template.bind( null );
+WithGoogleTagGatewayAvailable.storyName = 'With Google tag gateway available';
+WithGoogleTagGatewayAvailable.parameters = {
+	features: [ 'googleTagGateway' ],
 };
-WithFirstPartyModeAvailable.decorators = [
+WithGoogleTagGatewayAvailable.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			const fpmServerRequirementsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+			const gtgServerRequirementsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
 
-			const fpmSettings = {
+			const gtgSettings = {
 				isEnabled: true,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			};
 
-			fetchMock.get( fpmServerRequirementsEndpoint, {
-				body: fpmSettings,
+			fetchMock.get( gtgServerRequirementsEndpoint, {
+				body: gtgSettings,
 			} );
 
 			registry
 				.dispatch( CORE_SITE )
-				.receiveGetFirstPartyModeSettings( fpmSettings );
+				.receiveGetGoogleTagGatewaySettings( gtgSettings );
 		};
 
 		return (
@@ -130,33 +130,34 @@ WithFirstPartyModeAvailable.decorators = [
 		);
 	},
 ];
-WithFirstPartyModeAvailable.scenario = {};
+WithGoogleTagGatewayAvailable.scenario = {};
 
-export const WithFirstPartyModeUnavailable = Template.bind( null );
-WithFirstPartyModeUnavailable.storyName = 'With first party mode unavailable';
-WithFirstPartyModeUnavailable.parameters = {
-	features: [ 'firstPartyMode' ],
+export const WithGoogleTagGatewayUnavailable = Template.bind( null );
+WithGoogleTagGatewayUnavailable.storyName =
+	'With Google tag gateway unavailable';
+WithGoogleTagGatewayUnavailable.parameters = {
+	features: [ 'googleTagGateway' ],
 };
-WithFirstPartyModeUnavailable.decorators = [
+WithGoogleTagGatewayUnavailable.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			const fpmServerRequirementsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+			const gtgServerRequirementsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
 
-			const fpmSettings = {
+			const gtgSettings = {
 				isEnabled: true,
-				isFPMHealthy: false,
+				isGTGHealthy: false,
 				isScriptAccessEnabled: false,
 			};
 
-			fetchMock.get( fpmServerRequirementsEndpoint, {
-				body: fpmSettings,
+			fetchMock.get( gtgServerRequirementsEndpoint, {
+				body: gtgSettings,
 			} );
 
 			registry
 				.dispatch( CORE_SITE )
-				.receiveGetFirstPartyModeSettings( fpmSettings );
+				.receiveGetGoogleTagGatewaySettings( gtgSettings );
 		};
 
 		return (
@@ -166,7 +167,7 @@ WithFirstPartyModeUnavailable.decorators = [
 		);
 	},
 ];
-WithFirstPartyModeUnavailable.scenario = {};
+WithGoogleTagGatewayUnavailable.scenario = {};
 
 export const WithoutModuleAccess = Template.bind( null );
 WithoutModuleAccess.storyName = 'Without module access';
