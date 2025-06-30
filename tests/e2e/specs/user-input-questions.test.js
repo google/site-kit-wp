@@ -281,7 +281,7 @@ describe( 'User Input Settings', () => {
 			] );
 		} );
 
-		await page.waitForNetworkIdle();
+		await pageWait();
 
 		await fillInInputSettings();
 	} );
