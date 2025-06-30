@@ -40,8 +40,8 @@ import SVGGraphic from '@/svg/graphics/gathering-data.svg?url';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 
 export default function GatheringDataNotification( { id, Notification } ) {
-	const settingsAdminURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	const connectMoreServicesURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getConnectMoreServicesURL()
 	);
 
 	const { analyticsGatheringData, searchConsoleGatheringData } =
@@ -94,7 +94,7 @@ export default function GatheringDataNotification( { id, Notification } ) {
 				) }
 				ctaButton={ {
 					label: __( 'Connect more services', 'google-site-kit' ),
-					href: `${ settingsAdminURL }#/connect-more-services`,
+					href: connectMoreServicesURL,
 					onClick: () => {
 						dismissNotification( id, {
 							expiresInSeconds: DAY_IN_SECONDS,

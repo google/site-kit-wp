@@ -36,7 +36,7 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from './constants';
 import { MODULE_SLUG_ADS } from '../constants';
 import { isValidConversionID } from '../utils/validation';
-import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
+import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_CONVERSION_ID =
@@ -66,27 +66,27 @@ export async function submitChanges( { select, dispatch } ) {
 		}
 	}
 
-	const haveFirstPartyModeSettingsChanged =
-		select( CORE_SITE ).haveFirstPartyModeSettingsChanged();
+	const haveGoogleTagGatewaySettingsChanged =
+		select( CORE_SITE ).haveGoogleTagGatewaySettingsChanged();
 
-	if ( haveFirstPartyModeSettingsChanged ) {
+	if ( haveGoogleTagGatewaySettingsChanged ) {
 		const { error } = await dispatch(
 			CORE_SITE
-		).saveFirstPartyModeSettings();
+		).saveGoogleTagGatewaySettings();
 
 		if ( error ) {
 			return { error };
 		}
 
 		if (
-			select( CORE_SITE ).isFirstPartyModeEnabled() &&
+			select( CORE_SITE ).isGoogleTagGatewayEnabled() &&
 			! select( CORE_NOTIFICATIONS ).isNotificationDismissed(
-				FPM_SETUP_CTA_BANNER_NOTIFICATION
+				GTG_SETUP_CTA_BANNER_NOTIFICATION
 			)
 		) {
 			const { error: dismissError } =
 				( await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
-					FPM_SETUP_CTA_BANNER_NOTIFICATION
+					GTG_SETUP_CTA_BANNER_NOTIFICATION
 				) ) || {};
 
 			if ( dismissError ) {
@@ -124,7 +124,7 @@ export function rollbackChanges( { select, dispatch } ) {
 	if ( select( MODULES_ADS ).haveSettingsChanged() ) {
 		dispatch( MODULES_ADS ).rollbackSettings();
 		dispatch( CORE_SITE ).resetConversionTrackingSettings();
-		dispatch( CORE_SITE ).resetFirstPartyModeSettings();
+		dispatch( CORE_SITE ).resetGoogleTagGatewaySettings();
 	}
 }
 
@@ -132,14 +132,14 @@ export function validateHaveSettingsChanged( select, state, keys ) {
 	const { settings, savedSettings } = state;
 	const haveConversionTrackingSettingsChanged =
 		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
-	const haveFirstPartyModeSettingsChanged =
-		select( CORE_SITE ).haveFirstPartyModeSettingsChanged();
+	const haveGoogleTagGatewaySettingsChanged =
+		select( CORE_SITE ).haveGoogleTagGatewaySettingsChanged();
 
 	if ( keys ) {
 		invariant(
 			isEqual( pick( settings, keys ), pick( savedSettings, keys ) ) ||
 				! haveConversionTrackingSettingsChanged ||
-				haveFirstPartyModeSettingsChanged,
+				haveGoogleTagGatewaySettingsChanged,
 			INVARIANT_SETTINGS_NOT_CHANGED
 		);
 	}
@@ -147,7 +147,7 @@ export function validateHaveSettingsChanged( select, state, keys ) {
 	invariant(
 		! isEqual( settings, savedSettings ) ||
 			haveConversionTrackingSettingsChanged ||
-			haveFirstPartyModeSettingsChanged,
+			haveGoogleTagGatewaySettingsChanged,
 		INVARIANT_SETTINGS_NOT_CHANGED
 	);
 }

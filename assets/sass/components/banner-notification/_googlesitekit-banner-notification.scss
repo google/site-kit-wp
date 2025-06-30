@@ -23,6 +23,17 @@
 
 		&.googlesitekit-banner-notification--info {
 			background-color: $c-site-kit-sk-10;
+
+			.googlesitekit-banner__title {
+				color: $c-black;
+			}
+
+			.googlesitekit-banner__description {
+				color: $c-black;
+				a {
+					color: $c-black;
+				}
+			}
 		}
 
 		&.googlesitekit-banner-notification--error {
@@ -36,13 +47,18 @@
 		&.googlesitekit-banner-notification--warning {
 			background-color: $c-yellow-y-10;
 
+			.googlesitekit-banner__title {
+				color: $c-black;
+			}
+
 			.googlesitekit-banner__description {
+				color: $c-black;
 				font-size: $fs-body-sm;
 				letter-spacing: $ls-xs;
 				line-height: $lh-body-sm;
 
 				a {
-					color: $c-site-kit-sk-1000;
+					color: $c-black;
 				}
 			}
 			.googlesitekit-notice__action {
