@@ -86,7 +86,7 @@ describe( 'User Input Settings', () => {
 			] )
 		);
 
-		await pageWait( 600 );
+		await page.waitForNetworkIdle();
 
 		await step(
 			'wait for a Key Metric tile to successfully appear',
@@ -263,8 +263,10 @@ describe( 'User Input Settings', () => {
 		await setSearchConsoleProperty();
 
 		await step( 'visit admin settings', async () => {
-			await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
-			await pageWait();
+			await Promise.all( [
+				visitAdminPage( 'admin.php', 'page=googlesitekit-settings' ),
+				page.waitForNetworkIdle(),
+			] );
 			await page.waitForSelector( '.mdc-tab-bar a.mdc-tab' );
 			await expect( page ).toClick( 'a.mdc-tab', {
 				text: /admin settings/i,
@@ -281,7 +283,7 @@ describe( 'User Input Settings', () => {
 			] );
 		} );
 
-		await pageWait();
+		await page.waitForNetworkIdle();
 
 		await fillInInputSettings();
 	} );
