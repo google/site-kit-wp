@@ -110,7 +110,7 @@ function CoreSiteBannerNotifications() {
 			}
 
 			registerNotification( notification.id, {
-				Component: () => {
+				Component() {
 					return <NotificationFromServer { ...notification } />;
 				},
 				priority: notification.priority,
