@@ -44,6 +44,7 @@ export default function BannerNotification( {
 	learnMoreLink,
 	dismissButton,
 	ctaButton,
+	dismissOnCTAClick,
 	dismissOptions,
 	gaTrackingEventArgs,
 	...props
@@ -72,6 +73,12 @@ export default function BannerNotification( {
 			gaTrackingEventArgs?.value
 		);
 		await ctaButton?.onClick?.( event );
+
+		if ( dismissOnCTAClick ) {
+			dismissNotification( notificationID, {
+				...dismissOptions,
+			} );
+		}
 	};
 
 	const handleLearnMoreClickWithTrackEvent = async ( event ) => {
@@ -131,6 +138,7 @@ BannerNotification.propTypes = {
 	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
 	ctaButton: PropTypes.shape( CTAButton.propTypes ),
+	dismissOnCTAClick: PropTypes.bool,
 	dismissOptions: PropTypes.object,
 	gaTrackingEventArgs: PropTypes.shape( {
 		category: PropTypes.string,
