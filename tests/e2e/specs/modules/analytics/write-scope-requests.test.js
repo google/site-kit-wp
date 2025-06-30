@@ -435,7 +435,7 @@ describe( 'Analytics write scope requests', () => {
 
 		// They should end up on the dashboard.
 		await page.waitForNavigation();
-		await page.waitForNetworkIdle();
+		await page.waitForTimeout( 5000 );
 		await expect( page ).toMatchElement( '.googlesitekit-notice__title', {
 			text: /Congrats on completing the setup for Analytics!/i,
 		} );

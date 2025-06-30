@@ -263,10 +263,8 @@ describe( 'User Input Settings', () => {
 		await setSearchConsoleProperty();
 
 		await step( 'visit admin settings', async () => {
-			await Promise.all( [
-				visitAdminPage( 'admin.php', 'page=googlesitekit-settings' ),
-				page.waitForNetworkIdle(),
-			] );
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
+			await pageWait();
 			await page.waitForSelector( '.mdc-tab-bar a.mdc-tab' );
 			await expect( page ).toClick( 'a.mdc-tab', {
 				text: /admin settings/i,
