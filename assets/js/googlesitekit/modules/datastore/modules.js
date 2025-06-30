@@ -1460,7 +1460,7 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state Data store's state (unused in this selector).
 	 * @return {(Object|undefined)} Object of recovery errors keyed by module slug,
-	 *                               or `undefined` if recoverable modules are not yet available.
+	 *                              or `undefined` if recoverable modules are not yet available.
 	 */
 	getRecoveryErrors: createRegistrySelector( ( select ) => () => {
 		const recoverableModules =
