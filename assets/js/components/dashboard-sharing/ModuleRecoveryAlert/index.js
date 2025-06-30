@@ -32,13 +32,13 @@ import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { DAY_IN_SECONDS } from '@/js/util';
+import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { DAY_IN_SECONDS } from '../../../util';
 import Description from './Description';
 import BannerNotification, {
 	TYPES,
-} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+} from '../../../googlesitekit/notifications/components/layout/BannerNotification';
 import AdditionalDescription from './AdditionalDescription';
 import PreviewBlock from '../../PreviewBlock';
 
@@ -90,7 +90,7 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 			dismissNotification( id, { skipHidingFromQueue: false } );
 		}
 
-		// Only update state if the component is still mounted
+		// Only update state if the component is still mounted.
 		if ( isMounted() ) {
 			setSelectedModuleSlugs( null );
 			setInProgress( false );
@@ -136,9 +136,7 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 					isLoading ? (
 						<Fragment>
 							<PreviewBlock width="auto" height="50px" />
-							<br />
 							<PreviewBlock width="auto" height="60px" />
-							<br />
 							<PreviewBlock width="220px" height="35px" />
 						</Fragment>
 					) : (
@@ -201,7 +199,7 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 									'Remind me later',
 									'google-site-kit'
 								),
-								primary: hideCTAButton,
+								tertiary: ! hideCTAButton,
 								className: hideCTAButton
 									? 'googlesitekit-banner__cta'
 									: undefined,
