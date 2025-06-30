@@ -32,7 +32,7 @@ import { Button } from 'googlesitekit-components';
 export default function DismissButton( {
 	className,
 	label = __( 'Maybe later', 'google-site-kit' ),
-	primary = false,
+	tertiary = true,
 	onClick,
 	disabled,
 } ) {
@@ -45,7 +45,7 @@ export default function DismissButton( {
 			className={ className }
 			onClick={ onClick }
 			disabled={ disabled }
-			tertiary={ ! primary }
+			tertiary={ tertiary }
 		>
 			{ label }
 		</Button>
@@ -55,7 +55,7 @@ export default function DismissButton( {
 DismissButton.propTypes = {
 	className: PropTypes.string,
 	label: PropTypes.string,
-	primary: PropTypes.bool,
+	tertiary: PropTypes.bool,
 	onClick: PropTypes.func,
 	disabled: PropTypes.bool,
 };
