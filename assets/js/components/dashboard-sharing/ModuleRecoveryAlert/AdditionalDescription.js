@@ -49,7 +49,8 @@ export default function AdditionalDescription( {
 	);
 
 	if ( ! hasUserRecoverableModules ) {
-		// List of unrecoverable modules.
+		// User has no permission to recover any modules.
+		// Show all recoverable modules in a read-only list.
 		return (
 			hasMultipleRecoverableModules && (
 				<ul className="mdc-list mdc-list--non-interactive">
