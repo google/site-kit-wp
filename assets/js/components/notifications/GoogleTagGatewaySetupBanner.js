@@ -24,7 +24,11 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -45,6 +49,7 @@ import GoogleTagGatewaySetupSuccessSubtleNotification, {
 } from './GoogleTagGatewaySetupSuccessSubtleNotification';
 
 export default function GoogleTagGatewaySetupBanner( { id, Notification } ) {
+	const [ inProgress, setInProgress ] = useState( false );
 	const { setGoogleTagGatewayEnabled, saveGoogleTagGatewaySettings } =
 		useDispatch( CORE_SITE );
 
@@ -72,6 +77,7 @@ export default function GoogleTagGatewaySetupBanner( { id, Notification } ) {
 	);
 
 	const onCTAClick = async () => {
+		setInProgress( true );
 		setGoogleTagGatewayEnabled( true );
 		const { error } = await saveGoogleTagGatewaySettings();
 
@@ -87,6 +93,8 @@ export default function GoogleTagGatewaySetupBanner( { id, Notification } ) {
 			isDismissible: false,
 			featureFlag: 'googleTagGateway',
 		} );
+
+		setInProgress( false );
 	};
 
 	const ctaError = useSelect( ( select ) => {
@@ -131,6 +139,7 @@ export default function GoogleTagGatewaySetupBanner( { id, Notification } ) {
 						'google-site-kit'
 					),
 					onClick: onCTAClick,
+					inProgress,
 				} }
 				dismissButton={ {
 					label: __( 'Maybe later', 'google-site-kit' ),
