@@ -96,12 +96,9 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 		await expect( page ).toMatchElement(
 			'#js-googlesitekit-main-dashboard'
 		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
-			{
-				text: /Congrats on completing the setup for Site Kit!/i,
-			}
-		);
+		await expect( page ).toMatchElement( '.googlesitekit-banner__title', {
+			text: /Congrats on completing the setup for Site Kit!/i,
+		} );
 	} );
 
 	it( 'saves search console property when site exists', async () => {
