@@ -48,7 +48,11 @@ export default function AdditionalDescription( {
 		select( CORE_MODULES ).getRecoveryErrors()
 	);
 
-	if ( ! hasUserRecoverableModules && hasMultipleRecoverableModules ) {
+	if ( ! hasUserRecoverableModules && ! hasMultipleRecoverableModules ) {
+		return null;
+	}
+
+	if ( ! hasUserRecoverableModules ) {
 		// User has no permission to recover any modules.
 		// Show all recoverable modules in a read-only list.
 		return (
