@@ -48,23 +48,19 @@ export default function AdditionalDescription( {
 		select( CORE_MODULES ).getRecoveryErrors()
 	);
 
-	if ( ! hasUserRecoverableModules ) {
+	if ( ! hasUserRecoverableModules && hasMultipleRecoverableModules ) {
 		// User has no permission to recover any modules.
 		// Show all recoverable modules in a read-only list.
 		return (
-			hasMultipleRecoverableModules && (
-				<ul className="mdc-list mdc-list--non-interactive">
-					{ Object.values( recoverableModules || {} ).map(
-						( module ) => (
-							<li className="mdc-list-item" key={ module.slug }>
-								<span className="mdc-list-item__text">
-									{ module.name }
-								</span>
-							</li>
-						)
-					) }
-				</ul>
-			)
+			<ul className="mdc-list mdc-list--non-interactive">
+				{ Object.values( recoverableModules || {} ).map( ( module ) => (
+					<li className="mdc-list-item" key={ module.slug }>
+						<span className="mdc-list-item__text">
+							{ module.name }
+						</span>
+					</li>
+				) ) }
+			</ul>
 		);
 	}
 

@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { useMountedState } from 'react-use';
 
 /**
@@ -200,9 +201,9 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 									'google-site-kit'
 								),
 								tertiary: ! hideCTAButton,
-								className: hideCTAButton
-									? 'googlesitekit-banner__cta'
-									: undefined,
+								className: classnames( {
+									'googlesitekit-banner__cta': hideCTAButton,
+								} ),
 						  }
 				}
 				dismissOptions={
