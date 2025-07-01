@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { useEffect, useState, Fragment } from '@wordpress/element';
 import { getQueryArg } from '@wordpress/url';
 
 /**
@@ -36,6 +36,7 @@ import UserInputQuestionnaire from './UserInputQuestionnaire';
 import Layout from '../layout/Layout';
 import { getUserInputQuestions } from './util/constants';
 import ProgressSegments from '../ProgressSegments';
+import CheckFill from '../../../svg/icons/check-fill.svg';
 
 export default function UserInputApp() {
 	const questions = getUserInputQuestions();
@@ -58,6 +59,21 @@ export default function UserInputApp() {
 	// Could check slug is `analytics-4` to be on the safe side.
 	const showProgress = getQueryArg( location.href, 'showProgress' );
 
+	const accountCreated = getQueryArg( location.href, 'accountCreated' );
+
+	const [ isAccountCreatedVisible, setIsAccountCreatedVisible ] = useState(
+		!! accountCreated
+	);
+
+	useEffect( () => {
+		if ( accountCreated ) {
+			setIsAccountCreatedVisible( true );
+			setTimeout( () => {
+				setIsAccountCreatedVisible( false );
+			}, 3000 );
+		}
+	}, [ accountCreated ] );
+
 	return (
 		<Fragment>
 			<Header>
@@ -67,6 +83,18 @@ export default function UserInputApp() {
 				<ProgressSegments currentSegment={ 6 } totalSegments={ 7 } />
 			) }
 			<div className="googlesitekit-user-input">
+				<div className="googlesite-user-input__notification">
+					{ isAccountCreatedVisible && (
+						<div className="googlesitekit-user-input__notification-wrapper">
+							<p>
+								<CheckFill width={ 24 } height={ 24 } />
+								<span>
+									Your account has been successfully created
+								</span>
+							</p>
+						</div>
+					) }
+				</div>
 				<div className="googlesitekit-module-page">
 					{ ! hasFinishedGettingInputSettings && (
 						<Grid>

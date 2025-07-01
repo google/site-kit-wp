@@ -189,6 +189,32 @@
 	}
 }
 
+.googlesite-user-input__notification {
+	bottom: 97px;
+	left: 50%;
+	position: fixed;
+	transform: translateX(-50%);
+	z-index: 10;
+
+	.googlesitekit-user-input__notification-wrapper {
+		align-items: center;
+		background-color: $c-grey-g-900;
+		border-radius: $br-lg;
+		color: $c-white;
+		display: flex;
+		font-size: $fs-body-lg;
+		letter-spacing: $ls-xxs;
+		padding: 14px 24px;
+
+		p {
+			align-items: center;
+			display: flex;
+			gap: 12px;
+			margin: 0;
+		}
+	}
+}
+
 // Adapt the fixed position bar based on the folded state of the WordPress menu
 .sb-show-main .googlesitekit-plugin .googlesitekit-user-input__footer,
 .sb-show-main .googlesitekit-plugin .googlesitekit-user-input__error {
