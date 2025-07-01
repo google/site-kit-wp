@@ -33,13 +33,14 @@ export default function DismissButton( {
 	label = __( 'Maybe later', 'google-site-kit' ),
 	onClick,
 	disabled,
+	tertiary = true,
 } ) {
 	if ( ! onClick ) {
 		return null;
 	}
 
 	return (
-		<Button onClick={ onClick } disabled={ disabled } tertiary>
+		<Button onClick={ onClick } disabled={ disabled } tertiary={ tertiary }>
 			{ label }
 		</Button>
 	);
@@ -49,4 +50,5 @@ DismissButton.propTypes = {
 	label: PropTypes.string,
 	onClick: PropTypes.func,
 	disabled: PropTypes.bool,
+	tertiary: PropTypes.bool,
 };
