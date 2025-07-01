@@ -31,6 +31,7 @@ import SetupForm from './SetupForm';
 import Badge from '../../../../components/Badge';
 import HTTPSWarning from '../../../../components/notifications/HTTPSWarning';
 import { isURLUsingHTTPS } from '../../../../util/is-url-using-https';
+import Typography from '../../../../components/Typography';
 
 export default function SetupMain() {
 	const homeURL = useSelect( ( select ) => select( CORE_SITE ).getHomeURL() );
@@ -42,7 +43,11 @@ export default function SetupMain() {
 					<SignInWithGoogleIcon width="40" height="40" />
 				</div>
 
-				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+				<Typography
+					className="googlesitekit-setup-module__title"
+					size="small"
+					type="headline"
+				>
 					{ _x(
 						'Sign in with Google',
 						'Service name',
@@ -52,7 +57,7 @@ export default function SetupMain() {
 						className="googlesitekit-badge--beta"
 						label={ __( 'Beta', 'google-site-kit' ) }
 					/>
-				</h2>
+				</Typography>
 			</div>
 			<div className="googlesitekit-setup-module__step">
 				<HTTPSWarning moduleSlug="sign-in-with-google" />

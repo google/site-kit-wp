@@ -33,6 +33,7 @@ import { Component, Fragment } from '@wordpress/element';
 import { get, set } from 'googlesitekit-api';
 import { Button, ProgressBar, TextField } from 'googlesitekit-components';
 import { validateJSON, trackEvent } from '../../util';
+import Typography from '../Typography';
 
 class SiteVerification extends Component {
 	constructor( props ) {
@@ -208,14 +209,15 @@ class SiteVerification extends Component {
 	static renderSetupDone() {
 		return (
 			<Fragment>
-				<h2
+				<Typography
 					className="
-					googlesitekit-heading-3
 					googlesitekit-wizard-step__title
 				"
+					size="small"
+					type="headline"
 				>
 					{ __( 'Verify URL', 'google-site-kit' ) }
-				</h2>
+				</Typography>
 
 				<p className="googlesitekit-wizard-step__text">
 					{ __(
@@ -237,14 +239,15 @@ class SiteVerification extends Component {
 
 		return (
 			<Fragment>
-				<h2
+				<Typography
 					className="
-					googlesitekit-heading-3
 					googlesitekit-wizard-step__title
 				"
+					size="small"
+					type="headline"
 				>
 					{ __( 'Verify URL', 'google-site-kit' ) }
-				</h2>
+				</Typography>
 
 				<p className="googlesitekit-wizard-step__text">
 					{ __(

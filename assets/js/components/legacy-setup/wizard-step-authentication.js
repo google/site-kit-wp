@@ -36,6 +36,7 @@ import OptIn from '../OptIn';
 import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
 import { setItem } from '../../googlesitekit/api/cache';
 import { trackEvent } from '../../util';
+import Typography from '../Typography';
 
 class WizardStepAuthentication extends Component {
 	constructor( props ) {
@@ -81,17 +82,19 @@ class WizardStepAuthentication extends Component {
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
-							<h2
+							<Typography
 								className="
 								googlesitekit-heading-3
 								googlesitekit-wizard-step__title
 							"
+								size="medium"
+								type="headline"
 							>
 								{ __(
 									'Authenticate with Google',
 									'google-site-kit'
 								) }
-							</h2>
+							</Typography>
 							<p>
 								{ __(
 									'Please sign into your Google account to begin.',

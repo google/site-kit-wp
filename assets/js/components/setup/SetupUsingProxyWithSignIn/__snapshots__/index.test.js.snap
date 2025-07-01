@@ -254,11 +254,12 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                   <div
                     class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
                   >
-                    <h1
-                      class="googlesitekit-setup__title"
+                    <span
+                      class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--large"
+                      role="heading"
                     >
                       Set up Site Kit
-                    </h1>
+                    </span>
                     <p
                       class="googlesitekit-setup__description"
                     >
@@ -591,11 +592,12 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                   <div
                     class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
                   >
-                    <h1
-                      class="googlesitekit-setup__title"
+                    <span
+                      class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--large"
+                      role="heading"
                     >
                       Set up Site Kit
-                    </h1>
+                    </span>
                     <p
                       class="googlesitekit-setup__description"
                     >

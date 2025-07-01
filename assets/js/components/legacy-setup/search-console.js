@@ -41,6 +41,7 @@ import {
 } from 'googlesitekit-components';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { trackEvent } from '../../util';
+import Typography from '../Typography';
 
 class SearchConsole extends Component {
 	constructor( props ) {
@@ -241,18 +242,19 @@ class SearchConsole extends Component {
 	static connected() {
 		return (
 			<section className="googlesitekit-setup-module googlesitekit-setup-module--search-console">
-				<h2
+				<Typography
 					className="
-					googlesitekit-heading-3
 					googlesitekit-setup-module__title
 				"
+					size="small"
+					type="headline"
 				>
 					{ _x(
 						'Search Console',
 						'Service name',
 						'google-site-kit'
 					) }
-				</h2>
+				</Typography>
 				<p className="googlesitekit-setup-module__text--no-margin">
 					{ __(
 						'Your Search Console is set up with Site Kit.',
@@ -320,18 +322,19 @@ class SearchConsole extends Component {
 
 		return (
 			<section className="googlesitekit-setup-module googlesitekit-setup-module--search-console">
-				<h2
+				<Typography
 					className="
-					googlesitekit-heading-3
 					googlesitekit-setup-module__title
 				"
+					size="small"
+					type="headline"
 				>
 					{ _x(
 						'Search Console',
 						'Service name',
 						'google-site-kit'
 					) }
-				</h2>
+				</Typography>
 
 				{ errorMsg && 0 < errorMsg.length && (
 					<p className="googlesitekit-error-text">{ errorMsg }</p>

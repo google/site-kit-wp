@@ -63,6 +63,7 @@ import { WooCommerceRedirectModal } from '../common';
 import Link from '../../../../components/Link';
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
+import Typography from '../../../../components/Typography';
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );
@@ -253,9 +254,13 @@ export default function SetupMainPAX( { finishSetup } ) {
 					<AdsIcon width="40" height="40" />
 				</div>
 
-				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+				<Typography
+					className="googlesitekit-setup-module__title"
+					size="small"
+					type="headline"
+				>
 					{ _x( 'Ads', 'Service name', 'google-site-kit' ) }
-				</h2>
+				</Typography>
 			</div>
 			<div className="googlesitekit-setup-module__step">
 				<AdBlockerWarning moduleSlug="ads" />

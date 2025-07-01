@@ -44,6 +44,7 @@ import { ProgressBar } from 'googlesitekit-components';
 import { PublicationCreate } from '../common';
 import ReaderRevenueManagerIcon from '../../../../../svg/graphics/reader-revenue-manager.svg';
 import SetupForm from './SetupForm';
+import Typography from '../../../../components/Typography';
 
 export default function SetupMain( { finishSetup = () => {} } ) {
 	const publications = useSelect( ( select ) =>
@@ -152,13 +153,17 @@ export default function SetupMain( { finishSetup = () => {} } ) {
 					<ReaderRevenueManagerIcon width="40" height="40" />
 				</div>
 
-				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+				<Typography
+					className="googlesitekit-setup-module__title"
+					size="small"
+					type="headline"
+				>
 					{ _x(
 						'Reader Revenue Manager',
 						'Service name',
 						'google-site-kit'
 					) }
-				</h2>
+				</Typography>
 			</div>
 
 			<div className="googlesitekit-setup-module__step">

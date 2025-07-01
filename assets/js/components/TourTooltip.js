@@ -60,6 +60,7 @@ export default function TourTooltip( {
 		>
 			<Card className="googlesitekit-tooltip-card">
 				<div className="googlesitekit-tooltip-body">
+					{ /* The Typography component is not appropriate here as the title does not follow default heading styles */ }
 					<h2 className="googlesitekit-tooltip-title">
 						{ step.title }
 					</h2>

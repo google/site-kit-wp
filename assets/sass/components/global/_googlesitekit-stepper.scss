@@ -68,6 +68,9 @@
 		align-items: center;
 		color: $c-surfaces-on-surface;
 		display: flex;
+
+		/* Font styles customized for the title here despite the Typography component,
+	     as the Stepper does not follow the dashboard heading styles */
 		font-family: $f-primary;
 		font-size: $fs-title-md;
 		font-weight: $fw-medium;

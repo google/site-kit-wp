@@ -51,6 +51,8 @@ function CTA( {
 			{ ( headerText || headerContent ) && (
 				<div className="googlesitekit-cta__header">
 					{ headerText && (
+						// Using the Typography component here is not appropriate
+						// as this heading does not match the dashboard styles.
 						<h2 className="googlesitekit-cta__header_text">
 							{ headerText }
 						</h2>

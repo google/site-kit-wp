@@ -34,6 +34,7 @@ import { forwardRef, Fragment } from '@wordpress/element';
 import { Row, Cell } from '../../../../../material-components';
 import ContentSVG from './ContentSVG';
 import AdSenseIcon from '../../../../../../svg/graphics/adsense.svg';
+import Typography from '../../../../../components/Typography';
 
 const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 	const stageContent = [
@@ -78,13 +79,17 @@ const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 							<AdSenseIcon width="33" height="33" />
 						</div>
 
-						<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+						<Typography
+							className="googlesitekit-setup-module__title"
+							size="small"
+							type="headline"
+						>
 							{ _x(
 								'AdSense',
 								'Service name',
 								'google-site-kit'
 							) }
-						</h2>
+						</Typography>
 					</div>
 				</Cell>
 			</Row>

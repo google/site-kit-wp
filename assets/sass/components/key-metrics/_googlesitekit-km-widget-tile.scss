@@ -218,10 +218,14 @@
 
 			.googlesitekit-cta__header_text {
 				color: $c-surfaces-on-background-variant;
+
+				/* Font styles customized for the header here despite the Typography component,
+				 as the KM Widget CTAs do not follow the dashboard heading styles */
 				font-family: $f-primary;
 				font-size: $fs-label-sm;
 				font-weight: $fw-normal;
 				letter-spacing: $ls-xs;
+				line-height: $lh-headline-md;
 				margin: 0 0 10px;
 			}
 
