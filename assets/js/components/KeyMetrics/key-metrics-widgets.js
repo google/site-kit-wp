@@ -220,7 +220,7 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredCustomDimensions: [ 'googlesitekit_post_type' ],
-		displayInSelectionPanel: ( select ) =>
+		displayInSelectionPanel: ( { select } ) =>
 			select( CORE_USER ).isKeyMetricActive(
 				KM_ANALYTICS_POPULAR_PRODUCTS
 			) || select( CORE_SITE ).getProductPostType(),
