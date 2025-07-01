@@ -282,7 +282,7 @@ describe( 'User Input Settings', () => {
 			] );
 		} );
 
-		await pageWait();
+		await page.waitForNetworkIdle();
 
 		await fillInInputSettings();
 	} );
