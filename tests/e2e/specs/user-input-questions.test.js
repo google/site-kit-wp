@@ -83,10 +83,9 @@ describe( 'User Input Settings', () => {
 					{ text: /complete setup/i }
 				),
 				page.waitForNavigation(),
+				page.waitForNetworkIdle(),
 			] )
 		);
-
-		await pageWait( 600 );
 
 		await step(
 			'wait for a Key Metric tile to successfully appear',
