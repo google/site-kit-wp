@@ -1232,7 +1232,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					throw new Missing_Required_Param_Exception( 'timezone' );
 				}
 
-				$show_progress = isset( $data['showProgress'] ) && $data['showProgress'];
+				$show_progress = isset( $data['showProgress'] );
 
 				$account = new GoogleAnalyticsAdminV1betaAccount();
 				$account->setDisplayName( $data['displayName'] );

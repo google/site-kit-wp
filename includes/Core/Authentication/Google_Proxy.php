@@ -108,6 +108,7 @@ class Google_Proxy {
 	 * @return array Array of supported features.
 	 */
 	private function get_supports() {
+		// TODO: Consider adding `show_progress` to the supports list.
 		$supports = array(
 			'credentials_retrieval',
 			'short_verification_token',
