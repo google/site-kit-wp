@@ -85,5 +85,13 @@
 				background-size: 75% 100%;
 			}
 		}
+
+		.googlesitekit-banner__svg-wrapper--cover {
+			background-position-y: center;
+
+			@media (min-width: $bp-xlarge) {
+				background-size: 100% 100%;
+			}
+		}
 	}
 }
