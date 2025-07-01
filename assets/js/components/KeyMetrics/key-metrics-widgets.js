@@ -117,14 +117,15 @@ function shouldDisplayWidgetWithAnalytics4AndAdSenseLinked( {
  *
  * @since 1.113.0
  *
- * @param {Function} select              Data store select function.
- * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
+ * @param {Object}   options                     Options object.
+ * @param {Function} options.select              Data store select function.
+ * @param {boolean}  options.isViewOnlyDashboard Whether the current dashboard is view only.
  * @return {boolean} Whether to display the widget.
  */
-function shouldDisplayWidgetWithCustomDimensions(
+function shouldDisplayWidgetWithCustomDimensions( {
 	select,
-	isViewOnlyDashboard
-) {
+	isViewOnlyDashboard,
+} ) {
 	if ( ! isViewOnlyDashboard ) {
 		return true;
 	}
