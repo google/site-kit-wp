@@ -13,16 +13,12 @@ import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constan
  * @since 1.136.0
  * @since 1.137.0 Moved function to its own file.
  *
- * @param {Function} select              Data store select function.
- * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
- * @param {string}   slug                Key metric widget slug.
+ * @param {Object}   options        Options object.
+ * @param {Function} options.select Data store select function.
+ * @param {string}   options.slug   Key metric widget slug.
  * @return {boolean} Whether to display the widget.
  */
-export function shouldDisplayWidgetWithConversionEvent(
-	select,
-	isViewOnlyDashboard,
-	slug
-) {
+export function shouldDisplayWidgetWithConversionEvent( { select, slug } ) {
 	return (
 		select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
 			// This property is available to the widget object that requires the
