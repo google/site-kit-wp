@@ -130,7 +130,12 @@ Banner.propTypes = {
 	svg: PropTypes.shape( {
 		desktop: PropTypes.elementType,
 		mobile: PropTypes.elementType,
-		verticalPosition: PropTypes.oneOf( [ 'top', 'center', 'bottom' ] ),
+		verticalPosition: PropTypes.oneOf( [
+			'top',
+			'center',
+			'bottom',
+			'cover',
+		] ),
 	} ),
 	footer: PropTypes.node,
 };
