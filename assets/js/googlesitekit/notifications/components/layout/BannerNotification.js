@@ -33,6 +33,7 @@ import LearnMoreLink from '../../../../components/Banner/LearnMoreLink';
 import CTAButton from '../../../../components/Banner/CTAButton';
 import DismissButton from '../../../../components/Banner/DismissButton';
 import { Cell, Grid, Row } from '../../../../material-components';
+import warningDesktopSVG from '@/svg/graphics/banner-warning.svg?url';
 
 export const TYPES = {
 	INFO: 'info',
@@ -44,6 +45,7 @@ export default function BannerNotification( {
 	learnMoreLink,
 	dismissButton,
 	ctaButton,
+	dismissOnCTAClick,
 	dismissOptions,
 	gaTrackingEventArgs,
 	...props
@@ -72,6 +74,12 @@ export default function BannerNotification( {
 			gaTrackingEventArgs?.value
 		);
 		await ctaButton?.onClick?.( event );
+
+		if ( dismissOnCTAClick ) {
+			dismissNotification( notificationID, {
+				...dismissOptions,
+			} );
+		}
 	};
 
 	const handleLearnMoreClickWithTrackEvent = async ( event ) => {
@@ -82,7 +90,22 @@ export default function BannerNotification( {
 		await learnMoreLink?.onClick?.( event );
 	};
 
-	const SVGData = props?.svg;
+	let SVGData = props?.svg;
+
+	if ( ! SVGData && type !== TYPES.INFO ) {
+		SVGData = {
+			desktop: undefined,
+			mobile: undefined,
+			verticalPosition: 'center',
+		};
+
+		if ( type === TYPES.WARNING ) {
+			SVGData = {
+				desktop: warningDesktopSVG,
+				verticalPosition: 'center',
+			};
+		}
+	}
 
 	return (
 		<div
@@ -131,6 +154,7 @@ BannerNotification.propTypes = {
 	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
 	ctaButton: PropTypes.shape( CTAButton.propTypes ),
+	dismissOnCTAClick: PropTypes.bool,
 	dismissOptions: PropTypes.object,
 	gaTrackingEventArgs: PropTypes.shape( {
 		category: PropTypes.string,

@@ -32,7 +32,6 @@ import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constan
 import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MINUTE_IN_SECONDS } from '../../util';
-import warningDesktopSVG from '@/svg/graphics/banner-warning.svg?url';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 
 export const WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION =
@@ -81,10 +80,6 @@ export default function WebDataStreamNotAvailableNotification( {
 				} }
 				dismissOptions={ {
 					expiresInSeconds: MINUTE_IN_SECONDS * 55,
-				} }
-				svg={ {
-					desktop: warningDesktopSVG,
-					verticalPosition: 'center',
 				} }
 			/>
 		</Notification>
