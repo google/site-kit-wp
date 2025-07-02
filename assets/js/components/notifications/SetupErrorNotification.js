@@ -26,9 +26,9 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import NotificationError from '../../googlesitekit/notifications/components/layout/NotificationError';
-import Description from '../../googlesitekit/notifications/components/common/Description';
-import CTALink from '../../googlesitekit/notifications/components/common/CTALink';
+import BannerNotification, {
+	TYPES,
+} from '../../googlesitekit/notifications/components/layout/BannerNotification';
 
 export default function SetupErrorNotification( { id, Notification } ) {
 	// These will be `null` if no errors exist.
@@ -41,23 +41,19 @@ export default function SetupErrorNotification( { id, Notification } ) {
 
 	return (
 		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
-			<NotificationError
+			<BannerNotification
+				notificationID={ id }
+				type={ TYPES.ERROR }
 				title={ __(
 					'Oops! There was a problem during set up. Please try again.',
 					'google-site-kit'
 				) }
-				description={ <Description text={ setupErrorMessage } /> }
-				actions={
-					setupErrorRedoURL && (
-						<CTALink
-							id={ id }
-							ctaLabel={ __(
-								'Redo the plugin setup',
-								'google-site-kit'
-							) }
-							ctaLink={ setupErrorRedoURL }
-						/>
-					)
+				description={ setupErrorMessage }
+				ctaButton={
+					setupErrorRedoURL && {
+						label: __( 'Redo the plugin setup', 'google-site-kit' ),
+						href: setupErrorRedoURL,
+					}
 				}
 			/>
 		</Notification>
