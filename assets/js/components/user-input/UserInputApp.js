@@ -25,7 +25,7 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../../material-components';
@@ -37,6 +37,7 @@ import Layout from '../layout/Layout';
 import { getUserInputQuestions } from './util/constants';
 import ProgressSegments from '../ProgressSegments';
 import CheckFill from '../../../svg/icons/check-fill.svg';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 export default function UserInputApp() {
 	const questions = getUserInputQuestions();
@@ -65,14 +66,45 @@ export default function UserInputApp() {
 		!! accountCreated
 	);
 
+	const { syncAvailableAudiences, fetchSyncAvailableCustomDimensions } =
+		useDispatch( MODULES_ANALYTICS_4 );
+
 	useEffect( () => {
-		if ( accountCreated ) {
-			setIsAccountCreatedVisible( true );
-			setTimeout( () => {
-				setIsAccountCreatedVisible( false );
-			}, 3000 );
+		if ( ! accountCreated ) {
+			return;
 		}
-	}, [ accountCreated ] );
+
+		setIsAccountCreatedVisible( true );
+		setTimeout( () => {
+			setIsAccountCreatedVisible( false );
+		}, 3000 );
+
+		const syncAudiences = async () => {
+			// Sync audiences and dimensions, so the `PrimaryUserSetupWidget` component
+			// can quickly setup audiences when the user lands on the dashboard.
+			// eslint-disable-next-line no-unused-vars
+			const { error: syncAudiencesError } =
+				await syncAvailableAudiences();
+
+			// FIXME: Handle errors properly.
+			if ( syncAudiencesError ) {
+				return { error: syncAudiencesError };
+			}
+
+			const { error: syncDimensionsError } =
+				await fetchSyncAvailableCustomDimensions();
+
+			if ( syncDimensionsError ) {
+				return { error: syncDimensionsError };
+			}
+		};
+
+		syncAudiences();
+	}, [
+		accountCreated,
+		fetchSyncAvailableCustomDimensions,
+		syncAvailableAudiences,
+	] );
 
 	return (
 		<Fragment>
