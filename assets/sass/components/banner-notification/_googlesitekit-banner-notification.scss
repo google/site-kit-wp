@@ -36,6 +36,14 @@
 			}
 		}
 
+		&.googlesitekit-banner-notification--error {
+			background-color: $c-red-r-10;
+
+			.googlesitekit-banner__cta {
+				background-color: $c-red-r-500;
+			}
+		}
+
 		&.googlesitekit-banner-notification--warning {
 			background-color: $c-yellow-y-10;
 
@@ -84,6 +92,14 @@
 			@media (min-width: $bp-xlarge) {
 				background-size: 75% 100%;
 			}
+		}
+
+		.googlesitekit-banner__additional-description {
+			margin-top: 10px;
+		}
+
+		.googlesitekit-preview-block__wrapper {
+			margin-bottom: 10px;
 		}
 	}
 }
