@@ -112,8 +112,8 @@ export default function SetupForm( { finishSetup } ) {
 			if ( ! error ) {
 				setConversionTrackingEnabled( true );
 
-				// Sync audiences and dimensions, and set the Audience Segmentation form to auto-submit so that
-				// it's setup when the user lands on the dashboard.
+				// Sync audiences and dimensions, so the `PrimaryUserSetupWidget` component
+				// can quickly setup audiences when the user lands on the dashboard.
 				// eslint-disable-next-line no-unused-vars
 				const { error: syncAudiencesError } =
 					await syncAvailableAudiences();
