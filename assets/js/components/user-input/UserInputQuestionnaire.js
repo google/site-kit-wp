@@ -145,7 +145,6 @@ export default function UserInputQuestionnaire() {
 					options={ USER_INPUT_ANSWERS_PURPOSE }
 					descriptions={ USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS }
 					next={ onSaveClick }
-					showInstructions
 				/>
 			</UserInputQuestionWrapper>
 		</div>
