@@ -78,12 +78,14 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		setInProgress( true );
 
 		await clearRecoveredModules();
+
 		const recoveryResponse = await recoverModules( selectedModuleSlugs );
 
-		// Only dismiss the notification if all modules were recovered successfully.
 		const successfullyRecoveredModules = Object.keys(
 			recoveryResponse?.response?.success || {}
 		).filter( ( slug ) => recoveryResponse.response.success[ slug ] );
+
+		// Only dismiss the notification if all modules were recovered successfully.
 		if (
 			userRecoverableModuleSlugs.length ===
 			successfullyRecoveredModules.length
