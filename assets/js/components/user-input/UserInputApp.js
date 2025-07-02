@@ -66,6 +66,8 @@ export default function UserInputApp() {
 		!! accountCreated
 	);
 
+	const [ isSyncingAudiences, setIsSyncingAudiences ] = useState( false );
+
 	const { syncAvailableAudiences, fetchSyncAvailableCustomDimensions } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
@@ -73,6 +75,8 @@ export default function UserInputApp() {
 		if ( ! accountCreated ) {
 			return;
 		}
+
+		setIsSyncingAudiences( true );
 
 		setIsAccountCreatedVisible( true );
 		setTimeout( () => {
@@ -97,6 +101,8 @@ export default function UserInputApp() {
 			if ( syncDimensionsError ) {
 				return { error: syncDimensionsError };
 			}
+
+			setIsSyncingAudiences( false );
 		};
 
 		syncAudiences();
@@ -159,7 +165,11 @@ export default function UserInputApp() {
 											mdSize={ 8 }
 											smSize={ 4 }
 										>
-											<UserInputQuestionnaire />
+											<UserInputQuestionnaire
+												isSyncingAudiences={
+													isSyncingAudiences
+												}
+											/>
 										</Cell>
 									</Row>
 								</Grid>

@@ -42,7 +42,7 @@ import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constan
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
-export default function UserInputQuestionnaire() {
+export default function UserInputQuestionnaire( { isSyncingAudiences } ) {
 	const viewContext = useViewContext();
 
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
@@ -136,6 +136,7 @@ export default function UserInputQuestionnaire() {
 				questionNumber={ 1 }
 				complete={ onSaveClick }
 				error={ error }
+				isSyncingAudiences={ isSyncingAudiences }
 			>
 				<UserInputSelectOptions
 					slug={ USER_INPUT_QUESTIONS_PURPOSE }
