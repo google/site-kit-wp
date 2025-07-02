@@ -67,12 +67,14 @@ export default function UserInputQuestionWrapper( props ) {
 				<Row>
 					<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
 						<Row>
-							<UserInputQuestionInfo
-								slug={ slug }
-								questionNumber={ questionNumber }
-							/>
+							<Cell lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
+								<UserInputQuestionInfo
+									slug={ slug }
+									questionNumber={ questionNumber }
+								/>
 
-							{ children }
+								{ children }
+							</Cell>
 						</Row>
 					</Cell>
 				</Row>
