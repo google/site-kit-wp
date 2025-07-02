@@ -56,11 +56,9 @@ class WizardStepCompleteSetup extends Component {
 					<Row>
 						<Cell size={ 12 }>
 							<Typography
-								className="
-									googlesitekit-heading-3
-									googlesitekit-wizard-step__title
-								"
-								size="medium"
+								as="h3"
+								className="googlesitekit-wizard-step__title"
+								size="small"
 								type="headline"
 							>
 								{ __( 'Congratulations!', 'google-site-kit' ) }

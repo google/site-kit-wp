@@ -71,7 +71,7 @@ exports[`EngagedTrafficSourceWidget should render the generic error variant when
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text"
         >
           Most engaged traffic source
         </h2>
@@ -133,7 +133,7 @@ exports[`EngagedTrafficSourceWidget should render the insufficient permissions e
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text"
         >
           Most engaged traffic source
         </h2>

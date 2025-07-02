@@ -154,6 +154,7 @@ export default function SetupMain( { finishSetup = () => {} } ) {
 				</div>
 
 				<Typography
+					as="h3"
 					className="googlesitekit-setup-module__title"
 					size="small"
 					type="headline"

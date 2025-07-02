@@ -324,6 +324,7 @@ class SetupUsingGCP extends Component {
 													<Row>
 														<Cell size={ 12 }>
 															<Typography
+																as="h1"
 																className="googlesitekit-setup__title"
 																size="large"
 																type="headline"

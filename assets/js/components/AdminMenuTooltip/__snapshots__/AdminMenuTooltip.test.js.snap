@@ -13,7 +13,7 @@ exports[`AdminMenuTooltip should render when isTooltipVisible is true and track 
       class="googlesitekit-tooltip-body"
     >
       <h2
-        class="googlesitekit-tooltip-title"
+        class="googlesitekit-typography googlesitekit-tooltip-title"
       >
         Test Title
       </h2>

@@ -243,9 +243,8 @@ class SearchConsole extends Component {
 		return (
 			<section className="googlesitekit-setup-module googlesitekit-setup-module--search-console">
 				<Typography
-					className="
-					googlesitekit-setup-module__title
-				"
+					as="h3"
+					className="googlesitekit-setup-module__title"
 					size="small"
 					type="headline"
 				>
@@ -323,9 +322,8 @@ class SearchConsole extends Component {
 		return (
 			<section className="googlesitekit-setup-module googlesitekit-setup-module--search-console">
 				<Typography
-					className="
-					googlesitekit-setup-module__title
-				"
+					as="h3"
+					className="googlesitekit-setup-module__title"
 					size="small"
 					type="headline"
 				>

@@ -108,6 +108,7 @@ export default function SetupUsingProxyViewOnly() {
 												lgOrder={ 1 }
 											>
 												<Typography
+													as="h1"
 													className="googlesitekit-setup__title"
 													size="large"
 													type="headline"

@@ -75,8 +75,9 @@ export default function SetupMain( { finishSetup } ) {
 				</div>
 
 				<Typography
-					className="googlesitekit-heading-3 googlesitekit-setup-module__title"
-					size="medium"
+					as="h3"
+					className="googlesitekit-setup-module__title"
+					size="small"
 					type="headline"
 				>
 					{ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) }

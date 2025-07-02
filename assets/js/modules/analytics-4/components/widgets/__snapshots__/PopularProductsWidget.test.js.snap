@@ -138,7 +138,7 @@ exports[`PopularProductsWidget should render the custom dimension error when the
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text"
         >
           Most popular products by pageviews
         </h2>
@@ -215,7 +215,7 @@ exports[`PopularProductsWidget should render the generic error variant when the 
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text"
         >
           Most popular products by pageviews
         </h2>
@@ -276,7 +276,7 @@ exports[`PopularProductsWidget should render the insufficient permissions error 
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text"
         >
           Most popular products by pageviews
         </h2>
@@ -397,7 +397,7 @@ exports[`PopularProductsWidget should render the missing custom dimension error 
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text"
         >
           Most popular products by pageviews
         </h2>

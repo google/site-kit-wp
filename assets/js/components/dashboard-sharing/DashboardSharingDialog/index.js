@@ -217,6 +217,7 @@ export default function DashboardSharingDialog() {
 
 						<div className="googlesitekit-dialog__header-titles">
 							<Typography
+								as="h2"
 								className="googlesitekit-dialog__title"
 								size="medium"
 								type="headline"

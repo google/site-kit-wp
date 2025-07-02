@@ -71,7 +71,7 @@ exports[`ReturningVisitorsWidget should render the generic error variant when th
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text"
         >
           Returning visitors
         </h2>
@@ -133,7 +133,7 @@ exports[`ReturningVisitorsWidget should render the insufficient permissions erro
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text"
         >
           Returning visitors
         </h2>

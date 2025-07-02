@@ -54,6 +54,7 @@ export default function PageHeader( props ) {
 					<Cell { ...titleCellProps }>
 						{ icon }
 						<Typography
+							as="h1"
 							className={ classnames(
 								'googlesitekit-page-header__title',
 								className

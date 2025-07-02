@@ -210,9 +210,8 @@ class SiteVerification extends Component {
 		return (
 			<Fragment>
 				<Typography
-					className="
-					googlesitekit-wizard-step__title
-				"
+					as="h3"
+					className="googlesitekit-wizard-step__title"
 					size="small"
 					type="headline"
 				>
@@ -240,9 +239,8 @@ class SiteVerification extends Component {
 		return (
 			<Fragment>
 				<Typography
-					className="
-					googlesitekit-wizard-step__title
-				"
+					as="h3"
+					className="googlesitekit-wizard-step__title"
 					size="small"
 					type="headline"
 				>

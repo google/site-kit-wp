@@ -80,6 +80,7 @@ const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 						</div>
 
 						<Typography
+							as="h3"
 							className="googlesitekit-setup-module__title"
 							size="small"
 							type="headline"

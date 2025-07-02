@@ -44,6 +44,7 @@ export default function SetupMain() {
 				</div>
 
 				<Typography
+					as="h3"
 					className="googlesitekit-setup-module__title"
 					size="small"
 					type="headline"

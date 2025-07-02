@@ -139,7 +139,7 @@ exports[`PopularContentWidget should render the generic error variant when the r
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text"
         >
           Most popular content by pageviews
         </h2>
@@ -201,7 +201,7 @@ exports[`PopularContentWidget should render the insufficient permissions error v
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text"
         >
           Most popular content by pageviews
         </h2>

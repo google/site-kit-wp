@@ -136,7 +136,7 @@ exports[`PopularKeywordsWidget should render the generic error variant when the 
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text"
         >
           Top performing keywords
         </h2>
@@ -198,7 +198,7 @@ exports[`PopularKeywordsWidget should render the insufficient permissions error 
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text"
         >
           Top performing keywords
         </h2>

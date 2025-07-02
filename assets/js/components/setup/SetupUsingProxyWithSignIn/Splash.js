@@ -141,6 +141,7 @@ export default function Splash( { children } ) {
 
 					<Cell { ...cellDetailsProp }>
 						<Typography
+							as="h1"
 							className="googlesitekit-setup__title"
 							size="large"
 							type="headline"

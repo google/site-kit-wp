@@ -27,6 +27,7 @@ import classnames from 'classnames';
  */
 import { Button } from 'googlesitekit-components';
 import Link from '../Link';
+import Typography from '../Typography';
 
 function CTA( {
 	title,
@@ -51,11 +52,12 @@ function CTA( {
 			{ ( headerText || headerContent ) && (
 				<div className="googlesitekit-cta__header">
 					{ headerText && (
-						// Using the Typography component here is not appropriate
-						// as this heading does not match the dashboard styles.
-						<h2 className="googlesitekit-cta__header_text">
+						<Typography
+							as="h2"
+							className="googlesitekit-cta__header_text"
+						>
 							{ headerText }
-						</h2>
+						</Typography>
 					) }
 					{ headerContent }
 				</div>

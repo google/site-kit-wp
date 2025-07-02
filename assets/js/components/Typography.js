@@ -40,7 +40,6 @@ function Typography( {
 				[ `googlesitekit-typography--${ size }` ]:
 					size && VALID_SIZES.includes( size ),
 			} ) }
-			role="heading"
 		>
 			{ children }
 		</Component>
