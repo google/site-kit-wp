@@ -98,13 +98,13 @@ export default function BannerNotification( {
 			mobile: undefined,
 			verticalPosition: 'center',
 		};
+	}
 
-		if ( type === TYPES.WARNING ) {
-			SVGData = {
-				desktop: warningDesktopSVG,
-				verticalPosition: 'center',
-			};
-		}
+	if ( ! SVGData && type === TYPES.WARNING ) {
+		SVGData = {
+			desktop: warningDesktopSVG,
+			verticalPosition: 'center',
+		};
 	}
 
 	return (
