@@ -48,6 +48,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Ads\AMP_Tag;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
+use Google\Site_Kit\Core\Tags\GTag;
 
 /**
  * Class representing the Ads module.
@@ -114,6 +115,26 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 			},
 			10
 		);
+
+		add_action( 'wp_enqueue_scripts', fn () => $this->maybe_enqueue_scripts(), 30 );
+	}
+
+	/**
+	 * Enqueues the gtag user data script for the Ads module.
+	 *
+	 * @since n/a
+	 */
+	public function maybe_enqueue_scripts() {
+		if ( Feature_Flags::enabled( 'ecEuID' ) ) {
+			$gtag_event = '
+				window._googlesitekit = window._googlesitekit || {};
+				window._googlesitekit.gtagUserData = () => {
+					gtag( "user_data", { event_source: "site-kit" } );
+				};
+			';
+
+			wp_add_inline_script( GTag::HANDLE, preg_replace( '/\s+/', ' ', $gtag_event ) );
+		}
 	}
 
 	/**
