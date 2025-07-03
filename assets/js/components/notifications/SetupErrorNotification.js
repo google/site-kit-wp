@@ -40,7 +40,7 @@ export default function SetupErrorNotification( { id, Notification } ) {
 	);
 
 	return (
-		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
+		<Notification>
 			<BannerNotification
 				notificationID={ id }
 				type={ TYPES.ERROR }

@@ -102,10 +102,7 @@ export default function SetupErrorMessageNotification( { Notification } ) {
 	};
 
 	return (
-		<Notification
-			{ ...gaTrackingProps }
-			className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error"
-		>
+		<Notification { ...gaTrackingProps }>
 			<BannerNotification
 				notificationID={ id }
 				title={ title }
@@ -118,9 +115,8 @@ export default function SetupErrorMessageNotification( { Notification } ) {
 					}
 				}
 				learnMoreLink={ {
-					id,
 					label: __( 'Get help', 'google-site-kit' ),
-					url: errorTroubleshootingLinkURL,
+					href: errorTroubleshootingLinkURL,
 				} }
 			/>
 		</Notification>
