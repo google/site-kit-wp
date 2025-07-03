@@ -32,6 +32,7 @@ import {
 	useCallback,
 	useState,
 } from '@wordpress/element';
+import { ESCAPE } from '@wordpress/keycodes';
 import { arrowLeft, Icon } from '@wordpress/icons';
 
 /**
@@ -163,8 +164,11 @@ export default function DashboardSharingDialog() {
 		};
 	}, [ resetDialogOpen, closeResetDialog ] );
 
-	// Handle escape key for reset dialog.
-	useKey( 'Escape', closeResetDialog );
+	// Pressing the Escape key should close the reset dialog.
+	useKey(
+		( event ) => resetDialogOpen && ESCAPE === event.keyCode,
+		closeResetDialog
+	);
 
 	return (
 		<Portal>
@@ -220,7 +224,7 @@ export default function DashboardSharingDialog() {
 
 								{ resetDialogOpen &&
 									__(
-										'Reset Dashboard Sharing permissions',
+										'Reset dashboard sharing permissions',
 										'google-site-kit'
 									) }
 							</h2>
@@ -256,7 +260,7 @@ export default function DashboardSharingDialog() {
 
 								{ resetDialogOpen &&
 									__(
-										'Warning: Resetting these permissions will remove view-only access for all users. Are you sure you want to reset all Dashboard Sharing permissions?',
+										'Warning: Resetting these permissions will remove view-only access for all users. Are you sure you want to reset all dashboard Sharing permissions?',
 										'google-site-kit'
 									) }
 							</p>

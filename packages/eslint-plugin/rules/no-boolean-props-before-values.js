@@ -19,7 +19,7 @@
 /**
  * Checks if an attribute is a boolean prop.
  *
- * @since n.e.x.t
+ * @since 1.156.0
  *
  * @param {Object} attribute The attribute to check.
  * @return {boolean} True if the attribute is a boolean prop, false otherwise.

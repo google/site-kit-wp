@@ -23,7 +23,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -56,33 +55,31 @@ export default function ActionsCTALinkDismiss( {
 	} );
 
 	return (
-		<Fragment>
-			<div className={ className }>
-				<CTALink
-					id={ id }
-					ctaLink={ ctaLink }
-					ctaLabel={ ctaLabel }
-					onCTAClick={ onCTAClick }
-					dismissOnCTAClick={ dismissOnCTAClick }
-					dismissExpires={ dismissExpires }
-					dismissOptions={ ctaDismissOptions }
-					gaTrackingEventArgs={ gaTrackingEventArgs }
-					isSaving={ isSaving }
-					isDisabled={ ctaDisabled }
-				/>
+		<div className={ className }>
+			<CTALink
+				id={ id }
+				ctaLink={ ctaLink }
+				ctaLabel={ ctaLabel }
+				onCTAClick={ onCTAClick }
+				dismissOnCTAClick={ dismissOnCTAClick }
+				dismissExpires={ dismissExpires }
+				dismissOptions={ ctaDismissOptions }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
+				isSaving={ isSaving }
+				isDisabled={ ctaDisabled }
+			/>
 
-				<Dismiss
-					id={ id }
-					primary={ false }
-					dismissLabel={ dismissLabel }
-					dismissExpires={ dismissExpires }
-					disabled={ isNavigatingToCTALink }
-					onDismiss={ onDismiss }
-					dismissOptions={ dismissOptions }
-					gaTrackingEventArgs={ gaTrackingEventArgs }
-				/>
-			</div>
-		</Fragment>
+			<Dismiss
+				id={ id }
+				primary={ false }
+				dismissLabel={ dismissLabel }
+				dismissExpires={ dismissExpires }
+				disabled={ isNavigatingToCTALink }
+				onDismiss={ onDismiss }
+				dismissOptions={ dismissOptions }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
+			/>
+		</div>
 	);
 }
 
