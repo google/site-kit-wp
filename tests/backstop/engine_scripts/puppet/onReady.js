@@ -16,6 +16,19 @@
  * limitations under the License.
  */
 
+const POLLING_INTERVAL_MS = 100;
+const FONT_WAIT_TIMEOUT_MS = 5000;
+
+/**
+ * Creates a promise that resolves after a specified delay.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} ms The delay in milliseconds.
+ * @return {Promise<void>} A promise that resolves after the delay.
+ */
+const delay = ( ms ) => new Promise( ( resolve ) => setTimeout( resolve, ms ) );
+
 /**
  * Executes custom waiting logic before taking screenshots.
  *
@@ -48,17 +61,16 @@ module.exports = async ( page, scenario, viewport ) => {
 			height: viewport.height + 1,
 			deviceScaleFactor: 1,
 		} );
-		await new Promise( ( resolve ) => {
-			setTimeout( resolve, 100 );
-		} );
+
+		await delay( POLLING_INTERVAL_MS );
+
 		await page.setViewport( {
 			width: viewport.width,
 			height: viewport.height,
 			deviceScaleFactor: 1,
 		} );
-		await new Promise( ( resolve ) => {
-			setTimeout( resolve, 100 );
-		} );
+
+		await delay( POLLING_INTERVAL_MS );
 	}
 
 	// Wait font size in selectors to match the expected size for the current viewport.
@@ -93,8 +105,8 @@ module.exports = async ( page, scenario, viewport ) => {
 				);
 			},
 			{
-				timeout: 5000,
-				polling: 100,
+				timeout: FONT_WAIT_TIMEOUT_MS,
+				polling: POLLING_INTERVAL_MS,
 			},
 			scenario.fontSizeSelector,
 			expectedFontSize
