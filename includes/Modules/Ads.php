@@ -125,15 +125,48 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 * @since n/a
 	 */
 	public function maybe_enqueue_scripts() {
-		if ( Feature_Flags::enabled( 'ecEuID' ) ) {
-			$gtag_event = '
-				window._googlesitekit = window._googlesitekit || {};
-				window._googlesitekit.gtagUserData = () => {
-					gtag( "user_data", { event_source: "site-kit" } );
-				};
+		if ( ! Feature_Flags::enabled( 'ecEuID' ) ) {
+			return;
+		}
+
+		// Do nothing if the Ads *web* snippet hasn't been inserted.
+		if ( ! did_action( 'googlesitekit_ads_init_tag' ) ) {
+			return;
+		}
+
+		// $accepted_customer_data_terms = $this->get_settings()->get()['acceptedCustomerDataTerms'];
+		$accepted_customer_data_terms = true;
+
+		if ( ! $accepted_customer_data_terms ) {
+			return;
+		}
+
+		if ( is_user_logged_in() ) {
+			$current_user = wp_get_current_user();
+
+			$user_details = array(
+				'user_id'  => $current_user->ID,
+				'username' => $current_user->user_login,
+				'email'    => $current_user->user_email,
+			);
+
+			$gtag_user_data = '
+					gtag( "user_data", { event_source: "site-kit", user_details: ' . wp_json_encode( $user_details ) . ' } );
 			';
 
-			wp_add_inline_script( GTag::HANDLE, preg_replace( '/\s+/', ' ', $gtag_event ) );
+			wp_add_inline_script( GTag::HANDLE, preg_replace( '/\s+/', ' ', $gtag_user_data ) );
+		} else {
+			// This is a PoC, but we should consider enqueing a script that provides a `sendUserData` function,
+			// somewhat similarly to how we manage Consent Mode:
+			// - assets/js/consent-mode/consent-mode.js
+			// - https://github.com/google/site-kit-wp/blob/e1aaea63b443154d769c445529857799c83cb62f/includes/Core/Consent_Mode/Consent_Mode.php#L182-L191
+			$gtag_user_data_callback = '
+				window._googlesitekit = window._googlesitekit || {};
+				window._googlesitekit.sendUserData = (userDetails) => {
+					gtag( "user_data", { event_source: "site-kit", user_details: userDetails } );
+				};
+				';
+			wp_add_inline_script( GTag::HANDLE, preg_replace( '/\s+/', ' ', $gtag_user_data_callback ) );
 		}
 	}
 
