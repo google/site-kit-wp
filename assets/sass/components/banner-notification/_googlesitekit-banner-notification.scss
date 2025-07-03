@@ -73,6 +73,10 @@
 						$c-interactive-callout-warning-hover,
 						$c-interactive-callout-warning-focus
 					);
+
+					&:not(:disabled) {
+						background-color: unset;
+					}
 				}
 			}
 		}
