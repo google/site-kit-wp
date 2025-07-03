@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -36,9 +34,12 @@ import sharedKeyMetrics from '../../../feature-tours/shared-key-metrics';
  *
  * @since 1.113.0
  *
- * @param {boolean} renderChangeMetricLink If metric link meets the conditions to render.
+ * @param {Object}  options                        Options object.
+ * @param {boolean} options.renderChangeMetricLink If metric link meets the conditions to render.
  */
-export const useChangeMetricsFeatureTourEffect = ( renderChangeMetricLink ) => {
+export const useChangeMetricsFeatureTourEffect = ( {
+	renderChangeMetricLink,
+} ) => {
 	const keyMetricsSetupCompletedBy = useSelect( ( select ) =>
 		select( CORE_SITE ).getKeyMetricsSetupCompletedBy()
 	);
