@@ -7,52 +7,64 @@ exports[`GoogleTagIDMismatchNotification should render the "alternative GA4 Conf
     id="google-tag-id-mismatch"
   >
     <div
-      class="mdc-layout-grid"
+      class="googlesitekit-banner-notification googlesitekit-banner-notification--warning"
     >
       <div
-        class="mdc-layout-grid__inner"
+        class="mdc-layout-grid"
       >
         <div
-          class="googlesitekit-publisher-win__content mdc-layout-grid__cell mdc-layout-grid__cell--span-11"
+          class="mdc-layout-grid__inner"
         >
-          <h3
-            class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
-          >
-            Update Site Kit's Analytics configuration to continue seeing Analytics data on the dashboard
-          </h3>
           <div
-            class="googlesitekit-publisher-win__desc"
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
           >
-            <p>
-              <span>
-                The Google Tag on your site is no longer associated with your current Google Analytics property "Test GA4 Property (1000)". It is now recording metrics to another Google Analytics property "Another GA4 Property (1001)". If you want to continue seeing Analytics data in the Site Kit dashboard, we suggest you update Site Kit’s Google Analytics configuration to show data for the property used in your Google Tag.
-              </span>
-               
-            </p>
-          </div>
-          <div
-            class="googlesitekit-publisher-win__actions"
-          >
-            <button
-              class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
-              target="_self"
+            <div
+              class="googlesitekit-banner"
             >
-              <span
-                class="mdc-button__label"
+              <div
+                class="googlesitekit-banner__content"
               >
-                Use new property
-              </span>
-            </button>
-            <button
-              class="mdc-button mdc-button--tertiary"
-              target="_self"
-            >
-              <span
-                class="mdc-button__label"
-              >
-                Keep existing property
-              </span>
-            </button>
+                <p
+                  class="googlesitekit-banner__title"
+                >
+                  Update Site Kit's Analytics configuration to continue seeing Analytics data on the dashboard
+                </p>
+                <div
+                  class="googlesitekit-banner__description"
+                >
+                  The Google Tag on your site is no longer associated with your current Google Analytics property "Test GA4 Property (1000)". It is now recording metrics to another Google Analytics property "Another GA4 Property (1001)". If you want to continue seeing Analytics data in the Site Kit dashboard, we suggest you update Site Kit’s Google Analytics configuration to show data for the property used in your Google Tag.
+                   
+                </div>
+                <div
+                  class="googlesitekit-notice__action"
+                >
+                  <button
+                    class="mdc-button googlesitekit-banner__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+                    target="_self"
+                  >
+                    <span
+                      class="mdc-button__label"
+                    >
+                      Use new property
+                    </span>
+                  </button>
+                  <button
+                    class="mdc-button mdc-button--tertiary"
+                    target="_self"
+                  >
+                    <span
+                      class="mdc-button__label"
+                    >
+                      Keep existing property
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="googlesitekit-banner__svg-wrapper googlesitekit-banner__svg-wrapper--center"
+                style="background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+);"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -68,39 +80,55 @@ exports[`GoogleTagIDMismatchNotification should render the "alternative GA4 Conf
     id="google-tag-id-mismatch"
   >
     <div
-      class="mdc-layout-grid"
+      class="googlesitekit-banner-notification googlesitekit-banner-notification--warning"
     >
       <div
-        class="mdc-layout-grid__inner"
+        class="mdc-layout-grid"
       >
         <div
-          class="googlesitekit-publisher-win__content mdc-layout-grid__cell mdc-layout-grid__cell--span-11"
+          class="mdc-layout-grid__inner"
         >
-          <h3
-            class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
-          >
-            Your Google tag configuration has changed
-          </h3>
           <div
-            class="googlesitekit-publisher-win__desc"
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
           >
-            <p>
-              <span>
-                The Google tag for your Google Analytics configuration has changed from GT-123 to GT-NBQN9V2. To keep using your current Google Analytics property "Test GA4 Property (1000)", you need to configure Site Kit to place the new Google tag GT-NBQN9V2 instead.
-              </span>
-               
-            </p>
-          </div>
-          <button
-            class="mdc-button googlesitekit-notification__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
-            target="_self"
-          >
-            <span
-              class="mdc-button__label"
+            <div
+              class="googlesitekit-banner"
             >
-              Update Google tag to GT-NBQN9V2
-            </span>
-          </button>
+              <div
+                class="googlesitekit-banner__content"
+              >
+                <p
+                  class="googlesitekit-banner__title"
+                >
+                  Your Google tag configuration has changed
+                </p>
+                <div
+                  class="googlesitekit-banner__description"
+                >
+                  The Google tag for your Google Analytics configuration has changed from GT-123 to GT-NBQN9V2. To keep using your current Google Analytics property "Test GA4 Property (1000)", you need to configure Site Kit to place the new Google tag GT-NBQN9V2 instead.
+                   
+                </div>
+                <div
+                  class="googlesitekit-notice__action"
+                >
+                  <button
+                    class="mdc-button googlesitekit-banner__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+                    target="_self"
+                  >
+                    <span
+                      class="mdc-button__label"
+                    >
+                      Update Google tag to GT-NBQN9V2
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="googlesitekit-banner__svg-wrapper googlesitekit-banner__svg-wrapper--center"
+                style="background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+);"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>

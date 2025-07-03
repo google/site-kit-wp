@@ -33,6 +33,7 @@ import {
 	useState,
 	useRef,
 } from '@wordpress/element';
+import { ESCAPE } from '@wordpress/keycodes';
 import { arrowLeft, Icon } from '@wordpress/icons';
 
 /**
@@ -168,8 +169,11 @@ export default function DashboardSharingDialog() {
 		};
 	}, [ ref, resetDialogOpen, closeResetDialog ] );
 
-	// Handle escape key for reset dialog.
-	useKey( 'Escape', closeResetDialog );
+	// Pressing the Escape key should close the reset dialog.
+	useKey(
+		( event ) => resetDialogOpen && ESCAPE === event.keyCode,
+		closeResetDialog
+	);
 
 	return (
 		<Portal>
