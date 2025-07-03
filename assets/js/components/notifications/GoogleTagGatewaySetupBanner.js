@@ -82,6 +82,7 @@ export default function GoogleTagGatewaySetupBanner( { id, Notification } ) {
 		const { error } = await saveGoogleTagGatewaySettings();
 
 		if ( error ) {
+			setInProgress( false );
 			return;
 		}
 
