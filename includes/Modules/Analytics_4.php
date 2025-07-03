@@ -368,6 +368,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_conversion_reporting_events_detection' ), 15 );
 
+		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_webdatastream_availability' ), 15 );
+
 		add_filter(
 			'googlesitekit_auth_scopes',
 			function ( array $scopes ) {
@@ -742,6 +744,9 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				'service' => '',
 			),
 			'POST:set-google-tag-id-mismatch'           => array(
+				'service' => '',
+			),
+			'POST:set-is-web-data-stream-available'     => array(
 				'service' => '',
 			),
 			'POST:create-audience'                      => array(
@@ -1778,6 +1783,20 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				return function () use ( $data ) {
 					return $this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
 				};
+			case 'POST:set-is-web-data-stream-available':
+				if ( ! isset( $data['isWebDataStreamAvailable'] ) ) {
+					throw new Missing_Required_Param_Exception( 'isWebDataStreamAvailable' );
+				}
+
+				if ( true === $data['isWebDataStreamAvailable'] ) {
+					return function () use ( $data ) {
+						return $this->transients->set( 'googlesitekit_web_data_stream_availability', $data['isWebDataStreamAvailable'] );
+					};
+				}
+
+				return function () {
+					return $this->transients->delete( 'googlesitekit_web_data_stream_availability' );
+				};
 		}
 
 		return parent::create_data_request( $data );
@@ -2710,6 +2729,25 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$modules_data['analytics-4']['newEvents']      = is_array( $detected_events ) ? $detected_events : array();
 		$modules_data['analytics-4']['lostEvents']     = is_array( $lost_events ) ? $lost_events : array();
 		$modules_data['analytics-4']['newBadgeEvents'] = is_array( $new_events_badge ) ? $new_events_badge['events'] : array();
+
+		return $modules_data;
+	}
+
+	/**
+	 * Populates web data stream availability data to pass to JS via _googlesitekitModulesData.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $modules_data Inline modules data.
+	 * @return array Inline modules data.
+	 */
+	public function inline_webdatastream_availability( $modules_data ) {
+		if ( ! $this->is_connected() ) {
+			return $modules_data;
+		}
+
+		$is_web_data_stream_available                            = $this->transients->get( 'googlesitekit_web_data_stream_availability' );
+		$modules_data['analytics-4']['isWebDataStreamAvailable'] = $is_web_data_stream_available;
 
 		return $modules_data;
 	}
