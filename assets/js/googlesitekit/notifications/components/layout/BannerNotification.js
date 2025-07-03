@@ -33,7 +33,7 @@ import LearnMoreLink from '../../../../components/Banner/LearnMoreLink';
 import CTAButton from '../../../../components/Banner/CTAButton';
 import DismissButton from '../../../../components/Banner/DismissButton';
 import { Cell, Grid, Row } from '../../../../material-components';
-import WarningDesktopSVG from '@/svg/graphics/banner-warning.svg?url';
+import WarningDesktopSVG from '@/svg/graphics/warning-banner.svg?url';
 import ErrorDesktopSVG from '@/svg/graphics/error-banner.svg?url';
 
 export const TYPES = {
@@ -103,8 +103,8 @@ export default function BannerNotification( {
 
 		if ( type === TYPES.WARNING ) {
 			SVGData.desktop = WarningDesktopSVG;
-    }
-    
+		}
+
 		if ( type === TYPES.ERROR ) {
 			SVGData.desktop = ErrorDesktopSVG;
 		}
