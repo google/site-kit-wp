@@ -19,6 +19,9 @@ use WPDieException;
  * @group Authentication
  * @group Setup
  */
+
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 class Setup_Test extends TestCase {
 
 	use Fake_Site_Connection_Trait;

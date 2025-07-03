@@ -63,7 +63,7 @@ export default function PlaceholderTile( { Widget } ) {
 	const { setValue } = useDispatch( CORE_UI );
 
 	const AnalyticsLink = (
-		<Link secondary href={ audienceLearnMoreURL } external />
+		<Link href={ audienceLearnMoreURL } secondary external />
 	);
 
 	return (
@@ -101,13 +101,13 @@ export default function PlaceholderTile( { Widget } ) {
 										AnalyticsLink,
 										SelectGroupLink: (
 											<Link
-												secondary
 												onClick={ () =>
 													setValue(
 														AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 														true
 													)
 												}
+												secondary
 											/>
 										),
 									}

@@ -138,12 +138,12 @@ export default function RRMIntroductoryOverlayNotification( {
 					target: '_blank',
 					trailingIcon: <ExternalIcon width={ 13 } height={ 13 } />,
 				} }
-				dismissButton
 				GraphicDesktop={
 					ReaderRevenueManagerIntroductoryGraphicDesktop
 				}
 				GraphicMobile={ ReaderRevenueManagerIntroductoryGraphicMobile }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
+				dismissButton
 			/>
 		</Notification>
 	);

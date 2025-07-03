@@ -8,6 +8,8 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Advanced_Tracking;
 
 use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking\AMP_Config_Injector;

@@ -125,11 +125,11 @@ export default function DimensionTabs( {
 
 			<div className="googlesitekit-widget--analyticsAllTraffic__tabs--small">
 				<Select
-					enhanced
 					onEnhancedChange={ handleTabUpdate }
-					outlined
 					value={ `dimension-name-${ activeTab }` }
 					disabled={ gatheringData || isZeroData }
+					enhanced
+					outlined
 				>
 					{ tabs.map( ( tab, index ) => (
 						<Option

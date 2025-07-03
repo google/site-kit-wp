@@ -102,8 +102,10 @@ export default function RRMSetupSuccessSubtleNotification( {
 		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
 	);
 
-	const settingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	const rrmSettingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getModuleSettingsEditURL(
+			MODULE_SLUG_READER_REVENUE_MANAGER
+		)
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -244,7 +246,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 			description: '',
 			primaryButton: {
 				text: __( 'Manage CTAs', 'google-site-kit' ),
-				ctaLink: `${ settingsURL }#connected-services/reader-revenue-manager/edit`,
+				ctaLink: rrmSettingsURL,
 				isCTALinkExternal: false,
 			},
 			secondaryButton: {
@@ -296,8 +298,8 @@ export default function RRMSetupSuccessSubtleNotification( {
 								) }
 								label={ __( 'Learn more', 'google-site-kit' ) }
 								url="https://support.google.com/news/publisher-center/answer/12813936"
-								hideExternalIndicator
 								gaTrackingEventArgs={ gaTrackingEventArgs }
+								hideExternalIndicator
 							/>
 						),
 					}

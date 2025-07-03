@@ -92,11 +92,11 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification( {
 					'Get to know how different types of visitors interact with your site, e.g. which pages they visit and for how long',
 					'google-site-kit'
 				) }
-				dismissButton
 				ctaButton={ {
 					label: __( 'Show me', 'google-site-kit' ),
 					onClick: scrollToWidgetArea,
 				} }
+				dismissButton
 			/>
 		</Notification>
 	);
