@@ -48,6 +48,7 @@ const Banner = forwardRef(
 			className,
 			title,
 			description,
+			additionalDescription,
 			errorText,
 			helpText,
 			learnMoreLink,
@@ -84,6 +85,11 @@ const Banner = forwardRef(
 						{ learnMoreLink?.href && (
 							<LearnMoreLink { ...learnMoreLink } />
 						) }
+						{ additionalDescription && (
+							<div className="googlesitekit-banner__additional-description">
+								{ additionalDescription }
+							</div>
+						) }
 					</Description>
 
 					{ helpText && <HelpText>{ helpText }</HelpText> }
@@ -93,7 +99,7 @@ const Banner = forwardRef(
 					) }
 
 					<div className="googlesitekit-notice__action">
-						<CTAButton { ...ctaButton } />
+						{ ctaButton && <CTAButton { ...ctaButton } /> }
 						{ dismissButton?.onClick && (
 							<DismissButton { ...dismissButton } />
 						) }
@@ -122,6 +128,10 @@ const Banner = forwardRef(
 Banner.propTypes = {
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
+	additionalDescription: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.node,
+	] ),
 	errorText: PropTypes.string,
 	helpText: PropTypes.string,
 	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),

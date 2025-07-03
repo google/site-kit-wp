@@ -71,9 +71,6 @@ export default function FooterPrimaryAction( {
 						isSaving={ isSaving }
 					>
 						{ ( () => {
-							if ( isSaving ) {
-								return __( 'Saving…', 'google-site-kit' );
-							}
 							if ( haveSettingsChanged ) {
 								return __(
 									'Confirm changes',

@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
 import { Button } from 'googlesitekit-components';
 
 export default function DismissButton( {
+	className,
 	label = __( 'Maybe later', 'google-site-kit' ),
 	onClick,
 	disabled,
@@ -40,13 +41,19 @@ export default function DismissButton( {
 	}
 
 	return (
-		<Button onClick={ onClick } disabled={ disabled } tertiary={ tertiary }>
+		<Button
+			className={ className }
+			onClick={ onClick }
+			disabled={ disabled }
+			tertiary={ tertiary }
+		>
 			{ label }
 		</Button>
 	);
 }
 
 DismissButton.propTypes = {
+	className: PropTypes.string,
 	label: PropTypes.string,
 	onClick: PropTypes.func,
 	disabled: PropTypes.bool,
