@@ -35,7 +35,6 @@ import {
 	resetSiteKit,
 	useRequestInterception,
 	setupSiteKit,
-	pageWait,
 	ignorePermissionScopeErrors,
 } from '../../../utils';
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
@@ -317,7 +316,7 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.googlesitekit-cta-link', {
 			text: /set up analytics/i,
 		} );
-		await pageWait();
+		await page.waitForNetworkIdle();
 		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
@@ -329,7 +328,7 @@ describe( 'Analytics write scope requests', () => {
 			text: /set up a new property/i,
 		} );
 		// Add a brief delay to allow the submit button to become enabled.
-		await pageWait();
+		await page.waitForNetworkIdle();
 
 		// Click on confirm changes button and wait for permissions modal dialog.
 		await expect( page ).toClick( '.mdc-button--raised', {
@@ -436,7 +435,10 @@ describe( 'Analytics write scope requests', () => {
 
 		// They should end up on the dashboard.
 		await page.waitForNavigation();
-		await page.waitForTimeout( 5000 );
+		await page.waitForSelector( '.googlesitekit-notice__title', {
+			timeout: 5000,
+		} );
+
 		await expect( page ).toMatchElement( '.googlesitekit-notice__title', {
 			text: /Congrats on completing the setup for Analytics!/i,
 		} );

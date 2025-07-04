@@ -33,7 +33,7 @@ import enhancedMeasurementMobileSVG from '@/svg/graphics/banner-enhanced-measure
 import signInWithGoogleDesktopSVG from '@/svg/graphics/banner-sign-in-with-google-setup-cta.svg?url';
 import signInWithGoogleMobileSVG from '@/svg/graphics/banner-sign-in-with-google-setup-cta-mobile.svg?url';
 import gatheringDataSVG from '@/svg/graphics/gathering-data.svg?url';
-import WarningSVG from '@/svg/graphics/banner-warning.svg?url';
+import warningDesktopSVG from '@/svg/graphics/warning-banner.svg?url';
 import Link from '../Link';
 
 function Template() {
@@ -208,7 +208,7 @@ function Template() {
 								onClick: () => {},
 							} }
 							svg={ {
-								desktop: WarningSVG,
+								desktop: warningDesktopSVG,
 								verticalPosition: 'center',
 							} }
 						/>
