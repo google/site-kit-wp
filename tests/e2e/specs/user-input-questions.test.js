@@ -195,6 +195,7 @@ describe( 'User Input Settings', () => {
 		await resetSiteKit();
 	} );
 
+	// HERE Failing:
 	it( 'should offer to enter input settings for existing users', async () => {
 		await setupSiteKit();
 		await page.setRequestInterception( false );
