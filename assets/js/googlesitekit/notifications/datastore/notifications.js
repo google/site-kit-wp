@@ -559,10 +559,6 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 			if (
 				state.queuedNotifications[ notification.groupID ] === undefined
 			) {
-				global.console.warn(
-					`Could not add notification with ID "${ id }" to queue. Queue is not yet populated/resolved.`
-				);
-
 				break;
 			}
 
