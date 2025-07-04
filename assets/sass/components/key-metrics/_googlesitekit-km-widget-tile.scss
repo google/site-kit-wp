@@ -218,6 +218,8 @@
 
 			.googlesitekit-cta__header_text {
 				color: $c-surfaces-on-background-variant;
+
+				// Override the Typography styles to match the CTA tile style.
 				font-weight: $fw-normal;
 				line-height: $lh-headline-md;
 				margin: 0 0 10px;
