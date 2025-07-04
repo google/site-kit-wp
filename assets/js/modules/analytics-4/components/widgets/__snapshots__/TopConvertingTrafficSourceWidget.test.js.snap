@@ -130,7 +130,7 @@ exports[`TopConvertingTrafficSourceWidget should render the generic error varian
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top converting traffic source
         </h2>
@@ -192,7 +192,7 @@ exports[`TopConvertingTrafficSourceWidget should render the insufficient permiss
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top converting traffic source
         </h2>

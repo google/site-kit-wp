@@ -71,7 +71,7 @@ exports[`VisitsPerVisitorWidget should render the generic error variant when the
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Visits per visitor
         </h2>
@@ -133,7 +133,7 @@ exports[`VisitsPerVisitorWidget should render the insufficient permissions error
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Visits per visitor
         </h2>

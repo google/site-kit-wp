@@ -71,7 +71,7 @@ exports[`TopTrafficSourceDrivingAddToCartWidget should render the generic error 
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top traffic source driving add to cart
         </h2>
@@ -133,7 +133,7 @@ exports[`TopTrafficSourceDrivingAddToCartWidget should render the insufficient p
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top traffic source driving add to cart
         </h2>

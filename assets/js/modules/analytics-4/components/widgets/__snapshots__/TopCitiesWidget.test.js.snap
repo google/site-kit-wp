@@ -112,7 +112,7 @@ exports[`TopCitiesWidget should render the generic error variant when the report
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top cities driving traffic
         </h2>
@@ -174,7 +174,7 @@ exports[`TopCitiesWidget should render the insufficient permissions error varian
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top cities driving traffic
         </h2>

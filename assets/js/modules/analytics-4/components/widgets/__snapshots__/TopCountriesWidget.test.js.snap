@@ -112,7 +112,7 @@ exports[`TopCountriesWidget should render the generic error variant when the rep
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top countries driving traffic
         </h2>
@@ -174,7 +174,7 @@ exports[`TopCountriesWidget should render the insufficient permissions error var
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top countries driving traffic
         </h2>

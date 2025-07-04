@@ -130,7 +130,7 @@ exports[`TopTrafficSourceWidget should render the generic error variant when the
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top traffic source
         </h2>
@@ -192,7 +192,7 @@ exports[`TopTrafficSourceWidget should render the insufficient permissions error
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top traffic source
         </h2>
@@ -255,7 +255,7 @@ exports[`TopTrafficSourceWidget should retry both reports when an error is encou
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top traffic source
         </h2>

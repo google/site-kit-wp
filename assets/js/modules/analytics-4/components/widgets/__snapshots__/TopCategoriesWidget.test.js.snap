@@ -112,7 +112,7 @@ exports[`TopCategoriesWidget should render the custom dimension error when there
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top categories by pageviews
         </h2>
@@ -189,7 +189,7 @@ exports[`TopCategoriesWidget should render the generic error variant when the re
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top categories by pageviews
         </h2>
@@ -251,7 +251,7 @@ exports[`TopCategoriesWidget should render the insufficient permissions error va
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top categories by pageviews
         </h2>
@@ -374,7 +374,7 @@ exports[`TopCategoriesWidget should render the missing custom dimension error wh
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top categories by pageviews
         </h2>

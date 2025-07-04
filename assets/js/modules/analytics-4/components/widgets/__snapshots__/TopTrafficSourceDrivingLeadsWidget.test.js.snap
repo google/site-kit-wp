@@ -71,7 +71,7 @@ exports[`TopTrafficSourceDrivingLeadsWidget should render the generic error vari
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top traffic source driving leads
         </h2>
@@ -133,7 +133,7 @@ exports[`TopTrafficSourceDrivingLeadsWidget should render the insufficient permi
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-typography googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top traffic source driving leads
         </h2>
