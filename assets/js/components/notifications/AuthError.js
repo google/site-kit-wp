@@ -26,31 +26,27 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import NotificationError from '../../googlesitekit/notifications/components/layout/NotificationError';
-import CTALink from '../../googlesitekit/notifications/components/common/CTALink';
-import Description from '../../googlesitekit/notifications/components/common/Description';
+import BannerNotification, {
+	TYPES,
+} from '../../googlesitekit/notifications/components/layout/BannerNotification';
 
 export default function AuthError( { id, Notification } ) {
 	const error = useSelect( ( select ) => select( CORE_USER ).getAuthError() );
 
 	return (
-		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
-			<NotificationError
+		<Notification>
+			<BannerNotification
+				notificationID={ id }
+				type={ TYPES.ERROR }
 				title={ __(
 					'Site Kit can’t access necessary data',
 					'google-site-kit'
 				) }
-				description={ <Description text={ error.message } /> }
-				actions={
-					<CTALink
-						id={ id }
-						ctaLabel={ __(
-							'Redo the plugin setup',
-							'google-site-kit'
-						) }
-						ctaLink={ error.data.reconnectURL }
-					/>
-				}
+				description={ error.message }
+				ctaButton={ {
+					label: __( 'Redo the plugin setup', 'google-site-kit' ),
+					href: error.data.reconnectURL,
+				} }
 			/>
 		</Notification>
 	);
