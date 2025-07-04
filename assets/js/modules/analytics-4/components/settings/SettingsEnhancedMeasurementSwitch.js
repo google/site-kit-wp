@@ -213,11 +213,11 @@ export default function SettingsEnhancedMeasurementSwitch( {
 
 				// Here we update the enhanced measurement `streamEnabled` setting to ensure `validateCanSubmitChanges()` can detect
 				// that the setting has changed via its call to `haveEnhancedMeasurementSettingsChanged()`.
-				setEnhancedMeasurementStreamEnabled(
+				setEnhancedMeasurementStreamEnabled( {
 					propertyID,
 					webDataStreamID,
-					! isEnhancedMeasurementEnabled
-				);
+					enabled: ! isEnhancedMeasurementStreamEnabled,
+				} );
 			} }
 			showTick
 		/>

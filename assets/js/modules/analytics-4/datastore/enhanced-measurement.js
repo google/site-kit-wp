@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -209,13 +207,14 @@ const baseActions = {
 	 *
 	 * @since 1.110.0
 	 *
-	 * @param {string}  propertyID      The GA4 property ID to set enhanced measurement settings for.
-	 * @param {string}  webDataStreamID The GA4 web data stream ID to set enhanced measurement settings for.
-	 * @param {boolean} enabled         Whether the `streamEnabled` setting should be enabled or not.
+	 * @param {Object}  settings                 The GA4 enhanced measurement settings to set.
+	 * @param {string}  settings.propertyID      The GA4 property ID to set enhanced measurement settings for.
+	 * @param {string}  settings.webDataStreamID The GA4 web data stream ID to set enhanced measurement settings for.
+	 * @param {boolean} settings.enabled         Whether the `streamEnabled` setting should be enabled or not.
 	 * @return {Object} Redux-style action.
 	 */
 	setEnhancedMeasurementStreamEnabled: createValidatedAction(
-		( propertyID, webDataStreamID, enabled ) => {
+		( { propertyID, webDataStreamID, enabled } ) => {
 			invariant(
 				isValidPropertyID( propertyID ),
 				'A valid GA4 propertyID is required.'
@@ -230,7 +229,7 @@ const baseActions = {
 				'enabled must be a boolean.'
 			);
 		},
-		function* ( propertyID, webDataStreamID, enabled ) {
+		function* ( { propertyID, webDataStreamID, enabled } ) {
 			const registry = yield commonActions.getRegistry();
 
 			const currentSettings = yield commonActions.await(
