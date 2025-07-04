@@ -60,6 +60,7 @@ const reportOptions = {
 	],
 	limit: 3,
 	keepEmptyRows: false,
+	reportID: 'analytics-4_top-categories-widget_widget_reportOptions',
 };
 
 const propertyID = '12345';

@@ -61,6 +61,8 @@ describe( 'ErrorNotice', () => {
 		startDate: '2024-02-29',
 		endDate: '2024-03-27',
 		metrics: [ { name: 'totalUsers' } ],
+		reportID:
+			'audience-segmentation_get-audiences-user-count-report-options_store:selector',
 	};
 
 	const reportOptions = {

@@ -57,6 +57,7 @@ function AdminBarUniqueVisitorsGA4( { WidgetReportError } ) {
 			},
 		],
 		url,
+		reportID: 'adminbar_admin-bar-unique-visitors-ga4_component_reportArgs',
 	};
 
 	const analyticsData = useSelect( ( select ) =>

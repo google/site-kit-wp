@@ -75,6 +75,8 @@ describe( 'VisitsPerVisitorWidget', () => {
 					name: 'sessions',
 				},
 			],
+			reportID:
+				'analytics-4_visits-per-visitor-widget_widget_reportOptions',
 		};
 		provideAnalytics4MockReport( registry, reportOptions );
 

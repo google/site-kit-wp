@@ -300,6 +300,8 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					},
 					metrics: [ { name: 'eventCount' } ],
 					limit: 1,
+					reportID:
+						'analytics-4_get-data-availability-report-options_store:selector',
 				};
 
 				if ( report ) {

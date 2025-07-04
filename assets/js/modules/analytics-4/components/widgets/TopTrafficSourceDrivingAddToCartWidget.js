@@ -68,6 +68,8 @@ function TopTrafficSourceDrivingAddToCartWidget( { Widget } ) {
 				name: 'addToCarts',
 			},
 		],
+		reportID:
+			'analytics-4_top-traffic-source-driving-add-to-cart-widget_widget_totalAddToCartReportOptions',
 	};
 
 	const trafficSourceReportOptions = {
@@ -80,6 +82,8 @@ function TopTrafficSourceDrivingAddToCartWidget( { Widget } ) {
 		],
 		limit: 1,
 		orderBy: 'addToCarts',
+		reportID:
+			'analytics-4_top-traffic-source-driving-add-to-cart-widget_widget_trafficSourceReportOptions',
 	};
 
 	const totalAddToCartReport = useInViewSelect(

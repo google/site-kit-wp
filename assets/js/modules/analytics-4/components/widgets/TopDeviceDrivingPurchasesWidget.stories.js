@@ -49,6 +49,8 @@ const reportOptions = [
 				name: 'ecommercePurchases',
 			},
 		],
+		reportID:
+			'analytics-4_top-device-driving-purchases-widget_widget_totalPurchasesReportOptions',
 	},
 	{
 		compareStartDate: '2020-07-14',
@@ -63,6 +65,8 @@ const reportOptions = [
 		],
 		limit: 1,
 		orderBy: 'ecommercePurchases',
+		reportID:
+			'analytics-4_top-device-driving-purchases-widget_widget_deviceReportOptions',
 	},
 ];
 

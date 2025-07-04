@@ -78,6 +78,7 @@ function TopEarningContentWidget( { Widget } ) {
 			},
 		],
 		limit: 3,
+		reportID: 'adsense_top-earning-content-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(

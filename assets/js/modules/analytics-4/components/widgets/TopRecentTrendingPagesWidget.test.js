@@ -108,6 +108,7 @@ describe( 'TopRecentTrendingPagesWidget', () => {
 				{ metric: { metricName: 'screenPageViews' }, desc: true },
 			],
 			limit: 15,
+			reportID: 'analytics-4_get-page-titles_store:selector_options',
 		};
 
 		const pageTitlesReport = getAnalytics4MockResponse(

@@ -74,6 +74,8 @@ export default function WPDashboardPopularPagesGA4( {
 			},
 		],
 		limit: 5,
+		reportID:
+			'dashboard_wp-dashboard-popular-pages-ga4_component_reportArgs',
 	};
 
 	const report = useInViewSelect(

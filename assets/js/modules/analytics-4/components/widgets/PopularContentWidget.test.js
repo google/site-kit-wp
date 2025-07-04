@@ -78,6 +78,7 @@ describe( 'PopularContentWidget', () => {
 			],
 			limit: 3,
 			keepEmptyRows: false,
+			reportID: 'analytics-4_popular-content-widget_widget_reportOptions',
 		};
 
 		const pageTitlesReportOptions = {
@@ -96,6 +97,7 @@ describe( 'PopularContentWidget', () => {
 				{ metric: { metricName: 'screenPageViews' }, desc: true },
 			],
 			limit: 15,
+			reportID: 'analytics-4_get-page-titles_store:selector_options',
 		};
 
 		const pageTitlesReport = getAnalytics4MockResponse(

@@ -88,6 +88,8 @@ const ga4ReportArgs = [
 		dimensionFilters: {
 			sessionDefaultChannelGrouping: [ 'Organic Search' ],
 		},
+		reportID:
+			'search-console_search-funnel-widget-ga4_widget_ga4OverviewArgs',
 	},
 	{
 		startDate: '2021-09-15',
@@ -117,6 +119,7 @@ const ga4ReportArgs = [
 				},
 			},
 		],
+		reportID: 'search-console_search-funnel-widget-ga4_widget_ga4StatsArgs',
 	},
 	{
 		startDate: '2021-09-15',
@@ -143,6 +146,8 @@ const ga4ReportArgs = [
 				},
 			},
 		],
+		reportID:
+			'search-console_search-funnel-widget-ga4_widget_ga4VisitorsOverviewAndStatsArgs',
 	},
 	{
 		dimensions: [

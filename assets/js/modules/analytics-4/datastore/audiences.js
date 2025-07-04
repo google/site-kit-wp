@@ -945,6 +945,8 @@ const baseSelectors = {
 							( { name } ) => name
 						),
 					},
+					reportID:
+						'audience-segmentation_get-audiences-user-count-report-options_store:selector',
 				};
 			}
 	),

@@ -67,6 +67,8 @@ describe( 'EngagedTrafficSourceWidget', () => {
 			metrics: [ { name: 'engagedSessions' } ],
 			orderBy: 'engagedSessions',
 			limit: 1,
+			reportID:
+				'analytics-4_engaged-traffic-source-widget_widget_reportOptions',
 		} );
 
 		const { container, waitForRegistry } = render(

@@ -79,6 +79,7 @@ const allTrafficReportOptions = [
 			},
 		],
 		url: 'https://www.elasticpress.io/features/',
+		reportID: 'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 	},
 	{
 		// Pie chart, with country dimension.
@@ -93,6 +94,7 @@ const allTrafficReportOptions = [
 			},
 		],
 		url: 'https://www.elasticpress.io/features/',
+		reportID: 'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 	},
 	{
 		// Pie chart, with deviceCategory dimension.
@@ -107,11 +109,14 @@ const allTrafficReportOptions = [
 			},
 		],
 		url: 'https://www.elasticpress.io/features/',
+		reportID: 'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 	},
 	{
 		// Totals.
 		...baseAllTrafficOptions,
 		url: 'https://www.elasticpress.io/features/',
+		reportID:
+			'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs',
 	},
 	{
 		// Line chart.
@@ -131,6 +136,8 @@ const allTrafficReportOptions = [
 			},
 		],
 		url: 'https://www.elasticpress.io/features/',
+		reportID:
+			'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs',
 	},
 	{
 		// Gathering data check.

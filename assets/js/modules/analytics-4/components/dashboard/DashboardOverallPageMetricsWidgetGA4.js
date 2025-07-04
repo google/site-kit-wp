@@ -88,6 +88,7 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 			},
 		],
 		url,
+		reportID: 'analytics-4_dashboard-overall-page-metrics-widget-args',
 	};
 
 	const reportArgs = {

@@ -119,6 +119,8 @@ export function getReportOptions( referenceDate ) {
 		],
 		limit: 3,
 		keepEmptyRows: false,
+		reportID:
+			'analytics-4_top-recent-trending-pages-widget_widget_reportOptions',
 	};
 
 	return reportOptions;

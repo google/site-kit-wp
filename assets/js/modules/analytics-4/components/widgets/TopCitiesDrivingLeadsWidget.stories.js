@@ -62,6 +62,8 @@ const reportOptions = {
 	],
 	limit: 3,
 	keepEmptyRows: false,
+	reportID:
+		'analytics-4_top-cities-driving-leads-widget_widget_topCitiesReportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(

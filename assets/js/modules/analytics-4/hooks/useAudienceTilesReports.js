@@ -179,6 +179,8 @@ export default function useAudienceTilesReports( {
 			{ name: 'screenPageViewsPerSession' },
 			{ name: 'screenPageViews' },
 		],
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_reportOptions',
 	};
 	const report = useInViewSelect(
 		( select ) => {
@@ -228,6 +230,8 @@ export default function useAudienceTilesReports( {
 			{ name: 'screenPageViewsPerSession' },
 			{ name: 'screenPageViews' },
 		],
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_newVsReturningReportOptions',
 	};
 	const siteKitAudiencesReport = useInViewSelect(
 		( select ) => {
@@ -272,6 +276,8 @@ export default function useAudienceTilesReports( {
 		startDate,
 		endDate,
 		metrics: [ { name: 'screenPageViews' } ],
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_totalPageviewsReportOptions',
 	};
 	const totalPageviewsReport = useInViewSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getReport(
@@ -308,6 +314,8 @@ export default function useAudienceTilesReports( {
 			},
 		],
 		limit: 4, // Limit is set to 4 so that (not set) can be filtered out and 3 cities remain to display.
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_topCitiesReportOptions',
 	};
 
 	const topCitiesReport = useInViewSelect( ( select ) =>
@@ -341,6 +349,8 @@ export default function useAudienceTilesReports( {
 		},
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 3,
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_topContentReportOptions',
 	};
 	const topContentReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
@@ -372,6 +382,8 @@ export default function useAudienceTilesReports( {
 		},
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 15,
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_topContentPageTitlesReportOptions',
 	};
 	const topContentPageTitlesReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(

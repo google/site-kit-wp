@@ -76,6 +76,7 @@ const reportOptions = [
 			},
 		],
 		url: null,
+		reportID: 'analytics-4_dashboard-overall-page-metrics-widget-args',
 	},
 	{
 		dimensions: [ 'date' ],

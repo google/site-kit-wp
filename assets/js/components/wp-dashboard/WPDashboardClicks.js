@@ -60,6 +60,7 @@ function WPDashboardClicks( { WPDashboardReportError } ) {
 		startDate: compareStartDate,
 		endDate,
 		dimensions: 'date',
+		reportID: 'dashboard_wp-dashboard-clicks_component_reportArgs',
 	};
 
 	const data = useInViewSelect(

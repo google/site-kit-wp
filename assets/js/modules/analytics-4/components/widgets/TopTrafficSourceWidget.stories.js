@@ -49,6 +49,8 @@ const reportOptions = [
 				name: 'totalUsers',
 			},
 		],
+		reportID:
+			'analytics-4_top-traffic-source-widget_widget_totalUsersReportOptions',
 	},
 	{
 		compareStartDate: '2020-07-14',
@@ -63,6 +65,8 @@ const reportOptions = [
 		],
 		limit: 1,
 		orderBy: 'totalUsers',
+		reportID:
+			'analytics-4_top-traffic-source-widget_widget_trafficSourceReportOptions',
 	},
 ];
 

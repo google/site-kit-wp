@@ -48,6 +48,8 @@ const reportOptions = {
 		},
 	],
 	limit: 4,
+	reportID:
+		'analytics-4_top-countries-widget_widget_topCountriesReportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(

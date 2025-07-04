@@ -81,19 +81,24 @@ function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 		metrics: Object.keys( ModuleOverviewWidget.metrics ),
 		startDate,
 		endDate,
+		reportID: 'adsense_module-overview-widget_widget_currentRangeArgs',
 	};
 	const previousRangeArgs = {
 		metrics: Object.keys( ModuleOverviewWidget.metrics ),
 		startDate: compareStartDate,
 		endDate: compareEndDate,
+		reportID: 'adsense_module-overview-widget_widget_previousRangeArgs',
 	};
 	const currentRangeChartArgs = {
 		...currentRangeArgs,
 		dimensions: [ 'DATE' ],
+		reportID: 'adsense_module-overview-widget_widget_currentRangeChartArgs',
 	};
 	const previousRangeChartArgs = {
 		...previousRangeArgs,
 		dimensions: [ 'DATE' ],
+		reportID:
+			'adsense_module-overview-widget_widget_previousRangeChartArgs',
 	};
 
 	const currentRangeData = useInViewSelect(

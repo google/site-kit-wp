@@ -59,6 +59,7 @@ function PagesPerVisitWidget( { Widget } ) {
 			{ name: 'screenPageViewsPerSession' },
 			{ name: 'screenPageViews' },
 		],
+		reportID: 'analytics-4_pages-per-visit-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(

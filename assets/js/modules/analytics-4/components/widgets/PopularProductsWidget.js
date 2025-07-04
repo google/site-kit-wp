@@ -94,6 +94,7 @@ function getPopularProductsWidgetReportOptions( select ) {
 		],
 		limit: 3,
 		keepEmptyRows: false,
+		reportID: 'analytics-4_popular-products-widget_widget_reportOptions',
 	};
 }
 

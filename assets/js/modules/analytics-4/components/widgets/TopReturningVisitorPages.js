@@ -72,6 +72,8 @@ function TopReturningVisitorPages( props ) {
 		],
 		limit: 3,
 		keepEmptyRows: false,
+		reportID:
+			'analytics-4_top-returning-visitor-pages-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(

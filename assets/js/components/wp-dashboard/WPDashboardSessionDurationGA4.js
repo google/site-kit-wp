@@ -64,6 +64,8 @@ function WPDashboardSessionDurationGA4( { WPDashboardReportError } ) {
 				name: 'averageSessionDuration',
 			},
 		],
+		reportID:
+			'dashboard_wp-dashboard-session-duration-ga4_component_reportArgs',
 	};
 
 	const analytics4Data = useInViewSelect(

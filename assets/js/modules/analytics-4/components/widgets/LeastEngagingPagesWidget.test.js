@@ -78,6 +78,8 @@ describe( 'LeastEngagingPagesWidget', () => {
 					desc: true,
 				},
 			],
+			reportID:
+				'analytics-4_least-engaging-pages-widget_widget_pageViewsReportOptions',
 		};
 		const pageTitlesReportOptions = {
 			...registry
@@ -95,6 +97,7 @@ describe( 'LeastEngagingPagesWidget', () => {
 				{ metric: { metricName: 'screenPageViews' }, desc: true },
 			],
 			limit: 15,
+			reportID: 'analytics-4_get-page-titles_store:selector_options',
 		};
 
 		const pageTitlesReport = getAnalytics4MockResponse(
@@ -152,6 +155,8 @@ describe( 'LeastEngagingPagesWidget', () => {
 				},
 			},
 			limit: 3,
+			reportID:
+				'analytics-4_least-engaging-pages-widget_widget_reportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );

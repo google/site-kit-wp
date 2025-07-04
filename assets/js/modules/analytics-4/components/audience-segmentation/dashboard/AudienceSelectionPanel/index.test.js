@@ -115,6 +115,8 @@ describe( 'AudienceSelectionPanel', () => {
 		baseReportOptions = {
 			...dateRangeDates,
 			metrics: [ { name: 'totalUsers' } ],
+			reportID:
+				'audience-segmentation_get-audiences-user-count-report-options_store:selector',
 		};
 		reportOptions = {
 			...baseReportOptions,
@@ -370,6 +372,8 @@ describe( 'AudienceSelectionPanel', () => {
 				const newVsReturningReportOptions = {
 					...baseReportOptions,
 					dimensions: [ { name: 'newVsReturning' } ],
+					reportID:
+						'audience-segmentation_audience-items_component_newVsReturningReport',
 				};
 
 				const audienceResourceNameReportOptions = {

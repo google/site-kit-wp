@@ -51,6 +51,7 @@ const reportOptions = {
 			name: 'sessions',
 		},
 	],
+	reportID: 'analytics-4_visits-per-visitor-widget_widget_reportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(

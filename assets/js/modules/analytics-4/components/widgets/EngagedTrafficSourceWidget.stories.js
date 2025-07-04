@@ -45,6 +45,7 @@ const reportOptions = {
 	metrics: [ { name: 'engagedSessions' } ],
 	orderBy: 'engagedSessions',
 	limit: 1,
+	reportID: 'analytics-4_engaged-traffic-source-widget_widget_reportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(

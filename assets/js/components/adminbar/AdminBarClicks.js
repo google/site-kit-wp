@@ -59,6 +59,7 @@ function AdminBarClicks( { WidgetReportError } ) {
 		endDate,
 		dimensions: 'date',
 		url,
+		reportID: 'adminbar_admin-bar-clicks_component_reportArgs',
 	};
 
 	const searchConsoleData = useSelect( ( select ) =>

@@ -84,6 +84,8 @@ describe( 'TopTrafficSourceDrivingLeadsWidget', () => {
 						value: [ ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ],
 					},
 				},
+				reportID:
+					'analytics-4_top-traffic-source-driving-leads-widget_widget_totalLeadsReportOptions',
 			},
 			{
 				...dates,
@@ -101,6 +103,8 @@ describe( 'TopTrafficSourceDrivingLeadsWidget', () => {
 				],
 				limit: 1,
 				orderBy: 'eventCount',
+				reportID:
+					'analytics-4_top-traffic-source-driving-leads-widget_widget_trafficSourceReportOptions',
 			},
 		];
 
@@ -137,6 +141,8 @@ describe( 'TopTrafficSourceDrivingLeadsWidget', () => {
 						value: [ ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ],
 					},
 				},
+				reportID:
+					'analytics-4_top-traffic-source-driving-leads-widget_widget_totalLeadsReportOptions',
 			},
 			{
 				...dates,
@@ -154,6 +160,8 @@ describe( 'TopTrafficSourceDrivingLeadsWidget', () => {
 				],
 				limit: 1,
 				orderBy: 'eventCount',
+				reportID:
+					'analytics-4_top-traffic-source-driving-leads-widget_widget_trafficSourceReportOptions',
 			},
 		];
 

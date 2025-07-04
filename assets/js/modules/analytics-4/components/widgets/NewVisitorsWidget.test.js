@@ -65,6 +65,7 @@ describe( 'NewVisitorsWidget', () => {
 			} ),
 			dimensions: [ 'newVsReturning' ],
 			metrics: [ { name: 'activeUsers' } ],
+			reportID: 'analytics-4_new-visitors-widget_widget_reportOptions',
 		} );
 
 		const { container, waitForRegistry } = render(

@@ -59,6 +59,8 @@ const reportOptions = [
 				value: [ ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ],
 			},
 		},
+		reportID:
+			'analytics-4_top-traffic-source-driving-leads-widget_widget_totalLeadsReportOptions',
 	},
 	{
 		compareStartDate: '2020-07-14',
@@ -79,6 +81,8 @@ const reportOptions = [
 		],
 		limit: 1,
 		orderBy: 'eventCount',
+		reportID:
+			'analytics-4_top-traffic-source-driving-leads-widget_widget_trafficSourceReportOptions',
 	},
 ];
 

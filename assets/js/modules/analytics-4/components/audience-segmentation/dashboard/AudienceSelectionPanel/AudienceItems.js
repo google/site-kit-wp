@@ -117,6 +117,8 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 					},
 				],
 				dimensions: [ { name: 'newVsReturning' } ],
+				reportID:
+					'audience-segmentation_audience-items_component_newVsReturningReport',
 			} );
 
 		// Get the user count for the available audiences using the `audienceResourceName` dimension.

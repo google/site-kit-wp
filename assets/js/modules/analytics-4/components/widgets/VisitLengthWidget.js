@@ -56,6 +56,7 @@ function VisitLengthWidget( { Widget } ) {
 	const reportOptions = {
 		...dates,
 		metrics: [ { name: 'averageSessionDuration' }, { name: 'sessions' } ],
+		reportID: 'analytics-4_visit-length-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(

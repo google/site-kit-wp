@@ -69,6 +69,7 @@ const reportOptions = {
 	],
 	limit: 3,
 	keepEmptyRows: false,
+	reportID: 'analytics-4_popular-authors-widget_widget_reportOptions',
 };
 
 const propertyID = '12345';

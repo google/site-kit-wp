@@ -52,6 +52,8 @@ const reportOptions = [
 				name: 'addToCarts',
 			},
 		],
+		reportID:
+			'analytics-4_top-traffic-source-driving-add-to-cart-widget_widget_totalAddToCartReportOptions',
 	},
 	{
 		compareStartDate: '2020-07-14',
@@ -66,6 +68,8 @@ const reportOptions = [
 		],
 		limit: 1,
 		orderBy: 'addToCarts',
+		reportID:
+			'analytics-4_top-traffic-source-driving-add-to-cart-widget_widget_trafficSourceReportOptions',
 	},
 ];
 

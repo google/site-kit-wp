@@ -62,6 +62,8 @@ function MostEngagingPagesWidget( props ) {
 		dimensions: [ 'pagePath' ],
 		metrics: [ { name: 'screenPageViews' } ],
 		limit: 1,
+		reportID:
+			'analytics-4_most-engaging-pages-widget_widget_pageViewsReportOptions',
 	};
 
 	const pageViewsReport = useInViewSelect(
@@ -98,6 +100,7 @@ function MostEngagingPagesWidget( props ) {
 			},
 		},
 		limit: 3,
+		reportID: 'analytics-4_most-engaging-pages-widget_widget_reportOptions',
 	};
 
 	const pageViewsReportErrors = useSelect( ( select ) =>
