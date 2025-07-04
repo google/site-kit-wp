@@ -63,6 +63,7 @@ const baseAllTrafficOptions = {
 			name: 'totalUsers',
 		},
 	],
+	reportID: 'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs',
 };
 
 const allTrafficReportOptions = [
@@ -91,6 +92,7 @@ const allTrafficReportOptions = [
 				desc: true,
 			},
 		],
+		reportID: 'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 	},
 	{
 		// Pie chart, with deviceCategory dimension.
@@ -105,6 +107,7 @@ const allTrafficReportOptions = [
 			},
 		],
 		limit: 6,
+		reportID: 'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 	},
 	// Totals.
 	baseAllTrafficOptions,
@@ -136,6 +139,8 @@ const allTrafficReportOptions = [
 				},
 			},
 		],
+		reportID:
+			'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs',
 	},
 	{
 		// Gathering data check.

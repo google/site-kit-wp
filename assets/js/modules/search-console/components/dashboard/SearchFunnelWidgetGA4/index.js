@@ -130,8 +130,6 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 		startDate: compareStartDate,
 		endDate,
 		dimensions: 'date',
-		reportID:
-			'search-console_search-funnel-widget-ga4_widget_searchConsoleReportArgs',
 	};
 
 	const ga4OverviewArgs = {
@@ -147,6 +145,8 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 		dimensionFilters: {
 			sessionDefaultChannelGrouping: [ 'Organic Search' ],
 		},
+		reportID:
+			'search-console_search-funnel-widget-ga4_widget_ga4OverviewArgs',
 	};
 
 	const ga4StatsArgs = {
@@ -164,6 +164,7 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 				},
 			},
 		],
+		reportID: 'search-console_search-funnel-widget-ga4_widget_ga4StatsArgs',
 	};
 	const ga4VisitorsOverviewAndStatsArgs = {
 		...ga4Dates,
@@ -187,6 +188,8 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 				},
 			},
 		],
+		reportID:
+			'search-console_search-funnel-widget-ga4_widget_ga4VisitorsOverviewAndStatsArgs',
 	};
 
 	if ( isURL( url ) ) {

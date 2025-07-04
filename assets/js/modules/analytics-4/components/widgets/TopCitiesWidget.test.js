@@ -71,6 +71,8 @@ describe( 'TopCitiesWidget', () => {
 				},
 			],
 			limit: 4,
+			reportID:
+				'analytics-4_top-cities-widget_widget_topCitiesReportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );

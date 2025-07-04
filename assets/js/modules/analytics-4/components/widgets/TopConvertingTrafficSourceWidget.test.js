@@ -78,6 +78,8 @@ describe( 'TopConvertingTrafficSourceWidget', () => {
 			],
 			limit: 1,
 			orderBy: 'sessionKeyEventRate',
+			reportID:
+				'analytics-4_top-converting-traffic-source-widget_widget_reportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );
@@ -105,6 +107,8 @@ describe( 'TopConvertingTrafficSourceWidget', () => {
 			],
 			limit: 1,
 			orderBy: 'sessionKeyEventRate',
+			reportID:
+				'analytics-4_top-converting-traffic-source-widget_widget_reportOptions',
 		};
 
 		const report = getAnalytics4MockResponse( reportOptions );

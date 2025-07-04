@@ -346,7 +346,6 @@ const baseSelectors = {
 			metrics: [ { name: 'totalUsers' } ],
 			startDate,
 			endDate,
-			reportID: 'analytics-4_get-sample-report_store:selector_args',
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
