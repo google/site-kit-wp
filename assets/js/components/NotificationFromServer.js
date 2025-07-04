@@ -20,6 +20,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { ReactNode } from '@wordpress/element';
@@ -39,17 +44,17 @@ import Link from './Link';
  *
  * @since n.e.x.t
  *
- * @param {Object}    props                Component props.
- * @param {string}    props.id             Notification ID/slug.
- * @param {string}    props.title          Notification title/heading.
- * @param {ReactNode} props.content        Decsription for notification.
- * @param {string}    props.ctaLabel       Label for the call-to-action button.
- * @param {?string}   props.ctaTarget      `target` for the call-to-action link, e.g. `_blank`. Optional.
- * @param {string}    props.ctaURL         URL for the call-to-action link.
- * @param {?boolean}  props.dismissible    Whether the notification is dismissible. Optional.
- * @param {?string}   props.dismissLabel   Label for the dismiss button. Optional.
- * @param {?string}   props.learnMoreLabel Label for the "Learn More" link. Optional.
- * @param {?string}   props.learnMoreURL   URL for the "Learn More" link. Optional.
+ * @param {Object}     props                Component props.
+ * @param {string}     props.id             Notification ID/slug.
+ * @param {string}     props.title          Notification title/heading.
+ * @param {?ReactNode} props.content        Decsription for notification.
+ * @param {string}     props.ctaLabel       Label for the call-to-action button.
+ * @param {?string}    props.ctaTarget      `target` for the call-to-action link, e.g. `_blank`. Optional.
+ * @param {?string}    props.ctaURL         URL for the call-to-action link.
+ * @param {?boolean}   props.dismissible    Whether the notification is dismissible. Optional.
+ * @param {?string}    props.dismissLabel   Label for the dismiss button. Optional.
+ * @param {?string}    props.learnMoreLabel Label for the "Learn More" link. Optional.
+ * @param {?string}    props.learnMoreURL   URL for the "Learn More" link. Optional.
  * @return {JSX.Element} Notification component.
  */
 function NotificationFromServer( {
@@ -100,5 +105,18 @@ function NotificationFromServer( {
 		</Notification>
 	);
 }
+
+NotificationFromServer.propTypes = {
+	id: PropTypes.string.isRequired,
+	title: PropTypes.string.isRequired,
+	content: PropTypes.node,
+	ctaLabel: PropTypes.string,
+	ctaTarget: PropTypes.string,
+	ctaURL: PropTypes.string,
+	dismissible: PropTypes.bool,
+	dismissLabel: PropTypes.string,
+	learnMoreLabel: PropTypes.string,
+	learnMoreURL: PropTypes.string,
+};
 
 export default NotificationFromServer;
