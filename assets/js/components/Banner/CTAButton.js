@@ -50,7 +50,7 @@ export default function CTAButton( {
 
 // eslint-disable-next-line sitekit/acronym-case
 CTAButton.propTypes = {
-	label: PropTypes.string.isRequired,
+	label: PropTypes.string,
 	disabled: PropTypes.bool,
 	inProgress: PropTypes.bool,
 	onClick: PropTypes.func,
