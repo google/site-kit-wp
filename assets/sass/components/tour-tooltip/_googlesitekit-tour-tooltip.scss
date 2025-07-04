@@ -65,8 +65,7 @@
 .googlesitekit-tooltip-title {
 	color: $c-content-on-primary;
 
-	/* The Tooltip component does not use the Typography component as
-		this heading does not follow the dashboard heading styles */
+	// The tooltip title overrides the default Typography styles.
 	font-family: $f-secondary;
 	font-size: $fs-body-lg;
 	font-weight: $fw-medium;

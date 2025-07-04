@@ -30,7 +30,12 @@ import Typography from '../Typography';
 export default function Step( { children, title, stepStatus } ) {
 	return (
 		<div className="googlesitekit-stepper__step-info">
-			<Typography as="h2" className="googlesitekit-stepper__step-title">
+			<Typography
+				as="h2"
+				className="googlesitekit-stepper__step-title"
+				size="medium"
+				type="title"
+			>
 				{ title }
 			</Typography>
 			<div className="googlesitekit-stepper__step-content-container">

@@ -55,6 +55,8 @@ function CTA( {
 						<Typography
 							as="h2"
 							className="googlesitekit-cta__header_text"
+							size="small"
+							type="label"
 						>
 							{ headerText }
 						</Typography>

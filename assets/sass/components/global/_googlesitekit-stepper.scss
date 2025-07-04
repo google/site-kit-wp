@@ -68,14 +68,7 @@
 		align-items: center;
 		color: $c-surfaces-on-surface;
 		display: flex;
-
-		/* The Stepper component does not use the Typography component as
-		   the heading does not follow the dashboard heading styles */
-		font-family: $f-primary;
-		font-size: $fs-title-md;
-		font-weight: $fw-medium;
 		height: 24px;
-		line-height: $lh-title-md;
 
 		@media (min-width: $bp-tablet) {
 			margin: 0;

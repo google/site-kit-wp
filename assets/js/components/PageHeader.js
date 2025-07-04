@@ -59,8 +59,8 @@ export default function PageHeader( props ) {
 								'googlesitekit-page-header__title',
 								className
 							) }
-							size="small"
-							type="headline"
+							size="medium"
+							type="title"
 						>
 							{ title }
 						</Typography>

@@ -61,7 +61,12 @@ export default function TourTooltip( {
 		>
 			<Card className="googlesitekit-tooltip-card">
 				<div className="googlesitekit-tooltip-body">
-					<Typography as="h2" className="googlesitekit-tooltip-title">
+					<Typography
+						as="h2"
+						className="googlesitekit-tooltip-title"
+						size="medium"
+						type="title"
+					>
 						{ step.title }
 					</Typography>
 					<div className="googlesitekit-tooltip-content">
