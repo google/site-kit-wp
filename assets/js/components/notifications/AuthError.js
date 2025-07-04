@@ -34,10 +34,10 @@ export default function AuthError( { id, Notification } ) {
 	const error = useSelect( ( select ) => select( CORE_USER ).getAuthError() );
 
 	return (
-		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
+		<Notification>
 			<BannerNotification
-				type={ TYPES.ERROR }
 				notificationID={ id }
+				type={ TYPES.ERROR }
 				title={ __(
 					'Site Kit can’t access necessary data',
 					'google-site-kit'
