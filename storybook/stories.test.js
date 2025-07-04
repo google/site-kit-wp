@@ -16,24 +16,24 @@
  * limitations under the License.
  */
 
-/**
- * Node dependencies
- */
-import path from 'path';
+// /**
+//  * Node dependencies
+//  */
+// import path from 'path';
 
-/**
- * External dependencies
- */
-import initStoryshots from '@storybook/addon-storyshots';
-import { puppeteerTest } from '@storybook/addon-storyshots-puppeteer';
+// /**
+//  * External dependencies
+//  */
+// import initStoryshots from '@storybook/addon-storyshots';
+// import { puppeteerTest } from '@storybook/addon-storyshots-puppeteer';
 
-initStoryshots( {
-	suite: 'Puppeteer storyshots',
-	configPath: path.resolve( __dirname, '../storybook' ),
-	test: puppeteerTest( {
-		// eslint-disable-next-line sitekit/acronym-case
-		storybookUrl: `file://${ path.resolve( __dirname, '../dist' ) }`,
-		setupTimeout: 5000,
-		testTimeout: 5000,
-	} ),
-} );
+// initStoryshots( {
+// 	suite: 'Puppeteer storyshots',
+// 	configPath: path.resolve( __dirname, '../storybook' ),
+// 	test: puppeteerTest( {
+// 		// eslint-disable-next-line sitekit/acronym-case
+// 		storybookUrl: `file://${ path.resolve( __dirname, '../dist' ) }`,
+// 		setupTimeout: 5000,
+// 		testTimeout: 5000,
+// 	} ),
+// } );
