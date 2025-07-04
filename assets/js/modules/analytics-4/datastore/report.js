@@ -248,6 +248,8 @@ const baseSelectors = {
 						},
 					],
 					limit: REQUEST_MULTIPLIER * pagePaths.length,
+					reportID:
+						'analytics-4_get-page-titles_store:selector_options',
 				};
 
 				const pageTitlesReport =
@@ -344,6 +346,7 @@ const baseSelectors = {
 			metrics: [ { name: 'totalUsers' } ],
 			startDate,
 			endDate,
+			reportID: 'analytics-4_get-sample-report_store:selector_args',
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();

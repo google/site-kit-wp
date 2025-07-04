@@ -51,7 +51,7 @@ function TopCitiesWidget( { Widget } ) {
 		} )
 	);
 
-	const topcCitiesReportOptions = {
+	const topCitiesReportOptions = {
 		...dates,
 		dimensions: [ 'city' ],
 		metrics: [ { name: 'totalUsers' } ],
@@ -64,17 +64,18 @@ function TopCitiesWidget( { Widget } ) {
 			},
 		],
 		limit: 4,
+		reportID: 'analytics-4_top-cities-widget_widget_topCitiesReportOptions',
 	};
 
 	const topCitiesReport = useInViewSelect(
 		( select ) =>
-			select( MODULES_ANALYTICS_4 ).getReport( topcCitiesReportOptions ),
-		[ topcCitiesReportOptions ]
+			select( MODULES_ANALYTICS_4 ).getReport( topCitiesReportOptions ),
+		[ topCitiesReportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			topcCitiesReportOptions,
+			topCitiesReportOptions,
 		] )
 	);
 
@@ -82,7 +83,7 @@ function TopCitiesWidget( { Widget } ) {
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
-				[ topcCitiesReportOptions ]
+				[ topCitiesReportOptions ]
 			)
 	);
 

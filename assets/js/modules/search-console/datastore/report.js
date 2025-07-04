@@ -231,6 +231,7 @@ const baseSelectors = {
 			startDate,
 			endDate,
 			dimensions: 'date',
+			reportID: 'search-console_get-sample-report_store:selector_args',
 		};
 
 		if ( url ) {

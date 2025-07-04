@@ -62,6 +62,7 @@ export default function useAllTrafficWidgetReport( reportOptions = {} ) {
 		startDate,
 		endDate,
 		metrics: [ { name: 'totalUsers' } ],
+		reportID: 'analytics-4_use-all-traffic-widget-report_hook_args',
 		...reportOptions,
 	};
 

@@ -130,6 +130,8 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 		startDate: compareStartDate,
 		endDate,
 		dimensions: 'date',
+		reportID:
+			'search-console_search-funnel-widget-ga4_widget_searchConsoleReportArgs',
 	};
 
 	const ga4OverviewArgs = {
