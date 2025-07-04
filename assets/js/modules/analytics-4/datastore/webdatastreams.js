@@ -507,7 +507,7 @@ const baseSelectors = {
 				for ( const datastream of datastreams[ propertyID ] ) {
 					const { _id: webDataStreamID, webStreamData } = datastream;
 					const {
-						defaultUri: defaultURI,
+						defaultUri: defaultURI, // eslint-disable-line sitekit/acronym-case
 						measurementId: measurementID, // eslint-disable-line sitekit/acronym-case
 					} = webStreamData;
 
