@@ -31,7 +31,7 @@ import { trackEvent } from '../../../../../util';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import SetupAccountSiteUI from './SetupAccountSiteUI';
 
-export default function GettingReady() {
+export default function GettingReady( { trackGAEvent = trackEvent } ) {
 	const viewContext = useContext( ViewContextContext );
 
 	const reviewSiteURL = useSelect( ( select ) =>
@@ -41,20 +41,20 @@ export default function GettingReady() {
 	const reviewSiteHandler = useCallback(
 		( event ) => {
 			event.preventDefault();
-			trackEvent(
+			trackGAEvent(
 				`${ viewContext }_adsense`,
 				'review_site_state',
 				'getting_ready'
 			);
 			global.open( reviewSiteURL, '_blank' );
 		},
-		[ reviewSiteURL, viewContext ]
+		[ reviewSiteURL, viewContext, trackGAEvent ]
 	);
 
 	const heading = __( 'Your site is getting ready', 'google-site-kit' );
 
 	const description = __(
-		'This usually takes a few days, but in some cases can take a few weeks. You’ll get an email from AdSense as soon as they have run some checks on your site.',
+		"This usually takes a few days, but in some cases can take a few weeks. You'll get an email from AdSense as soon as they have run some checks on your site.",
 		'google-site-kit'
 	);
 

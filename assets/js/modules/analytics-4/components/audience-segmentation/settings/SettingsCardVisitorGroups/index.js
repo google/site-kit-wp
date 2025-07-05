@@ -36,7 +36,9 @@ import Layout from '../../../../../../components/layout/Layout';
 import SetupCTA from './SetupCTA';
 import SetupSuccess from './SetupSuccess';
 
-export default function SettingsCardVisitorGroups() {
+export default function SettingsCardVisitorGroups( {
+	trackGAEvent = trackEvent,
+} ) {
 	const viewContext = useViewContext();
 
 	const audienceSegmentationWidgetHidden = useSelect( ( select ) =>
@@ -57,7 +59,7 @@ export default function SettingsCardVisitorGroups() {
 			? 'audience_widgets_enable'
 			: 'audience_widgets_disable';
 
-		trackEvent( `${ viewContext }_audiences-settings`, action ).finally(
+		trackGAEvent( `${ viewContext }_audiences-settings`, action ).finally(
 			async () => {
 				await setAudienceSegmentationWidgetHidden(
 					! audienceSegmentationWidgetHidden
@@ -70,6 +72,7 @@ export default function SettingsCardVisitorGroups() {
 		saveUserAudienceSettings,
 		setAudienceSegmentationWidgetHidden,
 		viewContext,
+		trackGAEvent,
 	] );
 
 	if (

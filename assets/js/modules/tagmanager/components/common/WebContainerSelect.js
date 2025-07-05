@@ -41,7 +41,10 @@ import ContainerSelect from './ContainerSelect';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 
-export default function WebContainerSelect( { hasModuleAccess } ) {
+export default function WebContainerSelect( {
+	trackGAEvent = trackEvent,
+	hasModuleAccess,
+} ) {
 	const viewContext = useViewContext();
 
 	const accountID = useSelect( ( select ) =>
@@ -73,13 +76,19 @@ export default function WebContainerSelect( { hasModuleAccess } ) {
 					newContainerID === CONTAINER_CREATE
 						? 'change_container_new'
 						: 'change_container';
-				trackEvent( `${ viewContext }_tagmanager`, eventAction );
+				trackGAEvent( `${ viewContext }_tagmanager`, eventAction );
 
 				setContainerID( newContainerID );
 				setInternalContainerID( newInternalContainerID || '' );
 			}
 		},
-		[ containerID, setContainerID, setInternalContainerID, viewContext ]
+		[
+			containerID,
+			setContainerID,
+			setInternalContainerID,
+			viewContext,
+			trackGAEvent,
+		]
 	);
 
 	const label = isAMP
@@ -113,5 +122,6 @@ export default function WebContainerSelect( { hasModuleAccess } ) {
 }
 
 WebContainerSelect.propTypes = {
+	trackGAEvent: PropTypes.func,
 	hasModuleAccess: PropTypes.bool,
 };

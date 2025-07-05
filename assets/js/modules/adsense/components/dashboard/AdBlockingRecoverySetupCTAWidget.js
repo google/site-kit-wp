@@ -57,7 +57,11 @@ import Banner from '../../../../components/Banner';
 import BannerSVGDesktop from '@/svg/graphics/banner-ad-blocking-recovery-setup-cta-mobile.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-ad-blocking-recovery-setup-cta.svg?url';
 
-function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
+function AdBlockingRecoverySetupCTAWidget( {
+	Widget,
+	WidgetNull,
+	trackGAEvent = trackEvent,
+} ) {
 	const viewOnlyDashboard = useViewOnly();
 	const inView = useInView();
 	const viewContext = useViewContext();
@@ -151,15 +155,15 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 
 	useEffect( () => {
 		if ( inView && shouldShowWidget ) {
-			trackEvent(
+			trackGAEvent(
 				`${ viewContext }_adsense-abr-cta-widget`,
 				'view_notification'
 			);
 		}
-	}, [ inView, shouldShowWidget, viewContext ] );
+	}, [ inView, shouldShowWidget, viewContext, trackGAEvent ] );
 
 	const handleCTAClick = async () => {
-		await trackEvent(
+		await trackGAEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'confirm_notification'
 		);
@@ -171,7 +175,7 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 	};
 
 	const handleDismissClick = async () => {
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'dismiss_notification'
 		);
@@ -191,7 +195,7 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 	};
 
 	const handleLearnMoreClick = () => {
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'click_learn_more_link'
 		);
@@ -242,7 +246,7 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 					label:
 						dismissCount < 2
 							? __( 'Maybe later', 'google-site-kit' )
-							: __( 'Don’t show again', 'google-site-kit' ),
+							: __( "Don't show again", 'google-site-kit' ),
 					onClick: handleDismissClick,
 				} }
 				ctaButton={ {

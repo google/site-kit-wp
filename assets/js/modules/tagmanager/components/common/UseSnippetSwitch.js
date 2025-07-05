@@ -36,7 +36,10 @@ import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 
-export default function UseSnippetSwitch( { description } ) {
+export default function UseSnippetSwitch( {
+	trackGAEvent = trackEvent,
+	description,
+} ) {
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getUseSnippet()
 	);
@@ -47,11 +50,11 @@ export default function UseSnippetSwitch( { description } ) {
 	const onChange = useCallback( () => {
 		const newUseSnippet = ! useSnippet;
 		setUseSnippet( newUseSnippet );
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_tagmanager`,
 			newUseSnippet ? 'enable_tag' : 'disable_tag'
 		);
-	}, [ setUseSnippet, useSnippet, viewContext ] );
+	}, [ setUseSnippet, useSnippet, viewContext, trackGAEvent ] );
 
 	if ( useSnippet === undefined ) {
 		return null;
@@ -74,5 +77,6 @@ export default function UseSnippetSwitch( { description } ) {
 }
 
 UseSnippetSwitch.propTypes = {
+	trackGAEvent: PropTypes.func,
 	description: PropTypes.node,
 };

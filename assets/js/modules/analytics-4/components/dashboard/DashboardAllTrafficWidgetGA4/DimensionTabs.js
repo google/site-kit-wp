@@ -63,6 +63,7 @@ export default function DimensionTabs( {
 	gatheringData,
 	loaded,
 	isZeroData,
+	trackGAEvent = trackEvent,
 } ) {
 	const viewContext = useViewContext();
 	const { setValues } = useDispatch( CORE_UI );
@@ -82,13 +83,13 @@ export default function DimensionTabs( {
 				[ UI_ACTIVE_ROW_INDEX ]: null,
 			} );
 
-			trackEvent(
+			trackGAEvent(
 				`${ viewContext }_all-traffic-widget`,
 				'tab_select',
 				name
 			);
 		},
-		[ setValues, viewContext ]
+		[ setValues, viewContext, trackGAEvent ]
 	);
 
 	if ( ! loaded ) {
@@ -150,4 +151,5 @@ DimensionTabs.propTypes = {
 	gatheringData: PropTypes.bool,
 	isZeroData: PropTypes.bool,
 	loaded: PropTypes.bool,
+	trackGAEvent: PropTypes.func,
 };
