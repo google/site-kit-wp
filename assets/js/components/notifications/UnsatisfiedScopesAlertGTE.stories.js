@@ -19,14 +19,8 @@
 /**
  * Internal dependencies
  */
-import {
-	provideModules,
-	provideUserAuthentication,
-} from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import UnsatisfiedScopesAlertGTE from './UnsatisfiedScopesAlertGTE';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'gathering-data-notification'
@@ -42,28 +36,4 @@ Default.scenario = {};
 
 export default {
 	title: 'Components/Notifications/Errors/UnsatisfiedScopesAlertGTE',
-	decorators: [
-		( Story ) => {
-			const setupRegistry = ( registry ) => {
-				provideModules( registry, [
-					{
-						slug: MODULE_SLUG_ANALYTICS_4,
-						active: true,
-						connected: true,
-					},
-				] );
-				provideUserAuthentication( registry, {
-					unsatisfiedScopes: [
-						'https://www.googleapis.com/auth/tagmanager.readonly',
-					],
-				} );
-			};
-
-			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
-				</WithRegistrySetup>
-			);
-		},
-	],
 };

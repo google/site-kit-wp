@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -32,12 +33,12 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import NotificationError from '../../googlesitekit/notifications/components/layout/NotificationError';
-import Description from '../../googlesitekit/notifications/components/common/Description';
-import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
-import CTALink from '../../googlesitekit/notifications/components/common/CTALink';
+import BannerNotification from '../../googlesitekit/notifications/components/layout/BannerNotification';
+import { TYPES } from '../Notice/constants';
 
 export default function UnsatisfiedScopesAlertGTE( { id, Notification } ) {
+	const [ isSaving, setIsSaving ] = useState( false );
+
 	const temporaryPersistedPermissionsError = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
@@ -64,34 +65,27 @@ export default function UnsatisfiedScopesAlertGTE( { id, Notification } ) {
 	}
 
 	return (
-		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
-			<NotificationError
+		<Notification>
+			<BannerNotification
+				notificationID={ id }
+				type={ TYPES.ERROR }
 				title={ __(
 					'Site Kit needs additional permissions to detect updates to tags on your site',
 					'google-site-kit'
 				) }
-				description={
-					<Description
-						text={ __(
-							'To continue using Analytics with Site Kit, you need to grant permission to check for any changes in your Google tag’s target Analytics property. The Google tag feature was recently updated to allow users to change a tag’s connected Analytics property without editing site code. Because of this change, Site Kit now must regularly check if the tag on your site matches the Analytics property destination.',
-							'google-site-kit'
-						) }
-						learnMoreLink={
-							<LearnMoreLink
-								id={ id }
-								label={ __( 'Learn more', 'google-site-kit' ) }
-								url={ googleTagLearnMoreURL }
-							/>
-						}
-					/>
-				}
-				actions={
-					<CTALink
-						id={ id }
-						ctaLabel={ __( 'Grant permission', 'google-site-kit' ) }
-						ctaLink={ connectURL }
-					/>
-				}
+				description={ __(
+					'To continue using Analytics with Site Kit, you need to grant permission to check for any changes in your Google tag’s target Analytics property. The Google tag feature was recently updated to allow users to change a tag’s connected Analytics property without editing site code. Because of this change, Site Kit now must regularly check if the tag on your site matches the Analytics property destination.',
+					'google-site-kit'
+				) }
+				learnMoreLink={ {
+					href: googleTagLearnMoreURL,
+				} }
+				ctaButton={ {
+					label: __( 'Grant permission', 'google-site-kit' ),
+					href: connectURL,
+					inProgress: isSaving,
+					onClick: () => setIsSaving( true ),
+				} }
 			/>
 		</Notification>
 	);
