@@ -115,11 +115,11 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setEnhancedMeasurementStreamEnabled(
+					.setEnhancedMeasurementStreamEnabled( {
 						propertyID,
 						webDataStreamID,
-						true
-					);
+						enabled: true,
+					} );
 
 				if ( args.enhancedConversionTracking !== 'resolving' ) {
 					registry
