@@ -168,7 +168,7 @@ export default {
 						{
 							_id: '110',
 							webStreamData: {
-								defaultUri: 'http://example-1.test',
+								defaultUri: 'http://example-1.test', // eslint-disable-line sitekit/acronym-case
 								measurementId: currentMeasurementID, // eslint-disable-line sitekit/acronym-case
 							},
 						},
