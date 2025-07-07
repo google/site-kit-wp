@@ -111,7 +111,8 @@
       {
         "usePrettierrc": true
       }
-    ]
+    ],
+    "react/jsx-no-useless-fragment": "error"
   },
   "settings": {
     "import/core-modules": [
