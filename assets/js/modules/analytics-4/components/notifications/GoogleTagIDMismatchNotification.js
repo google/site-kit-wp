@@ -31,11 +31,10 @@ import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { isValidMeasurementID } from '../../utils/validation';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { getBestTagID } from '../../utils/google-tag';
-import SimpleNotification from '../../../../googlesitekit/notifications/components/layout/SimpleNotification';
-import NotificationProgressBar from '../../../../googlesitekit/notifications/components/layout/NotificationProgressBar';
-import Description from '../../../../googlesitekit/notifications/components/common/Description';
-import ActionsCTALinkDismiss from '../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
-import CTALink from '../../../../googlesitekit/notifications/components/common/CTALink';
+import BannerNotification, {
+	TYPES,
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import { ProgressBar } from 'googlesitekit-components';
 
 export default function GoogleTagIDMismatchNotification( {
 	id,
@@ -155,7 +154,13 @@ export default function GoogleTagIDMismatchNotification( {
 		newGoogleTagID === undefined ||
 		currentAnalyticsProperty === undefined
 	) {
-		return <NotificationProgressBar />;
+		return (
+			<ProgressBar
+				className="googlesitekit-banner__progress-bar"
+				height={ 4 } // The progress bar height is set to 7px via CSS. This value removes margins within the ProgressBar component.
+				indeterminate
+			/>
+		);
 	}
 
 	// If the current and new properties are the same, don't show the notification.
@@ -171,51 +176,46 @@ export default function GoogleTagIDMismatchNotification( {
 		newAnalyticsProperty?._id &&
 		currentAnalyticsProperty._id === newAnalyticsProperty._id
 	) {
-		return null;
+		// return null;
 	}
 
 	if ( newAnalyticsProperty ) {
 		return (
 			<Notification className="googlesitekit-publisher-win">
-				<SimpleNotification
+				<BannerNotification
+					notificationID={ id }
+					type={ TYPES.WARNING }
 					title={ __(
 						"Update Site Kit's Analytics configuration to continue seeing Analytics data on the dashboard",
 						'google-site-kit'
 					) }
-					description={
-						<Description
-							text={ sprintf(
-								/* translators: 1: Current GA4 property name. 2: Current GA4 property ID. 3: Newly linked GA4 property name. 4: Newly linked GA4 property ID. */
-								__(
-									'The Google Tag on your site is no longer associated with your current Google Analytics property "%1$s (%2$s)". It is now recording metrics to another Google Analytics property "%3$s (%4$s)". If you want to continue seeing Analytics data in the Site Kit dashboard, we suggest you update Site Kit’s Google Analytics configuration to show data for the property used in your Google Tag.',
-									'google-site-kit'
-								),
-								currentAnalyticsProperty.displayName,
-								currentAnalyticsProperty._id,
-								newAnalyticsProperty.displayName,
-								newAnalyticsProperty._id
-							) }
-						/>
-					}
-					actions={
-						<ActionsCTALinkDismiss
-							id={ id }
-							ctaLabel={ __(
-								'Use new property',
-								'google-site-kit'
-							) }
-							onCTAClick={ updateToNewAnalyticsConfig }
-							isSaving={ isDoingSubmitChanges }
-							dismissLabel={ __(
-								'Keep existing property',
-								'google-site-kit'
-							) }
-							onDismiss={ updateGoogleTagConfig }
-							dismissExpires={ 1 } // Expire the dismissal in a second to allow the notification to be shown on page reload if necessary.
-							dismissOptions={ { skipHidingFromQueue: false } }
-							dismissOnCTAClick
-						/>
-					}
+					description={ sprintf(
+						/* translators: 1: Current GA4 property name. 2: Current GA4 property ID. 3: Newly linked GA4 property name. 4: Newly linked GA4 property ID. */
+						__(
+							'The Google Tag on your site is no longer associated with your current Google Analytics property "%1$s (%2$s)". It is now recording metrics to another Google Analytics property "%3$s (%4$s)". If you want to continue seeing Analytics data in the Site Kit dashboard, we suggest you update Site Kit’s Google Analytics configuration to show data for the property used in your Google Tag.',
+							'google-site-kit'
+						),
+						currentAnalyticsProperty.displayName,
+						currentAnalyticsProperty._id,
+						newAnalyticsProperty.displayName,
+						newAnalyticsProperty._id
+					) }
+					ctaButton={ {
+						label: __( 'Use new property', 'google-site-kit' ),
+						onClick: updateToNewAnalyticsConfig,
+						inProgress: isDoingSubmitChanges,
+					} }
+					dismissButton={ {
+						label: __(
+							'Keep existing property',
+							'google-site-kit'
+						),
+						onClick: updateGoogleTagConfig,
+					} }
+					dismissOptions={ {
+						expiresInSeconds: 1,
+					} }
+					dismissOnCTAClick
 				/>
 			</Notification>
 		);
@@ -224,43 +224,36 @@ export default function GoogleTagIDMismatchNotification( {
 	if ( newGoogleTagID ) {
 		return (
 			<Notification className="googlesitekit-publisher-win">
-				<SimpleNotification
+				<BannerNotification
+					notificationID={ id }
+					type={ TYPES.WARNING }
 					title={ __(
 						'Your Google tag configuration has changed',
 						'google-site-kit'
 					) }
-					description={
-						<Description
-							text={ sprintf(
-								/* translators: 1: Currently set Google Tag ID. 2: Newly linked Google Tag ID. 3: Current GA4 property name. 4: Current GA4 property ID. */
-								__(
-									'The Google tag for your Google Analytics configuration has changed from %1$s to %2$s. To keep using your current Google Analytics property "%3$s (%4$s)", you need to configure Site Kit to place the new Google tag %2$s instead.',
-									'google-site-kit'
-								),
-								currentAnalyticsConfig.googleTagID,
-								newGoogleTagID,
-								currentAnalyticsProperty.displayName,
-								currentAnalyticsProperty._id
-							) }
-						/>
-					}
-					actions={
-						<CTALink
-							id={ id }
-							ctaLabel={ sprintf(
-								/* translators: %s: Newly linked Google Tag ID. */
-								__(
-									'Update Google tag to %s',
-									'google-site-kit'
-								),
-								newGoogleTagID
-							) }
-							onCTAClick={ updateGoogleTagConfig }
-							dismissExpires={ 1 } // Expire the dismissal in a second to allow the notification to be shown on page reload if necessary.
-							dismissOptions={ { skipHidingFromQueue: false } }
-							dismissOnCTAClick
-						/>
-					}
+					description={ sprintf(
+						/* translators: 1: Currently set Google Tag ID. 2: Newly linked Google Tag ID. 3: Current GA4 property name. 4: Current GA4 property ID. */
+						__(
+							'The Google tag for your Google Analytics configuration has changed from %1$s to %2$s. To keep using your current Google Analytics property "%3$s (%4$s)", you need to configure Site Kit to place the new Google tag %2$s instead.',
+							'google-site-kit'
+						),
+						currentAnalyticsConfig.googleTagID,
+						newGoogleTagID,
+						currentAnalyticsProperty.displayName,
+						currentAnalyticsProperty._id
+					) }
+					ctaButton={ {
+						label: sprintf(
+							/* translators: %s: Newly linked Google Tag ID. */
+							__( 'Update Google tag to %s', 'google-site-kit' ),
+							newGoogleTagID
+						),
+						onClick: updateGoogleTagConfig,
+					} }
+					dismissOptions={ {
+						expiresInSeconds: 1,
+					} }
+					dismissOnCTAClick
 				/>
 			</Notification>
 		);

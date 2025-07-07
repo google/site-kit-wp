@@ -135,11 +135,16 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields {
 	public function get_debug_fields() {
 		$settings = $this->google_tag_gateway_settings->get();
 
+		// Determine effective GTG status based on settings and health checks.
+		$is_gtg_effectively_enabled = true === $settings['isEnabled']
+			&& true === $settings['isGTGHealthy']
+			&& true === $settings['isScriptAccessEnabled'];
+
 		return array(
 			'google_tag_gateway_is_enabled'               => array(
 				'label' => __( 'Google tag gateway for advertisers', 'google-site-kit' ),
-				'value' => ( true === $settings['isEnabled'] ) ? __( 'Enabled', 'google-site-kit' ) : __( 'Disabled', 'google-site-kit' ),
-				'debug' => $this->health_check_debug_field_debug( $settings['isEnabled'] ),
+				'value' => $is_gtg_effectively_enabled ? __( 'Enabled', 'google-site-kit' ) : __( 'Disabled', 'google-site-kit' ),
+				'debug' => $this->health_check_debug_field_debug( $is_gtg_effectively_enabled ),
 			),
 			'google_tag_gateway_is_gtg_healthy'           => array(
 				'label' => __( 'Google tag gateway for advertisers: Service healthy', 'google-site-kit' ),

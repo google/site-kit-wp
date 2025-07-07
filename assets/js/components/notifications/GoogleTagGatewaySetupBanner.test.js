@@ -101,6 +101,7 @@ describe( 'GoogleTagGatewaySetupBanner', () => {
 			);
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
 	} );
 
 	afterEach( () => {
