@@ -19,18 +19,18 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
+import { useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import NotificationAlertSVG from '../../../svg/graphics/notification-alert.svg';
-import BannerNotification from '../notifications/BannerNotification';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
+import NotificationFromServer from '../NotificationFromServer';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 
 function AdSenseAlerts() {
 	const adSenseModuleConnected = useSelect( ( select ) =>
@@ -39,60 +39,56 @@ function AdSenseAlerts() {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
+
+	const [ registeredNotifications, setRegisteredNotifications ] = useState(
+		[]
+	);
+	const { registerNotification } = useDispatch( CORE_NOTIFICATIONS );
+
 	const notifications = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getNotifications()
 	);
 
-	if (
-		! adSenseModuleConnected ||
-		! accountID ||
-		notifications === undefined
-	) {
-		return null;
-	}
+	useEffect( () => {
+		// If AdSense is not connected, or the account ID is not set,
+		// there's nothing to do here.
+		if ( ! adSenseModuleConnected || ! accountID ) {
+			return;
+		}
 
-	return (
-		<Fragment>
-			{ notifications.map(
-				( {
-					id,
-					title,
-					description,
-					format,
-					ctaURL,
-					ctaLabel,
-					ctaTarget,
-					severity,
-					isDismissable,
-				} ) => (
-					<BannerNotification
-						className="googlesitekit-adsense-alert"
-						key={ id }
-						id={ id }
-						title={ title || '' }
-						description={ description }
-						WinImageSVG={ NotificationAlertSVG }
-						format={ format || 'small' }
-						ctaLink={ ctaURL }
-						ctaLabel={ ctaLabel }
-						ctaTarget={ ctaTarget }
-						type={ severity }
-						dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-						isDismissible={ isDismissable || true }
-						module="adsense"
-						moduleName={ _x(
-							'AdSense',
-							'Service name',
-							'google-site-kit'
-						) }
-						dismissExpires={ 0 }
-						showOnce={ false }
-						logo
-					/>
-				)
-			) }
-		</Fragment>
-	);
+		// Register any notifications from the server that haven't yet been
+		// registered.
+		//
+		// (Usually there will be one, if any, notification from the server.)
+		notifications?.forEach( ( notification ) => {
+			if ( registeredNotifications.includes( notification.id ) ) {
+				return;
+			}
+
+			registerNotification( notification.id, {
+				Component() {
+					return <NotificationFromServer { ...notification } />;
+				},
+				priority: notification.priority,
+				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+				isDismissible: notification.isDismissible || true,
+			} );
+
+			setRegisteredNotifications( ( previousRegisteredNotifications ) => {
+				previousRegisteredNotifications.push( notification.id );
+
+				return previousRegisteredNotifications;
+			} );
+		} );
+	}, [
+		accountID,
+		adSenseModuleConnected,
+		notifications,
+		registerNotification,
+		registeredNotifications,
+	] );
+
+	return null;
 }
 
 export default AdSenseAlerts;
