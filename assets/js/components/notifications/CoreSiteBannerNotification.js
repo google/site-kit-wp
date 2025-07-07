@@ -36,11 +36,11 @@ import BannerNotification, {
 	TYPES,
 } from '../../googlesitekit/notifications/components/layout/BannerNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
 import { getStickyHeaderHeightWithoutNav } from '../../util/scroll';
 import { finiteNumberOrZero } from '../../util/finite-number-or-zero';
+import useNotificationEvents from '../../googlesitekit/notifications/hooks/useNotificationEvents';
 
 function CoreSiteBannerNotification( {
 	content,
@@ -54,6 +54,8 @@ function CoreSiteBannerNotification( {
 	learnMoreURL,
 	title,
 } ) {
+	const trackEvents = useNotificationEvents( id );
+
 	const { dismissNotification, acceptNotification } =
 		useDispatch( CORE_SITE );
 
@@ -72,14 +74,10 @@ function CoreSiteBannerNotification( {
 
 	useEffect( () => {
 		if ( ! isViewed && intersectionEntry?.isIntersecting ) {
-			trackEvent(
-				`${ viewContext }_remote-site-notification`,
-				'view_notification',
-				'remote-site-notification'
-			);
+			trackEvents.view();
 			setIsViewed( true );
 		}
-	}, [ viewContext, isViewed, intersectionEntry ] );
+	}, [ viewContext, isViewed, intersectionEntry, trackEvents ] );
 
 	const onCTAClick = useCallback( () => {
 		acceptNotification( id );
@@ -92,7 +90,7 @@ function CoreSiteBannerNotification( {
 	return (
 		<div ref={ bannerNotificationRef }>
 			<BannerNotification
-				notificationID="remote-site-notification"
+				notificationID={ id }
 				type={ TYPES.WARNING }
 				title={ title }
 				description={ content }
