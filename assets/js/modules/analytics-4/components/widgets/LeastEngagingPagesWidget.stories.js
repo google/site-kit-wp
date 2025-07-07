@@ -146,6 +146,8 @@ Ready.args = {
 				},
 			},
 			limit: 3,
+			reportID:
+				'analytics-4_least-engaging-pages-widget_widget_reportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );
@@ -208,6 +210,8 @@ ReadyViewOnly.args = {
 				},
 			},
 			limit: 3,
+			reportID:
+				'analytics-4_least-engaging-pages-widget_widget_reportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );
@@ -267,6 +271,8 @@ ZeroData.args = {
 				},
 			},
 			limit: 3,
+			reportID:
+				'analytics-4_least-engaging-pages-widget_widget_reportOptions',
 		};
 		const report = getAnalytics4MockResponse( reportOptions );
 

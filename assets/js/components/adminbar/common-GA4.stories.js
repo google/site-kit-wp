@@ -38,12 +38,28 @@ import { DAY_IN_SECONDS } from '../../util';
 import { properties } from '../../modules/analytics-4/datastore/__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 
-const adminbarSearchConsoleOptions = {
-	startDate: '2020-12-03',
-	endDate: '2021-01-27',
-	dimensions: 'date',
-	url: 'https://www.sitekitbygoogle.com/blog/',
-};
+const adminbarSearchConsoleOptions = [
+	{
+		startDate: '2020-12-03',
+		endDate: '2021-01-27',
+		dimensions: 'date',
+		url: 'https://www.sitekitbygoogle.com/blog/',
+	},
+	{
+		startDate: '2020-12-03',
+		endDate: '2021-01-27',
+		dimensions: 'date',
+		url: 'https://www.sitekitbygoogle.com/blog/',
+		reportID: 'adminbar_admin-bar-clicks_component_reportArgs',
+	},
+	{
+		startDate: '2020-12-03',
+		endDate: '2021-01-27',
+		dimensions: 'date',
+		url: 'https://www.sitekitbygoogle.com/blog/',
+		reportID: 'adminbar_admin-bar-impressions_component_reportArgs',
+	},
+];
 
 const adminbarAnalytics4OptionSets = [
 	// Mock options for mocking isGatheringData selector's response.
@@ -61,6 +77,7 @@ const adminbarAnalytics4OptionSets = [
 		startDate: '2020-12-31',
 		endDate: '2021-01-27',
 		url: 'https://www.sitekitbygoogle.com/blog/',
+		reportID: 'adminbar_admin-bar-unique-visitors-ga4_component_reportArgs',
 	},
 
 	// Mock options for mocking Total Users report's response.
@@ -87,6 +104,31 @@ const adminbarAnalytics4OptionSets = [
 		dimensions: [ 'date' ],
 		url: 'https://www.sitekitbygoogle.com/blog/',
 	},
+	{
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
+		metrics: [
+			{
+				name: 'totalUsers',
+			},
+		],
+		url: 'https://www.sitekitbygoogle.com/blog/',
+		reportID: 'adminbar_admin-bar-unique-visitors-ga4_component_reportArgs',
+	},
+	{
+		startDate: '2020-12-03',
+		endDate: '2021-01-27',
+		metrics: [
+			{
+				name: 'totalUsers',
+			},
+		],
+		dimensions: [ 'date' ],
+		url: 'https://www.sitekitbygoogle.com/blog/',
+		reportID: 'adminbar_admin-bar-unique-visitors-ga4_component_reportArgs',
+	},
 
 	// Mock options for mocking Sessions report's response.
 	{
@@ -106,6 +148,7 @@ const adminbarAnalytics4OptionSets = [
 			},
 		],
 		url: 'https://www.sitekitbygoogle.com/blog/',
+		reportID: 'adminbar_admin-bar-sessions-ga4_component_reportArgs',
 	},
 ];
 
@@ -159,16 +202,17 @@ export const widgetDecorators = [
 export const setupSearchConsoleMockReports = ( registry, data ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
-	if ( data ) {
-		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( data, {
-			options: adminbarSearchConsoleOptions,
-		} );
-	} else {
-		provideSearchConsoleMockReport(
-			registry,
-			adminbarSearchConsoleOptions
-		);
-	}
+	adminbarSearchConsoleOptions.forEach( ( options ) => {
+		if ( data ) {
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.receiveGetReport( data, {
+					options,
+				} );
+		} else {
+			provideSearchConsoleMockReport( registry, options );
+		}
+	} );
 };
 
 export const setupAnalytics4MockReports = (

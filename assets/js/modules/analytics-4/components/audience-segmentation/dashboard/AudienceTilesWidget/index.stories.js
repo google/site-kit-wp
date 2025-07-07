@@ -632,6 +632,8 @@ SingleTileErrored.args = {
 				},
 			],
 			limit: 4,
+			reportID:
+				'audience-segmentation_use-audience-tiles-reports_hook_topCitiesReportOptions',
 		};
 
 		const errorReport = {

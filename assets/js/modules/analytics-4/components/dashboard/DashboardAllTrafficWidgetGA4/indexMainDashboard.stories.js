@@ -63,7 +63,6 @@ const baseAllTrafficOptions = {
 			name: 'totalUsers',
 		},
 	],
-	reportID: 'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs',
 };
 
 const allTrafficReportOptions = [
@@ -79,6 +78,7 @@ const allTrafficReportOptions = [
 				desc: true,
 			},
 		],
+		reportID: 'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 	},
 	{
 		// Pie chart, with country dimension.
@@ -109,8 +109,12 @@ const allTrafficReportOptions = [
 		limit: 6,
 		reportID: 'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 	},
-	// Totals.
-	baseAllTrafficOptions,
+	{
+		// Totals.
+		...baseAllTrafficOptions,
+		reportID:
+			'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs',
+	},
 	{
 		// Line chart.
 		startDate: '2020-12-09',
