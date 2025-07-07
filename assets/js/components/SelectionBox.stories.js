@@ -43,12 +43,12 @@ function Template() {
 			</SelectionBox>
 			<SelectionBox
 				checked={ false }
-				disabled
 				id="selection-box-2"
 				name="selection-box-2"
 				onChange={ () => {} }
 				title="Disabled"
 				value="1"
+				disabled
 			>
 				Disabled SelectionBox
 			</SelectionBox>

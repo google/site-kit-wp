@@ -58,7 +58,7 @@ export default function NoticeNotification( {
 	return (
 		<Grid>
 			<Row>
-				<Cell alignMiddle size={ 12 }>
+				<Cell size={ 12 } alignMiddle>
 					<Notice
 						dismissButton={ {
 							...dismissButton,

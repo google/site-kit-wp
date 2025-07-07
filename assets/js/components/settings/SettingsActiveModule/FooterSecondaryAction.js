@@ -46,7 +46,6 @@ export default function FooterSecondaryAction( {
 			<Link
 				className="googlesitekit-settings-module__remove-button"
 				onClick={ handleDialog }
-				danger
 				trailingIcon={
 					<TrashIcon
 						className="googlesitekit-settings-module__remove-button-icon"
@@ -54,6 +53,7 @@ export default function FooterSecondaryAction( {
 						height={ 13 }
 					/>
 				}
+				danger
 			>
 				{ sprintf(
 					/* translators: %s is replaced with the module name */

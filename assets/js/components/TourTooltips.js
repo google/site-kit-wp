@@ -242,17 +242,17 @@ export default function TourTooltips( {
 	return (
 		<Joyride
 			callback={ handleJoyrideCallback }
-			continuous
-			disableOverlayClose
-			disableScrolling
 			floaterProps={ floaterProps }
 			locale={ joyrideLocale }
 			run={ run }
-			showProgress
 			stepIndex={ stepIndex }
 			steps={ parsedSteps }
 			styles={ joyrideStyles }
 			tooltipComponent={ TourTooltip }
+			continuous
+			disableOverlayClose
+			disableScrolling
+			showProgress
 		/>
 	);
 }

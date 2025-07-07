@@ -170,10 +170,10 @@ export default function withCustomDimensions( options = {} ) {
 				return (
 					<MetricTileWrapper
 						infoTooltip={ tileInfoTooltip }
-						loading
 						moduleSlug="analytics-4"
 						title={ tileTitle }
 						Widget={ Widget }
+						loading
 					/>
 				);
 			}

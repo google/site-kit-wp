@@ -48,6 +48,7 @@ const Banner = forwardRef(
 			className,
 			title,
 			description,
+			additionalDescription,
 			errorText,
 			helpText,
 			learnMoreLink,
@@ -62,8 +63,12 @@ const Banner = forwardRef(
 		const isMobileOrTablet =
 			breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
-		const SVGData =
-			isMobileOrTablet && svg?.mobile ? svg.mobile : svg?.desktop;
+		let SVGData = null;
+		if ( isMobileOrTablet && svg?.mobile ) {
+			SVGData = svg.mobile;
+		} else if ( ! isMobileOrTablet && svg?.desktop ) {
+			SVGData = svg.desktop;
+		}
 
 		const svgMode = svg?.verticalPosition ? svg.verticalPosition : 'center';
 
@@ -80,6 +85,11 @@ const Banner = forwardRef(
 						{ learnMoreLink?.href && (
 							<LearnMoreLink { ...learnMoreLink } />
 						) }
+						{ additionalDescription && (
+							<div className="googlesitekit-banner__additional-description">
+								{ additionalDescription }
+							</div>
+						) }
 					</Description>
 
 					{ helpText && <HelpText>{ helpText }</HelpText> }
@@ -89,23 +99,25 @@ const Banner = forwardRef(
 					) }
 
 					<div className="googlesitekit-notice__action">
-						<CTAButton { ...ctaButton } />
+						{ ctaButton && <CTAButton { ...ctaButton } /> }
 						{ dismissButton?.onClick && (
 							<DismissButton { ...dismissButton } />
 						) }
 					</div>
 				</div>
 
-				<div
-					className={ classnames(
-						'googlesitekit-banner__svg-wrapper',
-						{
-							[ `googlesitekit-banner__svg-wrapper--${ svgMode }` ]:
-								svgMode,
-						}
-					) }
-					style={ { backgroundImage: `url(${ SVGData })` } }
-				/>
+				{ SVGData && (
+					<div
+						className={ classnames(
+							'googlesitekit-banner__svg-wrapper',
+							{
+								[ `googlesitekit-banner__svg-wrapper--${ svgMode }` ]:
+									svgMode,
+							}
+						) }
+						style={ { backgroundImage: `url(${ SVGData })` } }
+					/>
+				) }
 
 				{ footer && <Footer>{ footer }</Footer> }
 			</div>
@@ -116,6 +128,10 @@ const Banner = forwardRef(
 Banner.propTypes = {
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
+	additionalDescription: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.node,
+	] ),
 	errorText: PropTypes.string,
 	helpText: PropTypes.string,
 	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),

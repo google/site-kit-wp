@@ -32,11 +32,10 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { TYPES } from '../Notice/constants';
 import useViewContext from '../../hooks/useViewContext';
-import SimpleNotification from '../../googlesitekit/notifications/components/layout/SimpleNotification';
-import Description from '../../googlesitekit/notifications/components/common/Description';
-import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
-import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
+import ErrorNotice from '../ErrorNotice';
+import NoticeNotification from '../../googlesitekit/notifications/components/layout/NoticeNotification';
 
 export const ENABLE_AUTO_UPDATES_BANNER_SLUG = 'auto-update-cta';
 
@@ -68,6 +67,10 @@ export default function EnableAutoUpdateBannerNotification( {
 		}
 	}, [ enabledViaCTA, setEnabledViaCTA, siteKitAutoUpdatesEnabled ] );
 
+	if ( enableAutoUpdateError?.message ) {
+		return <ErrorNotice message={ enableAutoUpdateError.message } />;
+	}
+
 	// Render the "Auto Updates enabled successfully" banner variation
 	// if auto updates were enabled using this banner CTA.
 	if ( enabledViaCTA ) {
@@ -78,28 +81,22 @@ export default function EnableAutoUpdateBannerNotification( {
 
 		return (
 			<Notification className="googlesitekit-publisher-win">
-				<SimpleNotification
+				<NoticeNotification
+					notificationID={ id }
+					type={ TYPES.SUCCESS }
+					gaTrackingEventArgs={ gaTrackingEventArgs }
 					title={ __(
 						'Thanks for enabling auto-updates',
 						'google-site-kit'
 					) }
-					description={
-						<Description
-							text={ __(
-								'Auto-updates have been enabled. Your version of Site Kit will automatically be updated when new versions are available.',
-								'google-site-kit'
-							) }
-							errorText={ enableAutoUpdateError?.message }
-						/>
-					}
-					actions={
-						<Dismiss
-							id={ id }
-							dismissLabel={ __( 'Dismiss', 'google-site-kit' ) }
-							gaTrackingEventArgs={ gaTrackingEventArgs }
-							dismissExpires={ 1 } // Expire the dismissal instantly to allow showing the banner again if auto-updates are disabled later.
-						/>
-					}
+					description={ __(
+						'Auto-updates have been enabled. Your version of Site Kit will automatically be updated when new versions are available.',
+						'google-site-kit'
+					) }
+					dismissButton={ {
+						label: __( 'Dismiss', 'google-site-kit' ),
+						dismissOptions: { expiresInSeconds: 1 },
+					} }
 				/>
 			</Notification>
 		);
@@ -107,29 +104,21 @@ export default function EnableAutoUpdateBannerNotification( {
 
 	return (
 		<Notification className="googlesitekit-publisher-win">
-			<SimpleNotification
+			<NoticeNotification
+				notificationID={ id }
+				type={ TYPES.NEW }
 				title={ __( 'Keep Site Kit up-to-date', 'google-site-kit' ) }
-				description={
-					<Description
-						text={ __(
-							'Turn on auto-updates so you always have the latest version of Site Kit. We constantly introduce new features to help you get the insights you need to be successful on the web.',
-							'google-site-kit'
-						) }
-						errorText={ enableAutoUpdateError?.message }
-					/>
-				}
-				actions={
-					<ActionsCTALinkDismiss
-						id={ id }
-						ctaLabel={ __(
-							'Enable auto-updates',
-							'google-site-kit'
-						) }
-						dismissOnCTAClick={ false }
-						onCTAClick={ ctaActivate }
-						dismissLabel={ __( 'Dismiss', 'google-site-kit' ) } // This dismissal is permanent since the user specifically chose not to enable auto-updates.
-					/>
-				}
+				description={ __(
+					'Turn on auto-updates so you always have the latest version of Site Kit. We constantly introduce new features to help you get the insights you need to be successful on the web.',
+					'google-site-kit'
+				) }
+				ctaButton={ {
+					label: __( 'Enable auto-updates', 'google-site-kit' ),
+					onClick: ctaActivate,
+				} }
+				dismissButton={ {
+					label: __( 'Dismiss', 'google-site-kit' ),
+				} }
 			/>
 		</Notification>
 	);

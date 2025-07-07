@@ -163,9 +163,9 @@ export default function SelectionPanelFooter( {
 				) }
 				<div className="googlesitekit-selection-panel-footer__actions">
 					<Button
-						tertiary
 						onClick={ onCancelClick }
 						disabled={ isBusy }
+						tertiary
 					>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Button>

@@ -30,11 +30,11 @@ export default function INPLearnMoreLink() {
 	return (
 		<Link
 			href="https://web.dev/inp-cwv/"
-			external
 			aria-label={ __(
 				'Learn more about INP replacing FID.',
 				'google-site-kit'
 			) }
+			external
 		>
 			{ __( 'Learn more', 'google-site-kit' ) }
 		</Link>

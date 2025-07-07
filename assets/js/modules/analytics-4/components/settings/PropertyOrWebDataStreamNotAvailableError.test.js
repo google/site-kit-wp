@@ -88,8 +88,8 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 
 		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
-				hasModuleAccess
 				isDisabled={ false }
+				hasModuleAccess
 			/>,
 			{ registry }
 		);
@@ -112,8 +112,8 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 
 		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
-				hasModuleAccess
 				isDisabled={ false }
+				hasModuleAccess
 			/>,
 			{ registry }
 		);
@@ -128,8 +128,8 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 
 		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
-				hasModuleAccess
 				isDisabled={ false }
+				hasModuleAccess
 			/>,
 			{ registry }
 		);
@@ -182,8 +182,8 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 
 		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
-				hasModuleAccess
 				isDisabled={ false }
+				hasModuleAccess
 			/>,
 			{ registry }
 		);
@@ -208,8 +208,8 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 
 		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
-				hasModuleAccess
 				isDisabled={ false }
+				hasModuleAccess
 			/>,
 			{ registry }
 		);

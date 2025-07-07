@@ -65,7 +65,6 @@ LoadingRecoverableModules.args = {
 			.startResolution( 'getRecoverableModules', [] );
 	},
 };
-LoadingRecoverableModules.scenario = {};
 
 export const SingleRecoverableModule = Template.bind( {} );
 SingleRecoverableModule.storyName = 'Single Recoverable Module (with access)';

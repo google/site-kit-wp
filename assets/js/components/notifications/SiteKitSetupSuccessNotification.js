@@ -43,8 +43,8 @@ export default function SiteKitSetupSuccessNotification( {
 	id,
 	Notification,
 } ) {
-	const settingsAdminURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	const connectMoreServicesURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getConnectMoreServicesURL()
 	);
 
 	const [ , setNotification ] = useQueryArg( 'notification' );
@@ -73,7 +73,7 @@ export default function SiteKitSetupSuccessNotification( {
 									'Go to Settings',
 									'google-site-kit'
 								) }
-								url={ `${ settingsAdminURL }#/connect-more-services` }
+								url={ connectMoreServicesURL }
 								external={ false }
 							/>
 						}

@@ -63,10 +63,10 @@ class LayoutHeader extends Component {
 						) }
 						{ ctaLink && (
 							<Cell
-								alignMiddle
-								mdAlignRight
 								smSize={ 4 }
 								lgSize={ 6 }
+								alignMiddle
+								mdAlignRight
 							>
 								<Link href={ ctaLink } external>
 									{ ctaLabel }

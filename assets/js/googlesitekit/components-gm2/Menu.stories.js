@@ -27,7 +27,6 @@ function Template() {
 			<div className="mdc-menu-surface--anchor">
 				<p>Menu</p>
 				<Menu
-					menuOpen
 					menuItems={ [
 						'Item 1',
 						'Item 2',
@@ -39,6 +38,7 @@ function Template() {
 						global.console.log( index );
 					} }
 					id="googlesitekit-menu"
+					menuOpen
 				/>
 			</div>
 		</div>

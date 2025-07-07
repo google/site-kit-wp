@@ -52,9 +52,9 @@ const InfoNotice = forwardRef(
 
 					{ dismissLabel && (
 						<Button
-							tertiary
 							onClick={ onDismiss }
 							className="googlesitekit-audience-segmentation-info-notice__dismiss"
+							tertiary
 						>
 							{ dismissLabel }
 						</Button>

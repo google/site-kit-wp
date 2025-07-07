@@ -72,7 +72,7 @@ describe( 'SemanticButton', () => {
 
 		it( 'should apply callout classes when callout props are set', () => {
 			const { container } = render(
-				<SemanticButton callout calloutStyle="warning">
+				<SemanticButton calloutStyle="warning" callout>
 					Test
 				</SemanticButton>
 			);

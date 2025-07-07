@@ -381,11 +381,11 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 			a: (
 				<Link
 					href={ documentationURL }
-					external
 					aria-label={ __(
 						'Learn more about advanced conversion reporting',
 						'google-site-kit'
 					) }
+					external
 				/>
 			),
 		}
@@ -406,7 +406,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	}
 
 	return (
-		<Widget noPadding fullWidth ref={ conversionReportingNotificationRef }>
+		<Widget ref={ conversionReportingNotificationRef } noPadding fullWidth>
 			{ shouldShowCalloutForLostEvents && (
 				<LostEventsSubtleNotification
 					onSelectMetricsCallback={ () => {

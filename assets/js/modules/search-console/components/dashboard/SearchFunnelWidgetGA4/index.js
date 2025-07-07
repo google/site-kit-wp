@@ -361,7 +361,7 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 	}
 
 	return (
-		<Widget noPadding Header={ Header } Footer={ WidgetFooter }>
+		<Widget Header={ Header } Footer={ WidgetFooter } noPadding>
 			<Overview
 				ga4Data={ ga4OverviewData }
 				ga4KeyEventsData={ ga4KeyEventsData }

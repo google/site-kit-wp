@@ -125,7 +125,6 @@ export default function WebDataStreamNameInput() {
 					'mdc-text-field--error': error,
 				} ) }
 				label={ __( 'Web Data Stream Name', 'google-site-kit' ) }
-				outlined
 				helperText={ helperText }
 				trailingIcon={
 					error && (
@@ -136,6 +135,7 @@ export default function WebDataStreamNameInput() {
 				}
 				value={ webDataStreamName }
 				onChange={ onChange }
+				outlined
 			/>
 		</div>
 	);

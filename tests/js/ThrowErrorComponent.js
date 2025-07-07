@@ -27,10 +27,10 @@ function ThrowErrorComponent( { throwErrorOnMount = false } ) {
 
 	return (
 		<Button
-			danger
 			onClick={ () => {
 				setShouldThrow( true );
 			} }
+			danger
 		>
 			Simulate an error
 		</Button>

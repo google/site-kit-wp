@@ -43,11 +43,11 @@ export default function AudienceTileCollectingDataHideable( { onHideTile } ) {
 				) }
 			</p>
 			<Link
-				secondary
-				linkButton
 				className="googlesitekit-audience-segmentation-tile-hide-cta"
 				onClick={ onHideTile }
 				leadingIcon={ <VisibilityIcon width={ 22 } height={ 22 } /> }
+				secondary
+				linkButton
 			>
 				{ __( 'Temporarily hide', 'google-site-kit' ) }
 			</Link>

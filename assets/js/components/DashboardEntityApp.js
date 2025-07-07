@@ -147,7 +147,7 @@ function DashboardEntityApp() {
 							<Fragment>
 								<Link href={ dashboardURL } back small>
 									{ __(
-										'Back to the Site Kit Dashboard',
+										'Back to the Site Kit dashboard',
 										'google-site-kit'
 									) }
 								</Link>

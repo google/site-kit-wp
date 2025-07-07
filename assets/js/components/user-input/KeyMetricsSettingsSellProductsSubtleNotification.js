@@ -93,7 +93,7 @@ export default function KeyMetricsSettingsSellProductsSubtleNotification() {
 				'google-site-kit'
 			) }
 			dismissCTA={
-				<Button tertiary onClick={ onDismiss }>
+				<Button onClick={ onDismiss } tertiary>
 					{ __( 'Got it', 'google-site-kit' ) }
 				</Button>
 			}

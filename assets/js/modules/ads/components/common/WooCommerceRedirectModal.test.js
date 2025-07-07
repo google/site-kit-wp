@@ -58,9 +58,9 @@ describe( 'WooCommerceRedirectModal', () => {
 	function ModalComponent() {
 		return (
 			<WooCommerceRedirectModal
-				dialogActive
 				onDismiss={ onDismiss }
 				onClose={ onClose }
+				dialogActive
 			/>
 		);
 	}
@@ -208,10 +208,10 @@ describe( 'WooCommerceRedirectModal', () => {
 
 		const { getByText, waitForRegistry } = render(
 			<WooCommerceRedirectModal
-				dialogActive
 				onDismiss={ onDismiss }
 				onClose={ onClose }
 				onBeforeSetupCallback={ onBeforeSetupCallback }
+				dialogActive
 			/>,
 			{
 				registry,

@@ -32,7 +32,10 @@ function vrtHead() {
 }
 
 module.exports = {
-	stories: [ '../assets/js/**/*.stories.js' ],
+	stories: [
+		'../assets/js/**/*.stories.js',
+		'../assets/blocks/**/*.stories.js',
+	],
 	addons: [ '@storybook/addon-viewport', '@storybook/addon-postcss' ],
 	previewHead: ( head ) => {
 		if ( process.env.VRT === '1' ) {

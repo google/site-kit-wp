@@ -66,7 +66,6 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification( {
 				) }
 				GraphicDesktop={ AnalyticsAdsenseConnectGraphicDesktop }
 				GraphicMobile={ AnalyticsAdsenseConnectGraphicMobile }
-				dismissButton
 				ctaButton={ {
 					href: supportURL,
 					target: '_blank',
@@ -74,6 +73,7 @@ export default function LinkAnalyticsAndAdSenseAccountsOverlayNotification( {
 					trailingIcon: <ExternalIcon width={ 13 } height={ 13 } />,
 					onClick: () => dismissNotification( id ),
 				} }
+				dismissButton
 			/>
 		</Notification>
 	);

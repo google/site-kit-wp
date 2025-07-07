@@ -103,12 +103,12 @@ export default function Description() {
 					a: (
 						<Link
 							href={ documentationURL }
-							external
 							onClick={ onLinkClick }
 							aria-label={ __(
 								'Learn more about dashboard sharing',
 								'google-site-kit'
 							) }
+							external
 						/>
 					),
 				}

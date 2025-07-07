@@ -122,9 +122,9 @@ function ModalDialog( {
 			<DialogFooter>
 				<Button
 					className="mdc-dialog__cancel-button"
-					tertiary
 					onClick={ handleCancel }
 					disabled={ inProgress }
+					tertiary
 				>
 					{ __( 'Cancel', 'google-site-kit' ) }
 				</Button>

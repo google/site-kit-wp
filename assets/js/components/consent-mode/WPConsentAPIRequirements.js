@@ -129,7 +129,6 @@ export default function WPConsentAPIRequirements() {
 											href={
 												wpConsentAPIDocumentationURL
 											}
-											external
 											aria-label={ __(
 												'Learn more about the WP Consent API',
 												'google-site-kit'
@@ -140,6 +139,7 @@ export default function WPConsentAPIRequirements() {
 													'wp_consent_api_learn_more'
 												);
 											} }
+											external
 										/>
 									),
 								}
@@ -260,7 +260,6 @@ export default function WPConsentAPIRequirements() {
 											href={
 												consentManagementPlatformDocumentationURL
 											}
-											external
 											aria-label={ __(
 												'Suggested consent management plugins',
 												'google-site-kit'
@@ -271,6 +270,7 @@ export default function WPConsentAPIRequirements() {
 													'consent_mgmt_plugin_learn_more'
 												);
 											} }
+											external
 										/>
 									),
 								}

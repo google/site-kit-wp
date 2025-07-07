@@ -45,7 +45,7 @@ import { isInvalidCustomDimensionError } from '../utils/custom-dimensions';
 /**
  * Gets custom dimensions data and state.
  *
- * @since n.e.x.t
+ * @since 1.156.0
  *
  * @param {Object}          options               Hook options.
  * @param {Array}           options.dimensions    Custom dimensions array.

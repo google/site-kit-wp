@@ -86,13 +86,13 @@ export default function ContainerNameTextField( { label, name } ) {
 					'mdc-text-field--error': ! containerName || ! isUniqueName,
 				} ) }
 				label={ label }
-				outlined
 				helperText={ helperText }
 				trailingIcon={ trailingIcon }
 				id={ name }
 				name={ name }
 				value={ containerName }
 				onChange={ onChange }
+				outlined
 			/>
 		</div>
 	);

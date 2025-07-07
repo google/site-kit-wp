@@ -108,11 +108,11 @@ export default function SetupCreateAccount() {
 							a: (
 								<SupportLink
 									path="/adsense/answer/2659101"
-									external
 									aria-label={ __(
 										'Learn more about adding a user to an existing AdSense account',
 										'google-site-kit'
 									) }
+									external
 								/>
 							),
 						}

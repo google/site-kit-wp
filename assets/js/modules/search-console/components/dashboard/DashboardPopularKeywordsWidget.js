@@ -124,7 +124,7 @@ export default function DashboardPopularKeywordsWidget( props ) {
 
 	if ( loading || isGatheringData === undefined ) {
 		return (
-			<Widget noPadding Footer={ Footer }>
+			<Widget Footer={ Footer } noPadding>
 				<PreviewTable padding />
 			</Widget>
 		);
@@ -203,7 +203,7 @@ export default function DashboardPopularKeywordsWidget( props ) {
 	];
 
 	return (
-		<Widget noPadding Footer={ Footer }>
+		<Widget Footer={ Footer } noPadding>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ data }

@@ -43,10 +43,10 @@ const CreateCustomDimensionCTA = forwardRef( ( { onClick, isSaving }, ref ) => {
 				{ __( 'Update Analytics to track metric', 'google-site-kit' ) }
 			</p>
 			<SpinnerButton
-				danger
 				onClick={ onClick }
 				isSaving={ isSaving }
 				disabled={ isSaving }
+				danger
 			>
 				{ __( 'Update', 'google-site-kit' ) }
 			</SpinnerButton>

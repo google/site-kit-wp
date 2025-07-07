@@ -87,8 +87,6 @@ export default function ProductIDSelect( props ) {
 			value={ productID }
 			onEnhancedChange={ onProductIDChange }
 			disabled={ isDisabled }
-			enhanced
-			outlined
 			helperText={
 				showHelperText
 					? createInterpolateElement(
@@ -112,6 +110,8 @@ export default function ProductIDSelect( props ) {
 					  )
 					: undefined
 			}
+			enhanced
+			outlined
 		>
 			<Option key="openaccess" value="openaccess">
 				{ __( 'Open access', 'google-site-kit' ) }

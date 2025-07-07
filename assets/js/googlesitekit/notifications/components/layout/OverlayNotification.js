@@ -68,7 +68,6 @@ export default function OverlayNotification( {
 
 	return (
 		<OverlayCard
-			visible
 			ctaButton={ {
 				...ctaButton,
 				onClick: handleCTAClickWithTrackEvent,
@@ -78,6 +77,7 @@ export default function OverlayNotification( {
 				onClick: handleDismissWithTrackEvent,
 			} }
 			{ ...props }
+			visible
 		/>
 	);
 }

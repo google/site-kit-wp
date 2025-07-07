@@ -80,7 +80,7 @@ export default function ConversionReportingSettingsSubtleNotification() {
 	return (
 		<Grid ref={ notificationRef }>
 			<Row>
-				<Cell alignMiddle size={ 12 }>
+				<Cell size={ 12 } alignMiddle>
 					<Notice
 						type="new"
 						title={ __(

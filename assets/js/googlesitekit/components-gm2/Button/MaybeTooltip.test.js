@@ -34,7 +34,7 @@ describe( 'MaybeTooltip', () => {
 
 	it( 'should show tooltip on hover', async () => {
 		const { getByText, findByRole, queryByRole } = render(
-			<MaybeTooltip tooltip tooltipTitle="Test Title">
+			<MaybeTooltip tooltipTitle="Test Title" tooltip>
 				<div className="test-child">Hover me</div>
 			</MaybeTooltip>
 		);
@@ -49,7 +49,7 @@ describe( 'MaybeTooltip', () => {
 
 	it( 'should show tooltip on hover when hasIconOnly is true', async () => {
 		const { getByText, findByRole } = render(
-			<MaybeTooltip hasIconOnly tooltipTitle="Icon Title">
+			<MaybeTooltip tooltipTitle="Icon Title" hasIconOnly>
 				<div className="test-child">Icon</div>
 			</MaybeTooltip>
 		);
@@ -60,7 +60,7 @@ describe( 'MaybeTooltip', () => {
 
 	it( 'should not show tooltip when disabled is true', () => {
 		const { getByText, queryByRole } = render(
-			<MaybeTooltip disabled tooltip tooltipTitle="Test Title">
+			<MaybeTooltip tooltipTitle="Test Title" disabled tooltip>
 				<div className="test-child">Test</div>
 			</MaybeTooltip>
 		);
@@ -71,7 +71,7 @@ describe( 'MaybeTooltip', () => {
 
 	it( 'should accept element as tooltipTitle', async () => {
 		const { getByText, findByText } = render(
-			<MaybeTooltip tooltip tooltipTitle={ <span>Element Title</span> }>
+			<MaybeTooltip tooltipTitle={ <span>Element Title</span> } tooltip>
 				<div className="test-child">Hover me</div>
 			</MaybeTooltip>
 		);

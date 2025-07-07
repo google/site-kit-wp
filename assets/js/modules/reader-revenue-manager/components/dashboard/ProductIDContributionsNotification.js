@@ -32,13 +32,16 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 
 export default function ProductIDContributionsNotification( {
 	id,
 	Notification,
 } ) {
-	const settingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	const rrmSettingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getModuleSettingsEditURL(
+			MODULE_SLUG_READER_REVENUE_MANAGER
+		)
 	);
 
 	return (
@@ -55,7 +58,7 @@ export default function ProductIDContributionsNotification( {
 				} }
 				ctaButton={ {
 					label: __( 'Edit settings', 'google-site-kit' ),
-					href: `${ settingsURL }#connected-services/reader-revenue-manager/edit`,
+					href: rrmSettingsURL,
 				} }
 			/>
 		</Notification>

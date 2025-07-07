@@ -46,8 +46,8 @@ export default function LearnMoreLink() {
 				{
 					link: (
 						<Link
-							secondary
 							href={ audienceLearnMoreURL }
+							secondary
 							external
 						/>
 					),

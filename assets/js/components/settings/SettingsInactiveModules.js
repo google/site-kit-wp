@@ -68,11 +68,11 @@ export default function SettingsInactiveModules() {
 
 	return (
 		<Layout
-			header
 			title={ __(
 				'Connect More Services to Gain More Insights',
 				'google-site-kit'
 			) }
+			header
 			rounded
 			relative
 		>

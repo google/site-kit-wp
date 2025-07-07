@@ -52,11 +52,11 @@ export default function LostEventsSubtleNotification( {
 					a: (
 						<Link
 							href={ lostEventsDocumentationURL }
-							external
 							aria-label={ __(
 								'Learn more about unavailable metric data',
 								'google-site-kit'
 							) }
+							external
 						/>
 					),
 				}

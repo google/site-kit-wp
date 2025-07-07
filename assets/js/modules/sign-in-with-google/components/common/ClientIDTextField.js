@@ -97,10 +97,10 @@ export default function ClientIDTextField( { existingClientID = '' } ) {
 					'mdc-text-field--error': ! isValid,
 				} ) }
 				helperText={ helperText }
-				outlined
 				value={ clientID }
 				onChange={ onChange }
 				maxLength={ 120 }
+				outlined
 			/>
 		</div>
 	);

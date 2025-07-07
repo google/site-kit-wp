@@ -51,10 +51,10 @@ function HelpMenuLink( { children, href, gaEventLabel } ) {
 			<Link
 				className="mdc-list-item__text"
 				href={ href }
-				external
-				hideExternalIndicator
 				role="menuitem"
 				onClick={ onClick }
+				external
+				hideExternalIndicator
 			>
 				{ children }
 			</Link>

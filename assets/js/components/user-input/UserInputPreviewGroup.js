@@ -185,17 +185,17 @@ export default function UserInputPreviewGroup( {
 					height="26px"
 				>
 					<Link
-						secondary
 						onClick={ handleOnEditClick }
 						ref={ editButtonRef }
 						disabled={
 							isScreenLoading ||
 							( !! currentlyEditingSlug && ! isEditing )
 						}
-						linkButton
 						trailingIcon={
 							<ChevronDownIcon width={ 20 } height={ 20 } />
 						}
+						secondary
+						linkButton
 					>
 						{ isEditing && __( 'Close', 'google-site-kit' ) }
 						{ ! isEditing && __( 'Edit', 'google-site-kit' ) }

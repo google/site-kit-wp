@@ -192,8 +192,8 @@ class SiteVerification extends Component {
 					<TextField
 						label={ __( 'Website Address', 'google-site-kit' ) }
 						name="siteProperty"
-						outlined
 						value={ siteURL }
+						outlined
 					/>
 				</div>
 				<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">

@@ -90,7 +90,7 @@ export default function AccountCreate() {
 				</Button>
 
 				<div className="googlesitekit-setup-module__sub-action">
-					<Button tertiary onClick={ refetchAccountsHandler }>
+					<Button onClick={ refetchAccountsHandler } tertiary>
 						{ __( 'Re-fetch My Account', 'google-site-kit' ) }
 					</Button>
 				</div>

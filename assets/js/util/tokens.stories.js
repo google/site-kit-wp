@@ -337,28 +337,26 @@ function UtilityTokens() {
 
 function Template() {
 	return (
-		<Fragment>
-			<Grid className="googlesitekit-widget-area googlesitekit-widget-area--boxes">
-				<Row className="googlesitekit-widget-area-widgets">
-					<Cell size={ 12 }>
-						<h1>Tokens</h1>
-					</Cell>
-					<Cell size={ 6 }>
-						<SurfacesTokens />
-					</Cell>
-					<Cell size={ 6 }>
-						<ContentTokens />
-					</Cell>
+		<Grid className="googlesitekit-widget-area googlesitekit-widget-area--boxes">
+			<Row className="googlesitekit-widget-area-widgets">
+				<Cell size={ 12 }>
+					<h1>Tokens</h1>
+				</Cell>
+				<Cell size={ 6 }>
+					<SurfacesTokens />
+				</Cell>
+				<Cell size={ 6 }>
+					<ContentTokens />
+				</Cell>
 
-					<Cell size={ 6 }>
-						<InteractiveTokens />
-					</Cell>
-					<Cell size={ 6 }>
-						<UtilityTokens />
-					</Cell>
-				</Row>
-			</Grid>
-		</Fragment>
+				<Cell size={ 6 }>
+					<InteractiveTokens />
+				</Cell>
+				<Cell size={ 6 }>
+					<UtilityTokens />
+				</Cell>
+			</Row>
+		</Grid>
 	);
 }
 

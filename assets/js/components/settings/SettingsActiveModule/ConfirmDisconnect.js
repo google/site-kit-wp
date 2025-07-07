@@ -32,7 +32,7 @@ import { ESCAPE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import ModalDialog from '../../ModalDialog';
+import RefocusableModalDialog from '../../RefocusableModalDialog';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
@@ -141,9 +141,8 @@ export default function ConfirmDisconnect( { slug } ) {
 	}
 
 	return (
-		<ModalDialog
+		<RefocusableModalDialog
 			className="googlesitekit-settings-module__confirm-disconnect-modal"
-			dialogActive
 			handleCancel={ onClose }
 			onClose={ onClose }
 			title={ title }
@@ -151,6 +150,7 @@ export default function ConfirmDisconnect( { slug } ) {
 			handleConfirm={ handleDisconnect }
 			dependentModules={ dependentModulesText }
 			inProgress={ isDeactivating }
+			dialogActive
 			danger
 		/>
 	);

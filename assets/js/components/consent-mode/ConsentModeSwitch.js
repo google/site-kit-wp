@@ -167,7 +167,6 @@ export default function ConsentModeSwitch( { loading } ) {
 									a: (
 										<Link
 											href={ consentModeDocumentationURL }
-											external
 											aria-label={ __(
 												'Learn more about consent mode',
 												'google-site-kit'
@@ -178,6 +177,7 @@ export default function ConsentModeSwitch( { loading } ) {
 													'como_learn_more'
 												);
 											} }
+											external
 										/>
 									),
 								}

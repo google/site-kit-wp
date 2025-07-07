@@ -232,11 +232,11 @@ export default function SetupForm( { finishSetup } ) {
 						when clicked, hence the `type="button"`.
 						*/ }
 						<Button
-							tertiary
 							className="googlesitekit-setup-module__sub-action"
 							type="button"
 							onClick={ onSetupWithoutAnalytics }
 							disabled={ ! canSubmitChanges }
+							tertiary
 						>
 							{ __(
 								'Complete setup without Analytics',

@@ -60,11 +60,11 @@ export default function AdBlockerWarningMessage( {
 					Link: (
 						<Link
 							href={ getHelpLink }
-							external
-							hideExternalIndicator
 							trailingIcon={
 								<ExternalIcon width={ 15 } height={ 15 } />
 							}
+							external
+							hideExternalIndicator
 						/>
 					),
 					Strong: <strong />,

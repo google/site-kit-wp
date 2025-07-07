@@ -77,8 +77,8 @@ function NewBadge( {
 			placement="top"
 			enterTouchDelay={ 0 }
 			leaveTouchDelay={ 5000 }
-			interactive
 			open={ forceOpen }
+			interactive
 		>
 			{ badgeComponent }
 		</Tooltip>

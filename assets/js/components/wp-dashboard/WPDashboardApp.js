@@ -75,7 +75,7 @@ function WPDashboardApp() {
 						href={ dashboardURL }
 					>
 						{ __(
-							'Visit your Site Kit Dashboard',
+							'Visit your Site Kit dashboard',
 							'google-site-kit'
 						) }
 					</Link>

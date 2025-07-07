@@ -118,10 +118,10 @@ export default function ConversionIDTextField( {
 						</span>
 					)
 				}
-				outlined
 				value={ conversionID?.replace( /^(AW)?-?/, '' ) }
 				onChange={ onChange }
 				maxLength={ 20 }
+				outlined
 			/>
 		</div>
 	);

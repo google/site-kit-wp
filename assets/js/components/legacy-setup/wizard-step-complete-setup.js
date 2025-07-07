@@ -74,7 +74,7 @@ class WizardStepCompleteSetup extends Component {
 									onClick={ this.props.completeSetup }
 								>
 									{ __(
-										'Go to Dashboard',
+										'Go to dashboard',
 										'google-site-kit'
 									) }
 								</Button>

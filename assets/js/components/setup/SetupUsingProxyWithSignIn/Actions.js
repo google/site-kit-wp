@@ -93,7 +93,7 @@ export default function Actions( {
 					isSecondAdmin &&
 					hasViewableModules &&
 					complete && (
-						<Button tertiary onClick={ goToSharedDashboard }>
+						<Button onClick={ goToSharedDashboard } tertiary>
 							{ __(
 								'Skip sign-in and view limited dashboard',
 								'google-site-kit'

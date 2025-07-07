@@ -55,12 +55,12 @@ const ErrorWidgetContent = forwardRef(
 		return (
 			<Widget
 				ref={ ref }
-				noPadding
 				className="googlesitekit-audience-segmentation-error-widget"
+				noPadding
 			>
 				<Grid
-					collapsed
 					className="googlesitekit-audience-segmentation-error__widget-primary-cell"
+					collapsed
 				>
 					<Row>
 						<Cell smSize={ 6 } mdSize={ 8 } lgSize={ 7 }>

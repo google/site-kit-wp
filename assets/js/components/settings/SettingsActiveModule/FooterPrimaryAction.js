@@ -71,9 +71,6 @@ export default function FooterPrimaryAction( {
 						isSaving={ isSaving }
 					>
 						{ ( () => {
-							if ( isSaving ) {
-								return __( 'Saving…', 'google-site-kit' );
-							}
 							if ( haveSettingsChanged ) {
 								return __(
 									'Confirm changes',
@@ -91,9 +88,9 @@ export default function FooterPrimaryAction( {
 
 				{ hasSettings && (
 					<Button
-						tertiary
 						className="googlesitekit-settings-module__footer-cancel"
 						onClick={ handleClose }
+						tertiary
 					>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Button>

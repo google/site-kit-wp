@@ -62,8 +62,8 @@ describe( 'DataBlock', () => {
 	it( 'should render with custom gathering data notice style', () => {
 		const { container, getByText } = render(
 			<DataBlock
-				gatheringData
 				gatheringDataNoticeStyle={ NOTICE_STYLE.SMALL }
+				gatheringData
 			/>
 		);
 
@@ -102,8 +102,8 @@ describe( 'DataBlock', () => {
 		const { getByRole } = render(
 			<DataBlock
 				context="button"
-				gatheringData
 				handleStatSelection={ handleStatSelection }
+				gatheringData
 			/>
 		);
 

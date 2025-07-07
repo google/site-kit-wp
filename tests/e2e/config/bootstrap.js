@@ -371,6 +371,7 @@ function observeNavigationResponse( res ) {
  *
  * @param {Object} req HTTP request object from the REST API request.
  */
+// eslint-disable-next-line sitekit/acronym-case
 function observeRestRequest( req ) {
 	if ( req.url().match( 'wp-json' ) ) {
 		const data = [ req.method(), req.url() ];
@@ -389,6 +390,7 @@ function observeRestRequest( req ) {
  *
  * @param {Object} res HTTP response object from the REST API request.
  */
+// eslint-disable-next-line sitekit/acronym-case
 async function observeRestResponse( res ) {
 	if ( res.url().match( 'wp-json' ) ) {
 		const data = [ res.status(), res.request().method(), res.url() ];

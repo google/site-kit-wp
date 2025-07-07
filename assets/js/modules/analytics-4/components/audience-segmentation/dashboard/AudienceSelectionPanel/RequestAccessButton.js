@@ -39,7 +39,6 @@ export default function RequestAccessButton( { requestAccessURL } ) {
 	return (
 		<Button
 			className="googlesitekit-audience-selection-panel__error-notice-action"
-			tertiary
 			href={ requestAccessURL }
 			target="_blank"
 			onClick={ () => {
@@ -48,6 +47,7 @@ export default function RequestAccessButton( { requestAccessURL } ) {
 					'insufficient_permissions_error_request_access'
 				);
 			} }
+			tertiary
 		>
 			{ __( 'Request access', 'google-site-kit' ) }
 		</Button>

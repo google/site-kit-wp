@@ -51,12 +51,12 @@ const SubtleNotification = forwardRef(
 			<Grid ref={ ref }>
 				<Row>
 					<Cell
-						alignMiddle
 						size={ 12 }
 						className={ classnames(
 							'googlesitekit-subtle-notification',
 							className
 						) }
+						alignMiddle
 					>
 						<div className="googlesitekit-subtle-notification__icon">
 							{ icon }

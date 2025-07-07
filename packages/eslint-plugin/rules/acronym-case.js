@@ -114,6 +114,19 @@ module.exports = {
 			'ID',
 			'JSON',
 			'URL',
+			'SDK',
+			'EMM',
+			'REST',
+			'GKE',
+			'URI',
+			'UX',
+			'OS',
+			'GCP',
+			'DNS',
+			'FCM',
+			'IAM',
+			'IP',
+			'ISO',
 		];
 
 		/**

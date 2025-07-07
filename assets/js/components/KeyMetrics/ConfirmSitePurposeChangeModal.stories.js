@@ -38,9 +38,9 @@ function Template( args ) {
 
 	return (
 		<ConfirmSitePurposeChangeModal
-			dialogActive
 			handleDialog={ handleDialog }
 			{ ...args }
+			dialogActive
 		/>
 	);
 }

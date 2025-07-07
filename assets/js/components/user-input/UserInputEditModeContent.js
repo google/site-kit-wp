@@ -131,8 +131,8 @@ export default function UserInputEditModeContent( {
 				slug={ slug }
 				max={ USER_INPUT_MAX_ANSWERS[ slug ] }
 				options={ options }
-				alignLeftOptions
 				descriptions={ USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS }
+				alignLeftOptions
 			/>
 			{ errorMessage && (
 				<p className="googlesitekit-error-text">{ errorMessage }</p>
@@ -158,9 +158,9 @@ export default function UserInputEditModeContent( {
 								: __( 'Save', 'google-site-kit' ) }
 						</SpinnerButton>
 						<Button
-							tertiary
 							disabled={ isScreenLoading }
 							onClick={ handleOnCancelClick }
+							tertiary
 						>
 							{ __( 'Cancel', 'google-site-kit' ) }
 						</Button>
