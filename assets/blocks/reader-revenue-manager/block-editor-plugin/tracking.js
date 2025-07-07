@@ -33,7 +33,7 @@ import { VIEW_CONTEXT_WP_BLOCK_EDITOR } from '@/js/googlesitekit/constants';
 /**
  * Tracks changes to the Reader Revenue Manager metadata in the post editor.
  *
- * @since n.e.x.t
+ * @since 1.156.0
  *
  * @return {void}
  */

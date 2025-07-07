@@ -63,9 +63,9 @@ export default function ErrorNotice( {
 		);
 	}, [ dispatch, selectorData ] );
 
-	// Do not display if there is no error, or if the error is for missing scopes.
-	// This only applies when no message prop is directly passed.
-	if ( ! message && ( ! error || isPermissionScopeError( error ) ) ) {
+	// Do not display if there is no error and no direct message text is passed as a direct prop.
+	// Also do not display if the error is for missing scopes as these are handled by a popup modal.
+	if ( ! message || isPermissionScopeError( error ) ) {
 		return null;
 	}
 

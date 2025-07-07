@@ -196,8 +196,9 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 				value: settingsURL,
 			} );
 
-			const adSenseSettingsURL = `${ settingsURL }#/connected-services/adsense`;
-
+			const adSenseSettingsURL = registry
+				.select( CORE_SITE )
+				.getModuleSettingsURL( MODULE_SLUG_ADSENSE );
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click( getByRole( 'button', { name: /cancel/i } ) );
@@ -334,8 +335,9 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 				value: settingsURL,
 			} );
 
-			const adSenseSettingsURL = `${ settingsURL }#/connected-services/adsense`;
-
+			const adSenseSettingsURL = registry
+				.select( CORE_SITE )
+				.getModuleSettingsURL( MODULE_SLUG_ADSENSE );
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click( getByRole( 'button', { name: /cancel/i } ) );
@@ -559,11 +561,9 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 		} );
 
 		it( 'should return to AdSense settings page when `Cancel` button is clicked', async () => {
-			const adSenseSettingsURL = `${ registry
+			const adSenseSettingsURL = registry
 				.select( CORE_SITE )
-				.getAdminURL(
-					'googlesitekit-settings'
-				) }#/connected-services/adsense`;
+				.getModuleSettingsURL( MODULE_SLUG_ADSENSE );
 
 			// eslint-disable-next-line require-await
 			await act( async () => {
