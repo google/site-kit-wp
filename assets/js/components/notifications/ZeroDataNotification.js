@@ -30,7 +30,6 @@ import { DAY_IN_SECONDS } from '../../util';
 import BannerNotification, {
 	TYPES,
 } from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
-import warningDesktopSVG from '@/svg/graphics/warning-banner.svg?url';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 export default function ZeroDataNotification( { id, Notification } ) {
@@ -67,10 +66,6 @@ export default function ZeroDataNotification( { id, Notification } ) {
 				ctaButton={ {
 					label: __( 'OK, got it', 'google-site-kit' ),
 					onClick: ctaClick,
-				} }
-				svg={ {
-					desktop: warningDesktopSVG,
-					verticalPosition: 'center',
 				} }
 			/>
 		</Notification>
