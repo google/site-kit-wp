@@ -33,7 +33,7 @@
 	}
 
 	@media (min-width: $page-content-max-width) {
-		right: calc(((100vw - #{$page-content-max-width}) / 2) - 5px - 42px);
+		right: calc(((100vw - #{$page-content-max-width}) / 2) - 47px);
 	}
 
 	@media (max-width: $bp-xxxlarge) {
@@ -51,7 +51,7 @@
 	}
 
 	@media (min-width: $page-content-max-width) {
-		right: calc(((100vw - #{$page-content-max-width}) / 2) + 40px - 24px);
+		right: calc(((100vw - #{$page-content-max-width}) / 2) + 16px);
 	}
 
 	@media (max-width: $bp-xxxlarge) {
