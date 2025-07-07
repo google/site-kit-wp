@@ -27,7 +27,8 @@ const FONT_WAIT_TIMEOUT_MS = 5000;
  * @param {number} ms The delay in milliseconds.
  * @return {Promise<void>} A promise that resolves after the delay.
  */
-const delay = ( ms ) => new Promise( ( resolve ) => setTimeout( resolve, ms ) );
+const waitForTimeout = ( ms ) =>
+	new Promise( ( resolve ) => setTimeout( resolve, ms ) );
 
 /**
  * Executes custom waiting logic before taking screenshots.
@@ -43,7 +44,7 @@ const delay = ( ms ) => new Promise( ( resolve ) => setTimeout( resolve, ms ) );
  * @param {Object} viewport The viewport configuration.
  */
 module.exports = async ( page, scenario, viewport ) => {
-	// NOTE: We can implement waitForRegistry or other not arbitrary time based delays here to improve test stability for other VRTs.
+	// NOTE: We can implement waitForRegistry or other non-arbitrary time based delays here to improve test stability for other VRTs.
 
 	// Reset the font size of the specific selector and retrigger resize events.
 	if ( scenario.resetDataBlockGroup ) {
@@ -62,7 +63,7 @@ module.exports = async ( page, scenario, viewport ) => {
 			deviceScaleFactor: 1,
 		} );
 
-		await delay( POLLING_INTERVAL_MS );
+		await waitForTimeout( POLLING_INTERVAL_MS );
 
 		await page.setViewport( {
 			width: viewport.width,
@@ -70,11 +71,11 @@ module.exports = async ( page, scenario, viewport ) => {
 			deviceScaleFactor: 1,
 		} );
 
-		await delay( POLLING_INTERVAL_MS );
+		await waitForTimeout( POLLING_INTERVAL_MS );
 	}
 
-	// Wait font size in selectors to match the expected size for the current viewport.
-	// Currently used for the DashboardOverallPageMetricsWidgetGA4 story which uses the DataBlockGroup component.
+	// Wait for the font size to match the expected size for the current viewport.
+	// This is currently used for the DashboardOverallPageMetricsWidgetGA4 story which uses the DataBlockGroup component.
 	if ( scenario.waitForFontSizeToMatch && scenario.fontSizeSelector ) {
 		const expectedFontSizes = {
 			small: scenario.expectedFontSizeSmall || false,

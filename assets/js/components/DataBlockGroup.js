@@ -59,7 +59,10 @@ export default function DataBlockGroup( { className, children } ) {
 				// Calculate the exact scale factor needed to resize the content to the parent.
 				const scaleFactor = parentWidth / dataPoint.scrollWidth;
 
-				// Round scaling factor down 1D.P to account for variations in font rendering causing inconsistent resizing for VRTs.
+				// Round the scale factor down to one decimal place. This creates a
+				// small visual buffer to prevent the text from appearing cramped.
+				// It also improves stability by preventing minor pixel fluctuations
+				// during resize from causing distracting font size changes.
 				const roundedScaleFactor = Math.floor( scaleFactor * 10 ) / 10;
 
 				if ( roundedScaleFactor < smallestScaleFactor ) {
@@ -98,23 +101,15 @@ export default function DataBlockGroup( { className, children } ) {
 		} );
 	};
 
-	const resetFontSizes = async ( blocks ) => {
-		await Promise.all(
-			[ ...blocks ].map( ( block ) => {
-				return new Promise( ( resolve ) => {
-					const dataPoint = block?.querySelector(
-						'.googlesitekit-data-block__datapoint'
-					);
-					if ( ! dataPoint ) {
-						resolve();
-						return;
-					}
-
-					dataPoint.style.fontSize = '';
-					resolve();
-				} );
-			} )
-		);
+	const resetFontSizes = ( blocks ) => {
+		blocks.forEach( ( block ) => {
+			const dataPoint = block?.querySelector(
+				'.googlesitekit-data-block__datapoint'
+			);
+			if ( dataPoint ) {
+				dataPoint.style.fontSize = '';
+			}
+		} );
 	};
 
 	// Debounce the adjustFontSize function to prevent excessive calls on resize.
