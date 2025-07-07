@@ -1,23 +1,8 @@
-## Coding pattern preferences
-
-- **Language:** Always use English.
-- **Simplicity:** Prefer simple solutions.
-- **Concreteness:** Provide concrete solutions that work within the project, avoiding high-level answers.
-- **Explanations:** Describe why changes are made, but avoid overly detailed explanations.
-- **Planning:** Before making changes, describe the full plan.
-- **Linters:** Take into account the project's linters.
-- **Code Duplication:** Avoid duplicating code by checking for existing similar code and functionality.
-- **Scope of Changes:**
-  - Only make requested changes, or changes that are well-understood and related to the request.
-  - Don't edit other parts of the code if it is not related to the request.
-- **Bug Fixes & New Patterns:**
-  - When fixing an issue or bug, first exhaust all options with the existing implementation.
-  - If a new pattern or technology is introduced, ensure the old implementation is removed to avoid duplicate logic.
-- **Codebase Hygiene:** Keep the codebase very clean and well-organized.
-- **Commit Messages:** Start with an infinitive verb and end with a period.
-- **Documentation:**
-  - Use the approach for documenting all parts of the codebase similarly how it is done in other files of the codebase.
-  - When adding a new function, method, class or an interface, use `n.e.x.t` as the `@since` tag.
+---
+description: 
+globs: 
+alwaysApply: true
+---
 
 ## Development Commands
 
