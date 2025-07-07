@@ -34,5 +34,6 @@
 	"stylelint.validate": [
 		"css",
 		"scss"
-	]
+	],
+	 "javascript.preferences.importModuleSpecifier": "relative"
 }

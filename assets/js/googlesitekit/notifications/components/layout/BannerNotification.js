@@ -33,9 +33,13 @@ import LearnMoreLink from '../../../../components/Banner/LearnMoreLink';
 import CTAButton from '../../../../components/Banner/CTAButton';
 import DismissButton from '../../../../components/Banner/DismissButton';
 import { Cell, Grid, Row } from '../../../../material-components';
+import WarningDesktopSVG from '@/svg/graphics/warning-banner.svg?url';
+import ErrorDesktopSVG from '@/svg/graphics/error-banner.svg?url';
 
 export const TYPES = {
 	INFO: 'info',
+	ERROR: 'error',
+	WARNING: 'warning',
 };
 export default function BannerNotification( {
 	notificationID,
@@ -43,6 +47,7 @@ export default function BannerNotification( {
 	learnMoreLink,
 	dismissButton,
 	ctaButton,
+	dismissOnCTAClick,
 	dismissOptions,
 	gaTrackingEventArgs,
 	...props
@@ -71,6 +76,12 @@ export default function BannerNotification( {
 			gaTrackingEventArgs?.value
 		);
 		await ctaButton?.onClick?.( event );
+
+		if ( dismissOnCTAClick ) {
+			dismissNotification( notificationID, {
+				...dismissOptions,
+			} );
+		}
 	};
 
 	const handleLearnMoreClickWithTrackEvent = async ( event ) => {
@@ -81,7 +92,23 @@ export default function BannerNotification( {
 		await learnMoreLink?.onClick?.( event );
 	};
 
-	const SVGData = props?.svg;
+	let SVGData = props?.svg;
+
+	if ( ! SVGData && type !== TYPES.INFO ) {
+		SVGData = {
+			desktop: undefined,
+			mobile: undefined,
+			verticalPosition: 'center',
+		};
+
+		if ( type === TYPES.WARNING ) {
+			SVGData.desktop = WarningDesktopSVG;
+		}
+
+		if ( type === TYPES.ERROR ) {
+			SVGData.desktop = ErrorDesktopSVG;
+		}
+	}
 
 	return (
 		<div
@@ -123,13 +150,14 @@ export default function BannerNotification( {
 }
 
 BannerNotification.propTypes = {
-	notificationID: PropTypes.string,
+	notificationID: PropTypes.string.isRequired,
 	type: PropTypes.oneOf( Object.values( TYPES ) ),
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
 	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
 	ctaButton: PropTypes.shape( CTAButton.propTypes ),
+	dismissOnCTAClick: PropTypes.bool,
 	dismissOptions: PropTypes.object,
 	gaTrackingEventArgs: PropTypes.shape( {
 		category: PropTypes.string,
