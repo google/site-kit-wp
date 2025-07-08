@@ -21,6 +21,14 @@
 	.googlesitekit-banner-notification {
 		width: 100%;
 
+		.googlesitekit-banner__description {
+
+			a {
+				color: $c-black;
+				text-decoration: underline;
+			}
+		}
+
 		&.googlesitekit-banner-notification--info {
 			background-color: $c-site-kit-sk-10;
 
@@ -47,20 +55,6 @@
 		&.googlesitekit-banner-notification--warning {
 			background-color: $c-yellow-y-10;
 
-			.googlesitekit-banner__title {
-				color: $c-black;
-			}
-
-			.googlesitekit-banner__description {
-				color: $c-black;
-				font-size: $fs-body-sm;
-				letter-spacing: $ls-xs;
-				line-height: $lh-body-sm;
-
-				a {
-					color: $c-black;
-				}
-			}
 			.googlesitekit-notice__action {
 				margin-bottom: 0;
 
