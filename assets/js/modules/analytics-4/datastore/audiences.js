@@ -355,7 +355,7 @@ const baseActions = {
 		const isAuthenticated = select( CORE_USER ).isAuthenticated();
 
 		if ( ! isAuthenticated ) {
-			// Unblock the flag so component reliying on the value are not incorrectly blocked.
+			// Unblock the flag so component relying on the value are not incorrectly blocked.
 			yield { type: FINISH_MAYBE_SYNC_AUDIENCES };
 
 			return;
