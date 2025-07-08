@@ -354,10 +354,17 @@ const baseActions = {
 
 		const isAuthenticated = select( CORE_USER ).isAuthenticated();
 
+		if ( ! isAuthenticated ) {
+			// Unblock the flag so component reliying on the value are not incorrectly blocked.
+			yield { type: FINISH_MAYBE_SYNC_AUDIENCES };
+
+			return;
+		}
+
 		const isSyncingAudiences =
 			select( MODULES_ANALYTICS_4 ).isSyncingAudiences();
 
-		if ( ! isAuthenticated || isSyncingAudiences ) {
+		if ( isSyncingAudiences ) {
 			return;
 		}
 
