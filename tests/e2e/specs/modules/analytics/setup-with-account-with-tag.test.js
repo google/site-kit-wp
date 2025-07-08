@@ -7,7 +7,7 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
-	createWaitForFetchRequestsWithDebounce,
+	// createWaitForFetchRequestsWithDebounce,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setAnalyticsExistingPropertyID,
@@ -137,7 +137,7 @@ function getRequestResponseMappings() {
 }
 
 describe( 'setting up the Analytics module with an existing account and existing tag', () => {
-	let waitForFetchRequests;
+	// let waitForFetchRequests;
 
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
@@ -162,11 +162,12 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await page.waitForSelector(
 			'.googlesitekit-settings-connect-module--analytics-4'
 		);
-		waitForFetchRequests = createWaitForFetchRequestsWithDebounce();
+		// waitForFetchRequests = createWaitForFetchRequestsWithDebounce();
 	} );
 
 	afterEach( async () => {
-		await waitForFetchRequests();
+		// await waitForFetchRequests();
+		await page.waitForNetworkIdle( { timeout: 10000 } );
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
