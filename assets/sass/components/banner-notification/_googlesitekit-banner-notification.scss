@@ -57,7 +57,8 @@
 
 			.googlesitekit-notice__action {
 				margin-bottom: 0;
-				.mdc-button {
+
+				.mdc-button:not(.mdc-button--tertiary) {
 					@include mdc-button-filled-accessible($c-utility-on-warning-container);
 				}
 
