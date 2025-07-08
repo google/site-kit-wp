@@ -139,7 +139,7 @@ exports[`LeastEngagingPagesWidget should render the generic error variant when t
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Least engaging pages
         </h2>
@@ -201,7 +201,7 @@ exports[`LeastEngagingPagesWidget should render the insufficient permissions err
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Least engaging pages
         </h2>

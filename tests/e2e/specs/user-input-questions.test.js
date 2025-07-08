@@ -45,7 +45,9 @@ import getMultiDimensionalObjectFromParams from '../utils/get-multi-dimensional-
 
 describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
-		await page.waitForSelector( '.googlesitekit-user-input__question' );
+		await page.waitForSelector( '.googlesitekit-user-input__question', {
+			timeout: 15000, // The UserInputApp needs more time to load to pass consistently.
+		} );
 
 		await step( 'select purpose', async () => {
 			await expect( page ).toClick( '#purpose-publish_blog' );
@@ -82,8 +84,9 @@ describe( 'User Input Settings', () => {
 					'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--complete',
 					{ text: /complete setup/i }
 				),
-				page.waitForNavigation(),
-				page.waitForNetworkIdle(),
+				// Navigation and network idle needs more time to complete to consistently pass.
+				page.waitForNavigation( { timeout: 15000 } ),
+				page.waitForNetworkIdle( { timeout: 15000 } ),
 			] )
 		);
 
