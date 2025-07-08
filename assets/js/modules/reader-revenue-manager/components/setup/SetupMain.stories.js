@@ -25,11 +25,11 @@ import {
 } from '../../../../../../tests/js/utils';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import {
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
 } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { publications } from '../../datastore/__fixtures__';
@@ -39,7 +39,7 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants
 function Template() {
 	return (
 		<ViewContextProvider value={ VIEW_CONTEXT_MAIN_DASHBOARD }>
-			<ModuleSetup moduleSlug={ READER_REVENUE_MANAGER_MODULE_SLUG } />
+			<ModuleSetup moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER } />
 		</ViewContextProvider>
 	);
 }
@@ -101,7 +101,7 @@ export default {
 			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+						slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 						active: true,
 						connected: false,
 					},

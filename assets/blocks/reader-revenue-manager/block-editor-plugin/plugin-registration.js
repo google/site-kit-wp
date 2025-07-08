@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager pluign registration.
+ * Reader Revenue Manager plugin registration.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -29,7 +29,9 @@ import { CORE_MODULES } from '../../../js/googlesitekit/modules/datastore/consta
 import { CORE_USER } from '../../../js/googlesitekit/datastore/user/constants';
 import { CORE_EDIT_SITE } from '../common/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import SettingPanel from './SettingPanel';
+import { initializeTracking } from './tracking';
 
 const { select, resolveSelect } = Data;
 
@@ -48,13 +50,13 @@ export async function registerReaderRevenueManagerPlugin() {
 	] );
 
 	let hasModuleOwnershipOrAccess = select( CORE_MODULES ).hasModuleOwnership(
-		'reader-revenue-manager'
+		MODULE_SLUG_READER_REVENUE_MANAGER
 	);
 
 	if ( hasModuleOwnershipOrAccess === false ) {
 		hasModuleOwnershipOrAccess = await resolveSelect(
 			CORE_MODULES
-		).hasModuleAccess( 'reader-revenue-manager' );
+		).hasModuleAccess( MODULE_SLUG_READER_REVENUE_MANAGER );
 	}
 
 	if ( ! hasModuleOwnershipOrAccess ) {
@@ -64,4 +66,6 @@ export async function registerReaderRevenueManagerPlugin() {
 	registerPlugin( 'googlesitekit-rrm-plugin', {
 		render: SettingPanel,
 	} );
+
+	initializeTracking();
 }

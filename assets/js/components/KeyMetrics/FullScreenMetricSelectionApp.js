@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { usePrevious } from '@wordpress/compose';
 import { Fragment, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -26,7 +27,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell, Grid, Row } from '../../material-components';
@@ -73,6 +73,15 @@ export default function FullScreenMetricSelectionApp() {
 		select( CORE_SITE ).isKeyMetricsSetupCompleted()
 	);
 
+	const previousIsKeyMetricsCompleted = usePrevious(
+		isKeyMetricsSetupCompleted
+	);
+
+	const showSelectionPanel =
+		( hasFinishedGettingInputSettings &&
+			isKeyMetricsSetupCompleted === false ) ||
+		( ! previousIsKeyMetricsCompleted && isKeyMetricsSetupCompleted );
+
 	useEffect( () => {
 		setValues( KEY_METRICS_SELECTION_FORM, {
 			[ KEY_METRICS_SELECTED ]: savedViewableMetrics,
@@ -86,72 +95,60 @@ export default function FullScreenMetricSelectionApp() {
 			</Header>
 			<div className="googlesitekit-metric-selection">
 				<div className="googlesitekit-module-page">
-					{ ( isKeyMetricsSetupCompleted === undefined ||
-						isKeyMetricsSetupCompleted === true ||
-						! hasFinishedGettingInputSettings ) && (
+					{ showSelectionPanel && (
 						<Grid>
-							<Row>
-								<Cell lgSize={ 12 } mdSize={ 12 } smSize={ 12 }>
-									<ProgressBar />
-								</Cell>
-							</Row>
+							<Layout rounded>
+								<Grid className="googlesitekit-user-input__header">
+									<Row>
+										<Cell
+											lgSize={ 12 }
+											mdSize={ 8 }
+											smSize={ 6 }
+										>
+											<PageHeader
+												className="googlesitekit-heading-3 googlesitekit-user-input__heading"
+												title={ __(
+													'Select up to 8 metrics that are most important for your business goals',
+													'google-site-kit'
+												) }
+												fullWidth
+											/>
+										</Cell>
+										<Cell
+											lgSize={ 12 }
+											mdSize={ 8 }
+											smSize={ 6 }
+										>
+											<span className="googlesitekit-user-input__subtitle">
+												{ __(
+													'Site Kit will start collecting data and add them on your dashboard. You can change your selection later on from Site Kit’s main dashboard.',
+													'google-site-kit'
+												) }
+											</span>
+										</Cell>
+									</Row>
+								</Grid>
+
+								<Grid className="googlesitekit-user-input__content">
+									<Row>
+										<Cell
+											lgSize={ 12 }
+											mdSize={ 8 }
+											smSize={ 6 }
+										>
+											<PanelContent
+												savedViewableMetrics={
+													savedViewableMetrics
+												}
+												showHeader={ false }
+												isFullScreen
+											/>
+										</Cell>
+									</Row>
+								</Grid>
+							</Layout>
 						</Grid>
 					) }
-					{ hasFinishedGettingInputSettings &&
-						isKeyMetricsSetupCompleted === false && (
-							<Grid>
-								<Layout rounded>
-									<Grid className="googlesitekit-user-input__header">
-										<Row>
-											<Cell
-												lgSize={ 12 }
-												mdSize={ 8 }
-												smSize={ 6 }
-											>
-												<PageHeader
-													className="googlesitekit-heading-3 googlesitekit-user-input__heading"
-													title={ __(
-														'Select up to 8 metrics that are most important for your business goals',
-														'google-site-kit'
-													) }
-													fullWidth
-												/>
-											</Cell>
-											<Cell
-												lgSize={ 12 }
-												mdSize={ 8 }
-												smSize={ 6 }
-											>
-												<span className="googlesitekit-user-input__subtitle">
-													{ __(
-														'Site Kit will start collecting data and add them on your dashboard. You can change your selection later on from Site Kit’s main dashboard.',
-														'google-site-kit'
-													) }
-												</span>
-											</Cell>
-										</Row>
-									</Grid>
-
-									<Grid className="googlesitekit-user-input__content">
-										<Row>
-											<Cell
-												lgSize={ 12 }
-												mdSize={ 8 }
-												smSize={ 6 }
-											>
-												<PanelContent
-													savedViewableMetrics={
-														savedViewableMetrics
-													}
-													showHeader={ false }
-													isFullScreen
-												/>
-											</Cell>
-										</Row>
-									</Grid>
-								</Layout>
-							</Grid>
-						) }
 				</div>
 			</div>
 		</Fragment>

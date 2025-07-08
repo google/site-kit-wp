@@ -26,7 +26,7 @@ import connection from './connection';
 import consentMode from './consent-mode';
 import conversionTracking from './conversion-tracking';
 import errors from './errors';
-import firstPartyMode from './first-party-mode';
+import googleTagGateway from './google-tag-gateway';
 import html from './html';
 import info from './info';
 import reset from './reset';
@@ -43,7 +43,7 @@ const store = combineStores(
 	consentMode,
 	conversionTracking,
 	errors,
-	firstPartyMode,
+	googleTagGateway,
 	html,
 	info,
 	developerPlugin,

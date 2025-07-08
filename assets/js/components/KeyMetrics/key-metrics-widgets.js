@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
+
 /**
  * WordPress dependencies
  */
@@ -399,11 +401,11 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE ]: {
 		title: __( 'Top converting traffic source', 'google-site-kit' ),
 		description: __(
-			'Channel which brought in the most visits that resulted in conversions',
+			'Channel which brought in the most visits that resulted in key events',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions',
+			'Channel (e.g. social, paid, search) that brought in visitors who generated the most key events',
 			'google-site-kit'
 		),
 		metadata: { group: KEY_METRICS_GROUP_DRIVING_TRAFFIC.SLUG },

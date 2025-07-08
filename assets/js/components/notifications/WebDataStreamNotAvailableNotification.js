@@ -25,12 +25,14 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import NotificationError from '../../googlesitekit/notifications/components/layout/NotificationError';
+import BannerNotification, {
+	TYPES,
+} from '../../googlesitekit/notifications/components/layout/BannerNotification';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MINUTE_IN_SECONDS } from '../../util';
-import Description from '../../googlesitekit/notifications/components/common/Description';
-import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 
 export const WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION =
 	'web-data-stream-not-available-notification';
@@ -43,41 +45,42 @@ export default function WebDataStreamNotAvailableNotification( {
 		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
 
-	const settingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	const analyticsSettingsEditURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getModuleSettingsEditURL( MODULE_SLUG_ANALYTICS_4 )
+	);
+
+	const isNavigatingToSettingsEditURL = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigatingTo( analyticsSettingsEditURL )
 	);
 
 	return (
-		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
-			<NotificationError
+		<Notification>
+			<BannerNotification
+				notificationID={ id }
+				type={ TYPES.WARNING }
 				title={ __(
 					'Your Analytics configuration has changed',
 					'google-site-kit'
 				) }
-				description={
-					<Description
-						text={ sprintf(
-							/* translators: %1$s: Google Analytics Measurement ID. */
-							__(
-								'The previously selected web data stream with measurement ID %1$s is no longer available. Please select a new web data stream to continue collecting data with Google Analytics.',
-								'google-site-kit'
-							),
-							measurementID
-						) }
-					/>
-				}
-				actions={
-					<ActionsCTALinkDismiss
-						id={ id }
-						ctaLabel={ __(
-							'Update Analytics settings',
-							'google-site-kit'
-						) }
-						ctaLink={ `${ settingsURL }#connected-services/analytics-4/edit` }
-						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
-						dismissExpires={ MINUTE_IN_SECONDS * 55 }
-					/>
-				}
+				description={ sprintf(
+					/* translators: %1$s: Google Analytics Measurement ID. */
+					__(
+						'The previously selected web data stream with measurement ID %1$s is no longer available. Please select a new web data stream to continue collecting data with Google Analytics.',
+						'google-site-kit'
+					),
+					measurementID
+				) }
+				ctaButton={ {
+					label: __( 'Update Analytics settings', 'google-site-kit' ),
+					href: analyticsSettingsEditURL,
+					disabled: isNavigatingToSettingsEditURL,
+				} }
+				dismissButton={ {
+					label: __( 'Maybe later', 'google-site-kit' ),
+				} }
+				dismissOptions={ {
+					expiresInSeconds: MINUTE_IN_SECONDS * 55,
+				} }
 			/>
 		</Notification>
 	);

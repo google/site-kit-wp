@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
+
 /**
  * External dependencies
  */
@@ -56,7 +58,7 @@ const KEY_SEPARATOR = '::';
  * @private
  *
  * @param {string} type        The data to access. One of 'core' or 'modules'.
- * @param {string} identifier  The data identifier, eg. a module slug like `'search-console'`.
+ * @param {string} identifier  The data identifier, eg. a module slug like `search-console`.
  * @param {string} datapoint   The endpoint to request data from.
  * @param {Object} queryParams Query params to send with the request.
  * @return {string} The cache key to use for this set of values.
@@ -114,7 +116,7 @@ export const dispatchAPIError = ( error ) => {
  * @private
  *
  * @param {string}  type                The data to access. One of 'core' or 'modules'.
- * @param {string}  identifier          The data identifier, eg. a module slug like `'search-console'`.
+ * @param {string}  identifier          The data identifier, eg. a module slug like `search-console`.
  * @param {string}  datapoint           The endpoint to request data from.
  * @param {Object}  options             Optional. Options to pass to the request.
  * @param {number}  options.cacheTTL    The oldest cache data to use, in seconds.
@@ -221,7 +223,7 @@ export const siteKitRequest = async (
  * @since 1.5.0
  *
  * @param {string}  type             The data to access. One of 'core' or 'modules'.
- * @param {string}  identifier       The data identifier, eg. a module slug like `'search-console'`.
+ * @param {string}  identifier       The data identifier, eg. a module slug like `search-console`.
  * @param {string}  datapoint        The endpoint to request data from.
  * @param {Object}  data             Data (query params) to send with the request.
  * @param {Object}  options          Extra options for this request.

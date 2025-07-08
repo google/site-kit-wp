@@ -30,14 +30,15 @@ import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
+import { MODULE_SLUG_ADSENSE } from '../constants';
 import { isValidAccountID } from '../util';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { extractExistingTag, getExistingTagURLs } from '../../../util/tag';
 import adBlockingRecoveryTagMatcher from '../util/ad-blocking-recovery-tag-matcher';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createReducer } from '../../../googlesitekit/data/create-reducer';
 
 // Actions
 const FETCH_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG =
@@ -48,7 +49,11 @@ const RECEIVE_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG =
 const fetchSyncAdBlockingRecoveryTagsStore = createFetchStore( {
 	baseName: 'syncAdBlockingRecoveryTags',
 	controlCallback: () => {
-		return set( 'modules', 'adsense', 'sync-ad-blocking-recovery-tags' );
+		return set(
+			'modules',
+			MODULE_SLUG_ADSENSE,
+			'sync-ad-blocking-recovery-tags'
+		);
 	},
 } );
 

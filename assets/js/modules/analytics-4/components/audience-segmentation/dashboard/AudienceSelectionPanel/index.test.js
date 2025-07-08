@@ -61,7 +61,6 @@ import {
 	provideUserAuthentication,
 	provideUserInfo,
 	waitForDefaultTimeouts,
-	waitForTimeouts,
 } from '../../../../../../../../tests/js/utils';
 import { provideAnalytics4MockReport } from '../../../../utils/data-mock';
 import {
@@ -1559,7 +1558,7 @@ describe( 'AudienceSelectionPanel', () => {
 					).toBeInTheDocument();
 				} );
 
-				await act( () => waitForTimeouts( 30 ) );
+				await waitForRegistry();
 
 				expect( console ).toHaveErroredWith(
 					'Google Site Kit API Error',
@@ -1613,7 +1612,7 @@ describe( 'AudienceSelectionPanel', () => {
 					).toBeInTheDocument();
 				} );
 
-				await act( () => waitForTimeouts( 30 ) );
+				await waitForRegistry();
 
 				expect( console ).toHaveErroredWith(
 					'Google Site Kit API Error',
@@ -1677,7 +1676,7 @@ describe( 'AudienceSelectionPanel', () => {
 					).toBeInTheDocument();
 				} );
 
-				await act( () => waitForTimeouts( 30 ) );
+				await waitForRegistry();
 
 				expect( console ).toHaveErroredWith(
 					'Google Site Kit API Error',
@@ -1929,7 +1928,7 @@ describe( 'AudienceSelectionPanel', () => {
 
 			expect(
 				document.querySelector(
-					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-footer .googlesitekit-error-text'
+					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-footer .googlesitekit-notice--error .googlesitekit-notice__content p.googlesitekit-notice__description'
 				).textContent
 			).toBe( 'Select at least 1 group (0 selected)' );
 

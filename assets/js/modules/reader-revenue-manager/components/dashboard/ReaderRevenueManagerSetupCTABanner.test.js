@@ -39,9 +39,9 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import { WEEK_IN_SECONDS } from '../../../../util';
@@ -58,6 +58,7 @@ jest.mock( '../../../../hooks/useActivateModuleCallback' );
 describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	let registry;
 	let activateModuleMock;
+	let activateModuleCallbackMock;
 
 	const ReaderRevenueManagerSetupCTABannerComponent =
 		withNotificationComponentProps( 'rrm-setup-notification' )(
@@ -68,7 +69,8 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		activateModuleMock = jest.fn( () => jest.fn() );
+		activateModuleCallbackMock = jest.fn();
+		activateModuleMock = jest.fn( () => activateModuleCallbackMock );
 
 		provideUserAuthentication( registry );
 
@@ -80,7 +82,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		provideModules( registry, [
 			{
-				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 				active: false,
 			},
 		] );
@@ -120,7 +122,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckRequirementsSuccess(
-				READER_REVENUE_MANAGER_MODULE_SLUG
+				MODULE_SLUG_READER_REVENUE_MANAGER
 			);
 
 		const { container, getByRole, waitForRegistry } = render(
@@ -143,7 +145,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			);
 		} );
 
-		expect( activateModuleMock ).toHaveBeenCalledTimes( 1 );
+		expect( activateModuleCallbackMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {
@@ -330,7 +332,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			// Throw error from checkRequirements to simulate non-HTTPS site error.
 			provideModules( registry, [
 				{
-					slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 					active: false,
 					checkRequirements: () => {
 						throw {

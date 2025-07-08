@@ -28,12 +28,13 @@ import { __, _x } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import NotificationAlertSVG from '../../../svg/graphics/notification-alert.svg';
 import BannerNotification from '../notifications/BannerNotification';
 
 function AdSenseAlerts() {
 	const adSenseModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'adsense' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE )
 	);
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
@@ -78,7 +79,6 @@ function AdSenseAlerts() {
 						type={ severity }
 						dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 						isDismissible={ isDismissable || true }
-						logo
 						module="adsense"
 						moduleName={ _x(
 							'AdSense',
@@ -87,6 +87,7 @@ function AdSenseAlerts() {
 						) }
 						dismissExpires={ 0 }
 						showOnce={ false }
+						logo
 					/>
 				)
 			) }

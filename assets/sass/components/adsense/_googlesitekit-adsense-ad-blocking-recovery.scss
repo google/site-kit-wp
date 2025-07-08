@@ -16,52 +16,6 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-widget--adBlockingRecovery {
-
-		.googlesitekit-publisher-win,
-		.mdc-layout-grid {
-			padding: 0;
-		}
-	}
-
-	.googlesitekit-widget--adBlockingRecovery__content {
-		margin-bottom: 30px;
-
-		p {
-			margin: 10px 0 0;
-		}
-	}
-
-	.googlesitekit-widget--adBlockingRecovery__graphics {
-		text-align: center;
-
-		p {
-			color: $c-surfaces-on-background-variant;
-			font-size: 12px;
-			margin: 0 34px;
-		}
-
-		@media (max-width: $bp-tablet) {
-			text-align: left;
-
-			p {
-				margin: 0;
-			}
-		}
-	}
-
-	.googlesitekit-ad-blocking-recovery__complete-content {
-		@media (min-width: $bp-tablet) {
-			padding-left: 35px;
-		}
-
-		p {
-			color: $c-surfaces-on-surface-variant;
-			font-size: $fs-body-lg;
-			letter-spacing: $ls-s;
-		}
-	}
-
 	.googlesitekit-ad-blocking-recovery__hero-graphic {
 		margin: 0 2rem;
 		text-align: center;
@@ -85,63 +39,20 @@
 		}
 	}
 
+	.googlesitekit-ad-blocking-recovery__steps {
+		.googlesitekit-stepper__step-title {
+			letter-spacing: $ls-xxs;
+		}
+	}
+
 	.googlesitekit-ad-blocking-recovery__complete-actions {
 		.mdc-button {
 			margin-right: 10px;
 		}
 	}
 
-	.googlesitekit-ad-blocking-recovery__footer-nav {
-		align-items: center;
-		column-gap: 20px;
-		display: flex;
-		padding: 17px 17px 33px;
-
-		@media (min-width: $bp-desktop) {
-			flex-direction: reverse;
-			padding: 0;
-		}
-	}
-
 	.googlesitekit-ad-blocking-recovery__footer-cancel button {
 		color: $c-surfaces-on-background-variant;
-	}
-
-	.googlesitekit-settings-notice-ad-blocking-recovery-cta {
-		align-items: center;
-		flex-wrap: wrap;
-		margin-top: 24px;
-		padding: 24px;
-		row-gap: 15px;
-
-		@media (min-width: $bp-tablet) {
-			flex-wrap: nowrap;
-		}
-
-		.googlesitekit-settings-notice__icon {
-			margin-right: 20px;
-		}
-
-		.googlesitekit-settings-notice__text {
-			font-size: $fs-title-sm;
-			font-weight: $fw-medium;
-			line-height: $lh-title-sm;
-		}
-
-		.googlesitekit-settings-notice__inner-row {
-			flex-wrap: wrap;
-			font-size: $fs-body-md;
-			line-height: $lh-body-md;
-			padding-top: 3px;
-		}
-
-		.googlesitekit-settings-notice__button {
-
-			@media (min-width: $bp-tablet) {
-				margin-left: 25px;
-				white-space: nowrap;
-			}
-		}
 	}
 
 	.googlesitekit-settings-module__ad-blocking-recovery-toggles {
@@ -173,6 +84,7 @@
 			}
 
 			> p:first-child {
+				letter-spacing: $ls-m;
 				margin-top: 0;
 
 				@media (min-width: $bp-tablet) {

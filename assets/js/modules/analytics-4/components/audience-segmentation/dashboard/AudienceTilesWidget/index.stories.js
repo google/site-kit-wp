@@ -30,6 +30,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -39,6 +40,7 @@ import { getPreviousDate } from '../../../../../../util';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
 	STRATEGY_ZIP,
 } from '../../../../utils/data-mock';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
@@ -677,6 +679,29 @@ Loading.decorators = [
 ];
 Loading.scenario = {};
 
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/1', // All Users
+		'properties/12345/audiences/3', // New visitors
+		'properties/12345/audiences/4', // Returning visitors
+	],
+	setupRegistry: (
+		registry,
+		{ reportOptions, newVsReturningReportOptions }
+	) => {
+		provideAnalyticsReportWithoutDateRangeData( registry, reportOptions );
+
+		provideAnalyticsReportWithoutDateRangeData(
+			registry,
+			newVsReturningReportOptions,
+			{ emptyRowBehavior: 'remove' }
+		);
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
+
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget',
 	decorators: [
@@ -733,7 +758,7 @@ export default {
 				} );
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -836,7 +861,10 @@ export default {
 						availableAudiencesLastSyncedAt: Date.now() - 1000,
 					} );
 
-				setupRegistryFn?.( registry );
+				setupRegistryFn?.( registry, {
+					reportOptions,
+					newVsReturningReportOptions,
+				} );
 			};
 
 			return (

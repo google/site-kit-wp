@@ -36,10 +36,14 @@ jest.mock( '@wordpress-core/components', () => ( {} ), {
 	virtual: true,
 } );
 jest.mock( '@wordpress-core/element', () => ( {} ), { virtual: true } );
+jest.mock( './tracking', () => ( {
+	initializeTracking: jest.fn(),
+} ) );
 
 import Data from 'googlesitekit-data';
 import SettingPanel from './SettingPanel';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { registerStore as registerCoreModulesStore } from '../../../js/googlesitekit/modules';
 import { registerStore as registerCoreUserStore } from '../../../js/googlesitekit/datastore/user';
 import { registerStore as registerReaderRevenueManagerStore } from '../../../js/modules/reader-revenue-manager/datastore';
@@ -51,7 +55,7 @@ const { dispatch } = Data;
 
 describe( 'registerReaderRevenueManagerPlugin', () => {
 	const rrmModuleDefaults = {
-		slug: 'reader-revenue-manager',
+		slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 		active: true,
 		connected: true,
 		storeName: MODULES_READER_REVENUE_MANAGER,

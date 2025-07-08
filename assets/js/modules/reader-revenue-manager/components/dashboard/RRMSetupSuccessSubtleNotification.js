@@ -38,11 +38,10 @@ import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 	READER_REVENUE_MANAGER_NOTICES_FORM,
 	SYNC_PUBLICATION,
-	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
 import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
 import { TYPES } from '../../../../components/Notice/constants';
@@ -91,10 +90,6 @@ export default function RRMSetupSuccessSubtleNotification( {
 			actionableOnboardingStates.includes( publicationOnboardingState )
 	);
 
-	const currentOnboardingState = useSelect( ( select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getPublicationOnboardingState()
-	);
-
 	const paymentOption = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPaymentOption()
 	);
@@ -107,8 +102,10 @@ export default function RRMSetupSuccessSubtleNotification( {
 		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
 	);
 
-	const settingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	const rrmSettingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getModuleSettingsEditURL(
+			MODULE_SLUG_READER_REVENUE_MANAGER
+		)
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -140,47 +137,25 @@ export default function RRMSetupSuccessSubtleNotification( {
 			return;
 		}
 
-		const { response } = await syncPublicationOnboardingState();
-		const newOnboardingState = response?.publicationOnboardingState;
-
-		if (
-			currentOnboardingState &&
-			newOnboardingState !== currentOnboardingState &&
-			newOnboardingState ===
-				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
-		) {
-			setValue(
-				UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
-				true
-			);
-		}
-	}, [
-		currentOnboardingState,
-		setValue,
-		shouldSyncPublication,
-		syncPublicationOnboardingState,
-	] );
+		await syncPublicationOnboardingState();
+	}, [ shouldSyncPublication, syncPublicationOnboardingState ] );
 
 	// Sync publication data when user re-focuses window.
 	useRefocus( syncPublication, 15000 );
 
 	const showingSuccessNotification =
 		notification === 'authentication_success' &&
-		slug === READER_REVENUE_MANAGER_MODULE_SLUG;
+		slug === MODULE_SLUG_READER_REVENUE_MANAGER;
 
 	// On successful module setup, if the payment option is not set,
-	// show the publication approved overlay notification.
+	// the "Publication approved" Overlay Notification will be triggered
+	// instead of this notice, so we can dismiss this notice.
 	useEffect( () => {
 		if (
 			showingSuccessNotification &&
 			publicationOnboardingState === ONBOARDING_COMPLETE &&
 			paymentOption === ''
 		) {
-			setValue(
-				UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
-				true
-			);
-
 			dismissNotice();
 		}
 	}, [
@@ -271,7 +246,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 			description: '',
 			primaryButton: {
 				text: __( 'Manage CTAs', 'google-site-kit' ),
-				ctaLink: `${ settingsURL }#connected-services/reader-revenue-manager/edit`,
+				ctaLink: rrmSettingsURL,
 				isCTALinkExternal: false,
 			},
 			secondaryButton: {
@@ -323,8 +298,8 @@ export default function RRMSetupSuccessSubtleNotification( {
 								) }
 								label={ __( 'Learn more', 'google-site-kit' ) }
 								url="https://support.google.com/news/publisher-center/answer/12813936"
-								hideExternalIndicator
 								gaTrackingEventArgs={ gaTrackingEventArgs }
+								hideExternalIndicator
 							/>
 						),
 					}

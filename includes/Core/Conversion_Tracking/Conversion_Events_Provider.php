@@ -56,7 +56,7 @@ abstract class Conversion_Events_Provider {
 	/**
 	 * Gets the conversion event names that are tracked by this provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.154.0
 	 *
 	 * @return string Comma separated list of event names.
 	 */

@@ -7,12 +7,14 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 
 namespace Google\Site_Kit\Tests\Core\Tags;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode_Settings;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
 use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -88,18 +90,18 @@ class GTagTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider provider_first_party_mode_data
+	 * @dataProvider provider_google_tag_gateway_data
 	 */
-	public function test_gtag_script_src__first_party_mode( $data ) {
-		self::enable_feature( 'firstPartyMode' );
+	public function test_gtag_script_src__google_tag_gateway( $data ) {
+		self::enable_feature( 'googleTagGateway' );
 
-		$first_party_mode_settings = new First_Party_Mode_Settings( $this->options );
-		$first_party_mode_settings->set( $data['settings'] );
+		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
+		$google_tag_gateway_settings->set( $data['settings'] );
 
 		$this->assertEquals( $data['expected_src'], $this->gtag->get_gtag_src() );
 	}
 
-	public function provider_first_party_mode_data() {
+	public function provider_google_tag_gateway_data() {
 		$googletagmanager_url = 'https://www.googletagmanager.com/gtag/js?id=' . static::TEST_TAG_ID_1;
 
 		return array(
@@ -107,27 +109,27 @@ class GTagTest extends TestCase {
 				array(
 					'settings'     => array(
 						'isEnabled'             => true,
-						'isFPMHealthy'          => true,
+						'isGTGHealthy'          => true,
 						'isScriptAccessEnabled' => true,
 					),
-					'expected_src' => plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?id=' . static::TEST_TAG_ID_1 . '&s=/gtag/js',
+					'expected_src' => plugins_url( 'gtg/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?id=' . static::TEST_TAG_ID_1 . '&s=/gtag/js',
 				),
 			),
 			'isEnabled false'             => array(
 				array(
 					'settings'     => array(
 						'isEnabled'             => false,
-						'isFPMHealthy'          => true,
+						'isGTGHealthy'          => true,
 						'isScriptAccessEnabled' => true,
 					),
 					'expected_src' => $googletagmanager_url,
 				),
 			),
-			'isFPMHealthy false'          => array(
+			'isGTGHealthy false'          => array(
 				array(
 					'settings'     => array(
 						'isEnabled'             => true,
-						'isFPMHealthy'          => false,
+						'isGTGHealthy'          => false,
 						'isScriptAccessEnabled' => true,
 					),
 					'expected_src' => $googletagmanager_url,
@@ -137,7 +139,7 @@ class GTagTest extends TestCase {
 				array(
 					'settings'     => array(
 						'isEnabled'             => true,
-						'isFPMHealthy'          => true,
+						'isGTGHealthy'          => true,
 						'isScriptAccessEnabled' => false,
 					),
 					'expected_src' => $googletagmanager_url,
@@ -147,7 +149,7 @@ class GTagTest extends TestCase {
 				array(
 					'settings'     => array(
 						'isEnabled'             => false,
-						'isFPMHealthy'          => false,
+						'isGTGHealthy'          => false,
 						'isScriptAccessEnabled' => false,
 					),
 					'expected_src' => $googletagmanager_url,

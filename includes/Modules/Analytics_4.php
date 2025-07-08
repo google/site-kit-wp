@@ -91,7 +91,7 @@ use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_Tag
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
@@ -121,9 +121,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
-	const READONLY_SCOPE  = 'https://www.googleapis.com/auth/analytics.readonly';
-	const PROVISION_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
-	const EDIT_SCOPE      = 'https://www.googleapis.com/auth/analytics.edit';
+	const READONLY_SCOPE = 'https://www.googleapis.com/auth/analytics.readonly';
+	const EDIT_SCOPE     = 'https://www.googleapis.com/auth/analytics.edit';
 
 	/**
 	 * Module slug name.
@@ -651,13 +650,13 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				: join( ', ', $site_kit_audiences ),
 		);
 
-		// Add fields from First-party mode.
+		// Add fields from Google tag gateway.
 		// Note: fields are added in both Analytics and Ads so that the debug fields will show if either module is enabled.
-		if ( Feature_Flags::enabled( 'firstPartyMode' ) ) {
-			$first_party_mode             = new First_Party_Mode( $this->context );
-			$fields_from_first_party_mode = $first_party_mode->get_debug_fields();
+		if ( Feature_Flags::enabled( 'googleTagGateway' ) ) {
+			$google_tag_gateway             = new Google_Tag_Gateway( $this->context );
+			$fields_from_google_tag_gateway = $google_tag_gateway->get_debug_fields();
 
-			$debug_fields = array_merge( $debug_fields, $fields_from_first_party_mode );
+			$debug_fields = array_merge( $debug_fields, $fields_from_google_tag_gateway );
 		}
 
 		return $debug_fields;
@@ -688,7 +687,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 			),
-			'GET:conversion-events'                     => array(
+			'GET:key-events'                            => array(
 				'service'   => 'analyticsadmin',
 				'shareable' => true,
 			),
@@ -1749,7 +1748,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				}
 
 				return $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $data['measurementID'] ) );
-			case 'GET:conversion-events':
+			case 'GET:key-events':
 				$settings = $this->get_settings()->get();
 				if ( empty( $settings['propertyID'] ) ) {
 					return new WP_Error(
@@ -1763,8 +1762,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				$property_id    = self::normalize_property_id( $settings['propertyID'] );
 
 				return $analyticsadmin
-					->properties_conversionEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-					->listPropertiesConversionEvents( $property_id );
+				->properties_keyEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				->listPropertiesKeyEvents( $property_id );
 			case 'POST:set-google-tag-id-mismatch':
 				if ( ! isset( $data['hasMismatchedTag'] ) ) {
 					throw new Missing_Required_Param_Exception( 'hasMismatchedTag' );
@@ -1839,8 +1838,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				return (array) $response->getDestination();
 			case 'GET:google-tag-settings':
 				return $this->get_google_tag_settings_for_measurement_id( $response, $data['measurementID'] );
-			case 'GET:conversion-events':
-				return (array) $response->getConversionEvents();
+			case 'GET:key-events':
+				return (array) $response->getKeyEvents();
 			case 'GET:report':
 				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );

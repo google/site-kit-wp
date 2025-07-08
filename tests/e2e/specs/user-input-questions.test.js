@@ -83,10 +83,9 @@ describe( 'User Input Settings', () => {
 					{ text: /complete setup/i }
 				),
 				page.waitForNavigation(),
+				page.waitForNetworkIdle(),
 			] )
 		);
-
-		await pageWait( 600 );
 
 		await step(
 			'wait for a Key Metric tile to successfully appear',
@@ -243,11 +242,11 @@ describe( 'User Input Settings', () => {
 
 		await step( 'click on CTA button and wait for navigation', async () => {
 			await page.waitForSelector(
-				'.googlesitekit-setup__wrapper--key-metrics-setup-cta'
+				'.googlesitekit-widget--keyMetricsSetupCTA'
 			);
 			await Promise.all( [
 				expect( page ).toClick(
-					'.googlesitekit-widget-key-metrics-actions__wrapper .googlesitekit-key-metrics-cta-button'
+					'.googlesitekit-widget--keyMetricsSetupCTA .googlesitekit-banner__cta'
 				),
 				page.waitForNavigation(),
 			] );
@@ -264,8 +263,10 @@ describe( 'User Input Settings', () => {
 		await setSearchConsoleProperty();
 
 		await step( 'visit admin settings', async () => {
-			await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
-			await pageWait();
+			await Promise.all( [
+				visitAdminPage( 'admin.php', 'page=googlesitekit-settings' ),
+				page.waitForNetworkIdle(),
+			] );
 			await page.waitForSelector( '.mdc-tab-bar a.mdc-tab' );
 			await expect( page ).toClick( 'a.mdc-tab', {
 				text: /admin settings/i,
@@ -282,7 +283,7 @@ describe( 'User Input Settings', () => {
 			] );
 		} );
 
-		await pageWait();
+		await page.waitForNetworkIdle();
 
 		await fillInInputSettings();
 	} );

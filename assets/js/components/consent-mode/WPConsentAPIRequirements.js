@@ -32,11 +32,11 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Grid, Cell, Row } from '../../material-components';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Link from '../Link';
-import ErrorText from '../ErrorText';
 import WPConsentAPIRequirement from './WPConsentAPIRequirement';
 import Tick from '../../../svg/icons/tick.svg';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import ErrorNotice from '../ErrorNotice';
 import Notice from '../Notice';
 
 export default function WPConsentAPIRequirements() {
@@ -129,7 +129,6 @@ export default function WPConsentAPIRequirements() {
 											href={
 												wpConsentAPIDocumentationURL
 											}
-											external
 											aria-label={ __(
 												'Learn more about the WP Consent API',
 												'google-site-kit'
@@ -140,6 +139,7 @@ export default function WPConsentAPIRequirements() {
 													'wp_consent_api_learn_more'
 												);
 											} }
+											external
 										/>
 									),
 								}
@@ -162,12 +162,12 @@ export default function WPConsentAPIRequirements() {
 											{ wpConsentPlugin.installed && (
 												<Fragment>
 													{ !! apiInstallResponse?.error && (
-														<ErrorText
+														<ErrorNotice
 															message={
-																apiInstallResponse
-																	?.error
-																	?.message
+																apiInstallResponse?.error
 															}
+															skipRetryMessage
+															hideIcon
 														/>
 													) }
 													<SpinnerButton
@@ -201,10 +201,12 @@ export default function WPConsentAPIRequirements() {
 											{ ! wpConsentPlugin.installed && (
 												<Fragment>
 													{ apiInstallHasError && (
-														<ErrorText
+														<ErrorNotice
 															message={
 																apiInstallHasError
 															}
+															skipRetryMessage
+															hideIcon
 														/>
 													) }
 													<SpinnerButton
@@ -258,7 +260,6 @@ export default function WPConsentAPIRequirements() {
 											href={
 												consentManagementPlatformDocumentationURL
 											}
-											external
 											aria-label={ __(
 												'Suggested consent management plugins',
 												'google-site-kit'
@@ -269,6 +270,7 @@ export default function WPConsentAPIRequirements() {
 													'consent_mgmt_plugin_learn_more'
 												);
 											} }
+											external
 										/>
 									),
 								}

@@ -40,6 +40,7 @@ import { VIEW_CONTEXT_AD_BLOCKING_RECOVERY } from '../../../../../googlesitekit/
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import * as tracking from '../../../../../util/tracking';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../../constants';
 import SetupMain from './SetupMain';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -60,7 +61,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 			},
 		] );
 		registry.dispatch( MODULES_ADSENSE ).setSettings( {
@@ -195,8 +196,9 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 				value: settingsURL,
 			} );
 
-			const adSenseSettingsURL = `${ settingsURL }#/connected-services/adsense`;
-
+			const adSenseSettingsURL = registry
+				.select( CORE_SITE )
+				.getModuleSettingsURL( MODULE_SLUG_ADSENSE );
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click( getByRole( 'button', { name: /cancel/i } ) );
@@ -333,8 +335,9 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 				value: settingsURL,
 			} );
 
-			const adSenseSettingsURL = `${ settingsURL }#/connected-services/adsense`;
-
+			const adSenseSettingsURL = registry
+				.select( CORE_SITE )
+				.getModuleSettingsURL( MODULE_SLUG_ADSENSE );
 			// eslint-disable-next-line require-await
 			await act( async () => {
 				fireEvent.click( getByRole( 'button', { name: /cancel/i } ) );
@@ -558,11 +561,9 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 		} );
 
 		it( 'should return to AdSense settings page when `Cancel` button is clicked', async () => {
-			const adSenseSettingsURL = `${ registry
+			const adSenseSettingsURL = registry
 				.select( CORE_SITE )
-				.getAdminURL(
-					'googlesitekit-settings'
-				) }#/connected-services/adsense`;
+				.getModuleSettingsURL( MODULE_SLUG_ADSENSE );
 
 			// eslint-disable-next-line require-await
 			await act( async () => {

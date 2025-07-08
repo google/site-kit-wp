@@ -1,6 +1,7 @@
 /**
  * Internal dependencies
  */
+import { MODULE_SLUG_ADS } from '../../../assets/js/modules/ads/constants';
 import { wpApiFetch } from './wp-api-fetch';
 
 const defaultAdsSettings = {
@@ -24,7 +25,7 @@ export async function setupAds( settingsOverrides = {} ) {
 		method: 'post',
 		path: 'google-site-kit/v1/core/modules/data/activation',
 		data: {
-			data: { slug: 'ads', active: true },
+			data: { slug: MODULE_SLUG_ADS, active: true },
 		},
 	} );
 	// Set placeholder connection data.
