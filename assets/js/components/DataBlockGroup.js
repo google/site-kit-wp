@@ -30,7 +30,7 @@ import { useDebounce } from '../hooks/useDebounce';
 export default function DataBlockGroup( { className, children } ) {
 	const ref = useRef();
 
-	const adjustFontSize = async () => {
+	const adjustFontSize = () => {
 		const blocks = ref?.current?.querySelectorAll(
 			'.googlesitekit-data-block'
 		);
@@ -42,7 +42,7 @@ export default function DataBlockGroup( { className, children } ) {
 		// Find the smallest font size needed across all blocks to fit without overflow.
 		let smallestScaleFactor = 1;
 
-		await resetFontSizes( blocks );
+		setFontSizes( blocks, '' );
 
 		blocks.forEach( ( block ) => {
 			const dataPoint = block.querySelector(
@@ -98,17 +98,6 @@ export default function DataBlockGroup( { className, children } ) {
 			}
 
 			dataPoint.style.fontSize = adjustedSize;
-		} );
-	};
-
-	const resetFontSizes = ( blocks ) => {
-		blocks.forEach( ( block ) => {
-			const dataPoint = block?.querySelector(
-				'.googlesitekit-data-block__datapoint'
-			);
-			if ( dataPoint ) {
-				dataPoint.style.fontSize = '';
-			}
 		} );
 	};
 
