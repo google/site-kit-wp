@@ -32,10 +32,10 @@ import { createInterpolateElement, useCallback } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import SuccessSetupSVG from '@/svg/graphics/success_setup_image.svg?url';
 import useQueryArg from '../../hooks/useQueryArg';
 import BannerNotification from '../../googlesitekit/notifications/components/layout/BannerNotification';
 import Link from '../Link';
+import SuccessSetupSVG from '@/svg/graphics/setup_success.svg?url';
 
 export default function SiteKitSetupSuccessNotification( {
 	id,
@@ -52,7 +52,7 @@ export default function SiteKitSetupSuccessNotification( {
 	}, [ setNotification ] );
 
 	return (
-		<Notification className="googlesitekit-publisher-win">
+		<Notification>
 			<BannerNotification
 				notificationID={ id }
 				title={ __(
@@ -69,13 +69,13 @@ export default function SiteKitSetupSuccessNotification( {
 					}
 				) }
 				dismissButton={ {
-					label: __( 'OK, Got it!', 'google-site-kit' ),
+					label: __( 'Got it!', 'google-site-kit' ),
 					onClick: onDismiss,
 					tertiary: false,
 				} }
 				svg={ {
 					desktop: SuccessSetupSVG,
-					verticalPosition: 'cover',
+					verticalPosition: 'center',
 				} }
 			/>
 		</Notification>
