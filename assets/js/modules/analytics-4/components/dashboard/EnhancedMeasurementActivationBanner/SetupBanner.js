@@ -158,6 +158,7 @@ export default function SetupBanner( props ) {
 					label: __( 'Enable now', 'google-site-kit' ),
 					onClick: handleSubmitChanges,
 					disabled: isSaving || isNavigatingToOAuthURL,
+					inProgress: isSaving || isNavigatingToOAuthURL,
 				} }
 				dismissButton={ {
 					label: __( 'Maybe later', 'google-site-kit' ),
