@@ -21,7 +21,12 @@
 	.googlesitekit-banner-notification {
 		width: 100%;
 
+		.googlesitekit-banner__title {
+			color: $c-black;
+		}
+
 		.googlesitekit-banner__description {
+			color: $c-black;
 
 			a {
 				color: $c-black;
@@ -31,17 +36,6 @@
 
 		&.googlesitekit-banner-notification--info {
 			background-color: $c-site-kit-sk-10;
-
-			.googlesitekit-banner__title {
-				color: $c-black;
-			}
-
-			.googlesitekit-banner__description {
-				color: $c-black;
-				a {
-					color: $c-black;
-				}
-			}
 		}
 
 		&.googlesitekit-banner-notification--error {
@@ -82,23 +76,6 @@
 
 		.googlesitekit-banner {
 			background-color: unset;
-		}
-
-		.googlesitekit-banner__svg-wrapper {
-			background-size: 100% 100%;
-			height: 100%;
-
-			@media (min-width: $bp-xlarge) {
-				background-size: 75% 100%;
-			}
-		}
-
-		.googlesitekit-banner__svg-wrapper--cover {
-			background-position-y: center;
-
-			@media (min-width: $bp-xlarge) {
-				background-size: 100% 100%;
-			}
 		}
 
 		.googlesitekit-banner__additional-description {
