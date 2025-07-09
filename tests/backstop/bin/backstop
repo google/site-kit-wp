@@ -23,6 +23,8 @@ VERSION=6.3.25
 # Use the GitHub Container Registry image.
 IMAGE=ghcr.io/google/site-kit-wp/vrt:$VERSION
 
+docker pull $IMAGE
+
 # Run the backstopjs command.
 docker run --rm --tty \
 	--shm-size=512m \
