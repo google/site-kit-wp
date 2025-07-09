@@ -58,6 +58,11 @@ export function createWaitForFetchRequestsWithDebounce( debounceTime = 250 ) {
 
 	const listener = ( req ) => {
 		if ( req.resourceType() === 'fetch' ) {
+			console.debug(
+				'createWaitForFetchRequestsWithDebounce: fetch request detected',
+				req.url()
+			);
+
 			const promise = page.waitForResponse(
 				// eslint-disable-next-line sitekit/acronym-case
 				( res ) => res.request()._requestId === req._requestId
@@ -86,6 +91,11 @@ export function createWaitForFetchRequestsWithDebounce( debounceTime = 250 ) {
 
 	return () => {
 		page.off( 'request', listener );
+
+		console.debug(
+			'createWaitForFetchRequestsWithDebounce: waiting for fetch requests to complete...',
+			responsePromises.length
+		);
 
 		return new Promise( ( resolve ) => {
 			resolvePromise = resolve;

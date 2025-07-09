@@ -40,7 +40,7 @@ import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
 } from '../utils';
-// import { createWaitForFetchRequestsWithDebounce } from '../utils/create-wait-for-fetch-requests';
+import { createWaitForFetchRequestsWithDebounce } from '../utils/create-wait-for-fetch-requests';
 import * as customMatchers from '../matchers';
 
 /**
@@ -404,7 +404,7 @@ async function observeRestResponse( res ) {
 	}
 }
 
-// let waitForFetchRequests;
+let waitForFetchRequests;
 
 // Before every test suite run, delete all content created by the test. This ensures
 // other posts/comments/etc. aren't dirtying tests and tests don't depend on
@@ -436,8 +436,8 @@ beforeAll( async () => {
 	await deactivateUtilityPlugins();
 	await resetSiteKit( { persistent: true } );
 
-	// Wait for any pending fetch requests before navigating away from the current page
-	// waitForFetchRequests = createWaitForFetchRequestsWithDebounce();
+	// Wait for any pending fetch requests before navigating away from the current page.
+	waitForFetchRequests = createWaitForFetchRequestsWithDebounce();
 } );
 
 afterEach( async () => {
@@ -447,8 +447,7 @@ afterEach( async () => {
 } );
 
 afterAll( async () => {
-	// await waitForFetchRequests();
-	await page.waitForNetworkIdle( { timeout: 10000 } );
+	await waitForFetchRequests();
 
 	await deactivateUtilityPlugins();
 	await resetSiteKit();

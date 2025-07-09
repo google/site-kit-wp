@@ -7,7 +7,6 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
-	// createWaitForFetchRequestsWithDebounce,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setAnalyticsExistingPropertyID,
@@ -137,8 +136,6 @@ function getRequestResponseMappings() {
 }
 
 describe( 'setting up the Analytics module with an existing account and existing tag', () => {
-	// let waitForFetchRequests;
-
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( getRequestResponseMappings() );
@@ -162,17 +159,13 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await page.waitForSelector(
 			'.googlesitekit-settings-connect-module--analytics-4'
 		);
-		// waitForFetchRequests = createWaitForFetchRequestsWithDebounce();
 	} );
 
 	afterEach( async () => {
-		// await waitForFetchRequests();
-		await page.waitForNetworkIdle( { timeout: 10000 } );
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
 
-	// HERE Failing:
 	it( 'informs about an existing tag that matches the current selected property', async () => {
 		const existingTag = {
 			accountID: '100', // Test Account A
