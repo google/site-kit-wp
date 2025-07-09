@@ -23,6 +23,9 @@ VERSION=6.3.25
 # Use the GitHub Container Registry image.
 IMAGE=ghcr.io/google/site-kit-wp/vrt:$VERSION
 
+# This is used to ensure the docker image used is the correct
+# architecture; if a previous image was pulled on a different architecture,
+# it will be used below unless this pull command is run first.
 docker pull $IMAGE
 
 # Run the backstopjs command.
