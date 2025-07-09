@@ -436,18 +436,24 @@ beforeAll( async () => {
 	await deactivateUtilityPlugins();
 	await resetSiteKit( { persistent: true } );
 
+	// // Wait for any pending fetch requests before navigating away from the current page.
+	// waitForFetchRequests = createWaitForFetchRequestsWithDebounce();
+} );
+
+beforeEach( () => {
 	// Wait for any pending fetch requests before navigating away from the current page.
 	waitForFetchRequests = createWaitForFetchRequestsWithDebounce();
 } );
 
 afterEach( async () => {
+	await waitForFetchRequests();
 	await clearLocalStorage();
 	await clearSessionStorage();
 	await setBrowserViewport( 'large' );
 } );
 
 afterAll( async () => {
-	await waitForFetchRequests();
+	// await waitForFetchRequests();
 
 	await deactivateUtilityPlugins();
 	await resetSiteKit();

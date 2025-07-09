@@ -52,30 +52,50 @@ export function createWaitForFetchRequests() {
 
 export function createWaitForFetchRequestsWithDebounce( debounceTime = 250 ) {
 	const responsePromises = [];
-
 	let timeout;
-	let resolvePromise;
+	let isWaiting = false;
+	let resolveWaiting;
 
 	const listener = ( req ) => {
-		if ( req.resourceType() === 'fetch' ) {
-			const promise = page.waitForResponse(
-				// eslint-disable-next-line sitekit/acronym-case
-				( res ) => res.request()._requestId === req._requestId
-			);
-			// A promise may be rejected if the execution context it was
-			// captured in no longer exists (e.g. previous page) which
-			// is necessary in some cases, and can be ignored since
-			// there is nothing to wait for any more.
-			responsePromises.push( promise.catch( () => {} ) );
+		// Filter out requests that might fail during navigation or are likely to cause issues
+		if (
+			req.resourceType() === 'fetch' &&
+			! req.url().includes( 'wp-admin/admin-ajax.php' ) &&
+			! req.url().includes( 'heartbeat' )
+		) {
+			const promise = page
+				.waitForResponse(
+					// eslint-disable-next-line sitekit/acronym-case
+					( res ) => res.request()._requestId === req._requestId,
+					{ timeout: 5000 } // Reduce timeout to prevent hanging
+				)
+				.catch( ( err ) => {
+					// Ignore specific errors that occur during navigation or teardown
+					if (
+						err.message &&
+						( err.message.includes( 'Navigation' ) ||
+							err.message.includes( 'timeout' ) ||
+							err.message.includes( 'Target closed' ) ||
+							err.message.includes(
+								'Execution context was destroyed'
+							) ||
+							err.message.includes( 'Protocol error' ) ||
+							err.message.includes( 'Session closed' ) )
+					) {
+						return null;
+					}
+					// For other errors, still return null to avoid breaking Promise.all
+					return null;
+				} );
 
-			if ( timeout ) {
+			responsePromises.push( promise );
+
+			// Reset debounce timer on new request if we're currently waiting
+			if ( isWaiting && timeout ) {
 				clearTimeout( timeout );
-
 				timeout = setTimeout( () => {
-					if ( resolvePromise ) {
-						resolvePromise( Promise.all( responsePromises ) );
-						resolvePromise = null;
-						timeout = null;
+					if ( resolveWaiting ) {
+						resolveWaiting();
 					}
 				}, debounceTime );
 			}
@@ -86,20 +106,32 @@ export function createWaitForFetchRequestsWithDebounce( debounceTime = 250 ) {
 
 	return () => {
 		page.off( 'request', listener );
+		isWaiting = true;
 
+		// eslint-disable-next-line no-console
 		console.debug(
 			'createWaitForFetchRequestsWithDebounce: waiting for fetch requests to complete...',
 			responsePromises.length
 		);
 
 		return new Promise( ( resolve ) => {
-			resolvePromise = resolve;
+			resolveWaiting = () => {
+				isWaiting = false;
+				if ( timeout ) {
+					clearTimeout( timeout );
+					timeout = null;
+				}
+				// Filter out null responses before resolving
+				const validPromises = responsePromises.filter(
+					( p ) => p !== null
+				);
+				resolve( Promise.all( validPromises ) );
+				resolveWaiting = null;
+			};
 
-			// TODO: Could DRY this with the setTimeout() above:
+			// Always set initial timeout, regardless of whether there are pending requests
 			timeout = setTimeout( () => {
-				resolve( Promise.all( responsePromises ) );
-				resolvePromise = null;
-				timeout = null;
+				resolveWaiting();
 			}, debounceTime );
 		} );
 	};
