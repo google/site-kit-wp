@@ -127,7 +127,7 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 	const hideCTAButton = ! hasUserRecoverableModules;
 
 	return (
-		<Notification className="googlesitekit-publisher-win">
+		<Notification>
 			<BannerNotification
 				notificationID={ id }
 				type={ TYPES.ERROR }
