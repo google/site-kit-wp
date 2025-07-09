@@ -92,6 +92,14 @@
 				}
 			}
 		}
+
+		&.googlesitekit-ad-blocking-recovery__step-create-message {
+			.googlesitekit-stepper__step-content {
+				> p {
+					letter-spacing: 0.5px;
+				}
+			}
+		}
 	}
 
 	.googlesitekit-ad-blocking-recovery__step-place-tags {
