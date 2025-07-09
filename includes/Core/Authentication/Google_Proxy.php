@@ -27,8 +27,7 @@ use WP_Error;
  */
 class Google_Proxy {
 
-	// const PRODUCTION_BASE_URL = 'https://sitekit.withgoogle.com';
-	const PRODUCTION_BASE_URL       = 'http://sks.local';
+	const PRODUCTION_BASE_URL       = 'https://sitekit.withgoogle.com';
 	const STAGING_BASE_URL          = 'https://site-kit-dev.appspot.com';
 	const DEVELOPMENT_BASE_URL      = 'https://site-kit-local.appspot.com';
 	const OAUTH2_SITE_URI           = '/o/oauth2/site/';
