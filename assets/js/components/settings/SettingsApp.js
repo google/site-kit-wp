@@ -77,7 +77,6 @@ function SettingsApp() {
 								>
 									<Tab
 										tag={ Link }
-										// Link will render a React Router Link component when `to` is provided.
 										to="/connected-services"
 										replace={ shouldReplaceHistory(
 											'connected-services'

@@ -112,7 +112,7 @@ export default function SetupForm( { finishSetup } ) {
 			if ( ! error ) {
 				setConversionTrackingEnabled( true );
 
-				// Sync audiences and dimensions, so the `PrimaryUserSetupWidget` component
+				// Sync audiences and custom dimensions, so the `PrimaryUserSetupWidget` component
 				// can quickly setup audiences when the user lands on the dashboard.
 				// eslint-disable-next-line no-unused-vars
 				const { error: syncAudiencesError } =

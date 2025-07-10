@@ -371,8 +371,6 @@ final class Screens {
 					'render_callback'  => function ( Context $context ) {
 						$is_view_only = ! $this->authentication->is_authenticated();
 
-						// HERE, `slug` is the module slug that is being set up.
-						// `reAuth` is a boolean that is set to true if the user is returning from the proxy.
 						$setup_slug = htmlspecialchars( $context->input()->filter( INPUT_GET, 'slug' ) ?: '' );
 						$reauth = $context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
 						if ( $context->input()->filter( INPUT_GET, 'permaLink' ) ) {
@@ -397,8 +395,6 @@ final class Screens {
 									wp_die( sprintf( '<span class="googlesitekit-notice">%s</span>', esc_html( $message ) ), 403 );
 								}
 							}
-							// HERE, `data-setup-module-slug` is the module slug that is being set up.
-							// This is used to determine which module to show the setup screen for.
 							?>
 							<div id="js-googlesitekit-main-dashboard" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" class="googlesitekit-page"></div>
 							<?php

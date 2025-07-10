@@ -132,7 +132,6 @@ export default function SetupForm( { finishSetup } ) {
 						throw error;
 					}
 
-					// HERE, we need to ensure this flow continues to work with the two-step setup flow.
 					await setItem( 'module_setup', MODULE_SLUG_ANALYTICS_4, {
 						ttl: 300,
 					} );

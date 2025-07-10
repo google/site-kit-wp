@@ -68,8 +68,6 @@ export default function useActivateModuleCallback( moduleSlug ) {
 				moduleSlug
 			);
 
-			// HERE, we need to ensure this flow continues to work with the two-step setup flow,
-			// anywhere this callback is used for Analytics setup.
 			await setItem( 'module_setup', moduleSlug, { ttl: 300 } );
 
 			navigateTo( response.moduleReauthURL );

@@ -45,8 +45,6 @@ domReady( async () => {
 	);
 
 	if ( renderTarget ) {
-		// HERE, `setupModuleSlug` is the module slug that is being set up, retrieved from the `data-setup-module-slug` attribute
-		// which is set in `includes/Core/Admin/Screens.php`.
 		const { setupModuleSlug, viewOnly } = renderTarget.dataset;
 
 		let viewContext = VIEW_CONTEXT_MODULE_SETUP;

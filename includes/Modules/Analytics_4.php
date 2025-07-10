@@ -481,20 +481,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 * @return array List of Google OAuth scopes.
 	 */
 	public function get_scopes() {
-		// HERE, we can unconditionally add `analytics.edit` to the scopes,
-		// and remove `analytics.readonly` from the scopes (TBC).
-		// However this would mean we _always_ require the `edit` scope - which may
-		// not be needed if we are keeping the flow for setting up Analytics from
-		// the settings screen the same (let's assume we are for now).
-		// So we need to conditionally include `analytics.edit` in the scopes if we are
-		// setting up Analytics from the splash screen.
-		// _Or_ we just keep it simple and say that we always require the `edit` scope.
-		// Probably the thing to do is always require the `edit` scope as the initial
-		// approach in Phase 1, and then we can refine this as an edge case in Phase 3.
-		//
-		// UPDATE: We are (TBC with Mariya) always going setup KM/AS when connecting
-		// Analytics, so we do need the `edit` scope. Have confirmed we also need the
-		// `readonly` scope for viewing GA4 data.
+		// We are always going to setup Key Metric and Audience Segmentation when connecting Analytics, so we need to include the `edit` scope
+		// in order to be able to create audiences and custom dimensions. We also need the `readonly` scope for viewing Analytics data.
 		return array( self::READONLY_SCOPE, self::EDIT_SCOPE );
 	}
 
@@ -981,7 +969,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$error = $input->filter( INPUT_GET, 'error' );
 		if ( ! empty( $error ) ) {
 			wp_safe_redirect(
-				// HERE, no need to try to continue user input flow if there's an error.
 				$this->context->admin_url( 'dashboard', array( 'error_code' => htmlspecialchars( $error ) ) )
 			);
 			exit;
@@ -991,7 +978,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		if ( empty( $account_id ) ) {
 			wp_safe_redirect(
-				// HERE, no need to try to continue user input flow if there's an error.
 				$this->context->admin_url( 'dashboard', array( 'error_code' => 'callback_missing_parameter' ) )
 			);
 			exit;
@@ -1010,7 +996,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$account_created = (bool) $input->filter( INPUT_GET, 'accountCreated' );
 
 		wp_safe_redirect(
-			// HERE, we redirect to the user input screen instead of the dashboard.
+			// Redirect to the user input screen instead of the dashboard. For production, we'll need to add a new screen instead
+			// of modifying the existing user input screen.
 			$this->context->admin_url(
 				'user-input',
 				array(
@@ -1244,8 +1231,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				$account_ticket_request = new Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest();
 				$account_ticket_request->setSiteId( $credentials['oauth2_client_id'] );
 				$account_ticket_request->setSiteSecret( $credentials['oauth2_client_secret'] );
-				// HERE, this sets the redirect_uri for account creation, we need to ensure that
-				// we redirect to the user input screen instead of the dashboard.
 				$account_ticket_request->setRedirectUri( $this->get_provisioning_redirect_uri( $show_progress ) );
 				$account_ticket_request->setAccount( $account );
 
@@ -2065,10 +2050,10 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 *
 	 * @since 1.98.0
 	 *
+	 * @param boolean $show_progress Whether to show the progress bar on the service screens.
 	 * @return string Provisioning redirect URI.
 	 */
 	private function get_provisioning_redirect_uri( $show_progress ) {
-		// Breaking here confirms that $show_progress is being passed correctly.
 		return $this->authentication->get_google_proxy()
 			->get_site_fields( $show_progress )['analytics_redirect_uri'];
 	}

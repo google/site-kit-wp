@@ -109,8 +109,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 		return null;
 	}
 
-	// const slug = getQueryArg( location.href, 'slug' );
-	// Could check slug is `analytics-4` to be on the safe side.
+	// TODO: Also check the query param `slug` is `analytics-4`, to be on the safe side.
 	const showProgress = getQueryArg( location.href, 'showProgress' );
 
 	const { SetupComponent } = module;
@@ -121,6 +120,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 				<HelpMenu />
 			</Header>
 			{ showProgress && (
+				// `currentSegment` and `totalSegments` can be hardcoded, at least for phase 1, although we might want to tweak their values.
 				<ProgressSegments currentSegment={ 5 } totalSegments={ 7 } />
 			) }
 			<div className="googlesitekit-setup">

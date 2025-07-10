@@ -56,8 +56,7 @@ export default function UserInputApp() {
 		);
 	} );
 
-	// const slug = getQueryArg( location.href, 'slug' );
-	// Could check slug is `analytics-4` to be on the safe side.
+	// TODO: Also check the query param `slug` is `analytics-4`, to be on the safe side.
 	const showProgress = getQueryArg( location.href, 'showProgress' );
 
 	const accountCreated = getQueryArg( location.href, 'accountCreated' );
@@ -84,7 +83,7 @@ export default function UserInputApp() {
 		}, 3000 );
 
 		const syncAudiences = async () => {
-			// Sync audiences and dimensions, so the `PrimaryUserSetupWidget` component
+			// Sync audiences and custom dimensions, so the `PrimaryUserSetupWidget` component
 			// can quickly setup audiences when the user lands on the dashboard.
 			// eslint-disable-next-line no-unused-vars
 			const { error: syncAudiencesError } =
@@ -118,6 +117,7 @@ export default function UserInputApp() {
 				<HelpMenu />
 			</Header>
 			{ showProgress && (
+				// `currentSegment` and `totalSegments` can be hardcoded, at least for phase 1, although we might want to tweak their values.
 				<ProgressSegments currentSegment={ 6 } totalSegments={ 7 } />
 			) }
 			<div className="googlesitekit-user-input">

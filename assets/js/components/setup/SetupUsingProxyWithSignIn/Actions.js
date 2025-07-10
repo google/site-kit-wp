@@ -78,11 +78,7 @@ export default function Actions( {
 			<div className="googlesitekit-start-setup-wrap">
 				<Button
 					className="googlesitekit-start-setup"
-					// Doesn't look like the `href` is actually used for the navigation, but it's still included here.
 					href={ proxySetupURL }
-					// HERE, `onButtonClick` is the function that will be called when the button is clicked.
-					// It will navigate to the proxy, optionally adding the `redirect` query arg to the URL.
-					// See `SetupUsingProxyWithSignIn` component for more details.
 					onClick={ onButtonClick }
 					disabled={ ! complete }
 				>

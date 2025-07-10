@@ -165,7 +165,7 @@ class User_Input {
 
 			$answered_by = intval( $setting['answeredBy'] );
 
-			// HERE, why do we want to skip if question has been answered by the current user?
+			// TODO: Why do we want to skip if the question has been answered by the current user? Investigate.
 			if ( ! $answered_by || $answered_by === $this->user_options->get_user_id() ) {
 				continue;
 			}
