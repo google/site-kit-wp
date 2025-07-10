@@ -28,13 +28,7 @@ module.exports = {
 	debugWindow: false,
 	engine: 'puppeteer',
 	engineOptions: {
-		args: [
-			'--no-sandbox',
-			'--disable-gpu',
-			'--disable-setuid-sandbox',
-			'--no-zygote',
-			'--accept-lang=en-US',
-		],
+		args: [ '--no-sandbox', '--accept-lang=en-US' ],
 		executablePath: '/usr/bin/chromium',
 	},
 	id: 'google-site-kit',

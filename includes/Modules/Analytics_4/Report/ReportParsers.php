@@ -75,7 +75,7 @@ class ReportParsers {
 	 *
 	 * @since 1.99.0
 	 * @since 1.130.0 Moved into ReportParsers for shared used between Report and PivotReport.
-	 * @since n.e.x.t Added support for dateRangeName and compareDateRangeName parameters.
+	 * @since 1.157.0 Added support for dateRangeName and compareDateRangeName parameters.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_DateRange[] An array of AnalyticsData DateRange objects.
