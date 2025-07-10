@@ -49,3 +49,58 @@ export function createWaitForFetchRequests() {
 		return Promise.all( responsePromises );
 	};
 }
+
+export function createWaitForFetchRequestsWithDebounce( debounceTime = 250 ) {
+	const responsePromises = [];
+
+	let timeout;
+	let resolvePromise;
+
+	const listener = ( req ) => {
+		if ( req.resourceType() === 'fetch' ) {
+			const promise = page.waitForResponse(
+				// eslint-disable-next-line sitekit/acronym-case
+				( res ) => res.request()._requestId === req._requestId
+			);
+			// A promise may be rejected if the execution context it was
+			// captured in no longer exists (e.g. previous page) which
+			// is necessary in some cases, and can be ignored since
+			// there is nothing to wait for any more.
+			responsePromises.push( promise.catch( () => {} ) );
+
+			if ( timeout ) {
+				clearTimeout( timeout );
+
+				timeout = setTimeout( () => {
+					if ( resolvePromise ) {
+						resolvePromise( Promise.all( responsePromises ) );
+						resolvePromise = null;
+						timeout = null;
+					}
+				}, debounceTime );
+			}
+		}
+	};
+
+	page.on( 'request', listener );
+
+	return () => {
+		page.off( 'request', listener );
+
+		console.debug(
+			'createWaitForFetchRequestsWithDebounce: waiting for fetch requests to complete...',
+			responsePromises.length
+		);
+
+		return new Promise( ( resolve ) => {
+			resolvePromise = resolve;
+
+			// TODO: Could DRY this with the setTimeout() above:
+			timeout = setTimeout( () => {
+				resolve( Promise.all( responsePromises ) );
+				resolvePromise = null;
+				timeout = null;
+			}, debounceTime );
+		} );
+	};
+}
