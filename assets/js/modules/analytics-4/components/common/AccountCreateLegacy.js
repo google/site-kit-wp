@@ -33,7 +33,7 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Notice from './Notice';
 import useViewContext from '../../../../hooks/useViewContext';
 
-export default function AccountCreateLegacy() {
+export default function AccountCreateLegacy( { trackGAEvent = trackEvent } ) {
 	const accounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountSummaries()
 	);
@@ -56,14 +56,14 @@ export default function AccountCreateLegacy() {
 	const createAccountHandler = useCallback(
 		async ( event ) => {
 			event.preventDefault();
-			await trackEvent(
+			await trackGAEvent(
 				`${ viewContext }_analytics`,
 				'create_account',
 				'custom-oauth'
 			);
 			global.open( createAccountURL, '_blank' );
 		},
-		[ createAccountURL, viewContext ]
+		[ createAccountURL, viewContext, trackGAEvent ]
 	);
 
 	const { resetAccountSummaries, resetAccountSettings } =

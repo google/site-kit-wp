@@ -43,7 +43,7 @@ import {
 } from '../../constants';
 import SettingsForm from './SettingsForm';
 
-export default function SettingsEdit() {
+export default function SettingsEdit( { trackGAEvent = trackEvent } ) {
 	const viewContext = useViewContext();
 
 	const isDoingSubmitChanges = useSelect( ( select ) =>
@@ -114,7 +114,7 @@ export default function SettingsEdit() {
 		}
 
 		if ( snippetMode !== oldSettings.snippetMode ) {
-			trackEvent(
+			trackGAEvent(
 				`${ viewContext }_rrm-settings`,
 				'change_snippet_mode',
 				SNIPPET_MODES[ snippetMode ]
@@ -125,7 +125,7 @@ export default function SettingsEdit() {
 			getPostTypesString( postTypes ) !==
 			getPostTypesString( oldSettings.postTypes )
 		) {
-			trackEvent(
+			trackGAEvent(
 				`${ viewContext }_rrm-settings`,
 				'change_post_types',
 				getPostTypesString( postTypes, allPostTypes )

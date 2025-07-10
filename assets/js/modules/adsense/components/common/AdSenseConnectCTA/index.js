@@ -51,7 +51,10 @@ import ContentAutoUpdate from './ContentAutoUpdate';
 import SupportLink from '../../../../../components/SupportLink';
 import useViewContext from '../../../../../hooks/useViewContext';
 
-export default function AdSenseConnectCTA( { onDismissModule } ) {
+export default function AdSenseConnectCTA( {
+	trackGAEvent = trackEvent,
+	onDismissModule,
+} ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
@@ -66,10 +69,13 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 	const inView = !! intersectionEntry?.intersectionRatio;
 	useEffect( () => {
 		if ( inView && ! hasBeenInView ) {
-			trackEvent( `${ viewContext }_adsense-cta-widget`, 'widget_view' );
+			trackGAEvent(
+				`${ viewContext }_adsense-cta-widget`,
+				'widget_view'
+			);
 			setHasBeenInView( true );
 		}
-	}, [ inView, viewContext, hasBeenInView ] );
+	}, [ trackGAEvent, viewContext, hasBeenInView, inView ] );
 
 	const adminReauthURL = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdminReauthURL()
@@ -109,7 +115,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 			return null;
 		}
 
-		await trackEvent(
+		await trackGAEvent(
 			`${ viewContext }_adsense-cta-widget`,
 			'activate_module',
 			MODULE_SLUG_ADSENSE
@@ -118,7 +124,13 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 		await setItem( 'module_setup', MODULE_SLUG_ADSENSE, { ttl: 300 } );
 
 		navigateTo( response.moduleReauthURL );
-	}, [ activateModule, navigateTo, setInternalServerError, viewContext ] );
+	}, [
+		activateModule,
+		navigateTo,
+		setInternalServerError,
+		viewContext,
+		trackGAEvent,
+	] );
 
 	const handleCompleteSetup = useCallback(
 		() => navigateTo( adminReauthURL ),
@@ -126,9 +138,9 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 	);
 
 	const handleDismissModule = useCallback( () => {
-		trackEvent( `${ viewContext }_adsense-cta-widget`, 'dismiss_widget' );
+		trackGAEvent( `${ viewContext }_adsense-cta-widget`, 'dismiss_widget' );
 		onDismissModule();
-	}, [ onDismissModule, viewContext ] );
+	}, [ onDismissModule, viewContext, trackGAEvent ] );
 
 	const cellProps = {
 		smSize: 4,

@@ -37,7 +37,9 @@ import useViewContext from '../../hooks/useViewContext';
 import Notice from '../../components/Notice';
 import { Grid, Cell, Row } from '../../material-components';
 
-export default function ConversionReportingSettingsSubtleNotification() {
+export default function ConversionReportingSettingsSubtleNotification( {
+	trackGAEvent = trackEvent,
+} ) {
 	const viewContext = useViewContext();
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const [ isViewed, setIsViewed ] = useState( false );
@@ -52,7 +54,7 @@ export default function ConversionReportingSettingsSubtleNotification() {
 	useEffect( () => {
 		if ( ! isViewed && inView ) {
 			// Handle internal tracking.
-			trackEvent(
+			trackGAEvent(
 				`${ viewContext }_kmw-settings-change-from-manual-to-tailored`,
 				'view_notification',
 				'conversion_reporting'
@@ -60,7 +62,7 @@ export default function ConversionReportingSettingsSubtleNotification() {
 
 			setIsViewed( true );
 		}
-	}, [ isViewed, inView, viewContext ] );
+	}, [ isViewed, inView, viewContext, trackGAEvent ] );
 
 	const userInputURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
@@ -70,12 +72,12 @@ export default function ConversionReportingSettingsSubtleNotification() {
 		setIsNavigating( true );
 
 		// Handle internal tracking.
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_kmw-settings-change-from-manual-to-tailored`,
 			'confirm_get_tailored_metrics',
 			'conversion_reporting'
 		);
-	}, [ setIsNavigating, viewContext ] );
+	}, [ setIsNavigating, viewContext, trackGAEvent ] );
 
 	return (
 		<Grid ref={ notificationRef }>

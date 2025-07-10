@@ -21,6 +21,7 @@
  */
 import { useCallback, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
@@ -36,7 +37,7 @@ import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { useChangeMetricsFeatureTourEffect } from './hooks/useChangeMetricsFeatureTourEffect';
 
-export default function ChangeMetricsLink() {
+export default function ChangeMetricsLink( { trackGAEvent = trackEvent } ) {
 	const keyMetrics = useSelect( ( select ) =>
 		select( CORE_USER ).getKeyMetrics()
 	);
@@ -46,8 +47,8 @@ export default function ChangeMetricsLink() {
 
 	const openMetricsSelectionPanel = useCallback( () => {
 		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
-		trackEvent( `${ viewContext }_kmw`, 'change_metrics' );
-	}, [ setValue, viewContext ] );
+		trackGAEvent( `${ viewContext }_kmw`, 'change_metrics' );
+	}, [ setValue, viewContext, trackGAEvent ] );
 
 	const renderChangeMetricLink =
 		Array.isArray( keyMetrics ) && keyMetrics?.length > 0;
@@ -73,3 +74,7 @@ export default function ChangeMetricsLink() {
 		</Fragment>
 	);
 }
+
+ChangeMetricsLink.propTypes = {
+	trackGAEvent: PropTypes.func,
+};

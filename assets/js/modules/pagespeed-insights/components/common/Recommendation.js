@@ -35,17 +35,20 @@ import Accordion from '../../../../components/Accordion';
 import { sanitizeHTML, markdownToHTML, trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 
-export default function Recommendation( props ) {
-	const { auditID, title, referenceURL, strategy } = props;
+export default function Recommendation( {
+	recommendation,
+	trackGAEvent = trackEvent,
+} ) {
+	const { auditID, title, referenceURL, strategy } = recommendation;
 	const viewContext = useViewContext();
 
 	const onOpen = useCallback( () => {
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_pagespeed-widget`,
 			'stack_pack_expand',
 			auditID
 		);
-	}, [ auditID, viewContext ] );
+	}, [ auditID, viewContext, trackGAEvent ] );
 
 	const stackPack = useSelect( ( select ) =>
 		select( MODULES_PAGESPEED_INSIGHTS ).getStackPackDescription(
@@ -78,9 +81,12 @@ export default function Recommendation( props ) {
 }
 
 Recommendation.propTypes = {
-	auditID: PropTypes.string.isRequired,
-	title: PropTypes.string.isRequired,
-	referenceURL: PropTypes.string.isRequired,
-	strategy: PropTypes.oneOf( [ STRATEGY_MOBILE, STRATEGY_DESKTOP ] )
-		.isRequired,
+	recommendation: PropTypes.shape( {
+		auditID: PropTypes.string.isRequired,
+		title: PropTypes.string.isRequired,
+		referenceURL: PropTypes.string.isRequired,
+		strategy: PropTypes.oneOf( [ STRATEGY_MOBILE, STRATEGY_DESKTOP ] )
+			.isRequired,
+	} ).isRequired,
+	trackGAEvent: PropTypes.func,
 };

@@ -49,7 +49,7 @@ import useViewContext from '../../../../../../hooks/useViewContext';
 const InfoNoticeWithIntersectionObserver =
 	withIntersectionObserver( InfoNotice );
 
-function InfoNoticeWidget( { Widget, WidgetNull } ) {
+function InfoNoticeWidget( { Widget, WidgetNull, trackGAEvent = trackEvent } ) {
 	const viewContext = useViewContext();
 
 	const availableAudiences = useInViewSelect( ( select ) => {
@@ -93,7 +93,7 @@ function InfoNoticeWidget( { Widget, WidgetNull } ) {
 			return;
 		}
 
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_audiences-info-notice`,
 			'dismiss_notice',
 			AUDIENCE_INFO_NOTICES[ dismissCount ].slug
@@ -106,7 +106,13 @@ function InfoNoticeWidget( { Widget, WidgetNull } ) {
 				expiresInSeconds: expiry,
 			} );
 		} );
-	}, [ dismissCount, dismissPrompt, noticesCount, viewContext ] );
+	}, [
+		dismissCount,
+		dismissPrompt,
+		noticesCount,
+		viewContext,
+		trackGAEvent,
+	] );
 
 	// Return null if there are no matching audiences or if the notice has been dismissed.
 	if (
@@ -128,7 +134,7 @@ function InfoNoticeWidget( { Widget, WidgetNull } ) {
 				dismissLabel={ __( 'Got it', 'google-site-kit' ) }
 				onDismiss={ onDismiss }
 				onInView={ () => {
-					trackEvent(
+					trackGAEvent(
 						`${ viewContext }_audiences-info-notice`,
 						'view_notice',
 						slug

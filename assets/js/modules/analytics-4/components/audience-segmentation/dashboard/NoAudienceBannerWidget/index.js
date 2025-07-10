@@ -37,7 +37,11 @@ import useViewContext from '../../../../../../hooks/useViewContext';
 const NoAudienceBannerWithIntersectionObserver =
 	withIntersectionObserver( NoAudienceBanner );
 
-function NoAudienceBannerWidget( { Widget, WidgetNull } ) {
+function NoAudienceBannerWidget( {
+	Widget,
+	WidgetNull,
+	trackGAEvent = trackEvent,
+} ) {
 	const viewContext = useViewContext();
 
 	const availableAudiences = useSelect( ( select ) => {
@@ -67,7 +71,7 @@ function NoAudienceBannerWidget( { Widget, WidgetNull } ) {
 			<Widget noPadding>
 				<NoAudienceBannerWithIntersectionObserver
 					onInView={ () => {
-						trackEvent(
+						trackGAEvent(
 							`${ viewContext }_audiences-no-audiences`,
 							'view_banner',
 							didSetAudiences

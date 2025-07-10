@@ -46,7 +46,10 @@ import {
 	MODULES_ADSENSE,
 } from '../../../../datastore/constants';
 
-export default function PlaceTagsStep( { setActiveStep } ) {
+export default function PlaceTagsStep( {
+	setActiveStep,
+	trackGAEvent = trackEvent,
+} ) {
 	const viewContext = useViewContext();
 
 	const useAdBlockingRecoveryErrorSnippet = useSelect( ( select ) =>
@@ -82,12 +85,12 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 
 			setUseAdBlockingRecoveryErrorSnippet( isChecked );
 
-			trackEvent(
+			trackGAEvent(
 				`${ viewContext }_adsense-abr`,
 				isChecked ? 'check_box' : 'uncheck_box'
 			);
 		},
-		[ setUseAdBlockingRecoveryErrorSnippet, viewContext ]
+		[ setUseAdBlockingRecoveryErrorSnippet, viewContext, trackGAEvent ]
 	);
 
 	const onCTAClick = useCallback( async () => {
@@ -108,7 +111,10 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 			return;
 		}
 
-		await trackEvent( `${ viewContext }_adsense-abr`, 'setup_enable_tag' );
+		await trackGAEvent(
+			`${ viewContext }_adsense-abr`,
+			'setup_enable_tag'
+		);
 
 		setActiveStep( ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.CREATE_MESSAGE );
 	}, [
@@ -118,6 +124,7 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 		setUseAdBlockingRecoverySnippet,
 		syncAdBlockingRecoveryTags,
 		viewContext,
+		trackGAEvent,
 	] );
 
 	useMount( () => {
@@ -125,7 +132,7 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 		if ( ! useAdBlockingRecoveryErrorSnippet ) {
 			setUseAdBlockingRecoveryErrorSnippet( true );
 		}
-		trackEvent( `${ viewContext }_adsense-abr`, 'setup_place_tag' );
+		trackGAEvent( `${ viewContext }_adsense-abr`, 'setup_place_tag' );
 	} );
 
 	return (
@@ -152,7 +159,7 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 			<p className="googlesitekit-ad-blocking-recovery__error-protection-tag-info">
 				{ createInterpolateElement(
 					__(
-						'If a site visitor’s ad blocker browser extension blocks the message you create in AdSense, a default, non-customizable ad blocking recovery message will display instead. <a>Learn more</a>',
+						"If a site visitor's ad blocker browser extension blocks the message you create in AdSense, a default, non-customizable ad blocking recovery message will display instead. <a>Learn more</a>",
 						'google-site-kit'
 					),
 					{
