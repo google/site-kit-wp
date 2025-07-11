@@ -563,12 +563,17 @@ export default function UserDimensionsPieChart( props ) {
 
 	const labelMetaMap = dataMap
 		.slice( 1 )
-		.map( ( [ label ], i ) => ( {
-			label,
-			color: options.slices?.[ i ]?.color || '#ccc',
-			index: i,
-		} ) )
-		.sort( ( a, b ) => a.label.localeCompare( b.label ) );
+		// eslint-disable-next-line no-unused-vars
+		.map( ( [ label, percentage ], i ) => {
+			const value = report?.rows?.[ i ]?.metricValues?.[ 0 ]?.value || 0;
+			return {
+				label,
+				color: options.slices?.[ i ]?.color || '#ccc',
+				index: i,
+				value: Number( value ),
+			};
+		} )
+		.sort( ( a, b ) => b.value - a.value );
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">
