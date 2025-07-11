@@ -44,7 +44,8 @@ import { RESOURCE_TYPE_AUDIENCE } from './partial-data';
 const MAX_INITIAL_AUDIENCES = 2;
 const START_AUDIENCES_SETUP = 'START_AUDIENCES_SETUP';
 const FINISH_AUDIENCES_SETUP = 'FINISH_AUDIENCES_SETUP';
-
+const START_MAYBE_SYNC_AUDIENCES = 'START_MAYBE_SYNC_AUDIENCES';
+const FINISH_MAYBE_SYNC_AUDIENCES = 'FINISH_MAYBE_SYNC_AUDIENCES';
 /**
  * Retrieves user counts for the provided audiences, filters to those with data over the given date range,
  * sorts them by total users, and returns the audienceResourceNames in that order.
@@ -239,6 +240,10 @@ async function getInitialConfiguredAudiences( registry, availableAudiences ) {
 
 export const baseInitialState = {
 	isSettingUpAudiences: false,
+	audienceSync: {
+		inProgress: false,
+		hasSynced: false,
+	},
 };
 
 const baseActions = {
@@ -350,12 +355,24 @@ const baseActions = {
 		const isAuthenticated = select( CORE_USER ).isAuthenticated();
 
 		if ( ! isAuthenticated ) {
+			// Unblock the flag so component relying on the value are not incorrectly blocked.
+			yield { type: FINISH_MAYBE_SYNC_AUDIENCES };
+
+			return;
+		}
+
+		const isSyncingAudiences =
+			select( MODULES_ANALYTICS_4 ).isSyncingAudiences();
+
+		if ( isSyncingAudiences ) {
 			return;
 		}
 
 		yield commonActions.await(
 			resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings()
 		);
+
+		yield { type: START_MAYBE_SYNC_AUDIENCES };
 
 		const availableAudiencesLastSyncedAt =
 			select( MODULES_ANALYTICS_4 ).getAvailableAudiencesLastSyncedAt();
@@ -371,6 +388,8 @@ const baseActions = {
 				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
 			);
 		}
+
+		yield { type: FINISH_MAYBE_SYNC_AUDIENCES };
 	},
 
 	/**
@@ -736,6 +755,24 @@ const baseReducer = ( state, { type } ) => {
 				isSettingUpAudiences: true,
 			};
 		}
+		case START_MAYBE_SYNC_AUDIENCES: {
+			return {
+				...state,
+				audienceSync: {
+					inProgress: true,
+					hasSynced: false,
+				},
+			};
+		}
+		case FINISH_MAYBE_SYNC_AUDIENCES: {
+			return {
+				...state,
+				audienceSync: {
+					inProgress: false,
+					hasSynced: true,
+				},
+			};
+		}
 		case FINISH_AUDIENCES_SETUP: {
 			return {
 				...state,
@@ -838,6 +875,26 @@ const baseSelectors = {
 			return audience?.audienceType === 'USER_AUDIENCE';
 		}
 	),
+
+	/**
+	 * Checks if the audience is syncing.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean)} `true` if the audience is syncing, `false` if not.
+	 */
+	isSyncingAudiences: ( state ) => state.audienceSync.inProgress,
+
+	/**
+	 * Checks if the audience sync has completed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean)} `true` if the audience sync has completed, `false` if not.
+	 */
+	hasSyncedAudiences: ( state ) => state.audienceSync.hasSynced,
 
 	/**
 	 * Checks whether the provided audiences are available.
