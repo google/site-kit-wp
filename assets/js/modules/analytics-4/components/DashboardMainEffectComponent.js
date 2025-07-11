@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import useAdSenseNotifications from '../../../hooks/useAdSenseNotifications';
 import useCreateCustomDimensionForAudienceEffect from '../hooks/useCreateCustomDimensionForAudienceEffect';
 import useCreateCustomDimensionsEffect from '../hooks/useCreateCustomDimensionsEffect';
 import useSyncGoogleTagEffect from '../hooks/useSyncGoogleTagEffect';
@@ -27,6 +28,7 @@ export default function DashboardMainEffectComponent() {
 	useCreateCustomDimensionForAudienceEffect();
 	useCreateCustomDimensionsEffect();
 	useSyncGoogleTagEffect();
+	useAdSenseNotifications();
 
 	return null;
 }

@@ -1,7 +1,7 @@
 /**
- * AdSenseAlerts component.
+ * AdSense notifications side-effect hook.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,14 +25,14 @@ import { useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
-import NotificationFromServer from '../NotificationFromServer';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { MODULES_ADSENSE } from '../modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../modules/adsense/constants';
+import { NOTIFICATION_AREAS } from '../googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '../googlesitekit/notifications/datastore/constants';
+import NotificationFromServer from '../components/NotificationFromServer';
 
-function AdSenseAlerts() {
+export default function useAdSenseNotifications() {
 	const adSenseModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE )
 	);
@@ -71,7 +71,7 @@ function AdSenseAlerts() {
 				},
 				priority: notification.priority,
 				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-				isDismissible: notification.isDismissible || true,
+				isDismissible: notification.isDismissible,
 			} );
 
 			setRegisteredNotifications( ( previousRegisteredNotifications ) => {
@@ -87,8 +87,4 @@ function AdSenseAlerts() {
 		registerNotification,
 		registeredNotifications,
 	] );
-
-	return null;
 }
-
-export default AdSenseAlerts;
