@@ -41,12 +41,21 @@ import { trackEvent } from '../../../../../../util';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
+// Avoid console.log in tests.
+const log = process?.stdout
+	? ( ...args ) =>
+			process.stdout.write(
+				args.map( JSON.stringify ).join( ' ' ) + '\n'
+			)
+	: global.console.log;
+
 const ErrorWidgetContentWithIntersectionObserver =
 	withIntersectionObserver( ErrorWidgetContent );
 
 function AudienceSegmentationErrorWidget( {
 	Widget,
 	errors,
+	failedAudiences,
 	onRetry,
 	showRetryButton,
 } ) {
@@ -75,10 +84,16 @@ function AudienceSegmentationErrorWidget( {
 		setValue( AUDIENCE_INFO_NOTICE_HIDE_UI, true );
 	}, [ setValue ] );
 
+	log( '[SFR] AudienceSegmentationErrorWidget render', {
+		errorsArray,
+		failedAudiences,
+	} );
+
 	return (
 		<ErrorWidgetContentWithIntersectionObserver
 			Widget={ Widget }
 			errors={ errorsArray }
+			failedAudiences={ failedAudiences }
 			onRetry={ handleRetry }
 			onRequestAccess={ () => {
 				trackEvent(
@@ -104,6 +119,7 @@ AudienceSegmentationErrorWidget.propTypes = {
 		PropTypes.object,
 		PropTypes.arrayOf( PropTypes.object ),
 	] ).isRequired,
+	failedAudiences: PropTypes.arrayOf( PropTypes.string ),
 	onRetry: PropTypes.func,
 	showRetryButton: PropTypes.bool,
 };

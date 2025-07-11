@@ -23,55 +23,43 @@ import PropTypes from 'prop-types';
 import { useMount } from 'react-use';
 
 /**
- * WordPress dependencies
- */
-import { useState } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import AudienceSegmentationErrorWidget from './AudienceSegmentationErrorWidget';
 import { isInsufficientPermissionsError } from '../../../../../util/errors';
 import AudienceTileLoading from './AudienceTilesWidget/AudienceTile/AudienceTileLoading';
+import useEnableAudienceGroup from '../../../hooks/useEnableAudienceGroup';
 
 export default function PrimaryUserSetupWidget( { Widget } ) {
-	const [ setupError, setSetupError ] = useState( null );
 	const isSettingUpAudiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isSettingUpAudiences()
 	);
-	const { enableAudienceGroup } = useDispatch( MODULES_ANALYTICS_4 );
 
-	const handleRetry = async () => {
-		setSetupError( null );
-		const { error } = await enableAudienceGroup();
-		if ( error ) {
-			setSetupError( error );
-		}
-	};
+	const { apiErrors, failedAudiences, onEnableGroups } =
+		useEnableAudienceGroup();
 
 	useMount( () => {
+		// TODO: Is this check needed? Remove if not.
 		if ( isSettingUpAudiences ) {
 			return;
 		}
 
-		( async () => {
-			const { error } = await enableAudienceGroup();
-			if ( error ) {
-				setSetupError( error );
-			}
-		} )();
+		onEnableGroups();
 	} );
 
-	if ( setupError ) {
+	if ( apiErrors.length || failedAudiences.length ) {
 		return (
 			<AudienceSegmentationErrorWidget
 				Widget={ Widget }
-				errors={ setupError }
-				onRetry={ handleRetry }
+				errors={ apiErrors }
+				failedAudiences={ failedAudiences }
+				onRetry={ onEnableGroups }
 				showRetryButton={
-					! isInsufficientPermissionsError( setupError )
+					apiErrors.length
+						? ! isInsufficientPermissionsError( apiErrors[ 0 ] )
+						: true
 				}
 			/>
 		);
