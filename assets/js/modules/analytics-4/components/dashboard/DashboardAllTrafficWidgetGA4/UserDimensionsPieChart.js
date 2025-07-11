@@ -26,7 +26,13 @@ import { cloneDeep } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
+import {
+	Fragment,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { ESCAPE } from '@wordpress/keycodes';
 
@@ -58,6 +64,19 @@ import GatheringDataNotice, {
 } from '../../../../../components/GatheringDataNotice';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { getTooltipHelp } from './utils';
+
+const PIE_CHART_COLORS = [
+	'#fece72',
+	'#a983e6',
+	'#bed4ff',
+	'#ee92da',
+	'#ff9b7a',
+	'#7fc6b9',
+	'#ffb1c1',
+	'#c9a0dc',
+	'#f5b041',
+	'#85c1e9',
+];
 
 export default function UserDimensionsPieChart( props ) {
 	const { dimensionName, dimensionValue, gatheringData, loaded, report } =
@@ -288,8 +307,6 @@ export default function UserDimensionsPieChart( props ) {
 		},
 	} );
 
-	const { slices } = UserDimensionsPieChart.chartOptions;
-
 	const onLegendClick = ( index ) => {
 		if ( ! chartWrapperRef.current ) {
 			return;
@@ -450,6 +467,55 @@ export default function UserDimensionsPieChart( props ) {
 	};
 
 	const options = cloneDeep( UserDimensionsPieChart.chartOptions );
+	// Use a ref to persist mapping during the component lifecycle
+	const labelColorMapRef = useRef( {} );
+	const usedColors = useMemo( () => new Set(), [] );
+
+	// Load from localStorage (optional: persists across page reloads)
+	useEffect( () => {
+		const stored = localStorage.getItem( 'ga4-label-color-map' );
+		if ( stored ) {
+			try {
+				const parsed = JSON.parse( stored );
+				labelColorMapRef.current = parsed;
+				Object.values( parsed ).forEach( ( color ) =>
+					usedColors.add( color )
+				);
+			} catch ( e ) {
+				// Ignore malformed storage
+			}
+		}
+	}, [ usedColors ] );
+
+	const getColorForLabel = ( label ) => {
+		const map = labelColorMapRef.current;
+
+		if ( map[ label ] ) {
+			return map[ label ];
+		}
+
+		const availableColor =
+			PIE_CHART_COLORS.find( ( color ) => ! usedColors.has( color ) ) ||
+			'#ccc';
+
+		map[ label ] = availableColor;
+		usedColors.add( availableColor );
+
+		// Save to localStorage immediately after assigning
+		localStorage.setItem(
+			'ga4-label-color-map',
+			JSON.stringify( labelColorMapRef.current )
+		);
+
+		return availableColor;
+	};
+
+	// Build slices object using label-based color mapping
+	const slices = {};
+	dataMap.slice( 1 ).forEach( ( [ label ], index ) => {
+		slices[ index ] = { color: getColorForLabel( label ) };
+	} );
+	options.slices = slices;
 
 	let labels = {
 		sessionDefaultChannelGrouping: __(
@@ -494,6 +560,15 @@ export default function UserDimensionsPieChart( props ) {
 	}
 
 	const showZeroDataChart = hasZeroData || dataMap.length < 2;
+
+	const labelMetaMap = dataMap
+		.slice( 1 )
+		.map( ( [ label ], i ) => ( {
+			label,
+			color: options.slices?.[ i ]?.color || '#ccc',
+			index: i,
+		} ) )
+		.sort( ( a, b ) => a.label.localeCompare( b.label ) );
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">
@@ -571,16 +646,15 @@ export default function UserDimensionsPieChart( props ) {
 				>
 					{ loaded &&
 						! showZeroDataChart &&
-						dataMap?.slice( 1 ).map( ( [ label ], i ) => {
+						labelMetaMap.map( ( { label, color, index } ) => {
 							const isActive = label === dimensionValue;
-							const sliceColor = slices[ i ]?.color;
 							const isOthers =
 								__( 'Others', 'google-site-kit' ) === label;
 
 							return (
 								<Link
 									key={ label }
-									onClick={ () => onLegendClick( i ) }
+									onClick={ () => onLegendClick( index ) }
 									className={ classnames(
 										'googlesitekit-widget--analyticsAllTraffic__legend-slice',
 										{
@@ -594,9 +668,7 @@ export default function UserDimensionsPieChart( props ) {
 								>
 									<span
 										className="googlesitekit-widget--analyticsAllTraffic__dot"
-										style={ {
-											backgroundColor: sliceColor,
-										} }
+										style={ { backgroundColor: color } }
 									/>
 
 									<span
@@ -608,9 +680,7 @@ export default function UserDimensionsPieChart( props ) {
 
 									<span
 										className="googlesitekit-widget--analyticsAllTraffic__underlay"
-										style={ {
-											backgroundColor: sliceColor,
-										} }
+										style={ { backgroundColor: color } }
 									/>
 								</Link>
 							);
@@ -694,13 +764,6 @@ UserDimensionsPieChart.chartOptions = {
 	pieSliceTextStyle: {
 		color: '#131418',
 		fontSize: 12,
-	},
-	slices: {
-		0: { color: '#fece72' },
-		1: { color: '#a983e6' },
-		2: { color: '#bed4ff' },
-		3: { color: '#ee92da' },
-		4: { color: '#ff9b7a' },
 	},
 	title: null,
 	tooltip: {
