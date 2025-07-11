@@ -57,6 +57,7 @@ function NewVisitorsWidget( { Widget } ) {
 		...dates,
 		dimensions: [ 'newVsReturning' ],
 		metrics: [ { name: 'activeUsers' } ],
+		reportID: 'analytics-4_new-visitors-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(
