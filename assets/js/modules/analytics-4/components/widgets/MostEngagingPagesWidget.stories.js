@@ -47,6 +47,8 @@ const pageViewsReportOptions = {
 	dimensions: [ 'pagePath' ],
 	metrics: [ { name: 'screenPageViews' } ],
 	limit: 1,
+	reportID:
+		'analytics-4_most-engaging-pages-widget_widget_pageViewsReportOptions',
 };
 
 const pageTitlesReportOptions = {
@@ -62,6 +64,7 @@ const pageTitlesReportOptions = {
 	metrics: [ { name: 'screenPageViews' } ],
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 15,
+	reportID: 'analytics-4_get-page-titles_store:selector_options',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
@@ -137,6 +140,8 @@ Ready.args = {
 				},
 			},
 			limit: 3,
+			reportID:
+				'analytics-4_most-engaging-pages-widget_widget_reportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );
@@ -201,6 +206,8 @@ ReadyViewOnly.args = {
 				},
 			},
 			limit: 3,
+			reportID:
+				'analytics-4_most-engaging-pages-widget_widget_reportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );
@@ -281,6 +288,8 @@ ZeroData.args = {
 				},
 			},
 			limit: 3,
+			reportID:
+				'analytics-4_most-engaging-pages-widget_widget_reportOptions',
 		};
 
 		const report = getAnalytics4MockResponse( reportOptions );

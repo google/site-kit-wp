@@ -341,6 +341,8 @@ const baseSelectors = {
 				},
 				metrics: [ { name: 'eventCount' } ],
 				limit: 1,
+				reportID:
+					'analytics-4_get-data-availability-report-options_store:selector',
 			};
 		}
 	),

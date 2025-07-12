@@ -39,6 +39,12 @@
 		}
 	}
 
+	.googlesitekit-ad-blocking-recovery__steps {
+		.googlesitekit-stepper__step-title {
+			letter-spacing: $ls-xxs;
+		}
+	}
+
 	.googlesitekit-ad-blocking-recovery__complete-actions {
 		.mdc-button {
 			margin-right: 10px;
@@ -78,10 +84,21 @@
 			}
 
 			> p:first-child {
+				letter-spacing: $ls-m;
 				margin-top: 0;
 
 				@media (min-width: $bp-tablet) {
 					margin-top: $grid-gap-phone / 2;
+				}
+			}
+		}
+
+		&.googlesitekit-ad-blocking-recovery__step-create-message {
+
+			.googlesitekit-stepper__step-content {
+
+				> p {
+					letter-spacing: $ls-m;
 				}
 			}
 		}

@@ -47,6 +47,7 @@ const reportOptions = {
 			name: 'activeUsers',
 		},
 	],
+	reportID: 'analytics-4_returning-visitors-widget_widget_reportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(

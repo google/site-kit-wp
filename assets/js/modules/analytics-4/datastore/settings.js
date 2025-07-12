@@ -240,11 +240,11 @@ async function updateEnhancedMeasurementSettings( {
 	webDataStreamID,
 	isEnhancedMeasurementEnabled,
 } ) {
-	await dispatch( MODULES_ANALYTICS_4 ).setEnhancedMeasurementStreamEnabled(
+	await dispatch( MODULES_ANALYTICS_4 ).setEnhancedMeasurementStreamEnabled( {
 		propertyID,
 		webDataStreamID,
-		isEnhancedMeasurementEnabled
-	);
+		enabled: isEnhancedMeasurementEnabled,
+	} );
 
 	if (
 		select( MODULES_ANALYTICS_4 ).haveEnhancedMeasurementSettingsChanged(

@@ -78,6 +78,8 @@ export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 				},
 			},
 		],
+		reportID:
+			'dashboard_wp-dashboard-unique-visitors-ga4_component_reportArgs',
 	};
 
 	const data = useInViewSelect(

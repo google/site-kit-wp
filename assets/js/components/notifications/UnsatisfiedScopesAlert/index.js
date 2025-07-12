@@ -39,12 +39,13 @@ import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 } from '../../../googlesitekit/datastore/user/constants';
-import NotificationError from '../../../googlesitekit/notifications/components/layout/NotificationError';
-import Description from '../../../googlesitekit/notifications/components/common/Description';
-import CTALink from '../../../googlesitekit/notifications/components/common/CTALink';
 import { getUnsatisfiedScopesMessage } from './utils';
+import BannerNotification from '../../../googlesitekit/notifications/components/layout/BannerNotification';
+import { TYPES } from '../../Notice/constants';
 
 export default function UnsatisfiedScopesAlert( { id, Notification } ) {
+	const [ isSaving, setIsSaving ] = useState( false );
+
 	const doingCTARef = useRef();
 	const [ inProgressModuleSetup, setInProgressModuleSetup ] =
 		useState( false );
@@ -98,6 +99,7 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 
 	const onCTAClick = useCallback( async () => {
 		doingCTARef.current = true;
+		setIsSaving( true );
 
 		if ( ! inProgressModuleSetup ) {
 			return;
@@ -141,20 +143,18 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 	);
 
 	return (
-		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
-			<NotificationError
+		<Notification>
+			<BannerNotification
+				notificationID={ id }
+				type={ TYPES.ERROR }
 				title={ title }
-				description={ <Description text={ message } /> }
-				actions={
-					<CTALink
-						id={ id }
-						ctaLabel={ ctaLabel }
-						ctaLink={
-							inProgressModuleSetup ? undefined : connectURL
-						}
-						onCTAClick={ onCTAClick }
-					/>
-				}
+				description={ message }
+				ctaButton={ {
+					label: ctaLabel,
+					href: inProgressModuleSetup ? undefined : connectURL,
+					onClick: onCTAClick,
+					inProgress: isSaving,
+				} }
 			/>
 		</Notification>
 	);
