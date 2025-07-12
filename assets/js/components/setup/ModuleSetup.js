@@ -44,6 +44,7 @@ import Header from '../Header';
 import ModuleSetupFooter from './ModuleSetupFooter';
 import { getQueryArg } from '@wordpress/url';
 import ProgressSegments from '../ProgressSegments';
+import Link from '../Link';
 
 export default function ModuleSetup( { moduleSlug } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -105,6 +106,10 @@ export default function ModuleSetup( { moduleSlug } ) {
 		trackEvent( 'moduleSetup', 'view_module_setup', moduleSlug );
 	} );
 
+	const adminURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL()
+	);
+
 	if ( ! module?.SetupComponent ) {
 		return null;
 	}
@@ -117,7 +122,16 @@ export default function ModuleSetup( { moduleSlug } ) {
 	return (
 		<Fragment>
 			<Header>
-				<HelpMenu />
+				{ showProgress && (
+					<Link
+						id={ `exit-setup-${ module.slug }` }
+						href={ `${ adminURL }/plugins.php` }
+						onClick={ onCancelButtonClick }
+					>
+						{ __( 'Exit setup', 'google-site-kit' ) }
+					</Link>
+				) }
+				{ ! showProgress && <HelpMenu /> }
 			</Header>
 			{ showProgress && (
 				// `currentSegment` and `totalSegments` can be hardcoded, at least for phase 1, although we might want to tweak their values.
@@ -145,15 +159,18 @@ export default function ModuleSetup( { moduleSlug } ) {
 									</Row>
 								</Grid>
 
-								<ModuleSetupFooter
-									module={ module }
-									onCancel={ onCancelButtonClick }
-									onComplete={
-										typeof onCompleteSetup === 'function'
-											? onCompleteSetupCallback
-											: undefined
-									}
-								/>
+								{ ! showProgress && (
+									<ModuleSetupFooter
+										module={ module }
+										onCancel={ onCancelButtonClick }
+										onComplete={
+											typeof onCompleteSetup ===
+											'function'
+												? onCompleteSetupCallback
+												: undefined
+										}
+									/>
+								) }
 							</section>
 						</Cell>
 					</Row>
