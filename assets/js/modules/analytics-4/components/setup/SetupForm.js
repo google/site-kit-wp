@@ -26,6 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs, getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -80,6 +81,21 @@ export default function SetupForm( { finishSetup } ) {
 		)
 	);
 
+	const userInputLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
+	);
+
+	const showProgress = getQueryArg( location.href, 'showProgress' );
+
+	const userInputLinkWithProgress = showProgress
+		? addQueryArgs( userInputLink, {
+				showProgress: true,
+		  } )
+		: userInputLink;
+
+	const { syncAvailableAudiences, fetchSyncAvailableCustomDimensions } =
+		useDispatch( MODULES_ANALYTICS_4 );
+
 	const submitForm = useCallback(
 		async ( event ) => {
 			event.preventDefault();
@@ -95,6 +111,25 @@ export default function SetupForm( { finishSetup } ) {
 
 			if ( ! error ) {
 				setConversionTrackingEnabled( true );
+
+				// Sync audiences and custom dimensions, so the `PrimaryUserSetupWidget` component
+				// can quickly setup audiences when the user lands on the dashboard.
+				// eslint-disable-next-line no-unused-vars
+				const { error: syncAudiencesError } =
+					await syncAvailableAudiences();
+
+				// FIXME: Handle errors properly.
+				if ( syncAudiencesError ) {
+					return { error: syncAudiencesError };
+				}
+
+				const { error: syncDimensionsError } =
+					await fetchSyncAvailableCustomDimensions();
+
+				if ( syncDimensionsError ) {
+					return { error: syncDimensionsError };
+				}
+
 				await saveConversionTrackingSettings();
 
 				if ( isEnhancedMeasurementEnabled === true ) {
@@ -103,16 +138,19 @@ export default function SetupForm( { finishSetup } ) {
 						'ga4_setup_enhanced_measurement_enabled'
 					);
 				}
-				finishSetup();
+				finishSetup( userInputLinkWithProgress );
 			}
 		},
 		[
-			finishSetup,
-			isEnhancedMeasurementEnabled,
-			setConversionTrackingEnabled,
-			saveConversionTrackingSettings,
 			setValues,
 			submitChanges,
+			setConversionTrackingEnabled,
+			syncAvailableAudiences,
+			fetchSyncAvailableCustomDimensions,
+			saveConversionTrackingSettings,
+			isEnhancedMeasurementEnabled,
+			finishSetup,
+			userInputLinkWithProgress,
 			viewContext,
 		]
 	);
@@ -148,7 +186,7 @@ export default function SetupForm( { finishSetup } ) {
 					disabled={ ! canSubmitChanges || isSaving }
 					isSaving={ isSaving }
 				>
-					{ __( 'Complete setup', 'google-site-kit' ) }
+					{ __( 'Set up', 'google-site-kit' ) }
 				</SpinnerButton>
 			</div>
 		</form>
