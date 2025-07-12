@@ -41,14 +41,6 @@ import { trackEvent } from '../../../../../../util';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
-// Avoid console.log in tests.
-const log = process?.stdout
-	? ( ...args ) =>
-			process.stdout.write(
-				args.map( JSON.stringify ).join( ' ' ) + '\n'
-			)
-	: global.console.log;
-
 const ErrorWidgetContentWithIntersectionObserver =
 	withIntersectionObserver( ErrorWidgetContent );
 
@@ -83,11 +75,6 @@ function AudienceSegmentationErrorWidget( {
 		// Set UI key to hide the info notice.
 		setValue( AUDIENCE_INFO_NOTICE_HIDE_UI, true );
 	}, [ setValue ] );
-
-	log( '[SFR] AudienceSegmentationErrorWidget render', {
-		errorsArray,
-		failedAudiences,
-	} );
 
 	return (
 		<ErrorWidgetContentWithIntersectionObserver
