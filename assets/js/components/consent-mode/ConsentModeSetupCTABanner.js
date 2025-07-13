@@ -146,6 +146,7 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 				} }
 				errorText={ saveError?.message }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
+				dismissOnCTAClick
 			/>
 		</Notification>
 	);
