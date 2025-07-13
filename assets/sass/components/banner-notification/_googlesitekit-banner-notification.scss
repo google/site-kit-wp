@@ -21,9 +21,13 @@
 	.googlesitekit-banner-notification {
 		width: 100%;
 
-		.googlesitekit-banner__description a {
-			color: unset;
-			text-decoration: underline;
+		.googlesitekit-banner__description {
+			font-size: $fs-body-sm;
+
+			a {
+				color: unset;
+				text-decoration: underline;
+			}
 		}
 
 		&.googlesitekit-banner-notification--info {
