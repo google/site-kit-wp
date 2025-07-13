@@ -109,6 +109,7 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 				} }
 				dismissButton={ {
 					label: __( 'Maybe later', 'google-site-kit' ),
+					disabled: isSaving,
 				} }
 				svg={ {
 					desktop: BannerSVGDesktop,
