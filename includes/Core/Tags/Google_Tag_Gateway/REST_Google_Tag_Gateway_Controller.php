@@ -22,7 +22,7 @@ use WP_REST_Server;
  * Class for handling Google Tag Gateway settings via REST API.
  *
  * @since 1.141.0
- * @since n.e.x.t Renamed from REST_First_Party_Mode_Controller to REST_Google_Tag_Gateway_Controller.
+ * @since 1.157.0 Renamed from REST_First_Party_Mode_Controller to REST_Google_Tag_Gateway_Controller.
  * @access private
  * @ignore
  */

@@ -77,6 +77,16 @@ describe( 'TopTrafficSourceWidget', () => {
 	it( 'should render correctly with the expected metrics', async () => {
 		provideAnalytics4MockReport( registry, {
 			...dateRangeDates,
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+			],
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_totalUsersReportOptions',
+		} );
+		provideAnalytics4MockReport( registry, {
+			...dateRangeDates,
 			dimensions: [ 'sessionDefaultChannelGroup' ],
 			metrics: [
 				{
@@ -85,15 +95,10 @@ describe( 'TopTrafficSourceWidget', () => {
 			],
 			limit: 1,
 			orderBy: 'totalUsers',
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_trafficSourceReportOptions',
 		} );
-		provideAnalytics4MockReport( registry, {
-			...dateRangeDates,
-			metrics: [
-				{
-					name: 'totalUsers',
-				},
-			],
-		} );
+
 		const { container, waitForRegistry } = render(
 			<TopTrafficSourceWidget { ...widgetProps } />,
 			{
@@ -116,6 +121,8 @@ describe( 'TopTrafficSourceWidget', () => {
 			],
 			limit: 1,
 			orderBy: 'totalUsers',
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_trafficSourceReportOptions',
 		};
 		const channelGroupReport = getAnalytics4MockResponse(
 			channelGroupReportOptions
@@ -145,6 +152,8 @@ describe( 'TopTrafficSourceWidget', () => {
 					name: 'totalUsers',
 				},
 			],
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_totalUsersReportOptions',
 		};
 		const totalUsersReport = getAnalytics4MockResponse(
 			totalUsersReportOptions

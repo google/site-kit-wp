@@ -20,7 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useEffect, useState } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -47,8 +47,12 @@ function AudienceTilesWidget( { Widget } ) {
 		select( CORE_USER ).getConfiguredAudiences()
 	);
 
-	const [ availableAudiencesSynced, setAvailableAudiencesSynced ] =
-		useState( false );
+	const availableAudiencesSynced = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasSyncedAudiences()
+	);
+	const isSyncingAudiences = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isSyncingAudiences()
+	);
 	const { clearErrors, maybeSyncAvailableAudiences, syncAvailableAudiences } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
@@ -63,16 +67,16 @@ function AudienceTilesWidget( { Widget } ) {
 	);
 
 	useEffect( () => {
-		if ( ! availableAudiencesSynced && ! isSettingUpAudiences ) {
-			const syncAudiences = async () => {
-				await maybeSyncAvailableAudiences();
-				setAvailableAudiencesSynced( true );
-			};
-
-			syncAudiences();
+		if (
+			! availableAudiencesSynced &&
+			! isSyncingAudiences &&
+			! isSettingUpAudiences
+		) {
+			maybeSyncAvailableAudiences();
 		}
 	}, [
 		availableAudiencesSynced,
+		isSyncingAudiences,
 		isSettingUpAudiences,
 		maybeSyncAvailableAudiences,
 	] );

@@ -81,6 +81,7 @@ function getPopularAuthorsWidgetReportOptions( select ) {
 		],
 		limit: 3,
 		keepEmptyRows: false,
+		reportID: 'analytics-4_popular-authors-widget_widget_reportOptions',
 	};
 }
 

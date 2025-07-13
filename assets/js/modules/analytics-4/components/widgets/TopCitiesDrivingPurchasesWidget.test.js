@@ -93,6 +93,8 @@ describe( 'TopCitiesDrivingPurchasesWidget', () => {
 			],
 			limit: 3,
 			keepEmptyRows: false,
+			reportID:
+				'analytics-4_top-cities-driving-purchases-widget_widget_topCitiesReportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );

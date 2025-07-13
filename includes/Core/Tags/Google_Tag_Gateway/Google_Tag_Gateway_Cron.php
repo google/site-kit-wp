@@ -14,7 +14,7 @@ namespace Google\Site_Kit\Core\Tags\Google_Tag_Gateway;
  * Class to manage Google Tag Gateway cron tasks.
  *
  * @since 1.142.0
- * @since n.e.x.t Renamed from First_Party_Mode_Cron to Google_Tag_Gateway_Cron.
+ * @since 1.157.0 Renamed from First_Party_Mode_Cron to Google_Tag_Gateway_Cron.
  * @access private
  * @ignore
  */
