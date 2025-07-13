@@ -115,6 +115,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 				learnMoreLink={ {
 					href: 'https://readerrevenue.withgoogle.com',
 				} }
+				dismissOnCTAClick
 			/>
 		</Notification>
 	);
