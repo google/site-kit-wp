@@ -106,6 +106,7 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 					mobile: BannerSVGMobile,
 					verticalPosition: 'bottom',
 				} }
+				dismissOnCTAClick
 			/>
 		</Notification>
 	);
