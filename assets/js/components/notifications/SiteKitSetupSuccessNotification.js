@@ -35,7 +35,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import useQueryArg from '../../hooks/useQueryArg';
 import BannerNotification from '../../googlesitekit/notifications/components/layout/BannerNotification';
 import Link from '../Link';
-import SuccessSetupSVG from '@/svg/graphics/setup_success.svg?url';
+import SuccessSetupSVG from '@/svg/graphics/banner-site-kit-setup-success.svg?url';
 
 export default function SiteKitSetupSuccessNotification( {
 	id,
