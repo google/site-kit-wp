@@ -21,17 +21,9 @@
 	.googlesitekit-banner-notification {
 		width: 100%;
 
-		.googlesitekit-banner__title {
-			color: $c-black;
-		}
-
-		.googlesitekit-banner__description {
-			color: $c-black;
-
-			a {
-				color: $c-black;
-				text-decoration: underline;
-			}
+		.googlesitekit-banner__description a {
+			color: unset;
+			text-decoration: underline;
 		}
 
 		&.googlesitekit-banner-notification--info {
