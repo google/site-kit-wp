@@ -61,7 +61,7 @@ export default function SiteKitSetupSuccessNotification( {
 				) }
 				description={ createInterpolateElement(
 					__(
-						'Connect more services to see more stats. Go to <a>Settings</a>',
+						'Connect more services to see more stats. <a>Go to Settings</a>',
 						'google-site-kit'
 					),
 					{
