@@ -49,6 +49,7 @@ const storyReportOptions = [
 		],
 		startDate: '2021-10-28',
 		endDate: '2021-11-24',
+		reportID: 'adsense_module-overview-widget_widget_currentRangeArgs',
 	},
 	{
 		dimensions: [ 'DATE' ],
@@ -60,6 +61,7 @@ const storyReportOptions = [
 		],
 		startDate: '2021-10-28',
 		endDate: '2021-11-24',
+		reportID: 'adsense_module-overview-widget_widget_currentRangeChartArgs',
 	},
 	{
 		metrics: [
@@ -70,6 +72,7 @@ const storyReportOptions = [
 		],
 		startDate: '2021-09-30',
 		endDate: '2021-10-27',
+		reportID: 'adsense_module-overview-widget_widget_previousRangeArgs',
 	},
 	{
 		dimensions: [ 'DATE' ],
@@ -81,6 +84,8 @@ const storyReportOptions = [
 		],
 		startDate: '2021-09-30',
 		endDate: '2021-10-27',
+		reportID:
+			'adsense_module-overview-widget_widget_previousRangeChartArgs',
 	},
 ];
 

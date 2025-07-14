@@ -60,6 +60,7 @@ function WPDashboardImpressions( { WPDashboardReportError } ) {
 		startDate: compareStartDate,
 		endDate,
 		dimensions: 'date',
+		reportID: 'dashboard_wp-dashboard-impressions_component_reportArgs',
 	};
 
 	const data = useInViewSelect(

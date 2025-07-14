@@ -77,6 +77,8 @@ describe( 'TopDeviceDrivingPurchasesWidget', () => {
 						name: 'ecommercePurchases',
 					},
 				],
+				reportID:
+					'analytics-4_top-device-driving-purchases-widget_widget_totalPurchasesReportOptions',
 			},
 			{
 				...dates,
@@ -88,6 +90,8 @@ describe( 'TopDeviceDrivingPurchasesWidget', () => {
 				],
 				limit: 1,
 				orderBy: 'ecommercePurchases',
+				reportID:
+					'analytics-4_top-device-driving-purchases-widget_widget_deviceReportOptions',
 			},
 		];
 

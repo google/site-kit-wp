@@ -140,6 +140,8 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 				{ metric: { metricName: 'totalAdRevenue' }, desc: true },
 			],
 			limit: 1,
+			reportID:
+				'notifications_analytics-adsense-linked-overlay_reportArgs',
 		};
 
 		registry

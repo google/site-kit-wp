@@ -68,6 +68,7 @@ const reportOptions = [
 			},
 		],
 		limit: 10,
+		reportID: 'analytics-4_module-popular-pages-widget-ga4_widget_args',
 	},
 	{
 		// Page titles report.
@@ -83,6 +84,7 @@ const reportOptions = [
 		metrics: [ { name: 'screenPageViews' } ],
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 50,
+		reportID: 'analytics-4_get-page-titles_store:selector_options',
 	},
 	{
 		// Gathering/zero data report.

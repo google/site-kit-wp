@@ -67,6 +67,8 @@ function LeastEngagingPagesWidget( props ) {
 				desc: true,
 			},
 		],
+		reportID:
+			'analytics-4_least-engaging-pages-widget_widget_pageViewsReportOptions',
 	};
 
 	const pageViewsReport = useInViewSelect(
@@ -103,6 +105,8 @@ function LeastEngagingPagesWidget( props ) {
 			},
 		},
 		limit: 3,
+		reportID:
+			'analytics-4_least-engaging-pages-widget_widget_reportOptions',
 	};
 
 	const loadedPageViewsReport = useSelect( ( select ) =>
