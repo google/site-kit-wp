@@ -114,6 +114,7 @@ describe( 'TopCategoriesWidget', () => {
 			],
 			limit: 3,
 			keepEmptyRows: false,
+			reportID: 'analytics-4_top-categories-widget_widget_reportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );

@@ -77,6 +77,8 @@ describe( 'TopTrafficSourceDrivingPurchasesWidget', () => {
 						name: 'ecommercePurchases',
 					},
 				],
+				reportID:
+					'analytics-4_top-traffic-source-driving-purchases-widget_widget_totalPurchasesReportOptions',
 			},
 			{
 				...dates,
@@ -88,6 +90,8 @@ describe( 'TopTrafficSourceDrivingPurchasesWidget', () => {
 				],
 				limit: 1,
 				orderBy: 'ecommercePurchases',
+				reportID:
+					'analytics-4_top-traffic-source-driving-purchases-widget_widget_trafficSourceReportOptions',
 			},
 		];
 
@@ -117,6 +121,8 @@ describe( 'TopTrafficSourceDrivingPurchasesWidget', () => {
 						name: 'ecommercePurchases',
 					},
 				],
+				reportID:
+					'analytics-4_top-traffic-source-driving-purchases-widget_widget_totalPurchasesReportOptions',
 			},
 			{
 				...dates,
@@ -128,6 +134,8 @@ describe( 'TopTrafficSourceDrivingPurchasesWidget', () => {
 				],
 				limit: 1,
 				orderBy: 'ecommercePurchases',
+				reportID:
+					'analytics-4_top-traffic-source-driving-purchases-widget_widget_trafficSourceReportOptions',
 			},
 		];
 
