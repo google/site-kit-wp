@@ -62,6 +62,9 @@ class Web_TagTest extends TestCase {
 	}
 
 	public function test_render_on_wp_footer() {
+		// Remove the problematic WordPress action to avoid deprecation notices.
+		remove_action( 'wp_footer', 'the_block_template_skip_link' );
+
 		$this->web_tag->register();
 
 		$output = $this->capture_action( 'wp_footer' );
@@ -70,6 +73,9 @@ class Web_TagTest extends TestCase {
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
 		$this->assertStringContainsString( 'google.accounts.id.initialize', $output );
 		$this->assertStringContainsString( 'test-client-id.googleusercontent.com', $output );
+
+		// Restore the WordPress action.
+		add_action( 'wp_footer', 'the_block_template_skip_link' );
 	}
 
 	public function test_render_on_login_footer() {
