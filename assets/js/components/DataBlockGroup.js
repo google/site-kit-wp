@@ -42,6 +42,7 @@ export default function DataBlockGroup( { className, children } ) {
 		// Find the smallest font size needed across all blocks to fit without overflow.
 		let smallestScaleFactor = 1;
 
+		// Reset font sizes first to get accurate measurement, specifically on resize.
 		setFontSizes( blocks, '' );
 
 		blocks.forEach( ( block ) => {
