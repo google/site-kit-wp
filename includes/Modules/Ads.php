@@ -48,6 +48,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Ads\AMP_Tag;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
+use Google\Site_Kit\Modules\Ads\Enhanced_Conversions;
 
 /**
  * Class representing the Ads module.
@@ -114,6 +115,12 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 			},
 			10
 		);
+
+		// Register the Enhanced Conversions class if the feature flag is enabled.
+		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
+			$enhanced_conversions = new Enhanced_Conversions( $this->context );
+			$enhanced_conversions->register();
+		}
 	}
 
 	/**
