@@ -64,19 +64,13 @@ export function createWaitForFetchRequestsWithDebounce( debounceTime = 250 ) {
 		) {
 			const promise = page
 				.waitForResponse(
-					( res ) => {
-						// eslint-disable-next-line sitekit/acronym-case
-						if ( res.request()._requestId === req._requestId ) {
-							// eslint-disable-next-line no-console
-							console.debug(
-								'createWaitForFetchRequestsWithDebounce: request completed',
-								res.url()
-							);
-						}
-						// eslint-disable-next-line sitekit/acronym-case
-						return res.request()._requestId === req._requestId;
-					},
-					{ timeout: 10_000 }
+					// eslint-disable-next-line sitekit/acronym-case
+					( res ) => res.request()._requestId === req._requestId,
+					// Set timeout to the default 30 seconds to allow for edge case longer requests,
+					// most requests will resolve much faster but this work is to catch edge cases
+					// causing invalid JSON errors due to teardown happening before requests are
+					// able to be served.
+					{ timeout: 30_000 }
 				)
 				.catch( () => {
 					// For errors, return null to avoid breaking Promise.all.
