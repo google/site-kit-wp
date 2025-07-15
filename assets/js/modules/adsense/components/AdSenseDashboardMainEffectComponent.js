@@ -1,7 +1,7 @@
 /**
- * DashboardMainEffectComponent component.
+ * AdSense DashboardMainEffectComponent component.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,10 @@
 /**
  * Internal dependencies
  */
-import useCreateCustomDimensionForAudienceEffect from '../hooks/useCreateCustomDimensionForAudienceEffect';
-import useCreateCustomDimensionsEffect from '../hooks/useCreateCustomDimensionsEffect';
-import useSyncGoogleTagEffect from '../hooks/useSyncGoogleTagEffect';
+import useAdSenseNotifications from '../../../hooks/useAdSenseNotifications';
 
-export default function DashboardMainEffectComponent() {
-	useCreateCustomDimensionForAudienceEffect();
-	useCreateCustomDimensionsEffect();
-	useSyncGoogleTagEffect();
+export default function AdSenseDashboardMainEffectComponent() {
+	useAdSenseNotifications();
 
 	return null;
 }
