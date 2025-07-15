@@ -33,6 +33,8 @@ use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
@@ -3615,7 +3617,7 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertArrayNotHasKey( 'analytics-4', $inline_modules_data );
+		$this->assertArrayNotHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'] );
 	}
 
 	public function test_inline_custom_dimension_data_initial_state__module_connected() {
@@ -3908,11 +3910,49 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( false, $inline_modules_data['analytics-4']['tagIDMismatch'] );
 
 		$transients = new Transients( $this->context );
-		$transients->set( 'googlesitekit_inline_tag_id_mismatch', true );
+		$transients->set( 'googlesitekit_tag_id_mismatch', true );
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
 		$this->assertEquals( true, $inline_modules_data['analytics-4']['tagIDMismatch'] );
+	}
+
+	public function test_inline_conversion_reporting_events_detection_not_connected() {
+		$this->analytics->register();
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertArrayNotHasKey( 'newEvents', $inline_modules_data['analytics-4'] );
+		$this->assertArrayNotHasKey( 'lostEvents', $inline_modules_data['analytics-4'] );
+		$this->assertArrayNotHasKey( 'newBadgeEvents', $inline_modules_data['analytics-4'] );
+	}
+
+	public function test_inline_conversion_reporting_events_detection_connected() {
+		$this->analytics->register();
+
+		// Ensure the module is connected.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
+		);
+
+		$transients = new Transients( $this->context );
+
+		$transients->set( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT, array( 'detect_event_1', 'detect_event_2' ) );
+		$transients->set( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT, array( 'lost_event' ) );
+		$transients->set( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT, array( 'events' => array( 'new_badge_event_1', 'new_badge_event_2', 'new_badge_event_3' ) ) );
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals( array( 'detect_event_1', 'detect_event_2' ), $inline_modules_data['analytics-4']['newEvents'] );
+		$this->assertEquals( array( 'lost_event' ), $inline_modules_data['analytics-4']['lostEvents'] );
+		$this->assertEquals( array( 'new_badge_event_1', 'new_badge_event_2', 'new_badge_event_3' ), $inline_modules_data['analytics-4']['newBadgeEvents'] );
 	}
 
 	public function test_get_data__adsense_links() {
