@@ -52,49 +52,30 @@ export function createWaitForFetchRequests() {
 
 export function createWaitForFetchRequestsWithDebounce( debounceTime = 250 ) {
 	const responsePromises = [];
+
 	let timeout;
-	let isWaiting = false;
-	let resolveWaiting;
+	let resolvePromise;
 
 	const listener = ( req ) => {
-		if (
-			req.resourceType() === 'fetch' ||
-			req.resourceType() === 'script' ||
-			req.resourceType() === 'document'
-		) {
-			const promise = page
-				.waitForResponse(
-					// eslint-disable-next-line sitekit/acronym-case
-					( res ) => res.request()._requestId === req._requestId,
-					// Set timeout to the default 30 seconds to allow for edge case longer requests,
-					// most requests will resolve much faster but this work is to catch edge cases
-					// causing invalid JSON errors due to teardown happening before requests are
-					// able to be served.
-					{ timeout: 60_000 }
-				)
-				.catch( ( error ) => {
-					// Check if the error is a timeout
-					if (
-						error.message &&
-						error.message.includes( 'Timeout' )
-					) {
-						// eslint-disable-next-line no-console
-						console.debug(
-							`Request timeout reached for: ${ req.url() }`
-						);
-					}
-					// For errors, return null to avoid breaking Promise.all.
-					return null;
-				} );
+		if ( req.resourceType() === 'fetch' ) {
+			const promise = page.waitForResponse(
+				// eslint-disable-next-line sitekit/acronym-case
+				( res ) => res.request()._requestId === req._requestId
+			);
+			// A promise may be rejected if the execution context it was
+			// captured in no longer exists (e.g. previous page) which
+			// is necessary in some cases, and can be ignored since
+			// there is nothing to wait for any more.
+			responsePromises.push( promise.catch( () => {} ) );
 
-			responsePromises.push( promise );
-
-			// Reset debounce timer on new request if we're currently waiting.
-			if ( isWaiting && timeout ) {
+			if ( timeout ) {
 				clearTimeout( timeout );
+
 				timeout = setTimeout( () => {
-					if ( resolveWaiting ) {
-						resolveWaiting();
+					if ( resolvePromise ) {
+						resolvePromise( Promise.all( responsePromises ) );
+						resolvePromise = null;
+						timeout = null;
 					}
 				}, debounceTime );
 			}
@@ -105,33 +86,98 @@ export function createWaitForFetchRequestsWithDebounce( debounceTime = 250 ) {
 
 	return () => {
 		page.off( 'request', listener );
-		isWaiting = true;
-
-		// eslint-disable-next-line no-console
-		console.debug(
-			'createWaitForFetchRequestsWithDebounce: waiting for fetch requests to complete...',
-			responsePromises.length
-		);
 
 		return new Promise( ( resolve ) => {
-			resolveWaiting = () => {
-				isWaiting = false;
-				if ( timeout ) {
-					clearTimeout( timeout );
-					timeout = null;
-				}
-				// Filter out null responses before resolving
-				const validPromises = responsePromises.filter(
-					( p ) => p !== null
-				);
-				resolve( Promise.all( validPromises ) );
-				resolveWaiting = null;
-			};
+			resolvePromise = resolve;
 
-			// Always set initial timeout, regardless of whether there are pending requests
+			// TODO: Could DRY this with the setTimeout() above:
 			timeout = setTimeout( () => {
-				resolveWaiting();
+				resolve( Promise.all( responsePromises ) );
+				resolvePromise = null;
+				timeout = null;
 			}, debounceTime );
 		} );
 	};
 }
+
+// export function createWaitForFetchRequestsWithDebounce( debounceTime = 250 ) {
+// 	const responsePromises = [];
+// 	let timeout;
+// 	let isWaiting = false;
+// 	let resolveWaiting;
+
+// 	const listener = ( req ) => {
+// 		if ( req.resourceType() === 'fetch' ) {
+// 			const promise = page
+// 				.waitForResponse(
+// 					// eslint-disable-next-line sitekit/acronym-case
+// 					( res ) => res.request()._requestId === req._requestId,
+// 					// Set timeout to the default 30 seconds to allow for edge case longer requests,
+// 					// most requests will resolve much faster but this work is to catch edge cases
+// 					// causing invalid JSON errors due to teardown happening before requests are
+// 					// able to be served.
+// 					{ timeout: 60_000 }
+// 				)
+// 				.catch( ( error ) => {
+// 					// Check if the error is a timeout
+// 					if (
+// 						error.message &&
+// 						error.message.includes( 'Timeout' )
+// 					) {
+// 						// eslint-disable-next-line no-console
+// 						console.debug(
+// 							`Request timeout reached for: ${ req.url() }`
+// 						);
+// 					}
+// 					// For errors, return null to avoid breaking Promise.all.
+// 					return null;
+// 				} );
+
+// 			responsePromises.push( promise );
+
+// 			// Reset debounce timer on new request if we're currently waiting.
+// 			if ( isWaiting && timeout ) {
+// 				clearTimeout( timeout );
+// 				timeout = setTimeout( () => {
+// 					if ( resolveWaiting ) {
+// 						resolveWaiting();
+// 					}
+// 				}, debounceTime );
+// 			}
+// 		}
+// 	};
+
+// 	page.on( 'request', listener );
+
+// 	return () => {
+// 		page.off( 'request', listener );
+// 		isWaiting = true;
+
+// 		// eslint-disable-next-line no-console
+// 		console.debug(
+// 			'createWaitForFetchRequestsWithDebounce: waiting for fetch requests to complete...',
+// 			responsePromises.length
+// 		);
+
+// 		return new Promise( ( resolve ) => {
+// 			resolveWaiting = () => {
+// 				isWaiting = false;
+// 				if ( timeout ) {
+// 					clearTimeout( timeout );
+// 					timeout = null;
+// 				}
+// 				// Filter out null responses before resolving
+// 				const validPromises = responsePromises.filter(
+// 					( p ) => p !== null
+// 				);
+// 				resolve( Promise.all( validPromises ) );
+// 				resolveWaiting = null;
+// 			};
+
+// 			// Always set initial timeout, regardless of whether there are pending requests
+// 			timeout = setTimeout( () => {
+// 				resolveWaiting();
+// 			}, debounceTime );
+// 		} );
+// 	};
+// }
