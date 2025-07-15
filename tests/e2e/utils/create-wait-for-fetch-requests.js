@@ -57,25 +57,25 @@ export function createWaitForFetchRequestsWithDebounce( debounceTime = 250 ) {
 	let resolveWaiting;
 
 	const listener = ( req ) => {
-		// Filter out requests that might fail during navigation or are likely to cause issues
-
-		if ( req.url().includes( 'wp-admin/admin-ajax.php' ) ) {
-			// eslint-disable-next-line no-console
-			console.debug(
-				'createWaitForFetchRequestsWithDebounce: skipping admin-ajax.php request',
-				req.url()
-			);
-			return;
-		}
-
 		if (
-			req.resourceType() === 'fetch' &&
-			! req.url().includes( 'wp-admin/admin-ajax.php' )
+			req.resourceType() === 'fetch' ||
+			req.resourceType() === 'script' ||
+			req.resourceType() === 'document'
 		) {
 			const promise = page
 				.waitForResponse(
-					// eslint-disable-next-line sitekit/acronym-case
-					( res ) => res.request()._requestId === req._requestId,
+					( res ) => {
+						// eslint-disable-next-line sitekit/acronym-case
+						if ( res.request()._requestId === req._requestId ) {
+							// eslint-disable-next-line no-console
+							console.debug(
+								'createWaitForFetchRequestsWithDebounce: request completed',
+								res.url()
+							);
+						}
+						// eslint-disable-next-line sitekit/acronym-case
+						return res.request()._requestId === req._requestId;
+					},
 					{ timeout: 10_000 }
 				)
 				.catch( () => {
