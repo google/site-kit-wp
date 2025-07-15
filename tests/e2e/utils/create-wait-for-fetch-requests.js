@@ -70,9 +70,19 @@ export function createWaitForFetchRequestsWithDebounce( debounceTime = 250 ) {
 					// most requests will resolve much faster but this work is to catch edge cases
 					// causing invalid JSON errors due to teardown happening before requests are
 					// able to be served.
-					{ timeout: 30_000 }
+					{ timeout: 60_000 }
 				)
-				.catch( () => {
+				.catch( ( error ) => {
+					// Check if the error is a timeout
+					if (
+						error.message &&
+						error.message.includes( 'Timeout' )
+					) {
+						// eslint-disable-next-line no-console
+						console.debug(
+							`Request timeout reached for: ${ req.url() }`
+						);
+					}
 					// For errors, return null to avoid breaking Promise.all.
 					return null;
 				} );
