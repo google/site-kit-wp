@@ -58,39 +58,34 @@ export function createWaitForFetchRequestsWithDebounce( debounceTime = 250 ) {
 
 	const listener = ( req ) => {
 		// Filter out requests that might fail during navigation or are likely to cause issues
+
+		if ( req.url().includes( 'wp-admin/admin-ajax.php' ) ) {
+			// eslint-disable-next-line no-console
+			console.debug(
+				'createWaitForFetchRequestsWithDebounce: skipping admin-ajax.php request',
+				req.url()
+			);
+			return;
+		}
+
 		if (
 			req.resourceType() === 'fetch' &&
-			! req.url().includes( 'wp-admin/admin-ajax.php' ) &&
-			! req.url().includes( 'heartbeat' )
+			! req.url().includes( 'wp-admin/admin-ajax.php' )
 		) {
 			const promise = page
 				.waitForResponse(
 					// eslint-disable-next-line sitekit/acronym-case
 					( res ) => res.request()._requestId === req._requestId,
-					{ timeout: 5000 } // Reduce timeout to prevent hanging
+					{ timeout: 10_000 }
 				)
-				.catch( ( err ) => {
-					// Ignore specific errors that occur during navigation or teardown
-					if (
-						err.message &&
-						( err.message.includes( 'Navigation' ) ||
-							err.message.includes( 'timeout' ) ||
-							err.message.includes( 'Target closed' ) ||
-							err.message.includes(
-								'Execution context was destroyed'
-							) ||
-							err.message.includes( 'Protocol error' ) ||
-							err.message.includes( 'Session closed' ) )
-					) {
-						return null;
-					}
-					// For other errors, still return null to avoid breaking Promise.all
+				.catch( () => {
+					// For errors, return null to avoid breaking Promise.all.
 					return null;
 				} );
 
 			responsePromises.push( promise );
 
-			// Reset debounce timer on new request if we're currently waiting
+			// Reset debounce timer on new request if we're currently waiting.
 			if ( isWaiting && timeout ) {
 				clearTimeout( timeout );
 				timeout = setTimeout( () => {
