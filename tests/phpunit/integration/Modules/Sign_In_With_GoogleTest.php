@@ -124,6 +124,12 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Render the button.
 		$output = apply_filters( 'login_form_top', '' );
 		$this->assertStringContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output );
+
+		// Reset these values to avoid affecting other tests.
+		update_option( 'home', $reset_site_url );
+		update_option( 'siteurl', $reset_site_url );
+		unset( $_SERVER['HTTPS'] );
+		unset( $_SERVER['SCRIPT_NAME'] );
 	}
 
 	public function test_handle_disconnect_user__bad_nonce() {

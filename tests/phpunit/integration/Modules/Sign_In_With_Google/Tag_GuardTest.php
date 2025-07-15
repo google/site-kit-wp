@@ -38,11 +38,27 @@ class Tag_GuardTest extends TestCase {
 	 */
 	private $guard;
 
+	/**
+	 * Site URL before tests.
+	 *
+	 * @var string
+	 */
+	private $reset_site_url;
+
 	public function set_up() {
 		parent::set_up();
 
-		$this->settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$this->guard    = new Tag_Guard( $this->settings );
+		$this->settings       = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$this->guard          = new Tag_Guard( $this->settings );
+		$this->reset_site_url = get_option( 'siteurl' );
+	}
+
+	public function tear_down() {
+		parent::tear_down();
+		update_option( 'home', $this->reset_site_url );
+		update_option( 'siteurl', $this->reset_site_url );
+		unset( $_SERVER['HTTPS'] );
+		unset( $_SERVER['SCRIPT_NAME'] );
 	}
 
 	public function test_can_activate() {
