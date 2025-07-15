@@ -154,6 +154,10 @@ class GTag {
 		wp_add_inline_script( self::HANDLE, 'gtag("js", new Date());' );
 		wp_add_inline_script( self::HANDLE, 'gtag("set", "developer_id.dZTNiMT", true);' ); // Site Kit developer ID.
 
+		if ( Feature_Flags::enabled( 'googleTagGateway' ) && $this->is_google_tag_gateway_active() ) {
+			wp_add_inline_script( self::HANDLE, 'gtag("set", "developer_id.dZmZmYj", true);' );
+		}
+
 		foreach ( $this->tags as $tag ) {
 			wp_add_inline_script( self::HANDLE, $this->get_gtag_call_for_tag( $tag ) );
 		}
