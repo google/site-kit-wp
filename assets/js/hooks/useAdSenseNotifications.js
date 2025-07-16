@@ -75,9 +75,7 @@ export default function useAdSenseNotifications() {
 			} );
 
 			setRegisteredNotifications( ( previousRegisteredNotifications ) => {
-				previousRegisteredNotifications.push( notification.id );
-
-				return previousRegisteredNotifications;
+				return [ ...previousRegisteredNotifications, notification.id ];
 			} );
 		} );
 	}, [
