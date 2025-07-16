@@ -35,7 +35,7 @@ import {
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import ReaderRevenueManagerIcon from '../../../svg/graphics/reader-revenue-manager.svg';
-import { isURLUsingHTTPS } from './utils/validation';
+import { isURLUsingHTTPS } from '../../../js/util/is-url-using-https';
 import {
 	ReaderRevenueManagerSetupCTABanner,
 	RRMSetupSuccessSubtleNotification,
