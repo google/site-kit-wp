@@ -124,6 +124,7 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 					href: adminSettingsURL,
 					onClick: handleCTAClick,
 					inProgress: isSaving,
+					dismiss: true,
 				} }
 				dismissButton={ {
 					label: isDismissalFinal
@@ -146,7 +147,6 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 				} }
 				errorText={ saveError?.message }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
-				dismissOnCTAClick
 			/>
 		</Notification>
 	);

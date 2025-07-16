@@ -97,6 +97,7 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 						)
 					),
 					onClick: onSetupActivate,
+					dismiss: true,
 				} }
 				dismissButton={ {
 					label: __( 'Maybe later', 'google-site-kit' ),
@@ -106,7 +107,6 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 					mobile: BannerSVGMobile,
 					verticalPosition: 'bottom',
 				} }
-				dismissOnCTAClick
 			/>
 		</Notification>
 	);

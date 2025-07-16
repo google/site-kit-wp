@@ -95,6 +95,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 					),
 					onClick: onSetupCallback,
 					inProgress: isSaving,
+					dismiss: true,
 				} }
 				dismissButton={ {
 					label: isDismissalFinal
@@ -115,7 +116,6 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 				learnMoreLink={ {
 					href: 'https://readerrevenue.withgoogle.com',
 				} }
-				dismissOnCTAClick
 			/>
 		</Notification>
 	);
