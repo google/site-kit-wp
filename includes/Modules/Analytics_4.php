@@ -2411,6 +2411,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * Populates custom dimension data to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.113.0
+	 * @since n.e.x.t Renamed method to `get_inline_custom_dimensions_data()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
 	 * @return array Inline modules data.
 	 */
@@ -2428,6 +2429,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * Populates tag ID mismatch value to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.130.0
+	 * @since n.e.x.t Renamed method to `get_inline_tag_id_mismatch()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
 	 * @return array Inline modules data.
 	 */
@@ -2447,6 +2449,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * Populates resource availability dates data to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.127.0
+	 * @since n.e.x.t Renamed method to `get_inline_resource_availability_dates_data()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
 	 * @return array Inline modules data.
 	 */
@@ -2681,6 +2684,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * Populates conversion reporting event data to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.139.0
+	 * @since n.e.x.t Renamed method to `get_inline_conversion_reporting_events_detection()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
 	 * @return array Inline modules data.
 	 */
