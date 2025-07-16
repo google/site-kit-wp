@@ -47,7 +47,6 @@ export default function BannerNotification( {
 	learnMoreLink,
 	dismissButton,
 	ctaButton,
-	dismissOnCTAClick,
 	dismissOptions,
 	gaTrackingEventArgs,
 	...props
@@ -77,7 +76,7 @@ export default function BannerNotification( {
 		);
 		await ctaButton?.onClick?.( event );
 
-		if ( dismissOnCTAClick ) {
+		if ( ctaButton?.dismiss ) {
 			dismissNotification( notificationID, {
 				...dismissOptions,
 			} );
@@ -157,7 +156,6 @@ BannerNotification.propTypes = {
 	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
 	ctaButton: PropTypes.shape( CTAButton.propTypes ),
-	dismissOnCTAClick: PropTypes.bool,
 	dismissOptions: PropTypes.object,
 	gaTrackingEventArgs: PropTypes.shape( {
 		category: PropTypes.string,

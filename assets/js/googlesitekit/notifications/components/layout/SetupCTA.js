@@ -49,7 +49,6 @@ export default function SetupCTA( {
 	learnMoreLink,
 	dismissButton,
 	ctaButton,
-	dismissOnCTAClick,
 	svg,
 	footer,
 	dismissOptions,
@@ -82,7 +81,7 @@ export default function SetupCTA( {
 		);
 		await ctaButton?.onClick?.( event );
 
-		if ( dismissOnCTAClick ) {
+		if ( ctaButton?.dismiss ) {
 			dismissNotification( notificationID, {
 				skipHidingFromQueue: true,
 				...dismissOptions,
@@ -161,7 +160,6 @@ SetupCTA.propTypes = {
 	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
 	ctaButton: PropTypes.shape( CTAButton.propTypes ),
-	dismissOnCTAClick: PropTypes.bool,
 	svg: PropTypes.shape( {
 		desktop: PropTypes.elementType,
 		mobile: PropTypes.elementType,
