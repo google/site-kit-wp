@@ -748,7 +748,7 @@ final class Assets {
 		$inline_data = array(
 			'homeURL'           => trailingslashit( $this->context->get_canonical_home_url() ),
 			'referenceSiteURL'  => esc_url_raw( trailingslashit( $site_url ) ),
-			'adminURL'          => esc_url_raw( trailingslashit( admin_url() ) ),
+			'adminURL'          => esc_url_raw( admin_url() ),
 			'assetsURL'         => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
 			'widgetsAdminURL'   => esc_url_raw( $this->get_widgets_admin_url() ),
 			'blogPrefix'        => $wpdb->get_blog_prefix(),

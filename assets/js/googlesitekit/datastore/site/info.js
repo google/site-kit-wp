@@ -402,10 +402,13 @@ export const selectors = {
 					return adminURL;
 				}
 
-				const baseURL =
-					adminURL[ adminURL.length - 1 ] === '/'
-						? adminURL
-						: `${ adminURL }/`;
+				const url = new URL( adminURL );
+
+				// If the URL does not end with a trailing slash, add one.
+				if ( url.pathname[url.pathname.length] !== '/' ) {
+					url.pathname += '/';
+				}
+
 				let pageArg = page;
 				let phpFile = 'admin.php';
 
@@ -421,10 +424,14 @@ export const selectors = {
 					phpFile = splitPage.shift();
 				}
 
+				// Add file pathname
+				url.pathname += phpFile;
+
 				// Since page should be first query arg, create queryArgs without 'page' to prevent a 'page' in args from overriding it.
 				const { page: extraPage, ...queryArgs } = args; // eslint-disable-line no-unused-vars
 
-				return addQueryArgs( `${ baseURL }${ phpFile }`, {
+				url.searchParams.set
+				return addQueryArgs( url.href, {
 					page: pageArg,
 					...queryArgs,
 				} );
