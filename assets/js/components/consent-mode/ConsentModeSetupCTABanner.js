@@ -125,6 +125,9 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 					onClick: handleCTAClick,
 					inProgress: isSaving,
 					dismissOnClick: true,
+					dismissOptions: {
+						skipHidingFromQueue: true,
+					},
 				} }
 				dismissButton={ {
 					label: isDismissalFinal

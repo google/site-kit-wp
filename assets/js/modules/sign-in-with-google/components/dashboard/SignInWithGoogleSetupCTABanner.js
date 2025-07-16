@@ -98,6 +98,9 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 					),
 					onClick: onSetupActivate,
 					dismissOnClick: true,
+					dismissOptions: {
+						skipHidingFromQueue: true,
+					},
 				} }
 				dismissButton={ {
 					label: __( 'Maybe later', 'google-site-kit' ),

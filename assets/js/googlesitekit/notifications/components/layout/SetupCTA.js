@@ -82,7 +82,6 @@ export default function SetupCTA( {
 
 		if ( ctaButton?.dismissOnClick ) {
 			dismissNotification( notificationID, {
-				skipHidingFromQueue: true,
 				...ctaButton?.dismissOptions,
 			} );
 		}
