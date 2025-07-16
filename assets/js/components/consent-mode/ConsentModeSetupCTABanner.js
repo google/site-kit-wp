@@ -124,7 +124,7 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 					href: adminSettingsURL,
 					onClick: handleCTAClick,
 					inProgress: isSaving,
-					dismiss: true,
+					dismissOnClick: true,
 				} }
 				dismissButton={ {
 					label: isDismissalFinal

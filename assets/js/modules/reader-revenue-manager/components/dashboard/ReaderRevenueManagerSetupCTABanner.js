@@ -95,7 +95,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 					),
 					onClick: onSetupCallback,
 					inProgress: isSaving,
-					dismiss: true,
+					dismissOnClick: true,
 				} }
 				dismissButton={ {
 					label: isDismissalFinal

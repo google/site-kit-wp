@@ -81,7 +81,7 @@ export default function SetupCTA( {
 		);
 		await ctaButton?.onClick?.( event );
 
-		if ( ctaButton?.dismiss ) {
+		if ( ctaButton?.dismissOnClick ) {
 			dismissNotification( notificationID, {
 				skipHidingFromQueue: true,
 				...dismissOptions,

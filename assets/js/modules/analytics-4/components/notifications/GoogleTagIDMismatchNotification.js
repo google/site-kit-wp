@@ -204,7 +204,7 @@ export default function GoogleTagIDMismatchNotification( {
 						label: __( 'Use new property', 'google-site-kit' ),
 						onClick: updateToNewAnalyticsConfig,
 						inProgress: isDoingSubmitChanges,
-						dismiss: true,
+						dismissOnClick: true,
 					} }
 					dismissButton={ {
 						label: __(
@@ -249,7 +249,7 @@ export default function GoogleTagIDMismatchNotification( {
 							newGoogleTagID
 						),
 						onClick: updateGoogleTagConfig,
-						dismiss: true,
+						dismissOnClick: true,
 					} }
 					dismissOptions={ {
 						expiresInSeconds: 1,

@@ -76,7 +76,7 @@ export default function BannerNotification( {
 		);
 		await ctaButton?.onClick?.( event );
 
-		if ( ctaButton?.dismiss ) {
+		if ( ctaButton?.dismissOnClick ) {
 			dismissNotification( notificationID, {
 				...dismissOptions,
 			} );
