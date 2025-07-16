@@ -88,32 +88,31 @@ function CoreSiteBannerNotification( {
 	}, [ id, dismissNotification ] );
 
 	return (
-		<div ref={ bannerNotificationRef }>
-			<BannerNotification
-				notificationID={ id }
-				type={ TYPES.WARNING }
-				title={ title }
-				description={ content }
-				learnMoreLink={ {
-					label: learnMoreLabel,
-					href: learnMoreURL,
-				} }
-				ctaButton={ {
-					label: ctaLabel,
-					href: ctaURL,
-					target: ctaTarget,
-					onClick: onCTAClick,
-				} }
-				dismissButton={
-					dismissible
-						? {
-								label: dismissLabel,
-								onClick: onDismissClick,
-						  }
-						: undefined
-				}
-			/>
-		</div>
+		<BannerNotification
+			ref={ bannerNotificationRef }
+			notificationID={ id }
+			type={ TYPES.WARNING }
+			title={ title }
+			description={ content }
+			learnMoreLink={ {
+				label: learnMoreLabel,
+				href: learnMoreURL,
+			} }
+			ctaButton={ {
+				label: ctaLabel,
+				href: ctaURL,
+				target: ctaTarget,
+				onClick: onCTAClick,
+			} }
+			dismissButton={
+				dismissible
+					? {
+							label: dismissLabel,
+							onClick: onDismissClick,
+					  }
+					: undefined
+			}
+		/>
 	);
 }
 
