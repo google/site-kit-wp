@@ -56,4 +56,5 @@ CTAButton.propTypes = {
 	onClick: PropTypes.func,
 	href: PropTypes.string,
 	dismissOnClick: PropTypes.bool,
+	dismissOptions: PropTypes.object,
 };
