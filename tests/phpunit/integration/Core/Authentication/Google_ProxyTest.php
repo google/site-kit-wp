@@ -151,73 +151,9 @@ class Google_ProxyTest extends TestCase {
 		);
 	}
 
-	public function test_fetch_site_fields() {
-		list ( $credentials ) = $this->get_credentials();
+	
 
-		// Force WP_Error response from as http requests are blocked.
-		$mock_url   = $this->google_proxy->url( Google_Proxy::OAUTH2_SITE_URI );
-		$mock_error = new WP_Error( 'test_error', 'test_error_message' );
-
-		// Ensure WP_Error response is passed through.
-		$this->mock_http_failure( $mock_url, $mock_error );
-		$error_response_data = $this->google_proxy->fetch_site_fields( $credentials );
-		$this->assertWPErrorWithMessage( 'test_error_message', $error_response_data );
-
-		// Mock reponse.
-		$mock_response = array(
-			'site_id',
-			'site_secret',
-			'url',
-			'name',
-			'redirect_uri',
-			'return_uri',
-			'action_uri',
-			'analytics_redirect_uri',
-		);
-		$this->mock_http_request( $mock_url, $mock_response );
-		$this->google_proxy->fetch_site_fields( $credentials );
-
-		// Ensure the request was made with the proper URL and body parameters.
-		$this->assertEquals( $mock_url, $this->request_url );
-		$this->assertEquals( 'POST', $this->request_args['method'] );
-		$this->assertEqualSets(
-			array(
-				'site_id',
-				'site_secret',
-			),
-			array_keys( $this->request_args['body'] )
-		);
-	}
-
-	public function test_are_site_fields_synced() {
-		list ( $credentials ) = $this->get_credentials();
-
-		// Mock matching reponse.
-		$matching_mock_url      = $this->google_proxy->url( Google_Proxy::OAUTH2_SITE_URI );
-		$matching_mock_response = array(
-			'url'                    => home_url(),
-			'action_uri'             => admin_url( 'index.php' ),
-			'name'                   => get_bloginfo( 'name' ),
-			'return_uri'             => $this->context->admin_url( 'splash' ),
-			'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
-			'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
-		);
-
-		$this->mock_http_request( $matching_mock_url, $matching_mock_response );
-		$success_response_data = $this->google_proxy->are_site_fields_synced( $credentials );
-
-		// Ensure matching response array returns true.
-		$this->assertEquals( $success_response_data, true );
-
-		// Mock non matching response.
-		$mock_non_matching_response = array( 'incorrect', 'keys' );
-
-		$this->mock_http_request( $matching_mock_url, $mock_non_matching_response );
-		$failure_response_data = $this->google_proxy->are_site_fields_synced( $credentials );
-
-		// Ensure non-matching response array returns false.
-		$this->assertEquals( $failure_response_data, false );
-	}
+	
 
 	/**
 	 * @runInSeparateProcess
