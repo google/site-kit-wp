@@ -2712,13 +2712,19 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return array An array of the module's inline data.
 	 */
 	public function get_inline_data() {
+		$inline_data = array_merge(
+			$this->get_inline_custom_dimensions_data(),
+			$this->get_inline_resource_availability_dates_data(),
+			$this->get_inline_tag_id_mismatch(),
+			$this->get_inline_conversion_reporting_events_detection()
+		);
+
+		if ( empty( $inline_data ) ) {
+			return array();
+		}
+
 		return array(
-			self::MODULE_SLUG => array_merge(
-				$this->get_inline_conversion_reporting_events_detection(),
-				$this->get_inline_tag_id_mismatch(),
-				$this->get_inline_custom_dimensions_data(),
-				$this->get_inline_resource_availability_dates_data()
-			),
+			self::MODULE_SLUG => $inline_data,
 		);
 	}
 }
