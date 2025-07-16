@@ -154,7 +154,7 @@ class GTag {
 		wp_add_inline_script( self::HANDLE, 'gtag("js", new Date());' );
 		wp_add_inline_script( self::HANDLE, 'gtag("set", "developer_id.dZTNiMT", true);' ); // Site Kit developer ID.
 
-		if ( Feature_Flags::enabled( 'googleTagGateway' ) && $this->is_google_tag_gateway_active() ) {
+		if ( $this->is_google_tag_gateway_active() ) {
 			wp_add_inline_script( self::HANDLE, 'gtag("set", "developer_id.dZmZmYj", true);' );
 		}
 
@@ -233,7 +233,7 @@ class GTag {
 		$tag_id = rawurlencode( $this->tags[0]['tag_id'] );
 
 		// If Google tag gateway is active, use the proxy URL to load the GTag script.
-		if ( Feature_Flags::enabled( 'googleTagGateway' ) && $this->is_google_tag_gateway_active() ) {
+		if ( $this->is_google_tag_gateway_active() ) {
 			return add_query_arg(
 				array(
 					'id' => $tag_id,
@@ -254,6 +254,10 @@ class GTag {
 	 * @return bool True if Google tag gateway is active, false otherwise.
 	 */
 	protected function is_google_tag_gateway_active() {
+		if ( ! Feature_Flags::enabled( 'googleTagGateway' ) ) {
+			return false;
+		}
+
 		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
 
 		$settings = $google_tag_gateway_settings->get();
