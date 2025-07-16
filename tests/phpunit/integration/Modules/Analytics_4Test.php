@@ -3617,7 +3617,7 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertArrayNotHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'] );
+		$this->assertArrayNotHasKey( 'analytics-4', $inline_modules_data );
 	}
 
 	public function test_inline_custom_dimension_data_initial_state__module_connected() {
@@ -3910,7 +3910,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( false, $inline_modules_data['analytics-4']['tagIDMismatch'] );
 
 		$transients = new Transients( $this->context );
-		$transients->set( 'googlesitekit_tag_id_mismatch', true );
+		$transients->set( 'googlesitekit_inline_tag_id_mismatch', true );
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
@@ -3922,9 +3922,7 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertArrayNotHasKey( 'newEvents', $inline_modules_data['analytics-4'] );
-		$this->assertArrayNotHasKey( 'lostEvents', $inline_modules_data['analytics-4'] );
-		$this->assertArrayNotHasKey( 'newBadgeEvents', $inline_modules_data['analytics-4'] );
+		$this->assertArrayNotHasKey( 'analytics-4', $inline_modules_data );
 	}
 
 	public function test_inline_conversion_reporting_events_detection_connected() {

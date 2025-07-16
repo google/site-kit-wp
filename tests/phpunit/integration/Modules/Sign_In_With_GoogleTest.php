@@ -386,7 +386,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEquals( false, $inline_modules_data['sign-in-with-google']['isWooCommerceRegistrationEnabled'] );
 	}
 
-	public function test_inline_data_with_not_existing_client_id() {
+	public function test_inline_data_with_no_existing_client_id() {
 		$this->module->register();
 		$this->module->get_settings()->register();
 
