@@ -1768,12 +1768,12 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 				if ( false === $data['hasMismatchedTag'] ) {
 					return function () {
-						return $this->transients->delete( 'googlesitekit_tag_id_mismatch' );
+						return $this->transients->delete( 'googlesitekit_inline_tag_id_mismatch' );
 					};
 				}
 
 				return function () use ( $data ) {
-					return $this->transients->set( 'googlesitekit_tag_id_mismatch', $data['hasMismatchedTag'] );
+					return $this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
 				};
 		}
 
@@ -2433,7 +2433,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 */
 	private function get_inline_tag_id_mismatch() {
 		if ( $this->is_connected() ) {
-			$tag_id_mismatch = $this->transients->get( 'googlesitekit_tag_id_mismatch' );
+			$tag_id_mismatch = $this->transients->get( 'googlesitekit_inline_tag_id_mismatch' );
 
 			return array(
 				'tagIDMismatch' => $tag_id_mismatch,
