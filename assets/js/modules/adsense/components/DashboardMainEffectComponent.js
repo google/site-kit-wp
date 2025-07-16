@@ -21,7 +21,7 @@
  */
 import useAdSenseNotifications from '../../../hooks/useAdSenseNotifications';
 
-export default function AdSenseDashboardMainEffectComponent() {
+export default function DashboardMainEffectComponent() {
 	useAdSenseNotifications();
 
 	return null;
