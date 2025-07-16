@@ -102,11 +102,11 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 						? __( 'Don’t show again', 'google-site-kit' )
 						: __( 'Maybe later', 'google-site-kit' ),
 					onClick: showTooltip,
-				} }
-				dismissOptions={ {
-					expiresInSeconds: isDismissalFinal
-						? 0
-						: 2 * WEEK_IN_SECONDS,
+					dismissOptions: {
+						expiresInSeconds: isDismissalFinal
+							? 0
+							: 2 * WEEK_IN_SECONDS,
+					},
 				} }
 				svg={ {
 					desktop: BannerSVGDesktop,

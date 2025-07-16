@@ -194,11 +194,11 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 					label: dismissLabel,
 					onClick: showTooltip,
 					disabled: isSaving,
-				} }
-				dismissOptions={ {
-					expiresInSeconds: isDismissalFinal
-						? 0
-						: 2 * WEEK_IN_SECONDS,
+					dismissOptions: {
+						expiresInSeconds: isDismissalFinal
+							? 0
+							: 2 * WEEK_IN_SECONDS,
+					},
 				} }
 				svg={ {
 					desktop: BannerSVGDesktop,
