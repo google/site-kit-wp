@@ -80,7 +80,7 @@ export default function EnableAutoUpdateBannerNotification( {
 		};
 
 		return (
-			<Notification className="googlesitekit-publisher-win">
+			<Notification>
 				<NoticeNotification
 					notificationID={ id }
 					type={ TYPES.SUCCESS }
@@ -103,7 +103,7 @@ export default function EnableAutoUpdateBannerNotification( {
 	}
 
 	return (
-		<Notification className="googlesitekit-publisher-win">
+		<Notification>
 			<NoticeNotification
 				notificationID={ id }
 				type={ TYPES.NEW }

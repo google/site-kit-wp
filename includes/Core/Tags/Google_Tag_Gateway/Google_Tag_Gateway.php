@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * Class for handling Google Tag Gateway.
  *
  * @since 1.141.0
- * @since n.e.x.t Renamed from First_Party_Mode to Google_Tag_Gateway.
+ * @since 1.157.0 Renamed from First_Party_Mode to Google_Tag_Gateway.
  * @access private
  * @ignore
  */

@@ -50,6 +50,7 @@ const reportOptions = {
 			name: 'screenPageViews',
 		},
 	],
+	reportID: 'analytics-4_pages-per-visit-widget_widget_reportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(

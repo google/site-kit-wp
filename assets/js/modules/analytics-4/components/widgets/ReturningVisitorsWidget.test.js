@@ -69,6 +69,8 @@ describe( 'ReturningVisitorsWidget', () => {
 					name: 'activeUsers',
 				},
 			],
+			reportID:
+				'analytics-4_returning-visitors-widget_widget_reportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );

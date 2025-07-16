@@ -65,6 +65,8 @@ function TopDeviceDrivingPurchases( { Widget } ) {
 				name: 'ecommercePurchases',
 			},
 		],
+		reportID:
+			'analytics-4_top-device-driving-purchases-widget_widget_totalPurchasesReportOptions',
 	};
 
 	const deviceReportOptions = {
@@ -77,6 +79,8 @@ function TopDeviceDrivingPurchases( { Widget } ) {
 		],
 		limit: 1,
 		orderBy: 'ecommercePurchases',
+		reportID:
+			'analytics-4_top-device-driving-purchases-widget_widget_deviceReportOptions',
 	};
 
 	const totalPurchasesReport = useInViewSelect(
