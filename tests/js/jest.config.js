@@ -23,46 +23,68 @@ function getModuleAbsolutePath( packageName ) {
 }
 
 module.exports = {
-	preset: getModuleAbsolutePath( '@wordpress/jest-preset-default' ),
-	rootDir: '../../',
-	transform: {
-		'^.+\\.[jt]sx?$': '<rootDir>/tests/js/babel-transform.js',
-	},
-	setupFiles: [
-		'<rootDir>/tests/js/setup-globals',
-		'jest-localstorage-mock',
+	projects: [
+		// Main Site Kit tests.
+		{
+			displayName: 'Site Kit',
+			rootDir: '../../',
+			preset: getModuleAbsolutePath( '@wordpress/jest-preset-default' ),
+			transform: {
+				'^.+\\.[jt]sx?$': '<rootDir>/tests/js/babel-transform.js',
+			},
+			setupFiles: [
+				'<rootDir>/tests/js/setup-globals',
+				'jest-localstorage-mock',
+			],
+			setupFilesAfterEnv: [
+				'<rootDir>/tests/js/jest-matchers',
+				'<rootDir>/tests/js/setup-before-after',
+			],
+			testMatch: [
+				'<rootDir>/assets/**/__tests__/**/*.js',
+				'<rootDir>/assets/**/test/*.js',
+				'<rootDir>/assets/**/?(*.)test.js',
+				'<rootDir>/packages/**/__tests__/**/*.js',
+				'<rootDir>/packages/**/test/*.js',
+				'<rootDir>/packages/**/?(*.)test.js',
+				'<rootDir>/tests/js/**/?(*.)test.js',
+			],
+			testPathIgnorePatterns: [
+				'<rootDir>/.git',
+				'<rootDir>/node_modules',
+				'<rootDir>/assets/node_modules',
+				'<rootDir>/build',
+				'<rootDir>/packages/eslint-plugin',
+			],
+			modulePathIgnorePatterns: [ '<rootDir>/.vscode' ],
+			transformIgnorePatterns: [ '<rootDir>/assets/node_modules/' ],
+			// Matches aliases in webpack.config.js.
+			moduleNameMapper: {
+				// New (JSR) modules.
+				'^googlesitekit-(.+)$': '<rootDir>assets/js/googlesitekit-$1',
+				// Necessary mock to prevent test failures caused by SVGR.
+				'\\.svg$': '<rootDir>/tests/js/svgrMock.js',
+				'\\.svg\\?url$': '<rootDir>/tests/js/svgStringMock.js',
+				'\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
+					'<rootDir>/tests/js/fileMock.js',
+				'^@/(.+)$': '<rootDir>assets/$1',
+			},
+		},
+		// ESLint plugin tests.
+		{
+			displayName: 'ESLint Plugin',
+			rootDir: '../../',
+			testEnvironment: 'node',
+			transform: {
+				'^.+\\.[jt]sx?$': '<rootDir>/tests/js/babel-transform.js',
+			},
+			testMatch: [ '<rootDir>/packages/eslint-plugin/**/?(*.)test.js' ],
+			testPathIgnorePatterns: [
+				'<rootDir>/.git',
+				'<rootDir>/node_modules',
+				'<rootDir>/build',
+			],
+			modulePathIgnorePatterns: [ '<rootDir>/.vscode' ],
+		},
 	],
-	setupFilesAfterEnv: [
-		'<rootDir>/tests/js/jest-matchers',
-		'<rootDir>/tests/js/setup-before-after',
-	],
-	testMatch: [
-		'<rootDir>/assets/**/__tests__/**/*.js',
-		'<rootDir>/assets/**/test/*.js',
-		'<rootDir>/assets/**/?(*.)test.js',
-		'<rootDir>/packages/**/__tests__/**/*.js',
-		'<rootDir>/packages/**/test/*.js',
-		'<rootDir>/packages/**/?(*.)test.js',
-		'<rootDir>/tests/js/**/?(*.)test.js',
-	],
-	testPathIgnorePatterns: [
-		'<rootDir>/.git',
-		'<rootDir>/node_modules',
-		'<rootDir>/assets/node_modules',
-		'<rootDir>/build',
-		'<rootDir>/packages/eslint-plugin',
-	],
-	modulePathIgnorePatterns: [ '<rootDir>/.vscode' ],
-	transformIgnorePatterns: [ '<rootDir>/assets/node_modules/' ],
-	// Matches aliases in webpack.config.js.
-	moduleNameMapper: {
-		// New (JSR) modules.
-		'^googlesitekit-(.+)$': '<rootDir>assets/js/googlesitekit-$1',
-		// Necessary mock to prevent test failures caused by SVGR
-		'\\.svg$': '<rootDir>/tests/js/svgrMock.js',
-		'\\.svg\\?url$': '<rootDir>/tests/js/svgStringMock.js',
-		'\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
-			'<rootDir>/tests/js/fileMock.js',
-		'^@/(.+)$': '<rootDir>assets/$1',
-	},
 };

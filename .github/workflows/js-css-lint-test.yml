@@ -103,27 +103,3 @@ jobs:
       - name: Jest Tests (Retry Failures 3)
         run: npm run test:js -- -- --onlyFailures
         if: steps.test-js-retry-2.outcome == 'failure'
-      # TODO: Rewrite this, or move the comment elsewhere and provide a simpler comment and link here:
-      # ESLint Plugin Tests. These require a separate Jest configuration because
-      # `@wordpress/jest-preset-default` is incompatible with ESLint 7.x module resolution.
-      # The preset tries to map @eslint/eslintrc for ESLint 8+ but this project uses ESLint 7.x.
-      # `@wordpress/jest-preset-default` was updated to fix tests as part of the Node upgrade,
-      # but the update introduced this dependency issue which necessitates the workaround.
-      # This will be addressed in a future issue.
-      - name: Jest Tests (ESLint Plugin)
-        id: test-js-eslint-plugin
-        run: npm run test:js:eslint-plugin
-        continue-on-error: true
-      - name: Jest Tests (ESLint Plugin, Retry Failures 1)
-        id: test-js-eslint-plugin-retry-1
-        run: npm run test:js:eslint-plugin -- -- --onlyFailures
-        if: steps.test-js-eslint-plugin.outcome == 'failure'
-        continue-on-error: true
-      - name: Jest Tests (ESLint Plugin, Retry Failures 2)
-        id: test-js-eslint-plugin-retry-2
-        run: npm run test:js:eslint-plugin -- -- --onlyFailures
-        if: steps.test-js-eslint-plugin-retry-1.outcome == 'failure'
-        continue-on-error: true
-      - name: Jest Tests (ESLint Plugin, Retry Failures 3)
-        run: npm run test:js:eslint-plugin -- -- --onlyFailures
-        if: steps.test-js-eslint-plugin-retry-2.outcome == 'failure'
