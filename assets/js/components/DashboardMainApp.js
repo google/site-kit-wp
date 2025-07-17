@@ -258,10 +258,12 @@ export default function DashboardMainApp() {
 			</Header>
 
 			<div className="googlesitekit-page-content">
-				{ /* These notifications are rendered at the top of the dashboard,
-			but are not attached to the header. The first component renders the
-			default queue which mainly contains setup success notices. The
-			second renders the Setup CTA Widgets. */ }
+				{ /*
+					These notifications are rendered at the top of the dashboard,
+					but are not attached to the header. The first component renders the
+					default queue which mainly contains setup success notices. The
+					second renders the Setup CTA Widgets.
+				*/ }
 				<Notifications areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP } />
 				<Notifications
 					areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP }
