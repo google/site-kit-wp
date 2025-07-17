@@ -25,6 +25,7 @@ import { createExistingTagStore } from '../../../googlesitekit/data/create-exist
 import tagMatchers from '../util/tag-matchers';
 
 const store = createExistingTagStore( {
+	moduleSlug: 'adsense',
 	storeName: MODULES_ADSENSE,
 	tagMatchers,
 	isValidTag: isValidClientID,
