@@ -50,6 +50,7 @@ module.exports = {
 		'<rootDir>/node_modules',
 		'<rootDir>/assets/node_modules',
 		'<rootDir>/build',
+		'<rootDir>/packages/eslint-plugin',
 	],
 	modulePathIgnorePatterns: [ '<rootDir>/.vscode' ],
 	transformIgnorePatterns: [ '<rootDir>/assets/node_modules/' ],

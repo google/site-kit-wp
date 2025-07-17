@@ -20,6 +20,7 @@
 		"test:visualapprove": "npm run -w tests/backstop test:visualapprove",
 		"test:js": "npm run -w tests/js test:js",
 		"test:js:watch": "npm run -w tests/js test:js:watch",
+		"test:js:eslint-plugin": "jest --config=packages/eslint-plugin/jest.config.js",
 		"test:storybook": "jest --config=./tests/js/jest.config.js --testMatch '<rootDir>/storybook/stories.test.js'",
 		"test:e2e": "npm run -w tests/e2e test",
 		"test:e2e:interactive": "npm run -w tests/e2e test:interactive",
