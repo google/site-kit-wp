@@ -308,14 +308,14 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 
 		const { getErrorForSelector } = select( MODULES_ANALYTICS_4 );
 
-		return (
-			getErrorForSelector( 'getReport', [ ga4OverviewArgs ] ) ||
-			getErrorForSelector( 'getReport', [ ga4StatsArgs ] ) ||
+		return [
+			getErrorForSelector( 'getReport', [ ga4OverviewArgs ] ),
+			getErrorForSelector( 'getReport', [ ga4StatsArgs ] ),
 			getErrorForSelector( 'getReport', [
 				ga4VisitorsOverviewAndStatsArgs,
-			] ) ||
-			getErrorForSelector( 'getKeyEvents', [] )
-		);
+			] ),
+			getErrorForSelector( 'getKeyEvents', [] ),
+		].filter( Boolean );
 	} );
 
 	const isGA4GatheringData = useInViewSelect(

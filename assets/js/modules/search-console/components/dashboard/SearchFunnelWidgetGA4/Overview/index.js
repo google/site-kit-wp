@@ -97,7 +97,7 @@ export default function Overview( props ) {
 	const showGA4 =
 		canViewSharedAnalytics4 &&
 		ga4ModuleConnected &&
-		! error &&
+		! error.length &&
 		! showRecoverableAnalytics;
 
 	const onGA4NewBadgeLearnMoreClick = useCallback( () => {
@@ -152,6 +152,6 @@ Overview.propTypes = {
 	searchConsoleData: PropTypes.arrayOf( PropTypes.object ),
 	selectedStats: PropTypes.number.isRequired,
 	handleStatsSelection: PropTypes.func.isRequired,
-	error: PropTypes.object,
+	error: PropTypes.arrayOf( PropTypes.object ),
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
