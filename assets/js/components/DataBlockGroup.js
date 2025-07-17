@@ -39,11 +39,11 @@ export default function DataBlockGroup( { className, children } ) {
 			return;
 		}
 
-		// Reset font sizes first to get accurate measurement, specifically on resize.
-		setFontSizes( blocks, '' );
-
 		// Find the smallest font size needed across all blocks to fit without overflow.
 		let smallestScaleFactor = 1;
+
+		// Reset font sizes first to get accurate measurement, specifically on resize.
+		setFontSizes( blocks, '' );
 
 		blocks.forEach( ( block ) => {
 			const dataPoint = block.querySelector(
@@ -60,14 +60,20 @@ export default function DataBlockGroup( { className, children } ) {
 				// Calculate the exact scale factor needed to resize the content to the parent.
 				const scaleFactor = parentWidth / dataPoint.scrollWidth;
 
-				if ( scaleFactor < smallestScaleFactor ) {
-					smallestScaleFactor = scaleFactor;
+				// Round the scale factor down to one decimal place. This creates a
+				// small visual buffer to prevent the text from appearing cramped.
+				// It also improves stability by preventing minor pixel fluctuations
+				// during resize from causing distracting font size changes.
+				const roundedScaleFactor = Math.floor( scaleFactor * 10 ) / 10;
+
+				if ( roundedScaleFactor < smallestScaleFactor ) {
+					smallestScaleFactor = roundedScaleFactor;
 				}
 			}
 		} );
 
 		// Apply the smallest font size to all blocks if adjustment is needed.
-		if ( smallestScaleFactor < 1 ) {
+		if ( smallestScaleFactor < 1 && smallestScaleFactor > 0 ) {
 			const fontSize = parseInt(
 				global?.getComputedStyle(
 					blocks[ 0 ].querySelector(
@@ -100,7 +106,7 @@ export default function DataBlockGroup( { className, children } ) {
 	const debouncedAdjustFontSize = useDebounce( adjustFontSize, 50 );
 
 	useMount( () => {
-		adjustFontSize();
+		debouncedAdjustFontSize();
 
 		global.addEventListener( 'resize', debouncedAdjustFontSize );
 	} );

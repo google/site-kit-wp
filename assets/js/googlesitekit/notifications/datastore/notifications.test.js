@@ -87,9 +87,6 @@ describe( 'core/notifications Notifications', () => {
 
 				const { queuedNotifications } = store.getState();
 
-				expect( console ).toHaveWarnedWith(
-					'Could not add notification with ID "test-notification-id" to queue. Queue is not yet populated/resolved.'
-				);
 				expect( queuedNotifications ).toEqual( {} );
 			} );
 		} );

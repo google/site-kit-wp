@@ -65,6 +65,8 @@ function TopTrafficSourceDrivingPurchasesWidget( { Widget } ) {
 				name: 'ecommercePurchases',
 			},
 		],
+		reportID:
+			'analytics-4_top-traffic-source-driving-purchases-widget_widget_totalPurchasesReportOptions',
 	};
 
 	const trafficSourceReportOptions = {
@@ -77,6 +79,8 @@ function TopTrafficSourceDrivingPurchasesWidget( { Widget } ) {
 		],
 		limit: 1,
 		orderBy: 'ecommercePurchases',
+		reportID:
+			'analytics-4_top-traffic-source-driving-purchases-widget_widget_trafficSourceReportOptions',
 	};
 
 	const totalPurchasesReport = useInViewSelect(

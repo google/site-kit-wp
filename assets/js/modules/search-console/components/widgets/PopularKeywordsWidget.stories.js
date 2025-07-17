@@ -41,6 +41,7 @@ const reportOptions = {
 	endDate: '2020-09-07',
 	dimensions: 'query',
 	limit: 100,
+	reportID: 'search-console_popular-keywords-widget_widget_reportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(

@@ -146,7 +146,7 @@ const baseSelectors = {
 	/**
 	 * Gets the URL for the module settings page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.157.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} moduleSlug The slug of the module.
@@ -169,7 +169,7 @@ const baseSelectors = {
 	/**
 	 * Gets the URL for the module settings edit page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.157.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} moduleSlug The slug of the module.
@@ -192,7 +192,7 @@ const baseSelectors = {
 	/**
 	 * Gets the URL for the "Connect More Services" page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.157.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} The URL for the "Connect More Services" page.
@@ -207,7 +207,7 @@ const baseSelectors = {
 	/**
 	 * Gets the URL for the admin settings page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.157.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} The URL for the admin settings page.
