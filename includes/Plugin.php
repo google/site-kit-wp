@@ -96,9 +96,7 @@ final class Plugin {
 		add_filter(
 			'googlesitekit_rest_routes',
 			function ( $routes ) {
-				$can_setup = function () {
-					return current_user_can( Core\Permissions\Permissions::SETUP );
-				};
+				$can_setup = fn() => current_user_can( Core\Permissions\Permissions::SETUP );
 				$routes[]  = new Core\REST_API\REST_Route(
 					'core/site/data/setup-tag',
 					array(
@@ -254,10 +252,7 @@ final class Plugin {
 		// Register _gl parameter to be removed from the URL.
 		add_filter(
 			'removable_query_args',
-			function ( $args ) {
-				$args[] = '_gl';
-				return $args;
-			}
+			[ $this, 'filter_removable_query_args' ]
 		);
 
 		// WP CLI Commands.
@@ -270,6 +265,19 @@ final class Plugin {
 
 		// Add Plugin Action Links.
 		( new Core\Admin\Plugin_Action_Links( $this->context ) )->register();
+	}
+
+	/**
+	 * Adds _gl to removable query args.
+	 *
+	 * @since 1.0.1
+	 *
+	 * @param array $args Query args.
+	 * @return array Modified query args.
+	 */
+	private function filter_removable_query_args( $args ) {
+		$args[] = '_gl';
+		return $args;
 	}
 
 	/**
