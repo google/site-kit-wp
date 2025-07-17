@@ -42,7 +42,7 @@ import Link from './Link';
  * Renders a notification from the server, usually from a
  * `select( CORE_SITE ).getNotifications()` selector call.
  *
- * @since n.e.x.t
+ * @since 1.157.0
  *
  * @param {Object}     props                Component props.
  * @param {string}     props.id             Notification ID/slug.

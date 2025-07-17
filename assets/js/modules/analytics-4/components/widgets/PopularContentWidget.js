@@ -69,6 +69,7 @@ function PopularContentWidget( props ) {
 		],
 		limit: 3,
 		keepEmptyRows: false,
+		reportID: 'analytics-4_popular-content-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(

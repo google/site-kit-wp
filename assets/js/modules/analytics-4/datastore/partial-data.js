@@ -533,6 +533,8 @@ const baseSelectors = {
 							},
 						],
 						limit: 1,
+						reportID:
+							'analytics-4_get-partial-data-report-options_store:selector_RESOURCE_TYPE_AUDIENCE',
 					};
 
 				case RESOURCE_TYPE_CUSTOM_DIMENSION:
@@ -542,6 +544,8 @@ const baseSelectors = {
 						dimensions: [ 'date', `customEvent:${ resourceSlug }` ],
 						metrics: [ 'eventCount' ],
 						limit: 1,
+						reportID:
+							'analytics-4_get-partial-data-report-options_store:selector_RESOURCE_TYPE_CUSTOM_DIMENSION',
 					};
 
 				case RESOURCE_TYPE_PROPERTY:
@@ -551,6 +555,8 @@ const baseSelectors = {
 						dimensions: [ 'date' ],
 						metrics: [ 'totalUsers' ],
 						limit: 1,
+						reportID:
+							'analytics-4_get-partial-data-report-options_store:selector_RESOURCE_TYPE_PROPERTY',
 					};
 			}
 		}

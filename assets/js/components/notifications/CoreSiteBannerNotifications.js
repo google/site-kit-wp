@@ -38,7 +38,7 @@ const MAX_SECONDS_FOR_SURVEY = 5;
  *
  * This is a side-effect component that does not render anything directly.
  *
- * @since n.e.x.t
+ * @since 1.157.0
  *
  * @return {null} Returns null as this component does not render anything directly.
  */

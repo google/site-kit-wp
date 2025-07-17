@@ -89,6 +89,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 		},
 		orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
 		limit: 5,
+		reportID: 'adsense_top-earning-pages-widget-ga4_widget_args',
 	};
 
 	const data = useInViewSelect(

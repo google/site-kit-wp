@@ -61,6 +61,7 @@ export default function PopularKeywordsWidget( { Widget } ) {
 		...dates,
 		dimensions: 'query',
 		limit: 100,
+		reportID: 'search-console_popular-keywords-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(

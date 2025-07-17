@@ -107,6 +107,7 @@ function DashboardAllTrafficWidgetGA4( props ) {
 				desc: true,
 			},
 		],
+		reportID: 'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 	};
 
 	const graphArgs = {
@@ -118,11 +119,15 @@ function DashboardAllTrafficWidgetGA4( props ) {
 				},
 			},
 		],
+		reportID:
+			'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs',
 	};
 
 	const totalsArgs = {
 		compareStartDate,
 		compareEndDate,
+		reportID:
+			'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs',
 	};
 
 	if ( dimensionName && dimensionValue ) {
