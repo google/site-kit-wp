@@ -70,15 +70,15 @@ export function createWaitForFetchRequestsWithDebounce( debounceTime = 250 ) {
 
 			if ( timeout ) {
 				clearTimeout( timeout );
-
-				timeout = setTimeout( () => {
-					if ( resolvePromise ) {
-						resolvePromise( Promise.all( responsePromises ) );
-						resolvePromise = null;
-						timeout = null;
-					}
-				}, debounceTime );
 			}
+
+			timeout = setTimeout( () => {
+				if ( resolvePromise ) {
+					resolvePromise( Promise.all( responsePromises ) );
+					resolvePromise = null;
+					timeout = null;
+				}
+			}, debounceTime );
 		}
 	};
 
