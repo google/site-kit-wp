@@ -24,7 +24,7 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { setupSiteKit } from '../../utils';
+import { getWPVersion, setupSiteKit } from '../../utils';
 import { setupReaderRevenueManager } from '../../utils/setup-reader-revenue-manager';
 import { setupSignInWithGoogle } from '../../utils/setup-sign-in-with-google';
 
@@ -32,6 +32,19 @@ describe( 'blocks', () => {
 	beforeEach( async () => {
 		await setupSiteKit();
 	} );
+
+	/**
+	 * Skips test on WordPress versions below 5.8.
+	 * We only support WP 5.8+ for blocks due to available feature and API.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Promise<boolean>} Promise resolving to true if block support is available, false otherwise.
+	 */
+	const hasBlockSupport = async () => {
+		const version = await getWPVersion();
+		return version.major >= 5 && version.minor >= 8;
+	};
 
 	/**
 	 * Closes the Gutenberg welcome modal if present.
@@ -51,6 +64,11 @@ describe( 'blocks', () => {
 
 	describe( 'google-site-kit/rrm-contribute-with-google block', () => {
 		it( 'can be inserted without console errors', async () => {
+			if ( ! ( await hasBlockSupport() ) ) {
+				// Skip test if block support is not available.
+				return;
+			}
+
 			await setupReaderRevenueManager( {
 				publicationID: `test-publication-${ Math.random()
 					.toString( 36 )
@@ -93,6 +111,11 @@ describe( 'blocks', () => {
 
 	describe( 'google-site-kit/rrm-subscribe-with-google block', () => {
 		it( 'can be inserted without console errors', async () => {
+			if ( ! ( await hasBlockSupport() ) ) {
+				// Skip test if block support is not available.
+				return;
+			}
+
 			await setupReaderRevenueManager( {
 				publicationID: `test-publication-${ Math.random()
 					.toString( 36 )
@@ -135,6 +158,11 @@ describe( 'blocks', () => {
 
 	describe( 'google-site-kit/sign-in-with-google block', () => {
 		it( 'can be inserted without console errors', async () => {
+			if ( ! ( await hasBlockSupport() ) ) {
+				// Skip test if block support is not available.
+				return;
+			}
+
 			await setupSignInWithGoogle( {
 				clientID: '1234',
 			} );
