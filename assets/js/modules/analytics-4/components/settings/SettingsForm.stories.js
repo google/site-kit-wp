@@ -28,6 +28,7 @@ import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
@@ -69,10 +70,7 @@ function Template( args ) {
 
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Analytics4/Settings/SettingsEdit/Default',
-	delay: 250,
-};
+Default.scenario = {};
 
 export const EnhancedMeasurementSwitch = Template.bind( null );
 EnhancedMeasurementSwitch.storyName = 'With enhanced measurement switch';
@@ -98,31 +96,31 @@ EnhancedMeasurementSwitch.decorators = [
 	},
 ];
 
-export const WithFirstPartyModeAvailable = Template.bind( null );
-WithFirstPartyModeAvailable.storyName = 'With first party mode available';
-WithFirstPartyModeAvailable.parameters = {
-	features: [ 'firstPartyMode' ],
+export const WithGoogleTagGatewayAvailable = Template.bind( null );
+WithGoogleTagGatewayAvailable.storyName = 'With Google tag gateway available';
+WithGoogleTagGatewayAvailable.parameters = {
+	features: [ 'googleTagGateway' ],
 };
-WithFirstPartyModeAvailable.decorators = [
+WithGoogleTagGatewayAvailable.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			const fpmServerRequirementsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+			const gtgServerRequirementsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
 
-			const fpmSettings = {
+			const gtgSettings = {
 				isEnabled: true,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			};
 
-			fetchMock.get( fpmServerRequirementsEndpoint, {
-				body: fpmSettings,
+			fetchMock.get( gtgServerRequirementsEndpoint, {
+				body: gtgSettings,
 			} );
 
 			registry
 				.dispatch( CORE_SITE )
-				.receiveGetFirstPartyModeSettings( fpmSettings );
+				.receiveGetGoogleTagGatewaySettings( gtgSettings );
 		};
 
 		return (
@@ -132,33 +130,34 @@ WithFirstPartyModeAvailable.decorators = [
 		);
 	},
 ];
-WithFirstPartyModeAvailable.scenario = {};
+WithGoogleTagGatewayAvailable.scenario = {};
 
-export const WithFirstPartyModeUnavailable = Template.bind( null );
-WithFirstPartyModeUnavailable.storyName = 'With first party mode unavailable';
-WithFirstPartyModeUnavailable.parameters = {
-	features: [ 'firstPartyMode' ],
+export const WithGoogleTagGatewayUnavailable = Template.bind( null );
+WithGoogleTagGatewayUnavailable.storyName =
+	'With Google tag gateway unavailable';
+WithGoogleTagGatewayUnavailable.parameters = {
+	features: [ 'googleTagGateway' ],
 };
-WithFirstPartyModeUnavailable.decorators = [
+WithGoogleTagGatewayUnavailable.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			const fpmServerRequirementsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+			const gtgServerRequirementsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
 
-			const fpmSettings = {
+			const gtgSettings = {
 				isEnabled: true,
-				isFPMHealthy: false,
+				isGTGHealthy: false,
 				isScriptAccessEnabled: false,
 			};
 
-			fetchMock.get( fpmServerRequirementsEndpoint, {
-				body: fpmSettings,
+			fetchMock.get( gtgServerRequirementsEndpoint, {
+				body: gtgSettings,
 			} );
 
 			registry
 				.dispatch( CORE_SITE )
-				.receiveGetFirstPartyModeSettings( fpmSettings );
+				.receiveGetGoogleTagGatewaySettings( gtgSettings );
 		};
 
 		return (
@@ -168,7 +167,7 @@ WithFirstPartyModeUnavailable.decorators = [
 		);
 	},
 ];
-WithFirstPartyModeUnavailable.scenario = {};
+WithGoogleTagGatewayUnavailable.scenario = {};
 
 export const WithoutModuleAccess = Template.bind( null );
 WithoutModuleAccess.storyName = 'Without module access';
@@ -178,24 +177,12 @@ WithoutModuleAccess.args = {
 
 export const PropertyNotAvailable = Template.bind( null );
 PropertyNotAvailable.storyName = 'Property not available';
-PropertyNotAvailable.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries(
-				accountSummaries.map( ( acct ) => ( {
-					...acct,
-					propertySummaries: [],
-				} ) )
-			);
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
+PropertyNotAvailable.parameters = {
+	accountSummaries: accounts.map( ( acct ) => ( {
+		...acct,
+		propertySummaries: [],
+	} ) ),
+};
 
 export const WebDataStreamNotAvailable = Template.bind( null );
 WebDataStreamNotAvailable.storyName = 'Web data stream not available';
@@ -258,10 +245,7 @@ WithExistingTagNoMatch.decorators = [
 
 export const IceEnabled = Template.bind( null );
 IceEnabled.storyName = 'With ICE Enabled';
-IceEnabled.scenario = {
-	label: 'Modules/Analytics4/Settings/SettingsEdit/ICE',
-	delay: 250,
-};
+IceEnabled.scenario = {};
 IceEnabled.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -272,7 +256,7 @@ IceEnabled.decorators = [
 
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: true,
 					connected: true,
 					owner: { login: 'analytics_4-owner-username' },
@@ -332,7 +316,7 @@ export default {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 						owner: { login: 'analytics_4-owner-username' },
@@ -341,7 +325,9 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetAccountSummaries( accountSummaries );
+					.receiveGetAccountSummaries(
+						parameters.accountSummaries || accountSummaries
+					);
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					accountID,

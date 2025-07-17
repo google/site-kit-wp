@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { MODULES_ADS } from '../../datastore/constants';
+import { MODULE_SLUG_ADS } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
@@ -44,9 +45,7 @@ function Template( { setupRegistry = () => {} } ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Ads/Setup/SetupForm/Default',
-};
+Default.scenario = {};
 
 export const AdBlocker = Template.bind( {} );
 AdBlocker.storyName = 'AdBlocker Active';
@@ -54,7 +53,7 @@ AdBlocker.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: false,
 				connected: false,
 			},
@@ -62,9 +61,7 @@ AdBlocker.args = {
 		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 	},
 };
-AdBlocker.scenario = {
-	label: 'Modules/Ads/Setup/SetupForm/AdBlocker',
-};
+AdBlocker.scenario = {};
 
 export const Empty = Template.bind( {} );
 Empty.storyName = 'Empty';
@@ -72,7 +69,7 @@ Empty.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: true,
 				connected: true,
 			},
@@ -84,9 +81,7 @@ Empty.args = {
 		registry.dispatch( MODULES_ADS ).setSettings( { conversionID: '' } );
 	},
 };
-Empty.scenario = {
-	label: 'Modules/Ads/Setup/SetupForm/Empty',
-};
+Empty.scenario = {};
 
 export const Invalid = Template.bind( {} );
 Invalid.storyName = 'Invalid';
@@ -94,7 +89,7 @@ Invalid.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: true,
 				connected: true,
 			},
@@ -111,9 +106,7 @@ Invalid.args = {
 			.setSettings( { conversionID: 'AW-ABCDEFGHIJ' } );
 	},
 };
-Invalid.scenario = {
-	label: 'Modules/Ads/Setup/SetupForm/Invalid',
-};
+Invalid.scenario = {};
 
 export const Initial = Template.bind( {} );
 Initial.storyName = 'Initial';
@@ -121,7 +114,7 @@ Initial.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: false,
 				connected: false,
 			},
@@ -141,7 +134,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'ads',
+						slug: MODULE_SLUG_ADS,
 						active: true,
 						connected: true,
 					},

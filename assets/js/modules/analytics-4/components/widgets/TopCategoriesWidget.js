@@ -38,6 +38,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { listFormat, numFmt } from '../../../../util';
 import { ZeroDataMessage } from '../common';
 import {
@@ -47,6 +48,7 @@ import {
 import whenActive from '../../../../util/when-active';
 import withCustomDimensions from '../../utils/withCustomDimensions';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import { splitCategories } from '../../utils';
 
 /**
  * Gets the report options for the Top Categories widget.
@@ -82,6 +84,7 @@ function getReportOptions( select ) {
 		],
 		limit: 3,
 		keepEmptyRows: false,
+		reportID: 'analytics-4_top-categories-widget_widget_reportOptions',
 	};
 }
 
@@ -120,7 +123,7 @@ function TopCategoriesWidget( { Widget } ) {
 
 				const categoriesList =
 					typeof categories?.value === 'string'
-						? categories.value.split( '; ' )
+						? splitCategories( categories.value )
 						: [];
 
 				const categoriesString = listFormat(
@@ -162,7 +165,7 @@ TopCategoriesWidget.propTypes = {
 
 export default compose(
 	whenActive( {
-		moduleName: 'analytics-4',
+		moduleName: MODULE_SLUG_ANALYTICS_4,
 		FallbackComponent: ConnectGA4CTATileWidget,
 	} ),
 	withCustomDimensions( {

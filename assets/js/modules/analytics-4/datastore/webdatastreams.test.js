@@ -24,7 +24,7 @@ import { pick } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -85,7 +85,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 	};
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -95,7 +95,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {
@@ -757,14 +757,14 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					{
 						_id: '110',
 						webStreamData: {
-							defaultUri: 'http://example-1.test',
+							defaultUri: 'http://example-1.test', // eslint-disable-line sitekit/acronym-case
 							measurementId: 'G-1101', // eslint-disable-line sitekit/acronym-case
 						},
 					},
 					{
 						_id: '111',
 						webStreamData: {
-							defaultUri: 'http://example-2.test',
+							defaultUri: 'http://example-2.test', // eslint-disable-line sitekit/acronym-case
 							measurementId: 'G-1102', // eslint-disable-line sitekit/acronym-case
 						},
 					},
@@ -773,14 +773,14 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					{
 						_id: '112',
 						webStreamData: {
-							defaultUri: 'http://example-3.test',
+							defaultUri: 'http://example-3.test', // eslint-disable-line sitekit/acronym-case
 							measurementId: 'G-1103', // eslint-disable-line sitekit/acronym-case
 						},
 					},
 					{
 						_id: '113',
 						webStreamData: {
-							defaultUri: 'http://example-4.test',
+							defaultUri: 'http://example-4.test', // eslint-disable-line sitekit/acronym-case
 							measurementId: 'G-1104', // eslint-disable-line sitekit/acronym-case
 						},
 					},
@@ -789,21 +789,21 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					{
 						_id: '114',
 						webStreamData: {
-							defaultUri: 'http://example-5.test',
+							defaultUri: 'http://example-5.test', // eslint-disable-line sitekit/acronym-case
 							measurementId: 'G-1105', // eslint-disable-line sitekit/acronym-case
 						},
 					},
 					{
 						_id: '115',
 						webStreamData: {
-							defaultUri: 'http://example.com',
+							defaultUri: 'http://example.com', // eslint-disable-line sitekit/acronym-case
 							measurementId: 'G-1106', // eslint-disable-line sitekit/acronym-case
 						},
 					},
 					{
 						_id: '116',
 						webStreamData: {
-							defaultUri: 'http://example-7.test',
+							defaultUri: 'http://example-7.test', // eslint-disable-line sitekit/acronym-case
 							measurementId: 'G-1107', // eslint-disable-line sitekit/acronym-case
 						},
 					},

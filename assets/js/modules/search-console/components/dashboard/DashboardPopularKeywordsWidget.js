@@ -60,6 +60,8 @@ export default function DashboardPopularKeywordsWidget( props ) {
 		...dateRangeDates,
 		dimensions: 'query',
 		limit: 10,
+		reportID:
+			'search-console_dashboard-popular-keywords-widget_widget_reportArgs',
 	};
 
 	const url = useSelect( ( select ) =>
@@ -124,7 +126,7 @@ export default function DashboardPopularKeywordsWidget( props ) {
 
 	if ( loading || isGatheringData === undefined ) {
 		return (
-			<Widget noPadding Footer={ Footer }>
+			<Widget Footer={ Footer } noPadding>
 				<PreviewTable padding />
 			</Widget>
 		);
@@ -203,7 +205,7 @@ export default function DashboardPopularKeywordsWidget( props ) {
 	];
 
 	return (
-		<Widget noPadding Footer={ Footer }>
+		<Widget Footer={ Footer } noPadding>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ data }

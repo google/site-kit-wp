@@ -27,6 +27,7 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import PopularKeywordsWidget from './PopularKeywordsWidget';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../constants';
 import { provideSearchConsoleMockReport } from '../../util/data-mock';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import {
@@ -40,6 +41,7 @@ const reportOptions = {
 	endDate: '2020-09-07',
 	dimensions: 'query',
 	limit: 100,
+	reportID: 'search-console_popular-keywords-widget_widget_reportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
@@ -65,10 +67,7 @@ Ready.args = {
 		provideSearchConsoleMockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	label: 'Key Metrics/PopularKeywordsWidget/Ready',
-	delay: 250,
-};
+Ready.scenario = {};
 
 export const ReadyViewOnly = Template.bind( {} );
 ReadyViewOnly.storyName = 'Ready View Only';
@@ -78,10 +77,7 @@ ReadyViewOnly.args = {
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
-ReadyViewOnly.scenario = {
-	label: 'Key Metrics/PopularKeywordsWidget/ReadyViewOnly',
-	delay: 250,
-};
+ReadyViewOnly.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -102,10 +98,7 @@ ZeroData.args = {
 		} );
 	},
 };
-ZeroData.scenario = {
-	label: 'Key Metrics/PopularKeywordsWidget/ZeroData',
-	delay: 250,
-};
+ZeroData.scenario = {};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
@@ -164,7 +157,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'search-console',
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
 						active: true,
 						connected: true,
 					},

@@ -23,6 +23,7 @@ import ConfirmDisconnect from './ConfirmDisconnect';
 import { provideModules } from '../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 function Template( args ) {
 	return <ConfirmDisconnect { ...args } />;
@@ -32,14 +33,14 @@ export const ConfirmDisconnectWithFeatures = Template.bind( {} );
 ConfirmDisconnectWithFeatures.storyName =
 	'ConfirmDisconnect dialog with features';
 ConfirmDisconnectWithFeatures.args = {
-	slug: 'analytics-4',
+	slug: MODULE_SLUG_ANALYTICS_4,
 };
 ConfirmDisconnectWithFeatures.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: true,
 					connected: true,
 					features: [

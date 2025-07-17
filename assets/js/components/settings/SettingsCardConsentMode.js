@@ -37,15 +37,15 @@ import Badge from '../../components/Badge';
 import ConsentModeSwitch from '../consent-mode/ConsentModeSwitch';
 import WPConsentAPIRequirements from '../consent-mode/WPConsentAPIRequirements';
 import Layout from '../layout/Layout';
-import SettingsNotice, { TYPE_INFO } from '../SettingsNotice';
 import { DAY_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import Notice from '../Notice';
 
 export default function SettingsCardConsentMode() {
 	const viewContext = useViewContext();
 
 	const isAdsConnected = useSelect( ( select ) =>
-		select( CORE_SITE ).isAdsConnected()
+		select( CORE_SITE ).isAdsConnectedUncached()
 	);
 
 	const isConsentModeEnabled = useSelect( ( select ) =>
@@ -138,10 +138,10 @@ export default function SettingsCardConsentMode() {
 							{ isAdsConnected && ! isConsentModeEnabled && (
 								<Row>
 									<Cell size={ 12 }>
-										<SettingsNotice
-											className="googlesitekit-settings-consent-mode__recommendation-notice"
-											type={ TYPE_INFO }
-											notice={ __(
+										<Notice
+											type={ Notice.TYPES.INFO }
+											className="googlesitekit-settings-notice"
+											description={ __(
 												'If you have Google Ads campaigns for this site, it’s highly recommended to enable Consent mode - otherwise, you won’t be able to collect any metrics on the effectiveness of your campaigns in regions like the European Economic Area.',
 												'google-site-kit'
 											) }

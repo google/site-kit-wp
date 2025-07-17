@@ -8,6 +8,8 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
@@ -372,5 +374,35 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertOptionNotExists( Existing_Client_ID::OPTION );
 		$this->module->on_deactivation();
 		$this->assertEquals( 'test_client_id.apps.googleusercontent.com', get_option( Existing_Client_ID::OPTION ) );
+	}
+
+	public function test_inline_data_has_woocommerce() {
+		$this->module->register();
+		$this->module->get_settings()->register();
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals( false, $inline_modules_data['sign-in-with-google']['isWooCommerceActive'] );
+		$this->assertEquals( false, $inline_modules_data['sign-in-with-google']['isWooCommerceRegistrationEnabled'] );
+	}
+
+	public function test_inline_data_with_no_existing_client_id() {
+		$this->module->register();
+		$this->module->get_settings()->register();
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertArrayNotHasKey( 'existingClientID', $inline_modules_data['sign-in-with-google'] );
+	}
+
+	public function test_inline_data_with_existing_client_id() {
+		$this->module->register();
+		$this->module->get_settings()->register();
+
+		update_option( Existing_Client_ID::OPTION, 'test_client_id.apps.googleusercontent.com' );
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals( 'test_client_id.apps.googleusercontent.com', $inline_modules_data['sign-in-with-google']['existingClientID'] );
 	}
 }

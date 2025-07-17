@@ -33,12 +33,16 @@ import { useEffect, useRef, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import { ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY } from '../../constants';
+import {
+	ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY,
+	MODULE_SLUG_ADSENSE,
+} from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { generateDateRangeArgs } from '../../../analytics-4/utils/report-date-range-args';
 import { numFmt, trackEvent } from '../../../../util';
@@ -85,6 +89,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 		},
 		orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
 		limit: 5,
+		reportID: 'adsense_top-earning-pages-widget-ga4_widget_args',
 	};
 
 	const data = useInViewSelect(
@@ -205,7 +210,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 
 	if ( loading || isGatheringData === undefined ) {
 		return (
-			<Widget noPadding Footer={ Footer }>
+			<Widget Footer={ Footer } noPadding>
 				<PreviewTable rows={ 5 } padding />
 			</Widget>
 		);
@@ -298,7 +303,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 	];
 
 	return (
-		<Widget noPadding Footer={ Footer } ref={ updateTrackingRef }>
+		<Widget Footer={ Footer } ref={ updateTrackingRef } noPadding>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ data?.rows || [] }
@@ -318,6 +323,6 @@ DashboardTopEarningPagesWidgetGA4.propTypes = {
 };
 
 export default compose(
-	whenActive( { moduleName: 'adsense' } ),
-	whenActive( { moduleName: 'analytics-4' } )
+	whenActive( { moduleName: MODULE_SLUG_ADSENSE } ),
+	whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )
 )( DashboardTopEarningPagesWidgetGA4 );

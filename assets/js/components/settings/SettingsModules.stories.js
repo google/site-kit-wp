@@ -26,6 +26,12 @@ import { MemoryRouter } from 'react-router-dom';
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -49,12 +55,12 @@ ConnectedServices.args = {
 		provideModules(
 			registry,
 			[
-				'ads',
-				'adsense',
-				'analytics-4',
-				'pagespeed-insights',
-				'search-console',
-				'sign-in-with-google',
+				MODULE_SLUG_ADS,
+				MODULE_SLUG_ADSENSE,
+				MODULE_SLUG_ANALYTICS_4,
+				MODULE_SLUG_PAGESPEED_INSIGHTS,
+				MODULE_SLUG_SEARCH_CONSOLE,
+				MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
 			].map( ( slug ) => ( {
 				slug,
 				active: true,
@@ -64,32 +70,31 @@ ConnectedServices.args = {
 		provideModuleRegistrations( registry );
 	},
 };
-ConnectedServices.scenario = {
-	label: 'Settings/Connected Services',
-};
+ConnectedServices.scenario = {};
 
 export const ConnectMoreServices = Template.bind( {} );
 ConnectMoreServices.args = {
 	setupRegistry: async ( registry ) => {
 		provideModules(
 			registry,
-			[ 'ads', 'adsense', 'pagespeed-insights', 'search-console' ].map(
-				( slug ) => ( {
-					slug,
-					active: true,
-					connected: true,
-				} )
-			)
+			[
+				MODULE_SLUG_ADS,
+				MODULE_SLUG_ADSENSE,
+				MODULE_SLUG_PAGESPEED_INSIGHTS,
+				MODULE_SLUG_SEARCH_CONSOLE,
+			].map( ( slug ) => ( {
+				slug,
+				active: true,
+				connected: true,
+			} ) )
 		);
 		provideModuleRegistrations( registry );
-		registry.select( CORE_MODULES ).getModule( 'adsense' );
+		registry.select( CORE_MODULES ).getModule( MODULE_SLUG_ADSENSE );
 		await untilResolved( registry, CORE_MODULES ).getModules();
 	},
 	route: '/connect-more-services',
 };
-ConnectMoreServices.scenario = {
-	label: 'Settings/Connect More Services',
-};
+ConnectMoreServices.scenario = {};
 
 export default {
 	title: 'Components/SettingsModules',

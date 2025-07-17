@@ -29,28 +29,28 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import { combineStores, createRegistrySelector } from 'googlesitekit-data';
+import { get } from 'googlesitekit-api';
+import {
+	combineStores,
+	createReducer,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { MODULES_PAGESPEED_INSIGHTS } from './constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { strategy, url } ) => {
-		return API.get( 'modules', 'pagespeed-insights', 'pagespeed', {
+		return get( 'modules', MODULE_SLUG_PAGESPEED_INSIGHTS, 'pagespeed', {
 			strategy,
 			url,
 		} );
 	},
-	reducerCallback: ( state, report, { strategy, url } ) => {
-		return {
-			...state,
-			reports: {
-				...state.reports,
-				[ `${ strategy }::${ url }` ]: { ...report },
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, report, { strategy, url } ) => {
+		state.reports = state.reports || {};
+		state.reports[ `${ strategy }::${ url }` ] = report;
+	} ),
 	argsToParams: ( url, strategy ) => {
 		return {
 			strategy,

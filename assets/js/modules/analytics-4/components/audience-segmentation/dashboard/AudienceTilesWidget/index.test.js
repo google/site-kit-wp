@@ -49,12 +49,14 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '../../../../../../util/tracking';
 import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
 import {
 	getViewportWidth,
 	setViewportWidth,
 } from '../../../../../../../../tests/js/viewport-width-utils';
+import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '../../../../../../../../tests/js/utils/zeroReports';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -68,11 +70,15 @@ mockTrackEvent.mockImplementation( () => Promise.resolve() );
  * @param {Array<string>} configuredAudiences                    Array of audience resource names.
  * @param {Object}        [options]                              Options object.
  * @param {boolean}       [options.isSiteKitAudiencePartialData] Whether the mock response should include partial data for Site Kit audiences. Defaults to false.
+ * @param {boolean}       [options.noDataInComparisonDateRange]  Whether the mock response should have no data in the comparison date range. Defaults to false.
  */
 function provideAudienceTilesMockReport(
 	registry,
 	configuredAudiences,
-	{ isSiteKitAudiencePartialData = false } = {}
+	{
+		isSiteKitAudiencePartialData = false,
+		noDataInComparisonDateRange = false,
+	} = {}
 ) {
 	const dates = registry.select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
@@ -119,6 +125,9 @@ function provideAudienceTilesMockReport(
 			{ name: 'screenPageViewsPerSession' },
 			{ name: 'screenPageViews' },
 		],
+		reportID: isSiteKitAudiencePartialData
+			? 'audience-segmentation_use-audience-tiles-reports_hook_newVsReturningReportOptions'
+			: 'audience-segmentation_use-audience-tiles-reports_hook_reportOptions',
 	};
 
 	const options = {
@@ -133,7 +142,15 @@ function provideAudienceTilesMockReport(
 			  },
 	};
 
-	const reportData = getAnalytics4MockResponse( options );
+	let reportData = getAnalytics4MockResponse( options );
+
+	if ( noDataInComparisonDateRange ) {
+		reportData = replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
+			reportData,
+			'date_range_1',
+			isSiteKitAudiencePartialData ? 'remove' : 'zero'
+		);
+	}
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( reportData, {
 		options,
@@ -147,6 +164,8 @@ function provideAudienceTilesMockReport(
 		startDate,
 		endDate,
 		metrics: [ { name: 'screenPageViews' } ],
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_totalPageviewsReportOptions',
 	};
 
 	const totalPageviewsReportData = getAnalytics4MockResponse( options );
@@ -175,6 +194,8 @@ function provideAudienceTilesMockReport(
 			},
 		],
 		limit: 4,
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_topCitiesReportOptions',
 	};
 
 	const topContentReportOptions = {
@@ -191,6 +212,8 @@ function provideAudienceTilesMockReport(
 		},
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 3,
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_topContentReportOptions',
 	};
 
 	const topContentPageTitlesReportOptions = {
@@ -207,6 +230,8 @@ function provideAudienceTilesMockReport(
 		},
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 15,
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_topContentPageTitlesReportOptions',
 	};
 
 	[
@@ -270,7 +295,7 @@ describe( 'AudienceTilesWidget', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideModuleRegistrations( registry );
@@ -350,7 +375,7 @@ describe( 'AudienceTilesWidget', () => {
 	it( 'should render when configured audience is matching available audiences', async () => {
 		const configuredAudiences = [ 'properties/12345/audiences/1' ];
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
 
@@ -386,7 +411,7 @@ describe( 'AudienceTilesWidget', () => {
 			'properties/12345/audiences/2',
 		];
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
 
@@ -416,12 +441,126 @@ describe( 'AudienceTilesWidget', () => {
 		} );
 	} );
 
+	it( 'should render with no data in the comparison date range', async () => {
+		const configuredAudiences = [
+			'properties/12345/audiences/1',
+			'properties/12345/audiences/2',
+		];
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
+		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+			configuredAudiences,
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		provideAudienceTilesMockReport( registry, configuredAudiences, {
+			noDataInComparisonDateRange: true,
+			isSiteKitAudiencePartialData: false,
+		} );
+
+		const { container, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+		await act( waitForDefaultTimeouts );
+
+		await waitFor( () => {
+			expect( container ).toMatchSnapshot();
+		} );
+	} );
+
+	it( 'should render with no data in the comparison date range and partial data', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
+		} );
+
+		const configuredAudiences = [
+			'properties/12345/audiences/3', // New visitors
+			'properties/12345/audiences/4', // Returning visitors
+		];
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const dataAvailabilityDate = Number(
+			getPreviousDate( dates.startDate, -1 ).replace( /-/g, '' )
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setResourceDataAvailabilityDate(
+				'properties/12345/audiences/3',
+				'audience',
+				dataAvailabilityDate
+			);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setResourceDataAvailabilityDate(
+				'properties/12345/audiences/4',
+				'audience',
+				dataAvailabilityDate
+			);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setAvailableAudiences( availableAudiences );
+
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+			configuredAudiences,
+			isAudienceSegmentationWidgetHidden: false,
+		} );
+
+		provideAudienceTilesMockReport( registry, configuredAudiences, {
+			noDataInComparisonDateRange: true,
+			isSiteKitAudiencePartialData: true,
+		} );
+
+		const { container, waitForRegistry } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		const [ siteKitAudiences ] = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getConfigurableSiteKitAndOtherAudiences();
+
+		const isSiteKitAudiencePartialData = registry
+			.select( MODULES_ANALYTICS_4 )
+			.hasAudiencePartialData( siteKitAudiences );
+
+		await act( waitForDefaultTimeouts );
+
+		await waitFor( () => {
+			expect( isSiteKitAudiencePartialData ).toBe( true );
+		} );
+
+		expect( container ).toMatchSnapshot();
+	} );
+
 	it( 'should not render audiences that are not available (archived)', async () => {
 		const configuredAudiences = [
 			'properties/12345/audiences/1', // Available.
 			'properties/12345/audiences/9', // Not available (archived).
 		];
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
 
@@ -458,7 +597,7 @@ describe( 'AudienceTilesWidget', () => {
 	} );
 
 	it( 'should render correctly when there is partial data for Site Kit audiences', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
 
@@ -559,13 +698,13 @@ describe( 'AudienceTilesWidget', () => {
 			)
 		).toBeInTheDocument();
 
-		await act( () => waitForTimeouts( 150 ) );
+		await waitForRegistry();
 	} );
 
 	it( 'should track an event when the tooltip for an audience tab is viewed', async () => {
 		const configuredAudiences = [ 'properties/12345/audiences/1' ];
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
 		} );
 
@@ -597,6 +736,7 @@ describe( 'AudienceTilesWidget', () => {
 		);
 
 		// Wait for the tooltip to appear, its delay is 100ms.
+		// waitForRegistry() is not suitable to use here as no state changes occur.
 		await waitForTimeouts( 100 );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(

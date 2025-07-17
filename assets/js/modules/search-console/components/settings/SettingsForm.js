@@ -27,17 +27,16 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { PropertySelect } from '../common/';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
-import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
-import { TYPE_INFO } from '../../../../components/SettingsNotice';
-import WarningIcon from '../../../../../../assets/svg/icons/warning-icon.svg';
+import Notice from '../../../../components/Notice';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const module = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( 'search-console' )
+		select( CORE_MODULES ).getModule( MODULE_SLUG_SEARCH_CONSOLE )
 	);
 
 	const formattedOwnerName = module?.owner?.login
@@ -56,10 +55,9 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			</div>
 
 			{ hasModuleAccess === false && (
-				<SettingsNotice
-					type={ TYPE_INFO }
-					Icon={ WarningIcon }
-					notice={ createInterpolateElement(
+				<Notice
+					type={ Notice.TYPES.WARNING }
+					description={ createInterpolateElement(
 						sprintf(
 							/* translators: 1: module owner's name, 2: module name */
 							__(

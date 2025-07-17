@@ -102,11 +102,11 @@ export default function TourTooltip( {
 				</CardActions>
 				<Button
 					className="googlesitekit-tooltip-close"
-					text
-					hideTooltipTitle
 					icon={ <CloseIcon width="14" height="14" /> }
 					onClick={ closeProps.onClick }
 					aria-label={ __( 'Close', 'google-site-kit' ) }
+					text
+					hideTooltipTitle
 				/>
 			</Card>
 		</div>
@@ -128,7 +128,7 @@ TourTooltip.propTypes = {
 	size: PropTypes.number.isRequired,
 	step: PropTypes.shape( {
 		content: PropTypes.node,
-		title: PropTypes.node.isRequired,
+		title: PropTypes.node,
 		cta: PropTypes.oneOfType( [ PropTypes.element, PropTypes.bool ] ),
 		className: PropTypes.string,
 	} ).isRequired,

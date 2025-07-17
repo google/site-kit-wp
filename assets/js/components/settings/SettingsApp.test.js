@@ -36,7 +36,11 @@ import {
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { VIEW_CONTEXT_SETTINGS } from '../../googlesitekit/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 
 const coreUserTrackingSettingsEndpointRegExp = new RegExp(
 	'^/google-site-kit/v1/core/user/data/tracking'
@@ -57,6 +61,7 @@ describe( 'SettingsApp', () => {
 			.dispatch( CORE_USER )
 			.receiveGetAuthentication( { needsReauthentication: false } );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 		registry
 			.dispatch( CORE_SITE )
@@ -81,7 +86,7 @@ describe( 'SettingsApp', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 				SettingsEditComponent() {
@@ -89,17 +94,17 @@ describe( 'SettingsApp', () => {
 				},
 			},
 			{
-				slug: 'tagmanager',
+				slug: MODULE_SLUG_TAGMANAGER,
 				active: true,
 				connected: true,
 			},
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				active: true,
 				connected: true,
 			},
 			{
-				slug: 'pagespeed-insights',
+				slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 				active: true,
 				connected: true,
 			},

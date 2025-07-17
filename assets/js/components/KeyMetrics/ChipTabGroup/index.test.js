@@ -27,13 +27,13 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
-import { enabledFeatures } from '../../../features';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { withConnected } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
 import ChipTabGroup from './';
@@ -72,14 +72,12 @@ describe( 'ChipTabGroup', () => {
 	let registry;
 
 	beforeEach( () => {
-		enabledFeatures.add( 'conversionReporting' );
-
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		provideKeyMetricsUserInputSettings( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 
 		provideKeyMetricsWidgetRegistrations(
 			registry,
@@ -87,7 +85,7 @@ describe( 'ChipTabGroup', () => {
 				( acc, widget ) => ( {
 					...acc,
 					[ widget ]: {
-						modules: [ 'analytics-4' ],
+						modules: [ MODULE_SLUG_ANALYTICS_4 ],
 					},
 				} ),
 				{}
@@ -135,7 +133,6 @@ describe( 'ChipTabGroup', () => {
 				<ChipTabGroupWrapped savedItemSlugs={ savedItemSlugs } />,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 
@@ -150,7 +147,6 @@ describe( 'ChipTabGroup', () => {
 				<ChipTabGroupWrapped savedItemSlugs={ savedItemSlugs } />,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 
@@ -190,7 +186,6 @@ describe( 'ChipTabGroup', () => {
 				<ChipTabGroupWrapped savedItemSlugs={ savedItemSlugs } />,
 				{
 					registry,
-					features: [ 'conversionReporting' ],
 				}
 			);
 

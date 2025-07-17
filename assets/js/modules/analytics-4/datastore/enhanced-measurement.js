@@ -30,11 +30,15 @@ import { createRegistrySelector } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import { get, set } from 'googlesitekit-api';
+import {
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createReducer } from '../../../googlesitekit/data/create-reducer';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidPropertyID, isValidWebDataStreamID } from '../utils/validation';
 
@@ -87,9 +91,9 @@ const fetchStoreReducerCallback = createReducer(
 const fetchGetEnhancedMeasurementSettingsStore = createFetchStore( {
 	baseName: 'getEnhancedMeasurementSettings',
 	controlCallback( { propertyID, webDataStreamID } ) {
-		return API.get(
+		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'enhanced-measurement-settings',
 			{ propertyID, webDataStreamID },
 			{
@@ -120,11 +124,16 @@ const fetchUpdateEnhancedMeasurementSettingsStore = createFetchStore( {
 		webDataStreamID,
 		enhancedMeasurementSettings,
 	} ) =>
-		API.set( 'modules', 'analytics-4', 'enhanced-measurement-settings', {
-			propertyID,
-			webDataStreamID,
-			enhancedMeasurementSettings,
-		} ),
+		set(
+			'modules',
+			MODULE_SLUG_ANALYTICS_4,
+			'enhanced-measurement-settings',
+			{
+				propertyID,
+				webDataStreamID,
+				enhancedMeasurementSettings,
+			}
+		),
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: (
 		propertyID,
@@ -198,13 +207,14 @@ const baseActions = {
 	 *
 	 * @since 1.110.0
 	 *
-	 * @param {string}  propertyID      The GA4 property ID to set enhanced measurement settings for.
-	 * @param {string}  webDataStreamID The GA4 web data stream ID to set enhanced measurement settings for.
-	 * @param {boolean} enabled         Whether the `streamEnabled` setting should be enabled or not.
+	 * @param {Object}  settings                 The GA4 enhanced measurement settings to set.
+	 * @param {string}  settings.propertyID      The GA4 property ID to set enhanced measurement settings for.
+	 * @param {string}  settings.webDataStreamID The GA4 web data stream ID to set enhanced measurement settings for.
+	 * @param {boolean} settings.enabled         Whether the `streamEnabled` setting should be enabled or not.
 	 * @return {Object} Redux-style action.
 	 */
 	setEnhancedMeasurementStreamEnabled: createValidatedAction(
-		( propertyID, webDataStreamID, enabled ) => {
+		( { propertyID, webDataStreamID, enabled } ) => {
 			invariant(
 				isValidPropertyID( propertyID ),
 				'A valid GA4 propertyID is required.'
@@ -219,7 +229,7 @@ const baseActions = {
 				'enabled must be a boolean.'
 			);
 		},
-		function* ( propertyID, webDataStreamID, enabled ) {
+		function* ( { propertyID, webDataStreamID, enabled } ) {
 			const registry = yield commonActions.getRegistry();
 
 			const currentSettings = yield commonActions.await(

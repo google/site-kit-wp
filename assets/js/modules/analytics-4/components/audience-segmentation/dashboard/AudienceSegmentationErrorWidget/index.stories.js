@@ -30,6 +30,7 @@ import {
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import AudienceSegmentationErrorWidget from '.';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
 
@@ -51,7 +52,7 @@ function Template( { setupRegistry = async () => {}, ...args } ) {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideModuleRegistrations( registry );
@@ -97,9 +98,7 @@ Default.args = {
 		);
 	},
 };
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationErrorWidget/Default',
-};
+Default.scenario = {};
 
 export const InsufficientPermissions = Template.bind( {} );
 InsufficientPermissions.storyName = 'InsufficientPermissions';
@@ -136,9 +135,7 @@ InsufficientPermissions.args = {
 		);
 	},
 };
-InsufficientPermissions.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationErrorWidget/InsufficientPermissions',
-};
+InsufficientPermissions.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationErrorWidget',

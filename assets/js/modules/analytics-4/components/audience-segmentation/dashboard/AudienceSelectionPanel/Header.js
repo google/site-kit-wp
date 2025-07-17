@@ -41,8 +41,8 @@ import { SelectionPanelHeader } from '../../../../../../components/SelectionPane
 export default function Header( { closePanel } ) {
 	const isViewOnly = useViewOnly();
 
-	const settingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	const adminSettingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getSiteKitAdminSettingsURL()
 	);
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingUserAudienceSettings()
@@ -51,8 +51,8 @@ export default function Header( { closePanel } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const onSettingsClick = useCallback(
-		() => navigateTo( `${ settingsURL }#/admin-settings` ),
-		[ navigateTo, settingsURL ]
+		() => navigateTo( adminSettingsURL ),
+		[ adminSettingsURL, navigateTo ]
 	);
 
 	return (
@@ -70,9 +70,9 @@ export default function Header( { closePanel } ) {
 						{
 							link: (
 								<Link
-									secondary
 									onClick={ onSettingsClick }
 									disabled={ isSavingSettings }
+									secondary
 								/>
 							),
 							strong: <strong />,

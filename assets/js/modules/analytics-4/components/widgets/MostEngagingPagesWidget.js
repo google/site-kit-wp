@@ -33,6 +33,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
@@ -43,6 +44,7 @@ import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import { numFmt } from '../../../../util';
+import { decodeAmpersand } from '../../utils';
 
 function MostEngagingPagesWidget( props ) {
 	const { Widget } = props;
@@ -60,6 +62,8 @@ function MostEngagingPagesWidget( props ) {
 		dimensions: [ 'pagePath' ],
 		metrics: [ { name: 'screenPageViews' } ],
 		limit: 1,
+		reportID:
+			'analytics-4_most-engaging-pages-widget_widget_pageViewsReportOptions',
 	};
 
 	const pageViewsReport = useInViewSelect(
@@ -96,6 +100,7 @@ function MostEngagingPagesWidget( props ) {
 			},
 		},
 		limit: 3,
+		reportID: 'analytics-4_most-engaging-pages-widget_widget_reportOptions',
 	};
 
 	const pageViewsReportErrors = useSelect( ( select ) =>
@@ -174,7 +179,7 @@ function MostEngagingPagesWidget( props ) {
 			field: 'dimensionValues.0.value',
 			Component( { fieldValue } ) {
 				const url = fieldValue;
-				const title = titles[ url ];
+				const title = decodeAmpersand( titles[ url ] );
 				// Utilizing `useSelect` inside the component rather than
 				// returning its direct value to the `columns` array.
 				// This pattern ensures that the component re-renders correctly based on changes in state,
@@ -237,6 +242,6 @@ MostEngagingPagesWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( MostEngagingPagesWidget );

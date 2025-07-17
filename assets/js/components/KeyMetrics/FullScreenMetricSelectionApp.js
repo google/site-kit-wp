@@ -19,15 +19,14 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import { usePrevious } from '@wordpress/compose';
+import { Fragment, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { ProgressBar } from 'googlesitekit-components';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell, Grid, Row } from '../../material-components';
@@ -43,12 +42,7 @@ import {
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 
 export default function FullScreenMetricSelectionApp() {
-	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setValues } = useDispatch( CORE_FORMS );
-
-	const mainDashboardURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
-	);
 
 	const hasFinishedGettingInputSettings = useSelect( ( select ) => {
 		// This needs to be called here to check on its resolution,
@@ -62,10 +56,6 @@ export default function FullScreenMetricSelectionApp() {
 			'getUserInputSettings'
 		);
 	} );
-
-	const closePanel = useCallback( () => {
-		navigateTo( mainDashboardURL );
-	}, [ navigateTo, mainDashboardURL ] );
 
 	const savedViewableMetrics = useSelect( ( select ) => {
 		const metrics = select( CORE_USER ).getKeyMetrics();
@@ -83,11 +73,14 @@ export default function FullScreenMetricSelectionApp() {
 		select( CORE_SITE ).isKeyMetricsSetupCompleted()
 	);
 
-	useEffect( () => {
-		if ( isKeyMetricsSetupCompleted && mainDashboardURL ) {
-			navigateTo( mainDashboardURL );
-		}
-	}, [ mainDashboardURL, navigateTo, isKeyMetricsSetupCompleted ] );
+	const previousIsKeyMetricsCompleted = usePrevious(
+		isKeyMetricsSetupCompleted
+	);
+
+	const showSelectionPanel =
+		( hasFinishedGettingInputSettings &&
+			isKeyMetricsSetupCompleted === false ) ||
+		( ! previousIsKeyMetricsCompleted && isKeyMetricsSetupCompleted );
 
 	useEffect( () => {
 		setValues( KEY_METRICS_SELECTION_FORM, {
@@ -102,73 +95,60 @@ export default function FullScreenMetricSelectionApp() {
 			</Header>
 			<div className="googlesitekit-metric-selection">
 				<div className="googlesitekit-module-page">
-					{ ( isKeyMetricsSetupCompleted === undefined ||
-						isKeyMetricsSetupCompleted === true ||
-						! hasFinishedGettingInputSettings ) && (
+					{ showSelectionPanel && (
 						<Grid>
-							<Row>
-								<Cell lgSize={ 12 } mdSize={ 12 } smSize={ 12 }>
-									<ProgressBar />
-								</Cell>
-							</Row>
+							<Layout rounded>
+								<Grid className="googlesitekit-user-input__header">
+									<Row>
+										<Cell
+											lgSize={ 12 }
+											mdSize={ 8 }
+											smSize={ 6 }
+										>
+											<PageHeader
+												className="googlesitekit-heading-3 googlesitekit-user-input__heading"
+												title={ __(
+													'Select up to 8 metrics that are most important for your business goals',
+													'google-site-kit'
+												) }
+												fullWidth
+											/>
+										</Cell>
+										<Cell
+											lgSize={ 12 }
+											mdSize={ 8 }
+											smSize={ 6 }
+										>
+											<span className="googlesitekit-user-input__subtitle">
+												{ __(
+													'Site Kit will start collecting data and add them on your dashboard. You can change your selection later on from Site Kit’s main dashboard.',
+													'google-site-kit'
+												) }
+											</span>
+										</Cell>
+									</Row>
+								</Grid>
+
+								<Grid className="googlesitekit-user-input__content">
+									<Row>
+										<Cell
+											lgSize={ 12 }
+											mdSize={ 8 }
+											smSize={ 6 }
+										>
+											<PanelContent
+												savedViewableMetrics={
+													savedViewableMetrics
+												}
+												showHeader={ false }
+												isFullScreen
+											/>
+										</Cell>
+									</Row>
+								</Grid>
+							</Layout>
 						</Grid>
 					) }
-					{ hasFinishedGettingInputSettings &&
-						isKeyMetricsSetupCompleted === false && (
-							<Grid>
-								<Layout rounded>
-									<Grid className="googlesitekit-user-input__header">
-										<Row>
-											<Cell
-												lgSize={ 12 }
-												mdSize={ 8 }
-												smSize={ 6 }
-											>
-												<PageHeader
-													className="googlesitekit-heading-3 googlesitekit-user-input__heading"
-													title={ __(
-														'Select up to 8 metrics that are most important for your business goals',
-														'google-site-kit'
-													) }
-													fullWidth
-												/>
-											</Cell>
-											<Cell
-												lgSize={ 12 }
-												mdSize={ 8 }
-												smSize={ 6 }
-											>
-												<span className="googlesitekit-user-input__subtitle">
-													{ __(
-														'Site Kit will start collecting data and add them on your dashboard. You can change your selection later on from Site Kit’s main dashboard.',
-														'google-site-kit'
-													) }
-												</span>
-											</Cell>
-										</Row>
-									</Grid>
-
-									<Grid className="googlesitekit-user-input__content">
-										<Row>
-											<Cell
-												lgSize={ 12 }
-												mdSize={ 8 }
-												smSize={ 6 }
-											>
-												<PanelContent
-													closePanel={ closePanel }
-													savedViewableMetrics={
-														savedViewableMetrics
-													}
-													showHeader={ false }
-													isFullScreen
-												/>
-											</Cell>
-										</Row>
-									</Grid>
-								</Layout>
-							</Grid>
-						) }
 				</div>
 			</div>
 		</Fragment>

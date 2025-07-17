@@ -24,19 +24,30 @@ import { useEffect, useState, useRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
 import CoreSiteBannerNotification from './CoreSiteBannerNotification';
 
 const MAX_SECONDS_FOR_SURVEY = 5;
 
+/**
+ * Registers notifications from the server, if any exist in the data store.
+ *
+ * This is a side-effect component that does not render anything directly.
+ *
+ * @since 1.157.0
+ *
+ * @return {null} Returns null as this component does not render anything directly.
+ */
 function CoreSiteBannerNotifications() {
-	const [ ready, setReady ] = useState( false );
+	const [ surveysHaveLoaded, setSurveysHaveLoaded ] = useState( false );
 	const [ hasSurveys, setHasSurveys ] = useState( false );
 
-	// This check doesn't rely on an actual date; we only need to track the elapsed
-	// number of seconds since this component was rendered to see when
+	// This check doesn't rely on an actual date; we only need to track the
+	// elapsed number of seconds since this component was rendered to see when
 	// to cause a survey to appear after page load.
 	const startTime = useRef( Date.now() ); // eslint-disable-line sitekit/no-direct-date
 
@@ -47,6 +58,11 @@ function CoreSiteBannerNotifications() {
 			: null
 	);
 
+	const [ registeredNotifications, setRegisteredNotifications ] = useState(
+		[]
+	);
+	const { registerNotification } = useDispatch( CORE_NOTIFICATIONS );
+
 	const notifications = useSelect( ( select ) =>
 		select( CORE_SITE ).getNotifications()
 	);
@@ -54,7 +70,7 @@ function CoreSiteBannerNotifications() {
 	useEffect( () => {
 		const timer = setTimeout( () => {
 			if ( ! hasSurveys ) {
-				setReady( true );
+				setSurveysHaveLoaded( true );
 			}
 		}, MAX_SECONDS_FOR_SURVEY * 1000 );
 
@@ -77,27 +93,46 @@ function CoreSiteBannerNotifications() {
 		}
 	}, [ startTime, surveys, setHasSurveys ] );
 
-	if ( ! Array.isArray( notifications ) || ! ready || hasSurveys ) {
-		return null;
-	}
+	useEffect( () => {
+		// If surveys haven't loaded yet or there are surveys on-screen, we don't
+		// register any server notifications.
+		if ( ! surveysHaveLoaded || hasSurveys ) {
+			return;
+		}
 
-	return notifications.map( ( notification ) => {
-		return (
-			<CoreSiteBannerNotification
-				content={ notification.content }
-				ctaLabel={ notification.ctaLabel }
-				ctaTarget={ notification.ctaTarget }
-				ctaURL={ notification.ctaURL }
-				dismissLabel={ notification.dismissLabel }
-				dismissible={ notification.dismissible }
-				id={ notification.id }
-				key={ notification.id }
-				learnMoreLabel={ notification.learnMoreLabel }
-				learnMoreURL={ notification.learnMoreURL }
-				title={ notification.title }
-			/>
-		);
-	} );
+		// Register any notifications from the server that haven't yet been
+		// registered.
+		//
+		// (Usually there will be one, if any, notification from the server.)
+		notifications?.forEach( ( notification ) => {
+			if ( registeredNotifications.includes( notification.id ) ) {
+				return;
+			}
+
+			registerNotification( notification.id, {
+				Component() {
+					return <CoreSiteBannerNotification { ...notification } />;
+				},
+				priority: notification.priority,
+				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+				isDismissible: notification.isDismissible,
+			} );
+
+			setRegisteredNotifications( ( previousRegisteredNotifications ) => {
+				previousRegisteredNotifications.push( notification.id );
+
+				return previousRegisteredNotifications;
+			} );
+		} );
+	}, [
+		hasSurveys,
+		notifications,
+		registerNotification,
+		registeredNotifications,
+		surveysHaveLoaded,
+	] );
+
+	return null;
 }
 
 export default CoreSiteBannerNotifications;

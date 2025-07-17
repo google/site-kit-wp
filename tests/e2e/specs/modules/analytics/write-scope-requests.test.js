@@ -35,7 +35,6 @@ import {
 	resetSiteKit,
 	useRequestInterception,
 	setupSiteKit,
-	pageWait,
 	ignorePermissionScopeErrors,
 } from '../../../utils';
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
@@ -127,7 +126,7 @@ describe( 'Analytics write scope requests', () => {
 					request.continue();
 				}
 			} else if (
-				request.url().match( 'analytics-4/data/conversion-events' ) ||
+				request.url().match( 'analytics-4/data/key-events' ) ||
 				request.url().match( 'search-console/data/searchanalytics' )
 			) {
 				request.respond( {
@@ -317,7 +316,7 @@ describe( 'Analytics write scope requests', () => {
 		await expect( page ).toClick( '.googlesitekit-cta-link', {
 			text: /set up analytics/i,
 		} );
-		await pageWait();
+		await page.waitForNetworkIdle();
 		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
@@ -329,7 +328,7 @@ describe( 'Analytics write scope requests', () => {
 			text: /set up a new property/i,
 		} );
 		// Add a brief delay to allow the submit button to become enabled.
-		await pageWait();
+		await page.waitForNetworkIdle();
 
 		// Click on confirm changes button and wait for permissions modal dialog.
 		await expect( page ).toClick( '.mdc-button--raised', {
@@ -342,29 +341,26 @@ describe( 'Analytics write scope requests', () => {
 
 		interceptCreatePropertyRequest = true;
 
-		await expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
-			text: /proceed/i,
-		} );
-
-		// expect( console ).toHaveErrored(); // Permission scope error.
-		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics-4/data/create-property' )
-		);
-		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics-4/data/create-webdatastream' )
-		);
+		await Promise.all( [
+			expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
+				text: /proceed/i,
+			} ),
+			page.waitForRequest( ( req ) =>
+				req.url().match( 'analytics-4/data/create-property' )
+			),
+			page.waitForRequest( ( req ) =>
+				req.url().match( 'analytics-4/data/create-webdatastream' )
+			),
+		] );
 
 		// They should end up on the dashboard.
 		await page.waitForNavigation();
-		await page.waitForSelector( '.googlesitekit-publisher-win__title', {
+		await page.waitForSelector( '.googlesitekit-notice__title', {
 			timeout: 5_000,
 		} );
-		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
-			{
-				text: /Congrats on completing the setup for Analytics!/i,
-			}
-		);
+		await expect( page ).toMatchElement( '.googlesitekit-notice__title', {
+			text: /Congrats on completing the setup for Analytics!/i,
+		} );
 	} );
 
 	it( 'prompts for additional permissions during a new Analytics web data stream creation if the user has not granted the Analytics edit scope', async () => {
@@ -412,13 +408,15 @@ describe( 'Analytics write scope requests', () => {
 			text: /set up a new web data stream/i,
 		} );
 
-		await expect( page ).toClick( '.mdc-button--raised', {
-			text: /complete setup/i,
-		} );
+		await Promise.all( [
+			expect( page ).toClick( '.mdc-button--raised', {
+				text: /complete setup/i,
+			} ),
 
-		await page.waitForRequest( ( req ) =>
-			req.url().match( 'analytics-4/data/create-webdatastream' )
-		);
+			page.waitForRequest( ( req ) =>
+				req.url().match( 'analytics-4/data/create-webdatastream' )
+			),
+		] );
 
 		// Click on confirm changes button and wait for permissions modal dialog.
 		await page.waitForSelector( '.mdc-dialog--open .mdc-button', {
@@ -437,12 +435,12 @@ describe( 'Analytics write scope requests', () => {
 
 		// They should end up on the dashboard.
 		await page.waitForNavigation();
-		await page.waitForTimeout( 5000 );
-		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
-			{
-				text: /Congrats on completing the setup for Analytics!/i,
-			}
-		);
+		await page.waitForSelector( '.googlesitekit-notice__title', {
+			timeout: 5000,
+		} );
+
+		await expect( page ).toMatchElement( '.googlesitekit-notice__title', {
+			text: /Congrats on completing the setup for Analytics!/i,
+		} );
 	} );
 } );

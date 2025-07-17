@@ -21,6 +21,7 @@
  */
 import Modules from 'googlesitekit-modules';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import {
 	submitChanges,
 	validateCanSubmitChanges,
@@ -29,7 +30,7 @@ import {
 } from './settings';
 import { convertDateStringToUNIXTimestamp } from '../../../util';
 
-const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
+const baseModuleStore = Modules.createModuleStore( MODULE_SLUG_ANALYTICS_4, {
 	ownedSettingsSlugs: [
 		'accountID',
 		'propertyID',
@@ -61,9 +62,6 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 		'adsConversionIDMigratedAtMs',
 		'adsLinked',
 		'adsLinkedLastSyncedAt',
-		'availableAudiences',
-		'availableAudiencesLastSyncedAt',
-		'audienceSegmentationSetupCompletedBy',
 		'detectedEvents',
 		'newConversionEventsLastUpdateAt',
 		'lostConversionEventsLastUpdateAt',

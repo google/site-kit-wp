@@ -1,5 +1,197 @@
 == Changelog ==
 
+= 1.157.0 =
+
+**Enhanced**
+
+* Show an in-progress spinner in the Google Tag Gateway Setup Banner's CTA button when it's clicked and setup is underway. See [#11027](https://github.com/google/site-kit-wp/issues/11027).
+* Update "First-party mode" references to "Google tag gateway for advertisers". See [#10951](https://github.com/google/site-kit-wp/issues/10951).
+* Add support for named date ranges when requesting Google Analytics reports. Props leonidasmi. See [#10738](https://github.com/google/site-kit-wp/issues/10738).
+* Apply the “Warning Banner” layout to redesign the `WebDataStreamNotAvailableNotification` banner. See [#10424](https://github.com/google/site-kit-wp/issues/10424).
+* Update the design of the Google Tag ID mismatch notification. See [#10423](https://github.com/google/site-kit-wp/issues/10423).
+* Apply the “Error Banner” layout to redesign the `AuthError` banner. See [#10422](https://github.com/google/site-kit-wp/issues/10422).
+* Update the error banner styling. See [#10421](https://github.com/google/site-kit-wp/issues/10421).
+* Apply the “Error Banner” layout to redesign the `UnsatisfiedScopesAlert` banner. See [#10420](https://github.com/google/site-kit-wp/issues/10420).
+* Update the module Recovery Alert banner design. See [#10384](https://github.com/google/site-kit-wp/issues/10384).
+* Update the "Confirm changes" module settings button to retain its label while saving. See [#10282](https://github.com/google/site-kit-wp/issues/10282).
+* Refactor `CoreSiteBannerNotifications` to use the new Notifications datastore. See [#9294](https://github.com/google/site-kit-wp/issues/9294).
+* Introduce consistent `Typography` component. See [#8581](https://github.com/google/site-kit-wp/issues/8581).
+* Update the Ad Blocking Recovery setup screen to better match the Figma design. Props mxbclang. See [#7300](https://github.com/google/site-kit-wp/issues/7300).
+* Add internal URL utility selectors. See [#7112](https://github.com/google/site-kit-wp/issues/7112).
+
+**Fixed**
+
+* Fix site health information for Google Tag Gateway enabled status. See [#11039](https://github.com/google/site-kit-wp/issues/11039).
+* Fix the console error that appeared when setting up visitor groups from Admin settngs. See [#10965](https://github.com/google/site-kit-wp/issues/10965).
+* Ensure spinner appears on Enhanced Measurement CTA button. See [#10960](https://github.com/google/site-kit-wp/issues/10960).
+* Update the design of the "Enable auto-updates" notification banner. See [#10956](https://github.com/google/site-kit-wp/issues/10956).
+
+= 1.156.0 =
+
+**Enhanced**
+
+* Update the Google tag gateway for advertisers (formerly First-party mode) `measurement.php` proxy script to the latest version. See [#10952](https://github.com/google/site-kit-wp/issues/10952).
+* Correct the casing for the terms "dashboard" and "dashboard sharing" in user-facing copy. See [#10842](https://github.com/google/site-kit-wp/issues/10842).
+* Update the popup maker tracking script to reference `PUM` object from the global scope. See [#10812](https://github.com/google/site-kit-wp/issues/10812).
+* Update Analytics and AdSense notification styles. See [#10392](https://github.com/google/site-kit-wp/issues/10392).
+* Add a new “Info Banner” layout to redesign the GatheringDataNotification banner component. See [#10386](https://github.com/google/site-kit-wp/issues/10386).
+* Add a new “Warning Banner” layout and apply it to redesign the `ZeroDataNotification` component. See [#10385](https://github.com/google/site-kit-wp/issues/10385).
+* Track GA event when the Reader Revenue Manager post-level setting is changed and the post is saved in the block editor. See [#10333](https://github.com/google/site-kit-wp/issues/10333).
+
+**Fixed**
+
+* Fix bug that could cause permission scope errors not to appear. See [#10920](https://github.com/google/site-kit-wp/issues/10920).
+* Update modal dialogs to restore focus to previously clicked elements when the modal dialog is closed. See [#10548](https://github.com/google/site-kit-wp/issues/10548).
+
+= 1.155.0 =
+
+**Enhanced**
+
+* Redesign the Enhanced Measurement Banner with the new Middle SVG and In Progress Banner states. See [#10813](https://github.com/google/site-kit-wp/issues/10813).
+* Refactor Setup CTA Widgets which use the new "Top SVG" Banner component variation. See [#10716](https://github.com/google/site-kit-wp/issues/10716).
+* Update the Consent Mode, Ads Setup, and Reader Revenue Manager banner images. See [#10715](https://github.com/google/site-kit-wp/issues/10715).
+* Update the Setup CTAs to use a different/consistent image style. See [#10714](https://github.com/google/site-kit-wp/issues/10714).
+* Remove the `rrmModule` feature flag. See [#10677](https://github.com/google/site-kit-wp/issues/10677).
+* Refactor AudienceSegmentationIntroductoryOverlayNotification to use the new notifications infrastructure. See [#10391](https://github.com/google/site-kit-wp/issues/10391).
+* Enhance the loading performance of the Audiences Widget by refining the data fetching logic. See [#9982](https://github.com/google/site-kit-wp/issues/9982).
+* Update references to Google Analytics "conversions" to use the new "key events" terminology across the plugin. See [#9463](https://github.com/google/site-kit-wp/issues/9463).
+* Refactor Audience Segmentation / FPM Setup Success Subtle Notifications to use a new "on demand" notification. See [#9453](https://github.com/google/site-kit-wp/issues/9453).
+
+**Fixed**
+
+* Fix bug that could cause auth setup banners to be interrupted by another notification. See [#10903](https://github.com/google/site-kit-wp/issues/10903).
+* Update the key metrics setup banner to continue showing the progress state in the CTA button until the next page loads. See [#10721](https://github.com/google/site-kit-wp/issues/10721).
+
+= 1.154.0 =
+
+**Enhanced**
+
+* Add the `purchase` event tracking for the WooCommerce conversion tracking provider on block themes. See [#10747](https://github.com/google/site-kit-wp/issues/10747).
+* Add all WooCommerce conversion events to track when WooCommerce Analytics Addon is available. See [#10691](https://github.com/google/site-kit-wp/issues/10691).
+* Update WooCommerce events tracking to include additional information. See [#10672](https://github.com/google/site-kit-wp/issues/10672).
+* Update success subtle notifications to use the new `<Notice type="success">` component. See [#10432](https://github.com/google/site-kit-wp/issues/10432).
+* Refactor the usage of all “info type notice” components to use the new `<Notice type='info'>` component. See [#10430](https://github.com/google/site-kit-wp/issues/10430).
+* Refactor components used for warnings throughout the plugin. See [#10428](https://github.com/google/site-kit-wp/issues/10428).
+* Reset the dismissal state for the Reader Revenue Manager product ID notifications when the connected publication is changed, ensuring they can be shown again. See [#10311](https://github.com/google/site-kit-wp/issues/10311).
+* Fix tooltip issues on mobile/tablet viewports when user clicked outside of the tooltip area. See [#10101](https://github.com/google/site-kit-wp/issues/10101).
+* Add the accepted language information to the remove notifications requests. See [#8813](https://github.com/google/site-kit-wp/issues/8813).
+
+**Fixed**
+
+* Fix error preventing the Reader Revenue Manager block editor plugin and Sign in With Google blocks from loading in the block editor. See [#10822](https://github.com/google/site-kit-wp/issues/10822).
+* Fix incorrect step navigation in feature tours. See [#10590](https://github.com/google/site-kit-wp/issues/10590).
+
+= 1.153.0 =
+
+**Enhanced**
+
+* Add the new Banner component. See [#10703](https://github.com/google/site-kit-wp/issues/10703).
+* Enhance WooCommerce provider to surface additional tracking details. See [#10670](https://github.com/google/site-kit-wp/issues/10670).
+* Add price and item name to Easy Digital Download Analytics events. See [#10644](https://github.com/google/site-kit-wp/issues/10644).
+* Refactor new feature type notices to use the new `<Notice type="new">` component. See [#10484](https://github.com/google/site-kit-wp/issues/10484).
+* Refactor RRMIntroductoryOverlayNotification to use the new notifications infrastructure. See [#10389](https://github.com/google/site-kit-wp/issues/10389).
+* Refactor `AudienceTiles` component to reduce cyclomatic complexity and remove the ESLint override. See [#10358](https://github.com/google/site-kit-wp/issues/10358).
+* Automatically dismiss notifications after they are viewed for three different days. See [#10106](https://github.com/google/site-kit-wp/issues/10106).
+* Rewrite a set of datastore reducers to use Immer. Props juniovitorino. See [#5795](https://github.com/google/site-kit-wp/issues/5795).
+
+**Changed**
+
+* Ensure the pie chart in the Analytics All Traffic widget displays its zero data state when it has no data for the current date range but does for the previous range. See [#10613](https://github.com/google/site-kit-wp/issues/10613).
+
+**Fixed**
+
+* Fix a bug where missing custom dimensions were not being created when the Key Metrics that require them were chosen in the full screen selection view. See [#10717](https://github.com/google/site-kit-wp/issues/10717).
+* Fix the Marionette issue in the Ninja Forms conversion tracking script. See [#10643](https://github.com/google/site-kit-wp/issues/10643).
+* Update Partner Ads integration. See [#10779](https://github.com/google/site-kit-wp/issues/10779).
+
+= 1.152.1 =
+
+**Fixed**
+
+* Published a new plugin version after issues with WordPress.org plugin updates not appearing for users.
+
+= 1.152.0 =
+
+**Enhanced**
+
+* Update the setup success notification copy to consistently refer to "visitor groups" instead of "audiences" in Audience Segmentation settings. See [#10554](https://github.com/google/site-kit-wp/issues/10554).
+* Improve the naming of the available audience selectors. See [#10449](https://github.com/google/site-kit-wp/issues/10449).
+* Add new components for notices. See [#10429](https://github.com/google/site-kit-wp/issues/10429).
+* Refactor `DashboardPageSpeed` component to reduce cyclomatic complexity and remove the ESLint override. See [#10362](https://github.com/google/site-kit-wp/issues/10362).
+* Refactor the `Footer` component in `SettingsActiveModule` to reduce cyclomatic complexity and remove the ESLint override. See [#10353](https://github.com/google/site-kit-wp/issues/10353).
+* Remove the ESLint complexity override from the dashboard sharing settings' `Module` component. See [#10350](https://github.com/google/site-kit-wp/issues/10350).
+* Fix minor visual issues when the Dashbaord Sharing modal is being closed. See [#9138](https://github.com/google/site-kit-wp/issues/9138).
+* Fix bug that could cause an erroneous module link to appear when a module isn't connected. See [#7698](https://github.com/google/site-kit-wp/issues/7698).
+
+**Changed**
+
+* Remove GM3 assets from the codebase. See [#10604](https://github.com/google/site-kit-wp/issues/10604).
+
+**Fixed**
+
+* Fix the `&amp;` occurrences issue in KMW widgets. See [#10622](https://github.com/google/site-kit-wp/issues/10622).
+* Fix bug that can occur when AAA Option Optimizer plugin is installed. Props tacoverdo. See [#10573](https://github.com/google/site-kit-wp/issues/10573).
+* Restore loading state for Google tag mismatch notification when actioning. See [#10489](https://github.com/google/site-kit-wp/issues/10489).
+* Fix glitches when closing various modal dialogs. See [#9137](https://github.com/google/site-kit-wp/issues/9137).
+* Update the Ad Blocking Recovery notification to remain visible after clicking on the CTA button. See [#7908](https://github.com/google/site-kit-wp/issues/7908).
+
+= 1.151.0 =
+
+**Enhanced**
+
+* Remove old feature tours. See [#10574](https://github.com/google/site-kit-wp/issues/10574).
+* Remove the `conversionReporting` feature flag. See [#10552](https://github.com/google/site-kit-wp/issues/10552).
+* Update the WooCommerce modal to deactivate the Google For WooCommerce linked account notification when the user selects to install that plugin. See [#10542](https://github.com/google/site-kit-wp/issues/10542).
+* Add OverlayCard components to use for overlay notifications. See [#10532](https://github.com/google/site-kit-wp/issues/10532).
+* Remove the ESLint complexity override from the Reader Revenue Manager `SettingsEdit` component. See [#10363](https://github.com/google/site-kit-wp/issues/10363).
+* Enhance Ads measurement checks to avoid extra requests on dashboard. See [#10190](https://github.com/google/site-kit-wp/issues/10190).
+* Limit display of Visitor groups setup success notice to user who set up the feature. See [#10089](https://github.com/google/site-kit-wp/issues/10089).
+* Improve language intended to direct users to Site Kit settings. Props mxbclang. See [#7756](https://github.com/google/site-kit-wp/issues/7756).
+
+**Changed**
+
+* Update PAX SDK version to 1.1.4. See [#10614](https://github.com/google/site-kit-wp/issues/10614).
+* Replace all usage of `deprecatedProvideNotifications` with the updated `provideNotifications` utility and remove the deprecated utility. See [#10465](https://github.com/google/site-kit-wp/issues/10465).
+
+**Fixed**
+
+* Fix issue where syncing audiences and custom dimensions in parallel could result in the cached audiences not being persisted. See [#8888](https://github.com/google/site-kit-wp/issues/8888).
+
+= 1.150.0 =
+
+**Enhanced**
+
+* Fix bug that could cause an error when Analytics module is not connected. See [#10564](https://github.com/google/site-kit-wp/issues/10564).
+* Improve CTA label in Reader Revenue Manager setup flow. See [#10500](https://github.com/google/site-kit-wp/issues/10500).
+* Update PAX SDK package. See [#10493](https://github.com/google/site-kit-wp/issues/10493).
+* Improve Reader Revenue Manager debug information visibility in Site Health. See [#10478](https://github.com/google/site-kit-wp/issues/10478).
+* Update the "See full details in Ads" link to lead to the campaign deeplink URL. See [#10437](https://github.com/google/site-kit-wp/issues/10437).
+* Remove the progress bar on the setup screen when PAX setup is initiated. See [#10427](https://github.com/google/site-kit-wp/issues/10427).
+* Persist Ads reminder notification when Google for Woo plugin is installed. See [#10419](https://github.com/google/site-kit-wp/issues/10419).
+* Improve Reader Revenue Manager blocks in the WordPress editor for non-Site Kit users. See [#10400](https://github.com/google/site-kit-wp/issues/10400).
+* Add GA event tracking for user interaction with the Reader Revenue Manager settings edit screen. See [#10332](https://github.com/google/site-kit-wp/issues/10332).
+* Add opt-in GA event tracking for user interaction with the Reader Revenue Manager module setup success notification. See [#10329](https://github.com/google/site-kit-wp/issues/10329).
+* Ensure metrics' scroll bar is visible on mobile screens. See [#10163](https://github.com/google/site-kit-wp/issues/10163).
+* Merge the `rrmModuleV2` feature flag with the `rrmModule` flag in preparation for the launch of RRM V2. See [#10071](https://github.com/google/site-kit-wp/issues/10071).
+* Fix a bug that occurs when setting up Site Kit and clicking on the **Next** button in the final service setup stage multiple times. See [#10037](https://github.com/google/site-kit-wp/issues/10037).
+* Prevent multiple admin menu tooltips from appearing at once. See [#10003](https://github.com/google/site-kit-wp/issues/10003).
+* Update the module connection notifications to use our new notification infrastructure. See [#9297](https://github.com/google/site-kit-wp/issues/9297).
+* Update Enhanced Measurement banner to use new notifications infrastructure. See [#9293](https://github.com/google/site-kit-wp/issues/9293).
+
+**Fixed**
+
+* Fix issue that could cause surveys with multiple-choice answers to skip questions. See [#10581](https://github.com/google/site-kit-wp/issues/10581).
+* Ensure that changes to a selected publication's available product IDs are reflected in the Reader Revenue Manager settings screen without needing to wait for the publication to be synchronized. See [#10482](https://github.com/google/site-kit-wp/issues/10482).
+* Fix link to Publisher Center in the Reader Revenue Manager publication approved overlay notification. See [#10480](https://github.com/google/site-kit-wp/issues/10480).
+* Fix styling of Reader Revenue Manager buttons in the pattern view of the WordPress Block Editor. See [#10479](https://github.com/google/site-kit-wp/issues/10479).
+* Update the divider underneath the Reader Revenue Manager Product ID dropdown in the settings screen to align with the design. See [#10477](https://github.com/google/site-kit-wp/issues/10477).
+* Fix the incorrect behavior of the "Account Linked" notification of the Ads module. See [#10463](https://github.com/google/site-kit-wp/issues/10463).
+* Update the `Using the WooCommerce plugin` modal not to dismiss itself when it is closed by clicking outside of the dialog. See [#10414](https://github.com/google/site-kit-wp/issues/10414).
+* Update the Ads setup banner to disable the CTA button if adblocker is detected. See [#10326](https://github.com/google/site-kit-wp/issues/10326).
+* Prevent duplicate GA4 settings update requests by limiting Google tag syncs to once per hour. See [#10284](https://github.com/google/site-kit-wp/issues/10284).
+* Fix duplicate Google tag settings request issue. See [#10283](https://github.com/google/site-kit-wp/issues/10283).
+* Fix Ninja Forms script loading issue when the enhanced conversion tracking is enabled. See [#9381](https://github.com/google/site-kit-wp/issues/9381).
+
 = 1.149.1 =
 
 **Fixed**

@@ -56,14 +56,11 @@ import { Cell, Grid, Row } from '../material-components';
 import PageHeader from './PageHeader';
 import Layout from './layout/Layout';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
-import ConsentModeSetupCTAWidget from './consent-mode/ConsentModeSetupCTAWidget';
 import ScrollEffect from './ScrollEffect';
-import EntityBannerNotifications from './notifications/EntityBannerNotifications';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import useViewOnly from '../hooks/useViewOnly';
 import OfflineNotification from './notifications/OfflineNotification';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
-import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 
 function DashboardEntityApp() {
@@ -150,7 +147,7 @@ function DashboardEntityApp() {
 							<Fragment>
 								<Link href={ dashboardURL } back small>
 									{ __(
-										'Back to the Site Kit Dashboard',
+										'Back to the Site Kit dashboard',
 										'google-site-kit'
 									) }
 								</Link>
@@ -217,16 +214,12 @@ function DashboardEntityApp() {
 		<Fragment>
 			<ScrollEffect />
 			<ModuleDashboardEffects />
-			<Header subHeader={ <EntityBannerNotifications /> } showNavigation>
+			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
-
-			{ ! viewOnlyDashboard && <ConsentModeSetupCTAWidget /> }
-
-			<OverlayNotificationsRenderer />
 
 			<WidgetContextRenderer
 				id={ ANCHOR_ID_TRAFFIC }

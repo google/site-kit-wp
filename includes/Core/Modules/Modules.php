@@ -145,14 +145,15 @@ final class Modules {
 	 * @var string[] Core module class names.
 	 */
 	private $core_modules = array(
-		Site_Verification::MODULE_SLUG   => Site_Verification::class,
-		Search_Console::MODULE_SLUG      => Search_Console::class,
-		Ads::MODULE_SLUG                 => Ads::class,
-		Analytics_4::MODULE_SLUG         => Analytics_4::class,
-		Tag_Manager::MODULE_SLUG         => Tag_Manager::class,
-		AdSense::MODULE_SLUG             => AdSense::class,
-		PageSpeed_Insights::MODULE_SLUG  => PageSpeed_Insights::class,
-		Sign_In_With_Google::MODULE_SLUG => Sign_In_With_Google::class,
+		Site_Verification::MODULE_SLUG      => Site_Verification::class,
+		Search_Console::MODULE_SLUG         => Search_Console::class,
+		Ads::MODULE_SLUG                    => Ads::class,
+		Analytics_4::MODULE_SLUG            => Analytics_4::class,
+		Tag_Manager::MODULE_SLUG            => Tag_Manager::class,
+		AdSense::MODULE_SLUG                => AdSense::class,
+		PageSpeed_Insights::MODULE_SLUG     => PageSpeed_Insights::class,
+		Sign_In_With_Google::MODULE_SLUG    => Sign_In_With_Google::class,
+		Reader_Revenue_Manager::MODULE_SLUG => Reader_Revenue_Manager::class,
 	);
 
 	/**
@@ -179,10 +180,6 @@ final class Modules {
 		$this->user_options     = $user_options ?: new User_Options( $this->context );
 		$this->authentication   = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
 		$this->assets           = $assets ?: new Assets( $this->context );
-
-		if ( Feature_Flags::enabled( 'rrmModule' ) ) {
-			$this->core_modules[ Reader_Revenue_Manager::MODULE_SLUG ] = Reader_Revenue_Manager::class;
-		}
 
 		$this->rest_controller              = new REST_Modules_Controller( $this );
 		$this->dashboard_sharing_controller = new REST_Dashboard_Sharing_Controller( $this );
@@ -933,6 +930,9 @@ final class Modules {
 	 * @return array Dashboard sharing settings option with default settings inserted for shared ownership modules.
 	 */
 	protected function populate_default_shared_ownership_module_settings( $sharing_settings ) {
+		if ( ! is_array( $sharing_settings ) ) {
+			$sharing_settings = array();
+		}
 		$shared_ownership_modules = array_keys( $this->get_shared_ownership_modules() );
 		foreach ( $shared_ownership_modules as $shared_ownership_module ) {
 			if ( ! isset( $sharing_settings[ $shared_ownership_module ] ) ) {

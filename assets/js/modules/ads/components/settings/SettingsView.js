@@ -40,7 +40,7 @@ import SettingsStatuses from '../../../../components/settings/SettingsStatuses';
 
 export default function SettingsView() {
 	const paxEnabled = useFeature( 'adsPax' );
-	const fpmEnabled = useFeature( 'firstPartyMode' );
+	const gtgEnabled = useFeature( 'googleTagGateway' );
 
 	const conversionID = useSelect( ( select ) =>
 		select( MODULES_ADS ).getConversionID()
@@ -67,16 +67,19 @@ export default function SettingsView() {
 		select( CORE_SITE ).isConversionTrackingEnabled()
 	);
 
-	const isFPMEnabled = useSelect( ( select ) => {
-		if ( ! fpmEnabled ) {
+	const isGTGEnabled = useSelect( ( select ) => {
+		if ( ! gtgEnabled ) {
 			return false;
 		}
-		const { isFirstPartyModeEnabled, isFPMHealthy, isScriptAccessEnabled } =
-			select( CORE_SITE );
+		const {
+			isGoogleTagGatewayEnabled,
+			isGTGHealthy,
+			isScriptAccessEnabled,
+		} = select( CORE_SITE );
 
 		return (
-			isFirstPartyModeEnabled() &&
-			isFPMHealthy() &&
+			isGoogleTagGatewayEnabled() &&
+			isGTGHealthy() &&
 			isScriptAccessEnabled()
 		);
 	} );
@@ -126,7 +129,7 @@ export default function SettingsView() {
 
 			<SettingsStatuses
 				statuses={
-					fpmEnabled
+					gtgEnabled
 						? [
 								{
 									label: __(
@@ -137,10 +140,10 @@ export default function SettingsView() {
 								},
 								{
 									label: __(
-										'First-party mode',
+										'Google tag gateway for advertisers',
 										'google-site-kit'
 									),
-									status: isFPMEnabled,
+									status: isGTGEnabled,
 								},
 						  ]
 						: [

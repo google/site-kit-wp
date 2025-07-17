@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
-	deprecatedProvideNotifications,
+	provideNotifications,
 	provideUserAuthentication,
 	untilResolved,
 	waitForDefaultTimeouts,
@@ -34,8 +34,7 @@ import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
-import { DEFAULT_NOTIFICATIONS } from '../../../googlesitekit/notifications/register-defaults';
+import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -76,7 +75,7 @@ describe( 'modules/analytics-4 settings', () => {
 	);
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -85,7 +84,7 @@ describe( 'modules/analytics-4 settings', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {
@@ -93,8 +92,8 @@ describe( 'modules/analytics-4 settings', () => {
 			const settingsEndpoint = new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/settings'
 			);
-			const fpmSettingsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/fpm-settings'
+			const gtgSettingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/gtg-settings'
 			);
 			const dismissItemEndpoint = new RegExp(
 				'^/google-site-kit/v1/core/user/data/dismiss-item'
@@ -516,7 +515,7 @@ describe( 'modules/analytics-4 settings', () => {
 				).toBe( false );
 			} );
 
-			it( 'should send a POST request to the FPM settings endpoint when the toggle state is changed', async () => {
+			it( 'should send a POST request to the GTG settings endpoint when the toggle state is changed', async () => {
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 				fetchMock.postOnce( surveyTriggerEndpoint, {
@@ -526,28 +525,19 @@ describe( 'modules/analytics-4 settings', () => {
 
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
+					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isFPMHealthy: true,
+						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
 					} );
 
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetDismissedItems( [
-						FPM_SETUP_CTA_BANNER_NOTIFICATION,
+						GTG_SETUP_CTA_BANNER_NOTIFICATION,
 					] );
 
-				deprecatedProvideNotifications(
-					registry,
-					{
-						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
-							DEFAULT_NOTIFICATIONS[
-								FPM_SETUP_CTA_BANNER_NOTIFICATION
-							],
-					},
-					{ overwrite: true }
-				);
+				provideNotifications( registry );
 
 				const validSettings = {
 					accountID: fixtures.createProperty._accountID,
@@ -564,7 +554,7 @@ describe( 'modules/analytics-4 settings', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( fpmSettingsEndpoint, ( url, opts ) => {
+				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
 					const {
 						data: {
 							settings: { isEnabled },
@@ -574,17 +564,19 @@ describe( 'modules/analytics-4 settings', () => {
 					return {
 						body: {
 							isEnabled, // Return the `isEnabled` value passed to the API.
-							isFPMHealthy: true,
+							isGTGHealthy: true,
 							isScriptAccessEnabled: true,
 						},
 						status: 200,
 					};
 				} );
 
-				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( true );
 				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 
-				expect( fetchMock ).toHaveFetched( fpmSettingsEndpoint, {
+				expect( fetchMock ).toHaveFetched( gtgSettingsEndpoint, {
 					body: {
 						data: {
 							settings: { isEnabled: true },
@@ -595,12 +587,12 @@ describe( 'modules/analytics-4 settings', () => {
 				await waitForDefaultTimeouts();
 			} );
 
-			it( 'should handle an error when sending a POST request to the FPM settings endpoint', async () => {
+			it( 'should handle an error when sending a POST request to the GTG settings endpoint', async () => {
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
+					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isFPMHealthy: true,
+						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
 					} );
 
@@ -619,12 +611,14 @@ describe( 'modules/analytics-4 settings', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( fpmSettingsEndpoint, {
+				fetchMock.postOnce( gtgSettingsEndpoint, {
 					body: error,
 					status: 500,
 				} );
 
-				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( true );
 				const { error: submitChangesError } = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.submitChanges();
@@ -634,12 +628,12 @@ describe( 'modules/analytics-4 settings', () => {
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'should not send a POST request to the FPM settings endpoint when the toggle state is changed', async () => {
+			it( 'should not send a POST request to the GTG settings endpoint when the toggle state is changed', async () => {
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
+					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isFPMHealthy: true,
+						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
 					} );
 
@@ -660,10 +654,10 @@ describe( 'modules/analytics-4 settings', () => {
 
 				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 
-				expect( fetchMock ).not.toHaveFetched( fpmSettingsEndpoint );
+				expect( fetchMock ).not.toHaveFetched( gtgSettingsEndpoint );
 			} );
 
-			it( 'should dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `true`', async () => {
+			it( 'should dismiss the GTG setup CTA banner when the GTG `isEnabled` setting is changed to `true`', async () => {
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 				fetchMock.postOnce( surveyTriggerEndpoint, {
@@ -671,22 +665,13 @@ describe( 'modules/analytics-4 settings', () => {
 					body: {},
 				} );
 
-				deprecatedProvideNotifications(
-					registry,
-					{
-						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
-							DEFAULT_NOTIFICATIONS[
-								FPM_SETUP_CTA_BANNER_NOTIFICATION
-							],
-					},
-					{ overwrite: true }
-				);
+				provideNotifications( registry );
 
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
+					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isFPMHealthy: true,
+						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
 					} );
 
@@ -707,7 +692,7 @@ describe( 'modules/analytics-4 settings', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( fpmSettingsEndpoint, ( url, opts ) => {
+				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
 					const {
 						data: {
 							settings: { isEnabled },
@@ -717,7 +702,7 @@ describe( 'modules/analytics-4 settings', () => {
 					return {
 						body: {
 							isEnabled, // Return the `isEnabled` value passed to the API.
-							isFPMHealthy: true,
+							isGTGHealthy: true,
 							isScriptAccessEnabled: true,
 						},
 						status: 200,
@@ -725,24 +710,26 @@ describe( 'modules/analytics-4 settings', () => {
 				} );
 
 				fetchMock.postOnce( dismissItemEndpoint, {
-					body: [ FPM_SETUP_CTA_BANNER_NOTIFICATION ],
+					body: [ GTG_SETUP_CTA_BANNER_NOTIFICATION ],
 					status: 200,
 				} );
 
-				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( true );
 				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
 					body: {
 						data: {
-							slug: FPM_SETUP_CTA_BANNER_NOTIFICATION,
+							slug: GTG_SETUP_CTA_BANNER_NOTIFICATION,
 							expiration: 0,
 						},
 					},
 				} );
 			} );
 
-			it( 'should handle an error when dismissing the FPM setup CTA banner', async () => {
+			it( 'should handle an error when dismissing the GTG setup CTA banner', async () => {
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 				fetchMock.postOnce( surveyTriggerEndpoint, {
@@ -750,22 +737,13 @@ describe( 'modules/analytics-4 settings', () => {
 					body: {},
 				} );
 
-				deprecatedProvideNotifications(
-					registry,
-					{
-						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
-							DEFAULT_NOTIFICATIONS[
-								FPM_SETUP_CTA_BANNER_NOTIFICATION
-							],
-					},
-					{ overwrite: true }
-				);
+				provideNotifications( registry );
 
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
+					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isFPMHealthy: true,
+						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
 					} );
 
@@ -786,7 +764,7 @@ describe( 'modules/analytics-4 settings', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( fpmSettingsEndpoint, ( url, opts ) => {
+				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
 					const {
 						data: {
 							settings: { isEnabled },
@@ -796,7 +774,7 @@ describe( 'modules/analytics-4 settings', () => {
 					return {
 						body: {
 							isEnabled, // Return the `isEnabled` value passed to the API.
-							isFPMHealthy: true,
+							isGTGHealthy: true,
 							isScriptAccessEnabled: true,
 						},
 						status: 200,
@@ -808,7 +786,9 @@ describe( 'modules/analytics-4 settings', () => {
 					status: 500,
 				} );
 
-				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( true );
 				const { error: submitChangesError } = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.submitChanges();
@@ -819,23 +799,14 @@ describe( 'modules/analytics-4 settings', () => {
 				await waitForDefaultTimeouts();
 			} );
 
-			it( 'should not dismiss the FPM setup CTA banner when the FPM `isEnabled` setting is changed to `false`', async () => {
-				deprecatedProvideNotifications(
-					registry,
-					{
-						[ FPM_SETUP_CTA_BANNER_NOTIFICATION ]:
-							DEFAULT_NOTIFICATIONS[
-								FPM_SETUP_CTA_BANNER_NOTIFICATION
-							],
-					},
-					{ overwrite: true }
-				);
+			it( 'should not dismiss the GTG setup CTA banner when the GTG `isEnabled` setting is changed to `false`', async () => {
+				provideNotifications( registry );
 
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
+					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: true,
-						isFPMHealthy: true,
+						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
 					} );
 
@@ -856,7 +827,7 @@ describe( 'modules/analytics-4 settings', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( fpmSettingsEndpoint, ( url, opts ) => {
+				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
 					const {
 						data: {
 							settings: { isEnabled },
@@ -866,7 +837,7 @@ describe( 'modules/analytics-4 settings', () => {
 					return {
 						body: {
 							isEnabled, // Return the `isEnabled` value passed to the API.
-							isFPMHealthy: true,
+							isGTGHealthy: true,
 							isScriptAccessEnabled: true,
 						},
 						status: 200,
@@ -875,7 +846,7 @@ describe( 'modules/analytics-4 settings', () => {
 
 				registry
 					.dispatch( CORE_SITE )
-					.setFirstPartyModeEnabled( false );
+					.setGoogleTagGatewayEnabled( false );
 				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 
 				expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
@@ -1003,18 +974,20 @@ describe( 'modules/analytics-4 settings', () => {
 
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
+					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isFPMHealthy: true,
+						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
 					} );
 
-				registry.dispatch( CORE_SITE ).setFirstPartyModeEnabled( true );
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( true );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).rollbackChanges();
 
 				expect(
-					registry.select( CORE_SITE ).isFirstPartyModeEnabled()
+					registry.select( CORE_SITE ).isGoogleTagGatewayEnabled()
 				).toBe( false );
 			} );
 		} );

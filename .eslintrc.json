@@ -111,7 +111,8 @@
       {
         "usePrettierrc": true
       }
-    ]
+    ],
+    "react/jsx-no-useless-fragment": "error"
   },
   "settings": {
     "import/core-modules": [
@@ -127,6 +128,14 @@
     "import/resolver": {
       "alias": {
         "map": [
+          [
+            "@/(.*\\.svg)\\?url",
+            "assets/"
+          ],
+          [
+            "@/(.*)",
+            "assets/"
+          ],
           [
             "@wordpress-core",
             "@wordpress"

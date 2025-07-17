@@ -28,8 +28,10 @@ import { provideModules } from '../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
 import { withNotificationComponentProps } from '../../../googlesitekit/notifications/util/component-props';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import ModuleRecoveryAlert from '.';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -63,30 +65,23 @@ LoadingRecoverableModules.args = {
 			.startResolution( 'getRecoverableModules', [] );
 	},
 };
-LoadingRecoverableModules.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Global/ModuleRecoveryAlert/Loading Recoverable Modules',
-	delay: 250,
-};
 
 export const SingleRecoverableModule = Template.bind( {} );
 SingleRecoverableModule.storyName = 'Single Recoverable Module (with access)';
 SingleRecoverableModule.args = {
 	setupRegistry: ( registry ) => {
-		provideModulesWithRecoverable( registry, [ 'search-console' ] );
+		provideModulesWithRecoverable( registry, [
+			MODULE_SLUG_SEARCH_CONSOLE,
+		] );
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: true },
-				{ slug: 'search-console' }
+				{ slug: MODULE_SLUG_SEARCH_CONSOLE }
 			);
 	},
 };
-SingleRecoverableModule.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Global/ModuleRecoveryAlert/Single Recoverable Module (with access)',
-	delay: 250,
-};
+SingleRecoverableModule.scenario = {};
 
 export const MultipleRecoverableModule = Template.bind( {} );
 MultipleRecoverableModule.storyName =
@@ -94,48 +89,42 @@ MultipleRecoverableModule.storyName =
 MultipleRecoverableModule.args = {
 	setupRegistry: ( registry ) => {
 		provideModulesWithRecoverable( registry, [
-			'search-console',
-			'analytics-4',
+			MODULE_SLUG_SEARCH_CONSOLE,
+			MODULE_SLUG_ANALYTICS_4,
 		] );
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: true },
-				{ slug: 'search-console' }
+				{ slug: MODULE_SLUG_SEARCH_CONSOLE }
 			);
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: true },
-				{ slug: 'analytics-4' }
+				{ slug: MODULE_SLUG_ANALYTICS_4 }
 			);
 	},
 };
-MultipleRecoverableModule.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (with access)',
-	delay: 250,
-};
+MultipleRecoverableModule.scenario = {};
 
 export const SingleRecoverableModuleNoAccess = Template.bind( {} );
 SingleRecoverableModuleNoAccess.storyName =
 	'Single Recoverable Module (no access)';
 SingleRecoverableModuleNoAccess.args = {
 	setupRegistry: ( registry ) => {
-		provideModulesWithRecoverable( registry, [ 'search-console' ] );
+		provideModulesWithRecoverable( registry, [
+			MODULE_SLUG_SEARCH_CONSOLE,
+		] );
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
-				{ slug: 'search-console' }
+				{ slug: MODULE_SLUG_SEARCH_CONSOLE }
 			);
 	},
 };
-SingleRecoverableModuleNoAccess.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Global/ModuleRecoveryAlert/Single Recoverable Module (no access)',
-	delay: 250,
-};
+SingleRecoverableModuleNoAccess.scenario = {};
 
 export const MultipleRecoverableModuleNoAccess = Template.bind( {} );
 MultipleRecoverableModuleNoAccess.storyName =
@@ -143,28 +132,24 @@ MultipleRecoverableModuleNoAccess.storyName =
 MultipleRecoverableModuleNoAccess.args = {
 	setupRegistry: ( registry ) => {
 		provideModulesWithRecoverable( registry, [
-			'search-console',
-			'analytics-4',
+			MODULE_SLUG_SEARCH_CONSOLE,
+			MODULE_SLUG_ANALYTICS_4,
 		] );
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
-				{ slug: 'search-console' }
+				{ slug: MODULE_SLUG_SEARCH_CONSOLE }
 			);
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
-				{ slug: 'analytics-4' }
+				{ slug: MODULE_SLUG_ANALYTICS_4 }
 			);
 	},
 };
-MultipleRecoverableModuleNoAccess.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'Global/ModuleRecoveryAlert/Multiple Recoverable Modules (no access)',
-	delay: 250,
-};
+MultipleRecoverableModuleNoAccess.scenario = {};
 
 export const SingleRecoverableModuleError = Template.bind( {} );
 SingleRecoverableModuleError.storyName =
@@ -173,10 +158,10 @@ SingleRecoverableModuleError.args = {
 	setupRegistry: ( registry ) => {
 		const response = {
 			success: {
-				'search-console': false,
+				MODULE_SLUG_SEARCH_CONSOLE: false,
 			},
 			error: {
-				'search-console': {
+				MODULE_SLUG_SEARCH_CONSOLE: {
 					code: 'module_not_recoverable',
 					message: 'Module is not recoverable.',
 					data: { status: 403 },
@@ -191,16 +176,18 @@ SingleRecoverableModuleError.args = {
 			{ body: response, status: 200 }
 		);
 
-		provideModulesWithRecoverable( registry, [ 'search-console' ] );
+		provideModulesWithRecoverable( registry, [
+			MODULE_SLUG_SEARCH_CONSOLE,
+		] );
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: true },
-				{ slug: 'search-console' }
+				{ slug: MODULE_SLUG_SEARCH_CONSOLE }
 			);
 		registry
 			.dispatch( CORE_MODULES )
-			.recoverModules( [ 'search-console' ] );
+			.recoverModules( [ MODULE_SLUG_SEARCH_CONSOLE ] );
 	},
 };
 
@@ -211,11 +198,11 @@ MultipleRecoverableModuleErrors.args = {
 	setupRegistry: ( registry ) => {
 		const response = {
 			success: {
-				'search-console': false,
+				MODULE_SLUG_SEARCH_CONSOLE: false,
 				analytics: false,
 			},
 			error: {
-				'search-console': {
+				MODULE_SLUG_SEARCH_CONSOLE: {
 					code: 'module_not_recoverable',
 					message: 'Module is not recoverable.',
 					data: { status: 403 },
@@ -236,24 +223,27 @@ MultipleRecoverableModuleErrors.args = {
 		);
 
 		provideModulesWithRecoverable( registry, [
-			'search-console',
-			'analytics-4',
+			MODULE_SLUG_SEARCH_CONSOLE,
+			MODULE_SLUG_ANALYTICS_4,
 		] );
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: true },
-				{ slug: 'search-console' }
+				{ slug: MODULE_SLUG_SEARCH_CONSOLE }
 			);
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: true },
-				{ slug: 'analytics-4' }
+				{ slug: MODULE_SLUG_ANALYTICS_4 }
 			);
 		registry
 			.dispatch( CORE_MODULES )
-			.recoverModules( [ 'search-console', 'analytics-4' ] );
+			.recoverModules( [
+				MODULE_SLUG_SEARCH_CONSOLE,
+				MODULE_SLUG_ANALYTICS_4,
+			] );
 	},
 };
 

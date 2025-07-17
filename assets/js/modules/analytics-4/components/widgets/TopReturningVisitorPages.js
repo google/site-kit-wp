@@ -33,6 +33,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
@@ -43,6 +44,7 @@ import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
+import { decodeAmpersand } from '../../utils';
 
 function TopReturningVisitorPages( props ) {
 	const { Widget } = props;
@@ -70,6 +72,8 @@ function TopReturningVisitorPages( props ) {
 		],
 		limit: 3,
 		keepEmptyRows: false,
+		reportID:
+			'analytics-4_top-returning-visitor-pages-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(
@@ -109,7 +113,7 @@ function TopReturningVisitorPages( props ) {
 			field: 'dimensionValues.0.value',
 			Component( { fieldValue } ) {
 				const url = fieldValue;
-				const title = titles[ url ];
+				const title = decodeAmpersand( titles[ url ] );
 				// Utilizing `useSelect` inside the component rather than
 				// returning its direct value to the `columns` array.
 				// This pattern ensures that the component re-renders correctly based on changes in state,
@@ -172,6 +176,6 @@ TopReturningVisitorPages.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( TopReturningVisitorPages );

@@ -21,6 +21,7 @@
  */
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
@@ -28,7 +29,7 @@ import {
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import { getAnalytics4MockResponse } from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import TopCitiesWidget from './TopCitiesWidget';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
@@ -47,6 +48,7 @@ const reportOptions = {
 		},
 	],
 	limit: 4,
+	reportID: 'analytics-4_top-cities-widget_widget_topCitiesReportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -84,9 +86,7 @@ Ready.args = {
 		} );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/TopCitiesWidget/Ready',
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -169,7 +169,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

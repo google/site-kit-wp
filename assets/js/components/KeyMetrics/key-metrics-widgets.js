@@ -61,7 +61,6 @@ import {
 	ENUM_CONVERSION_EVENTS,
 } from '../../modules/analytics-4/datastore/constants';
 import { shouldDisplayWidgetWithConversionEvent } from './shouldDisplayWidgetWithConversionEvent';
-import { isFeatureEnabled } from '../../features';
 import {
 	KEY_METRICS_GROUP_CONTENT_PERFORMANCE,
 	KEY_METRICS_GROUP_DRIVING_TRAFFIC,
@@ -80,14 +79,15 @@ import {
  *
  * @since 1.121.0
  *
- * @param {Function} select              Data store select function.
- * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
+ * @param {Object}   options                     Options object.
+ * @param {Function} options.select              Data store select function.
+ * @param {boolean}  options.isViewOnlyDashboard Whether the current dashboard is view only.
  * @return {boolean} Whether to display the widget.
  */
-function shouldDisplayWidgetWithAnalytics4AndAdSenseLinked(
+function shouldDisplayWidgetWithAnalytics4AndAdSenseLinked( {
 	select,
-	isViewOnlyDashboard
-) {
+	isViewOnlyDashboard,
+} ) {
 	if ( ! isViewOnlyDashboard ) {
 		return true;
 	}
@@ -115,14 +115,15 @@ function shouldDisplayWidgetWithAnalytics4AndAdSenseLinked(
  *
  * @since 1.113.0
  *
- * @param {Function} select              Data store select function.
- * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
+ * @param {Object}   options                     Options object.
+ * @param {Function} options.select              Data store select function.
+ * @param {boolean}  options.isViewOnlyDashboard Whether the current dashboard is view only.
  * @return {boolean} Whether to display the widget.
  */
-function shouldDisplayWidgetWithCustomDimensions(
+function shouldDisplayWidgetWithCustomDimensions( {
 	select,
-	isViewOnlyDashboard
-) {
+	isViewOnlyDashboard,
+} ) {
 	if ( ! isViewOnlyDashboard ) {
 		return true;
 	}
@@ -217,7 +218,7 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredCustomDimensions: [ 'googlesitekit_post_type' ],
-		displayInSelectionPanel: ( select ) =>
+		displayInSelectionPanel: ( { select } ) =>
 			select( CORE_USER ).isKeyMetricActive(
 				KM_ANALYTICS_POPULAR_PRODUCTS
 			) || select( CORE_SITE ).getProductPostType(),
@@ -348,7 +349,6 @@ const KEY_METRICS_WIDGETS = {
 		),
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
-		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
@@ -368,7 +368,6 @@ const KEY_METRICS_WIDGETS = {
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 		],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
-		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
 	},
@@ -384,7 +383,6 @@ const KEY_METRICS_WIDGETS = {
 		),
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
-		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
@@ -403,11 +401,11 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE ]: {
 		title: __( 'Top converting traffic source', 'google-site-kit' ),
 		description: __(
-			'Channel which brought in the most visits that resulted in conversions',
+			'Channel which brought in the most visits that resulted in key events',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions',
+			'Channel (e.g. social, paid, search) that brought in visitors who generated the most key events',
 			'google-site-kit'
 		),
 		metadata: { group: KEY_METRICS_GROUP_DRIVING_TRAFFIC.SLUG },
@@ -440,7 +438,6 @@ const KEY_METRICS_WIDGETS = {
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 		],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
-		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
 	},
@@ -456,7 +453,6 @@ const KEY_METRICS_WIDGETS = {
 		),
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
-		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
@@ -472,7 +468,6 @@ const KEY_METRICS_WIDGETS = {
 		),
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
-		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
@@ -488,7 +483,6 @@ const KEY_METRICS_WIDGETS = {
 		),
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
-		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
@@ -528,7 +522,6 @@ const KEY_METRICS_WIDGETS = {
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 		],
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
-		displayInWidgetArea: () => isFeatureEnabled( 'conversionReporting' ),
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
 	},

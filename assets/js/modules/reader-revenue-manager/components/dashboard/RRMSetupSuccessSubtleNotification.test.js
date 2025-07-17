@@ -29,16 +29,16 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
 import * as fixtures from '../../datastore/__fixtures__';
+import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import {
-	CORE_NOTIFICATIONS,
+	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../../../../googlesitekit/notifications/datastore/constants';
+} from '../../../../googlesitekit/notifications/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
-	UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION,
 } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import * as tracking from '../../../../util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
@@ -103,7 +103,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 		provideModules( registry, [
 			{
-				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 				active: true,
 				connected: true,
 			},
@@ -114,7 +114,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				case 'notification':
 					return [ 'authentication_success', setValueMock ];
 				case 'slug':
-					return [ READER_REVENUE_MANAGER_MODULE_SLUG, setValueMock ];
+					return [ MODULE_SLUG_READER_REVENUE_MANAGER, setValueMock ];
 			}
 		} );
 
@@ -191,7 +191,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				.dispatch( CORE_NOTIFICATIONS )
 				.registerNotification( id, {
 					Component: NotificationWithComponentProps,
-					areaSlug: 'notification-area-banners-above-nav',
+					areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 					viewContexts: [ 'mainDashboard' ],
 					isDismissible: false,
 				} );
@@ -276,14 +276,6 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		).not.toBeInTheDocument();
 
 		act( () => {
-			expect(
-				registry
-					.select( CORE_UI )
-					.getValue(
-						UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
-					)
-			).toBeUndefined();
-
 			fireEvent.click( getByText( 'Complete publication setup' ) );
 		} );
 
@@ -309,15 +301,6 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				.select( MODULES_READER_REVENUE_MANAGER )
 				.getPublicationOnboardingState()
 		).toBe( ONBOARDING_COMPLETE );
-
-		// Ensure that the UI key is set to true.
-		expect(
-			registry
-				.select( CORE_UI )
-				.getValue(
-					UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
-				)
-		).toBe( true );
 
 		// Verify that the message relevant to the ONBOARDING_COMPLETE
 		// state is displayed.
@@ -442,43 +425,6 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		}
 	);
 
-	it( 'should display overlay notification on successful module setup with a publication that has no CTAs', async () => {
-		expect(
-			registry
-				.select( CORE_UI )
-				.getValue(
-					UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
-				)
-		).toBeUndefined();
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				publicationOnboardingState: ONBOARDING_COMPLETE,
-				paymentOption: '',
-				productIDs: [],
-				productID: 'openaccess',
-			} );
-
-		const { waitForRegistry } = render(
-			<NotificationWithComponentProps />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			registry
-				.select( CORE_UI )
-				.getValue(
-					UI_KEY_READER_REVENUE_MANAGER_SHOW_PUBLICATION_APPROVED_NOTIFICATION
-				)
-		).toBe( true );
-	} );
-
 	describe( 'GA event tracking', () => {
 		beforeEach( async () => {
 			mockTrackEvent.mockClear();
@@ -487,7 +433,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				.dispatch( CORE_NOTIFICATIONS )
 				.registerNotification( id, {
 					Component: NotificationWithComponentProps,
-					areaSlug: 'notification-area-banners-above-nav',
+					areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 					viewContexts: [ 'mainDashboard' ],
 					isDismissible: false,
 				} );

@@ -28,7 +28,6 @@ import { useMount } from 'react-use';
  */
 import {
 	createInterpolateElement,
-	Fragment,
 	useCallback,
 	useRef,
 	useState,
@@ -62,6 +61,8 @@ import {
 import { Cell, Row } from '../../../../material-components';
 import { WooCommerceRedirectModal } from '../common';
 import Link from '../../../../components/Link';
+import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '../../../../util';
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );
@@ -70,6 +71,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const showPaxAppStep =
 		!! showPaxAppQueryParam && parseInt( showPaxAppQueryParam, 10 );
 	const paxAppRef = useRef();
+	const viewContext = useViewContext();
 
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( CORE_USER ).isAdBlockerActive()
@@ -146,6 +148,8 @@ export default function SetupMainPAX( { finishSetup } ) {
 			return;
 		}
 
+		trackEvent( `${ viewContext }_pax`, 'pax_campaign_created' );
+
 		setUserID( customerData.userId );
 		setCustomerID( customerData.customerId );
 		setExtCustomerID( customerData.externalCustomerId );
@@ -161,7 +165,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 			setConversionTrackingEnabled( true );
 			await saveConversionTrackingSettings();
 		}
-	}, [ setExtCustomerID, setPaxConversionID ] );
+	}, [ setExtCustomerID, setPaxConversionID, viewContext ] );
 
 	const registry = useRegistry();
 	const onCompleteSetup = useCallbackOne( async () => {
@@ -174,8 +178,9 @@ export default function SetupMainPAX( { finishSetup } ) {
 				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
 			}
 		);
+		await trackEvent( `${ viewContext }_pax`, 'pax_setup_completed' );
 		finishSetup( redirectURL );
-	}, [ registry, finishSetup ] );
+	}, [ registry, finishSetup, viewContext ] );
 
 	const isWooCommerceRedirectModalDismissed = useSelect( ( select ) =>
 		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
@@ -193,15 +198,22 @@ export default function SetupMainPAX( { finishSetup } ) {
 		setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
 	}, [ navigateTo, setShowPaxAppQueryParam, hasAdwordsScope, oAuthURL ] );
 
-	const onLaunch = useCallback( ( app ) => {
-		paxAppRef.current = app;
-	}, [] );
+	const onLaunch = useCallback(
+		( app ) => {
+			trackEvent( `${ viewContext }_pax`, 'pax_launch' );
+			paxAppRef.current = app;
+		},
+		[ viewContext ]
+	);
 
-	const onSetupCallback = useCallback( () => {
+	const onSetupCallback = useCallback( async () => {
 		if ( isWooCommerceActivated && ! isWooCommerceRedirectModalDismissed ) {
 			setOpenDialog( true );
 			return;
 		}
+
+		// awaiting because `createAccount` may trigger a navigation.
+		await trackEvent( viewContext, 'start_setup_pax' );
 
 		createAccount();
 	}, [
@@ -209,6 +221,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		isWooCommerceRedirectModalDismissed,
 		setOpenDialog,
 		createAccount,
+		viewContext,
 	] );
 
 	const setupNewAdsAccountSupportURL = useSelect( ( select ) =>
@@ -266,97 +279,90 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 				{ ! isAdBlockerActive &&
 					( ! showPaxAppStep || ! hasAdwordsScope ) && (
-						<Fragment>
-							<Row className="googlesitekit-setup-module--ads--setup-container">
-								<Cell
-									smSize={ 8 }
-									mdSize={ 8 }
-									lgSize={ 5 }
-									className="align-top"
-								>
-									<h3>
-										{ __(
-											'Set up a new Ads account',
+						<Row className="googlesitekit-setup-module--ads--setup-container">
+							<Cell
+								smSize={ 8 }
+								mdSize={ 8 }
+								lgSize={ 5 }
+								className="align-top"
+							>
+								<h3>
+									{ __(
+										'Set up a new Ads account',
+										'google-site-kit'
+									) }
+								</h3>
+								<p className="instructions">
+									{ createInterpolateElement(
+										__(
+											'Create your first Ads campaign, add billing information, and choose your conversion goals. To create a new Ads account, you’ll need to grant Site Kit additional permissions during the account creation process. <a>Learn more</a>',
 											'google-site-kit'
-										) }
-									</h3>
-									<p className="instructions">
-										{ createInterpolateElement(
-											__(
-												'Create your first Ads campaign, add billing information, and choose your conversion goals. To create a new Ads account, you’ll need to grant Site Kit additional permissions during the account creation process. <a>Learn more</a>',
-												'google-site-kit'
+										),
+										{
+											a: (
+												<Link
+													href={
+														setupNewAdsAccountSupportURL
+													}
+													external
+												/>
 											),
-											{
-												a: (
-													<Link
-														href={
-															setupNewAdsAccountSupportURL
-														}
-														external
-													/>
-												),
-											}
-										) }
-									</p>
-									<Fragment>
-										<SpinnerButton
-											onClick={ onSetupCallback }
-											disabled={ isNavigatingToOAuthURL }
-											isSaving={ isNavigatingToOAuthURL }
-										>
-											{ __(
-												'Start setup wizard',
-												'google-site-kit'
-											) }
-										</SpinnerButton>
-									</Fragment>
-								</Cell>
-								<Cell
-									className="divider"
-									smSize={ 8 }
-									mdSize={ 8 }
-									lgSize={ 2 }
-								>
-									<span className="divider-line" />
-									<span className="divider-label">
-										{ __( 'OR', 'google-site-kit' ) }
-									</span>
-								</Cell>
-								<Cell smSize={ 8 } mdSize={ 8 } lgSize={ 5 }>
-									<h3>
-										{ __(
-											'Connect an existing Ads account',
-											'google-site-kit'
-										) }
-									</h3>
-									<p className="instructions">
-										{ createInterpolateElement(
-											__(
-												'To track conversions for your Ads campaign, you need to add your Conversion ID to Site Kit. You can always change the Conversion ID later in Site Kit Settings. <a>Learn more</a>',
-												'google-site-kit'
-											),
-											{
-												a: (
-													<Link
-														href={
-															setupExistingAdsAccountSupportURL
-														}
-														external
-													/>
-												),
-												br: <br />,
-											}
-										) }
-									</p>
-									<SetupFormPAX
-										finishSetup={ finishSetup }
-										isNavigatingToOAuthURL={
-											isNavigatingToOAuthURL
 										}
-									/>
-								</Cell>
-							</Row>
-						</Fragment>
+									) }
+								</p>
+								<SpinnerButton
+									onClick={ onSetupCallback }
+									disabled={ isNavigatingToOAuthURL }
+									isSaving={ isNavigatingToOAuthURL }
+								>
+									{ __( 'Start setup', 'google-site-kit' ) }
+								</SpinnerButton>
+							</Cell>
+							<Cell
+								className="divider"
+								smSize={ 8 }
+								mdSize={ 8 }
+								lgSize={ 2 }
+							>
+								<span className="divider-line" />
+								<span className="divider-label">
+									{ __( 'OR', 'google-site-kit' ) }
+								</span>
+							</Cell>
+							<Cell smSize={ 8 } mdSize={ 8 } lgSize={ 5 }>
+								<h3>
+									{ __(
+										'Connect an existing Ads account',
+										'google-site-kit'
+									) }
+								</h3>
+								<p className="instructions">
+									{ createInterpolateElement(
+										__(
+											'To track conversions for your Ads campaign, you need to add your Conversion ID to Site Kit. You can always change the Conversion ID later in Site Kit Settings. <a>Learn more</a>',
+											'google-site-kit'
+										),
+										{
+											a: (
+												<Link
+													href={
+														setupExistingAdsAccountSupportURL
+													}
+													external
+												/>
+											),
+											br: <br />,
+										}
+									) }
+								</p>
+								<SetupFormPAX
+									finishSetup={ finishSetup }
+									isNavigatingToOAuthURL={
+										isNavigatingToOAuthURL
+									}
+								/>
+							</Cell>
+						</Row>
 					) }
 			</div>
 			{ openDialog && (

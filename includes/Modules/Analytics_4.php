@@ -30,6 +30,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Inline_Data;
+use Google\Site_Kit\Core\Modules\Module_With_Inline_Data_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -91,7 +93,7 @@ use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_Tag
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
@@ -109,7 +111,7 @@ use WP_Post;
  * @access private
  * @ignore
  */
-final class Analytics_4 extends Module implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State, Module_With_Tag {
+final class Analytics_4 extends Module implements Module_With_Inline_Data, Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State, Module_With_Tag {
 
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
@@ -118,12 +120,12 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	use Module_With_Settings_Trait;
 	use Module_With_Data_Available_State_Trait;
 	use Module_With_Tag_Trait;
+	use Module_With_Inline_Data_Trait;
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
-	const READONLY_SCOPE  = 'https://www.googleapis.com/auth/analytics.readonly';
-	const PROVISION_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
-	const EDIT_SCOPE      = 'https://www.googleapis.com/auth/analytics.edit';
+	const READONLY_SCOPE = 'https://www.googleapis.com/auth/analytics.readonly';
+	const EDIT_SCOPE     = 'https://www.googleapis.com/auth/analytics.edit';
 
 	/**
 	 * Module slug name.
@@ -205,7 +207,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
 		$this->reset_audiences                  = new Reset_Audiences( $this->user_options );
-		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings() );
+		$this->audience_settings                = new Audience_Settings( $this->options );
+		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings(), $this->audience_settings );
 	}
 
 	/**
@@ -216,6 +219,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+
+		$this->register_inline_data();
 
 		$synchronize_property = new Synchronize_Property(
 			$this,
@@ -236,17 +241,14 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		);
 		$synchronize_ads_linked->register();
 
-		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
-			$conversion_reporting_provider = new Conversion_Reporting_Provider(
-				$this->context,
-				$this->settings,
-				$this->user_options,
-				$this
-			);
-			$conversion_reporting_provider->register();
-		}
+		$conversion_reporting_provider = new Conversion_Reporting_Provider(
+			$this->context,
+			$this->settings,
+			$this->user_options,
+			$this
+		);
+		$conversion_reporting_provider->register();
 
-		$this->audience_settings = new Audience_Settings( $this->options );
 		$this->audience_settings->register();
 
 		( new Advanced_Tracking( $this->context ) )->register();
@@ -264,25 +266,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		// Analytics 4 tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 
-		$this->get_settings()->on_change(
+		$this->audience_settings->on_change(
 			function ( $old_value, $new_value ) {
-				// Ensure that the data available state is reset when the property ID or measurement ID changes.
-				if ( $old_value['propertyID'] !== $new_value['propertyID'] || $old_value['measurementID'] !== $new_value['measurementID'] ) {
-					$this->reset_data_available();
-					$this->custom_dimensions_data_available->reset_data_available();
-
-					$available_audiences = $old_value['availableAudiences'] ?? array();
-
-					$available_audience_names = array_map(
-						function ( $audience ) {
-							return $audience['name'];
-						},
-						$available_audiences
-					);
-
-					$this->resource_data_availability_date->reset_all_resource_dates( $available_audience_names, $old_value['propertyID'] );
-				}
-
 				// Ensure that the resource data availability dates for `availableAudiences` that no longer exist are reset.
 				$old_available_audiences = $old_value['availableAudiences'];
 				if ( $old_available_audiences ) {
@@ -307,6 +292,28 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 						$this->resource_data_availability_date->reset_resource_date( $unavailable_audience_name, Resource_Data_Availability_Date::RESOURCE_TYPE_AUDIENCE );
 					}
 				}
+			}
+		);
+
+		$this->get_settings()->on_change(
+			function ( $old_value, $new_value ) {
+				// Ensure that the data available state is reset when the property ID or measurement ID changes.
+				if ( $old_value['propertyID'] !== $new_value['propertyID'] || $old_value['measurementID'] !== $new_value['measurementID'] ) {
+					$this->reset_data_available();
+					$this->custom_dimensions_data_available->reset_data_available();
+
+					$audience_settings   = $this->audience_settings->get();
+					$available_audiences = $audience_settings['availableAudiences'] ?? array();
+
+					$available_audience_names = array_map(
+						function ( $audience ) {
+							return $audience['name'];
+						},
+						$available_audiences
+					);
+
+					$this->resource_data_availability_date->reset_all_resource_dates( $available_audience_names, $old_value['propertyID'] );
+				}
 
 				// Reset property specific settings when propertyID changes.
 				if ( $old_value['propertyID'] !== $new_value['propertyID'] ) {
@@ -317,23 +324,22 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 							'adsLinked'                 => false,
 							'adsLinkedLastSyncedAt'     => 0,
 							'detectedEvents'            => array(),
-							'availableAudiencesLastSyncedAt' => 0,
 						)
 					);
+
+					$this->audience_settings->delete();
 
 					if ( ! empty( $new_value['propertyID'] ) ) {
 						do_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED );
 
-						if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
-							// Reset event detection and new badge events.
-							$this->transients->delete( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
-							$this->transients->delete( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
-							$this->transients->delete( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
+						// Reset event detection and new badge events.
+						$this->transients->delete( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
+						$this->transients->delete( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
+						$this->transients->delete( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
 
-							$this->transients->set( Conversion_Reporting_New_Badge_Events_Sync::SKIP_NEW_BADGE_TRANSIENT, 1 );
+						$this->transients->set( Conversion_Reporting_New_Badge_Events_Sync::SKIP_NEW_BADGE_TRANSIENT, 1 );
 
-							do_action( Conversion_Reporting_Cron::CRON_ACTION );
-						}
+						do_action( Conversion_Reporting_Cron::CRON_ACTION );
 					}
 
 					// Reset audience specific settings.
@@ -350,9 +356,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			'pre_update_option_googlesitekit_analytics-4_settings',
 			function ( $new_value, $old_value ) {
 				if ( $new_value['propertyID'] !== $old_value['propertyID'] ) {
-					$new_value['availableCustomDimensions']            = null;
-					$new_value['availableAudiences']                   = null;
-					$new_value['audienceSegmentationSetupCompletedBy'] = null;
+					$new_value['availableCustomDimensions'] = null;
 				}
 
 				return $new_value;
@@ -360,16 +364,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			10,
 			2
 		);
-
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ), 10 );
-
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_tag_id_mismatch' ), 15 );
-
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_resource_availability_dates_data' ) );
-
-		if ( Feature_Flags::enabled( 'conversionReporting' ) ) {
-			add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_conversion_reporting_events_detection' ), 15 );
-		}
 
 		add_filter(
 			'googlesitekit_auth_scopes',
@@ -434,6 +428,44 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				);
 			}
 		);
+
+		add_filter(
+			'googlesitekit_ads_measurement_connection_checks',
+			function ( $checks ) {
+				$checks[] = array( $this, 'check_ads_measurement_connection' );
+				return $checks;
+			},
+			20
+		);
+	}
+
+	/**
+	 * Checks if the Analytics 4 module is connected and contributing to Ads measurement.
+	 *
+	 * Verifies connection status and settings to determine if Ads-related configurations
+	 * (AdSense linked or Google Tag Container with AW- destination IDs) exist.
+	 *
+	 * @since 1.151.0
+	 *
+	 * @return bool True if Analytics 4 is connected and configured for Ads measurement; false otherwise.
+	 */
+	public function check_ads_measurement_connection() {
+		if ( ! $this->is_connected() ) {
+			return false;
+		}
+		$settings = $this->get_settings()->get();
+
+		if ( $settings['adsLinked'] ) {
+			return true;
+		}
+
+		foreach ( (array) $settings['googleTagContainerDestinationIDs'] as $destination_id ) {
+			if ( 0 === stripos( $destination_id, 'AW-' ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -497,6 +529,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		$this->reset_data_available();
 		$this->custom_dimensions_data_available->reset_data_available();
 		$this->reset_audiences->reset_audience_data();
+		$this->audience_settings->delete();
 	}
 
 	/**
@@ -597,7 +630,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 		}
 
 		// Return the SITE_KIT_AUDIENCE audiences.
-		$site_kit_audiences = $this->get_site_kit_audiences( $settings['availableAudiences'] ?? array() );
+		$available_audiences = $this->audience_settings->get()['availableAudiences'] ?? array();
+		$site_kit_audiences  = $this->get_site_kit_audiences( $available_audiences );
 
 		$debug_fields['analytics_4_site_kit_audiences'] = array(
 			'label' => __( 'Analytics: Site created audiences', 'google-site-kit' ),
@@ -613,13 +647,13 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				: join( ', ', $site_kit_audiences ),
 		);
 
-		// Add fields from First-party mode.
+		// Add fields from Google tag gateway.
 		// Note: fields are added in both Analytics and Ads so that the debug fields will show if either module is enabled.
-		if ( Feature_Flags::enabled( 'firstPartyMode' ) ) {
-			$first_party_mode             = new First_Party_Mode( $this->context );
-			$fields_from_first_party_mode = $first_party_mode->get_debug_fields();
+		if ( Feature_Flags::enabled( 'googleTagGateway' ) ) {
+			$google_tag_gateway             = new Google_Tag_Gateway( $this->context );
+			$fields_from_google_tag_gateway = $google_tag_gateway->get_debug_fields();
 
-			$debug_fields = array_merge( $debug_fields, $fields_from_first_party_mode );
+			$debug_fields = array_merge( $debug_fields, $fields_from_google_tag_gateway );
 		}
 
 		return $debug_fields;
@@ -650,7 +684,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 			),
-			'GET:conversion-events'                     => array(
+			'GET:key-events'                            => array(
 				'service'   => 'analyticsadmin',
 				'shareable' => true,
 			),
@@ -1506,13 +1540,20 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					);
 				}
 
-				if ( isset( $data['audienceSegmentationSetupCompletedBy'] ) && ! is_int( $data['audienceSegmentationSetupCompletedBy'] ) ) {
+				$settings = $data['settings'];
+
+				if (
+					isset( $settings['audienceSegmentationSetupCompletedBy'] ) &&
+					! is_int( $settings['audienceSegmentationSetupCompletedBy'] )
+				) {
 					throw new Invalid_Param_Exception( 'audienceSegmentationSetupCompletedBy' );
 				}
 
-				return function () use ( $data ) {
-					if ( isset( $data['audienceSegmentationSetupCompletedBy'] ) ) {
-						$new_settings['audienceSegmentationSetupCompletedBy'] = $data['audienceSegmentationSetupCompletedBy'];
+				return function () use ( $settings ) {
+					$new_settings = array();
+
+					if ( isset( $settings['audienceSegmentationSetupCompletedBy'] ) ) {
+						$new_settings['audienceSegmentationSetupCompletedBy'] = $settings['audienceSegmentationSetupCompletedBy'];
 					}
 
 					$settings = $this->audience_settings->merge( $new_settings );
@@ -1704,7 +1745,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				}
 
 				return $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $data['measurementID'] ) );
-			case 'GET:conversion-events':
+			case 'GET:key-events':
 				$settings = $this->get_settings()->get();
 				if ( empty( $settings['propertyID'] ) ) {
 					return new WP_Error(
@@ -1718,8 +1759,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				$property_id    = self::normalize_property_id( $settings['propertyID'] );
 
 				return $analyticsadmin
-					->properties_conversionEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-					->listPropertiesConversionEvents( $property_id );
+				->properties_keyEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				->listPropertiesKeyEvents( $property_id );
 			case 'POST:set-google-tag-id-mismatch':
 				if ( ! isset( $data['hasMismatchedTag'] ) ) {
 					throw new Missing_Required_Param_Exception( 'hasMismatchedTag' );
@@ -1794,8 +1835,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				return (array) $response->getDestination();
 			case 'GET:google-tag-settings':
 				return $this->get_google_tag_settings_for_measurement_id( $response, $data['measurementID'] );
-			case 'GET:conversion-events':
-				return (array) $response->getConversionEvents();
+			case 'GET:key-events':
+				return (array) $response->getKeyEvents();
 			case 'GET:report':
 				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );
@@ -1978,6 +2019,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-modules',
+						'googlesitekit-notifications',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
 						'googlesitekit-datastore-forms',
@@ -2369,63 +2411,56 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 * Populates custom dimension data to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.113.0
+	 * @since n.e.x.t Renamed method to `get_inline_custom_dimensions_data()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
-	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
 	 */
-	private function inline_custom_dimensions_data( $modules_data ) {
+	private function get_inline_custom_dimensions_data() {
 		if ( $this->is_connected() ) {
-			// Add the data under the `analytics-4` key to make it clear it's scoped to this module.
-			$modules_data['analytics-4'] = array(
+			return array(
 				'customDimensionsDataAvailable' => $this->custom_dimensions_data_available->get_data_availability(),
 			);
 		}
 
-		return $modules_data;
+		return array();
 	}
 
 	/**
 	 * Populates tag ID mismatch value to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.130.0
+	 * @since n.e.x.t Renamed method to `get_inline_tag_id_mismatch()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
-	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
 	 */
-	protected function inline_tag_id_mismatch( $modules_data ) {
+	private function get_inline_tag_id_mismatch() {
 		if ( $this->is_connected() ) {
 			$tag_id_mismatch = $this->transients->get( 'googlesitekit_inline_tag_id_mismatch' );
 
-			// Add the data under the `analytics-4` key to make it clear it's scoped to this module.
-			// No need to check if `analytics-4` key is present, as this hook is added with higher
-			// priority than inline_custom_dimensions_data where this key is set.
-			$modules_data['analytics-4']['tagIDMismatch'] = $tag_id_mismatch;
+			return array(
+				'tagIDMismatch' => $tag_id_mismatch,
+			);
 		}
 
-		return $modules_data;
+		return array();
 	}
 
 	/**
 	 * Populates resource availability dates data to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.127.0
+	 * @since n.e.x.t Renamed method to `get_inline_resource_availability_dates_data()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
-	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
 	 */
-	private function inline_resource_availability_dates_data( $modules_data ) {
+	private function get_inline_resource_availability_dates_data() {
 		if ( $this->is_connected() ) {
-			// Add the data under the `analytics-4` key to make it clear it's scoped to this module.
-			// If `analytics-4` key already exists, merge the data.
-			$modules_data['analytics-4'] = array_merge(
-				$modules_data['analytics-4'] ?? array(),
-				array(
-					'resourceAvailabilityDates' => $this->resource_data_availability_date->get_all_resource_dates(),
-				)
+			return array(
+				'resourceAvailabilityDates' => $this->resource_data_availability_date->get_all_resource_dates(),
 			);
 		}
 
-		return $modules_data;
+		return array();
 	}
 
 	/**
@@ -2515,7 +2550,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			}
 		);
 
-		$this->get_settings()->merge(
+		$this->audience_settings->merge(
 			array(
 				'availableAudiences'             => $available_audiences,
 				'availableAudiencesLastSyncedAt' => time(),
@@ -2649,23 +2684,47 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 * Populates conversion reporting event data to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.139.0
+	 * @since n.e.x.t Renamed method to `get_inline_conversion_reporting_events_detection()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
-	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
 	 */
-	public function inline_conversion_reporting_events_detection( $modules_data ) {
+	private function get_inline_conversion_reporting_events_detection() {
 		if ( ! $this->is_connected() ) {
-			return $modules_data;
+			return array();
 		}
 
 		$detected_events  = $this->transients->get( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
 		$lost_events      = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
 		$new_events_badge = $this->transients->get( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
 
-		$modules_data['analytics-4']['newEvents']      = is_array( $detected_events ) ? $detected_events : array();
-		$modules_data['analytics-4']['lostEvents']     = is_array( $lost_events ) ? $lost_events : array();
-		$modules_data['analytics-4']['newBadgeEvents'] = is_array( $new_events_badge ) ? $new_events_badge['events'] : array();
+		return array(
+			'newEvents'      => is_array( $detected_events ) ? $detected_events : array(),
+			'lostEvents'     => is_array( $lost_events ) ? $lost_events : array(),
+			'newBadgeEvents' => is_array( $new_events_badge ) ? $new_events_badge['events'] : array(),
+		);
+	}
 
-		return $modules_data;
+	/**
+	 * Gets required inline data for the module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array An array of the module's inline data.
+	 */
+	public function get_inline_data() {
+		$inline_data = array_merge(
+			$this->get_inline_custom_dimensions_data(),
+			$this->get_inline_resource_availability_dates_data(),
+			$this->get_inline_tag_id_mismatch(),
+			$this->get_inline_conversion_reporting_events_detection()
+		);
+
+		if ( empty( $inline_data ) ) {
+			return array();
+		}
+
+		return array(
+			self::MODULE_SLUG => $inline_data,
+		);
 	}
 }

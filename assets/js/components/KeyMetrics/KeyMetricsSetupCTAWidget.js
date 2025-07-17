@@ -20,44 +20,37 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useMount } from 'react-use';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
-import KeyMetricsCTAContent from './KeyMetricsCTAContent';
-import KeyMetricsCTAFooter from './KeyMetricsCTAFooter';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '../../../js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import {
-	KEY_METRICS_SETUP_CTA_WIDGET_SLUG,
-	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
-} from './constants';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import whenActive from '../../util/when-active';
-import {
-	AdminMenuTooltip,
-	useShowTooltip,
-	useTooltipState,
-} from '../AdminMenuTooltip';
-import { trackEvent } from '../../util';
+import { useShowTooltip } from '../AdminMenuTooltip';
+import { trackEvent, WEEK_IN_SECONDS } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import useDisplayCTAWidget from './hooks/useDisplayCTAWidget';
-import KeyMetricsSetupCTARenderedEffect from './KeyMetricsSetupCTARenderedEffect';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { useFeature } from '../../hooks/useFeature';
+import Banner from '../Banner';
+import Link from '../Link';
+import BannerSVGDesktop from '@/svg/graphics/banner-conversions-setup-cta.svg?url';
+import BannerSVGMobile from '@/svg/graphics/banner-conversions-setup-cta-mobile.svg?url';
 
 function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
-	const isConversionReportingEnabled = useFeature( 'conversionReporting' );
+	const trackingRef = useRef();
 	const viewContext = useViewContext();
+	const trackEventCategory = `${ viewContext }_kmw-cta-notification`;
 	const displayCTAWidget = useDisplayCTAWidget();
 	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
@@ -66,98 +59,76 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-metric-selection' )
 	);
 
-	const showTooltip = useShowTooltip( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
-	const { isTooltipVisible } = useTooltipState(
-		KEY_METRICS_SETUP_CTA_WIDGET_SLUG
+	const intersectionEntry = useIntersection( trackingRef, {
+		threshold: 0.25,
+	} );
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const inView = !! intersectionEntry?.intersectionRatio;
+
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
 	);
 
-	const { setValue } = useDispatch( CORE_UI );
+	useEffect( () => {
+		if ( ! inView || hasBeenInView ) {
+			return;
+		}
+
+		trackEvent(
+			`${ viewContext }_kmw-cta-notification`,
+			'view_notification'
+		);
+
+		if ( usingProxy ) {
+			triggerSurvey( 'view_kmw_setup_cta', { ttl: WEEK_IN_SECONDS } );
+		}
+
+		setHasBeenInView( true );
+	}, [ inView, hasBeenInView, viewContext, usingProxy, triggerSurvey ] );
+
+	const tooltipSettings = {
+		tooltipSlug: KEY_METRICS_SETUP_CTA_WIDGET_SLUG,
+		title: __(
+			'You can always set up goals in Settings later',
+			'google-site-kit'
+		),
+		content: __(
+			'The Key Metrics section will be added back to your dashboard once you set your goals in Settings',
+			'google-site-kit'
+		),
+		dismissLabel: __( 'Got it', 'google-site-kit' ),
+	};
+	const showTooltip = useShowTooltip( tooltipSettings );
 	const { dismissItem } = useDispatch( CORE_USER );
 
-	const dismissCallback = async () => {
-		await trackEvent(
-			`${ viewContext }_kmw-cta-notification`,
-			'dismiss_notification'
-		);
+	const handleDismiss = useCallback( async () => {
+		await trackEvent( trackEventCategory, 'dismiss_notification' );
 		showTooltip();
 		await dismissItem( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
-	};
-
-	const onTooltipDismiss = useCallback( () => {
-		trackEvent( `${ viewContext }_kmw`, 'tooltip_dismiss' );
-	}, [ viewContext ] );
+	}, [ trackEventCategory, showTooltip, dismissItem ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const openMetricsSelectionPanel = useCallback( () => {
-		if ( isConversionReportingEnabled ) {
-			navigateTo( fullScreenSelectionLink );
-		} else {
-			setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
-		}
+	const openMetricsSelectionPanel = useCallback( async () => {
+		await trackEvent( trackEventCategory, 'confirm_pick_own_metrics' );
 
-		trackEvent(
-			`${ viewContext }_kmw-cta-notification`,
-			'confirm_pick_own_metrics'
-		);
-	}, [
-		navigateTo,
-		fullScreenSelectionLink,
-		viewContext,
-		isConversionReportingEnabled,
-		setValue,
-	] );
+		navigateTo( fullScreenSelectionLink );
+	}, [ trackEventCategory, navigateTo, fullScreenSelectionLink ] );
 
 	const onGetTailoredMetricsClick = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_kmw-cta-notification`,
-			'confirm_get_tailored_metrics'
-		);
-	}, [ viewContext ] );
-
-	useMount( () => {
-		// Since components are conditionally rendered, when tooltip
-		// appears, old component will unmount and new componnet will mount,
-		// with tooltip visible equal to true, so here we ensure event is sent only once when that occurs,
-		if ( isTooltipVisible ) {
-			trackEvent( `${ viewContext }_kmw`, 'tooltip_view' );
-		}
-	} );
-
-	if ( isTooltipVisible ) {
-		return (
-			<Fragment>
-				<WidgetNull />
-				<AdminMenuTooltip
-					title={ __(
-						'You can always set up goals from Settings later',
-						'google-site-kit'
-					) }
-					content={ __(
-						'The Key Metrics section will be added back to your dashboard once you set your goals in Settings',
-						'google-site-kit'
-					) }
-					dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					tooltipStateKey={ KEY_METRICS_SETUP_CTA_WIDGET_SLUG }
-					onDismiss={ onTooltipDismiss }
-				/>
-			</Fragment>
-		);
-	}
+		trackEvent( trackEventCategory, 'confirm_get_tailored_metrics' );
+	}, [ trackEventCategory ] );
 
 	if ( ! displayCTAWidget ) {
 		return <WidgetNull />;
 	}
 
 	return (
-		<Widget
-			noPadding
-			Footer={ () => (
-				<KeyMetricsCTAFooter
-					onActionClick={ openMetricsSelectionPanel }
-				/>
-			) }
-		>
-			<KeyMetricsCTAContent
+		<Widget noPadding>
+			<Banner
+				ref={ trackingRef }
+				className="googlesitekit-banner--setup-cta"
 				title={ __(
 					'Get personalized suggestions for user interaction metrics based on your goals',
 					'google-site-kit'
@@ -166,22 +137,36 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 					'Answer 3 questions and we’ll suggest relevant metrics for your dashboard. These metrics will help you track how users interact with your site.',
 					'google-site-kit'
 				) }
-				actions={
-					<Fragment>
-						<KeyMetricsSetupCTARenderedEffect />
-						<Button
-							className="googlesitekit-key-metrics-cta-button"
-							href={ ctaLink }
-							onClick={ onGetTailoredMetricsClick }
-						>
-							{ __( 'Get tailored metrics', 'google-site-kit' ) }
-						</Button>
-						<Button tertiary onClick={ dismissCallback }>
-							{ __( 'Maybe later', 'google-site-kit' ) }
-						</Button>
-					</Fragment>
+				dismissButton={ {
+					label: __( 'Maybe later', 'google-site-kit' ),
+					onClick: handleDismiss,
+				} }
+				ctaButton={ {
+					label: __( 'Get tailored metrics', 'google-site-kit' ),
+					href: ctaLink,
+					onClick: onGetTailoredMetricsClick,
+				} }
+				svg={ {
+					desktop: BannerSVGDesktop,
+					mobile: BannerSVGMobile,
+					verticalPosition: 'top',
+				} }
+				footer={
+					<div className="googlesitekit-widget-key-metrics-footer">
+						<span>
+							{ __(
+								'Interested in specific metrics?',
+								'google-site-kit'
+							) }
+						</span>
+						<Link onClick={ openMetricsSelectionPanel }>
+							{ __(
+								'Select your own metrics',
+								'google-site-kit'
+							) }
+						</Link>
+					</div>
 				}
-				ga4Connected
 			/>
 		</Widget>
 	);
@@ -192,6 +177,6 @@ KeyMetricsSetupCTAWidget.propTypes = {
 	WidgetNull: PropTypes.elementType,
 };
 
-export default whenActive( { moduleName: 'analytics-4' } )(
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
 	KeyMetricsSetupCTAWidget
 );

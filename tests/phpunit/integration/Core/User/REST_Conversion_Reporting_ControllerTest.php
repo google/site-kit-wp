@@ -7,6 +7,8 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 
 namespace Google\Site_Kit\Tests\Core\User;
 
@@ -73,21 +75,7 @@ class REST_Conversion_Reporting_ControllerTest extends TestCase {
 		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
 	}
 
-	public function test_get_routes__no_feature_flag() {
-		$this->controller->register();
-
-		$server = rest_get_server();
-		$routes = array(
-			'/' . REST_Routes::REST_ROOT . '/core/user/data/conversion-reporting-settings',
-
-		);
-		$get_routes = array_intersect( $routes, array_keys( $server->get_routes() ) );
-
-		$this->assertTrue( empty( $get_routes ) );
-	}
-
-	public function test_get_routes__with_feature_flag() {
-		$this->enable_feature( 'conversionReporting' );
+	public function test_get_routes() {
 		$this->controller->register();
 
 		$server = rest_get_server();

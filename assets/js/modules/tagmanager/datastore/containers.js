@@ -24,13 +24,15 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTEXT_AMP } from './constants';
+import { MODULE_SLUG_TAGMANAGER } from '../constants';
 import {
 	isValidAccountID,
 	isValidContainerID,
@@ -53,9 +55,9 @@ const fetchGetContainersStore = createFetchStore( {
 		);
 	},
 	controlCallback: ( { accountID } ) => {
-		return API.get(
+		return get(
 			'modules',
-			'tagmanager',
+			MODULE_SLUG_TAGMANAGER,
 			'containers',
 			{ accountID },
 			{ useCache: false }
@@ -92,24 +94,18 @@ const fetchCreateContainerStore = createFetchStore( {
 		);
 	},
 	controlCallback: ( { accountID, usageContext, containerName: name } ) => {
-		return API.set( 'modules', 'tagmanager', 'create-container', {
+		return set( 'modules', MODULE_SLUG_TAGMANAGER, 'create-container', {
 			accountID,
 			usageContext,
 			name,
 		} );
 	},
-	reducerCallback( state, container, { accountID } ) {
-		return {
-			...state,
-			containers: {
-				...state.containers,
-				[ accountID ]: [
-					...( state.containers[ accountID ] || [] ),
-					container,
-				],
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, container, { accountID } ) => {
+		if ( ! state.containers[ accountID ] ) {
+			state.containers[ accountID ] = [];
+		}
+		state.containers[ accountID ].push( container );
+	} ),
 } );
 
 const baseInitialState = {

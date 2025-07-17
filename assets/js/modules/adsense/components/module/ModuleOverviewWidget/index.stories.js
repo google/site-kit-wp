@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import ModuleOverviewWidget from '.';
-import { replaceValuesInAdSenseReportWithZeroData } from '../../../../../../../storybook/utils/zeroReports';
+import { replaceValuesInAdSenseReportWithZeroData } from '../../../../../../../tests/js/utils/zeroReports';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -29,7 +29,9 @@ import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../../constants';
 import {
 	getAdSenseMockResponse,
 	provideAdSenseMockReports,
@@ -47,6 +49,7 @@ const storyReportOptions = [
 		],
 		startDate: '2021-10-28',
 		endDate: '2021-11-24',
+		reportID: 'adsense_module-overview-widget_widget_currentRangeArgs',
 	},
 	{
 		dimensions: [ 'DATE' ],
@@ -58,6 +61,7 @@ const storyReportOptions = [
 		],
 		startDate: '2021-10-28',
 		endDate: '2021-11-24',
+		reportID: 'adsense_module-overview-widget_widget_currentRangeChartArgs',
 	},
 	{
 		metrics: [
@@ -68,6 +72,7 @@ const storyReportOptions = [
 		],
 		startDate: '2021-09-30',
 		endDate: '2021-10-27',
+		reportID: 'adsense_module-overview-widget_widget_previousRangeArgs',
 	},
 	{
 		dimensions: [ 'DATE' ],
@@ -79,6 +84,8 @@ const storyReportOptions = [
 		],
 		startDate: '2021-09-30',
 		endDate: '2021-10-27',
+		reportID:
+			'adsense_module-overview-widget_widget_previousRangeChartArgs',
 	},
 ];
 
@@ -97,9 +104,7 @@ Default.args = {
 		provideAdSenseMockReports( registry, storyReportOptions );
 	},
 };
-Default.scenario = {
-	label: 'AdSense Module/Overview Widget',
-};
+Default.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -164,12 +169,12 @@ export default {
 					{
 						active: true,
 						connected: true,
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 					},
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 					},
 				] );
 

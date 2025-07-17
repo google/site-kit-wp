@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
+
 /**
  * External dependencies
  */
@@ -25,16 +27,16 @@ import { isEqual, isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
-import { createReducer } from '../../data/create-reducer';
 import { actions as errorStoreActions } from '../../data/create-error-store';
 import { CORE_USER } from './constants';
 
@@ -69,7 +71,7 @@ const fetchStoreReducerCallback = createReducer(
 const fetchGetUserAudienceSettingsStore = createFetchStore( {
 	baseName: 'getUserAudienceSettings',
 	controlCallback() {
-		return API.get(
+		return get(
 			'core',
 			'user',
 			'audience-settings',
@@ -85,7 +87,7 @@ const fetchGetUserAudienceSettingsStore = createFetchStore( {
 const fetchSaveUserAudienceSettingsStore = createFetchStore( {
 	baseName: 'saveUserAudienceSettings',
 	controlCallback: ( settings ) =>
-		API.set( 'core', 'user', 'audience-settings', { settings } ),
+		set( 'core', 'user', 'audience-settings', { settings } ),
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
 	validateParams: validateUserAudienceSettings,
@@ -132,7 +134,7 @@ const baseActions = {
 			const availableAudiences = yield commonActions.await(
 				registry
 					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getAvailableAudiences()
+					.getOrSyncAvailableAudiences()
 			);
 
 			const sortedConfiguredAudiences = [

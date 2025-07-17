@@ -25,7 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
@@ -40,6 +40,7 @@ import {
 	FORM_ACCOUNT_CREATE,
 	MODULES_ANALYTICS_4,
 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
@@ -52,9 +53,9 @@ const { receiveError, clearError, clearErrors } = errorStoreActions;
 const fetchGetAccountSummariesStore = createFetchStore( {
 	baseName: 'getAccountSummaries',
 	controlCallback( { pageToken } ) {
-		return API.get(
+		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'account-summaries',
 			{ pageToken },
 			{
@@ -79,9 +80,9 @@ const fetchGetAccountSummariesStore = createFetchStore( {
 const fetchCreateAccountStore = createFetchStore( {
 	baseName: 'createAccount',
 	controlCallback: ( { data } ) => {
-		return API.set(
+		return set(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'create-account-ticket',
 			data
 		);

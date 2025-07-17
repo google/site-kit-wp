@@ -19,16 +19,17 @@
  *
  * @since 1.148.0
  *
- * @param {boolean} hasModuleAccess           Whether the user has module access.
- * @param {string}  withModuleAccessNotice    Notice when the user has module access.
- * @param {string}  withoutModuleAccessNotice Notice when the user does not have module access.
+ * @param {Object}  options                           Options object.
+ * @param {boolean} options.hasModuleAccess           Whether the user has module access.
+ * @param {string}  options.withModuleAccessNotice    Notice when the user has module access.
+ * @param {string}  options.withoutModuleAccessNotice Notice when the user does not have module access.
  * @return {string|null} Notice text. Returns `null` if `hasModuleAccess` is `undefined`.
  */
-function getNoticeWithModuleAccess(
+function getNoticeWithModuleAccess( {
 	hasModuleAccess,
 	withModuleAccessNotice,
-	withoutModuleAccessNotice
-) {
+	withoutModuleAccessNotice,
+} ) {
 	if ( hasModuleAccess === undefined ) {
 		return null;
 	}
@@ -75,11 +76,13 @@ export function getNoticeAndDisabled( {
 	if ( paymentOption !== requiredPaymentOption ) {
 		return {
 			disabled: true,
-			notice: getNoticeWithModuleAccess(
+			notice: getNoticeWithModuleAccess( {
 				hasModuleAccess,
-				invalidPaymentOptionWithModuleAccessNotice,
-				invalidPaymentOptionWithoutModuleAccessNotice
-			),
+				withModuleAccessNotice:
+					invalidPaymentOptionWithModuleAccessNotice,
+				withoutModuleAccessNotice:
+					invalidPaymentOptionWithoutModuleAccessNotice,
+			} ),
 		};
 	}
 
@@ -92,11 +95,11 @@ export function getNoticeAndDisabled( {
 	) {
 		return {
 			disabled: true,
-			notice: getNoticeWithModuleAccess(
+			notice: getNoticeWithModuleAccess( {
 				hasModuleAccess,
-				noSnippetWithModuleAccessNotice,
-				noSnippetWithoutModuleAccessNotice
-			),
+				withModuleAccessNotice: noSnippetWithModuleAccessNotice,
+				withoutModuleAccessNotice: noSnippetWithoutModuleAccessNotice,
+			} ),
 		};
 	}
 

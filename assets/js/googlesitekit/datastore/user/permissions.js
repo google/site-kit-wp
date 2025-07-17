@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
@@ -43,7 +43,7 @@ const RECEIVE_CAPABILITIES = 'RECEIVE_CAPABILITIES';
 const fetchGetCapabilitiesStore = createFetchStore( {
 	baseName: 'getCapabilities',
 	controlCallback: () => {
-		return API.get( 'core', 'user', 'permissions', undefined, {
+		return get( 'core', 'user', 'permissions', undefined, {
 			useCache: false,
 		} );
 	},

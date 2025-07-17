@@ -34,7 +34,6 @@ import {
 	setSearchConsoleProperty,
 	wpApiFetch,
 	useRequestInterception,
-	pageWait,
 	step,
 } from '../../../utils';
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
@@ -114,12 +113,12 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				request
 					.url()
 					.match(
-						'/wp-json/google-site-kit/v1/modules/analytics-4/data/conversion-events'
+						'/wp-json/google-site-kit/v1/modules/analytics-4/data/key-events'
 					)
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( fixtures.conversionEvents ),
+					body: JSON.stringify( fixtures.keyEvents ),
 				} );
 			} else if ( request.url().match( 'user/data/audience-settings' ) ) {
 				request.respond( {
@@ -325,7 +324,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			} );
 
 			await step( 'wait and click configure button', async () => {
-				await pageWait( 500 );
+				await page.waitForNetworkIdle();
 				await expect( page ).toClick( 'button', {
 					text: /complete setup/i,
 				} );
@@ -333,14 +332,11 @@ describe( 'setting up the Analytics module with an existing account and no exist
 
 			await step( 'redirect and check notification bar', async () => {
 				await page.waitForNavigation();
-				await page.waitForSelector(
-					'.googlesitekit-publisher-win__title',
-					{
-						timeout: 5_000,
-					}
-				);
+				await page.waitForSelector( '.googlesitekit-notice__title', {
+					timeout: 5_000,
+				} );
 				await expect( page ).toMatchElement(
-					'.googlesitekit-publisher-win__title',
+					'.googlesitekit-notice__title',
 					{
 						text: /Congrats on completing the setup for Analytics!/i,
 					}

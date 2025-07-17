@@ -25,7 +25,9 @@ import {
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import DashboardTopEarningPagesWidgetGA4 from './DashboardTopEarningPagesWidgetGA4';
 import {
 	STRATEGY_ZIP,
@@ -35,7 +37,7 @@ import {
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -53,6 +55,7 @@ const reportOptions = {
 	},
 	orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
 	limit: 5,
+	reportID: 'adsense_top-earning-pages-widget-ga4_widget_args',
 };
 
 const pageTitlesReportOptions = {
@@ -68,6 +71,7 @@ const pageTitlesReportOptions = {
 	metrics: [ { name: 'screenPageViews' } ],
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 25,
+	reportID: 'analytics-4_get-page-titles_store:selector_options',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -99,9 +103,7 @@ Default.args = {
 	},
 };
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4/Default',
-};
+Default.scenario = {};
 
 export const ViewOnlyDashboard = Template.bind( {} );
 ViewOnlyDashboard.args = {
@@ -125,9 +127,7 @@ ViewOnlyDashboard.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 ViewOnlyDashboard.storyName = 'ViewOnlyDashboard';
-ViewOnlyDashboard.scenario = {
-	label: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4/ViewOnlyDashboard',
-};
+ViewOnlyDashboard.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.args = {
@@ -157,9 +157,7 @@ DataUnavailable.args = {
 	},
 };
 DataUnavailable.storyName = 'Data Unavailable';
-DataUnavailable.scenario = {
-	label: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4/DataUnavailable',
-};
+DataUnavailable.scenario = {};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.args = {
@@ -181,9 +179,7 @@ ZeroData.args = {
 	},
 };
 ZeroData.storyName = 'Zero Data';
-ZeroData.scenario = {
-	label: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4/ZeroData',
-};
+ZeroData.scenario = {};
 
 export const AdSenseNotLinked = Template.bind( {} );
 AdSenseNotLinked.args = {
@@ -195,9 +191,7 @@ AdSenseNotLinked.args = {
 	},
 };
 AdSenseNotLinked.storyName = 'AdSense Not Linked';
-AdSenseNotLinked.scenario = {
-	label: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4/AdSenseNotLinked',
-};
+AdSenseNotLinked.scenario = {};
 
 export const AdBlockerActive = Template.bind( {} );
 AdBlockerActive.args = {
@@ -206,9 +200,7 @@ AdBlockerActive.args = {
 	},
 };
 AdBlockerActive.storyName = 'Ad Blocker Active';
-AdBlockerActive.scenario = {
-	label: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4/AdBlockerActive',
-};
+AdBlockerActive.scenario = {};
 
 export const Error = Template.bind( {} );
 Error.args = {
@@ -227,9 +219,7 @@ Error.args = {
 	},
 };
 Error.storyName = 'Error';
-Error.scenario = {
-	label: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4/Error',
-};
+Error.scenario = {};
 
 export default {
 	title: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4',
@@ -240,12 +230,12 @@ export default {
 					{
 						active: true,
 						connected: true,
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 					},
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 					},
 				] );
 

@@ -45,7 +45,7 @@ import ExclamationIcon from '../../svg/icons/warning.svg';
 function ModalDialog( {
 	className = '',
 	dialogActive = false,
-	handleDialog = null,
+	handleCancel = null,
 	onOpen = null,
 	onClose = null,
 	title = null,
@@ -122,9 +122,9 @@ function ModalDialog( {
 			<DialogFooter>
 				<Button
 					className="mdc-dialog__cancel-button"
-					tertiary
-					onClick={ handleDialog }
+					onClick={ handleCancel }
 					disabled={ inProgress }
+					tertiary
 				>
 					{ __( 'Cancel', 'google-site-kit' ) }
 				</Button>

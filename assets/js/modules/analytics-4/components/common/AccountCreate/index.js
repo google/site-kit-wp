@@ -25,7 +25,7 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { invalidateCache } from 'googlesitekit-api';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
 import {
@@ -34,6 +34,7 @@ import {
 	GTM_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
@@ -108,7 +109,7 @@ export default function AccountCreate() {
 	useEffect( () => {
 		if ( accountTicketTermsOfServiceURL ) {
 			( async () => {
-				await API.invalidateCache( 'modules', 'analytics-4' );
+				await invalidateCache( 'modules', MODULE_SLUG_ANALYTICS_4 );
 				navigateTo( accountTicketTermsOfServiceURL );
 			} )();
 		}
@@ -293,9 +294,9 @@ export default function AccountCreate() {
 
 				{ accounts && !! accounts.length && (
 					<Button
-						tertiary
 						className="googlesitekit-setup-module__sub-action"
 						onClick={ handleBack }
+						tertiary
 					>
 						{ __( 'Back', 'google-site-kit' ) }
 					</Button>

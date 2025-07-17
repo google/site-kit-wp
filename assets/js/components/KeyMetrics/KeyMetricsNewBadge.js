@@ -26,12 +26,8 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Badge from '../Badge';
-import { isFeatureEnabled } from '../../features';
 
 export default function KeyMetricsNewBadge() {
-	const conversionReportingEnabled = isFeatureEnabled(
-		'conversionReporting'
-	);
 	// This is necessary to conditionally render the badge
 	// as this component is used in a context where `select` is not in scope.
 	const isKeyMetricsSetupNew = useSelect( ( select ) =>
@@ -56,11 +52,7 @@ export default function KeyMetricsNewBadge() {
 
 	// In new ACR design "New" badge is shown only initially before
 	// KMW is setup, afterwards, "New" badge is not visible anymore.
-	if ( conversionReportingEnabled && isKeyMetricsSetupCompleted ) {
-		return null;
-	}
-
-	if ( ! isNew && ! conversionReportingEnabled ) {
+	if ( isKeyMetricsSetupCompleted || ! isNew ) {
 		return null;
 	}
 

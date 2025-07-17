@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
+
 /**
  * External dependencies
  */
@@ -34,7 +36,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	createRegistryControl,
@@ -133,7 +135,7 @@ const calculateRecoverableModules = memize( ( modules, recoverableModules ) =>
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
 	controlCallback: () => {
-		return API.get( 'core', 'modules', 'list', null, {
+		return get( 'core', 'modules', 'list', null, {
 			useCache: false,
 		} );
 	},
@@ -151,7 +153,7 @@ const fetchGetModulesStore = createFetchStore( {
 const fetchSetModuleActivationStore = createFetchStore( {
 	baseName: 'setModuleActivation',
 	controlCallback: ( { slug, active } ) => {
-		return API.set( 'core', 'modules', 'activation', {
+		return set( 'core', 'modules', 'activation', {
 			slug,
 			active,
 		} );
@@ -179,7 +181,7 @@ const fetchSetModuleActivationStore = createFetchStore( {
 const fetchCheckModuleAccessStore = createFetchStore( {
 	baseName: 'checkModuleAccess',
 	controlCallback: ( { slug } ) => {
-		return API.set( 'core', 'modules', 'check-access', { slug } );
+		return set( 'core', 'modules', 'check-access', { slug } );
 	},
 	reducerCallback: ( state, { access }, { slug } ) => {
 		return {
@@ -201,7 +203,7 @@ const fetchCheckModuleAccessStore = createFetchStore( {
 const fetchRecoverModulesStore = createFetchStore( {
 	baseName: 'recoverModules',
 	controlCallback: ( { slugs } ) => {
-		return API.set( 'core', 'modules', 'recover-modules', { slugs } );
+		return set( 'core', 'modules', 'recover-modules', { slugs } );
 	},
 	reducerCallback: ( state, recoveredModules ) => {
 		return {
@@ -345,6 +347,7 @@ const baseActions = {
 	 * @param {WPComponent}    [settings.SettingsViewComponent]            Optional. React component to render the settings view panel. Default none.
 	 * @param {WPComponent}    [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
 	 * @param {WPComponent}    [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
+	 * @param {boolean}        [settings.overrideSetupSuccessNotification] Optional. Flag to denote whether to render a custom setup success notification. Default `false`.
 	 * @param {Function}       [settings.onCompleteSetup]                  Optional. Function to use as a complete CTA callback. Default `undefined`.
 	 * @param {Function}       [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
 	 * @param {WPComponent}    [settings.DashboardMainEffectComponent]     Optional. React component to render the effects on main dashboard. Default none.
@@ -366,10 +369,11 @@ const baseActions = {
 				homepage,
 				SettingsEditComponent,
 				SettingsViewComponent,
-				SetupComponent,
 				SettingsSetupIncompleteComponent,
-				checkRequirements,
+				SetupComponent,
+				overrideSetupSuccessNotification = false,
 				onCompleteSetup,
+				checkRequirements,
 				DashboardMainEffectComponent,
 				DashboardEntityEffectComponent,
 			} = {}
@@ -384,9 +388,10 @@ const baseActions = {
 				homepage,
 				SettingsEditComponent,
 				SettingsViewComponent,
-				SetupComponent,
-				onCompleteSetup,
 				SettingsSetupIncompleteComponent,
+				SetupComponent,
+				overrideSetupSuccessNotification,
+				onCompleteSetup,
 				checkRequirements,
 				DashboardMainEffectComponent,
 				DashboardEntityEffectComponent,
@@ -1443,6 +1448,90 @@ const baseSelectors = {
 
 			return acc;
 		}, {} );
+	} ),
+
+	/**
+	 * Gets recovery errors for recoverable modules.
+	 *
+	 * Returns an object keyed by module slug, containing error details and module name,
+	 * for all recoverable modules that have a corresponding recovery error.
+	 *
+	 * @since 1.157.0
+	 *
+	 * @param {Object} state Data store's state (unused in this selector).
+	 * @return {(Object|undefined)} Object of recovery errors keyed by module slug,
+	 *                              or `undefined` if recoverable modules are not yet available.
+	 */
+	getRecoveryErrors: createRegistrySelector( ( select ) => () => {
+		const recoverableModules =
+			select( CORE_MODULES ).getRecoverableModules();
+
+		if ( ! recoverableModules ) {
+			return undefined;
+		}
+
+		const recoveredModules = select( CORE_MODULES ).getRecoveredModules();
+
+		if ( ! recoveredModules ) {
+			return {};
+		}
+
+		const modules = Object.keys( recoverableModules );
+
+		const getRecoveryError = ( module ) =>
+			recoveredModules?.error?.[ module ];
+
+		return modules
+			.filter( ( module ) => !! getRecoveryError( module ) )
+			.reduce(
+				( acc, module ) => ( {
+					...acc,
+					[ module ]: {
+						name: recoverableModules[ module ].name,
+						...getRecoveryError( module ),
+					},
+				} ),
+				{}
+			);
+	} ),
+
+	/**
+	 * Gets the list of recoverable module slugs the current user has access to.
+	 *
+	 * Returns an array of module slugs from `getRecoverableModules` that the user
+	 * has access to based on `hasModuleAccess`.
+	 *
+	 * @since 1.157.0
+	 *
+	 * @param {Object} state Data store's state (unused in this selector).
+	 * @return {(Array<string>|undefined)} Array of accessible recoverable module slugs,
+	 *                                     or `undefined` if data is not ready.
+	 */
+	getUserRecoverableModuleSlugs: createRegistrySelector( ( select ) => () => {
+		const { getRecoverableModules, hasModuleAccess } =
+			select( CORE_MODULES );
+		const modules = getRecoverableModules();
+
+		if ( modules === undefined ) {
+			return undefined;
+		}
+
+		const slugAccessEntries = Object.keys( modules ).map( ( slug ) => [
+			slug,
+			hasModuleAccess( slug ),
+		] );
+
+		if (
+			slugAccessEntries.some(
+				( [ , hasAccess ] ) => hasAccess === undefined
+			)
+		) {
+			return undefined;
+		}
+
+		return slugAccessEntries
+			.filter( ( [ , hasAccess ] ) => hasAccess )
+			.map( ( [ slug ] ) => slug );
 	} ),
 
 	getRecoveredModules( state ) {

@@ -19,6 +19,13 @@
 /**
  * Internal dependencies
  */
+const mockShowTooltip = jest.fn();
+jest.mock( '../../../../components/AdminMenuTooltip', () => ( {
+	__esModule: true,
+	default: jest.fn(),
+	useShowTooltip: jest.fn( () => mockShowTooltip ),
+} ) );
+
 import AdSenseConnectCTAWidget from './AdSenseConnectCTAWidget';
 import {
 	act,
@@ -28,7 +35,10 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/test-utils';
-import { ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../constants';
+import {
+	ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY,
+	MODULE_SLUG_ADSENSE,
+} from '../../constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
@@ -49,7 +59,7 @@ describe( 'AdSenseConnectCTA', () => {
 		provideUserAuthentication( registry );
 		registry
 			.dispatch( CORE_MODULES )
-			.receiveGetModules( withActive( 'adsense' ) );
+			.receiveGetModules( withActive( MODULE_SLUG_ADSENSE ) );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
@@ -89,35 +99,7 @@ describe( 'AdSenseConnectCTA', () => {
 		} );
 
 		it( 'should open the tooltip', () => {
-			expect(
-				document.querySelector( '.googlesitekit-tour-tooltip' )
-			).toBeInTheDocument();
-		} );
-
-		it( 'should close the tooltip on clicking the close button', async () => {
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				fireEvent.click(
-					document.querySelector( '.googlesitekit-tooltip-close' )
-				);
-			} );
-			expect(
-				document.querySelector( '.googlesitekit-tour-tooltip' )
-			).not.toBeInTheDocument();
-		} );
-
-		it( 'should close the modal on clicking the dismiss button', async () => {
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				fireEvent.click(
-					document.querySelector(
-						'.googlesitekit-tooltip-buttons > button'
-					)
-				);
-			} );
-			expect(
-				document.querySelector( '.googlesitekit-tour-tooltip' )
-			).not.toBeInTheDocument();
+			expect( mockShowTooltip ).toHaveBeenCalled();
 		} );
 	} );
 

@@ -24,6 +24,7 @@ import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { availableAudiences as audiencesFixture } from '../datastore/__fixtures__';
@@ -43,11 +44,11 @@ describe( 'useEnableAudienceGroup', () => {
 	let registry;
 	let enableAudienceGroupSpy;
 
-	const audienceSettingsEndpoint = new RegExp(
+	const audienceUserSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
-	const analyticsSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/settings'
+	const audienceSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/save-audience-settings'
 	);
 	const reportEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
@@ -71,7 +72,7 @@ describe( 'useEnableAudienceGroup', () => {
 			'enableAudienceGroup'
 		);
 
-		fetchMock.postOnce( analyticsSettingsEndpoint, ( url, opts ) => {
+		fetchMock.postOnce( audienceSettingsEndpoint, ( url, opts ) => {
 			const { data } = JSON.parse( opts.body );
 			// Return the same settings passed to the API.
 			return { body: data, status: 200 };
@@ -85,7 +86,7 @@ describe( 'useEnableAudienceGroup', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -223,7 +224,7 @@ describe( 'useEnableAudienceGroup', () => {
 			status: 200,
 		} );
 
-		fetchMock.postOnce( audienceSettingsEndpoint, {
+		fetchMock.postOnce( audienceUserSettingsEndpoint, {
 			status: 200,
 			body: {
 				configuredAudiences: [
@@ -267,7 +268,7 @@ describe( 'useEnableAudienceGroup', () => {
 			status: 200,
 		} );
 
-		fetchMock.postOnce( audienceSettingsEndpoint, {
+		fetchMock.postOnce( audienceUserSettingsEndpoint, {
 			status: 200,
 			body: {
 				configuredAudiences: [
@@ -312,7 +313,7 @@ describe( 'useEnableAudienceGroup', () => {
 			status: 200,
 		} );
 
-		fetchMock.postOnce( audienceSettingsEndpoint, {
+		fetchMock.postOnce( audienceUserSettingsEndpoint, {
 			status: 200,
 			body: {
 				configuredAudiences: [

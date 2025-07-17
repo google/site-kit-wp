@@ -24,17 +24,6 @@ import {
 
 export const CORE_NOTIFICATIONS = 'core/notifications';
 
-export const NOTIFICATION_AREAS = {
-	ERRORS: 'notification-area-errors',
-	BANNERS_ABOVE_NAV: 'notification-area-banners-above-nav',
-	BANNERS_BELOW_NAV: 'notification-area-banners-below-nav',
-};
-
-export const NOTIFICATION_GROUPS = {
-	DEFAULT: 'default',
-	SETUP_CTAS: 'setup-ctas',
-};
-
 export const NOTIFICATION_VIEW_CONTEXTS = [
 	VIEW_CONTEXT_SPLASH,
 	VIEW_CONTEXT_MAIN_DASHBOARD,

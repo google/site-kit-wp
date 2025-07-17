@@ -25,7 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies.
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
@@ -36,17 +36,17 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../constants';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
 	controlCallback: () =>
-		API.get(
+		get(
 			'modules',
-			READER_REVENUE_MANAGER_MODULE_SLUG,
+			MODULE_SLUG_READER_REVENUE_MANAGER,
 			'publications',
 			{},
 			{ useCache: false }
@@ -57,9 +57,9 @@ const fetchGetPublicationsStore = createFetchStore( {
 const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 	baseName: 'getSyncPublicationOnboardingState',
 	controlCallback: ( { publicationID, publicationOnboardingState } ) =>
-		API.set(
+		set(
 			'modules',
-			READER_REVENUE_MANAGER_MODULE_SLUG,
+			MODULE_SLUG_READER_REVENUE_MANAGER,
 			'sync-publication-onboarding-state',
 			{
 				publicationID,
@@ -326,7 +326,7 @@ const baseSelectors = {
 	/**
 	 * Gets the current publication IDs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.150.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array.<string> | undefined)} An array of product IDs; `undefined` if publications are not loaded.

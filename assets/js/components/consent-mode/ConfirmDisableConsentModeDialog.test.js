@@ -39,7 +39,10 @@ describe( 'ConfirmDisableConsentModeDialog', () => {
 	it( 'should display appropriate subtitle with Ads not connected', async () => {
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetAdsMeasurementStatus( { connected: false } );
+			.receiveGetAdsMeasurementStatus(
+				{ connected: false },
+				{ useCache: false }
+			);
 
 		const { getByText, waitForRegistry } = render(
 			<ConfirmDisableConsentModeDialog
@@ -63,7 +66,10 @@ describe( 'ConfirmDisableConsentModeDialog', () => {
 	it( 'should display appropriate subtitle with Ads connected', async () => {
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetAdsMeasurementStatus( { connected: true } );
+			.receiveGetAdsMeasurementStatus(
+				{ connected: true },
+				{ useCache: false }
+			);
 
 		const { getByText, waitForRegistry } = render(
 			<ConfirmDisableConsentModeDialog
@@ -81,6 +87,10 @@ describe( 'ConfirmDisableConsentModeDialog', () => {
 			getByText(
 				/Disabling consent mode may affect your ability to track these in the European Economic Area, the UK and Switzerland:/i
 			)
+		).toBeInTheDocument();
+
+		expect(
+			getByText( /How visitors interact with your site via Analytics/i )
 		).toBeInTheDocument();
 	} );
 } );

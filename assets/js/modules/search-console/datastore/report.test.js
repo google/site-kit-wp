@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 import {
@@ -29,7 +29,7 @@ import {
 	provideSiteInfo,
 	subscribeUntil,
 	untilResolved,
-	waitForTimeouts,
+	createWaitForRegistry,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
@@ -59,17 +59,19 @@ describe( 'modules/search-console report', () => {
 	];
 
 	let registry;
+	let waitForRegistry;
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		waitForRegistry = createWaitForRegistry( registry );
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'selectors', () => {
@@ -183,7 +185,7 @@ describe( 'modules/search-console report', () => {
 				expect( isGatheringData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForTimeouts( 30 );
+				await waitForRegistry();
 
 				expect( fetchMock ).toHaveFetched( searchAnalyticsRegexp );
 			} );
@@ -198,7 +200,7 @@ describe( 'modules/search-console report', () => {
 				expect( isGatheringData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForTimeouts( 30 );
+				await waitForRegistry();
 
 				expect( console ).toHaveErroredWith( ...consoleError );
 				expect( isGatheringData() ).toBe( true );
@@ -260,7 +262,7 @@ describe( 'modules/search-console report', () => {
 				);
 
 				// Wait for resolvers to run.
-				await waitForTimeouts( 30 );
+				await waitForRegistry();
 
 				expect( fetchMock ).toHaveFetched( searchAnalyticsRegexp );
 			} );
@@ -275,7 +277,7 @@ describe( 'modules/search-console report', () => {
 				expect( hasZeroData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForTimeouts( 30 );
+				await waitForRegistry();
 
 				expect( console ).toHaveErroredWith( ...consoleError );
 

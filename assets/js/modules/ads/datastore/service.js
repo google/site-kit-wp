@@ -22,13 +22,14 @@
 import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ADS } from './constants';
+import { MODULE_SLUG_ADS } from '../constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 const selectors = {
 	/**
 	 * Overrides the details link URL for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.150.0
 	 *
 	 * @return {string} Details link URL.
 	 */
@@ -42,7 +43,7 @@ const selectors = {
 			);
 		}
 
-		const module = select( CORE_MODULES ).getModule( 'ads' );
+		const module = select( CORE_MODULES ).getModule( MODULE_SLUG_ADS );
 
 		if ( module === undefined ) {
 			return undefined;

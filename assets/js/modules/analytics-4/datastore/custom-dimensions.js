@@ -25,16 +25,18 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	createRegistryControl,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../utils/validation';
 import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
@@ -53,7 +55,7 @@ const customDimensionFields = [
 const fetchCreateCustomDimensionStore = createFetchStore( {
 	baseName: 'createCustomDimension',
 	controlCallback: ( { propertyID, customDimension } ) =>
-		API.set( 'modules', 'analytics-4', 'create-custom-dimension', {
+		set( 'modules', MODULE_SLUG_ANALYTICS_4, 'create-custom-dimension', {
 			propertyID,
 			customDimension,
 		} ),
@@ -82,16 +84,11 @@ const fetchCreateCustomDimensionStore = createFetchStore( {
 const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 	baseName: 'syncAvailableCustomDimensions',
 	controlCallback: () =>
-		API.set( 'modules', 'analytics-4', 'sync-custom-dimensions' ),
-	reducerCallback: ( state, dimensions ) => {
-		return {
-			...state,
-			settings: {
-				...state.settings,
-				availableCustomDimensions: [ ...dimensions ],
-			},
-		};
-	},
+		set( 'modules', MODULE_SLUG_ANALYTICS_4, 'sync-custom-dimensions' ),
+	reducerCallback: createReducer( ( state, dimensions ) => {
+		state.settings = state.settings || {};
+		state.settings.availableCustomDimensions = dimensions;
+	} ),
 } );
 
 const baseInitialState = {
@@ -262,25 +259,23 @@ export const baseControls = {
 	),
 };
 
-export const baseReducer = ( state, { type, payload } ) => {
-	switch ( type ) {
+export const baseReducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
 		case SET_CUSTOM_DIMENSIONS_BEING_CREATED: {
-			return {
-				...state,
-				customDimensionsBeingCreated: payload.customDimensions,
-			};
+			state.customDimensionsBeingCreated =
+				action.payload.customDimensions;
+			break;
 		}
+
 		case SET_SYNC_TIMEOUT_ID: {
-			return {
-				...state,
-				syncTimeoutID: payload.syncTimeoutID,
-			};
+			state.syncTimeoutID = action.payload.syncTimeoutID;
+			break;
 		}
-		default: {
-			return state;
-		}
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getAvailableCustomDimensions() {
@@ -288,7 +283,9 @@ const baseResolvers = {
 		const { isAuthenticated, hasCapability } = select( CORE_USER );
 
 		const isGA4Connected = yield commonActions.await(
-			resolveSelect( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+			resolveSelect( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			)
 		);
 
 		if ( ! isGA4Connected ) {

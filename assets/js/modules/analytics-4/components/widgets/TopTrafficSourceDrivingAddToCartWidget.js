@@ -40,6 +40,7 @@ import {
 	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { numFmt } from '../../../../util';
 import { get } from 'lodash';
 import whenActive from '../../../../util/when-active';
@@ -67,6 +68,8 @@ function TopTrafficSourceDrivingAddToCartWidget( { Widget } ) {
 				name: 'addToCarts',
 			},
 		],
+		reportID:
+			'analytics-4_top-traffic-source-driving-add-to-cart-widget_widget_totalAddToCartReportOptions',
 	};
 
 	const trafficSourceReportOptions = {
@@ -79,6 +82,8 @@ function TopTrafficSourceDrivingAddToCartWidget( { Widget } ) {
 		],
 		limit: 1,
 		orderBy: 'addToCarts',
+		reportID:
+			'analytics-4_top-traffic-source-driving-add-to-cart-widget_widget_trafficSourceReportOptions',
 	};
 
 	const totalAddToCartReport = useInViewSelect(
@@ -212,6 +217,6 @@ TopTrafficSourceDrivingAddToCartWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( TopTrafficSourceDrivingAddToCartWidget );

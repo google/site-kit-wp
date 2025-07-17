@@ -9,6 +9,8 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 namespace Google\Site_Kit\Tests\Modules;
 
 use Closure;
@@ -30,6 +32,9 @@ use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
@@ -50,12 +55,12 @@ use Google\Site_Kit\Tests\UserAuthenticationTrait;
 use Google\Site_Kit_Dependencies\Google\Service\Exception;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaListAudiencesResponse;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaConversionEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaCustomDimension;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListConversionEventsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaKeyEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListCustomDimensionsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListKeyEventsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
@@ -124,6 +129,13 @@ class Analytics_4Test extends TestCase {
 	private $analytics;
 
 	/**
+	 * Audience settings instance.
+	 *
+	 * @var Audience_Settings
+	 */
+	private $audience_settings;
+
+	/**
 	 * Fake HTTP request handler calls.
 	 *
 	 * @var array
@@ -134,12 +146,14 @@ class Analytics_4Test extends TestCase {
 		parent::set_up();
 		$this->request_handler_calls = array();
 
-		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options        = new Options( $this->context );
-		$this->user           = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$this->user_options   = new User_Options( $this->context, $this->user->ID );
-		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );
-		$this->analytics      = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
+		$this->context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->options           = new Options( $this->context );
+		$this->user              = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$this->user_options      = new User_Options( $this->context, $this->user->ID );
+		$this->authentication    = new Authentication( $this->context, $this->options, $this->user_options );
+		$this->analytics         = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
+		$this->audience_settings = new Audience_Settings( $this->options );
+
 		wp_set_current_user( $this->user->ID );
 		remove_all_actions( 'wp_enqueue_scripts' );
 		( new GTag( $this->options ) )->register();
@@ -278,7 +292,8 @@ class Analytics_4Test extends TestCase {
 		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
 
 		// Should not reset audience when it is available.
-		$this->analytics->get_settings()->merge(
+		$audience_settings = new Audience_Settings( $this->options );
+		$audience_settings->set(
 			array(
 				'availableAudiences' => array(
 					array(
@@ -294,7 +309,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ) );
 
 		// Should reset audience when it is no longer available.
-		$this->analytics->get_settings()->merge(
+		$audience_settings->set(
 			array(
 				'availableAudiences' => array(
 					array(
@@ -528,32 +543,29 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'                            => $account_id,
-				'propertyID'                           => '',
-				'webDataStreamID'                      => '',
-				'measurementID'                        => '',
-				'ownerID'                              => 0,
-				'adsConversionID'                      => '',
-				'trackingDisabled'                     => array( 'loggedinUsers' ),
-				'useSnippet'                           => true,
-				'googleTagID'                          => '',
-				'googleTagAccountID'                   => '',
-				'googleTagContainerID'                 => '',
-				'googleTagContainerDestinationIDs'     => null,
-				'googleTagLastSyncedAtMs'              => 0,
-				'availableCustomDimensions'            => null,
-				'propertyCreateTime'                   => 0,
-				'adSenseLinked'                        => false,
-				'adSenseLinkedLastSyncedAt'            => 0,
-				'adsConversionIDMigratedAtMs'          => 0,
-				'adsLinked'                            => false,
-				'adsLinkedLastSyncedAt'                => 0,
-				'availableAudiences'                   => null,
-				'availableAudiencesLastSyncedAt'       => 0,
-				'audienceSegmentationSetupCompletedBy' => null,
-				'detectedEvents'                       => array(),
-				'lostConversionEventsLastUpdateAt'     => 0,
-				'newConversionEventsLastUpdateAt'      => 0,
+				'accountID'                        => $account_id,
+				'propertyID'                       => '',
+				'webDataStreamID'                  => '',
+				'measurementID'                    => '',
+				'ownerID'                          => 0,
+				'adsConversionID'                  => '',
+				'trackingDisabled'                 => array( 'loggedinUsers' ),
+				'useSnippet'                       => true,
+				'googleTagID'                      => '',
+				'googleTagAccountID'               => '',
+				'googleTagContainerID'             => '',
+				'googleTagContainerDestinationIDs' => null,
+				'googleTagLastSyncedAtMs'          => 0,
+				'availableCustomDimensions'        => null,
+				'propertyCreateTime'               => 0,
+				'adSenseLinked'                    => false,
+				'adSenseLinkedLastSyncedAt'        => 0,
+				'adsConversionIDMigratedAtMs'      => 0,
+				'adsLinked'                        => false,
+				'adsLinkedLastSyncedAt'            => 0,
+				'detectedEvents'                   => array(),
+				'lostConversionEventsLastUpdateAt' => 0,
+				'newConversionEventsLastUpdateAt'  => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -564,32 +576,29 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'                            => $account_id,
-				'propertyID'                           => $property_id,
-				'webDataStreamID'                      => $webdatastream_id,
-				'measurementID'                        => $measurement_id,
-				'ownerID'                              => 0,
-				'adsConversionID'                      => '',
-				'trackingDisabled'                     => array( 'loggedinUsers' ),
-				'useSnippet'                           => true,
-				'googleTagID'                          => 'GT-123',
-				'googleTagAccountID'                   => $google_tag_account_id,
-				'googleTagContainerID'                 => $google_tag_container_id,
-				'googleTagContainerDestinationIDs'     => null,
-				'googleTagLastSyncedAtMs'              => 0,
-				'availableCustomDimensions'            => null,
-				'propertyCreateTime'                   => 0,
-				'adSenseLinked'                        => false,
-				'adSenseLinkedLastSyncedAt'            => 0,
-				'adsConversionIDMigratedAtMs'          => 0,
-				'adsLinked'                            => false,
-				'adsLinkedLastSyncedAt'                => 0,
-				'availableAudiences'                   => null,
-				'availableAudiencesLastSyncedAt'       => 0,
-				'audienceSegmentationSetupCompletedBy' => false,
-				'detectedEvents'                       => array(),
-				'lostConversionEventsLastUpdateAt'     => 0,
-				'newConversionEventsLastUpdateAt'      => 0,
+				'accountID'                        => $account_id,
+				'propertyID'                       => $property_id,
+				'webDataStreamID'                  => $webdatastream_id,
+				'measurementID'                    => $measurement_id,
+				'ownerID'                          => 0,
+				'adsConversionID'                  => '',
+				'trackingDisabled'                 => array( 'loggedinUsers' ),
+				'useSnippet'                       => true,
+				'googleTagID'                      => 'GT-123',
+				'googleTagAccountID'               => $google_tag_account_id,
+				'googleTagContainerID'             => $google_tag_container_id,
+				'googleTagContainerDestinationIDs' => null,
+				'googleTagLastSyncedAtMs'          => 0,
+				'availableCustomDimensions'        => null,
+				'propertyCreateTime'               => 0,
+				'adSenseLinked'                    => false,
+				'adSenseLinkedLastSyncedAt'        => 0,
+				'adsConversionIDMigratedAtMs'      => 0,
+				'adsLinked'                        => false,
+				'adsLinkedLastSyncedAt'            => 0,
+				'detectedEvents'                   => array(),
+				'lostConversionEventsLastUpdateAt' => 0,
+				'newConversionEventsLastUpdateAt'  => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -699,32 +708,29 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'                            => $account_id,
-				'propertyID'                           => '',
-				'webDataStreamID'                      => '',
-				'measurementID'                        => '',
-				'ownerID'                              => 0,
-				'adsConversionID'                      => '',
-				'trackingDisabled'                     => array( 'loggedinUsers' ),
-				'useSnippet'                           => true,
-				'googleTagID'                          => '',
-				'googleTagAccountID'                   => '',
-				'googleTagContainerID'                 => '',
-				'googleTagContainerDestinationIDs'     => null,
-				'googleTagLastSyncedAtMs'              => 0,
-				'availableCustomDimensions'            => null,
-				'propertyCreateTime'                   => 0,
-				'adSenseLinked'                        => false,
-				'adSenseLinkedLastSyncedAt'            => 0,
-				'adsConversionIDMigratedAtMs'          => 0,
-				'adsLinked'                            => false,
-				'adsLinkedLastSyncedAt'                => 0,
-				'availableAudiences'                   => null,
-				'availableAudiencesLastSyncedAt'       => 0,
-				'audienceSegmentationSetupCompletedBy' => null,
-				'detectedEvents'                       => array(),
-				'lostConversionEventsLastUpdateAt'     => 0,
-				'newConversionEventsLastUpdateAt'      => 0,
+				'accountID'                        => $account_id,
+				'propertyID'                       => '',
+				'webDataStreamID'                  => '',
+				'measurementID'                    => '',
+				'ownerID'                          => 0,
+				'adsConversionID'                  => '',
+				'trackingDisabled'                 => array( 'loggedinUsers' ),
+				'useSnippet'                       => true,
+				'googleTagID'                      => '',
+				'googleTagAccountID'               => '',
+				'googleTagContainerID'             => '',
+				'googleTagContainerDestinationIDs' => null,
+				'googleTagLastSyncedAtMs'          => 0,
+				'availableCustomDimensions'        => null,
+				'propertyCreateTime'               => 0,
+				'adSenseLinked'                    => false,
+				'adSenseLinkedLastSyncedAt'        => 0,
+				'adsConversionIDMigratedAtMs'      => 0,
+				'adsLinked'                        => false,
+				'adsLinkedLastSyncedAt'            => 0,
+				'detectedEvents'                   => array(),
+				'lostConversionEventsLastUpdateAt' => 0,
+				'newConversionEventsLastUpdateAt'  => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -835,32 +841,29 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'                            => $account_id,
-				'propertyID'                           => '',
-				'webDataStreamID'                      => '',
-				'measurementID'                        => '',
-				'ownerID'                              => 0,
-				'adsConversionID'                      => '',
-				'trackingDisabled'                     => array( 'loggedinUsers' ),
-				'useSnippet'                           => true,
-				'googleTagID'                          => '',
-				'googleTagAccountID'                   => '',
-				'googleTagContainerID'                 => '',
-				'googleTagContainerDestinationIDs'     => null,
-				'googleTagLastSyncedAtMs'              => 0,
-				'availableCustomDimensions'            => null,
-				'propertyCreateTime'                   => 0,
-				'adSenseLinked'                        => false,
-				'adSenseLinkedLastSyncedAt'            => 0,
-				'adsConversionIDMigratedAtMs'          => 0,
-				'adsLinked'                            => false,
-				'adsLinkedLastSyncedAt'                => 0,
-				'availableAudiences'                   => null,
-				'availableAudiencesLastSyncedAt'       => 0,
-				'audienceSegmentationSetupCompletedBy' => null,
-				'detectedEvents'                       => array(),
-				'lostConversionEventsLastUpdateAt'     => 0,
-				'newConversionEventsLastUpdateAt'      => 0,
+				'accountID'                        => $account_id,
+				'propertyID'                       => '',
+				'webDataStreamID'                  => '',
+				'measurementID'                    => '',
+				'ownerID'                          => 0,
+				'adsConversionID'                  => '',
+				'trackingDisabled'                 => array( 'loggedinUsers' ),
+				'useSnippet'                       => true,
+				'googleTagID'                      => '',
+				'googleTagAccountID'               => '',
+				'googleTagContainerID'             => '',
+				'googleTagContainerDestinationIDs' => null,
+				'googleTagLastSyncedAtMs'          => 0,
+				'availableCustomDimensions'        => null,
+				'propertyCreateTime'               => 0,
+				'adSenseLinked'                    => false,
+				'adSenseLinkedLastSyncedAt'        => 0,
+				'adsConversionIDMigratedAtMs'      => 0,
+				'adsLinked'                        => false,
+				'adsLinkedLastSyncedAt'            => 0,
+				'detectedEvents'                   => array(),
+				'lostConversionEventsLastUpdateAt' => 0,
+				'newConversionEventsLastUpdateAt'  => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -874,32 +877,29 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'accountID'                            => $account_id,
-				'propertyID'                           => $property_id,
-				'webDataStreamID'                      => $webdatastream_id,
-				'measurementID'                        => $measurement_id,
-				'ownerID'                              => 0,
-				'adsConversionID'                      => '',
-				'trackingDisabled'                     => array( 'loggedinUsers' ),
-				'useSnippet'                           => true,
-				'googleTagID'                          => '',
-				'googleTagAccountID'                   => '',
-				'googleTagContainerID'                 => '',
-				'googleTagContainerDestinationIDs'     => null,
-				'googleTagLastSyncedAtMs'              => 0,
-				'availableCustomDimensions'            => null,
-				'propertyCreateTime'                   => Synchronize_Property::convert_time_to_unix_ms( '2022-09-09T09:18:05.968Z' ),
-				'adSenseLinked'                        => false,
-				'adSenseLinkedLastSyncedAt'            => 0,
-				'adsConversionIDMigratedAtMs'          => 0,
-				'adsLinked'                            => false,
-				'adsLinkedLastSyncedAt'                => 0,
-				'availableAudiences'                   => null,
-				'availableAudiencesLastSyncedAt'       => 0,
-				'audienceSegmentationSetupCompletedBy' => false,
-				'detectedEvents'                       => array(),
-				'lostConversionEventsLastUpdateAt'     => 0,
-				'newConversionEventsLastUpdateAt'      => 0,
+				'accountID'                        => $account_id,
+				'propertyID'                       => $property_id,
+				'webDataStreamID'                  => $webdatastream_id,
+				'measurementID'                    => $measurement_id,
+				'ownerID'                          => 0,
+				'adsConversionID'                  => '',
+				'trackingDisabled'                 => array( 'loggedinUsers' ),
+				'useSnippet'                       => true,
+				'googleTagID'                      => '',
+				'googleTagAccountID'               => '',
+				'googleTagContainerID'             => '',
+				'googleTagContainerDestinationIDs' => null,
+				'googleTagLastSyncedAtMs'          => 0,
+				'availableCustomDimensions'        => null,
+				'propertyCreateTime'               => Synchronize_Property::convert_time_to_unix_ms( '2022-09-09T09:18:05.968Z' ),
+				'adSenseLinked'                    => false,
+				'adSenseLinkedLastSyncedAt'        => 0,
+				'adsConversionIDMigratedAtMs'      => 0,
+				'adsLinked'                        => false,
+				'adsLinkedLastSyncedAt'            => 0,
+				'detectedEvents'                   => array(),
+				'lostConversionEventsLastUpdateAt' => 0,
+				'newConversionEventsLastUpdateAt'  => 0,
 			),
 			$options->get( Settings::OPTION )
 		);
@@ -1248,7 +1248,7 @@ class Analytics_4Test extends TestCase {
 				'container-lookup',
 				'container-destinations',
 				'google-tag-settings',
-				'conversion-events',
+				'key-events',
 				'create-property',
 				'create-webdatastream',
 				'pivot-report',
@@ -1274,8 +1274,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_datapoints__conversionReporting() {
-		$this->enable_feature( 'conversionReporting' );
-
 		$this->assertEqualSets(
 			array(
 				'account-summaries',
@@ -1285,7 +1283,7 @@ class Analytics_4Test extends TestCase {
 				'container-lookup',
 				'container-destinations',
 				'google-tag-settings',
-				'conversion-events',
+				'key-events',
 				'create-property',
 				'create-webdatastream',
 				'pivot-report',
@@ -1310,6 +1308,8 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 	public function test_get_debug_fields() {
+		$this->analytics->register();
+
 		$this->assertEqualSets(
 			array(
 				'analytics_4_account_id',
@@ -1328,6 +1328,8 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_debug_fields__AdSense_disabled() {
+		$this->analytics->register();
+
 		$this->assertEqualSets(
 			array(
 				'analytics_4_account_id',
@@ -1346,6 +1348,7 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_debug_fields__AdSense_enabled() {
+		$this->analytics->register();
 
 		$adsense_settings = new AdSense_Settings( $this->options );
 		$adsense_settings->merge(
@@ -2478,7 +2481,7 @@ class Analytics_4Test extends TestCase {
 	 *
 	 * @param string $access_token Access token, or empty string if none.
 	 */
-	public function test_get_conversion_events( $access_token ) {
+	public function test_get_key_events( $access_token ) {
 		$this->setup_user_authentication( $access_token );
 
 		$property_id = '123456789';
@@ -2496,9 +2499,9 @@ class Analytics_4Test extends TestCase {
 
 		$this->fake_handler_and_invoke_register_method( $property_id );
 
-		// Fetch conversion events.
+		// Fetch key events.
 		$data = $this->analytics->get_data(
-			'conversion-events',
+			'key-events',
 			array(
 				'propertyID' => $property_id,
 			)
@@ -2506,7 +2509,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertNotWPError( $data );
 
-		// Verify the conversion events are returned by checking an event name.
+		// Verify the key events are returned by checking an event name.
 		$this->assertEquals( 'some-event', $data[0]['eventName'] );
 
 		// Verify the request URL and params were correctly generated.
@@ -2515,7 +2518,7 @@ class Analytics_4Test extends TestCase {
 		$request_url = $this->request_handler_calls[0]['url'];
 
 		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
-		$this->assertEquals( "/v1beta/properties/$property_id/conversionEvents", $request_url['path'] );
+		$this->assertEquals( "/v1beta/properties/$property_id/keyEvents", $request_url['path'] );
 	}
 
 	public function test_get_enhanced_measurement_settings__required_params() {
@@ -3103,19 +3106,19 @@ class Analytics_4Test extends TestCase {
 						)
 					);
 
-				case "/v1beta/properties/$property_id/conversionEvents":
-					$conversion_event = new GoogleAnalyticsAdminV1betaConversionEvent();
-					$conversion_event->setName( "properties/$property_id/conversionEvents/some-name" );
-					$conversion_event->setEventName( 'some-event' );
+				case "/v1beta/properties/$property_id/keyEvents":
+					$key_event = new GoogleAnalyticsAdminV1betaKeyEvent();
+					$key_event->setName( "properties/$property_id/keyEvents/some-name" );
+					$key_event->setEventName( 'some-event' );
 
-					$conversion_events = new GoogleAnalyticsAdminV1betaListConversionEventsResponse();
-					$conversion_events->setConversionEvents( array( $conversion_event ) );
+					$key_events = new GoogleAnalyticsAdminV1betaListKeyEventsResponse();
+					$key_events->setKeyEvents( array( $key_event ) );
 
 					return new FulfilledPromise(
 						new Response(
 							200,
 							array(),
-							json_encode( $conversion_events )
+							json_encode( $key_events )
 						)
 					);
 
@@ -3383,12 +3386,11 @@ class Analytics_4Test extends TestCase {
 			: 0;
 		wp_set_current_user( $user );
 
-		$analytics = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$analytics->get_settings()->set( $settings );
+		$this->analytics->get_settings()->set( $settings );
 
 		remove_all_actions( 'template_redirect' );
 		remove_all_actions( 'googlesitekit_setup_gtag' );
-		$analytics->register();
+		$this->analytics->register();
 		do_action( 'template_redirect' );
 
 		$head_html = $this->capture_action( 'wp_head' );
@@ -3915,6 +3917,42 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( true, $inline_modules_data['analytics-4']['tagIDMismatch'] );
 	}
 
+	public function test_inline_conversion_reporting_events_detection_not_connected() {
+		$this->analytics->register();
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertArrayNotHasKey( 'analytics-4', $inline_modules_data );
+	}
+
+	public function test_inline_conversion_reporting_events_detection_connected() {
+		$this->analytics->register();
+
+		// Ensure the module is connected.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
+		);
+
+		$transients = new Transients( $this->context );
+
+		$transients->set( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT, array( 'detect_event_1', 'detect_event_2' ) );
+		$transients->set( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT, array( 'lost_event' ) );
+		$transients->set( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT, array( 'events' => array( 'new_badge_event_1', 'new_badge_event_2', 'new_badge_event_3' ) ) );
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals( array( 'detect_event_1', 'detect_event_2' ), $inline_modules_data['analytics-4']['newEvents'] );
+		$this->assertEquals( array( 'lost_event' ), $inline_modules_data['analytics-4']['lostEvents'] );
+		$this->assertEquals( array( 'new_badge_event_1', 'new_badge_event_2', 'new_badge_event_3' ), $inline_modules_data['analytics-4']['newBadgeEvents'] );
+	}
+
 	public function test_get_data__adsense_links() {
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
@@ -4355,13 +4393,13 @@ class Analytics_4Test extends TestCase {
 
 		// Verify that the module setting is not set yet.
 		$this->assertEquals(
-			$this->analytics->get_settings()->get()['availableAudiences'],
+			$this->audience_settings->get()['availableAudiences'],
 			null
 		);
 
 		// Verify that a sync timestamp has not been set yet.
 		$this->assertEquals(
-			$this->analytics->get_settings()->get()['availableAudiencesLastSyncedAt'],
+			$this->audience_settings->get()['availableAudiencesLastSyncedAt'],
 			0
 		);
 
@@ -4384,14 +4422,14 @@ class Analytics_4Test extends TestCase {
 		// Verify that the module setting is updated with correct values
 		// including various audience types and slugs.
 		$this->assertEquals(
-			$this->analytics->get_settings()->get()['availableAudiences'],
+			$this->audience_settings->get()['availableAudiences'],
 			$expected_available_audiences
 		);
 
 		// Verify that a sync timestamp has been set.
 		$this->assertGreaterThan(
 			0,
-			$this->analytics->get_settings()->get()['availableAudiencesLastSyncedAt']
+			$this->audience_settings->get()['availableAudiencesLastSyncedAt']
 		);
 	}
 
@@ -4533,6 +4571,70 @@ class Analytics_4Test extends TestCase {
 		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
 	}
 
+	public function test_register__googlesitekit_ads_measurement_connection_checks() {
+		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+
+		$this->analytics->register();
+
+		$this->assertEquals(
+			array(
+				array( $this->analytics, 'check_ads_measurement_connection' ),
+			),
+			apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() )
+		);
+	}
+
+	/**
+	 * @dataProvider data_ads_measurement_connection
+	 */
+	public function test_check_ads_measurement_connection( $settings, $expected ) {
+		$this->analytics->get_settings()->merge( $settings );
+
+		$this->assertEquals(
+			$expected,
+			$this->analytics->check_ads_measurement_connection()
+		);
+	}
+
+	public function data_ads_measurement_connection() {
+		yield 'not connected' => array(
+			array(),
+			false,
+		);
+		yield 'connected, no google tag IDs set' => array(
+			array(
+				'accountID'       => '123',
+				'propertyID'      => '55555',
+				'webDataStreamID' => '9999',
+				'measurementID'   => 'G-12345',
+			),
+			false,
+		);
+		yield 'connected, empty google tag IDs' => array(
+			array(
+				'accountID'                        => '123',
+				'propertyID'                       => '55555',
+				'webDataStreamID'                  => '9999',
+				'measurementID'                    => 'G-12345',
+				'googleTagContainerDestinationIDs' => array(),
+			),
+			false,
+		);
+		yield 'connected, google tag IDs with Ads' => array(
+			array(
+				'accountID'                        => '123',
+				'propertyID'                       => '55555',
+				'webDataStreamID'                  => '9999',
+				'measurementID'                    => 'G-12345',
+				'googleTagContainerDestinationIDs' => array(
+					'GT-12345',
+					'AW-99999',
+				),
+			),
+			true,
+		);
+	}
+
 	/**
 	 * @dataProvider block_on_consent_provider_non_amp
 	 * @param array $test_parameters {
@@ -4663,29 +4765,31 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Set module level audience settings.
-		$this->analytics->get_settings()->merge(
+		$this->audience_settings->merge(
 			$activated_audience_segmentation_settings
 		);
-		$analytics_settings = $this->analytics->get_settings()->get();
+
+		$audience_settings = $this->audience_settings->get();
 		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
-			$this->assertEquals( $activated_audience_segmentation_settings[ $key ], $analytics_settings[ $key ] );
+			$this->assertEquals( $activated_audience_segmentation_settings[ $key ], $audience_settings[ $key ], "{$key} is not equal before property change" );
 		}
 
-		// Update the propertyID to trigger reset.
 		$this->analytics->get_settings()->merge(
 			array(
 				'propertyID' => 'UA-222222',
 			)
 		);
 
-		// Confirm the module level audience settings have been reset.
-		$analytics_settings = $this->analytics->get_settings()->get();
+		$audience_settings = $this->audience_settings->get();
+
 		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
-			$this->assertEquals( $default_audience_segmentation_settings[ $key ], $analytics_settings[ $key ] );
+			$this->assertEquals( $default_audience_segmentation_settings[ $key ], $audience_settings[ $key ], "{$key} is not equal after property change" );
 		}
 	}
 
 	public function test_module_level_audience_settings_reset__on_deactivation() {
+		$this->analytics->register();
+
 		$default_audience_segmentation_settings = array(
 			'availableAudiences'                   => null,
 			'availableAudiencesLastSyncedAt'       => 0,
@@ -4706,10 +4810,10 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Set module level audience settings.
-		$this->analytics->get_settings()->merge(
+		$this->audience_settings->merge(
 			$activated_audience_segmentation_settings
 		);
-		$analytics_settings = $this->analytics->get_settings()->get();
+		$analytics_settings = $this->audience_settings->get();
 		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
 			$this->assertEquals( $activated_audience_segmentation_settings[ $key ], $analytics_settings[ $key ] );
 		}
@@ -4718,9 +4822,10 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->on_deactivation();
 
 		// Confirm the module level audience settings have been reset.
-		$analytics_settings = $this->analytics->get_settings()->get();
+		$audience_settings = $this->audience_settings->get();
+
 		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
-			$this->assertEquals( $default_audience_segmentation_settings[ $key ], $analytics_settings[ $key ] );
+			$this->assertEquals( $default_audience_segmentation_settings[ $key ], $audience_settings[ $key ] );
 		}
 	}
 
@@ -4762,15 +4867,21 @@ class Analytics_4Test extends TestCase {
 		$test_resource_data_availability_transient_custom_dimension = 'googlesitekit_' . Resource_Data_Availability_Date::RESOURCE_TYPE_CUSTOM_DIMENSION . "_{$test_resource_slug_custom_dimension}_data_availability_date";
 		$test_resource_data_availability_transient_property         = 'googlesitekit_' . Resource_Data_Availability_Date::RESOURCE_TYPE_PROPERTY . "_{$test_resource_slug_property}_data_availability_date";
 
-		$this->analytics->get_settings()->merge(
+		$audience_settings = new Audience_Settings( $this->options );
+		$audience_settings->set(
 			array(
-				'propertyID'         => $test_resource_slug_property,
-				'measurementID'      => 'A1B2C3D4E5',
 				'availableAudiences' => array(
 					array(
 						'name' => $test_resource_slug_audience,
 					),
 				),
+			)
+		);
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID'    => $test_resource_slug_property,
+				'measurementID' => 'A1B2C3D4E5',
 			)
 		);
 

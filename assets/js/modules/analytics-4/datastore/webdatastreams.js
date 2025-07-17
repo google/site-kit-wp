@@ -25,14 +25,16 @@ import { pick, difference } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {
@@ -43,9 +45,9 @@ import {
 const fetchGetWebDataStreamsStore = createFetchStore( {
 	baseName: 'getWebDataStreams',
 	controlCallback( { propertyID } ) {
-		return API.get(
+		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'webdatastreams',
 			{ propertyID },
 			{
@@ -78,9 +80,9 @@ const fetchGetWebDataStreamsStore = createFetchStore( {
 const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 	baseName: 'getWebDataStreamsBatch',
 	controlCallback( { propertyIDs } ) {
-		return API.get(
+		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'webdatastreams-batch',
 			{ propertyIDs },
 			{
@@ -117,23 +119,24 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 const fetchCreateWebDataStreamStore = createFetchStore( {
 	baseName: 'createWebDataStream',
 	controlCallback( { propertyID, displayName } ) {
-		return API.set( 'modules', 'analytics-4', 'create-webdatastream', {
-			propertyID,
-			displayName,
-		} );
+		return set(
+			'modules',
+			MODULE_SLUG_ANALYTICS_4,
+			'create-webdatastream',
+			{
+				propertyID,
+				displayName,
+			}
+		);
 	},
-	reducerCallback( state, webDataStream, { propertyID } ) {
-		return {
-			...state,
-			webdatastreams: {
-				...state.webdatastreams,
-				[ propertyID ]: [
-					...( state.webdatastreams[ propertyID ] || [] ),
-					webDataStream,
-				],
-			},
-		};
-	},
+	reducerCallback: createReducer(
+		( state, webDataStream, { propertyID } ) => {
+			if ( ! state.webdatastreams[ propertyID ] ) {
+				state.webdatastreams[ propertyID ] = [];
+			}
+			state.webdatastreams[ propertyID ].push( webDataStream );
+		}
+	),
 	argsToParams( propertyID, displayName ) {
 		return { propertyID, displayName };
 	},
@@ -199,13 +202,12 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = ( state, { type } ) => {
-	switch ( type ) {
-		default: {
-			return state;
-		}
+const baseReducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
+		default:
+			break;
 	}
-};
+} );
 
 function* resolveGetWebDataStreams( propertyID ) {
 	const { resolveSelect } = yield commonActions.getRegistry();
@@ -505,7 +507,7 @@ const baseSelectors = {
 				for ( const datastream of datastreams[ propertyID ] ) {
 					const { _id: webDataStreamID, webStreamData } = datastream;
 					const {
-						defaultUri: defaultURI,
+						defaultUri: defaultURI, // eslint-disable-line sitekit/acronym-case
 						measurementId: measurementID, // eslint-disable-line sitekit/acronym-case
 					} = webStreamData;
 

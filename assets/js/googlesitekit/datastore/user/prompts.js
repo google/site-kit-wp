@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
@@ -47,14 +47,14 @@ function reducerCallback( state, dismissedPrompts ) {
 const fetchGetDismissedPromptsStore = createFetchStore( {
 	baseName: 'getDismissedPrompts',
 	controlCallback: () =>
-		API.get( 'core', 'user', 'dismissed-prompts', {}, { useCache: false } ),
+		get( 'core', 'user', 'dismissed-prompts', {}, { useCache: false } ),
 	reducerCallback,
 } );
 
 const fetchDismissPromptStore = createFetchStore( {
 	baseName: 'dismissPrompt',
 	controlCallback: ( { slug, expiresInSeconds } ) =>
-		API.set( 'core', 'user', 'dismiss-prompt', {
+		set( 'core', 'user', 'dismiss-prompt', {
 			slug,
 			expiration: expiresInSeconds,
 		} ),
@@ -101,7 +101,7 @@ const baseActions = {
 
 			const registry = yield commonActions.getRegistry();
 
-			registry.dispatch( CORE_USER ).setIsPromptDimissing( slug, true );
+			registry.dispatch( CORE_USER ).setIsPromptDismissing( slug, true );
 
 			const { response, error } =
 				yield fetchDismissPromptStore.actions.fetchDismissPrompt(
@@ -109,12 +109,12 @@ const baseActions = {
 					expiresInSeconds
 				);
 
-			registry.dispatch( CORE_USER ).setIsPromptDimissing( slug, false );
+			registry.dispatch( CORE_USER ).setIsPromptDismissing( slug, false );
 
 			return { response, error };
 		}
 	),
-	setIsPromptDimissing( slug, isDismissing ) {
+	setIsPromptDismissing( slug, isDismissing ) {
 		return {
 			payload: { slug, isDismissing },
 			type: 'SET_IS_PROMPT_DISMISSING',

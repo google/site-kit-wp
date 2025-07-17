@@ -33,10 +33,11 @@ import {
 import { properties } from '../../../datastore/__fixtures__';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import { DAY_IN_SECONDS } from '../../../../../util';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import ModulePopularPagesWidgetGA4 from '.';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../tests/js/utils/zeroReports';
 
 const reportOptions = [
 	{
@@ -67,6 +68,7 @@ const reportOptions = [
 			},
 		],
 		limit: 10,
+		reportID: 'analytics-4_module-popular-pages-widget-ga4_widget_args',
 	},
 	{
 		// Page titles report.
@@ -82,6 +84,7 @@ const reportOptions = [
 		metrics: [ { name: 'screenPageViews' } ],
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 50,
+		reportID: 'analytics-4_get-page-titles_store:selector_options',
 	},
 	{
 		// Gathering/zero data report.
@@ -129,10 +132,7 @@ Loaded.args = {
 		}
 	},
 };
-Loaded.scenario = {
-	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/Loaded',
-	delay: 250,
-};
+Loaded.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -153,9 +153,7 @@ Loading.decorators = [
 		);
 	},
 ];
-Loading.scenario = {
-	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/Loading',
-};
+Loading.scenario = {};
 
 export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';
@@ -199,9 +197,7 @@ DataUnavailable.args = {
 		}
 	},
 };
-DataUnavailable.scenario = {
-	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/DataUnavailable',
-};
+DataUnavailable.scenario = {};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
@@ -226,10 +222,7 @@ ZeroData.args = {
 		}
 	},
 };
-ZeroData.scenario = {
-	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/ZeroData',
-	delay: 250,
-};
+ZeroData.scenario = {};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
@@ -255,9 +248,7 @@ Error.args = {
 		}
 	},
 };
-Error.scenario = {
-	label: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4/Error',
-};
+Error.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4',
@@ -266,7 +257,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

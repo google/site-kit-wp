@@ -44,6 +44,7 @@ exports.projectPath = projectPath;
 
 exports.resolve = {
 	alias: {
+		'@': path.resolve( rootDir, 'assets' ),
 		'@wordpress/api-fetch__non-shim': require.resolve(
 			'@wordpress/api-fetch'
 		),
@@ -109,24 +110,6 @@ exports.manifestArgs = ( mode ) => ( {
 					file.path,
 					file.chunk.contentHash.javascript
 				);
-			} else if (
-				file.chunk.name?.startsWith( 'googlesitekit-components-' )
-			) {
-				// Exception for 'googlesitekit-components' because it's a dynamic asset
-				// with multiple possible file names.
-				seedObj[ 'googlesitekit-components' ] =
-					seedObj[ 'googlesitekit-components' ] || [];
-
-				// Filter out any existing duplicate entries, when rebuilding during hot reload.
-				seedObj[ 'googlesitekit-components' ] = seedObj[
-					'googlesitekit-components'
-				].filter(
-					( existingEntry ) => existingEntry[ 0 ] !== file.path
-				);
-
-				seedObj[ 'googlesitekit-components' ].push(
-					entry( file.path, file.chunk.contentHash.javascript )
-				);
 			} else if ( file.isInitial ) {
 				// Normal entries.
 				seedObj[ file.chunk.name ] = entry(
@@ -187,13 +170,21 @@ exports.noAMDParserRule = noAMDParserRule;
 
 const svgRule = {
 	test: /\.svg$/,
-	use: [
+	oneOf: [
 		{
-			loader: '@svgr/webpack',
-			options: {
-				// strip width & height to allow manual override using props
-				dimensions: false,
-			},
+			resourceQuery: /url/,
+			use: 'url-loader',
+		},
+		{
+			use: [
+				{
+					loader: '@svgr/webpack',
+					options: {
+						// strip width & height to allow manual override using props
+						dimensions: false,
+					},
+				},
+			],
 		},
 	],
 };
@@ -206,22 +197,6 @@ exports.createRules = ( mode ) => [
 	{
 		test: /\.js$/,
 		exclude: /node_modules/,
-		use: [
-			{
-				loader: 'babel-loader',
-				options: {
-					sourceMap: mode !== 'production',
-					babelrc: false,
-					configFile: false,
-					cacheDirectory: true,
-					presets: [ '@wordpress/default', '@babel/preset-react' ],
-				},
-			},
-		],
-		...noAMDParserRule,
-	},
-	{
-		test: RegExp( 'node_modules/@material/web/.*.js' ),
 		use: [
 			{
 				loader: 'babel-loader',

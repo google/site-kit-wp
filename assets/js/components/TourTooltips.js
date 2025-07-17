@@ -99,8 +99,8 @@ export default function TourTooltips( {
 
 	const viewContext = useViewContext();
 
-	const stepIndex = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( stepKey )
+	const stepIndex = useSelect(
+		( select ) => select( CORE_UI ).getValue( stepKey ) || 0
 	);
 	const run = useSelect( ( select ) => {
 		return (
@@ -242,17 +242,17 @@ export default function TourTooltips( {
 	return (
 		<Joyride
 			callback={ handleJoyrideCallback }
-			continuous
-			disableOverlayClose
-			disableScrolling
 			floaterProps={ floaterProps }
 			locale={ joyrideLocale }
 			run={ run }
-			showProgress
 			stepIndex={ stepIndex }
 			steps={ parsedSteps }
 			styles={ joyrideStyles }
 			tooltipComponent={ TourTooltip }
+			continuous
+			disableOverlayClose
+			disableScrolling
+			showProgress
 		/>
 	);
 }

@@ -23,7 +23,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,9 +35,9 @@ import CTALink from './CTALink';
 export default function ActionsCTALinkDismiss( {
 	id,
 	className = 'googlesitekit-publisher-win__actions',
-	ctaLink,
-	ctaLabel,
 	ctaDisabled = false,
+	ctaLabel,
+	ctaURL,
 	onCTAClick,
 	ctaDismissOptions,
 	isSaving = false,
@@ -50,39 +49,37 @@ export default function ActionsCTALinkDismiss( {
 	gaTrackingEventArgs = {},
 } ) {
 	const isNavigatingToCTALink = useSelect( ( select ) => {
-		return ctaLink
-			? select( CORE_LOCATION ).isNavigatingTo( ctaLink )
+		return ctaURL
+			? select( CORE_LOCATION ).isNavigatingTo( ctaURL )
 			: false;
 	} );
 
 	return (
-		<Fragment>
-			<div className={ className }>
-				<CTALink
-					id={ id }
-					ctaLink={ ctaLink }
-					ctaLabel={ ctaLabel }
-					onCTAClick={ onCTAClick }
-					dismissOnCTAClick={ dismissOnCTAClick }
-					dismissExpires={ dismissExpires }
-					dismissOptions={ ctaDismissOptions }
-					gaTrackingEventArgs={ gaTrackingEventArgs }
-					isSaving={ isSaving }
-					isDisabled={ ctaDisabled }
-				/>
+		<div className={ className }>
+			<CTALink
+				id={ id }
+				ctaLink={ ctaURL }
+				ctaLabel={ ctaLabel }
+				onCTAClick={ onCTAClick }
+				dismissOnCTAClick={ dismissOnCTAClick }
+				dismissExpires={ dismissExpires }
+				dismissOptions={ ctaDismissOptions }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
+				isSaving={ isSaving }
+				isDisabled={ ctaDisabled }
+			/>
 
-				<Dismiss
-					id={ id }
-					primary={ false }
-					dismissLabel={ dismissLabel }
-					dismissExpires={ dismissExpires }
-					disabled={ isNavigatingToCTALink }
-					onDismiss={ onDismiss }
-					dismissOptions={ dismissOptions }
-					gaTrackingEventArgs={ gaTrackingEventArgs }
-				/>
-			</div>
-		</Fragment>
+			<Dismiss
+				id={ id }
+				primary={ false }
+				dismissLabel={ dismissLabel }
+				dismissExpires={ dismissExpires }
+				disabled={ isNavigatingToCTALink }
+				onDismiss={ onDismiss }
+				dismissOptions={ dismissOptions }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
+			/>
+		</div>
 	);
 }
 
@@ -90,8 +87,8 @@ ActionsCTALinkDismiss.propTypes = {
 	id: PropTypes.string,
 	className: PropTypes.string,
 	ctaDisabled: PropTypes.bool,
-	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,
+	ctaURL: PropTypes.string,
 	onCTAClick: PropTypes.func,
 	isSaving: PropTypes.bool,
 	onDismiss: PropTypes.func,

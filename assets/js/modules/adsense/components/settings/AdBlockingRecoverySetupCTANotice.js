@@ -29,10 +29,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import Badge from '../../../../components/Badge';
-import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 import SupportLink from '../../../../components/SupportLink';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -42,6 +40,7 @@ import { DAY_IN_SECONDS, trackEvent } from '../../../../util';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 import SurveyViewTrigger from '../../../../components/surveys/SurveyViewTrigger';
+import Notice from '../../../../components/Notice';
 
 export default function AdBlockingRecoverySetupCTANotice() {
 	const inView = useInView();
@@ -61,6 +60,9 @@ export default function AdBlockingRecoverySetupCTANotice() {
 	);
 	const recoveryPageURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-ad-blocking-recovery' )
+	);
+	const isNavigatingToRecoveryPageURL = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigatingTo( recoveryPageURL )
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -101,8 +103,9 @@ export default function AdBlockingRecoverySetupCTANotice() {
 	}
 
 	return (
-		<SettingsNotice
-			notice={
+		<Notice
+			type={ Notice.TYPES.INFO }
+			title={
 				<Fragment>
 					{ __( 'Ad blocking recovery', 'google-site-kit' ) }
 					<Badge
@@ -111,14 +114,7 @@ export default function AdBlockingRecoverySetupCTANotice() {
 					/>
 				</Fragment>
 			}
-			className="googlesitekit-settings-notice-ad-blocking-recovery-cta"
-			OuterCTA={ () => (
-				<Button onClick={ handleCTAClick }>
-					{ __( 'Set up now', 'google-site-kit' ) }
-				</Button>
-			) }
-		>
-			{ createInterpolateElement(
+			description={ createInterpolateElement(
 				__(
 					'Start recovering revenue lost from ad blockers by deploying an ad blocking recovery message through Site Kit. <a>Learn more</a>',
 					'google-site-kit'
@@ -127,16 +123,23 @@ export default function AdBlockingRecoverySetupCTANotice() {
 					a: (
 						<SupportLink
 							path="/adsense/answer/11576589"
-							external
 							onClick={ handleLearnMoreClick }
+							external
 						/>
 					),
 				}
 			) }
+			ctaButton={ {
+				label: __( 'Set up now', 'google-site-kit' ),
+				onClick: handleCTAClick,
+				isSaving: isNavigatingToRecoveryPageURL,
+				disabled: isNavigatingToRecoveryPageURL,
+			} }
+		>
 			<SurveyViewTrigger
 				triggerID="view_abr_setup_cta"
 				ttl={ DAY_IN_SECONDS }
 			/>
-		</SettingsNotice>
+		</Notice>
 	);
 }

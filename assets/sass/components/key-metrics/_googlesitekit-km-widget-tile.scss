@@ -257,7 +257,6 @@
 				button:not(.googlesitekit-cta-link),
 				a.mdc-button {
 					align-self: flex-end;
-					font-weight: $fw-medium;
 					min-height: 32px;
 					padding: 6px 16px;
 
@@ -355,6 +354,10 @@
 			grid-template-columns: auto;
 			grid-template-rows: auto;
 
+			.googlesitekit-widget-context {
+				padding: 0;
+			}
+
 			.mdc-layout-grid__inner {
 
 				@media (min-width: $bp-tablet) {
@@ -379,6 +382,17 @@
 		// Reduce the size of the module disconnected Maybe Later CTA.
 		.mdc-layout-grid__inner.googlesitekit-widget-key-metrics-footer {
 			display: inline-block;
+		}
+
+		.googlesitekit-widget-key-metrics-footer {
+
+			& > .googlesitekit-cta-link {
+				margin: 5px 0 0;
+
+				@media (min-width: $bp-tablet) {
+					margin: 0 0 0 5px;
+				}
+			}
 		}
 	}
 }

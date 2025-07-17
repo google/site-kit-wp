@@ -40,7 +40,7 @@ const actions = {
 	/**
 	 * Stores woocommerce modal dismissal in the datastore.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.150.0
 	 * @private
 	 *
 	 * @param {Object} cacheHit Boolean property extracted fro mthe cache item.
@@ -73,7 +73,7 @@ const selectors = {
 	/**
 	 * Gets the WooCommerce modal dismissal status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.150.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean)} WooCommerce modal dismissed status.

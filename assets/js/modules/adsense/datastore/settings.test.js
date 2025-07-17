@@ -19,8 +19,9 @@
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import { MODULES_ADSENSE } from './constants';
+import { MODULE_SLUG_ADSENSE } from '../constants';
 import { ACCOUNT_STATUS_APPROVED, SITE_STATUS_ADDED } from '../util/status';
 import {
 	createTestRegistry,
@@ -50,7 +51,7 @@ describe( 'modules/adsense settings', () => {
 	};
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -58,7 +59,7 @@ describe( 'modules/adsense settings', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {
@@ -130,7 +131,7 @@ describe( 'modules/adsense settings', () => {
 
 				const cacheKey = createCacheKey(
 					'modules',
-					'adsense',
+					MODULE_SLUG_ADSENSE,
 					'arbitrary-datapoint'
 				);
 				expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );

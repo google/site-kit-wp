@@ -93,19 +93,23 @@ export default function UserMenu() {
 		menuButtonRef.current?.focus();
 	} );
 
+	const handleClose = () => {
+		toggleDialog( false );
+		setMenuOpen( false );
+	};
+
 	useEffect( () => {
-		const handleDialogClose = ( e ) => {
+		const handleEscapeKeyPress = ( e ) => {
 			// Close if Escape key is pressed.
 			if ( ESCAPE === e.keyCode ) {
-				toggleDialog( false );
-				setMenuOpen( false );
+				handleClose();
 			}
 		};
 
-		global.addEventListener( 'keyup', handleDialogClose );
+		global.addEventListener( 'keyup', handleEscapeKeyPress );
 
 		return () => {
-			global.removeEventListener( 'keyup', handleDialogClose );
+			global.removeEventListener( 'keyup', handleEscapeKeyPress );
 		};
 	}, [] );
 
@@ -211,7 +215,6 @@ export default function UserMenu() {
 					disabled={ isAutoCreatingCustomDimensionsForAudience }
 					ref={ menuButtonRef }
 					className="googlesitekit-header__dropdown mdc-button--dropdown googlesitekit-border-radius-round--tablet googlesitekit-border-radius-round--phone googlesitekit-border-radius-round googlesitekit-button-icon"
-					text
 					onClick={ handleMenu }
 					icon={
 						!! userPicture && (
@@ -238,7 +241,6 @@ export default function UserMenu() {
 							? undefined
 							: __( 'Account', 'google-site-kit' )
 					}
-					tooltip
 					tooltipEnterDelayInMS={ 500 }
 					customizedTooltip={
 						isAutoCreatingCustomDimensionsForAudience ? null : (
@@ -257,6 +259,8 @@ export default function UserMenu() {
 							</span>
 						)
 					}
+					text
+					tooltip
 				/>
 
 				<Menu
@@ -299,7 +303,8 @@ export default function UserMenu() {
 				<ModalDialog
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
-					handleDialog={ handleDialog }
+					handleCancel={ handleClose }
+					onClose={ handleClose }
 					title={ __( 'Disconnect', 'google-site-kit' ) }
 					subtitle={ __(
 						'Disconnecting Site Kit by Google will remove your access to all services. After disconnecting, you will need to re-authorize to restore service.',

@@ -30,11 +30,10 @@ import { useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import SubtleNotification from '../../../../../googlesitekit/notifications/components/layout/SubtleNotification';
+import NoticeNotification from '../../../../../googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '../../../../../components/Notice/constants';
 import { getNavigationalScrollTop } from '../../../../../util/scroll';
 import { useBreakpoint } from '../../../../../hooks/useBreakpoint';
-import Dismiss from '../../../../../googlesitekit/notifications/components/common/Dismiss';
-import CTALinkSubtle from '../../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -82,7 +81,9 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification( {
 
 	return (
 		<Notification>
-			<SubtleNotification
+			<NoticeNotification
+				notificationID={ id }
+				type={ TYPES.SUCCESS }
 				title={ __(
 					'Success! Visitor groups added to your dashboard',
 					'google-site-kit'
@@ -91,20 +92,11 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification( {
 					'Get to know how different types of visitors interact with your site, e.g. which pages they visit and for how long',
 					'google-site-kit'
 				) }
-				dismissCTA={
-					<Dismiss
-						id={ id }
-						primary={ false }
-						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					/>
-				}
-				additionalCTA={
-					<CTALinkSubtle
-						id={ id }
-						ctaLabel={ __( 'Show me', 'google-site-kit' ) }
-						onCTAClick={ scrollToWidgetArea }
-					/>
-				}
+				ctaButton={ {
+					label: __( 'Show me', 'google-site-kit' ),
+					onClick: scrollToWidgetArea,
+				} }
+				dismissButton
 			/>
 		</Notification>
 	);

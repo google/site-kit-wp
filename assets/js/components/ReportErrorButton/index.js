@@ -39,8 +39,7 @@ function ReportErrorButton( { message, componentStack } ) {
 
 	const onErrorClick = () => {
 		// Copy message with wrapping backticks for code block formatting on wp.org.
-		copyToClipboard( `\`${ message }\n${ componentStack }\`` );
-
+		copyToClipboard( `\`\`\`\n${ message }\n${ componentStack }\n\`\`\`` );
 		setCopied( true );
 	};
 

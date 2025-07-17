@@ -31,11 +31,13 @@ import {
 	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
 } from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 
@@ -50,6 +52,8 @@ const reportOptions = [
 				name: 'addToCarts',
 			},
 		],
+		reportID:
+			'analytics-4_top-traffic-source-driving-add-to-cart-widget_widget_totalAddToCartReportOptions',
 	},
 	{
 		compareStartDate: '2020-07-14',
@@ -64,6 +68,8 @@ const reportOptions = [
 		],
 		limit: 1,
 		orderBy: 'addToCarts',
+		reportID:
+			'analytics-4_top-traffic-source-driving-add-to-cart-widget_widget_trafficSourceReportOptions',
 	},
 ];
 
@@ -88,9 +94,7 @@ Ready.args = {
 		);
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/TopTrafficSourceDrivingAddToCartWidget/Ready',
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -172,6 +176,23 @@ InsufficientPermissions.args = {
 	},
 };
 
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideAnalyticsReportWithoutDateRangeData(
+			registry,
+			reportOptions[ 0 ]
+		);
+		provideAnalyticsReportWithoutDateRangeData(
+			registry,
+			reportOptions[ 1 ],
+			{ emptyRowBehavior: 'remove' }
+		);
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
+
 export default {
 	title: 'Key Metrics/TopTrafficSourceDrivingAddToCart',
 	decorators: [
@@ -179,7 +200,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

@@ -35,6 +35,7 @@ import {
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '../../../../googlesitekit/datastore/user/constants';
 import { DATE_RANGE_OFFSET, MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
@@ -47,6 +48,7 @@ import ConnectGA4CTATileWidget from '../../../analytics-4/components/widgets/Con
 import useViewOnly from '../../../../hooks/useViewOnly';
 import { AdSenseLinkCTA } from '../common';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
 function TopEarningContentWidget( { Widget } ) {
@@ -76,6 +78,7 @@ function TopEarningContentWidget( { Widget } ) {
 			},
 		],
 		limit: 3,
+		reportID: 'adsense_top-earning-content-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(
@@ -204,11 +207,11 @@ TopEarningContentWidget.propTypes = {
 
 export default compose(
 	whenActive( {
-		moduleName: 'analytics-4',
+		moduleName: MODULE_SLUG_ANALYTICS_4,
 		FallbackComponent: ConnectGA4CTATileWidget,
 	} ),
 	whenActive( {
-		moduleName: 'adsense',
+		moduleName: MODULE_SLUG_ADSENSE,
 		FallbackComponent: ConnectAdSenseCTATileWidget,
 	} )
 )( TopEarningContentWidget );

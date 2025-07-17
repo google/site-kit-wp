@@ -22,6 +22,7 @@
 import { useSelect } from 'googlesitekit-data';
 import AudienceTileError from '.';
 import { MODULES_ANALYTICS_4 } from '../../../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	WithTestRegistry,
 	createTestRegistry,
@@ -76,9 +77,7 @@ Default.args = {
 		);
 	},
 };
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTileError/Default',
-};
+Default.scenario = {};
 
 export const InsufficientPermissions = Template.bind( {} );
 InsufficientPermissions.storyName = 'InsufficientPermissions';
@@ -88,7 +87,7 @@ InsufficientPermissions.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 
@@ -123,9 +122,7 @@ InsufficientPermissions.args = {
 		);
 	},
 };
-InsufficientPermissions.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTileError/InsufficientPermissions',
-};
+InsufficientPermissions.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTileError',

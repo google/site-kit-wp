@@ -43,7 +43,7 @@ export default function CTALink( {
 	isSaving,
 	dismissOnCTAClick = false,
 	dismissExpires = 0,
-	dismissOptions = { skipHidingFromQueue: true },
+	dismissOptions = {},
 	gaTrackingEventArgs,
 	isDisabled = false,
 } ) {

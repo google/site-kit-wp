@@ -28,6 +28,7 @@ import SettingsEdit from './SettingsEdit';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from '../../datastore/constants';
+import { MODULE_SLUG_ADS } from '../../constants';
 import {
 	provideModules,
 	WithTestRegistry,
@@ -56,10 +57,7 @@ function Template( args ) {
 
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Ads/Settings/SettingsEdit/Default',
-	delay: 250,
-};
+Default.scenario = {};
 Default.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -83,7 +81,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'ads',
+						slug: MODULE_SLUG_ADS,
 						active: true,
 						connected: true,
 					},
@@ -101,10 +99,7 @@ export default {
 
 export const PaxConnected = Template.bind( null );
 PaxConnected.storyName = 'With PAX onboarding';
-PaxConnected.scenario = {
-	label: 'Modules/Ads/Settings/SettingsEdit/PAX',
-	delay: 250,
-};
+PaxConnected.scenario = {};
 PaxConnected.parameters = {
 	features: [ 'adsPax' ],
 };
@@ -130,10 +125,7 @@ PaxConnected.decorators = [
 
 export const IceEnabled = Template.bind( null );
 IceEnabled.storyName = 'With ICE Enabled';
-IceEnabled.scenario = {
-	label: 'Modules/Ads/Settings/SettingsEdit/ICE',
-	delay: 250,
-};
+IceEnabled.scenario = {};
 IceEnabled.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -157,10 +149,7 @@ IceEnabled.decorators = [
 
 export const IcePaxEnabled = Template.bind( null );
 IcePaxEnabled.storyName = 'With ICE & PAX Enabled';
-IcePaxEnabled.scenario = {
-	label: 'Modules/Ads/Settings/SettingsEdit/ICE_PAX',
-	delay: 250,
-};
+IcePaxEnabled.scenario = {};
 IcePaxEnabled.parameters = {
 	features: [ 'adsPax' ],
 };
@@ -182,34 +171,34 @@ IcePaxEnabled.decorators = [
 	},
 ];
 
-export const FirstPartyModeEnabled = Template.bind( null );
-FirstPartyModeEnabled.storyName = 'FirstPartyModeEnabled';
-FirstPartyModeEnabled.decorators = [
+export const GTGEnabled = Template.bind( null );
+GTGEnabled.storyName = 'With Google tag gateway enabled';
+GTGEnabled.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			const fpmServerRequirementsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+			const gtgServerRequirementsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
 
-			const fpmSettings = {
+			const gtgSettings = {
 				isEnabled: true,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			};
 
-			fetchMock.getOnce( fpmServerRequirementsEndpoint, {
-				body: fpmSettings,
+			fetchMock.getOnce( gtgServerRequirementsEndpoint, {
+				body: gtgSettings,
 			} );
 
 			registry
 				.dispatch( CORE_SITE )
-				.receiveGetFirstPartyModeSettings( fpmSettings );
+				.receiveGetGoogleTagGatewaySettings( gtgSettings );
 		};
 
 		return (
 			<WithTestRegistry
 				callback={ setupRegistry }
-				features={ [ 'firstPartyMode' ] }
+				features={ [ 'googleTagGateway' ] }
 			>
 				<Story />
 			</WithTestRegistry>
@@ -217,35 +206,35 @@ FirstPartyModeEnabled.decorators = [
 	},
 ];
 
-export const FirstPartyModeDisabledWithWarning = Template.bind( null );
-FirstPartyModeDisabledWithWarning.storyName =
-	'FirstPartyModeDisabledWithWarning';
-FirstPartyModeDisabledWithWarning.decorators = [
+export const GTGDisabledWithWarning = Template.bind( null );
+GTGDisabledWithWarning.storyName =
+	'With Google tag gateway disabled with warning';
+GTGDisabledWithWarning.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			const fpmServerRequirementsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+			const gtgServerRequirementsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
 
-			const fpmSettings = {
+			const gtgSettings = {
 				isEnabled: true,
-				isFPMHealthy: false,
+				isGTGHealthy: false,
 				isScriptAccessEnabled: false,
 			};
 
-			fetchMock.getOnce( fpmServerRequirementsEndpoint, {
-				body: fpmSettings,
+			fetchMock.getOnce( gtgServerRequirementsEndpoint, {
+				body: gtgSettings,
 			} );
 
 			registry
 				.dispatch( CORE_SITE )
-				.receiveGetFirstPartyModeSettings( fpmSettings );
+				.receiveGetGoogleTagGatewaySettings( gtgSettings );
 		};
 
 		return (
 			<WithTestRegistry
 				callback={ setupRegistry }
-				features={ [ 'firstPartyMode' ] }
+				features={ [ 'googleTagGateway' ] }
 			>
 				<Story />
 			</WithTestRegistry>

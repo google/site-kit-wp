@@ -21,17 +21,19 @@
  */
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
 } from '../../utils/data-mock';
 import { properties } from '../../datastore/__fixtures__';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
@@ -74,6 +76,7 @@ const reportOptions = [
 			},
 		],
 		url: null,
+		reportID: 'analytics-4_dashboard-overall-page-metrics-widget-args',
 	},
 	{
 		dimensions: [ 'date' ],
@@ -82,7 +85,7 @@ const reportOptions = [
 		endDate: '2020-09-07',
 	},
 ];
-const currentEntityURL = 'https://www.example.com/example-page-3/';
+const currentEntityURL = 'https://www.example.com/example-page/';
 const reportOptionsWithEntity = reportOptions.map( ( options ) => {
 	return {
 		...options,
@@ -111,10 +114,7 @@ Ready.args = {
 		}
 	},
 };
-Ready.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/Ready',
-	delay: 500,
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -135,9 +135,7 @@ Loading.decorators = [
 		);
 	},
 ];
-Loading.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/Loading',
-};
+Loading.scenario = {};
 
 export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';
@@ -179,9 +177,7 @@ DataUnavailable.args = {
 		}
 	},
 };
-DataUnavailable.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/DataUnavailable',
-};
+DataUnavailable.scenario = {};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
@@ -206,10 +202,6 @@ ZeroData.args = {
 		}
 	},
 };
-ZeroData.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/ZeroData',
-	delay: 500,
-};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
@@ -231,9 +223,7 @@ Error.args = {
 		] );
 	},
 };
-Error.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/Error',
-};
+Error.scenario = {};
 
 export const LoadedEntityURL = Template.bind( {} );
 LoadedEntityURL.storyName = 'Ready w/ entity URL set';
@@ -249,9 +239,6 @@ LoadedEntityURL.args = {
 			provideAnalytics4MockReport( registry, options );
 		}
 	},
-};
-LoadedEntityURL.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/LoadedEntityURL',
 };
 
 export const LoadingEntityURL = Template.bind( {} );
@@ -279,9 +266,6 @@ LoadingEntityURL.decorators = [
 		);
 	},
 ];
-LoadingEntityURL.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/LoadingEntityURL',
-};
 
 export const DataUnavailableEntityURL = Template.bind( {} );
 DataUnavailableEntityURL.storyName = 'Data Unavailable w/ entity URL';
@@ -332,9 +316,6 @@ DataUnavailableEntityURL.args = {
 			);
 	},
 };
-DataUnavailableEntityURL.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/DataUnavailableEntityURL',
-};
 
 export const ZeroDataEntityURL = Template.bind( {} );
 ZeroDataEntityURL.storyName = 'Zero Data w/ entity URL';
@@ -367,10 +348,6 @@ ZeroDataEntityURL.args = {
 		}
 	},
 };
-ZeroDataEntityURL.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/ZeroDataEntityURL',
-	delay: 500,
-};
 
 export const ErrorEntityURL = Template.bind( {} );
 ErrorEntityURL.storyName = 'Error w/ entity URL';
@@ -397,9 +374,49 @@ ErrorEntityURL.args = {
 			.finishResolution( 'getReport', [ options ] );
 	},
 };
-ErrorEntityURL.scenario = {
-	label: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4/ErrorEntityURL',
+
+export const LongDataValues = Template.bind( {} );
+LongDataValues.storyName = 'Long Data Values';
+LongDataValues.args = {
+	setupRegistry: ( registry ) => {
+		const extremeReport = getAnalytics4MockResponse( reportOptions[ 0 ] );
+
+		if ( extremeReport.rows && extremeReport.rows.length ) {
+			// Set extremely large values for metrics to test limits of the DataBlockGroup resizing logic.
+			extremeReport.totals[ 0 ].metricValues = [
+				{ value: '9876543210' },
+				{ value: '8765432109' },
+				{ value: '0.9999' },
+				{ value: '54321.9876' },
+			];
+		}
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( extremeReport, { options: reportOptions[ 0 ] } );
+	},
 };
+LongDataValues.scenario = {
+	resetDataBlockGroup: true,
+	waitForFontSizeToMatch: '.googlesitekit-data-block__datapoint',
+	// Once #10798 is implemented we can have story level viewports which better
+	// capture sizes at each flexbox reflow that cause font size changes.
+	fontSizeLarge: 41,
+	fontSizeMedium: false, // No resizing occurs at this viewport.
+	fontSizeSmall: 27,
+};
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideAnalyticsReportWithoutDateRangeData(
+			registry,
+			reportOptions[ 0 ]
+		);
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4',
@@ -408,7 +425,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

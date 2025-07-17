@@ -24,17 +24,22 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import { get } from 'googlesitekit-api';
+import {
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
+import { MODULE_SLUG_ADSENSE } from '../constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetAdUnitsStore = createFetchStore( {
 	baseName: 'getAdUnits',
 	controlCallback: ( { accountID, clientID } ) => {
-		return API.get(
+		return get(
 			'modules',
-			'adsense',
+			MODULE_SLUG_ADSENSE,
 			'adunits',
 			{ accountID, clientID },
 			{
@@ -42,15 +47,12 @@ const fetchGetAdUnitsStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback: ( state, adunits, { accountID, clientID } ) => {
-		return {
-			...state,
-			adunits: {
-				...state.adunits,
-				[ `${ accountID }::${ clientID }` ]: adunits,
-			},
-		};
-	},
+	reducerCallback: createReducer(
+		( state, adunits, { accountID, clientID } ) => {
+			state.adunits = state.adunits || {};
+			state.adunits[ `${ accountID }::${ clientID }` ] = adunits;
+		}
+	),
 	argsToParams: ( accountID, clientID ) => {
 		return { accountID, clientID };
 	},
@@ -66,14 +68,12 @@ const baseInitialState = {
 
 const baseActions = {};
 
-const baseReducer = ( state, { type } ) => {
-	switch ( type ) {
-		default: {
-			return state;
-		}
+const baseReducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
+		default:
+			break;
 	}
-};
-
+} );
 const baseResolvers = {
 	*getAdUnits( accountID, clientID ) {
 		if ( undefined === accountID || undefined === clientID ) {

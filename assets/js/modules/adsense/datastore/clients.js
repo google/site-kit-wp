@@ -24,13 +24,15 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
+import { MODULE_SLUG_ADSENSE } from '../constants';
 import { isValidAccountID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
@@ -41,9 +43,9 @@ const RESET_CLIENTS = 'RESET_CLIENTS';
 const fetchGetClientsStore = createFetchStore( {
 	baseName: 'getClients',
 	controlCallback: ( { accountID } ) => {
-		return API.get(
+		return get(
 			'modules',
-			'adsense',
+			MODULE_SLUG_ADSENSE,
 			'clients',
 			{ accountID },
 			{
@@ -51,19 +53,12 @@ const fetchGetClientsStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback: ( state, clients, { accountID } ) => {
-		if ( ! Array.isArray( clients ) ) {
-			return state;
+	reducerCallback: createReducer( ( state, clients, { accountID } ) => {
+		if ( Array.isArray( clients ) ) {
+			state.clients = state.clients || {};
+			state.clients[ accountID ] = clients;
 		}
-
-		return {
-			...state,
-			clients: {
-				...state.clients,
-				[ accountID ]: [ ...clients ],
-			},
-		};
-	},
+	} ),
 	argsToParams: ( accountID ) => {
 		return { accountID };
 	},
@@ -93,8 +88,8 @@ const baseActions = {
 	},
 };
 
-const baseReducer = ( state, { type } ) => {
-	switch ( type ) {
+const baseReducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
 		case RESET_CLIENTS: {
 			const {
 				clientID,
@@ -103,25 +98,24 @@ const baseReducer = ( state, { type } ) => {
 				accountSetupComplete,
 				siteSetupComplete,
 			} = state.savedSettings || {};
-			return {
-				...state,
-				clients: initialState.clients,
-				settings: {
-					...( state.settings || {} ),
-					clientID,
-					accountStatus,
-					siteStatus,
-					accountSetupComplete,
-					siteSetupComplete,
-				},
+
+			state.clients = initialState.clients;
+
+			state.settings = {
+				...( state.settings || {} ),
+				clientID,
+				accountStatus,
+				siteStatus,
+				accountSetupComplete,
+				siteSetupComplete,
 			};
+			break;
 		}
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getClients( accountID ) {

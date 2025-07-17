@@ -61,6 +61,8 @@ describe( 'ErrorNotice', () => {
 		startDate: '2024-02-29',
 		endDate: '2024-03-27',
 		metrics: [ { name: 'totalUsers' } ],
+		reportID:
+			'audience-segmentation_get-audiences-user-count-report-options_store:selector',
 	};
 
 	const reportOptions = {
@@ -109,6 +111,9 @@ describe( 'ErrorNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences,
 		} );
 

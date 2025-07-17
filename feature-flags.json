@@ -1,8 +1,6 @@
 [
   "adsPax",
-  "conversionReporting",
-  "firstPartyMode",
-  "gm3Components",
-  "privacySandboxModule",
-  "rrmModule"
+  "gtagUserData",
+  "googleTagGateway",
+  "privacySandboxModule"
 ]

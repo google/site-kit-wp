@@ -26,7 +26,7 @@ import { useInterval } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useEffect, useState } from '@wordpress/element';
+import { useEffect, useState, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,17 +34,24 @@ import { useEffect, useState } from '@wordpress/element';
 import TourTooltip from './TourTooltip';
 import Portal from './Portal';
 import { joyrideStyles, floaterProps } from './TourTooltips';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '../hooks/useBreakpoint';
 
 export default function JoyrideTooltip( props ) {
 	const {
 		title,
 		content,
 		dismissLabel,
+		disableOverlay = true,
 		target,
 		cta = false,
 		className,
 		styles = {},
 		slug = '',
+		placement = 'auto',
 		onDismiss = () => {},
 		onView = () => {},
 		onTourStart = () => {},
@@ -55,6 +62,13 @@ export default function JoyrideTooltip( props ) {
 		!! global.document.querySelector( target );
 
 	const [ targetExists, setTargetExists ] = useState( checkIfTargetExists );
+
+	const breakpoint = useBreakpoint();
+	const isMobileTablet =
+		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
+	const [ shouldRun, setShouldRun ] = useState( true );
+	const previousIsMobileTabletRef = useRef( isMobileTablet );
+
 	useInterval(
 		() => {
 			if ( checkIfTargetExists() ) {
@@ -80,6 +94,22 @@ export default function JoyrideTooltip( props ) {
 		}
 	}, [ target, targetExists ] );
 
+	// Reset the component between mobile and desktop layouts they use different
+	// targets which requires the tooltip to be re-rendered to display correctly.
+	useEffect( () => {
+		if ( previousIsMobileTabletRef.current !== isMobileTablet ) {
+			setShouldRun( false );
+
+			const timeoutID = setTimeout( () => {
+				setShouldRun( true );
+			}, 50 );
+
+			previousIsMobileTabletRef.current = isMobileTablet;
+
+			return () => clearTimeout( timeoutID );
+		}
+	}, [ isMobileTablet ] );
+
 	// Joyride expects the step's target to be in the DOM immediately
 	// so we need to wait for it in some cases, e.g. loading data.
 	if ( ! targetExists ) {
@@ -93,7 +123,7 @@ export default function JoyrideTooltip( props ) {
 			content,
 			disableBeacon: true,
 			isFixed: true,
-			placement: 'auto',
+			placement,
 			cta,
 			className,
 		},
@@ -135,8 +165,7 @@ export default function JoyrideTooltip( props ) {
 		<Portal slug={ slug }>
 			<Joyride
 				callback={ callback }
-				disableOverlay
-				disableScrolling
+				disableOverlay={ disableOverlay }
 				spotlightPadding={ 0 }
 				floaterProps={ floaterProps }
 				locale={ joyrideLocale }
@@ -154,15 +183,17 @@ export default function JoyrideTooltip( props ) {
 					},
 				} }
 				tooltipComponent={ TourTooltip }
-				run
+				run={ shouldRun }
+				disableScrolling
 			/>
 		</Portal>
 	);
 }
 
 JoyrideTooltip.propTypes = {
-	title: PropTypes.string.isRequired,
+	title: PropTypes.node,
 	content: PropTypes.string,
+	disableOverlay: PropTypes.bool,
 	dismissLabel: PropTypes.string,
 	target: PropTypes.string.isRequired,
 	onDismiss: PropTypes.func,
@@ -170,5 +201,6 @@ JoyrideTooltip.propTypes = {
 	className: PropTypes.string,
 	styles: PropTypes.object,
 	slug: PropTypes.string,
+	placement: PropTypes.string,
 	onView: PropTypes.func,
 };

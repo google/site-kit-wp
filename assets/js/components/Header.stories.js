@@ -61,6 +61,9 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../modules/search-console/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../modules/pagespeed-insights/constants';
 
 function SubHeaderBannerNotification() {
 	return (
@@ -96,7 +99,6 @@ PluginHeader.args = {
 	},
 };
 PluginHeader.scenario = {
-	label: 'Global/Plugin Header',
 	hierarchyRootSeparator: '|',
 	hierarchySeparator: {},
 	delay: 3000,
@@ -111,7 +113,6 @@ HeaderWithDateSelector.args = {
 	},
 };
 HeaderWithDateSelector.scenario = {
-	label: 'Global/Plugin Header with Date Selector',
 	hierarchyRootSeparator: '|',
 	hierarchySeparator: {},
 	delay: 3000,
@@ -230,21 +231,21 @@ HeaderViewOnly.args = {
 		provideSiteConnection( registry );
 		provideModules( registry, [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				owner: {
 					id: '1',
 					login: 'Admin 1',
 				},
 			},
 			{
-				slug: 'pagespeed-insights',
+				slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 				owner: {
 					id: '2',
 					login: 'Admin 2',
 				},
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				owner: {
 					id: '3',
 					login: 'Admin 3',
@@ -257,15 +258,15 @@ HeaderViewOnly.args = {
 			[ PERMISSION_VIEW_SHARED_DASHBOARD ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'search-console'
+				MODULE_SLUG_SEARCH_CONSOLE
 			) ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'pagespeed-insights'
+				MODULE_SLUG_PAGESPEED_INSIGHTS
 			) ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'analytics-4'
+				MODULE_SLUG_ANALYTICS_4
 			) ]: true,
 		} );
 

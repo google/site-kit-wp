@@ -5,6 +5,8 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 
 namespace Google\Tests\Core\Conversion_Tracking\Conversion_Event_Providers;
 
@@ -27,16 +29,9 @@ class Easy_Digital_DownloadsTest extends TestCase {
 		$this->contactform = new Easy_Digital_Downloads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
-	public static function tear_down_after_class() {
-		parent::tear_down_after_class();
-
-		if ( function_exists( 'runkit7_constant_remove' ) ) {
-			runkit7_constant_remove( 'EDD_VERSION' );
-		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
-			runkit_constant_remove( 'EDD_VERSION' );
-		}
-	}
-
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_is_active() {
 		$this->assertFalse( $this->contactform->is_active() );
 		define( 'EDD_VERSION', 1 );

@@ -25,17 +25,18 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { set } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
 	createRegistrySelector,
+	createReducer,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createReducer } from '../../../googlesitekit/data/create-reducer';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getDateString } from '../../../util';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 
 export const RESOURCE_TYPE_AUDIENCE = 'audience';
 export const RESOURCE_TYPE_CUSTOM_DIMENSION = 'customDimension';
@@ -55,9 +56,9 @@ const SET_RESOURCE_DATA_AVAILABILITY_DATE =
 const fetchSaveResourceDataAvailabilityDateStore = createFetchStore( {
 	baseName: 'saveResourceDataAvailabilityDate',
 	controlCallback: ( { resourceSlug, resourceType, date } ) =>
-		API.set(
+		set(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'save-resource-data-availability-date',
 			{
 				resourceSlug,
@@ -194,7 +195,7 @@ const baseResolvers = {
 		}
 
 		const resourceAvailabilityDatesOnLoad =
-			global._googlesitekitModulesData?.[ 'analytics-4' ]
+			global._googlesitekitModulesData?.[ MODULE_SLUG_ANALYTICS_4 ]
 				?.resourceAvailabilityDates;
 
 		if ( resourceAvailabilityDatesOnLoad ) {
@@ -228,7 +229,10 @@ const baseResolvers = {
 		) {
 			// Ensure the settings are loaded.
 			yield commonActions.await(
-				resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+				Promise.all( [
+					resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+					resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings(),
+				] )
 			);
 
 			// Validate if the resourceSlug is a valid resource.
@@ -237,7 +241,7 @@ const baseResolvers = {
 					yield commonActions.await(
 						resolveSelect(
 							MODULES_ANALYTICS_4
-						).getAvailableAudiences()
+						).getOrSyncAvailableAudiences()
 					);
 
 					if (
@@ -529,6 +533,8 @@ const baseSelectors = {
 							},
 						],
 						limit: 1,
+						reportID:
+							'analytics-4_get-partial-data-report-options_store:selector_RESOURCE_TYPE_AUDIENCE',
 					};
 
 				case RESOURCE_TYPE_CUSTOM_DIMENSION:
@@ -538,6 +544,8 @@ const baseSelectors = {
 						dimensions: [ 'date', `customEvent:${ resourceSlug }` ],
 						metrics: [ 'eventCount' ],
 						limit: 1,
+						reportID:
+							'analytics-4_get-partial-data-report-options_store:selector_RESOURCE_TYPE_CUSTOM_DIMENSION',
 					};
 
 				case RESOURCE_TYPE_PROPERTY:
@@ -547,6 +555,8 @@ const baseSelectors = {
 						dimensions: [ 'date' ],
 						metrics: [ 'totalUsers' ],
 						limit: 1,
+						reportID:
+							'analytics-4_get-partial-data-report-options_store:selector_RESOURCE_TYPE_PROPERTY',
 					};
 			}
 		}

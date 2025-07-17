@@ -24,7 +24,7 @@ import { cloneDeep } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -39,6 +39,7 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import * as fixtures from './__fixtures__';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 
@@ -71,8 +72,11 @@ describe( 'modules/analytics-4 properties', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/set-google-tag-id-mismatch'
 	);
 
+	const gtmAccountID = '6065484567';
+	const gtmContainerID = '98369876';
+
 	const containerDestinationsMock =
-		fixtures.containerDestinations[ 6065484567 ][ 98369876 ];
+		fixtures.containerDestinations[ gtmAccountID ][ gtmContainerID ];
 
 	const googleTagContainerDestinationIDs = containerDestinationsMock.map(
 		// eslint-disable-next-line sitekit/acronym-case
@@ -80,7 +84,7 @@ describe( 'modules/analytics-4 properties', () => {
 	);
 
 	beforeAll( () => {
-		API.setUsingCache( false );
+		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
@@ -92,7 +96,7 @@ describe( 'modules/analytics-4 properties', () => {
 	} );
 
 	afterAll( () => {
-		API.setUsingCache( true );
+		setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {
@@ -660,9 +664,9 @@ describe( 'modules/analytics-4 properties', () => {
 					body: fixtures.googleTagSettings,
 				} );
 
-				expect( store.getState().googleTagSettings ).toMatchObject(
-					fixtures.googleTagSettings
-				);
+				expect(
+					store.getState().googleTagSettings[ measurementID ]
+				).toMatchObject( fixtures.googleTagSettings );
 			} );
 
 			it( 'requires the GTM readonly scope to dispatch a request for Google Tag settings', async () => {
@@ -764,7 +768,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -798,7 +802,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: false,
 					},
@@ -832,7 +836,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -865,7 +869,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -896,6 +900,84 @@ describe( 'modules/analytics-4 properties', () => {
 				).toEqual( googleTagLastSyncedAtMs );
 			} );
 
+			it( 'should only execute once if multiple calls are made in quick succession', async () => {
+				provideUserAuthentication( registry, {
+					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
+				} );
+
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const measurementID = 'G-2B7M8YQ1K6';
+				const containerMock = fixtures.container[ measurementID ];
+
+				const ga4Settings = {
+					measurementID,
+					googleTagAccountID: gtmAccountID,
+					googleTagContainerID: gtmContainerID,
+					googleTagID: containerMock.tagIds[ 0 ],
+					googleTagLastSyncedAtMs: 0,
+				};
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					...ga4Settings,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetGoogleTagContainer( containerMock, {
+						measurementID,
+					} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetGoogleTagContainerDestinations(
+						containerDestinationsMock,
+						{
+							gtmAccountID,
+							gtmContainerID,
+						}
+					);
+
+				fetchMock.postOnce( ga4SettingsEndpoint, {
+					body: {
+						...ga4Settings,
+						googleTagLastSyncedAtMs: Date.now(), // This is set purely for illustrative purposes, the actual value will be calculated when `syncGoogleTagSettings()` is called.
+					},
+					status: 200,
+				} );
+
+				await Promise.all( [
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.syncGoogleTagSettings(),
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.syncGoogleTagSettings(),
+				] );
+
+				const googleTagLastSyncedAtMs = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getGoogleTagLastSyncedAtMs();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, {
+					body: {
+						data: {
+							...ga4Settings,
+							googleTagContainerDestinationIDs,
+							googleTagLastSyncedAtMs,
+						},
+					},
+					method: 'POST',
+				} );
+			} );
+
 			it( 'dispatches a request to get and populate Google Tag settings', async () => {
 				provideUserAuthentication( registry, {
 					grantedScopes: [ TAGMANAGER_READ_SCOPE ],
@@ -903,7 +985,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -991,7 +1073,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 			it( 'should set `isWebDataStreamAvailable` to `false` when there is no Google Tag Container available', async () => {
 				global._googlesitekitModulesData = {
-					'analytics-4': {
+					[ MODULE_SLUG_ANALYTICS_4 ]: {
 						tagIDMismatch: false,
 					},
 				};
@@ -1002,7 +1084,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -1108,7 +1190,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -1207,7 +1289,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -1250,7 +1332,7 @@ describe( 'modules/analytics-4 properties', () => {
 				fetchMock.postOnce( ga4SettingsEndpoint, {
 					body: {
 						...ga4Settings,
-						googleTagLastSyncedAtMs: Date.now(), // This is set purely for illustrative purposes, the actual value will be calculated at the point of dispatch.
+						googleTagLastSyncedAtMs: Date.now(), // This is set purely for illustrative purposes, the actual value will be calculated when `syncGoogleTagSettings()` is called.
 					},
 					status: 200,
 				} );
@@ -1788,7 +1870,7 @@ describe( 'modules/analytics-4 properties', () => {
 		describe( 'hasMismatchedGoogleTagID', () => {
 			it( 'should use a resolver to source value from global', async () => {
 				global._googlesitekitModulesData = {
-					'analytics-4': {
+					[ MODULE_SLUG_ANALYTICS_4 ]: {
 						tagIDMismatch: false,
 					},
 				};

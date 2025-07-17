@@ -40,6 +40,7 @@ import { WEEK_IN_SECONDS } from '../../../../../../util';
 import * as tracking from '../../../../../../util/tracking';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { AUDIENCE_INFO_NOTICES, AUDIENCE_INFO_NOTICE_SLUG } from './constants';
 
 jest.mock( 'react-use', () => ( {
@@ -66,7 +67,7 @@ describe( 'InfoNoticeWidget', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
@@ -80,16 +81,22 @@ describe( 'InfoNoticeWidget', () => {
 		mockTrackEvent.mockClear();
 	} );
 
+	const userAudienceSettingsRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/audience-settings'
+	);
+
+	const analyticsAudienceSettingsRegExp = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+	);
+
 	const WidgetWithComponentProps = withWidgetComponentProps(
 		'analyticsAudienceInfoNotice'
 	)( InfoNoticeWidget );
 
-	const audienceSettingsRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/audience-settings'
-	);
-
 	it( 'should not render when availableAudiences and configuredAudiences are not loaded', () => {
-		muteFetch( audienceSettingsRegExp );
+		muteFetch( userAudienceSettingsRegExp );
+		muteFetch( analyticsAudienceSettingsRegExp );
+
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
 		const { container } = render( <WidgetWithComponentProps />, {
@@ -100,10 +107,8 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	it( 'should not render when availableAudiences is not loaded', () => {
-		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
-			configuredAudiences: [ 'properties/12345/audiences/1' ],
-			isAudienceSegmentationWidgetHidden: false,
-		} );
+		muteFetch( analyticsAudienceSettingsRegExp );
+		muteFetch( userAudienceSettingsRegExp );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
@@ -115,11 +120,8 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	it( 'should not render when configuredAudiences is not loaded', () => {
-		muteFetch( audienceSettingsRegExp );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setAvailableAudiences( availableAudiences );
+		muteFetch( userAudienceSettingsRegExp );
+		muteFetch( analyticsAudienceSettingsRegExp );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
@@ -186,6 +188,10 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	it( 'should not render when there is no matching audience', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences,
+		} );
+
 		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [ 'properties/12345/audiences/9' ],
 			isAudienceSegmentationWidgetHidden: false,

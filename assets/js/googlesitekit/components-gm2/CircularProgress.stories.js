@@ -80,9 +80,7 @@ export function VRTStory() {
 	);
 }
 
-VRTStory.scenario = {
-	label: 'Global/CircularProgress',
-};
+VRTStory.scenario = {};
 
 export default {
 	title: 'Components/CircularProgress',

@@ -27,7 +27,6 @@ import {
 	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/utils';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import {
 	EDIT_SCOPE,
@@ -36,8 +35,8 @@ import {
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import * as fixtures from '../../datastore/__fixtures__';
-import ga4ReportingTour from '../../../../feature-tours/ga4-reporting';
 import SetupForm from './SetupForm';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
@@ -76,7 +75,9 @@ describe( 'SetupForm', () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
-		provideModules( registry, [ { slug: 'analytics-4', active: true } ] );
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_ANALYTICS_4, active: true },
+		] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
 		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {
@@ -188,10 +189,6 @@ describe( 'SetupForm', () => {
 			);
 		} );
 
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
-
 		muteFetch( REGEX_REST_GA4_SETTINGS );
 
 		fetchMock.post( REGEX_REST_DISMISS_ITEM, {
@@ -277,10 +274,6 @@ describe( 'SetupForm', () => {
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
 		} );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 
 		fetchMock.post( REGEX_REST_GA4_CREATE_PROPERTY, {
 			status: 200,
@@ -372,10 +365,6 @@ describe( 'SetupForm', () => {
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
 		} );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedTours( [ ga4ReportingTour.slug ] );
 
 		fetchMock.post( REGEX_REST_GA4_CREATE_PROPERTY, {
 			status: 403,

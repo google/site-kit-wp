@@ -38,19 +38,16 @@ function Template( args ) {
 
 	return (
 		<ConfirmSitePurposeChangeModal
-			dialogActive
 			handleDialog={ handleDialog }
 			{ ...args }
+			dialogActive
 		/>
 	);
 }
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ConfirmSitePurposeChangeModal';
-Default.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/ConfirmSitePurposeChangeModal',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Key Metrics/Key Metrics Confirm Site Purpose Change Modal',

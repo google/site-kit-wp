@@ -39,6 +39,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { numFmt } from '../../../../util';
 import { get } from 'lodash';
 import whenActive from '../../../../util/when-active';
@@ -59,6 +60,8 @@ function TopTrafficSourceWidget( { Widget } ) {
 				name: 'totalUsers',
 			},
 		],
+		reportID:
+			'analytics-4_top-traffic-source-widget_widget_totalUsersReportOptions',
 	};
 
 	const trafficSourceReportOptions = {
@@ -71,6 +74,8 @@ function TopTrafficSourceWidget( { Widget } ) {
 		],
 		limit: 1,
 		orderBy: 'totalUsers',
+		reportID:
+			'analytics-4_top-traffic-source-widget_widget_trafficSourceReportOptions',
 	};
 
 	const totalUsersReport = useInViewSelect(
@@ -194,6 +199,6 @@ TopTrafficSourceWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( TopTrafficSourceWidget );

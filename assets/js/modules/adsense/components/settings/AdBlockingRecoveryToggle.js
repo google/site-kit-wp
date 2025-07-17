@@ -33,7 +33,6 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Switch } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import Link from '../../../../components/Link';
-import SettingsNotice from '../../../../components/SettingsNotice/SettingsNotice';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import useViewContext from '../../../../hooks/useViewContext';
@@ -43,6 +42,7 @@ import {
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
 import { parseAccountIDFromExistingTag } from '../../util';
+import Notice from '../../../../components/Notice';
 
 export default function AdBlockingRecoveryToggle() {
 	const viewContext = useViewContext();
@@ -209,8 +209,9 @@ export default function AdBlockingRecoveryToggle() {
 				) }
 			</div>
 			{ existingAdBlockingRecoveryTag && (
-				<SettingsNotice
-					notice={ existingAdBlockingRecoveryTagMessage }
+				<Notice
+					type={ Notice.TYPES.INFO }
+					description={ existingAdBlockingRecoveryTagMessage }
 				/>
 			) }
 		</fieldset>

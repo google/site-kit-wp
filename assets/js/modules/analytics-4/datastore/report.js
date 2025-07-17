@@ -29,7 +29,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import {
 	createRegistrySelector,
 	commonActions,
@@ -40,6 +40,7 @@ import { createGatheringDataStore } from '../../../googlesitekit/modules/create-
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4, DATE_RANGE_OFFSET } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { DAY_IN_SECONDS, dateSub, stringifyObject } from '../../../util';
 import { normalizeReportOptions, isZeroReport } from '../utils';
 import { validateReport } from '../utils/validation';
@@ -47,9 +48,9 @@ import { validateReport } from '../utils/validation';
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { options } ) => {
-		return API.get(
+		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'report',
 			normalizeReportOptions( options )
 		);
@@ -69,7 +70,7 @@ const fetchGetReportStore = createFetchStore( {
 	validateParams: ( { options } = {} ) => validateReport( options ),
 } );
 
-const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
+const gatheringDataStore = createGatheringDataStore( MODULE_SLUG_ANALYTICS_4, {
 	storeName: MODULES_ANALYTICS_4,
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_analytics-4' ],
@@ -247,6 +248,8 @@ const baseSelectors = {
 						},
 					],
 					limit: REQUEST_MULTIPLIER * pagePaths.length,
+					reportID:
+						'analytics-4_get-page-titles_store:selector_options',
 				};
 
 				const pageTitlesReport =

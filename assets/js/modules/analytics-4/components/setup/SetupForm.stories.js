@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
@@ -48,10 +49,7 @@ function Template() {
 
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Analytics4/Setup/SetupForm/Default',
-	delay: 250,
-};
+Default.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Setup/SetupForm',
@@ -60,7 +58,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

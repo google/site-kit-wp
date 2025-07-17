@@ -45,6 +45,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../../components/KeyMetrics/constants';
 import {
@@ -57,6 +58,7 @@ import whenActive from '../../../../util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import useViewOnly from '../../../../hooks/useViewOnly';
 import withCustomDimensions from '../../utils/withCustomDimensions';
+import { decodeAmpersand } from '../../utils';
 
 /**
  * Gets the report options for the Popular Products widget.
@@ -92,6 +94,7 @@ function getPopularProductsWidgetReportOptions( select ) {
 		],
 		limit: 3,
 		keepEmptyRows: false,
+		reportID: 'analytics-4_popular-products-widget_widget_reportOptions',
 	};
 }
 
@@ -178,7 +181,7 @@ function PopularProductsWidget( props ) {
 			field: 'dimensionValues.0.value',
 			Component( { fieldValue } ) {
 				const url = fieldValue;
-				const title = titles[ url ];
+				const title = decodeAmpersand( titles[ url ] );
 				// Utilizing `useSelect` inside the component rather than
 				// returning its direct value to the `columns` array.
 				// This pattern ensures that the component re-renders correctly based on changes in state,
@@ -273,7 +276,7 @@ PopularProductsWidget.propTypes = {
 
 export default compose(
 	whenActive( {
-		moduleName: 'analytics-4',
+		moduleName: MODULE_SLUG_ANALYTICS_4,
 		FallbackComponent: ConnectGA4CTATileWidget,
 	} ),
 	withCustomDimensions( {

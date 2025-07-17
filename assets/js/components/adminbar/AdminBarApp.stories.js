@@ -27,6 +27,7 @@ import {
 	setupAnalytics4MockReports,
 	setupSearchConsoleZeroData,
 	setupAnalytics4ZeroData,
+	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
 } from './common-GA4.stories';
 import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
@@ -56,9 +57,7 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	label: 'Global/Admin Bar',
 	readySelector: '.googlesitekit-data-block',
-	delay: 250,
 };
 
 export const ViewOnlyAnalyticsAndSearchConsole = Template.bind( {} );
@@ -121,6 +120,18 @@ ZeroData.args = {
 		setupSearchConsoleZeroData( registry );
 		setupAnalytics4ZeroData( registry );
 	},
+};
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReportsWithNoDataInComparisonDateRange( registry );
+	},
+};
+NoDataInComparisonDateRange.scenario = {
+	readySelector: '.googlesitekit-data-block',
 };
 
 export default {

@@ -66,9 +66,6 @@
 @import "vendor/mdc-text-field";
 @import "vendor/mui-circular-progress";
 
-// GM3 Components
-@import "components-gm3";
-
 /*
  * Top-level Cascade Items
  */
@@ -104,7 +101,7 @@
 @import "components/global/googlesitekit-entity-search";
 @import "components/global/googlesitekit-error-handler";
 @import "components/global/googlesitekit-error-text";
-@import "components/global/googlesitekit-first-party-mode-toggle";
+@import "components/global/googlesitekit-google-tag-gateway-toggle";
 @import "components/global/googlesitekit-gathering-data-notice";
 @import "components/global/googlesitekit-generic-error-handler-actions";
 @import "components/global/googlesitekit-header";
@@ -146,7 +143,7 @@
 @import "components/global/googlesitekit-use-snippet-switch";
 @import "components/global/googlesitekit-user-menu";
 @import "components/global/googlesitekit-view-only-menu";
-@import "components/global/googlesitekit-warning-notice";
+@import "components/global/googlesitekit-typography";
 
 // Dashboard
 @import "components/dashboard/googlesitekit-signin-box";
@@ -158,7 +155,6 @@
 @import "components/dashboard/googlesitekit-ReportMetric";
 @import "components/dashboard/googlesitekit-subtle-notification";
 @import "components/dashboard/googlesitekit-setup-cta-banner";
-@import "components/dashboard/googlesitekit-consent-mode-setup-cta";
 
 // Dashboard Wizard
 @import "components/dashboard/wizard/googlesitekit-wizard";
@@ -213,7 +209,6 @@
 @import "components/analytics-4";
 @import "components/reader-revenue-manager";
 @import "components/sign-in-with-google";
-@import "components/first-party-mode";
 
 // Key Metric Widgets Styles
 @import "components/key-metrics/googlesitekit-km-widget-tile";
@@ -223,8 +218,20 @@
 // User Feedback
 @import "components/surveys";
 
-// Overlay Notification
-@import "components/overlay-notification/googlesitekit-overlay-notification";
+// Banner
+@import "components/banner/googlesitekit-banner";
+
+// Notice
+@import "components/notice/googlesitekit-notice";
+
+// Overlay Card
+@import "components/overlay-card/googlesitekit-overlay-card";
+
+// Banner Notification
+@import "components/banner-notification/googlesitekit-banner-notification";
+
+// Notification from Server
+@import "components/notification-from-server/googlesitekit-notification-from-server";
 
 // Widget Styles
 @import "widgets/widget-area";

@@ -23,7 +23,7 @@ import {
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import {
@@ -38,7 +38,9 @@ import {
 	provideAnalytics4MockReport,
 } from '../../../analytics-4/utils/data-mock';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 
 const adSenseAccountID = 'pub-1234567890';
 
@@ -57,6 +59,7 @@ const reportOptions = {
 		},
 	],
 	limit: 3,
+	reportID: 'adsense_top-earning-content-widget_widget_reportOptions',
 };
 
 const pageTitlesReportOptions = {
@@ -72,6 +75,7 @@ const pageTitlesReportOptions = {
 	metrics: [ { name: 'screenPageViews' } ],
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 15,
+	reportID: 'analytics-4_get-page-titles_store:selector_options',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
@@ -111,10 +115,7 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/TopEarningContentWidget/Ready',
-	delay: 250,
-};
+Ready.scenario = {};
 
 export const ReadyViewOnly = Template.bind( {} );
 ReadyViewOnly.storyName = 'Ready View Only';
@@ -135,10 +136,7 @@ ReadyViewOnly.args = {
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
-ReadyViewOnly.scenario = {
-	label: 'KeyMetrics/TopEarningContentWidget/ReadyViewOnly',
-	delay: 250,
-};
+ReadyViewOnly.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -221,10 +219,7 @@ AdSenseNotLinked.args = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( false );
 	},
 };
-AdSenseNotLinked.scenario = {
-	label: 'KeyMetrics/TopEarningContentWidget/AdSenseNotLinked',
-	delay: 250,
-};
+AdSenseNotLinked.scenario = {};
 
 export default {
 	title: 'Key Metrics/TopEarningContentWidget',
@@ -233,12 +228,12 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 						active: true,
 						connected: true,
 					},
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

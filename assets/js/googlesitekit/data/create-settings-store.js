@@ -25,7 +25,7 @@ import { isPlainObject, isEqual, pick } from 'lodash';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get, set, invalidateCache } from 'googlesitekit-api';
 import {
 	commonActions,
 	createRegistrySelector,
@@ -67,7 +67,7 @@ const ROLLBACK_SETTING = 'ROLLBACK_SETTING';
  * @private
  *
  * @param {string}        type                                  The data to access. One of 'core' or 'modules'.
- * @param {string}        identifier                            The data identifier, eg. a module slug like 'search-console'.
+ * @param {string}        identifier                            The data identifier, eg. a module slug like `search-console`.
  * @param {string}        datapoint                             The endpoint to request data from, e.g. 'settings'.
  * @param {Object}        options                               Optional. Options to consider for the store.
  * @param {Array}         [options.ownedSettingsSlugs]          Optional. List of "owned settings" for this module, if they exist.
@@ -105,7 +105,7 @@ export const createSettingsStore = (
 	const fetchGetSettingsStore = createFetchStore( {
 		baseName: 'getSettings',
 		controlCallback: () => {
-			return API.get(
+			return get(
 				type,
 				identifier,
 				datapoint,
@@ -134,7 +134,7 @@ export const createSettingsStore = (
 		baseName: 'saveSettings',
 		controlCallback: ( params ) => {
 			const { values } = params;
-			return API.set( type, identifier, datapoint, values );
+			return set( type, identifier, datapoint, values );
 		},
 		reducerCallback: ( state, values ) => {
 			return {
@@ -499,7 +499,7 @@ export function makeDefaultSubmitChanges( slug, storeName ) {
 			}
 		}
 
-		await API.invalidateCache( 'modules', slug );
+		await invalidateCache( 'modules', slug );
 
 		return {};
 	};

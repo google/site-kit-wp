@@ -24,7 +24,6 @@ import { availableAudiences } from '../../../datastore/__fixtures__';
 import {
 	createTestRegistry,
 	fireEvent,
-	freezeFetch,
 	render,
 } from '../../../../../../../tests/js/test-utils';
 import * as tracking from '../../../../../util/tracking';
@@ -36,10 +35,6 @@ mockTrackEvent.mockImplementation( () => Promise.resolve() );
 describe( 'ChangeGroupsLink', () => {
 	let registry;
 
-	const settingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/settings'
-	);
-
 	beforeEach( () => {
 		registry = createTestRegistry();
 	} );
@@ -49,7 +44,9 @@ describe( 'ChangeGroupsLink', () => {
 	} );
 
 	it( 'should not render if available audiences are undefined', () => {
-		freezeFetch( settingsEndpoint );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAudienceSettings( {} );
 
 		const { queryByRole } = render( <ChangeGroupsLink />, { registry } );
 
@@ -58,7 +55,7 @@ describe( 'ChangeGroupsLink', () => {
 	} );
 
 	it( 'should not render if no audiences are available', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: [],
 		} );
 
@@ -69,7 +66,7 @@ describe( 'ChangeGroupsLink', () => {
 	} );
 
 	it( 'should render a button to change groups', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences,
 		} );
 
@@ -92,7 +89,7 @@ describe( 'ChangeGroupsLink', () => {
 	} );
 
 	it( 'should set UI store key correctly when button is clicked', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences,
 		} );
 

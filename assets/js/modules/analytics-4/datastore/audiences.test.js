@@ -39,6 +39,7 @@ import {
 	MODULES_ANALYTICS_4,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../util/errors';
 import {
@@ -62,8 +63,11 @@ describe( 'modules/analytics-4 audiences', () => {
 	const syncAvailableAudiencesEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
-	const audienceSettingsEndpoint = new RegExp(
+	const audienceUserSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/audience-settings'
+	);
+	const audienceSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/save-audience-settings'
 	);
 	const analyticsSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/settings'
@@ -218,9 +222,11 @@ describe( 'modules/analytics-4 audiences', () => {
 					authenticated: false,
 				} );
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					availableAudiences: [],
-				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: [],
+					} );
 
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
@@ -237,7 +243,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'should make a network request to sync available audiences', async () => {
-				muteFetch( audienceSettingsEndpoint );
+				muteFetch( audienceUserSettingsEndpoint );
 
 				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
 					body: availableAudiences,
@@ -267,7 +273,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 500,
 				} );
 
-				fetchMock.getOnce( audienceSettingsEndpoint, {
+				fetchMock.getOnce( audienceUserSettingsEndpoint, {
 					body: {
 						data: {
 							configuredAudiences: [],
@@ -299,7 +305,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				fetchMock.get( audienceSettingsEndpoint, {
+				fetchMock.get( audienceUserSettingsEndpoint, {
 					body: {
 						data: {
 							configuredAudiences: [],
@@ -319,7 +325,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.getAvailableAudiences()
+						.getOrSyncAvailableAudiences()
 				).toEqual( availableAudiences );
 			} );
 
@@ -396,7 +402,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				fetchMock.getOnce( audienceSettingsEndpoint, {
+				fetchMock.getOnce( audienceUserSettingsEndpoint, {
 					body: {
 						data: {
 							configuredAudiences: [],
@@ -406,7 +412,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSettings( {} );
+					.receiveGetAudienceSettings( {} );
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -426,10 +432,12 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					availableAudiencesLastSyncedAt:
-						( Date.now() - 1000 ) / 1000, // Value expected to be a PHP date so divide by 1000.
-				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiencesLastSyncedAt:
+							( Date.now() - 1000 ) / 1000, // Value expected to be a PHP date so divide by 1000.
+					} );
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -444,7 +452,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				fetchMock.getOnce( audienceSettingsEndpoint, {
+				fetchMock.getOnce( audienceUserSettingsEndpoint, {
 					body: {
 						data: {
 							configuredAudiences: [],
@@ -452,10 +460,12 @@ describe( 'modules/analytics-4 audiences', () => {
 					},
 				} );
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					availableAudiencesLastSyncedAt:
-						( Date.now() - 2 * 60 * 60 * 1000 ) / 1000, // Value expected to be a PHP date so divide by 1000.
-				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiencesLastSyncedAt:
+							( Date.now() - 2 * 60 * 60 * 1000 ) / 1000, // Value expected to be a PHP date so divide by 1000.
+					} );
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -595,18 +605,15 @@ describe( 'modules/analytics-4 audiences', () => {
 			const isAudienceSegmentationWidgetHidden = false;
 
 			beforeEach( () => {
-				fetchMock.postOnce(
-					analyticsSettingsEndpoint,
-					( url, opts ) => {
-						const { data } = JSON.parse( opts.body );
-						// Return the same settings passed to the API.
-						return { body: data, status: 200 };
-					}
-				);
+				fetchMock.postOnce( audienceSettingsEndpoint, ( url, opts ) => {
+					const { data } = JSON.parse( opts.body );
+					// Return the same settings passed to the API.
+					return { body: data.settings, status: 200 };
+				} );
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -615,10 +622,15 @@ describe( 'modules/analytics-4 audiences', () => {
 				provideUserAuthentication( registry );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					availableAudiences: availableAudiencesFixture,
 					availableCustomDimensions: [ 'googlesitekit_post_type' ],
 					propertyID: testPropertyID,
 				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: availableAudiencesFixture,
+					} );
 
 				registry
 					.dispatch( CORE_USER )
@@ -635,7 +647,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'sets `isSettingUpAudiences` to true while the action is in progress', async () => {
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences: [],
 						isAudienceSegmentationWidgetHidden,
@@ -741,7 +753,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						.dispatch( MODULES_ANALYTICS_4 )
 						.setAvailableAudiences( availableUserAudiences );
 
-					fetchMock.postOnce( audienceSettingsEndpoint, {
+					fetchMock.postOnce( audienceUserSettingsEndpoint, {
 						body: {
 							configuredAudiences: expectedConfiguredAudiences,
 							isAudienceSegmentationWidgetHidden,
@@ -777,7 +789,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 					expect( fetchMock ).toHaveFetchedTimes(
 						1,
-						audienceSettingsEndpoint,
+						audienceUserSettingsEndpoint,
 						{
 							body: {
 								data: {
@@ -845,7 +857,7 @@ describe( 'modules/analytics-4 audiences', () => {
 							...availableUserAudiences.slice( 1 ),
 						] );
 
-					fetchMock.postOnce( audienceSettingsEndpoint, {
+					fetchMock.postOnce( audienceUserSettingsEndpoint, {
 						body: {
 							configuredAudiences: expectedConfiguredAudiences,
 							isAudienceSegmentationWidgetHidden,
@@ -881,7 +893,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 					expect( fetchMock ).toHaveFetchedTimes(
 						1,
-						audienceSettingsEndpoint,
+						audienceUserSettingsEndpoint,
 						{
 							body: {
 								data: {
@@ -941,7 +953,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					createdReturningVisitorsAudienceName,
 				];
 
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences: expectedConfiguredAudiences,
 						isAudienceSegmentationWidgetHidden,
@@ -1005,7 +1017,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.getAvailableAudiences()
+						.getOrSyncAvailableAudiences()
 				).toEqual( finalAvailableAudiences );
 
 				expect( fetchMock ).toHaveFetchedTimes(
@@ -1040,7 +1052,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes(
 					1,
-					audienceSettingsEndpoint,
+					audienceUserSettingsEndpoint,
 					{
 						body: {
 							data: {
@@ -1104,7 +1116,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					( { name } ) => name
 				);
 
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences: expectedConfiguredAudiences,
 						isAudienceSegmentationWidgetHidden,
@@ -1150,7 +1162,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						...availableUserAudiences.slice( 1 ),
 					] );
 
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences,
 						isAudienceSegmentationWidgetHidden,
@@ -1223,7 +1235,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						availableReturningVisitorsAudienceFixture,
 					] );
 
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences,
 						isAudienceSegmentationWidgetHidden,
@@ -1263,14 +1275,19 @@ describe( 'modules/analytics-4 audiences', () => {
 					provideUserCapabilities( registry );
 
 					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-						availableAudiences: availableAudiencesFixture,
 						availableCustomDimensions: [],
 						propertyID: testPropertyID,
 					} );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetAudienceSettings( {
+							availableAudiences: availableAudiencesFixture,
+						} );
 				} );
 
 				it( "creates the `googlesitekit_post_type` custom dimension if it doesn't exist", async () => {
-					fetchMock.postOnce( audienceSettingsEndpoint, {
+					fetchMock.postOnce( audienceUserSettingsEndpoint, {
 						body: {
 							configuredAudiences: [],
 							isAudienceSegmentationWidgetHidden,
@@ -1495,7 +1512,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						status: 200,
 					} );
 
-					fetchMock.postOnce( audienceSettingsEndpoint, {
+					fetchMock.postOnce( audienceUserSettingsEndpoint, {
 						body: {
 							configuredAudiences: expectedConfiguredAudiences,
 							isAudienceSegmentationWidgetHidden,
@@ -1568,7 +1585,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 					expect( fetchMock ).toHaveFetchedTimes(
 						1,
-						audienceSettingsEndpoint,
+						audienceUserSettingsEndpoint,
 						{
 							body: {
 								data: {
@@ -1643,7 +1660,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						createdReturningVisitorsAudienceName,
 					];
 
-					fetchMock.postOnce( audienceSettingsEndpoint, {
+					fetchMock.postOnce( audienceUserSettingsEndpoint, {
 						body: {
 							configuredAudiences: expectedConfiguredAudiences,
 							isAudienceSegmentationWidgetHidden,
@@ -1840,7 +1857,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			beforeEach( () => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -1849,7 +1866,6 @@ describe( 'modules/analytics-4 audiences', () => {
 				provideUserAuthentication( registry );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					availableAudiences: null,
 					// Assume the required custom dimension is available for most tests. Its creation is tested in its own subsection.
 					availableCustomDimensions: [ 'googlesitekit_post_type' ],
 					propertyID: testPropertyID,
@@ -1863,6 +1879,10 @@ describe( 'modules/analytics-4 audiences', () => {
 					configuredAudiences: null,
 					isAudienceSegmentationWidgetHidden,
 				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {} );
 			} );
 
 			it( 'sets `isSettingUpAudiences` to true while the action is in progress', async () => {
@@ -1871,7 +1891,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences: [],
 						isAudienceSegmentationWidgetHidden,
@@ -1926,7 +1946,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					authenticated: false,
 				} );
 
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences: [],
 						isAudienceSegmentationWidgetHidden,
@@ -1966,7 +1986,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences: [],
 						isAudienceSegmentationWidgetHidden,
@@ -2003,7 +2023,7 @@ describe( 'modules/analytics-4 audiences', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.getAvailableAudiences()
+						.getOrSyncAvailableAudiences()
 				).toEqual( availableAudiencesFixture );
 			} );
 
@@ -2060,7 +2080,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						status: 200,
 					} );
 
-					fetchMock.postOnce( audienceSettingsEndpoint, {
+					fetchMock.postOnce( audienceUserSettingsEndpoint, {
 						body: {
 							configuredAudiences: expectedConfiguredAudiences,
 							isAudienceSegmentationWidgetHidden,
@@ -2096,7 +2116,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 					expect( fetchMock ).toHaveFetchedTimes(
 						1,
-						audienceSettingsEndpoint,
+						audienceUserSettingsEndpoint,
 						{
 							body: {
 								data: {
@@ -2159,7 +2179,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						status: 200,
 					} );
 
-					fetchMock.postOnce( audienceSettingsEndpoint, {
+					fetchMock.postOnce( audienceUserSettingsEndpoint, {
 						body: {
 							configuredAudiences: expectedConfiguredAudiences,
 							isAudienceSegmentationWidgetHidden,
@@ -2195,7 +2215,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 					expect( fetchMock ).toHaveFetchedTimes(
 						1,
-						audienceSettingsEndpoint,
+						audienceUserSettingsEndpoint,
 						{
 							body: {
 								data: {
@@ -2235,7 +2255,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( audienceSettingsEndpoint, {
+				fetchMock.postOnce( audienceUserSettingsEndpoint, {
 					body: {
 						configuredAudiences,
 						isAudienceSegmentationWidgetHidden,
@@ -2308,73 +2328,13 @@ describe( 'modules/analytics-4 audiences', () => {
 			'properties/12345/audiences/5', // Test audience.
 		];
 
-		describe( 'getAvailableAudiences', () => {
-			const availableAudiences = [
-				{
-					name: 'properties/123456789/audiences/0987654321',
-					displayName: 'All visitors',
-					description: 'All users',
-					audienceType: 'DEFAULT_AUDIENCE',
-					audienceSlug: 'all-users',
-				},
-			];
-
-			it( 'should not sync cached audiences when the availableAudiences setting is not null', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setAvailableAudiences( availableAudiences );
-
-				const audiences = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getAvailableAudiences();
-
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
-				expect( audiences ).toEqual( availableAudiences );
-			} );
-
-			it( 'should sync cached audiences when the availableAudiences setting is null for authenticated user', async () => {
-				provideUserAuthentication( registry );
-
-				muteFetch( audienceSettingsEndpoint );
-
-				fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
-					body: availableAudiences,
-					status: 200,
-				} );
-
-				// Simulate a scenario where getAvailableAudiences is null.
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setAvailableAudiences( null );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getAvailableAudiences()
-				).toBeNull();
-
-				// Wait until the resolver has finished fetching the audiences.
-				await untilResolved(
-					registry,
-					MODULES_ANALYTICS_4
-				).getAvailableAudiences();
-
-				const audiences = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getAvailableAudiences();
-
-				// Make sure that available audiences are same as the audiences fetched from the sync audiences.
-				expect( audiences ).toEqual( availableAudiences );
-
-				await waitForDefaultTimeouts();
-			} );
-		} );
-
 		describe( 'isDefaultAudience', () => {
 			it( 'should return `true` if the audience is a default audience', () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					availableAudiences: availableAudiencesFixture,
-				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: availableAudiencesFixture,
+					} );
 
 				defaultAudienceResourceNames.forEach(
 					( audienceResourceName ) => {
@@ -2388,9 +2348,11 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'should return `false` if the audience is not a default audience', () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					availableAudiences: availableAudiencesFixture,
-				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: availableAudiencesFixture,
+					} );
 
 				[
 					...siteKitAudienceResourceNames,
@@ -2407,7 +2369,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			it( 'should return `undefined` if the available audiences are not loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSettings( {} );
+					.receiveGetAudienceSettings( {} );
 
 				const isDefaultAudience = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -2419,9 +2381,11 @@ describe( 'modules/analytics-4 audiences', () => {
 
 		describe( 'isSiteKitAudience', () => {
 			it( 'should return `true` if the audience is a Site Kit audience', () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					availableAudiences: availableAudiencesFixture,
-				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: availableAudiencesFixture,
+					} );
 
 				siteKitAudienceResourceNames.forEach(
 					( audienceResourceName ) => {
@@ -2435,9 +2399,11 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'should return `false` if the audience is not a Site Kit audience', () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					availableAudiences: availableAudiencesFixture,
-				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: availableAudiencesFixture,
+					} );
 
 				[
 					...defaultAudienceResourceNames,
@@ -2454,7 +2420,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			it( 'should return `undefined` if the available audiences are not loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSettings( {} );
+					.receiveGetAudienceSettings( {} );
 
 				const isSiteKitAudience = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -2466,9 +2432,11 @@ describe( 'modules/analytics-4 audiences', () => {
 
 		describe( 'isUserAudience', () => {
 			it( 'should return `true` if the audience is a user audience', () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					availableAudiences: availableAudiencesFixture,
-				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: availableAudiencesFixture,
+					} );
 
 				userAudienceResourceNames.forEach( ( audienceResourceName ) => {
 					const isUserAudience = registry
@@ -2480,9 +2448,11 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'should return `false` if the audience is not a user audience', () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					availableAudiences: availableAudiencesFixture,
-				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: availableAudiencesFixture,
+					} );
 
 				[
 					...defaultAudienceResourceNames,
@@ -2499,7 +2469,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			it( 'should return `undefined` if the available audiences are not loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSettings( {} );
+					.receiveGetAudienceSettings( {} );
 
 				const isUserAudience = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -2525,6 +2495,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 			it( 'returns undefined when available audiences have not loaded', async () => {
 				freezeFetch( availableAudiences );
+				freezeFetch( syncAvailableAudiencesEndpoint );
 
 				expect(
 					registry
@@ -2540,9 +2511,11 @@ describe( 'modules/analytics-4 audiences', () => {
 					authenticated: false,
 				} );
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					availableAudiences: null,
-				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: null,
+					} );
 
 				expect(
 					registry
@@ -2553,13 +2526,15 @@ describe( 'modules/analytics-4 audiences', () => {
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getAvailableAudiences();
+				).getOrSyncAvailableAudiences();
 			} );
 
 			it( 'returns true when all provided audiences are available', () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					availableAudiences,
-				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences,
+					} );
 
 				expect(
 					registry
@@ -2578,9 +2553,11 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'returns false when some or all provided audiences are not available', () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					availableAudiences,
-				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences,
+					} );
 
 				expect(
 					registry
@@ -2603,7 +2580,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			it( 'should return `undefined` if the available audiences are not loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSettings( {} );
+					.receiveGetAudienceSettings( {} );
 
 				const configurableAudiences = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -2616,10 +2593,13 @@ describe( 'modules/analytics-4 audiences', () => {
 				provideUserAuthentication( registry, {
 					authenticated: false,
 				} );
+				muteFetch( syncAvailableAudiencesEndpoint );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSettings( { availableAudiences: null } );
+					.receiveGetAudienceSettings( {
+						availableAudiences: null,
+					} );
 
 				const configurableAudiences = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -2630,13 +2610,15 @@ describe( 'modules/analytics-4 audiences', () => {
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getAvailableAudiences();
+				).getOrSyncAvailableAudiences();
 			} );
 
 			it( 'should not include "Purchasers" if it has no data', () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					availableAudiences: availableAudiencesFixture,
-				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: availableAudiencesFixture,
+					} );
 
 				// Simulate no data available state for "Purchasers".
 				registry
@@ -2670,9 +2652,11 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'should include "Purchasers" if it has data', () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					availableAudiences: availableAudiencesFixture,
-				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: availableAudiencesFixture,
+					} );
 
 				// Simulate data available state for all available audiences.
 				registry
@@ -2713,6 +2697,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						( { name } ) => name
 					),
 				},
+				reportID:
+					'audience-segmentation_get-audiences-user-count-report-options_store:selector',
 			};
 
 			it( 'should return report options to get user count for passed audiences', () => {
@@ -2784,7 +2770,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			it( 'should return `undefined` if the configurable audiences are not loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSettings( {} );
+					.receiveGetAudienceSettings( {} );
 
 				const [
 					siteKitUserCountReportError,
@@ -2799,9 +2785,11 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'should return `undefined` if there is no user count report error', () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-					availableAudiences: availableAudiencesFixture,
-				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: availableAudiencesFixture,
+					} );
 
 				const [
 					siteKitUserCountReportError,
@@ -2815,7 +2803,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'should return error object if there is a user count report error', () => {
-				const { receiveError, receiveGetSettings } =
+				const { receiveError, receiveGetAudienceSettings } =
 					registry.dispatch( MODULES_ANALYTICS_4 );
 
 				const {
@@ -2823,7 +2811,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					getAudienceUserCountReportErrors,
 				} = registry.select( MODULES_ANALYTICS_4 );
 
-				receiveGetSettings( {
+				receiveGetAudienceSettings( {
 					availableAudiences: availableAudiencesFixture,
 				} );
 
@@ -2840,7 +2828,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'should return an error object if a Site Kit audience is in the partial data state, and the special case `newVsReturning` report returns an error', () => {
-				const { receiveError, receiveGetSettings } =
+				const { receiveError, receiveGetAudienceSettings } =
 					registry.dispatch( MODULES_ANALYTICS_4 );
 
 				const {
@@ -2867,7 +2855,7 @@ describe( 'modules/analytics-4 audiences', () => {
 						property: {},
 					} );
 
-				receiveGetSettings( {
+				receiveGetAudienceSettings( {
 					availableAudiences: availableAudiencesFixture,
 				} );
 

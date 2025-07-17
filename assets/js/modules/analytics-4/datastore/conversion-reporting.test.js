@@ -36,7 +36,7 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 } from '../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4, ENUM_CONVERSION_EVENTS } from './constants';
-import { enabledFeatures } from '../../../features';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 
 describe( 'modules/analytics-4 conversion-reporting', () => {
 	let registry;
@@ -62,7 +62,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				};
 
 				global._googlesitekitModulesData = {
-					'analytics-4': inlineData,
+					[ MODULE_SLUG_ANALYTICS_4 ]: inlineData,
 				};
 
 				registry
@@ -130,7 +130,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				};
 
 				global._googlesitekitModulesData = {
-					'analytics-4': inlineData,
+					[ MODULE_SLUG_ANALYTICS_4 ]: inlineData,
 				};
 
 				registry.select( MODULES_ANALYTICS_4 )[ selector ]();
@@ -168,8 +168,6 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 
 		describe( 'haveConversionEventsForTailoredMetrics', () => {
 			beforeEach( () => {
-				enabledFeatures.add( 'conversionReporting' );
-
 				provideKeyMetricsUserInputSettings( registry );
 
 				registry
@@ -180,10 +178,6 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					widgetSlugs: [],
 					isWidgetHidden: false,
 				} );
-			} );
-
-			afterEach( () => {
-				enabledFeatures.delete( 'conversionReporting' );
 			} );
 
 			it( 'should return true when detectedEvents have an event associated with ACR KWM for the current purpose', () => {
@@ -293,15 +287,13 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 
 		describe( 'shouldIncludeConversionTailoredMetrics', () => {
 			beforeEach( () => {
-				enabledFeatures.add( 'conversionReporting' );
-
 				provideKeyMetricsUserInputSettings( registry );
 
 				provideModules( registry, [
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 					},
 				] );
 
@@ -315,16 +307,12 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				} );
 			} );
 
-			afterEach( () => {
-				enabledFeatures.delete( 'conversionReporting' );
-			} );
-
 			it( 'should return empty array if Analytics module is not connected', () => {
 				provideModules( registry, [
 					{
 						active: true,
 						connected: false,
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 					},
 				] );
 
@@ -383,16 +371,10 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 
 		describe( 'haveLostEventsForCurrentMetrics', () => {
 			beforeEach( () => {
-				enabledFeatures.add( 'conversionReporting' );
-
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					widgetSlugs: [],
 					isWidgetHidden: false,
 				} );
-			} );
-
-			afterEach( () => {
-				enabledFeatures.delete( 'conversionReporting' );
 			} );
 
 			it( 'should return false if no events associated with the current site purpose have been lost', () => {

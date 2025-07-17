@@ -29,6 +29,7 @@ import AdsIcon from '../../../svg/graphics/ads.svg';
 import { SettingsEdit, SettingsView } from './components/settings';
 import { SetupMain, SetupMainPAX } from './components/setup';
 import { MODULES_ADS } from './datastore/constants';
+import { MODULE_SLUG_ADS } from './constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import {
 	CORE_USER,
@@ -42,20 +43,20 @@ import {
 	AdsModuleSetupCTABanner,
 } from './components/notifications';
 import {
-	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/datastore/constants';
+	NOTIFICATION_AREAS,
+	PRIORITY,
+} from '../../googlesitekit/notifications/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../googlesitekit/constants';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
-import { PRIORITY } from '../../googlesitekit/notifications/constants';
 
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	modules.registerModule( 'ads', {
+	modules.registerModule( MODULE_SLUG_ADS, {
 		storeName: MODULES_ADS,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
@@ -71,6 +72,7 @@ export const registerModule = ( modules ) => {
 				'google-site-kit'
 			),
 		],
+		overrideSetupSuccessNotification: true,
 		checkRequirements: async ( registry ) => {
 			const adBlockerActive = await registry
 				.resolveSelect( CORE_USER )
@@ -98,7 +100,7 @@ export const registerWidgets = () => {};
 export const ADS_NOTIFICATIONS = {
 	'setup-success-notification-ads': {
 		Component: SetupSuccessSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -107,7 +109,10 @@ export const ADS_NOTIFICATIONS = {
 			const notification = getQueryArg( location.href, 'notification' );
 			const slug = getQueryArg( location.href, 'slug' );
 
-			if ( 'authentication_success' === notification && slug === 'ads' ) {
+			if (
+				'authentication_success' === notification &&
+				slug === MODULE_SLUG_ADS
+			) {
 				return true;
 			}
 
@@ -116,7 +121,7 @@ export const ADS_NOTIFICATIONS = {
 	},
 	'setup-success-notification-pax': {
 		Component: PAXSetupSuccessSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -133,14 +138,16 @@ export const ADS_NOTIFICATIONS = {
 	},
 	'account-linked-via-google-for-woocommerce': {
 		Component: AccountLinkedViaGoogleForWooCommerceSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			// isWooCommerceActivated, isGoogleForWooCommerceActivated and isGoogleForWooCommerceLinked are all relying
 			// on the data being resolved in getModuleData() selector.
 			const [ , isModuleConnected ] = await Promise.all( [
 				resolveSelect( MODULES_ADS ).getModuleData(),
-				resolveSelect( CORE_MODULES ).isModuleConnected( 'ads' ),
+				resolveSelect( CORE_MODULES ).isModuleConnected(
+					MODULE_SLUG_ADS
+				),
 			] );
 
 			const {
@@ -164,7 +171,7 @@ export const ADS_NOTIFICATIONS = {
 		// This notification should be displayed before audience segmentation one,
 		// which has priority of PRIORITY.SETUP_CTA_LOW
 		priority: PRIORITY.SETUP_CTA_HIGH,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -175,15 +182,19 @@ export const ADS_NOTIFICATIONS = {
 				// isGoogleForWooCommerceLinked is relying
 				// on the data being resolved in getModuleData() selector.
 				resolveSelect( MODULES_ADS ).getModuleData(),
-				resolveSelect( CORE_MODULES ).isModuleConnected( 'ads' ),
-				resolveSelect( CORE_MODULES ).canActivateModule( 'ads' ),
+				resolveSelect( CORE_MODULES ).isModuleConnected(
+					MODULE_SLUG_ADS
+				),
+				resolveSelect( CORE_MODULES ).canActivateModule(
+					MODULE_SLUG_ADS
+				),
 			] );
 
 			const { isModuleConnected } = select( CORE_MODULES );
 			const { isPromptDismissed } = select( CORE_USER );
 			const { hasGoogleForWooCommerceAdsAccount } = select( MODULES_ADS );
 
-			const isAdsConnected = isModuleConnected( 'ads' );
+			const isAdsConnected = isModuleConnected( MODULE_SLUG_ADS );
 			const isDismissed = isPromptDismissed( 'ads-setup-cta' );
 
 			return (

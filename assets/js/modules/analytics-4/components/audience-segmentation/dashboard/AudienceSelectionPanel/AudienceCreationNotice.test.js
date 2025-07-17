@@ -43,6 +43,7 @@ import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../googlesitekit/constants';
 import AudienceCreationNotice from './AudienceCreationNotice';
 
@@ -72,7 +73,7 @@ describe( 'AudienceCreationNotice', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideModuleRegistrations( registry );
@@ -91,6 +92,10 @@ describe( 'AudienceCreationNotice', () => {
 	} );
 
 	it( 'should render null if no audiences are available', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAudienceSettings( {} );
+
 		const { container } = render( <AudienceCreationNotice />, {
 			registry,
 		} );
@@ -99,6 +104,10 @@ describe( 'AudienceCreationNotice', () => {
 	} );
 
 	it( 'should render null if the user has dismissed the notice', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAudienceSettings( {} );
+
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [ AUDIENCE_CREATION_NOTICE_SLUG ] );
@@ -120,7 +129,6 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
-			availableAudiences,
 		} );
 
 		const { container, waitForRegistry } = render(
@@ -153,7 +161,12 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
-			availableAudiences: [],
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences: availableAudiences.filter(
+				( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
+			),
 		} );
 
 		const { container, waitForRegistry } = render(
@@ -197,6 +210,9 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: availableAudiences.filter(
 				( { displayName } ) => displayName !== 'Returning visitors'
 			),
@@ -265,8 +281,13 @@ describe( 'AudienceCreationNotice', () => {
 				propertyID: '34567',
 				measurementID: '56789',
 				webDataStreamID: '78901',
-				availableAudiences: filteredAudiences,
 			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAudienceSettings( {
+					availableAudiences: filteredAudiences,
+				} );
 
 			const { getByRole, waitForRegistry } = render(
 				<AudienceCreationNotice />,
@@ -315,6 +336,9 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: [],
 		} );
 
@@ -365,6 +389,9 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: [],
 		} );
 
@@ -415,6 +442,9 @@ describe( 'AudienceCreationNotice', () => {
 			propertyID: '34567',
 			measurementID: '56789',
 			webDataStreamID: '78901',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: [],
 		} );
 

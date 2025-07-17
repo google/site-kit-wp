@@ -24,13 +24,14 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
+import { get } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { MODULES_TAGMANAGER } from './constants';
+import { MODULE_SLUG_TAGMANAGER } from '../constants';
 import {
 	isValidAccountID,
 	isValidInternalContainerID,
@@ -55,9 +56,9 @@ const fetchGetLiveContainerVersionStore = createFetchStore( {
 	},
 	controlCallback: async ( { accountID, internalContainerID } ) => {
 		try {
-			return await API.get(
+			return await get(
 				'modules',
-				'tagmanager',
+				MODULE_SLUG_TAGMANAGER,
 				'live-container-version',
 				{ accountID, internalContainerID },
 				{ useCache: false }
