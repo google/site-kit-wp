@@ -1,6 +1,6 @@
 [
   "adsPax",
-  "ecEuID",
-  "firstPartyMode",
+  "gtagUserData",
+  "googleTagGateway",
   "privacySandboxModule"
 ]

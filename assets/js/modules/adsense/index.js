@@ -60,6 +60,7 @@ import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants'
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import AdBlockingRecoverySetupSuccessNotification from './components/dashboard/AdBlockingRecoverySetupSuccessNotification';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
@@ -69,6 +70,7 @@ export const registerModule = ( modules ) => {
 		SettingsViewComponent: SettingsView,
 		SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
 		SetupComponent: SetupMain,
+		DashboardMainEffectComponent,
 		Icon: AdSenseIcon,
 		features: [
 			__(

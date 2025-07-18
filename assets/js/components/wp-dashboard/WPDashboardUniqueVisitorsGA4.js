@@ -58,6 +58,8 @@ function WPDashboardUniqueVisitorsGA4( { WPDashboardReportError } ) {
 				name: 'totalUsers',
 			},
 		],
+		reportID:
+			'dashboard_wp-dashboard-unique-visitors-ga4_component_reportArgs',
 	};
 
 	const data = useInViewSelect(

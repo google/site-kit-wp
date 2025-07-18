@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.8
 Requires PHP:      7.4
-Stable tag:        1.155.0
+Stable tag:        1.157.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,23 +109,30 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.155.0 =
+= 1.157.0 =
 
 **Enhanced**
 
-* Redesign the Enhanced Measurement Banner with the new Middle SVG and In Progress Banner states. See [#10813](https://github.com/google/site-kit-wp/issues/10813).
-* Refactor Setup CTA Widgets which use the new "Top SVG" Banner component variation. See [#10716](https://github.com/google/site-kit-wp/issues/10716).
-* Update the Consent Mode, Ads Setup, and Reader Revenue Manager banner images. See [#10715](https://github.com/google/site-kit-wp/issues/10715).
-* Update the Setup CTAs to use a different/consistent image style. See [#10714](https://github.com/google/site-kit-wp/issues/10714).
-* Remove the `rrmModule` feature flag. See [#10677](https://github.com/google/site-kit-wp/issues/10677).
-* Refactor AudienceSegmentationIntroductoryOverlayNotification to use the new notifications infrastructure. See [#10391](https://github.com/google/site-kit-wp/issues/10391).
-* Enhance the loading performance of the Audiences Widget by refining the data fetching logic. See [#9982](https://github.com/google/site-kit-wp/issues/9982).
-* Update references to Google Analytics "conversions" to use the new "key events" terminology across the plugin. See [#9463](https://github.com/google/site-kit-wp/issues/9463).
-* Refactor Audience Segmentation / FPM Setup Success Subtle Notifications to use a new "on demand" notification. See [#9453](https://github.com/google/site-kit-wp/issues/9453).
+* Show an in-progress spinner in the Google Tag Gateway Setup Banner's CTA button when it's clicked and setup is underway. See [#11027](https://github.com/google/site-kit-wp/issues/11027).
+* Update "First-party mode" references to "Google tag gateway for advertisers". See [#10951](https://github.com/google/site-kit-wp/issues/10951).
+* Add support for named date ranges when requesting Google Analytics reports. Props leonidasmi. See [#10738](https://github.com/google/site-kit-wp/issues/10738).
+* Apply the “Warning Banner” layout to redesign the `WebDataStreamNotAvailableNotification` banner. See [#10424](https://github.com/google/site-kit-wp/issues/10424).
+* Update the design of the Google Tag ID mismatch notification. See [#10423](https://github.com/google/site-kit-wp/issues/10423).
+* Apply the “Error Banner” layout to redesign the `AuthError` banner. See [#10422](https://github.com/google/site-kit-wp/issues/10422).
+* Update the error banner styling. See [#10421](https://github.com/google/site-kit-wp/issues/10421).
+* Apply the “Error Banner” layout to redesign the `UnsatisfiedScopesAlert` banner. See [#10420](https://github.com/google/site-kit-wp/issues/10420).
+* Update the module Recovery Alert banner design. See [#10384](https://github.com/google/site-kit-wp/issues/10384).
+* Update the "Confirm changes" module settings button to retain its label while saving. See [#10282](https://github.com/google/site-kit-wp/issues/10282).
+* Refactor `CoreSiteBannerNotifications` to use the new Notifications datastore. See [#9294](https://github.com/google/site-kit-wp/issues/9294).
+* Introduce consistent `Typography` component. See [#8581](https://github.com/google/site-kit-wp/issues/8581).
+* Update the Ad Blocking Recovery setup screen to better match the Figma design. Props mxbclang. See [#7300](https://github.com/google/site-kit-wp/issues/7300).
+* Add internal URL utility selectors. See [#7112](https://github.com/google/site-kit-wp/issues/7112).
 
 **Fixed**
 
-* Fix bug that could cause auth setup banners to be interrupted by another notification. See [#10903](https://github.com/google/site-kit-wp/issues/10903).
-* Update the key metrics setup banner to continue showing the progress state in the CTA button until the next page loads. See [#10721](https://github.com/google/site-kit-wp/issues/10721).
+* Fix site health information for Google Tag Gateway enabled status. See [#11039](https://github.com/google/site-kit-wp/issues/11039).
+* Fix the console error that appeared when setting up visitor groups from Admin settngs. See [#10965](https://github.com/google/site-kit-wp/issues/10965).
+* Ensure spinner appears on Enhanced Measurement CTA button. See [#10960](https://github.com/google/site-kit-wp/issues/10960).
+* Update the design of the "Enable auto-updates" notification banner. See [#10956](https://github.com/google/site-kit-wp/issues/10956).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

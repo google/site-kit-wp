@@ -21,19 +21,14 @@ const viewports = require( './viewports' );
 
 module.exports = {
 	onBeforeScript: 'puppet/onBefore.js',
+	onReadyScript: 'puppet/onReady.js',
 	asyncCaptureLimit: 5,
 	asyncCompareLimit: 50,
 	debug: false,
 	debugWindow: false,
 	engine: 'puppeteer',
 	engineOptions: {
-		args: [
-			'--no-sandbox',
-			'--disable-gpu',
-			'--disable-setuid-sandbox',
-			'--no-zygote',
-			'--accept-lang=en-US',
-		],
+		args: [ '--no-sandbox', '--accept-lang=en-US' ],
 		executablePath: '/usr/bin/chromium',
 	},
 	id: 'google-site-kit',

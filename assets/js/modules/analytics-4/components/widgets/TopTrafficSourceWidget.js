@@ -60,6 +60,8 @@ function TopTrafficSourceWidget( { Widget } ) {
 				name: 'totalUsers',
 			},
 		],
+		reportID:
+			'analytics-4_top-traffic-source-widget_widget_totalUsersReportOptions',
 	};
 
 	const trafficSourceReportOptions = {
@@ -72,6 +74,8 @@ function TopTrafficSourceWidget( { Widget } ) {
 		],
 		limit: 1,
 		orderBy: 'totalUsers',
+		reportID:
+			'analytics-4_top-traffic-source-widget_widget_trafficSourceReportOptions',
 	};
 
 	const totalUsersReport = useInViewSelect(
