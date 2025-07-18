@@ -37,18 +37,9 @@ import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 
 describe( 'CoreSiteBannerNotifications', () => {
 	let registry;
-	let originalSetTimeout;
 
 	beforeEach( () => {
 		jest.useFakeTimers();
-		// Store the original setTimeout function.
-		originalSetTimeout = global.setTimeout;
-		// Mock the setTimeout function.
-		jest.spyOn( global, 'setTimeout' ).mockImplementation(
-			( callback, delay ) => {
-				originalSetTimeout( callback, delay );
-			}
-		);
 
 		registry = createTestRegistry();
 
@@ -74,7 +65,7 @@ describe( 'CoreSiteBannerNotifications', () => {
 	} );
 
 	afterEach( () => {
-		global.setTimeout = originalSetTimeout;
+		jest.useRealTimers();
 	} );
 
 	it( 'does register server notification after surveys have loaded', async () => {
