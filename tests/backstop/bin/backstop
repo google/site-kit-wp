@@ -30,14 +30,19 @@ IMAGE=ghcr.io/google/site-kit-wp/vrt:$VERSION
 # it will be used below unless this pull command is run first.
 # For local development, set BACKSTOP_NO_PULL=1 to skip pulling and use a local build.
 
-# Set pull behavior based on environment variable
+# Set pull behavior based on environment variable.
 PULL_FLAG=""
 if [ "$BACKSTOP_NO_PULL" != "1" ]; then
 	PULL_FLAG="--pull=always"
 fi
 
+# FIXME: Temporarily force local build for testing - remove this later.
+echo "Building Docker image locally for testing..."
+docker build -t $IMAGE "$ROOT_DIR/tests/backstop"
+
+# Run with the locally built image.
+# FIXME: Restore $PULL_FLAG when testing is complete.
 docker run --rm --tty \
-	$PULL_FLAG \
 	--shm-size=512m \
 	--mount "type=bind,source=$ROOT_DIR,target=/src" \
 	--env STORYBOOK_SERVER_URL=http://localhost:3000/iframe.html?id= \
