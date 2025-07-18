@@ -32,6 +32,15 @@ import {
 	ANCHOR_ID_TRAFFIC,
 } from '../../../../googlesitekit/constants';
 
+/**
+ * Returns helper data and functions for navigation chips.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}        params                 Parameters for the hook.
+ * @param {Array<string>} params.visibleSections The sections that are currently visible.
+ * @return {Object} An object containing helper data and functions for navigation chips.
+ */
 export default function useNavChipHelpers( { visibleSections } ) {
 	const breakpoint = useBreakpoint();
 	const viewOnlyDashboard = useViewOnly();

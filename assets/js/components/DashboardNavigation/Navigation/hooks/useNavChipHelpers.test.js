@@ -48,6 +48,25 @@ describe( 'useNavChipHelpers', () => {
 		ANCHOR_ID_MONETIZATION,
 	];
 
+	it( 'should return necessary data and functions', () => {
+		const { result } = renderHook(
+			() =>
+				useNavChipHelpers( {
+					visibleSections,
+				} ),
+			{
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		expect( result.current ).toHaveProperty( 'calculateScrollPosition' );
+		expect( result.current ).toHaveProperty( 'defaultChipID' );
+		expect( result.current ).toHaveProperty( 'findClosestSection' );
+		expect( result.current ).toHaveProperty( 'isValidChipID' );
+		expect( result.current ).toHaveProperty( 'scrollToChip' );
+		expect( result.current ).toHaveProperty( 'updateURLHash' );
+	} );
+
 	describe( 'defaultChipID', () => {
 		it( 'should return ANCHOR_ID_KEY_METRICS when key metrics is visible', () => {
 			const { result } = renderHook(

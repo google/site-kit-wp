@@ -62,6 +62,13 @@ export const contexts = {
 	},
 };
 
+/**
+ * Returns the visible sections for the dashboard navigation.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Array<string>} The visible sections.
+ */
 export default function useVisibleSections() {
 	const dashboardType = useDashboardType();
 	const viewOnlyDashboard = useViewOnly();
