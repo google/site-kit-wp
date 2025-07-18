@@ -1762,8 +1762,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				$property_id    = self::normalize_property_id( $settings['propertyID'] );
 
 				return $analyticsadmin
-				->properties_keyEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-				->listPropertiesKeyEvents( $property_id );
+					->properties_keyEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					->listPropertiesKeyEvents( $property_id );
 			case 'POST:set-google-tag-id-mismatch':
 				if ( ! isset( $data['hasMismatchedTag'] ) ) {
 					throw new Missing_Required_Param_Exception( 'hasMismatchedTag' );
@@ -1771,12 +1771,14 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 				if ( false === $data['hasMismatchedTag'] ) {
 					return function () {
-						return $this->transients->delete( 'googlesitekit_inline_tag_id_mismatch' );
+						$this->transients->delete( 'googlesitekit_inline_tag_id_mismatch' );
+						return false;
 					};
 				}
 
 				return function () use ( $data ) {
-					return $this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
+					$this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
+					return $data['hasMismatchedTag'];
 				};
 			case 'POST:set-is-web-data-stream-available':
 				if ( ! isset( $data['isWebDataStreamAvailable'] ) ) {
@@ -1785,12 +1787,14 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 				if ( true === $data['isWebDataStreamAvailable'] ) {
 					return function () use ( $data ) {
-						return $this->transients->set( 'googlesitekit_web_data_stream_availability', $data['isWebDataStreamAvailable'] );
+						$this->transients->set( 'googlesitekit_web_data_stream_availability', $data['isWebDataStreamAvailable'] );
+						return $data['isWebDataStreamAvailable'];
 					};
 				}
 
 				return function () {
-					return $this->transients->delete( 'googlesitekit_web_data_stream_availability' );
+					$this->transients->delete( 'googlesitekit_web_data_stream_availability' );
+					return false;
 				};
 		}
 
