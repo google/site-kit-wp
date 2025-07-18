@@ -26,7 +26,6 @@ import {
 	provideModules,
 	provideSiteInfo,
 	act,
-	waitFor,
 } from '../../../../tests/js/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -64,10 +63,6 @@ describe( 'CoreSiteBannerNotifications', () => {
 			.receiveGetNotifications( [ notification1 ], {} );
 	} );
 
-	afterEach( () => {
-		jest.useRealTimers();
-	} );
-
 	it( 'does register server notification after surveys have loaded', async () => {
 		const fetchGetDismissedItems = new RegExp(
 			'^/google-site-kit/v1/core/user/data/dismissed-items'
@@ -89,17 +84,17 @@ describe( 'CoreSiteBannerNotifications', () => {
 		// This component does not render anything directly,
 		expect( container.childElementCount ).toBe( undefined );
 
-		const { getQueuedNotifications } =
-			registry.select( CORE_NOTIFICATIONS );
+		// Switch to real timers for the async resolver.
+		jest.useRealTimers();
 
-		await waitFor( () => {
-			expect(
-				getQueuedNotifications(
-					VIEW_CONTEXT_MAIN_DASHBOARD,
-					NOTIFICATION_GROUPS.DEFAULT
-				).length
-			).toBe( 1 );
-		} );
+		const queuedNotifications = await registry
+			.resolveSelect( CORE_NOTIFICATIONS )
+			.getQueuedNotifications(
+				VIEW_CONTEXT_MAIN_DASHBOARD,
+				NOTIFICATION_GROUPS.DEFAULT
+			);
+
+		expect( queuedNotifications.length ).toBe( 1 );
 	} );
 
 	it( 'does not render notification with survey', () => {
