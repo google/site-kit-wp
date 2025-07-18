@@ -2424,61 +2424,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		return $settings['measurementID'];
 	}
 
-	/**
-	 * Populates custom dimension data to pass to JS via _googlesitekitModulesData.
-	 *
-	 * @since 1.113.0
-	 * @since n.e.x.t Renamed method to `get_inline_custom_dimensions_data()`, and modified it to return a new array rather than populating a passed filter value.
-	 *
-	 * @return array Inline modules data.
-	 */
-	private function get_inline_custom_dimensions_data() {
-		if ( $this->is_connected() ) {
-			return array(
-				'customDimensionsDataAvailable' => $this->custom_dimensions_data_available->get_data_availability(),
-			);
-		}
 
-		return array();
-	}
 
-	/**
-	 * Populates tag ID mismatch value to pass to JS via _googlesitekitModulesData.
-	 *
-	 * @since 1.130.0
-	 * @since n.e.x.t Renamed method to `get_inline_tag_id_mismatch()`, and modified it to return a new array rather than populating a passed filter value.
-	 *
-	 * @return array Inline modules data.
-	 */
-	private function get_inline_tag_id_mismatch() {
-		if ( $this->is_connected() ) {
-			$tag_id_mismatch = $this->transients->get( 'googlesitekit_inline_tag_id_mismatch' );
-
-			return array(
-				'tagIDMismatch' => $tag_id_mismatch,
-			);
-		}
-
-		return array();
-	}
-
-	/**
-	 * Populates resource availability dates data to pass to JS via _googlesitekitModulesData.
-	 *
-	 * @since 1.127.0
-	 * @since n.e.x.t Renamed method to `get_inline_resource_availability_dates_data()`, and modified it to return a new array rather than populating a passed filter value.
-	 *
-	 * @return array Inline modules data.
-	 */
-	private function get_inline_resource_availability_dates_data() {
-		if ( $this->is_connected() ) {
-			return array(
-				'resourceAvailabilityDates' => $this->resource_data_availability_date->get_all_resource_dates(),
-			);
-		}
-
-		return array();
-	}
 
 	/**
 	 * Filters whether or not the option to exclude certain users from tracking should be displayed.
@@ -2698,30 +2645,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	}
 
 	/**
-	 * Populates conversion reporting event data to pass to JS via _googlesitekitModulesData.
-	 *
-	 * @since 1.139.0
-	 * @since n.e.x.t Renamed method to `get_inline_conversion_reporting_events_detection()`, and modified it to return a new array rather than populating a passed filter value.
-	 *
-	 * @return array Inline modules data.
-	 */
-	private function get_inline_conversion_reporting_events_detection() {
-		if ( ! $this->is_connected() ) {
-			return array();
-		}
-
-		$detected_events  = $this->transients->get( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
-		$lost_events      = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
-		$new_events_badge = $this->transients->get( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
-
-		return array(
-			'newEvents'      => is_array( $detected_events ) ? $detected_events : array(),
-			'lostEvents'     => is_array( $lost_events ) ? $lost_events : array(),
-			'newBadgeEvents' => is_array( $new_events_badge ) ? $new_events_badge['events'] : array(),
-		);
-	}
-
-	/**
 	 * Gets required inline data for the module.
 	 *
 	 * @since n.e.x.t
@@ -2729,38 +2652,37 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return array An array of the module's inline data.
 	 */
 	public function get_inline_data() {
-		$inline_data = array_merge(
-			$this->get_inline_custom_dimensions_data(),
-			$this->get_inline_resource_availability_dates_data(),
-			$this->get_inline_tag_id_mismatch(),
-			$this->get_inline_conversion_reporting_events_detection()
-		);
-
-		if ( empty( $inline_data ) ) {
+		if ( ! $this->is_connected() ) {
 			return array();
 		}
+
+		$inline_data = array();
+
+		// Custom dimensions data.
+		$inline_data['customDimensionsDataAvailable'] = $this->custom_dimensions_data_available->get_data_availability();
+
+		// Resource availability dates data.
+		$inline_data['resourceAvailabilityDates'] = $this->resource_data_availability_date->get_all_resource_dates();
+
+		// Tag ID mismatch data.
+		$tag_id_mismatch              = $this->transients->get( 'googlesitekit_inline_tag_id_mismatch' );
+		$inline_data['tagIDMismatch'] = $tag_id_mismatch;
+
+		// Conversion reporting events detection data.
+		$detected_events  = $this->transients->get( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
+		$lost_events      = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
+		$new_events_badge = $this->transients->get( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
+
+		$inline_data['newEvents']      = is_array( $detected_events ) ? $detected_events : array();
+		$inline_data['lostEvents']     = is_array( $lost_events ) ? $lost_events : array();
+		$inline_data['newBadgeEvents'] = is_array( $new_events_badge ) ? $new_events_badge['events'] : array();
+
+		// Web data stream availability data.
+		$is_web_data_stream_available            = $this->transients->get( 'googlesitekit_web_data_stream_availability' );
+		$inline_data['isWebDataStreamAvailable'] = $is_web_data_stream_available;
 
 		return array(
 			self::MODULE_SLUG => $inline_data,
 		);
-	}
-
-	/**
-	 * Populates web data stream availability data to pass to JS via _googlesitekitModulesData.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $modules_data Inline modules data.
-	 * @return array Inline modules data.
-	 */
-	public function inline_webdatastream_availability( $modules_data ) {
-		if ( ! $this->is_connected() ) {
-			return $modules_data;
-		}
-
-		$is_web_data_stream_available                            = $this->transients->get( 'googlesitekit_web_data_stream_availability' );
-		$modules_data['analytics-4']['isWebDataStreamAvailable'] = $is_web_data_stream_available;
-
-		return $modules_data;
 	}
 }
