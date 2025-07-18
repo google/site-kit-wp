@@ -226,7 +226,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	);
 
 	it( 'should sync onboarding state when the window is refocused 15 seconds after clicking the CTA', async () => {
-		jest.useFakeTimers();
+		jest.useFakeTimers( 'modern' );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -289,6 +289,11 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 		act( () => {
 			global.window.dispatchEvent( new Event( 'focus' ) );
+		} );
+
+		// Allow microtasks to flush after triggering the focus event
+		await act( async () => {
+			await jest.runAllTimersAsync();
 		} );
 
 		await waitFor( () => {
