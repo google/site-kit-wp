@@ -25,7 +25,7 @@ exports[`Stepper should render all steps as completed when activeStep is greater
         class="googlesitekit-stepper__step-info"
       >
         <h2
-          class="googlesitekit-stepper__step-title"
+          class="googlesitekit-typography googlesitekit-stepper__step-title googlesitekit-typography--title googlesitekit-typography--medium"
         >
           Step 1
         </h2>
@@ -51,7 +51,7 @@ exports[`Stepper should render all steps as completed when activeStep is greater
         class="googlesitekit-stepper__step-info"
       >
         <h2
-          class="googlesitekit-stepper__step-title"
+          class="googlesitekit-typography googlesitekit-stepper__step-title googlesitekit-typography--title googlesitekit-typography--medium"
         >
           Step 2
         </h2>
@@ -89,7 +89,7 @@ exports[`Stepper should render all steps as upcoming when activeStep is negative
         class="googlesitekit-stepper__step-info"
       >
         <h2
-          class="googlesitekit-stepper__step-title"
+          class="googlesitekit-typography googlesitekit-stepper__step-title googlesitekit-typography--title googlesitekit-typography--medium"
         >
           Step 1
         </h2>
@@ -115,7 +115,7 @@ exports[`Stepper should render all steps as upcoming when activeStep is negative
         class="googlesitekit-stepper__step-info"
       >
         <h2
-          class="googlesitekit-stepper__step-title"
+          class="googlesitekit-typography googlesitekit-stepper__step-title googlesitekit-typography--title googlesitekit-typography--medium"
         >
           Step 2
         </h2>
@@ -153,7 +153,7 @@ exports[`Stepper should render all steps as upcoming when activeStep is not prov
         class="googlesitekit-stepper__step-info"
       >
         <h2
-          class="googlesitekit-stepper__step-title"
+          class="googlesitekit-typography googlesitekit-stepper__step-title googlesitekit-typography--title googlesitekit-typography--medium"
         >
           Step 1
         </h2>
@@ -179,7 +179,7 @@ exports[`Stepper should render all steps as upcoming when activeStep is not prov
         class="googlesitekit-stepper__step-info"
       >
         <h2
-          class="googlesitekit-stepper__step-title"
+          class="googlesitekit-typography googlesitekit-stepper__step-title googlesitekit-typography--title googlesitekit-typography--medium"
         >
           Step 2
         </h2>
@@ -217,7 +217,7 @@ exports[`Stepper should render the active step as active and display its content
         class="googlesitekit-stepper__step-info"
       >
         <h2
-          class="googlesitekit-stepper__step-title"
+          class="googlesitekit-typography googlesitekit-stepper__step-title googlesitekit-typography--title googlesitekit-typography--medium"
         >
           Step 1
         </h2>
@@ -249,7 +249,7 @@ exports[`Stepper should render the active step as active and display its content
         class="googlesitekit-stepper__step-info"
       >
         <h2
-          class="googlesitekit-stepper__step-title"
+          class="googlesitekit-typography googlesitekit-stepper__step-title googlesitekit-typography--title googlesitekit-typography--medium"
         >
           Step 2
         </h2>
@@ -287,7 +287,7 @@ exports[`Stepper should render the active step as active and display its content
         class="googlesitekit-stepper__step-info"
       >
         <h2
-          class="googlesitekit-stepper__step-title"
+          class="googlesitekit-typography googlesitekit-stepper__step-title googlesitekit-typography--title googlesitekit-typography--medium"
         >
           Step 1
         </h2>
@@ -313,7 +313,7 @@ exports[`Stepper should render the active step as active and display its content
         class="googlesitekit-stepper__step-info"
       >
         <h2
-          class="googlesitekit-stepper__step-title"
+          class="googlesitekit-typography googlesitekit-stepper__step-title googlesitekit-typography--title googlesitekit-typography--medium"
         >
           Step 2
         </h2>

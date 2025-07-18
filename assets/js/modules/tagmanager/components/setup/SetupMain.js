@@ -36,6 +36,7 @@ import SetupForm from './SetupForm';
 import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import { AccountCreate } from '../common';
+import Typography from '../../../../components/Typography';
 
 export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) =>
@@ -73,9 +74,14 @@ export default function SetupMain( { finishSetup } ) {
 					<TagManagerIcon width="40" height="40" />
 				</div>
 
-				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+				<Typography
+					as="h3"
+					className="googlesitekit-setup-module__title"
+					size="small"
+					type="headline"
+				>
 					{ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) }
-				</h2>
+				</Typography>
 			</div>
 			<div className="googlesitekit-setup-module__step">
 				{ viewComponent }

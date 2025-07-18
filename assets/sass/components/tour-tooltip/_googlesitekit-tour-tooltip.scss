@@ -64,6 +64,8 @@
 
 .googlesitekit-tooltip-title {
 	color: $c-content-on-primary;
+
+	// The tooltip title overrides the default Typography styles.
 	font-family: $f-secondary;
 	font-size: $fs-body-lg;
 	font-weight: $fw-medium;

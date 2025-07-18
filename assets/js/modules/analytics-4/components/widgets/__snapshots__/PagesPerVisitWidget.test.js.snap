@@ -71,7 +71,7 @@ exports[`PagesPerVisitWidget should render the generic error variant when the re
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Pages per visit
         </h2>
@@ -133,7 +133,7 @@ exports[`PagesPerVisitWidget should render the insufficient permissions error va
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Pages per visit
         </h2>
