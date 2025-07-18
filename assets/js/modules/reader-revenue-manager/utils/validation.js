@@ -56,28 +56,6 @@ export function isValidOnboardingState( onboardingState ) {
 }
 
 /**
- * Checks if a given URL uses HTTPS.
- *
- * @since 1.131.0
- *
- * @param {string} url The URL to check.
- * @return {boolean} True if the URL uses HTTPS, false otherwise.
- */
-export const isURLUsingHTTPS = ( url ) => {
-	try {
-		if ( typeof url !== 'string' || ! url ) {
-			throw new TypeError( `Invalid URL: ${ url }` );
-		}
-
-		const parsedURL = new URL( url );
-		return parsedURL.protocol === 'https:';
-	} catch ( error ) {
-		global.console.warn( 'Invalid URL:', error );
-		return false;
-	}
-};
-
-/**
  * Validates if a value is one of the allowed snippet modes.
  *
  * @since 1.145.0
