@@ -368,9 +368,7 @@ class Google_Proxy {
 	 * @param Credentials $credentials Credentials instance.
 	 * @return array|WP_Error The response as an associative array or WP_Error on failure.
 	 */
-	public function fetch_site_fields( Credentials $credentials ) {
-		return $this->request( self::OAUTH2_SITE_URI, $credentials );
-	}
+	
 
 	/**
 	 * Are site fields synced
@@ -381,21 +379,7 @@ class Google_Proxy {
 	 *
 	 * @return boolean|WP_Error Boolean do the site fields match or WP_Error on failure.
 	 */
-	public function are_site_fields_synced( Credentials $credentials ) {
-		$site_fields = $this->fetch_site_fields( $credentials );
-		if ( is_wp_error( $site_fields ) ) {
-			return $site_fields;
-		}
-
-		$get_site_fields = $this->get_site_fields();
-		foreach ( $get_site_fields as $key => $site_field ) {
-			if ( ! array_key_exists( $key, $site_fields ) || $site_fields[ $key ] !== $site_field ) {
-				return false;
-			}
-		}
-
-		return true;
-	}
+	
 
 	/**
 	 * Gets user fields.
