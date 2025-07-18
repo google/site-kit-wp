@@ -1,0 +1,134 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+## Development Commands
+
+### Build and Development
+- `npm run build` - Build for production
+- `npm run build:dev` - Build for development with source maps
+- `npm run watch` - Watch mode for development
+- `npm run dev` - Alias for `npm run build:dev`
+
+### Testing
+- `npm run test` - Run JavaScript tests in watch mode
+- `npm run test:js` - Run JavaScript tests once
+- `npm run test:storybook` - Run Storybook tests
+- `npm run test:e2e` - Run end-to-end tests
+- `npm run test:visualtest` - Run visual regression tests
+- `npm run test:visualapprove` - Approve visual test changes
+- `composer run test` - Run PHP unit tests
+- `composer run test:multisite` - Run PHP multisite tests
+
+### Linting and Code Quality
+- `npm run lint` - Run all linters (JavaScript and CSS)
+- `npm run lint:js` - Run JavaScript linter
+- `npm run lint:js-fix` - Fix JavaScript linting issues
+- `npm run lint:css` - Run CSS linter
+- `npm run lint:css-fix` - Fix CSS linting issues
+- `composer run lint` - Run PHP linter (PHPCS)
+- `composer run lint-fix` - Fix PHP linting issues (PHPCBF)
+
+### Storybook
+- `npm run storybook` - Start Storybook development server
+- `npm run build:storybook` - Build Storybook for production
+
+## Code Architecture
+
+### High-Level Structure
+Site Kit by Google is a WordPress plugin that integrates various Google services. The codebase follows a modular architecture with clear separation between backend (PHP) and frontend (React) components.
+
+### Backend Architecture (PHP)
+- **Core namespace**: `Google\Site_Kit\` (PSR-4 autoloading from `includes/`)
+- **Modules**: Each Google service is implemented as a separate module in `includes/Modules/`
+- **Modular design**: Core functionality is in `includes/Core/` with modules extending base classes
+- **REST API**: All API endpoints are implemented as REST controllers
+- **Authentication**: OAuth2 implementation with Google's authentication service
+- **Storage**: Abstracted storage layer supporting WordPress options, user options, and encryption
+
+### Frontend Architecture (React)
+- **Component-based**: React components in `assets/js/components/`
+- **Data stores**: WordPress Data API for state management
+- **Module separation**: JavaScript modules mirror PHP module structure
+- **Webpack build**: Multiple entry points for different admin pages
+- **Material Design**: Uses Material-UI components with custom styling
+
+### Key Modules
+- **Analytics_4**: Google Analytics 4 integration
+- **AdSense**: Google AdSense integration
+- **Search_Console**: Google Search Console integration
+- **Tag_Manager**: Google Tag Manager integration
+- **PageSpeed_Insights**: PageSpeed Insights integration
+- **Reader_Revenue_Manager**: Reader Revenue Manager integration
+- **Sign_In_With_Google**: Sign In With Google integration
+
+### Module System
+- Base class: `Module` in `includes/Core/Modules/`
+- Modules implement various interfaces for different capabilities:
+  - `Module_With_Assets`: For modules that enqueue assets
+  - `Module_With_Settings`: For modules with settings
+  - `Module_With_Scopes`: For modules requiring OAuth scopes
+  - `Module_With_Tag`: For modules that output tracking tags
+  - `Module_With_Activation`: For modules with activation steps
+
+### Authentication System
+- **OAuth2 flow**: Implemented in `includes/Core/Authentication/`
+- **Google Proxy**: Site Kit authentication service integration
+- **Scopes management**: Dynamic scope management based on active modules
+- **Token handling**: Secure token storage and refresh mechanisms
+
+### Data Storage
+- **Options API**: WordPress options with encryption support
+- **User options**: Per-user settings storage
+- **Transients**: Temporary data caching
+- **Meta storage**: Post/term meta integration for specific features
+
+### Asset Management
+- **Webpack**: Multiple configurations for different build targets
+- **Code splitting**: Separate bundles for different admin pages
+- **CSS/SCSS**: Modular styling with Material Design components
+- **SVG handling**: Optimized SVG icon and graphic management
+
+## Important Development Notes
+
+### PHP Standards
+- Follow WordPress coding standards (WPCS)
+- Use PSR-4 autoloading
+- Document all classes and methods with `@since n.e.x.t` for new code
+- Use dependency injection where appropriate
+
+### JavaScript Standards
+- Use React functional components with hooks
+- Follow WordPress JavaScript coding standards
+- Use WordPress Data API for state management
+- Write comprehensive tests for all components
+
+### Testing Requirements
+- PHP: PHPUnit tests in `tests/phpunit/`
+- JavaScript: Jest tests alongside component files
+- Visual regression: Storybook stories for UI components
+- End-to-end: Puppeteer tests in `tests/e2e/`
+
+### Module Development
+When creating new modules:
+1. Extend the base `Module` class
+2. Implement necessary interfaces based on functionality
+3. Add REST API endpoints if needed
+4. Create corresponding JavaScript components
+5. Add comprehensive tests
+
+### Build Process
+- Uses npm workspaces for monorepo structure
+- Webpack builds assets from `assets/` to `dist/`
+- PHP dependencies are scoped to avoid conflicts
+- Composer autoloads are generated for includes
+
+### Key Configuration Files
+- `webpack.config.js` - Main Webpack configuration
+- `phpunit.xml.dist` - PHPUnit configuration
+- `composer.json` - PHP dependencies and scripts
+- `package.json` - Node.js dependencies and scripts
+- `.eslintrc.json` - JavaScript linting rules
+- `phpcs.xml` - PHP coding standards rules
