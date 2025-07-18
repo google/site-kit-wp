@@ -149,6 +149,56 @@ final class Client_Factory {
 			$config['proxy'] = "{$auth}{$http_proxy->host()}:{$http_proxy->port()}";
 		}
 
+		// Respect WordPress HTTP request blocking settings.
+		if ( defined( 'WP_HTTP_BLOCK_EXTERNAL' ) && WP_HTTP_BLOCK_EXTERNAL ) {
+			// Get the site host.
+			$site_host = wp_parse_url( home_url(), PHP_URL_HOST );
+
+			// Get allowed hosts from WP_ACCESSIBLE_HOSTS.
+			$allowed_hosts = array( 'localhost', '127.0.0.1', $site_host );
+			if ( defined( 'WP_ACCESSIBLE_HOSTS' ) && WP_ACCESSIBLE_HOSTS ) {
+				$user_allowed_hosts = explode( ',', WP_ACCESSIBLE_HOSTS );
+				$allowed_hosts      = array_merge( $allowed_hosts, array_map( 'trim', $user_allowed_hosts ) );
+			}
+
+			// Create a handler stack with middleware to check hosts.
+			$stack = \Google\Site_Kit_Dependencies\GuzzleHttp\HandlerStack::create();
+			$stack->push(
+				function ( $handler ) use ( $allowed_hosts ) {
+					return function ( $request, $options ) use ( $handler, $allowed_hosts ) {
+						$host = wp_parse_url( (string) $request->getUri(), PHP_URL_HOST );
+
+						// Check if the host is allowed or matches a wildcard.
+						$allowed = false;
+						foreach ( $allowed_hosts as $allowed_host ) {
+							// Check for wildcard domains (*.example.com).
+							if ( strpos( $allowed_host, '*.' ) === 0 ) {
+								$domain = substr( $allowed_host, 2 );
+								if ( $host === $domain || preg_match( '/\.' . preg_quote( $domain, '/' ) . '$/', $host ) ) {
+									$allowed = true;
+									break;
+								}
+							} elseif ( $host === $allowed_host ) {
+								$allowed = true;
+								break;
+							}
+						}
+
+						if ( ! $allowed ) {
+							throw new \Google\Site_Kit_Dependencies\GuzzleHttp\Exception\RequestException(
+								sprintf( 'Request to %s blocked by WordPress. (WP_HTTP_BLOCK_EXTERNAL)', $host ),
+								$request
+							);
+						}
+
+						return $handler( $request, $options );
+					};
+				}
+			);
+
+			$config['handler'] = $stack;
+		}
+
 		/**
 		 * Filters the IP version to force hostname resolution with.
 		 *
