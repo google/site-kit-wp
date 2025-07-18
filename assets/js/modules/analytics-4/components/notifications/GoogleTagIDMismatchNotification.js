@@ -176,7 +176,7 @@ export default function GoogleTagIDMismatchNotification( {
 		newAnalyticsProperty?._id &&
 		currentAnalyticsProperty._id === newAnalyticsProperty._id
 	) {
-		// return null;
+		return null;
 	}
 
 	if ( newAnalyticsProperty ) {

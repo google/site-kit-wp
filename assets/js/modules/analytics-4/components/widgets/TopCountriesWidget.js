@@ -64,6 +64,8 @@ function TopCountriesWidget( { Widget } ) {
 			},
 		],
 		limit: 4,
+		reportID:
+			'analytics-4_top-countries-widget_widget_topCountriesReportOptions',
 	};
 
 	const topCountriesReport = useInViewSelect(

@@ -125,6 +125,9 @@ function provideAudienceTilesMockReport(
 			{ name: 'screenPageViewsPerSession' },
 			{ name: 'screenPageViews' },
 		],
+		reportID: isSiteKitAudiencePartialData
+			? 'audience-segmentation_use-audience-tiles-reports_hook_newVsReturningReportOptions'
+			: 'audience-segmentation_use-audience-tiles-reports_hook_reportOptions',
 	};
 
 	const options = {
@@ -161,6 +164,8 @@ function provideAudienceTilesMockReport(
 		startDate,
 		endDate,
 		metrics: [ { name: 'screenPageViews' } ],
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_totalPageviewsReportOptions',
 	};
 
 	const totalPageviewsReportData = getAnalytics4MockResponse( options );
@@ -189,6 +194,8 @@ function provideAudienceTilesMockReport(
 			},
 		],
 		limit: 4,
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_topCitiesReportOptions',
 	};
 
 	const topContentReportOptions = {
@@ -205,6 +212,8 @@ function provideAudienceTilesMockReport(
 		},
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 3,
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_topContentReportOptions',
 	};
 
 	const topContentPageTitlesReportOptions = {
@@ -221,6 +230,8 @@ function provideAudienceTilesMockReport(
 		},
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 15,
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_topContentPageTitlesReportOptions',
 	};
 
 	[

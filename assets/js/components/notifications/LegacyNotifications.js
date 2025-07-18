@@ -25,15 +25,12 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
-import AdSenseAlerts from './AdSenseAlerts';
 import useViewOnly from '../../hooks/useViewOnly';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../hooks/useDashboardType';
-import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
 import InternalServerError from './InternalServerError';
 
 export default function LegacyNotifications() {
@@ -43,19 +40,13 @@ export default function LegacyNotifications() {
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
-	const adSenseModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ADSENSE )
-	);
 
 	return (
 		<Fragment>
 			<InternalServerError />
-			{ ! viewOnly && dashboardType === DASHBOARD_TYPE_MAIN && (
-				<Fragment>
-					{ adSenseModuleActive && <AdSenseAlerts /> }
-					{ isAuthenticated && <CoreSiteBannerNotifications /> }
-				</Fragment>
-			) }
+			{ ! viewOnly &&
+				dashboardType === DASHBOARD_TYPE_MAIN &&
+				isAuthenticated && <CoreSiteBannerNotifications /> }
 		</Fragment>
 	);
 }

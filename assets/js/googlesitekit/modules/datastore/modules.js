@@ -1456,7 +1456,7 @@ const baseSelectors = {
 	 * Returns an object keyed by module slug, containing error details and module name,
 	 * for all recoverable modules that have a corresponding recovery error.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.157.0
 	 *
 	 * @param {Object} state Data store's state (unused in this selector).
 	 * @return {(Object|undefined)} Object of recovery errors keyed by module slug,
@@ -1501,7 +1501,7 @@ const baseSelectors = {
 	 * Returns an array of module slugs from `getRecoverableModules` that the user
 	 * has access to based on `hasModuleAccess`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.157.0
 	 *
 	 * @param {Object} state Data store's state (unused in this selector).
 	 * @return {(Array<string>|undefined)} Array of accessible recoverable module slugs,
