@@ -45,13 +45,10 @@ import {
 	CORE_UI,
 	ACTIVE_CONTEXT_ID,
 } from '../../../googlesitekit/datastore/ui/constants';
-import { getDefaultChipID } from './utils';
-import { getNavigationalScrollTop } from '../../../util/scroll';
 import { trackEvent } from '../../../util';
-import { useBreakpoint } from '../../../hooks/useBreakpoint';
 import useDashboardType from '../../../hooks/useDashboardType';
+import useNavChipHelpers from './hooks/useNavChipHelpers';
 import useViewContext from '../../../hooks/useViewContext';
-import useViewOnly from '../../../hooks/useViewOnly';
 import useVisibleSections from './hooks/useVisibleSections';
 import NavContentIcon from '../../../../svg/icons/nav-content-icon.svg';
 import NavKeyMetricsIcon from '../../../../svg/icons/nav-key-metrics-icon.svg';
@@ -60,12 +57,19 @@ import NavSpeedIcon from '../../../../svg/icons/nav-speed-icon.svg';
 import NavTrafficIcon from '../../../../svg/icons/nav-traffic-icon.svg';
 
 export default function Navigation() {
-	const breakpoint = useBreakpoint();
 	const dashboardType = useDashboardType();
 	const elementRef = useRef();
 	const viewContext = useViewContext();
-	const viewOnlyDashboard = useViewOnly();
 	const visibleSections = useVisibleSections();
+
+	const {
+		calculateScrollPosition,
+		defaultChipID,
+		findClosestSection,
+		isValidChipID,
+		scrollToChip,
+		updateURLHash,
+	} = useNavChipHelpers( { visibleSections } );
 
 	const initialHash = global.location.hash?.substring( 1 );
 
@@ -77,131 +81,84 @@ export default function Navigation() {
 
 	const { setValue } = useDispatch( CORE_UI );
 
-	const defaultChipID = getDefaultChipID( {
-		visibleSections,
-		viewOnlyDashboard,
-	} );
-
-	const isValidChipID = useCallback(
-		( chipID ) => visibleSections.includes( chipID ),
-		[ visibleSections ]
-	);
-
+	/**
+	 * Handles the selection of a chip.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} event The click event.
+	 * @return {void}
+	 */
 	const handleSelect = useCallback(
 		( { target } ) => {
 			const chip = target.closest( '.mdc-chip' );
-			const chipID = chip?.dataset?.contextId; // eslint-disable-line sitekit/acronym-case
+			const chipID =
+				// Uses non-acronym case to meet DOM data attribute standards.
+				// eslint-disable-next-line sitekit/acronym-case
+				chip?.dataset?.contextId;
 
-			global.history.replaceState( {}, '', `#${ chipID }` );
-
+			// Update URL and scroll to the selected chip.
+			updateURLHash( chipID );
 			setIsJumpingTo( chipID );
-			trackEvent( `${ viewContext }_navigation`, 'tab_select', chipID );
+			scrollToChip( chipID );
 
-			global.scrollTo( {
-				top:
-					chipID !== defaultChipID
-						? getNavigationalScrollTop( `#${ chipID }`, breakpoint )
-						: 0,
-				behavior: 'smooth',
-			} );
+			// Track user event.
+			trackEvent( `${ viewContext }_navigation`, 'tab_select', chipID );
 
 			setTimeout( () => {
 				setValue( ACTIVE_CONTEXT_ID, chipID );
 			}, 50 );
 		},
-		[ breakpoint, defaultChipID, setValue, viewContext ]
+		[ scrollToChip, setValue, updateURLHash, viewContext ]
 	);
 
-	// Scroll to the initial chip on mount.
-	useMount( () => {
-		if ( ! initialHash ) {
-			setSelectedID( defaultChipID );
-			setTimeout( () =>
-				global.history.replaceState( {}, '', `#${ defaultChipID }` )
-			);
+	/**
+	 * Determines the sticky state of navigation based on scroll position.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {void}
+	 */
+	const handleSticky = useCallback( () => {
+		const { top } = elementRef?.current?.getBoundingClientRect();
 
-			return;
+		if ( global.scrollY === 0 ) {
+			setIsSticky( false );
+		} else {
+			const headerBottom = document
+				.querySelector( '.googlesitekit-header' )
+				?.getBoundingClientRect().bottom;
+
+			setIsSticky( top === headerBottom );
 		}
+	}, [] );
 
-		let chipID = initialHash;
-
-		if ( ! isValidChipID( chipID ) ) {
-			chipID = defaultChipID;
-		}
-
-		setValue( ACTIVE_CONTEXT_ID, chipID );
-		setSelectedID( chipID );
-
-		setTimeout( () => {
-			const scrollTo =
-				chipID !== defaultChipID
-					? getNavigationalScrollTop( `#${ chipID }`, breakpoint )
-					: 0;
-
-			if ( global.scrollY === scrollTo ) {
+	/**
+	 * Determines the selected state of a chip based on scroll position.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Event} event The scroll event.
+	 * @return {void}
+	 */
+	const handleSelectedChip = useCallback(
+		( event ) => {
+			const changeSelectedChip = ( chipID ) => {
 				setValue( ACTIVE_CONTEXT_ID, undefined );
-				return;
-			}
+				setSelectedID( chipID );
+				setIsJumpingTo( undefined );
+			};
 
-			global.scrollTo( {
-				top: scrollTo,
-				behavior: 'smooth',
-			} );
-		}, 50 );
-	} );
+			const closestID = findClosestSection( elementRef );
 
-	// Update the selected chip based on scroll position.
-	useEffect( () => {
-		const changeSelectedChip = ( chipID ) => {
-			setValue( ACTIVE_CONTEXT_ID, undefined );
-			setSelectedID( chipID );
-			setIsJumpingTo( undefined );
-		};
-
-		const onScroll = ( event ) => {
-			const yScrollPosition = global.scrollY;
-			const entityHeader = document
-				.querySelector( '.googlesitekit-entity-header' )
-				?.getBoundingClientRect()?.bottom;
-			const { bottom: navigationBottom, top: navigationTop } =
-				elementRef?.current?.getBoundingClientRect();
-			const margin = 20;
-
-			let closest;
-			let closestID = defaultChipID;
-
-			if ( yScrollPosition === 0 ) {
-				setIsSticky( false );
-			} else {
-				const headerBottom = document
-					.querySelector( '.googlesitekit-header' )
-					?.getBoundingClientRect().bottom;
-				setIsSticky( navigationTop === headerBottom );
-			}
-
-			for ( const areaID of visibleSections ) {
-				const area = document.getElementById( areaID );
-				if ( ! area ) {
-					continue;
-				}
-
-				const top =
-					area.getBoundingClientRect().top -
-					margin -
-					( entityHeader || navigationBottom || 0 );
-
-				if ( top < 0 && ( closest === undefined || closest < top ) ) {
-					closest = top;
-					closestID = areaID;
-				}
-			}
-
+			// Check if user clicked on a chip and is actively jumping to it.
 			if ( isJumpingTo ) {
 				if ( isJumpingTo === closestID ) {
 					changeSelectedChip( closestID );
 				}
 			} else {
 				const { hash } = global.location;
+
 				if ( closestID !== hash?.substring( 1 ) ) {
 					if ( event ) {
 						trackEvent(
@@ -210,10 +167,56 @@ export default function Navigation() {
 							closestID
 						);
 					}
-					global.history.replaceState( {}, '', `#${ closestID }` );
+
+					updateURLHash( closestID );
 					changeSelectedChip( closestID );
 				}
 			}
+		},
+		[
+			findClosestSection,
+			isJumpingTo,
+			setValue,
+			updateURLHash,
+			viewContext,
+		]
+	);
+
+	// Set up initial chip on mount.
+	useMount( () => {
+		// If no initial hash is set, set the default chip as selected.
+		if ( ! initialHash ) {
+			setSelectedID( defaultChipID );
+			setTimeout( () => updateURLHash( defaultChipID ) );
+			return;
+		}
+
+		const chipID = isValidChipID( initialHash )
+			? initialHash
+			: defaultChipID;
+
+		// Set initial/default chip ID in state.
+		setSelectedID( chipID );
+		setValue( ACTIVE_CONTEXT_ID, chipID );
+
+		// Scroll to the chip position.
+		setTimeout( () => {
+			const scrollTo = calculateScrollPosition( chipID );
+
+			if ( global.scrollY === scrollTo ) {
+				setValue( ACTIVE_CONTEXT_ID, undefined );
+				return;
+			}
+
+			scrollToChip( chipID );
+		}, 50 );
+	} );
+
+	// Handle scroll events to update sticky state and selected chip.
+	useEffect( () => {
+		const onScroll = ( event ) => {
+			handleSticky();
+			handleSelectedChip( event );
 		};
 
 		const throttledOnScroll = throttle( onScroll, 150 );
@@ -222,7 +225,7 @@ export default function Navigation() {
 		return () => {
 			global.removeEventListener( 'scroll', throttledOnScroll );
 		};
-	}, [ defaultChipID, isJumpingTo, setValue, viewContext, visibleSections ] );
+	}, [ handleSelectedChip, handleSticky ] );
 
 	const chips = {
 		[ ANCHOR_ID_KEY_METRICS ]: {
