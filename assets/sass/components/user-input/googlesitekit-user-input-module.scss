@@ -23,7 +23,7 @@
 	}
 
 	.googlesitekit-user-input__header {
-		padding-bottom: 30px;
+		padding-bottom: 0;
 		padding-top: 30px;
 
 		.mdc-layout-grid__inner {
@@ -185,6 +185,32 @@
 				margin-right: 8px;
 				width: 24px;
 			}
+		}
+	}
+}
+
+.googlesite-user-input__notification {
+	bottom: 97px;
+	left: 50%;
+	position: fixed;
+	transform: translateX(-50%);
+	z-index: 10;
+
+	.googlesitekit-user-input__notification-wrapper {
+		align-items: center;
+		background-color: $c-grey-g-900;
+		border-radius: $br-lg;
+		color: $c-white;
+		display: flex;
+		font-size: $fs-body-lg;
+		letter-spacing: $ls-xxs;
+		padding: 14px 24px;
+
+		p {
+			align-items: center;
+			display: flex;
+			gap: 12px;
+			margin: 0;
 		}
 	}
 }

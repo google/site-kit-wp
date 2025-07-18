@@ -19,13 +19,13 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { useEffect, useState, Fragment } from '@wordpress/element';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../../material-components';
@@ -34,23 +34,14 @@ import HelpMenu from '../help/HelpMenu';
 import PageHeader from '../PageHeader';
 import UserInputQuestionnaire from './UserInputQuestionnaire';
 import Layout from '../layout/Layout';
-import {
-	FORM_USER_INPUT_QUESTION_NUMBER,
-	getUserInputQuestions,
-} from './util/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { getUserInputQuestions } from './util/constants';
+import ProgressSegments from '../ProgressSegments';
+import CheckFill from '../../../svg/icons/check-fill.svg';
+import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 
 export default function UserInputApp() {
-	const questionNumber =
-		useSelect( ( select ) =>
-			select( CORE_FORMS ).getValue(
-				FORM_USER_INPUT_QUESTION_NUMBER,
-				'questionNumber'
-			)
-		) || 1;
-
 	const questions = getUserInputQuestions();
-	const questionTitle = questions[ questionNumber - 1 ]?.title || '';
+	const questionTitle = questions[ 0 ]?.title || '';
 
 	const hasFinishedGettingInputSettings = useSelect( ( select ) => {
 		// This needs to be called here to check on its resolution,
@@ -65,12 +56,83 @@ export default function UserInputApp() {
 		);
 	} );
 
+	// TODO: Also check the query param `slug` is `analytics-4`, to be on the safe side.
+	const showProgress = getQueryArg( location.href, 'showProgress' );
+
+	const accountCreated = getQueryArg( location.href, 'accountCreated' );
+
+	const [ isAccountCreatedVisible, setIsAccountCreatedVisible ] = useState(
+		!! accountCreated
+	);
+
+	const [ isSyncingAudiences, setIsSyncingAudiences ] = useState( false );
+
+	const { syncAvailableAudiences, fetchSyncAvailableCustomDimensions } =
+		useDispatch( MODULES_ANALYTICS_4 );
+
+	useEffect( () => {
+		if ( ! accountCreated ) {
+			return;
+		}
+
+		setIsSyncingAudiences( true );
+
+		setIsAccountCreatedVisible( true );
+		setTimeout( () => {
+			setIsAccountCreatedVisible( false );
+		}, 3000 );
+
+		const syncAudiences = async () => {
+			// Sync audiences and custom dimensions, so the `PrimaryUserSetupWidget` component
+			// can quickly setup audiences when the user lands on the dashboard.
+			// eslint-disable-next-line no-unused-vars
+			const { error: syncAudiencesError } =
+				await syncAvailableAudiences();
+
+			// FIXME: Handle errors properly.
+			if ( syncAudiencesError ) {
+				return { error: syncAudiencesError };
+			}
+
+			const { error: syncDimensionsError } =
+				await fetchSyncAvailableCustomDimensions();
+
+			if ( syncDimensionsError ) {
+				return { error: syncDimensionsError };
+			}
+
+			setIsSyncingAudiences( false );
+		};
+
+		syncAudiences();
+	}, [
+		accountCreated,
+		fetchSyncAvailableCustomDimensions,
+		syncAvailableAudiences,
+	] );
+
 	return (
 		<Fragment>
 			<Header>
 				<HelpMenu />
 			</Header>
+			{ showProgress && (
+				// `currentSegment` and `totalSegments` can be hardcoded, at least for phase 1, although we might want to tweak their values.
+				<ProgressSegments currentSegment={ 6 } totalSegments={ 7 } />
+			) }
 			<div className="googlesitekit-user-input">
+				<div className="googlesite-user-input__notification">
+					{ isAccountCreatedVisible && (
+						<div className="googlesitekit-user-input__notification-wrapper">
+							<p>
+								<CheckFill width={ 24 } height={ 24 } />
+								<span>
+									Your account has been successfully created
+								</span>
+							</p>
+						</div>
+					) }
+				</div>
 				<div className="googlesitekit-module-page">
 					{ ! hasFinishedGettingInputSettings && (
 						<Grid>
@@ -85,22 +147,6 @@ export default function UserInputApp() {
 						<Grid>
 							<Layout rounded>
 								<Grid className="googlesitekit-user-input__header">
-									<Row>
-										<Cell
-											size={ 12 }
-											className="googlesitekit-user-input__question-number"
-										>
-											{ sprintf(
-												/*  translators: %d is replaced with the current page number (1, 2, or 3 etc.). */
-												__(
-													'%d / 3',
-													'google-site-kit'
-												),
-												questionNumber
-											) }
-										</Cell>
-									</Row>
-
 									<Row>
 										<Cell lgSize={ 12 }>
 											<PageHeader
@@ -119,7 +165,11 @@ export default function UserInputApp() {
 											mdSize={ 8 }
 											smSize={ 4 }
 										>
-											<UserInputQuestionnaire />
+											<UserInputQuestionnaire
+												isSyncingAudiences={
+													isSyncingAudiences
+												}
+											/>
 										</Cell>
 									</Row>
 								</Grid>

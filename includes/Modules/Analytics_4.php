@@ -375,6 +375,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				if ( $oauth_client->has_sufficient_scopes(
 					array(
 						self::READONLY_SCOPE,
+						self::EDIT_SCOPE,
 						'https://www.googleapis.com/auth/tagmanager.readonly',
 					)
 				) ) {
@@ -387,6 +388,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				} elseif ( ! $oauth_client->has_sufficient_scopes(
 					array(
 						self::READONLY_SCOPE,
+						self::EDIT_SCOPE,
 					)
 				) ) {
 					$needs_tagmanager_scope = true;
@@ -476,7 +478,9 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return array List of Google OAuth scopes.
 	 */
 	public function get_scopes() {
-		return array( self::READONLY_SCOPE );
+		// We are always going to setup Key Metric and Audience Segmentation when connecting Analytics, so we need to include the `edit` scope
+		// in order to be able to create audiences and custom dimensions. We also need the `readonly` scope for viewing Analytics data.
+		return array( self::READONLY_SCOPE, self::EDIT_SCOPE );
 	}
 
 	/**
@@ -985,12 +989,17 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 		$this->provision_property_webdatastream( $account_id, $account_ticket );
 
+		$show_progress   = (bool) $input->filter( INPUT_GET, 'showProgress' );
+		$account_created = (bool) $input->filter( INPUT_GET, 'accountCreated' );
+
 		wp_safe_redirect(
+			// Redirect to the user input screen instead of the dashboard. For production, we'll need to add a new screen instead
+			// of modifying the existing user input screen.
 			$this->context->admin_url(
-				'dashboard',
+				'user-input',
 				array(
-					'notification' => 'authentication_success',
-					'slug'         => 'analytics-4',
+					'showProgress'   => $show_progress,
+					'accountCreated' => $account_created,
 				)
 			)
 		);
@@ -1209,6 +1218,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					throw new Missing_Required_Param_Exception( 'timezone' );
 				}
 
+				$show_progress = isset( $data['showProgress'] );
+
 				$account = new GoogleAnalyticsAdminV1betaAccount();
 				$account->setDisplayName( $data['displayName'] );
 				$account->setRegionCode( $data['regionCode'] );
@@ -1217,7 +1228,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				$account_ticket_request = new Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest();
 				$account_ticket_request->setSiteId( $credentials['oauth2_client_id'] );
 				$account_ticket_request->setSiteSecret( $credentials['oauth2_client_secret'] );
-				$account_ticket_request->setRedirectUri( $this->get_provisioning_redirect_uri() );
+				$account_ticket_request->setRedirectUri( $this->get_provisioning_redirect_uri( $show_progress ) );
 				$account_ticket_request->setAccount( $account );
 
 				return $this->get_service( 'analyticsprovisioning' )
@@ -2036,11 +2047,12 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 *
 	 * @since 1.98.0
 	 *
+	 * @param boolean $show_progress Whether to show the progress bar on the service screens.
 	 * @return string Provisioning redirect URI.
 	 */
-	private function get_provisioning_redirect_uri() {
+	private function get_provisioning_redirect_uri( $show_progress ) {
 		return $this->authentication->get_google_proxy()
-			->get_site_fields()['analytics_redirect_uri'];
+			->get_site_fields( $show_progress )['analytics_redirect_uri'];
 	}
 
 	/**

@@ -155,9 +155,11 @@ const baseActions = {
 	 *
 	 * @since 1.98.0
 	 *
+	 * @param {Object}  options              Options object.
+	 * @param {boolean} options.showProgress Whether to show progress.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createAccount() {
+	*createAccount( { showProgress } ) {
 		const registry = yield commonActions.getRegistry();
 
 		const { getValue } = registry.select( CORE_FORMS );
@@ -171,6 +173,7 @@ const baseActions = {
 				FORM_ACCOUNT_CREATE,
 				ENHANCED_MEASUREMENT_ENABLED
 			),
+			showProgress,
 		};
 
 		yield clearError( 'createAccount', [] );

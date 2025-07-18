@@ -43,8 +43,16 @@ import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants'
 import WarningSVG from '../../../svg/icons/warning.svg';
 
 export default function UserInputQuestionWrapper( props ) {
-	const { children, slug, questionNumber, next, back, complete, error } =
-		props;
+	const {
+		children,
+		slug,
+		questionNumber,
+		next,
+		back,
+		complete,
+		error,
+		isSyncingAudiences,
+	} = props;
 
 	const values = useSelect(
 		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
@@ -67,12 +75,14 @@ export default function UserInputQuestionWrapper( props ) {
 				<Row>
 					<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
 						<Row>
-							<UserInputQuestionInfo
-								slug={ slug }
-								questionNumber={ questionNumber }
-							/>
+							<Cell lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
+								<UserInputQuestionInfo
+									slug={ slug }
+									questionNumber={ questionNumber }
+								/>
 
-							{ children }
+								{ children }
+							</Cell>
 						</Row>
 					</Cell>
 				</Row>
@@ -108,8 +118,11 @@ export default function UserInputQuestionWrapper( props ) {
 						<SpinnerButton
 							className="googlesitekit-user-input__buttons--complete"
 							onClick={ complete }
-							isSaving={ isScreenLoading }
-							disabled={ hasErrorForAnswer( values ) }
+							isSaving={ isScreenLoading || isSyncingAudiences }
+							disabled={
+								hasErrorForAnswer( values ) ||
+								isSyncingAudiences
+							}
 						>
 							{ createInterpolateElement(
 								__(
