@@ -56,6 +56,7 @@ function VisitsPerVisitorWidget( { Widget } ) {
 	const reportOptions = {
 		...dates,
 		metrics: [ { name: 'sessionsPerUser' }, { name: 'sessions' } ],
+		reportID: 'analytics-4_visits-per-visitor-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(

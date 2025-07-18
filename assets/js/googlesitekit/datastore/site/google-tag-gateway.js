@@ -109,7 +109,7 @@ const baseActions = {
 	 *
 	 * @since 1.141.0
 	 * @since 1.145.0 Added the survey trigger.
-	 * @since n.e.x.t Renamed from `saveFirstPartyModeSettings` to `saveGoogleTagGatewaySettings`.
+	 * @since 1.157.0 Renamed from `saveFirstPartyModeSettings` to `saveGoogleTagGatewaySettings`.
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
@@ -135,7 +135,7 @@ const baseActions = {
 	 * Sets the Google tag gateway enabled status.
 	 *
 	 * @since 1.141.0
-	 * @since n.e.x.t Renamed from `setFirstPartyModeEnabled` to `setGoogleTagGatewayEnabled`.
+	 * @since 1.157.0 Renamed from `setFirstPartyModeEnabled` to `setGoogleTagGatewayEnabled`.
 	 *
 	 * @param {boolean} isEnabled Google tag gateway enabled status.
 	 * @return {Object} Redux-style action.
@@ -151,7 +151,7 @@ const baseActions = {
 	 * Returns the current settings back to the current saved values.
 	 *
 	 * @since 1.142.0
-	 * @since n.e.x.t Renamed from `resetFirstPartyModeSettings` to `resetGoogleTagGatewaySettings`.
+	 * @since 1.157.0 Renamed from `resetFirstPartyModeSettings` to `resetGoogleTagGatewaySettings`.
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -202,7 +202,7 @@ const baseSelectors = {
 	 * Gets the Google tag gateway settings.
 	 *
 	 * @since 1.141.0
-	 * @since n.e.x.t Renamed from `getFirstPartyModeSettings` to `getGoogleTagGatewaySettings`.
+	 * @since 1.157.0 Renamed from `getFirstPartyModeSettings` to `getGoogleTagGatewaySettings`.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object|undefined} Google tag gateway settings, or undefined if not loaded.
@@ -215,7 +215,7 @@ const baseSelectors = {
 	 * Checks if Google tag gateway is enabled.
 	 *
 	 * @since 1.141.0
-	 * @since n.e.x.t Renamed from `isFirstPartyModeEnabled` to `isGoogleTagGatewayEnabled`.
+	 * @since 1.157.0 Renamed from `isFirstPartyModeEnabled` to `isGoogleTagGatewayEnabled`.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} True if Google tag gateway is enabled, otherwise false. Returns undefined if the state is not loaded.
@@ -231,7 +231,7 @@ const baseSelectors = {
 	 * Checks if the GTG service is determined to be healthy.
 	 *
 	 * @since 1.141.0
-	 * @since n.e.x.t Renamed from `isFPMHealthy` to `isGTGHealthy`.
+	 * @since 1.157.0 Renamed from `isFPMHealthy` to `isGTGHealthy`.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|null|undefined} True if the GTG service is healthy, otherwise false. Returns undefined if the state is not loaded.
@@ -262,7 +262,7 @@ const baseSelectors = {
 	 * Indicates whether the current Google tag gateway settings have changed from what is saved.
 	 *
 	 * @since 1.142.0
-	 * @since n.e.x.t Renamed from `haveFirstPartyModeSettingsChanged` to `haveGoogleTagGatewaySettingsChanged`.
+	 * @since 1.157.0 Renamed from `haveFirstPartyModeSettingsChanged` to `haveGoogleTagGatewaySettingsChanged`.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if the settings have changed, false otherwise.
@@ -280,7 +280,7 @@ const baseSelectors = {
 	/**
 	 * Checks if any Google tag gateway module is connected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.157.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if any Google tag gateway module is connected, false otherwise.

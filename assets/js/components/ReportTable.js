@@ -250,7 +250,7 @@ ReportTable.propTypes = {
 			primary: PropTypes.bool,
 			className: PropTypes.string,
 			field: PropTypes.string,
-			Component: PropTypes.componentType,
+			Component: PropTypes.elementType,
 			badge: PropTypes.node,
 		} )
 	).isRequired,

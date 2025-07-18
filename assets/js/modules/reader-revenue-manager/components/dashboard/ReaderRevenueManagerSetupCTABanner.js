@@ -101,6 +101,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 						? __( 'Don’t show again', 'google-site-kit' )
 						: __( 'Maybe later', 'google-site-kit' ),
 					onClick: showTooltip,
+					disabled: isSaving,
 				} }
 				dismissOptions={ {
 					expiresInSeconds: isDismissalFinal

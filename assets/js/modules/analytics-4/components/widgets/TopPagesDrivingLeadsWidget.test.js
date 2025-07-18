@@ -91,6 +91,8 @@ describe( 'TopPagesDrivingLeadsWidget', () => {
 			],
 			limit: 3,
 			keepEmptyRows: false,
+			reportID:
+				'analytics-4_top-pages-driving-leads-widget_widget_reportOptions',
 		};
 
 		const pageTitlesReportOptions = {
@@ -107,6 +109,7 @@ describe( 'TopPagesDrivingLeadsWidget', () => {
 				{ metric: { metricName: 'screenPageViews' }, desc: true },
 			],
 			limit: 15,
+			reportID: 'analytics-4_get-page-titles_store:selector_options',
 		};
 
 		const pageTitlesReport = getAnalytics4MockResponse(

@@ -20,5 +20,10 @@
 
 	.googlesitekit-notification-from-server {
 		background-color: $c-white;
+
+		.googlesitekit-heading-2 {
+			margin-bottom: 0.5em;
+			margin-top: 0;
+		}
 	}
 }
