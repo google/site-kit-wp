@@ -58,5 +58,8 @@ DismissButton.propTypes = {
 	tertiary: PropTypes.bool,
 	onClick: PropTypes.func,
 	disabled: PropTypes.bool,
-	dismissOptions: PropTypes.object,
+	dismissOptions: PropTypes.shape( {
+		expiresInSeconds: PropTypes.number,
+		skipHidingFromQueue: PropTypes.bool,
+	} ),
 };

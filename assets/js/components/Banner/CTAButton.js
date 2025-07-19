@@ -56,5 +56,8 @@ CTAButton.propTypes = {
 	onClick: PropTypes.func,
 	href: PropTypes.string,
 	dismissOnClick: PropTypes.bool,
-	dismissOptions: PropTypes.object,
+	dismissOptions: PropTypes.shape( {
+		expiresInSeconds: PropTypes.number,
+		skipHidingFromQueue: PropTypes.bool,
+	} ),
 };
