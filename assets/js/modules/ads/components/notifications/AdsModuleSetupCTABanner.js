@@ -92,13 +92,6 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const markNotificationDismissed = useCallback( () => {
-		dismissNotification( id, {
-			skipHidingFromQueue: true,
-			expiresInSeconds: 2 * WEEK_IN_SECONDS,
-		} );
-	}, [ id, dismissNotification ] );
-
 	const { setCacheItem } = useDispatch( CORE_SITE );
 	const dismissWooCommerceRedirectModal = useCallback( () => {
 		setCacheItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY, true, {
@@ -114,7 +107,6 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 			isWooCommerceRedirectModalDismissed
 		) {
 			setIsSaving( true );
-			markNotificationDismissed();
 			activateModule();
 			return;
 		}
@@ -123,7 +115,6 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	}, [
 		shouldShowWooCommerceRedirectModal,
 		activateModule,
-		markNotificationDismissed,
 		isWooCommerceRedirectModalDismissed,
 	] );
 
@@ -189,6 +180,11 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 					onClick: onSetupCallback,
 					disabled: isAdBlockerActive || isSaving || openDialog,
 					inProgress: isSaving,
+					dismissOnClick: true,
+					dismissOptions: {
+						expiresInSeconds: 2 * WEEK_IN_SECONDS,
+						skipHidingFromQueue: true,
+					},
 				} }
 				dismissButton={ {
 					label: dismissLabel,
@@ -208,7 +204,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 			/>
 			{ openDialog && (
 				<WooCommerceRedirectModal
-					onDismiss={ markNotificationDismissed }
+					onDismiss={ () => dismissNotification( id ) }
 					onClose={ onModalClose }
 					onBeforeSetupCallback={ dismissWooCommerceRedirectModal }
 					dialogActive
