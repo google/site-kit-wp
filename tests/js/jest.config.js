@@ -71,6 +71,12 @@ module.exports = {
 			},
 		},
 		// ESLint plugin tests.
+		// These require separate configuration because `@wordpress/jest-preset-default` is incompatible
+		// with ESLint 7.x module resolution. The preset tries to map @eslint/eslintrc for ESLint 8+ but
+		// other dependencies currently use ESLint 7.x. `@wordpress/jest-preset-default` was updated to
+		// fix tests as part of the Node upgrade (see https://github.com/google/site-kit-wp/issues/6026),
+		// but the update introduced this dependency issue, necessitating the workaround. This will be
+		// addressed in a future issue.
 		{
 			displayName: 'ESLint Plugin',
 			rootDir: '../../',
