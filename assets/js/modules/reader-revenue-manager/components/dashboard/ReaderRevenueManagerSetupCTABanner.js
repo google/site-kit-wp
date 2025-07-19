@@ -95,18 +95,22 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 					),
 					onClick: onSetupCallback,
 					inProgress: isSaving,
+					dismissOnClick: true,
+					dismissOptions: {
+						skipHidingFromQueue: true,
+					},
 				} }
 				dismissButton={ {
 					label: isDismissalFinal
 						? __( 'Don’t show again', 'google-site-kit' )
 						: __( 'Maybe later', 'google-site-kit' ),
 					onClick: showTooltip,
+					dismissOptions: {
+						expiresInSeconds: isDismissalFinal
+							? 0
+							: 2 * WEEK_IN_SECONDS,
+					},
 					disabled: isSaving,
-				} }
-				dismissOptions={ {
-					expiresInSeconds: isDismissalFinal
-						? 0
-						: 2 * WEEK_IN_SECONDS,
 				} }
 				svg={ {
 					desktop: BannerSVGDesktop,

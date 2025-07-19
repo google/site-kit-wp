@@ -103,9 +103,9 @@ export default function GatheringDataNotification( { id, Notification } ) {
 				} }
 				dismissButton={ {
 					label: __( 'Got it', 'google-site-kit' ),
-				} }
-				dismissOptions={ {
-					expiresInSeconds: DAY_IN_SECONDS,
+					dismissOptions: {
+						expiresInSeconds: DAY_IN_SECONDS,
+					},
 				} }
 				svg={ {
 					desktop: SVGGraphic,

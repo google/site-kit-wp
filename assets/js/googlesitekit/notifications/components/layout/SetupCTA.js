@@ -51,7 +51,6 @@ export default function SetupCTA( {
 	ctaButton,
 	svg,
 	footer,
-	dismissOptions,
 	gaTrackingEventArgs,
 	waitingProgress,
 	...props
@@ -70,7 +69,7 @@ export default function SetupCTA( {
 			gaTrackingEventArgs?.value
 		);
 		dismissNotification( notificationID, {
-			...dismissOptions,
+			...dismissButton?.dismissOptions,
 		} );
 	};
 
@@ -80,6 +79,12 @@ export default function SetupCTA( {
 			gaTrackingEventArgs?.value
 		);
 		await ctaButton?.onClick?.( event );
+
+		if ( ctaButton?.dismissOnClick ) {
+			dismissNotification( notificationID, {
+				...ctaButton?.dismissOptions,
+			} );
+		}
 	};
 
 	const handleLearnMoreClickWithTrackEvent = async ( event ) => {
@@ -159,7 +164,6 @@ SetupCTA.propTypes = {
 		verticalPosition: PropTypes.oneOf( [ 'top', 'center', 'bottom' ] ),
 	} ),
 	footer: PropTypes.node,
-	dismissOptions: PropTypes.object,
 	gaTrackingEventArgs: PropTypes.shape( {
 		category: PropTypes.string,
 		label: PropTypes.string,

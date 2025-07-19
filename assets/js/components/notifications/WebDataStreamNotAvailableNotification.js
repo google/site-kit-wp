@@ -77,9 +77,9 @@ export default function WebDataStreamNotAvailableNotification( {
 				} }
 				dismissButton={ {
 					label: __( 'Maybe later', 'google-site-kit' ),
-				} }
-				dismissOptions={ {
-					expiresInSeconds: MINUTE_IN_SECONDS * 55,
+					dismissOptions: {
+						expiresInSeconds: MINUTE_IN_SECONDS * 55,
+					},
 				} }
 			/>
 		</Notification>

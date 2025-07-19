@@ -111,12 +111,13 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should call the "useActivateModuleCallback" hook when the setup CTA is clicked', async () => {
+	it( 'should call the "useActivateModuleCallback" hook and dismiss the notification when the setup CTA is clicked', async () => {
 		mockSurveyEndpoints();
 
 		fetchMock.postOnce( dismissPromptEndpoint, {
-			body: JSON.stringify( [ 'rrm-setup-notification' ] ),
-			status: 200,
+			body: {
+				'rrm-setup-notification': { expires: 0, count: 1 },
+			},
 		} );
 
 		registry
@@ -146,6 +147,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		} );
 
 		expect( activateModuleCallbackMock ).toHaveBeenCalledTimes( 1 );
+		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
 	} );
 
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {
