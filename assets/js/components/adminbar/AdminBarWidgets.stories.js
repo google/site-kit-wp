@@ -32,7 +32,7 @@ import {
 	widgetDecorators,
 	setupAnalytics4Loading,
 	setupAnalytics4MockReports,
-} from './common-GA4.stories';
+} from './common-GA4-stories';
 import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '../../googlesitekit/constants';
