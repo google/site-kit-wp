@@ -397,7 +397,13 @@ LongDataValues.args = {
 	},
 };
 LongDataValues.scenario = {
-	delay: 300, // Delay required to allow time to wait for the font sizes to be resized.
+	resetDataBlockGroup: true,
+	waitForFontSizeToMatch: '.googlesitekit-data-block__datapoint',
+	// Once #10798 is implemented we can have story level viewports which better
+	// capture sizes at each flexbox reflow that cause font size changes.
+	fontSizeLarge: 41,
+	fontSizeMedium: false, // No resizing occurs at this viewport.
+	fontSizeSmall: 27,
 };
 
 export const NoDataInComparisonDateRange = Template.bind( {} );

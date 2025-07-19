@@ -110,6 +110,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 							? 0
 							: 2 * WEEK_IN_SECONDS,
 					},
+					disabled: isSaving,
 				} }
 				svg={ {
 					desktop: BannerSVGDesktop,
