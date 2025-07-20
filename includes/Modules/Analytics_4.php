@@ -2305,29 +2305,26 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return boolean|WP_Error
 	 */
 	public function check_service_entity_access() {
-		try {
-			// Create a basic report request with minimal parameters to test access.
-			$data = array(
-				'dimensions' => array( 'date' ),
-				'metrics'    => array( 'sessions' ),
-				'startDate'  => 'yesterday',
-				'endDate'    => 'today',
-				'limit'      => 0,
-			);
+		// Create a basic report request with minimal parameters to test access.
+		$data = array(
+			'dimensions' => array( 'date' ),
+			'metrics'    => array( 'sessions' ),
+			'startDate'  => 'yesterday',
+			'endDate'    => 'today',
+			'limit'      => 0,
+		);
 
-			// Use the 'non-shareable-report' datapoint to prevent user access assumption
-			// when using dashboard sharing.
-			$request = $this->get_data( 'non-shareable-report', $data );
+		// Use the 'non-shareable-report' datapoint to prevent user access assumption
+		// when using dashboard sharing.
+		$request = $this->get_data( 'non-shareable-report', $data );
 
-			if ( is_wp_error( $request ) ) {
-				return $request;
-			}
-		} catch ( Exception $e ) {
-			if ( $e->getCode() === 403 ) {
+		if ( is_wp_error( $request ) ) {
+			// A 403 error implies that the user does not have access to the service entity.
+			if ( $request->get_error_code() === 403 ) {
 				return false;
 			}
 
-			return $this->exception_to_error( $e );
+			return $request;
 		}
 
 		return true;
