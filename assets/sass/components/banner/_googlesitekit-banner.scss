@@ -35,6 +35,9 @@
 
 		@media (min-width: $width-tablet + 1 + px) {
 			min-height: 188px;
+		}
+
+		@media (min-width: $width-desktop + 1 + px) {
 			padding: $grid-gap-desktop;
 		}
 	}
