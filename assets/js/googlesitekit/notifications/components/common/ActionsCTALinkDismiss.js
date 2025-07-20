@@ -35,9 +35,9 @@ import CTALink from './CTALink';
 export default function ActionsCTALinkDismiss( {
 	id,
 	className = 'googlesitekit-publisher-win__actions',
-	ctaLink,
-	ctaLabel,
 	ctaDisabled = false,
+	ctaLabel,
+	ctaURL,
 	onCTAClick,
 	ctaDismissOptions,
 	isSaving = false,
@@ -49,8 +49,8 @@ export default function ActionsCTALinkDismiss( {
 	gaTrackingEventArgs = {},
 } ) {
 	const isNavigatingToCTALink = useSelect( ( select ) => {
-		return ctaLink
-			? select( CORE_LOCATION ).isNavigatingTo( ctaLink )
+		return ctaURL
+			? select( CORE_LOCATION ).isNavigatingTo( ctaURL )
 			: false;
 	} );
 
@@ -58,7 +58,7 @@ export default function ActionsCTALinkDismiss( {
 		<div className={ className }>
 			<CTALink
 				id={ id }
-				ctaLink={ ctaLink }
+				ctaLink={ ctaURL }
 				ctaLabel={ ctaLabel }
 				onCTAClick={ onCTAClick }
 				dismissOnCTAClick={ dismissOnCTAClick }
@@ -87,8 +87,8 @@ ActionsCTALinkDismiss.propTypes = {
 	id: PropTypes.string,
 	className: PropTypes.string,
 	ctaDisabled: PropTypes.bool,
-	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,
+	ctaURL: PropTypes.string,
 	onCTAClick: PropTypes.func,
 	isSaving: PropTypes.bool,
 	onDismiss: PropTypes.func,
