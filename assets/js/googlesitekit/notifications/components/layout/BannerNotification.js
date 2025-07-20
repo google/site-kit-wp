@@ -38,7 +38,7 @@ import LearnMoreLink from '../../../../components/Banner/LearnMoreLink';
 import CTAButton from '../../../../components/Banner/CTAButton';
 import DismissButton from '../../../../components/Banner/DismissButton';
 import { Cell, Grid, Row } from '../../../../material-components';
-import WarningDesktopSVG from '@/svg/graphics/warning-banner.svg?url';
+import WarningDesktopSVG from '@/svg/graphics/banner-warning.svg?url';
 import ErrorDesktopSVG from '@/svg/graphics/error-banner.svg?url';
 
 export const TYPES = {
@@ -128,7 +128,7 @@ const BannerNotification = forwardRef(
 					`googlesitekit-banner-notification--${ type }`
 				) }
 			>
-				<Grid>
+				<Grid className="googlesitekit-page-content">
 					<Row>
 						<Cell size={ 12 }>
 							<Banner
