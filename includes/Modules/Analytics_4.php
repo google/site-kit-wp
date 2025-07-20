@@ -715,6 +715,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'service'   => 'analyticsdata',
 				'shareable' => true,
 			),
+			'GET:non-shareable-report'                  => array( 'service' => 'analyticsdata' ),
 			'GET:pivot-report'                          => array(
 				'service'   => 'analyticsdata',
 				'shareable' => true,
@@ -1281,6 +1282,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 				return $this->get_service( 'analyticsadmin' )->properties->get( self::normalize_property_id( $data['propertyID'] ) );
 			case 'GET:report':
+			case 'GET:non-shareable-report':
 				if ( empty( $data['metrics'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
@@ -1838,8 +1840,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			case 'GET:key-events':
 				return (array) $response->getKeyEvents();
 			case 'GET:report':
-				$report = new Analytics_4_Report_Response( $this->context );
-				return $report->parse_response( $data, $response );
+			case 'GET:non-shareable-report':
 			case 'GET:pivot-report':
 				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );
@@ -2304,42 +2305,28 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return boolean|WP_Error
 	 */
 	public function check_service_entity_access() {
-		$settings = $this->get_settings()->get();
-		if ( empty( $settings['propertyID'] ) ) {
-			return new WP_Error(
-				'missing_required_setting',
-				__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
-				array( 'status' => 500 )
-			);
-		}
-
 		try {
 			// Create a basic report request with minimal parameters to test access.
-			$data_request = new Data_Request(
-				array(
-					'dimensions' => array( 'date' ),
-					'metrics'    => array( 'sessions' ), // Add a basic metric since it's required.
-					'startDate'  => 'yesterday',
-					'endDate'    => 'today',
-					'limit'      => 0,
-				)
+			$data = array(
+				'dimensions' => array( 'date' ),
+				'metrics'    => array( 'sessions' ),
+				'startDate'  => 'yesterday',
+				'endDate'    => 'today',
+				'limit'      => 0,
 			);
 
-			$report  = new Analytics_4_Report_Request( $this->context );
-			$request = $report->create_request( $data_request, false ); // Non-shared request.
+			// Use the 'non-shareable-report' datapoint to prevent user access assumption
+			// when using dashboard sharing.
+			$request = $this->get_data( 'non-shareable-report', $data );
 
 			if ( is_wp_error( $request ) ) {
 				return $request;
 			}
-
-			$property_id = self::normalize_property_id( $settings['propertyID'] );
-			$request->setProperty( $property_id );
-
-			$this->get_analyticsdata_service()->properties->runReport( $property_id, $request );
 		} catch ( Exception $e ) {
 			if ( $e->getCode() === 403 ) {
 				return false;
 			}
+
 			return $this->exception_to_error( $e );
 		}
 
