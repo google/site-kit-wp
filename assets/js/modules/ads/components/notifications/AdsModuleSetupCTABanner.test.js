@@ -142,7 +142,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 				document.querySelector( '.mdc-dialog' )
 			).toBeInTheDocument();
 			// Dismissal should be triggered when the modal is opened.
-			expect( fetchMock ).toHaveFetchedTimes( 0 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 
 		it( 'should trigger WooCommerce redirect modal when both WooCommerce and Google For WooCommerce are active but Ads account is not connected', async () => {
@@ -179,7 +179,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 			).toBeInTheDocument();
 
 			// Dismissal should be triggered when the modal is opened.
-			expect( fetchMock ).toHaveFetchedTimes( 0 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 
 		it( 'should start Ads module activation when WooCommerce is not active', async () => {
