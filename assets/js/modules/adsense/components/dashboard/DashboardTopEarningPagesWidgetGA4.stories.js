@@ -55,6 +55,7 @@ const reportOptions = {
 	},
 	orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
 	limit: 5,
+	reportID: 'adsense_top-earning-pages-widget-ga4_widget_args',
 };
 
 const pageTitlesReportOptions = {
@@ -70,6 +71,7 @@ const pageTitlesReportOptions = {
 	metrics: [ { name: 'screenPageViews' } ],
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 25,
+	reportID: 'analytics-4_get-page-titles_store:selector_options',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(

@@ -95,6 +95,8 @@ function TopPagesDrivingLeadsWidget( props ) {
 		],
 		limit: 3,
 		keepEmptyRows: false,
+		reportID:
+			'analytics-4_top-pages-driving-leads-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(

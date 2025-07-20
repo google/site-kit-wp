@@ -2697,6 +2697,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						( { name } ) => name
 					),
 				},
+				reportID:
+					'audience-segmentation_get-audiences-user-count-report-options_store:selector',
 			};
 
 			it( 'should return report options to get user count for passed audiences', () => {
