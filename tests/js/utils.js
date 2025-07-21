@@ -508,11 +508,11 @@ export const provideNotifications = ( registry, extraData ) => {
  * @param {Object[]} [extraWidgetAreas] List of widget area registration data objects to be merged with defaults. Default empty array.
  * @param {Object[]} [extraWidgets]     List of widget registration data objects to be merged with defaults. Default empty array.
  */
-export const provideWidgetRegistrations = (
+export function provideWidgetRegistrations(
 	registry,
 	extraWidgetAreas = [],
 	extraWidgets = []
-) => {
+) {
 	const extraWidgetAreasBySlug = extraWidgetAreas.reduce(
 		( acc, { slug, ...data } ) => {
 			return { ...acc, [ slug ]: { slug, ...data } };
@@ -587,7 +587,7 @@ export const provideWidgetRegistrations = (
 		.forEach( ( [ slug, { widgetAreaSlugs, ...settings } ] ) =>
 			realRegisterWidget( slug, settings, widgetAreaSlugs )
 		);
-};
+}
 
 /**
  * Mutes a fetch request to the given URL once.

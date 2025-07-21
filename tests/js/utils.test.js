@@ -214,23 +214,27 @@ describe( 'test utilities', () => {
 		it( 'should register default widget areas and widgets without extra data', () => {
 			provideWidgetRegistrations( registry );
 
-			expect(
-				registry
-					.select( CORE_WIDGETS )
-					.isWidgetAreaRegistered( 'mainDashboardKeyMetricsPrimary' )
-			).toBe( true );
+			const expectedRegistrations = [
+				{ key: 'mainDashboardKeyMetricsPrimary', type: 'widgetArea' },
+				{ key: 'mainDashboardTrafficPrimary', type: 'widgetArea' },
+				{ key: 'keyMetricsSetupCTA', type: 'widget' },
+			];
 
-			expect(
-				registry
-					.select( CORE_WIDGETS )
-					.isWidgetAreaRegistered( 'mainDashboardTrafficPrimary' )
-			).toBe( true );
-
-			expect(
-				registry
-					.select( CORE_WIDGETS )
-					.isWidgetRegistered( 'keyMetricsSetupCTA' )
-			).toBe( true );
+			expectedRegistrations.forEach( ( { key, type } ) => {
+				if ( type === 'widgetArea' ) {
+					expect(
+						registry
+							.select( CORE_WIDGETS )
+							.isWidgetAreaRegistered( key )
+					).toBe( true );
+				} else if ( type === 'widget' ) {
+					expect(
+						registry
+							.select( CORE_WIDGETS )
+							.isWidgetRegistered( key )
+					).toBe( true );
+				}
+			} );
 		} );
 
 		it( 'should register extra widget areas', () => {
