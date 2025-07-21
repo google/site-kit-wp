@@ -33,7 +33,6 @@ import {
 	resetSiteKit,
 	useRequestInterception,
 	setSearchConsoleProperty,
-	pageWait,
 } from '../../../utils';
 
 describe( 'setting up the Analytics module with no existing account and no existing tag via proxy', () => {
@@ -100,7 +99,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 	} );
 
 	it( 'displays account creation form when user has no Analytics account', async () => {
-		await pageWait( 3000 );
+		await page.waitForNetworkIdle();
 		await expect( page ).toMatchElement( '.googlesitekit-heading-4', {
 			text: /Create your Analytics account/i,
 		} );

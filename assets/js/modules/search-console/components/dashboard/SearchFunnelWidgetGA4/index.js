@@ -36,6 +36,7 @@ import {
 	MODULES_SEARCH_CONSOLE,
 	DATE_RANGE_OFFSET,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import PreviewBlock from '../../../../../components/PreviewBlock';
@@ -48,6 +49,7 @@ import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
 } from '../../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import Chart from './Chart';
 
 function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
@@ -56,7 +58,7 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 	const viewOnly = useViewOnly();
 
 	const isAnalytics4Available = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
+		select( CORE_MODULES ).isModuleAvailable( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const canViewSharedAnalytics4 = useSelect( ( select ) => {
@@ -68,11 +70,13 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+		return select( CORE_USER ).canViewSharedModule(
+			MODULE_SLUG_ANALYTICS_4
+		);
 	} );
 
 	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const dateRangeLength = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
@@ -106,15 +110,17 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 			return undefined;
 		}
 
-		return Object.keys( recoverableModules ).includes( 'analytics-4' );
+		return Object.keys( recoverableModules ).includes(
+			MODULE_SLUG_ANALYTICS_4
+		);
 	} );
 
-	const ga4ConversionsData = useInViewSelect(
+	const ga4KeyEventsData = useInViewSelect(
 		( select ) => {
 			return isGA4Connected &&
 				canViewSharedAnalytics4 &&
 				! showRecoverableAnalytics
-				? select( MODULES_ANALYTICS_4 ).getConversionEvents()
+				? select( MODULES_ANALYTICS_4 ).getKeyEvents()
 				: [];
 		},
 		[ isGA4Connected, canViewSharedAnalytics4, showRecoverableAnalytics ]
@@ -130,7 +136,7 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 		...ga4Dates,
 		metrics: [
 			{
-				name: 'conversions',
+				name: 'keyEvents',
 			},
 			{
 				name: 'engagementRate',
@@ -139,6 +145,8 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 		dimensionFilters: {
 			sessionDefaultChannelGrouping: [ 'Organic Search' ],
 		},
+		reportID:
+			'search-console_search-funnel-widget-ga4_widget_ga4OverviewArgs',
 	};
 
 	const ga4StatsArgs = {
@@ -156,6 +164,7 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 				},
 			},
 		],
+		reportID: 'search-console_search-funnel-widget-ga4_widget_ga4StatsArgs',
 	};
 	const ga4VisitorsOverviewAndStatsArgs = {
 		...ga4Dates,
@@ -179,6 +188,8 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 				},
 			},
 		],
+		reportID:
+			'search-console_search-funnel-widget-ga4_widget_ga4VisitorsOverviewAndStatsArgs',
 	};
 
 	if ( isURL( url ) ) {
@@ -286,7 +297,7 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 			hasFinishedResolution( 'getReport', [
 				ga4VisitorsOverviewAndStatsArgs,
 			] ) &&
-			hasFinishedResolution( 'getConversionEvents', [] )
+			hasFinishedResolution( 'getKeyEvents', [] )
 		);
 	} );
 
@@ -303,7 +314,7 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 			getErrorForSelector( 'getReport', [
 				ga4VisitorsOverviewAndStatsArgs,
 			] ) ||
-			getErrorForSelector( 'getConversionEvents', [] )
+			getErrorForSelector( 'getKeyEvents', [] )
 		);
 	} );
 
@@ -355,10 +366,10 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 	}
 
 	return (
-		<Widget noPadding Header={ Header } Footer={ WidgetFooter }>
+		<Widget Header={ Header } Footer={ WidgetFooter } noPadding>
 			<Overview
 				ga4Data={ ga4OverviewData }
-				ga4ConversionsData={ ga4ConversionsData }
+				ga4KeyEventsData={ ga4KeyEventsData }
 				ga4VisitorsData={ ga4VisitorsOverviewAndStatsData }
 				searchConsoleData={ searchConsoleData }
 				handleStatsSelection={ setSelectedStats }
@@ -393,32 +404,32 @@ SearchFunnelWidgetGA4.metrics = [
 		color: '#6380b8',
 		label: __( 'Impressions', 'google-site-kit' ),
 		metric: 'impressions',
-		service: 'search-console',
+		service: MODULE_SLUG_SEARCH_CONSOLE,
 	},
 	{
 		id: 'clicks',
 		color: '#4bbbbb',
 		label: __( 'Clicks', 'google-site-kit' ),
 		metric: 'clicks',
-		service: 'search-console',
+		service: MODULE_SLUG_SEARCH_CONSOLE,
 	},
 	{
 		id: 'users',
 		color: '#3c7251',
 		label: __( 'Users', 'google-site-kit' ),
-		service: 'analytics-4',
+		service: MODULE_SLUG_ANALYTICS_4,
 	},
 	{
-		id: 'conversions',
+		id: 'keyEvents',
 		color: '#8e68cb',
-		label: __( 'Conversions', 'google-site-kit' ),
-		service: 'analytics-4',
+		label: __( 'Key Events', 'google-site-kit' ),
+		service: MODULE_SLUG_ANALYTICS_4,
 	},
 	{
 		id: 'engagement-rate',
 		color: '#8e68cb',
 		label: __( 'Engagement Rate', 'google-site-kit' ),
-		service: 'analytics-4',
+		service: MODULE_SLUG_ANALYTICS_4,
 	},
 ];
 

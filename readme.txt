@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.8
 Requires PHP:      7.4
-Stable tag:        1.153.0
+Stable tag:        1.157.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,26 +109,30 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.153.0 =
+= 1.157.0 =
 
 **Enhanced**
 
-* Add the new Banner component. See [#10703](https://github.com/google/site-kit-wp/issues/10703).
-* Enhance WooCommerce provider to surface additional tracking details. See [#10670](https://github.com/google/site-kit-wp/issues/10670).
-* Add price and item name to Easy Digital Download Analytics events. See [#10644](https://github.com/google/site-kit-wp/issues/10644).
-* Refactor new feature type notices to use the new `<Notice type="new">` component. See [#10484](https://github.com/google/site-kit-wp/issues/10484).
-* Refactor RRMIntroductoryOverlayNotification to use the new notifications infrastructure. See [#10389](https://github.com/google/site-kit-wp/issues/10389).
-* Refactor `AudienceTiles` component to reduce cyclomatic complexity and remove the ESLint override. See [#10358](https://github.com/google/site-kit-wp/issues/10358).
-* Automatically dismiss notifications after they are viewed for three different days. See [#10106](https://github.com/google/site-kit-wp/issues/10106).
-* Rewrite a set of datastore reducers to use Immer. Props juniovitorino. See [#5795](https://github.com/google/site-kit-wp/issues/5795).
-
-**Changed**
-
-* Ensure the pie chart in the Analytics All Traffic widget displays its zero data state when it has no data for the current date range but does for the previous range. See [#10613](https://github.com/google/site-kit-wp/issues/10613).
+* Show an in-progress spinner in the Google Tag Gateway Setup Banner's CTA button when it's clicked and setup is underway. See [#11027](https://github.com/google/site-kit-wp/issues/11027).
+* Update "First-party mode" references to "Google tag gateway for advertisers". See [#10951](https://github.com/google/site-kit-wp/issues/10951).
+* Add support for named date ranges when requesting Google Analytics reports. Props leonidasmi. See [#10738](https://github.com/google/site-kit-wp/issues/10738).
+* Apply the “Warning Banner” layout to redesign the `WebDataStreamNotAvailableNotification` banner. See [#10424](https://github.com/google/site-kit-wp/issues/10424).
+* Update the design of the Google Tag ID mismatch notification. See [#10423](https://github.com/google/site-kit-wp/issues/10423).
+* Apply the “Error Banner” layout to redesign the `AuthError` banner. See [#10422](https://github.com/google/site-kit-wp/issues/10422).
+* Update the error banner styling. See [#10421](https://github.com/google/site-kit-wp/issues/10421).
+* Apply the “Error Banner” layout to redesign the `UnsatisfiedScopesAlert` banner. See [#10420](https://github.com/google/site-kit-wp/issues/10420).
+* Update the module Recovery Alert banner design. See [#10384](https://github.com/google/site-kit-wp/issues/10384).
+* Update the "Confirm changes" module settings button to retain its label while saving. See [#10282](https://github.com/google/site-kit-wp/issues/10282).
+* Refactor `CoreSiteBannerNotifications` to use the new Notifications datastore. See [#9294](https://github.com/google/site-kit-wp/issues/9294).
+* Introduce consistent `Typography` component. See [#8581](https://github.com/google/site-kit-wp/issues/8581).
+* Update the Ad Blocking Recovery setup screen to better match the Figma design. Props mxbclang. See [#7300](https://github.com/google/site-kit-wp/issues/7300).
+* Add internal URL utility selectors. See [#7112](https://github.com/google/site-kit-wp/issues/7112).
 
 **Fixed**
 
-* Fix a bug where missing custom dimensions were not being created when the Key Metrics that require them were chosen in the full screen selection view. See [#10717](https://github.com/google/site-kit-wp/issues/10717).
-* Fix the Marionette issue in the Ninja Forms conversion tracking script. See [#10643](https://github.com/google/site-kit-wp/issues/10643).
+* Fix site health information for Google Tag Gateway enabled status. See [#11039](https://github.com/google/site-kit-wp/issues/11039).
+* Fix the console error that appeared when setting up visitor groups from Admin settngs. See [#10965](https://github.com/google/site-kit-wp/issues/10965).
+* Ensure spinner appears on Enhanced Measurement CTA button. See [#10960](https://github.com/google/site-kit-wp/issues/10960).
+* Update the design of the "Enable auto-updates" notification banner. See [#10956](https://github.com/google/site-kit-wp/issues/10956).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

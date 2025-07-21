@@ -53,6 +53,7 @@ import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
 import useViewContext from '../../../hooks/useViewContext';
@@ -106,7 +107,7 @@ export default function Footer( {
 	);
 
 	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	// The `custom_dimensions` query value is arbitrary and serves two purposes:
@@ -134,6 +135,13 @@ export default function Footer( {
 	const mainDashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
+
+	const isNavigatingToMainDashboard = useSelect( ( select ) => {
+		return (
+			!! mainDashboardURL &&
+			select( CORE_LOCATION ).isNavigatingTo( mainDashboardURL )
+		);
+	} );
 
 	const { saveKeyMetricsSettings, setPermissionScopeError } =
 		useDispatch( CORE_USER );
@@ -254,7 +262,11 @@ export default function Footer( {
 			saveSettings={ saveSettings }
 			minSelectedItemCount={ MIN_SELECTED_METRICS_COUNT }
 			maxSelectedItemCount={ MAX_SELECTED_METRICS_COUNT }
-			isBusy={ isSavingSettings || isNavigatingToOAuthURL }
+			isBusy={
+				isSavingSettings ||
+				isNavigatingToOAuthURL ||
+				( isNavigatingToMainDashboard && isFullScreen )
+			}
 			onSaveSuccess={ () => {
 				onSaveSuccess( selectedMetrics );
 			} }

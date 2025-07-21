@@ -30,6 +30,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -39,6 +40,7 @@ import { getPreviousDate } from '../../../../../../util';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
 	STRATEGY_ZIP,
 } from '../../../../utils/data-mock';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
@@ -60,6 +62,8 @@ const totalPageviewsReportOptions = {
 	endDate: '2024-03-27',
 	startDate: '2024-02-29',
 	metrics: [ { name: 'screenPageViews' } ],
+	reportID:
+		'audience-segmentation_use-audience-tiles-reports_hook_totalPageviewsReportOptions',
 };
 
 const topCitiesReportOptions = {
@@ -76,6 +80,8 @@ const topCitiesReportOptions = {
 		},
 	],
 	limit: 4,
+	reportID:
+		'audience-segmentation_use-audience-tiles-reports_hook_topCitiesReportOptions',
 };
 
 const topContentReportOptions = {
@@ -92,6 +98,8 @@ const topContentReportOptions = {
 	},
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 3,
+	reportID:
+		'audience-segmentation_use-audience-tiles-reports_hook_topContentReportOptions',
 };
 
 const topContentPageTitlesReportOptions = {
@@ -108,6 +116,8 @@ const topContentPageTitlesReportOptions = {
 	},
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 15,
+	reportID:
+		'audience-segmentation_use-audience-tiles-reports_hook_topContentPageTitlesReportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -209,6 +219,8 @@ DefaultWithZeroTile.args = {
 				{ name: 'screenPageViewsPerSession' },
 				{ name: 'screenPageViews' },
 			],
+			reportID:
+				'audience-segmentation_use-audience-tiles-reports_hook_reportOptions',
 		};
 
 		const report = getAnalytics4MockResponse( reportOptions );
@@ -328,6 +340,8 @@ TwoTilesWithZeroTile.args = {
 				{ name: 'screenPageViewsPerSession' },
 				{ name: 'screenPageViews' },
 			],
+			reportID:
+				'audience-segmentation_use-audience-tiles-reports_hook_reportOptions',
 		};
 
 		const report = getAnalytics4MockResponse( reportOptions );
@@ -387,6 +401,8 @@ ZeroTileWithPlaceholder.args = {
 				{ name: 'screenPageViewsPerSession' },
 				{ name: 'screenPageViews' },
 			],
+			reportID:
+				'audience-segmentation_use-audience-tiles-reports_hook_reportOptions',
 		};
 
 		const report = getAnalytics4MockResponse( reportOptions );
@@ -566,6 +582,8 @@ AllTilesErrored.args = {
 				{ name: 'screenPageViewsPerSession' },
 				{ name: 'screenPageViews' },
 			],
+			reportID:
+				'audience-segmentation_use-audience-tiles-reports_hook_reportOptions',
 		};
 
 		const errorReport = {
@@ -614,6 +632,8 @@ SingleTileErrored.args = {
 				},
 			],
 			limit: 4,
+			reportID:
+				'audience-segmentation_use-audience-tiles-reports_hook_topCitiesReportOptions',
 		};
 
 		const errorReport = {
@@ -657,6 +677,8 @@ Loading.args = {
 				{ name: 'screenPageViewsPerSession' },
 				{ name: 'screenPageViews' },
 			],
+			reportID:
+				'audience-segmentation_use-audience-tiles-reports_hook_reportOptions',
 		};
 
 		// Start loading the report and do not resolve it so that tiles are displayed in loading state.
@@ -676,6 +698,29 @@ Loading.decorators = [
 	},
 ];
 Loading.scenario = {};
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	configuredAudiences: [
+		'properties/12345/audiences/1', // All Users
+		'properties/12345/audiences/3', // New visitors
+		'properties/12345/audiences/4', // Returning visitors
+	],
+	setupRegistry: (
+		registry,
+		{ reportOptions, newVsReturningReportOptions }
+	) => {
+		provideAnalyticsReportWithoutDateRangeData( registry, reportOptions );
+
+		provideAnalyticsReportWithoutDateRangeData(
+			registry,
+			newVsReturningReportOptions,
+			{ emptyRowBehavior: 'remove' }
+		);
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTilesWidget',
@@ -708,6 +753,8 @@ export default {
 					{ name: 'screenPageViewsPerSession' },
 					{ name: 'screenPageViews' },
 				],
+				reportID:
+					'audience-segmentation_use-audience-tiles-reports_hook_reportOptions',
 			};
 			const newVsReturningReportOptions = {
 				compareEndDate: '2024-02-28',
@@ -724,6 +771,8 @@ export default {
 					{ name: 'screenPageViewsPerSession' },
 					{ name: 'screenPageViews' },
 				],
+				reportID:
+					'audience-segmentation_use-audience-tiles-reports_hook_newVsReturningReportOptions',
 			};
 
 			const setupRegistry = ( registry ) => {
@@ -733,7 +782,7 @@ export default {
 				} );
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -836,7 +885,10 @@ export default {
 						availableAudiencesLastSyncedAt: Date.now() - 1000,
 					} );
 
-				setupRegistryFn?.( registry );
+				setupRegistryFn?.( registry, {
+					reportOptions,
+					newVsReturningReportOptions,
+				} );
 			};
 
 			return (

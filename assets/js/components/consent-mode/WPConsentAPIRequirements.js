@@ -31,14 +31,13 @@ import SpinnerButton from '../../googlesitekit/components-gm2/SpinnerButton';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Grid, Cell, Row } from '../../material-components';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import InfoCircle from '../../../../assets/svg/icons/info-circle.svg';
 import Link from '../Link';
-import ErrorText from '../ErrorText';
-import SettingsNotice, { TYPE_INFO } from '../SettingsNotice';
 import WPConsentAPIRequirement from './WPConsentAPIRequirement';
 import Tick from '../../../svg/icons/tick.svg';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import ErrorNotice from '../ErrorNotice';
+import Notice from '../Notice';
 
 export default function WPConsentAPIRequirements() {
 	const viewContext = useViewContext();
@@ -130,7 +129,6 @@ export default function WPConsentAPIRequirements() {
 											href={
 												wpConsentAPIDocumentationURL
 											}
-											external
 											aria-label={ __(
 												'Learn more about the WP Consent API',
 												'google-site-kit'
@@ -141,6 +139,7 @@ export default function WPConsentAPIRequirements() {
 													'wp_consent_api_learn_more'
 												);
 											} }
+											external
 										/>
 									),
 								}
@@ -163,12 +162,12 @@ export default function WPConsentAPIRequirements() {
 											{ wpConsentPlugin.installed && (
 												<Fragment>
 													{ !! apiInstallResponse?.error && (
-														<ErrorText
+														<ErrorNotice
 															message={
-																apiInstallResponse
-																	?.error
-																	?.message
+																apiInstallResponse?.error
 															}
+															skipRetryMessage
+															hideIcon
 														/>
 													) }
 													<SpinnerButton
@@ -202,10 +201,12 @@ export default function WPConsentAPIRequirements() {
 											{ ! wpConsentPlugin.installed && (
 												<Fragment>
 													{ apiInstallHasError && (
-														<ErrorText
+														<ErrorNotice
 															message={
 																apiInstallHasError
 															}
+															skipRetryMessage
+															hideIcon
 														/>
 													) }
 													<SpinnerButton
@@ -259,7 +260,6 @@ export default function WPConsentAPIRequirements() {
 											href={
 												consentManagementPlatformDocumentationURL
 											}
-											external
 											aria-label={ __(
 												'Suggested consent management plugins',
 												'google-site-kit'
@@ -270,16 +270,16 @@ export default function WPConsentAPIRequirements() {
 													'consent_mgmt_plugin_learn_more'
 												);
 											} }
+											external
 										/>
 									),
 								}
 							) }
 							footer={
-								<SettingsNotice
-									className="googlesitekit-settings-consent-mode-requirement__consent-management-plugin-notice"
-									type={ TYPE_INFO }
-									Icon={ InfoCircle }
-									notice={ __(
+								<Notice
+									type={ Notice.TYPES.INFO }
+									className="googlesitekit-notice--small googlesitekit-settings-notice"
+									description={ __(
 										"Make sure you have installed a plugin compatible with WP Consent API (Site Kit isn't able to verify the compatibility of all WP plugins).",
 										'google-site-kit'
 									) }

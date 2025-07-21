@@ -40,6 +40,7 @@ import {
 	FORM_ACCOUNT_CREATE,
 	MODULES_ANALYTICS_4,
 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
@@ -54,7 +55,7 @@ const fetchGetAccountSummariesStore = createFetchStore( {
 	controlCallback( { pageToken } ) {
 		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'account-summaries',
 			{ pageToken },
 			{
@@ -79,7 +80,12 @@ const fetchGetAccountSummariesStore = createFetchStore( {
 const fetchCreateAccountStore = createFetchStore( {
 	baseName: 'createAccount',
 	controlCallback: ( { data } ) => {
-		return set( 'modules', 'analytics-4', 'create-account-ticket', data );
+		return set(
+			'modules',
+			MODULE_SLUG_ANALYTICS_4,
+			'create-account-ticket',
+			data
+		);
 	},
 	// eslint-disable-next-line sitekit/acronym-case
 	reducerCallback: ( state, { accountTicketId: accountTicketID } ) => {

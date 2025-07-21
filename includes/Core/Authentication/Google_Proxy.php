@@ -198,15 +198,10 @@ class Google_Proxy {
 	 * @return string Complete proxy URL.
 	 */
 	public function url( $path = '' ) {
-		$url          = self::PRODUCTION_BASE_URL;
-		$allowed_urls = array(
-			self::PRODUCTION_BASE_URL,
-			self::STAGING_BASE_URL,
-			self::DEVELOPMENT_BASE_URL,
-		);
+		$url = self::PRODUCTION_BASE_URL;
 
-		if ( defined( 'GOOGLESITEKIT_PROXY_URL' ) && in_array( GOOGLESITEKIT_PROXY_URL, $allowed_urls, true ) ) {
-			$url = GOOGLESITEKIT_PROXY_URL;
+		if ( defined( 'GOOGLESITEKIT_PROXY_URL' ) ) {
+			$url = $this->sanitize_base_url( GOOGLESITEKIT_PROXY_URL );
 		}
 
 		$url = untrailingslashit( $url );
@@ -215,6 +210,33 @@ class Google_Proxy {
 		}
 
 		return $url;
+	}
+
+	/**
+	 * Sanitizes the given base URL.
+	 *
+	 * @since 1.154.0
+	 *
+	 * @param string $url Base URL to sanitize.
+	 * @return string Sanitized base URL.
+	 */
+	public function sanitize_base_url( $url ) {
+		$allowed_urls = array(
+			self::PRODUCTION_BASE_URL,
+			self::STAGING_BASE_URL,
+			self::DEVELOPMENT_BASE_URL,
+		);
+
+		if ( in_array( $url, $allowed_urls, true ) ) {
+			return $url;
+		}
+
+		// Allow for version-specific URLs to application instances.
+		if ( preg_match( '#^https://(?:\d{8}t\d{6}-dot-)?site-kit(?:-dev|-local)?(?:\.[a-z]{2}\.r)?\.appspot\.com/?$#', $url, $_ ) ) {
+			return $url;
+		}
+
+		return self::PRODUCTION_BASE_URL;
 	}
 
 	/**

@@ -39,6 +39,7 @@ import {
 	MODULES_ANALYTICS_4,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../util/errors';
 import {
@@ -612,7 +613,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -1856,7 +1857,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			beforeEach( () => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -1878,6 +1879,10 @@ describe( 'modules/analytics-4 audiences', () => {
 					configuredAudiences: null,
 					isAudienceSegmentationWidgetHidden,
 				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {} );
 			} );
 
 			it( 'sets `isSettingUpAudiences` to true while the action is in progress', async () => {
@@ -2692,6 +2697,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						( { name } ) => name
 					),
 				},
+				reportID:
+					'audience-segmentation_get-audiences-user-count-report-options_store:selector',
 			};
 
 			it( 'should return report options to get user count for passed audiences', () => {

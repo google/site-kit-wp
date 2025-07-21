@@ -33,6 +33,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { ZeroDataMessage } from '../common';
 import { numFmt } from '../../../../util';
 import {
@@ -50,7 +51,7 @@ function TopCitiesWidget( { Widget } ) {
 		} )
 	);
 
-	const topcCitiesReportOptions = {
+	const topCitiesReportOptions = {
 		...dates,
 		dimensions: [ 'city' ],
 		metrics: [ { name: 'totalUsers' } ],
@@ -63,17 +64,18 @@ function TopCitiesWidget( { Widget } ) {
 			},
 		],
 		limit: 4,
+		reportID: 'analytics-4_top-cities-widget_widget_topCitiesReportOptions',
 	};
 
 	const topCitiesReport = useInViewSelect(
 		( select ) =>
-			select( MODULES_ANALYTICS_4 ).getReport( topcCitiesReportOptions ),
-		[ topcCitiesReportOptions ]
+			select( MODULES_ANALYTICS_4 ).getReport( topCitiesReportOptions ),
+		[ topCitiesReportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			topcCitiesReportOptions,
+			topCitiesReportOptions,
 		] )
 	);
 
@@ -81,7 +83,7 @@ function TopCitiesWidget( { Widget } ) {
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
-				[ topcCitiesReportOptions ]
+				[ topCitiesReportOptions ]
 			)
 	);
 
@@ -131,6 +133,6 @@ TopCitiesWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( TopCitiesWidget );

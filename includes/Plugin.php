@@ -221,14 +221,14 @@ final class Plugin {
 				( new Core\Util\Migration_1_123_0( $this->context, $options ) )->register();
 				( new Core\Util\Migration_1_129_0( $this->context, $options ) )->register();
 				( new Core\Util\Migration_1_150_0( $this->context, $options ) )->register();
-				( new Core\Dashboard_Sharing\Dashboard_Sharing( $this->context, $user_options ) )->register();
+				( new Core\Dashboard_Sharing\Dashboard_Sharing() )->register();
 				( new Core\Key_Metrics\Key_Metrics( $this->context, $user_options, $options ) )->register();
 				( new Core\Prompts\Prompts( $this->context, $user_options ) )->register();
 				( new Core\Consent_Mode\Consent_Mode( $this->context, $modules, $options ) )->register();
 				( new Core\Tags\GTag( $options ) )->register();
 				( new Core\Conversion_Tracking\Conversion_Tracking( $this->context, $options ) )->register();
-				if ( Feature_Flags::enabled( 'firstPartyMode' ) ) {
-					( new Core\Tags\First_Party_Mode\First_Party_Mode( $this->context, $options ) )->register();
+				if ( Feature_Flags::enabled( 'googleTagGateway' ) ) {
+					( new Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway( $this->context, $options ) )->register();
 				}
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.

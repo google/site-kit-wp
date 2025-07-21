@@ -41,6 +41,7 @@ import HelpMenuLink from './HelpMenuLink';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import useViewContext from '../../hooks/useViewContext';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 
 export default function HelpMenu( { children } ) {
 	const [ menuOpen, setMenuOpen ] = useState( false );
@@ -53,7 +54,7 @@ export default function HelpMenu( { children } ) {
 	);
 
 	const adSenseModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'adsense' )
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ADSENSE )
 	);
 
 	const handleMenu = useCallback( () => {
@@ -87,8 +88,8 @@ export default function HelpMenu( { children } ) {
 				className="googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon googlesitekit-help-menu__button mdc-button--dropdown"
 				icon={ <HelpIcon width="20" height="20" /> }
 				onClick={ handleMenu }
-				text
 				tooltipEnterDelayInMS={ 500 }
+				text
 			/>
 			<Menu
 				className="googlesitekit-width-auto"

@@ -7,6 +7,8 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 
 namespace Google\Site_Kit\Tests\Core\Modules;
 
@@ -45,23 +47,21 @@ class ModulesTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'ads'                 => 'Google\\Site_Kit\\Modules\\Ads',
-				'adsense'             => 'Google\\Site_Kit\\Modules\\AdSense',
-				'analytics-4'         => 'Google\\Site_Kit\\Modules\\Analytics_4',
-				'pagespeed-insights'  => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
-				'search-console'      => 'Google\\Site_Kit\\Modules\\Search_Console',
-				'site-verification'   => 'Google\\Site_Kit\\Modules\\Site_Verification',
-				'tagmanager'          => 'Google\\Site_Kit\\Modules\\Tag_Manager',
-				'sign-in-with-google' => 'Google\\Site_Kit\\Modules\\Sign_In_With_Google',
+				'ads'                    => 'Google\\Site_Kit\\Modules\\Ads',
+				'adsense'                => 'Google\\Site_Kit\\Modules\\AdSense',
+				'analytics-4'            => 'Google\\Site_Kit\\Modules\\Analytics_4',
+				'pagespeed-insights'     => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+				'search-console'         => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'site-verification'      => 'Google\\Site_Kit\\Modules\\Site_Verification',
+				'tagmanager'             => 'Google\\Site_Kit\\Modules\\Tag_Manager',
+				'sign-in-with-google'    => 'Google\\Site_Kit\\Modules\\Sign_In_With_Google',
+				'reader-revenue-manager' => 'Google\\Site_Kit\\Modules\\Reader_Revenue_Manager',
 			),
 			$available
 		);
 	}
 
 	public function test_get_available_modules__with_rrm_module_feature_flag_enabled() {
-		// Enable the `rrmModule` feature flag.
-		$this->enable_feature( 'rrmModule' );
-
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$available = array_map(
@@ -397,6 +397,7 @@ class ModulesTest extends TestCase {
 			PageSpeed_Insights::MODULE_SLUG,
 			Tag_Manager::MODULE_SLUG,
 			Sign_In_With_Google::MODULE_SLUG,
+			Reader_Revenue_Manager::MODULE_SLUG,
 		);
 
 		yield 'should return all the modules if filter does not change the modules keys' => array(
@@ -507,26 +508,7 @@ class ModulesTest extends TestCase {
 			PageSpeed_Insights::MODULE_SLUG,
 			Tag_Manager::MODULE_SLUG,
 			Sign_In_With_Google::MODULE_SLUG,
-		);
-
-		yield 'should include the `reader-revenue-manager` module when enabled' => array(
-			// Module feature flag.
-			'rrmModule',
-			// Module enabled or disabled
-			true,
 			Reader_Revenue_Manager::MODULE_SLUG,
-			// Expected
-			array_merge( $default_modules, array( Reader_Revenue_Manager::MODULE_SLUG ) ),
-		);
-
-		yield 'should not include the `reader-revenue-manager` module when disabled' => array(
-			// Module feature flag.
-			'rrmModule',
-			// Module enabled or disabled
-			false,
-			Reader_Revenue_Manager::MODULE_SLUG,
-			// Expected
-			$default_modules,
 		);
 	}
 

@@ -50,6 +50,7 @@ import {
 } from '../user-input/util/constants';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
@@ -125,8 +126,9 @@ function ConfirmSitePurposeChangeModal( {
 	] );
 
 	const userInputPurposeConversionEvents = useSelect( ( select ) => {
-		const isGA4Connected =
-			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+		const isGA4Connected = select( CORE_MODULES ).isModuleConnected(
+			MODULE_SLUG_ANALYTICS_4
+		);
 
 		if ( ! isGA4Connected ) {
 			return [];
@@ -288,8 +290,8 @@ function ConfirmSitePurposeChangeModal( {
 			<DialogFooter>
 				<Button
 					className="mdc-dialog__cancel-button"
-					tertiary
 					onClick={ onClose }
+					tertiary
 				>
 					{ __( 'Keep current selection', 'google-site-kit' ) }
 				</Button>

@@ -37,6 +37,7 @@ import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import * as tracking from '../../../../util/tracking';
 import AdBlockingRecoverySetupSuccessNotification from './AdBlockingRecoverySetupSuccessNotification';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
@@ -67,7 +68,7 @@ describe( 'AdBlockingRecoverySetupSuccessNotification', () => {
 		provideSiteInfo( registry );
 		provideModules( registry, [
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				active: true,
 				connected: true,
 			},
@@ -145,7 +146,7 @@ describe( 'AdBlockingRecoverySetupSuccessNotification', () => {
 
 		// eslint-disable-next-line require-await
 		await act( async () => {
-			fireEvent.click( getByRole( 'button', { name: /Ok, got it!/i } ) );
+			fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
 		} );
 
 		// The tracking event should fire when the notification is confirmed.

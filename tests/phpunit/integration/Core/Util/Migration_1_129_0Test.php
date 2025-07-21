@@ -64,7 +64,7 @@ class Migration_1_129_0Test extends TestCase {
 
 		$migration->register();
 
-		$this->assertTrue( has_action( 'admin_init' ) );
+		$this->assertTrue( has_action( 'admin_init' ), 'Migration_1_129_0 should register admin_init action.' );
 	}
 
 	// If the Analytics module is not active, the migration should not
@@ -81,7 +81,7 @@ class Migration_1_129_0Test extends TestCase {
 		$migration->migrate();
 
 		$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
-		$this->assertFalse( in_array( 'ads', $active_modules, true ) );
+		$this->assertFalse( in_array( 'ads', $active_modules, true ), 'Ads module should not be activated if Analytics is not active.' );
 	}
 
 	// If the Analytics module is active, but does not have an adsConversionID
@@ -101,13 +101,13 @@ class Migration_1_129_0Test extends TestCase {
 		$migration->migrate();
 
 		$analytics_4_settings = $this->analytics_settings->get();
-		$this->assertTrue( empty( $analytics_4_settings['adsConversionID'] ) );
+		$this->assertTrue( empty( $analytics_4_settings['adsConversionID'] ), 'adsConversionID should not be set in Analytics settings.' );
 
 		$ads_settings = $this->ads_settings->get();
-		$this->assertTrue( empty( $ads_settings['conversionID'] ) );
+		$this->assertTrue( empty( $ads_settings['conversionID'] ), 'conversionID should not be set in Ads settings.' );
 
 		$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
-		$this->assertFalse( in_array( 'ads', $active_modules, true ) );
+		$this->assertFalse( in_array( 'ads', $active_modules, true ), 'Ads module should not be activated if adsConversionID is not set in Analytics settings.' );
 	}
 
 	// If the Analytics module is active but has an empty adsConversionID
@@ -127,10 +127,10 @@ class Migration_1_129_0Test extends TestCase {
 		$migration->migrate();
 
 		$analytics_4_settings = $this->analytics_settings->get();
-		$this->assertTrue( empty( $analytics_4_settings['adsConversionID'] ) );
+		$this->assertTrue( empty( $analytics_4_settings['adsConversionID'] ), 'adsConversionID should not be set in Analytics settings.' );
 
 		$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
-		$this->assertFalse( in_array( 'ads', $active_modules, true ) );
+		$this->assertFalse( in_array( 'ads', $active_modules, true ), 'Ads module should not be activated if adsConversionID is empty in Analytics settings.' );
 	}
 
 	// When the Analytics module is active and has an adsConversionID set,
@@ -151,15 +151,15 @@ class Migration_1_129_0Test extends TestCase {
 		$migration->migrate();
 
 		$analytics_4_settings = $this->analytics_settings->get();
-		$this->assertTrue( empty( $analytics_4_settings['adsConversionID'] ) );
-		$this->assertEquals( '12845678', $analytics_4_settings['accountID'] );
-		$this->assertTrue( ! empty( $analytics_4_settings['adsConversionIDMigratedAtMs'] ) );
+		$this->assertTrue( empty( $analytics_4_settings['adsConversionID'] ), 'adsConversionID should not be set in Analytics settings after migration.' );
+		$this->assertEquals( '12845678', $analytics_4_settings['accountID'], 'Account ID should remain unchanged in Analytics settings.' );
+		$this->assertTrue( ! empty( $analytics_4_settings['adsConversionIDMigratedAtMs'] ), 'adsConversionIDMigratedAtMs should be set in Analytics settings after migration.' );
 
 		$ads_settings = $this->ads_settings->get();
-		$this->assertEquals( '1234567890', $ads_settings['conversionID'] );
+		$this->assertEquals( '1234567890', $ads_settings['conversionID'], 'conversionID should be set in Ads settings after migration.' );
 
 		$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
-		$this->assertTrue( in_array( 'ads', $active_modules, true ) );
+		$this->assertTrue( in_array( 'ads', $active_modules, true ), 'Ads module should be activated after migration.' );
 	}
 
 	// When the Ads module is already active and has an conversionID set,
@@ -181,15 +181,15 @@ class Migration_1_129_0Test extends TestCase {
 		$migration->migrate();
 
 		$analytics_4_settings = $this->analytics_settings->get();
-		$this->assertTrue( empty( $analytics_4_settings['adsConversionID'] ) );
-		$this->assertEquals( '12845678', $analytics_4_settings['accountID'] );
-		$this->assertTrue( empty( $analytics_4_settings['adsConversionIDMigratedAtMs'] ) );
+		$this->assertTrue( empty( $analytics_4_settings['adsConversionID'] ), 'adsConversionID should be removed from Analytics settings after migration.' );
+		$this->assertEquals( '12845678', $analytics_4_settings['accountID'], 'Account ID should remain unchanged in Analytics settings.' );
+		$this->assertTrue( empty( $analytics_4_settings['adsConversionIDMigratedAtMs'] ), 'adsConversionIDMigratedAtMs should not be set in Analytics settings if Ads module already has conversionID.' );
 
 		$ads_settings = $this->ads_settings->get();
-		$this->assertEquals( '9876543210', $ads_settings['conversionID'] );
+		$this->assertEquals( '9876543210', $ads_settings['conversionID'], 'conversionID should remain unchanged in Ads settings after migration.' );
 
 		$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
-		$this->assertTrue( in_array( 'ads', $active_modules, true ) );
+		$this->assertTrue( in_array( 'ads', $active_modules, true ), 'Ads module should remain active after migration if it already has conversionID.' );
 	}
 
 	protected function configure_analytics_module( $adsConversionID ) {

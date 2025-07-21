@@ -22,19 +22,18 @@
 import { Fragment } from 'react';
 import Banner from '.';
 import { Cell, Grid, Row } from '../../material-components';
-// TODO: This rule should be updated to allow query parameters in import paths.
-/* eslint-disable import/no-unresolved */
-import AdSenseDesktopSVG from './../../../svg/graphics/banner-adsense-setup-cta.svg?url';
-import AdSenseMobileSVG from './../../../svg/graphics/banner-adsense-setup-cta-mobile.svg?url';
-import AdBlockingRecoveryDesktopSVG from './../../../svg/graphics/banner-ad-blocking-recovery-setup-cta.svg?url';
-import AdBlockingRecoveryMobileSVG from './../../../svg/graphics/banner-ad-blocking-recovery-setup-cta-mobile.svg?url';
-import ConversionsDesktopSVG from './../../../svg/graphics/banner-conversions-setup-cta.svg?url';
-import ConversionsMobileSVG from './../../../svg/graphics/banner-conversions-setup-cta-mobile.svg?url';
-import EnhancedMeasurementDesktopSVG from './../../../svg/graphics/banner-enhanced-measurement-setup-cta.svg?url';
-import EnhancedMeasurementMobileSVG from './../../../svg/graphics/banner-enhanced-measurement-setup-cta-mobile.svg?url';
-import SignInWithGoogleDesktopSVG from './../../../svg/graphics/banner-sign-in-with-google-setup-cta.svg?url';
-import SignInWithGoogleMobileSVG from './../../../svg/graphics/banner-sign-in-with-google-setup-cta-mobile.svg?url';
-/* eslint-enable import/no-unresolved */
+import adSenseDesktopSVG from '@/svg/graphics/banner-adsense-setup-cta.svg?url';
+import adSenseMobileSVG from '@/svg/graphics/banner-adsense-setup-cta-mobile.svg?url';
+import adBlockingRecoveryDesktopSVG from '@/svg/graphics/banner-ad-blocking-recovery-setup-cta.svg?url';
+import adBlockingRecoveryMobileSVG from '@/svg/graphics/banner-ad-blocking-recovery-setup-cta-mobile.svg?url';
+import conversionsDesktopSVG from '@/svg/graphics/banner-conversions-setup-cta.svg?url';
+import conversionsMobileSVG from '@/svg/graphics/banner-conversions-setup-cta-mobile.svg?url';
+import enhancedMeasurementDesktopSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta.svg?url';
+import enhancedMeasurementMobileSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta-mobile.svg?url';
+import signInWithGoogleDesktopSVG from '@/svg/graphics/banner-sign-in-with-google-setup-cta.svg?url';
+import signInWithGoogleMobileSVG from '@/svg/graphics/banner-sign-in-with-google-setup-cta-mobile.svg?url';
+import gatheringDataSVG from '@/svg/graphics/gathering-data.svg?url';
+import warningDesktopSVG from '@/svg/graphics/warning-banner.svg?url';
 import Link from '../Link';
 
 function Template() {
@@ -64,8 +63,8 @@ function Template() {
 							onClick: () => {},
 						} }
 						svg={ {
-							mobile: AdSenseMobileSVG,
-							desktop: AdSenseDesktopSVG,
+							mobile: adSenseMobileSVG,
+							desktop: adSenseDesktopSVG,
 							verticalPosition: 'top',
 						} }
 					/>
@@ -100,8 +99,8 @@ function Template() {
 							onClick: () => {},
 						} }
 						svg={ {
-							mobile: AdBlockingRecoveryMobileSVG,
-							desktop: AdBlockingRecoveryDesktopSVG,
+							mobile: adBlockingRecoveryMobileSVG,
+							desktop: adBlockingRecoveryDesktopSVG,
 							verticalPosition: 'top',
 						} }
 						helpText="* Average for publishers showing non-dismissible ad blocking recovery messages placed at the center of the page on desktop"
@@ -112,8 +111,8 @@ function Template() {
 						title="Get personalized suggestions for user interaction metrics based on your goals"
 						description="Answer 3 questions and we’ll suggest relevant metrics for your dashboard. These metrics will help you track how users interact with your site."
 						svg={ {
-							mobile: ConversionsMobileSVG,
-							desktop: ConversionsDesktopSVG,
+							mobile: conversionsMobileSVG,
+							desktop: conversionsDesktopSVG,
 							verticalPosition: 'top',
 						} }
 						ctaButton={ {
@@ -146,8 +145,8 @@ function Template() {
 							onClick: () => {},
 						} }
 						svg={ {
-							mobile: EnhancedMeasurementMobileSVG,
-							desktop: EnhancedMeasurementDesktopSVG,
+							mobile: enhancedMeasurementMobileSVG,
+							desktop: enhancedMeasurementDesktopSVG,
 							verticalPosition: 'center',
 						} }
 						helpText="You can always add/edit this in the Site Kit Settings."
@@ -168,11 +167,52 @@ function Template() {
 							onClick: () => {},
 						} }
 						svg={ {
-							mobile: SignInWithGoogleMobileSVG,
-							desktop: SignInWithGoogleDesktopSVG,
+							mobile: signInWithGoogleMobileSVG,
+							desktop: signInWithGoogleDesktopSVG,
 							verticalPosition: 'bottom',
 						} }
 					/>
+
+					<h3>Info Banners</h3>
+
+					<div className="googlesitekit-banner-notification googlesitekit-banner-notification--info">
+						<Banner
+							title="Analytics is gathering data"
+							description="It can take up to 72 hours before stats show up for your site. While you’re waiting, connect more services to get more stats."
+							ctaButton={ {
+								label: 'Connect more services',
+								onClick: () => {},
+							} }
+							dismissButton={ {
+								label: 'Got it',
+								onClick: () => {},
+							} }
+							svg={ {
+								desktop: gatheringDataSVG,
+								verticalPosition: 'center',
+							} }
+						/>
+					</div>
+
+					<h3>Warning Banners</h3>
+
+					<div className="googlesitekit-banner-notification googlesitekit-banner-notification--warning">
+						<Banner
+							title="Not enough traffic yet to display stats"
+							description="Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors."
+							learnMoreLink={ {
+								href: 'https://example.com',
+							} }
+							ctaButton={ {
+								label: 'Ok, got it',
+								onClick: () => {},
+							} }
+							svg={ {
+								desktop: warningDesktopSVG,
+								verticalPosition: 'center',
+							} }
+						/>
+					</div>
 				</Cell>
 			</Row>
 		</Grid>

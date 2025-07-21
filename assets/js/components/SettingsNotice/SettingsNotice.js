@@ -33,12 +33,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import SettingsNoticeSingleRow from './SettingsNoticeSingleRow';
 import SettingsNoticeMultiRow from './SettingsNoticeMultiRow';
-import {
-	TYPE_WARNING,
-	TYPE_INFO,
-	TYPE_SUGGESTION,
-	getIconFromType,
-} from './utils';
+import { TYPE_SUGGESTION, getIconFromType } from './utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Button } from 'googlesitekit-components';
 import { forwardRef } from 'react';
@@ -90,7 +85,6 @@ const SettingsNotice = forwardRef( ( props, ref ) => {
 			{ dismiss && (
 				<div className="googlesitekit-settings-notice__button">
 					<Button
-						tertiary
 						onClick={ () => {
 							if ( typeof dismiss === 'string' ) {
 								dismissItem( dismiss );
@@ -98,6 +92,7 @@ const SettingsNotice = forwardRef( ( props, ref ) => {
 
 							dismissCallback?.();
 						} }
+						tertiary
 					>
 						{ dismissLabel }
 					</Button>
@@ -117,7 +112,7 @@ SettingsNotice.propTypes = {
 	className: PropTypes.string,
 	children: PropTypes.node,
 	notice: PropTypes.node.isRequired,
-	type: PropTypes.oneOf( [ TYPE_INFO, TYPE_WARNING, TYPE_SUGGESTION ] ),
+	type: PropTypes.oneOf( [ TYPE_SUGGESTION ] ),
 	Icon: PropTypes.elementType,
 	LearnMore: PropTypes.elementType,
 	CTA: PropTypes.elementType,
@@ -125,10 +120,6 @@ SettingsNotice.propTypes = {
 	dismiss: PropTypes.string,
 	dismissLabel: PropTypes.string,
 	dismissCallback: PropTypes.func,
-};
-
-SettingsNotice.defaultProps = {
-	type: TYPE_INFO,
 };
 
 export default SettingsNotice;

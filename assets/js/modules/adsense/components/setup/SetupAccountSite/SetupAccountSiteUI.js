@@ -70,7 +70,7 @@ export default function SetupAccountSiteUI( {
 				</SpinnerButton>
 				{ secondaryButton && (
 					<div className="googlesitekit-setup-module__sub-action">
-						<Button tertiary onClick={ secondaryButton.onClick }>
+						<Button onClick={ secondaryButton.onClick } tertiary>
 							{ secondaryButton.label }
 						</Button>
 					</div>

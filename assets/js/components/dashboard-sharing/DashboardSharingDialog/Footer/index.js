@@ -43,7 +43,7 @@ import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 import Link from '../../../Link';
 import Notice from './Notice';
-import ErrorText from '../../../ErrorText';
+import ErrorNotice from '../../../ErrorNotice';
 
 export default function Footer( { closeDialog, openResetDialog } ) {
 	const viewContext = useViewContext();
@@ -123,7 +123,7 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 		<div className="googlesitekit-dashboard-sharing-settings__footer">
 			{ showNotice && (
 				<div className="googlesitekit-dashboard-sharing-settings__footer-notice">
-					{ errorNotice && <ErrorText message={ errorNotice } /> }
+					{ errorNotice && <ErrorNotice message={ errorNotice } /> }
 					{ ! errorNotice && <Notice /> }
 				</div>
 			) }
@@ -147,7 +147,7 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 					) }
 
 				<div className="googlesitekit-dashboard-sharing-settings__footer-actions-right">
-					<Button tertiary onClick={ onCancel }>
+					<Button onClick={ onCancel } tertiary>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Button>
 

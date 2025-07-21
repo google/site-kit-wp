@@ -34,6 +34,7 @@ import {
 	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { ZeroDataMessage } from '../common';
 import { numFmt } from '../../../../util';
 import {
@@ -93,6 +94,8 @@ function TopCitiesDrivingLeadsWidget( { Widget } ) {
 		],
 		limit: 3,
 		keepEmptyRows: false,
+		reportID:
+			'analytics-4_top-cities-driving-leads-widget_widget_topCitiesReportOptions',
 	};
 
 	const topCitiesReport = useInViewSelect(
@@ -158,6 +161,6 @@ TopCitiesDrivingLeadsWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( TopCitiesDrivingLeadsWidget );

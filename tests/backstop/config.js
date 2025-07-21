@@ -21,19 +21,14 @@ const viewports = require( './viewports' );
 
 module.exports = {
 	onBeforeScript: 'puppet/onBefore.js',
+	onReadyScript: 'puppet/onReady.js',
 	asyncCaptureLimit: 5,
 	asyncCompareLimit: 50,
 	debug: false,
 	debugWindow: false,
 	engine: 'puppeteer',
 	engineOptions: {
-		args: [
-			'--no-sandbox',
-			'--disable-gpu',
-			'--disable-setuid-sandbox',
-			'--no-zygote',
-			'--accept-lang=en-US',
-		],
+		args: [ '--no-sandbox', '--accept-lang=en-US' ],
 		executablePath: '/usr/bin/chromium',
 	},
 	id: 'google-site-kit',
@@ -42,11 +37,14 @@ module.exports = {
 		bitmaps_test: 'tests/backstop/tests',
 		engine_scripts: 'tests/backstop/engine_scripts',
 		html_report: 'tests/backstop/html_report',
+		json_report: 'tests/backstop/json_report',
 		ci_report: 'tests/backstop/ci_report',
 	},
-	report: [ 'browser' ],
+	report: [ 'browser', 'json' ],
 	scenarios,
+	scenarioDefaults: {
+		misMatchThreshold: 0,
+		delay: 1000, // Default delay to ensure components render complete.
+	},
 	viewports,
-	misMatchThreshold: 0,
-	delay: 1000, // Default delay to ensure components render complete.
 };

@@ -33,6 +33,7 @@ import {
 import { properties } from '../../../datastore/__fixtures__';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import { DAY_IN_SECONDS } from '../../../../../util';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import ModulePopularPagesWidgetGA4 from '.';
@@ -67,6 +68,7 @@ const reportOptions = [
 			},
 		],
 		limit: 10,
+		reportID: 'analytics-4_module-popular-pages-widget-ga4_widget_args',
 	},
 	{
 		// Page titles report.
@@ -82,6 +84,7 @@ const reportOptions = [
 		metrics: [ { name: 'screenPageViews' } ],
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 50,
+		reportID: 'analytics-4_get-page-titles_store:selector_options',
 	},
 	{
 		// Gathering/zero data report.
@@ -254,7 +257,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

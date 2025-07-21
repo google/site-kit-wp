@@ -29,6 +29,7 @@ export default function NoticeNotification( {
 	children,
 	dismissButton,
 	ctaButton,
+	gaTrackingEventArgs,
 	...props
 } ) {
 	const trackEvents = useNotificationEvents( notificationID );
@@ -37,21 +38,27 @@ export default function NoticeNotification( {
 
 	const handleDismissWithTrackEvent = async ( event ) => {
 		await dismissButton?.onClick?.( event );
-		trackEvents.dismiss();
+		trackEvents.dismiss(
+			gaTrackingEventArgs?.label,
+			gaTrackingEventArgs?.value
+		);
 		dismissNotification( notificationID, {
-			...dismissButton.dismissOptions,
+			...( dismissButton?.dismissOptions || {} ),
 		} );
 	};
 
 	const handleCTAClickWithTrackEvent = async ( event ) => {
 		await ctaButton?.onClick?.( event );
-		trackEvents.confirm();
+		trackEvents.confirm(
+			gaTrackingEventArgs?.label,
+			gaTrackingEventArgs?.value
+		);
 	};
 
 	return (
 		<Grid>
 			<Row>
-				<Cell alignMiddle size={ 12 }>
+				<Cell size={ 12 } alignMiddle>
 					<Notice
 						dismissButton={ {
 							...dismissButton,
@@ -74,6 +81,7 @@ export default function NoticeNotification( {
 NoticeNotification.propTypes = {
 	notificationID: propTypes.string.isRequired,
 	children: propTypes.node,
-	dismissButton: propTypes.object,
+	dismissButton: propTypes.oneOfType( [ propTypes.bool, propTypes.object ] ),
 	ctaButton: propTypes.object,
+	gaTrackingEventArgs: propTypes.object,
 };

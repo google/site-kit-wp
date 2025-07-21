@@ -46,7 +46,6 @@ import { AudienceSelectionPanel } from '../modules/analytics-4/components/audien
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
-import BannerNotifications from './notifications/BannerNotifications';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import ScrollEffect from './ScrollEffect';
@@ -66,7 +65,6 @@ import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import useViewOnly from '../hooks/useViewOnly';
 import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
 import OfflineNotification from './notifications/OfflineNotification';
-import OverlayNotificationsRenderer from './OverlayNotification/OverlayNotificationsRenderer';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 import { useBreakpoint } from '../hooks/useBreakpoint';
 import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
@@ -76,9 +74,9 @@ import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
 import Notifications from './notifications/Notifications';
 import {
-	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../googlesitekit/notifications/datastore/constants';
+	NOTIFICATION_AREAS,
+} from '../googlesitekit/notifications/constants';
 import { AdminMenuTooltip } from './AdminMenuTooltip';
 
 export default function DashboardMainApp() {
@@ -252,67 +250,75 @@ export default function DashboardMainApp() {
 
 			<AdminMenuTooltip />
 
-			<Header subHeader={ <BannerNotifications /> } showNavigation>
+			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
 
-			<Notifications
-				areaSlug={ NOTIFICATION_AREAS.BANNERS_BELOW_NAV }
-				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-			/>
+			<div className="googlesitekit-page-content">
+				{ /*
+					These notifications are rendered at the top of the dashboard,
+					but are not attached to the header. The first component renders the
+					default queue which mainly contains setup success notices. The
+					second renders the Setup CTA Widgets.
+				*/ }
+				<Notifications areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP } />
+				<Notifications
+					areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP }
+					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+				/>
 
-			<OverlayNotificationsRenderer />
+				<Notifications
+					areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+				/>
 
-			<Notifications
-				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-			/>
-
-			{ isKeyMetricsWidgetHidden !== true && (
+				{ isKeyMetricsWidgetHidden !== true && (
+					<WidgetContextRenderer
+						id={ ANCHOR_ID_KEY_METRICS }
+						slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
+						className={ classnames( {
+							'googlesitekit-widget-context--last':
+								lastWidgetAnchor === ANCHOR_ID_KEY_METRICS,
+						} ) }
+					/>
+				) }
 				<WidgetContextRenderer
-					id={ ANCHOR_ID_KEY_METRICS }
-					slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
+					id={ ANCHOR_ID_TRAFFIC }
+					slug={ CONTEXT_MAIN_DASHBOARD_TRAFFIC }
 					className={ classnames( {
 						'googlesitekit-widget-context--last':
-							lastWidgetAnchor === ANCHOR_ID_KEY_METRICS,
+							lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
 					} ) }
 				/>
-			) }
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_TRAFFIC }
-				slug={ CONTEXT_MAIN_DASHBOARD_TRAFFIC }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_CONTENT }
-				slug={ CONTEXT_MAIN_DASHBOARD_CONTENT }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_CONTENT,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_SPEED }
-				slug={ CONTEXT_MAIN_DASHBOARD_SPEED }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_SPEED,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_MONETIZATION }
-				slug={ CONTEXT_MAIN_DASHBOARD_MONETIZATION }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
-				} ) }
-			/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_CONTENT }
+					slug={ CONTEXT_MAIN_DASHBOARD_CONTENT }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_CONTENT,
+					} ) }
+				/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_SPEED }
+					slug={ CONTEXT_MAIN_DASHBOARD_SPEED }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_SPEED,
+					} ) }
+				/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_MONETIZATION }
+					slug={ CONTEXT_MAIN_DASHBOARD_MONETIZATION }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
+					} ) }
+				/>
+				<OfflineNotification />
+			</div>
 
 			<SurveyViewTrigger
 				triggerID="view_dashboard"

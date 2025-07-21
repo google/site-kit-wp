@@ -77,7 +77,6 @@
 	}
 
 	.mdc-button {
-		font-weight: $fw-medium;
 		margin: 0 auto;
 		min-height: 32px;
 		padding: 6px $grid-gap-phone;
@@ -91,7 +90,6 @@
 		}
 
 		&.mdc-button--raised {
-			font-weight: $fw-medium;
 			padding: 6px $grid-gap-phone;
 		}
 	}
@@ -132,54 +130,6 @@
 			.mdc-button__label {
 				margin-left: 3px;
 			}
-		}
-	}
-
-	&.googlesitekit-subtle-notification--info {
-		background-color: $c-surfaces-background;
-
-		.googlesitekit-subtle-notification__icon,
-		.googlesitekit-subtle-notification__content {
-			color: $c-surfaces-on-surface;
-		}
-
-		.mdc-button {
-
-			&.googlesitekit-subtle-notification__cta {
-				@include mdc-button-filled-accessible( $c-surfaces-on-surface );
-			}
-		}
-
-		.mdc-button--tertiary {
-			@include mdc-button-tertiary-styles(
-				$c-surfaces-on-surface,
-				$c-interactive-tertiary-hover,
-				$c-interactive-tertiary-focus
-			);
-		}
-	}
-
-	&.googlesitekit-subtle-notification--warning {
-		background-color: $c-utility-warning-container;
-
-		.googlesitekit-subtle-notification__icon,
-		.googlesitekit-subtle-notification__content {
-			color: $c-utility-on-warning-container;
-		}
-
-		.mdc-button {
-
-			&.googlesitekit-subtle-notification__cta {
-				@include mdc-button-filled-accessible($c-utility-on-warning-container);
-			}
-		}
-
-		.mdc-button--tertiary {
-			@include mdc-button-tertiary-styles(
-				$c-utility-on-warning-container,
-				$c-interactive-callout-warning-hover,
-				$c-interactive-callout-warning-focus
-			);
 		}
 	}
 }

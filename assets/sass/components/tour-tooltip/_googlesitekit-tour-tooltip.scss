@@ -64,6 +64,8 @@
 
 .googlesitekit-tooltip-title {
 	color: $c-content-on-primary;
+
+	// The tooltip title overrides the default Typography styles.
 	font-family: $f-secondary;
 	font-size: $fs-body-lg;
 	font-weight: $fw-medium;
@@ -157,4 +159,28 @@
 
 .googlesitekit-tooltip-indicator.active {
 	opacity: 1;
+}
+
+// Style the tooltip to appear in a modal style on mobile and tablet designs.
+// This class is set within the Joyride component based on the breakpoint.
+.googlesitekit-tour-tooltip__modal_step {
+	max-width: 352px;
+	width: calc(100vw - 64px);
+
+	.googlesitekit-tooltip-body {
+		max-width: 100%;
+		padding: 16px 16px 0;
+	}
+
+	.googlesitekit-tooltip-title {
+		margin-bottom: 10px;
+	}
+
+	.googlesitekit-tooltip-close {
+		display: none;
+	}
+
+	.googlesitekit-tooltip-actions {
+		padding: 0 16px;
+	}
 }

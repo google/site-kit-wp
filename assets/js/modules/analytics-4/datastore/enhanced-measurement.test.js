@@ -135,11 +135,11 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.setEnhancedMeasurementStreamEnabled(
-							null,
+						.setEnhancedMeasurementStreamEnabled( {
+							propertyID: null,
 							webDataStreamID,
-							true
-						)
+							enabled: true,
+						} )
 				).toThrow( 'A valid GA4 propertyID is required.' );
 			} );
 
@@ -147,11 +147,11 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.setEnhancedMeasurementStreamEnabled(
+						.setEnhancedMeasurementStreamEnabled( {
 							propertyID,
-							null,
-							true
-						)
+							webDataStreamID: null,
+							enabled: true,
+						} )
 				).toThrow( 'A valid GA4 webDataStreamID is required.' );
 			} );
 
@@ -159,11 +159,11 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.setEnhancedMeasurementStreamEnabled(
+						.setEnhancedMeasurementStreamEnabled( {
 							propertyID,
 							webDataStreamID,
-							undefined
-						)
+							enabled: undefined,
+						} )
 				).toThrow( 'enabled is required.' );
 			} );
 
@@ -171,11 +171,11 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.setEnhancedMeasurementStreamEnabled(
+						.setEnhancedMeasurementStreamEnabled( {
 							propertyID,
 							webDataStreamID,
-							'string_value'
-						)
+							enabled: 'string_value',
+						} )
 				).toThrow( 'enabled must be a boolean.' );
 			} );
 
@@ -201,11 +201,11 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				// Set the `streamEnabled` setting to `false`.
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setEnhancedMeasurementStreamEnabled(
+					.setEnhancedMeasurementStreamEnabled( {
 						propertyID,
 						webDataStreamID,
-						false
-					);
+						enabled: false,
+					} );
 
 				// Modify the initial settings mock to match the expected new settings.
 				const expectedSettings = {

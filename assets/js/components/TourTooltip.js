@@ -34,6 +34,7 @@ import { __ } from '@wordpress/i18n';
 import { Button } from 'googlesitekit-components';
 import { createIncrementalArrayBySize } from '../util/create-incremental-array-by-size';
 import CloseIcon from '../../svg/icons/close.svg';
+import Typography from './Typography';
 
 export default function TourTooltip( {
 	backProps,
@@ -60,9 +61,14 @@ export default function TourTooltip( {
 		>
 			<Card className="googlesitekit-tooltip-card">
 				<div className="googlesitekit-tooltip-body">
-					<h2 className="googlesitekit-tooltip-title">
+					<Typography
+						as="h2"
+						className="googlesitekit-tooltip-title"
+						size="medium"
+						type="title"
+					>
 						{ step.title }
-					</h2>
+					</Typography>
 					<div className="googlesitekit-tooltip-content">
 						{ step.content }
 					</div>
@@ -102,11 +108,11 @@ export default function TourTooltip( {
 				</CardActions>
 				<Button
 					className="googlesitekit-tooltip-close"
-					text
-					hideTooltipTitle
 					icon={ <CloseIcon width="14" height="14" /> }
 					onClick={ closeProps.onClick }
 					aria-label={ __( 'Close', 'google-site-kit' ) }
+					text
+					hideTooltipTitle
 				/>
 			</Card>
 		</div>

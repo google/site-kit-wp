@@ -11,7 +11,7 @@
 namespace Google\Site_Kit\Core\Tags;
 
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode_Settings;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
@@ -154,6 +154,10 @@ class GTag {
 		wp_add_inline_script( self::HANDLE, 'gtag("js", new Date());' );
 		wp_add_inline_script( self::HANDLE, 'gtag("set", "developer_id.dZTNiMT", true);' ); // Site Kit developer ID.
 
+		if ( $this->is_google_tag_gateway_active() ) {
+			wp_add_inline_script( self::HANDLE, 'gtag("set", "developer_id.dZmZmYj", true);' );
+		}
+
 		foreach ( $this->tags as $tag ) {
 			wp_add_inline_script( self::HANDLE, $this->get_gtag_call_for_tag( $tag ) );
 		}
@@ -214,7 +218,7 @@ class GTag {
 	 * Returns the gtag source URL.
 	 *
 	 * @since 1.124.0
-	 * @since 1.142.0 Provides support for First-party mode.
+	 * @since 1.142.0 Provides support for Google tag gateway.
 	 *
 	 * @return string|false The gtag source URL. False if no tags are added.
 	 */
@@ -228,14 +232,14 @@ class GTag {
 		// of which is used to load the source.
 		$tag_id = rawurlencode( $this->tags[0]['tag_id'] );
 
-		// If First-party mode is active, use the proxy URL to load the GTag script.
-		if ( Feature_Flags::enabled( 'firstPartyMode' ) && $this->is_first_party_mode_active() ) {
+		// If Google tag gateway is active, use the proxy URL to load the GTag script.
+		if ( $this->is_google_tag_gateway_active() ) {
 			return add_query_arg(
 				array(
 					'id' => $tag_id,
 					's'  => '/gtag/js',
 				),
-				plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE )
+				plugins_url( 'gtg/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE )
 			);
 		}
 
@@ -243,18 +247,22 @@ class GTag {
 	}
 
 	/**
-	 * Checks if First-party mode is active.
+	 * Checks if Google tag gateway is active.
 	 *
 	 * @since 1.142.0
 	 *
-	 * @return bool True if First-party mode is active, false otherwise.
+	 * @return bool True if Google tag gateway is active, false otherwise.
 	 */
-	protected function is_first_party_mode_active() {
-		$first_party_mode_settings = new First_Party_Mode_Settings( $this->options );
+	protected function is_google_tag_gateway_active() {
+		if ( ! Feature_Flags::enabled( 'googleTagGateway' ) ) {
+			return false;
+		}
 
-		$settings = $first_party_mode_settings->get();
+		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
 
-		$required_settings = array( 'isEnabled', 'isFPMHealthy', 'isScriptAccessEnabled' );
+		$settings = $google_tag_gateway_settings->get();
+
+		$required_settings = array( 'isEnabled', 'isGTGHealthy', 'isScriptAccessEnabled' );
 
 		foreach ( $required_settings as $setting ) {
 			if ( ! isset( $settings[ $setting ] ) || ! $settings[ $setting ] ) {

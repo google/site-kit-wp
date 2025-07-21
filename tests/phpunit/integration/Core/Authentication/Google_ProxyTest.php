@@ -8,6 +8,8 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 namespace Google\Site_Kit\Tests\Core\Authentication;
 
 use Google\Site_Kit\Context;
@@ -217,58 +219,73 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals( $failure_response_data, false );
 	}
 
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_url_handles_staging() {
 		$url = $this->google_proxy->url();
 		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL );
-		// The test for this behaviour depends on a constant value which can
-		// only be redefined if PECL extension runkit/7 is installed.
-		if ( ! extension_loaded( 'runkit7' ) && ! extension_loaded( 'runkit' ) ) {
-			$this->markTestSkipped( 'The runkit7 or runkit extension is not available.' );
-		}
 
 		define( 'GOOGLESITEKIT_PROXY_URL', Google_Proxy::STAGING_BASE_URL );
+
 		$url = $this->google_proxy->url();
 		$this->assertEquals( $url, Google_Proxy::STAGING_BASE_URL );
-		if ( function_exists( 'runkit7_constant_remove' ) ) {
-			runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
-		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
-			runkit_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
-		}
 	}
 
-	public function test_url_handles_development() {
-		$url = $this->google_proxy->url();
-		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL );
-		// The test for this behaviour depends on a constant value which can
-		// only be redefined if PECL extension runkit/7 is installed.
-		if ( ! extension_loaded( 'runkit7' ) && ! extension_loaded( 'runkit' ) ) {
-			$this->markTestSkipped( 'The runkit7 or runkit extension is not available.' );
-		}
-
-		define( 'GOOGLESITEKIT_PROXY_URL', Google_Proxy::DEVELOPMENT_BASE_URL );
-		$url = $this->google_proxy->url();
-		$this->assertEquals( $url, Google_Proxy::DEVELOPMENT_BASE_URL );
-		if ( function_exists( 'runkit7_constant_remove' ) ) {
-			runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
-		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
-			runkit_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
-		}
-	}
-
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_url_ignores_invalid_values() {
-		// The test for this behaviour depends on a constant value which can
-		// only be redefined if PECL extension runkit/7 is installed.
-		if ( ! extension_loaded( 'runkit7' ) && ! extension_loaded( 'runkit' ) ) {
-			$this->markTestSkipped( 'The runkit7 or runkit extension is not available.' );
-		}
 		define( 'GOOGLESITEKIT_PROXY_URL', 'https://example.com' );
+
 		$url = $this->google_proxy->url();
+
 		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL );
-		if ( function_exists( 'runkit7_constant_remove' ) ) {
-			runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
-		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
-			runkit_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
-		}
+	}
+
+	/**
+	 * @dataProvider data_sanitized_base_urls
+	 */
+	public function test_sanitize_base_url( $input, $expected ) {
+		$this->assertEquals(
+			$expected,
+			$this->google_proxy->sanitize_base_url( $input )
+		);
+	}
+
+	public function data_sanitized_base_urls() {
+		yield 'production URL' => array(
+			Google_Proxy::PRODUCTION_BASE_URL,
+			Google_Proxy::PRODUCTION_BASE_URL,
+		);
+		yield 'staging URL' => array(
+			Google_Proxy::STAGING_BASE_URL,
+			Google_Proxy::STAGING_BASE_URL,
+		);
+		yield 'development URL' => array(
+			Google_Proxy::DEVELOPMENT_BASE_URL,
+			Google_Proxy::DEVELOPMENT_BASE_URL,
+		);
+		yield 'invalid URL' => array(
+			'https://example.com',
+			Google_Proxy::PRODUCTION_BASE_URL,
+		);
+		yield 'production instance URL' => array(
+			'https://20191031t123456-dot-site-kit.ue.r.appspot.com/',
+			'https://20191031t123456-dot-site-kit.ue.r.appspot.com/',
+		);
+		yield 'staging instance URL, no region' => array(
+			'https://20191031t123456-dot-site-kit-dev.appspot.com/',
+			'https://20191031t123456-dot-site-kit-dev.appspot.com/',
+		);
+		yield 'development instance URL' => array(
+			'https://20191031t123456-dot-site-kit-local.ue.r.appspot.com/',
+			'https://20191031t123456-dot-site-kit-local.ue.r.appspot.com/',
+		);
+		yield 'invalid instance URL' => array(
+			'https://20191031t123456-dot-site-kit-impersonator.ue.r.appspot.com/',
+			Google_Proxy::PRODUCTION_BASE_URL,
+		);
 	}
 
 	public function test_get_user_fields() {

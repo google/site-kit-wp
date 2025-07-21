@@ -33,6 +33,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
@@ -61,6 +62,8 @@ function MostEngagingPagesWidget( props ) {
 		dimensions: [ 'pagePath' ],
 		metrics: [ { name: 'screenPageViews' } ],
 		limit: 1,
+		reportID:
+			'analytics-4_most-engaging-pages-widget_widget_pageViewsReportOptions',
 	};
 
 	const pageViewsReport = useInViewSelect(
@@ -97,6 +100,7 @@ function MostEngagingPagesWidget( props ) {
 			},
 		},
 		limit: 3,
+		reportID: 'analytics-4_most-engaging-pages-widget_widget_reportOptions',
 	};
 
 	const pageViewsReportErrors = useSelect( ( select ) =>
@@ -238,6 +242,6 @@ MostEngagingPagesWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( MostEngagingPagesWidget );

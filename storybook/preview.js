@@ -28,6 +28,7 @@ import '../assets/sass/wpdashboard.scss';
 import '../assets/sass/adminbar.scss';
 import '../assets/sass/admin.scss';
 import './assets/sass/wp-admin.scss';
+import './assets/sass/blocks.scss';
 import './assets/sass/stories/tokens.scss';
 import './assets/sass/stories/type-scale.scss';
 // Ensure all globals are set up before any other imports are run.
@@ -46,12 +47,21 @@ bootstrapFetchMocks();
 
 // Decorators run from last added to first. (Eg. In reverse order as listed.)
 export const decorators = [
-	( Story, { parameters } ) => {
+	( Story, { parameters, kind } ) => {
 		const styles = {};
 
 		const { padding } = parameters || {};
 		if ( padding !== undefined ) {
 			styles.padding = padding;
+		}
+
+		// Render block stories in non-Site Kit context.
+		if ( kind.startsWith( 'Blocks/' ) ) {
+			return (
+				<Grid style={ styles }>
+					<Story />
+				</Grid>
+			);
 		}
 
 		return (
@@ -78,8 +88,8 @@ export const decorators = [
 			<WithTestRegistry
 				features={ features }
 				route={ route }
-				// Expose registry as global for tinkering.
 				callback={ ( registry ) => {
+					// Expose registry as global for tinkering.
 					global.registry = registry;
 				} }
 			>

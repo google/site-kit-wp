@@ -36,26 +36,41 @@
 				margin-top: $grid-gap-phone / 2;
 			}
 		}
+	}
 
-		.googlesitekit-settings-analytics-ads-conversion-id-notice {
-			align-items: center;
-			display: flex;
-			margin: 16px 0 0;
-			padding: $grid-gap-phone - 2px $grid-gap-desktop;
+	.googlesitekit-analytics-enable-enhanced-measurement--loading {
+		padding-top: 10px;
+	}
 
-			.googlesitekit-settings-notice__icon {
-				margin-right: $grid-gap-phone;
-			}
+	.googlesitekit-analytics-enable-enhanced-measurement__progress--settings-edit {
+		margin: 0 0 21px;
+	}
 
-			.googlesitekit-settings-notice__text {
-				font-size: $fs-label-md;
-				font-weight: $fw-medium;
-			}
+	.googlesitekit-analytics-enable-enhanced-measurement__progress--settings-view {
+		margin: 0 0 13px;
+	}
 
-			.googlesitekit-settings-notice__button button {
-				color: $c-surfaces-on-surface;
-				font-family: $f-secondary;
-			}
+	.googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label {
+		display: flex;
+		gap: 6px;
+		margin-top: 1px;
+	}
+
+	.googlesitekit-analytics-enable-enhanced-measurement__already-enabled-tick {
+		align-items: center;
+		background-color: $c-content-primary;
+		border-radius: 11px;
+		color: $c-content-on-primary;
+		display: flex;
+		flex-shrink: 0;
+		height: 20px;
+		justify-content: center;
+		margin-left: 16px;
+		width: 20px;
+
+		svg {
+			height: 10px;
+			width: 10px;
 		}
 	}
 }

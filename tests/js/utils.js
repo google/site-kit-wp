@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
+
 /**
  * External dependencies
  */
@@ -628,6 +630,9 @@ export const waitForDefaultTimeouts = () => {
 /**
  * Creates a delay in the execution of subsequent code for a specified duration in milliseconds.
  *
+ * Developers should consider using `waitForRegistry()`, instead of this helper,
+ * if state changes occur.
+ *
  * @since 1.102.0
  *
  * @param {number} timeout The duration to wait before resolving the promise, in milliseconds.
@@ -649,7 +654,10 @@ export const waitForTimeouts = ( timeout ) => {
  * @return {Function} Function to await all registry updates since creation.
  */
 export const createWaitForRegistry = ( registry ) => {
-	if ( jest.isMockFunction( setTimeout ) ) {
+	if (
+		process.env.NODE_ENV === 'test' &&
+		jest.isMockFunction( setTimeout )
+	) {
 		// Fail if attempted to use.
 		return () => {
 			throw new Error(

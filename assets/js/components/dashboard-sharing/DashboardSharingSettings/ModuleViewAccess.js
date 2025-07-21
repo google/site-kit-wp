@@ -27,7 +27,7 @@ import { createInterpolateElement, forwardRef } from '@wordpress/element';
  */
 import PropTypes from 'prop-types';
 import UserRoleSelect from '../UserRoleSelect';
-import WarningNotice from '../../WarningNotice';
+import Notice from '../../Notice';
 import Link from '../../Link';
 
 const ModuleViewAccess = forwardRef(
@@ -53,14 +53,16 @@ const ModuleViewAccess = forwardRef(
 
 		if ( recoverable ) {
 			return (
-				<WarningNotice>
-					{ createInterpolateElement(
+				<Notice
+					className="googlesitekit-notice--small"
+					type={ Notice.TYPES.WARNING }
+					description={ createInterpolateElement(
 						__(
-							'Managing user required to manage view access. <Link>Learn more</Link>',
+							'Managing user required to manage view access. <a>Learn more</a>',
 							'google-site-kit'
 						),
 						{
-							Link: (
+							a: (
 								<Link
 									href={ recoverableModuleSupportLink }
 									external
@@ -69,7 +71,8 @@ const ModuleViewAccess = forwardRef(
 							),
 						}
 					) }
-				</WarningNotice>
+					hideIcon
+				/>
 			);
 		}
 
