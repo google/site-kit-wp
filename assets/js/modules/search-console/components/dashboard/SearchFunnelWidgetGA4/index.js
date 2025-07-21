@@ -301,9 +301,9 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 		);
 	} );
 
-	const ga4Error = useSelect( ( select ) => {
+	const ga4Errors = useSelect( ( select ) => {
 		if ( ! isGA4Connected || showRecoverableAnalytics ) {
-			return null;
+			return [];
 		}
 
 		const { getErrorForSelector } = select( MODULES_ANALYTICS_4 );
@@ -375,7 +375,7 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 				handleStatsSelection={ setSelectedStats }
 				selectedStats={ selectedStats }
 				dateRangeLength={ dateRangeLength }
-				error={ ga4Error }
+				errors={ ga4Errors }
 				WidgetReportError={ WidgetReportError }
 				showRecoverableAnalytics={ showRecoverableAnalytics }
 			/>
