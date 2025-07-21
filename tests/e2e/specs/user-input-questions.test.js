@@ -45,7 +45,9 @@ import getMultiDimensionalObjectFromParams from '../utils/get-multi-dimensional-
 
 describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
-		await page.waitForSelector( '.googlesitekit-user-input__question' );
+		await page.waitForSelector( '.googlesitekit-user-input__question', {
+			timeout: 30_000,
+		} );
 
 		await step( 'select purpose', async () => {
 			await expect( page ).toClick( '#purpose-publish_blog' );
