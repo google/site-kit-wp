@@ -149,6 +149,7 @@ describe( 'Header', () => {
 		).toBe( false );
 	} );
 
+	// Temporary comment.
 	it( 'should close the tab if opened when ESCAPE key is pressed', () => {
 		history.push( '/connected-services/pagespeed-insights' );
 
