@@ -33,10 +33,10 @@ class Block_External {
 	public static function block_external_request() {
 		return static function ( callable $handler ) {
 			return function ( $request, $options ) use ( $handler ) {
-				$host = URL::parse( (string) $request->getUri(), PHP_URL_HOST );
+				$uri = $request->getUri();
 
 				$wp_http = new WP_Http();
-				if ( $wp_http->block_request( $host ) ) {
+				if ( is_string( $uri ) && $wp_http->block_request( $uri ) ) {
 					throw new RequestException(
 						__( 'User has blocked requests through HTTP.', 'default' ),
 						$request
