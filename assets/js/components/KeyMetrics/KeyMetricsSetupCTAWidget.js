@@ -148,6 +148,7 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 				} }
 				ctaButton={ {
 					label: __( 'Get tailored metrics', 'google-site-kit' ),
+					href: ctaLink,
 					onClick: onGetTailoredMetricsClick,
 					disabled: isNavigatingToCTALink,
 					inProgress: isNavigatingToCTALink,
