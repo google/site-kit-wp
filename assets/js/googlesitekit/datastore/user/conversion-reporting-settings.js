@@ -25,6 +25,7 @@ import { isPlainObject } from 'lodash';
  */
 import { get, set } from 'googlesitekit-api';
 import {
+	createReducer,
 	createRegistrySelector,
 	commonActions,
 	combineStores,
@@ -46,9 +47,8 @@ const fetchGetConversionReportingSettingsStore = createFetchStore( {
 			// make requests to Google APIs so it's not a slow request.
 			useCache: false,
 		} ),
-	reducerCallback: ( state, conversionReportingSettings ) => ( {
-		...state,
-		conversionReportingSettings,
+	reducerCallback: createReducer( ( state, conversionReportingSettings ) => {
+		state.conversionReportingSettings = conversionReportingSettings;
 	} ),
 } );
 
@@ -58,9 +58,8 @@ const fetchSaveConversionReportingSettingsStore = createFetchStore( {
 		set( 'core', 'user', 'conversion-reporting-settings', {
 			settings,
 		} ),
-	reducerCallback: ( state, conversionReportingSettings ) => ( {
-		...state,
-		conversionReportingSettings,
+	reducerCallback: createReducer( ( state, conversionReportingSettings ) => {
+		state.conversionReportingSettings = conversionReportingSettings;
 	} ),
 	argsToParams: ( settings ) => settings,
 	validateParams: ( settings ) => {
