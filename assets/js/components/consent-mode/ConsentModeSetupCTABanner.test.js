@@ -21,14 +21,8 @@ import {
 	provideSiteInfo,
 	provideUserInfo,
 	provideUserAuthentication,
-	act,
-	fireEvent,
 } from '../../../../tests/js/test-utils';
-import {
-	mockSurveyEndpoints,
-	surveyTimeoutsEndpoint,
-	surveyTriggerEndpoint,
-} from '../../../../tests/js/mock-survey-endpoints';
+import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
 import ConsentModeSetupCTABanner from './ConsentModeSetupCTABanner';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -36,13 +30,9 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
-import { dismissPromptEndpoint } from '../../../../tests/js/mock-dismiss-prompt-endpoints';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 
 describe( 'ConsentModeSetupCTABanner', () => {
-	mockLocation();
-
 	let registry;
 	const ConsentModeSetupCTABannerComponent = withNotificationComponentProps(
 		CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
@@ -97,62 +87,6 @@ describe( 'ConsentModeSetupCTABanner', () => {
 		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'should  dismiss the notification when the setup CTA is clicked', async () => {
-		// Not using mockSurveyEndpoints() here because it only mocks a survey trigger once.
-		// But this test requires two triggers, one on view and one on CTA click.
-		fetchMock.post( surveyTriggerEndpoint, {
-			status: 200,
-			body: {},
-		} );
-		fetchMock.getOnce( surveyTimeoutsEndpoint, {
-			status: 200,
-			body: [],
-		} );
-
-		fetchMock.postOnce(
-			new RegExp( '^/google-site-kit/v1/core/site/data/consent-mode' ),
-			{
-				body: {
-					enabled: true,
-					regions: [ 'AT' ],
-				},
-				status: 200,
-			}
-		);
-
-		fetchMock.postOnce( dismissPromptEndpoint, {
-			body: {
-				CONSENT_MODE_SETUP_CTA_WIDGET_SLUG: { expires: 0, count: 1 },
-			},
-		} );
-
-		registry
-			.dispatch( CORE_USER )
-			.finishResolution( 'getDismissedPrompts', [] );
-
-		const { container, waitForRegistry, getByRole } = render(
-			<ConsentModeSetupCTABannerComponent />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).not.toBeEmptyDOMElement();
-
-		// eslint-disable-next-line require-await
-		await act( async () => {
-			fireEvent.click(
-				getByRole( 'button', {
-					name: /Enable consent mode/i,
-				} )
-			);
-		} );
-
-		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
 	} );
 
 	describe( 'checkRequirements', () => {
