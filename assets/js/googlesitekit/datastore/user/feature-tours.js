@@ -70,9 +70,8 @@ const fetchDismissTourStore = createFetchStore( {
 	baseName: 'dismissTour',
 	controlCallback: ( { slug } ) =>
 		set( 'core', 'user', 'dismiss-tour', { slug } ),
-	reducerCallback: ( state, dismissedTourSlugs ) => ( {
-		...state,
-		dismissedTourSlugs,
+	reducerCallback: createReducer( ( state, dismissedTourSlugs ) => {
+		state.dismissedTourSlugs = dismissedTourSlugs;
 	} ),
 	argsToParams: ( slug ) => ( { slug } ),
 	validateParams: ( { slug } = {} ) => {
