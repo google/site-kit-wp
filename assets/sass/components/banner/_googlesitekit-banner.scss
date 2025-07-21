@@ -33,11 +33,8 @@
 	.googlesitekit-banner__content {
 		padding: $grid-gap-phone;
 
-		@media (min-width: $width-tablet + 1 + px) {
+		@media (min-width: $bp-nonMobile) {
 			min-height: 188px;
-		}
-
-		@media (min-width: $width-desktop + 1 + px) {
 			padding: $grid-gap-desktop;
 		}
 	}
