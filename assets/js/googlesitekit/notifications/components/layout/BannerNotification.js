@@ -128,7 +128,7 @@ const BannerNotification = forwardRef(
 					`googlesitekit-banner-notification--${ type }`
 				) }
 			>
-				<Grid className="googlesitekit-page-content">
+				<Grid>
 					<Row>
 						<Cell size={ 12 }>
 							<Banner
