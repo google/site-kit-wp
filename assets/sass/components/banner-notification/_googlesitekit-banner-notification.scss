@@ -21,7 +21,8 @@
 	.googlesitekit-banner-notification {
 		width: 100%;
 
-		.googlesitekit-banner__description {
+		.googlesitekit-banner__description,
+		.googlesitekit-banner__description p {
 			font-size: $fs-body-sm;
 
 			a {
