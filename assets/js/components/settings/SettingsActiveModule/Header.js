@@ -71,8 +71,10 @@ export default function Header( { slug } ) {
 		select( CORE_MODULES )?.getCheckRequirementsError( slug )
 	);
 
-	const isNavigatingToAdminReAuthURL = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
+	const isNavigatingToAdminReAuthURL = useSelect(
+		( select ) =>
+			adminReauthURL &&
+			select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
 	);
 
 	const openHeader = useCallback( () => {
