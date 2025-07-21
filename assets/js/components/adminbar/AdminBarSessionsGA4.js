@@ -63,6 +63,7 @@ function AdminBarSessionsGA4( { WidgetReportError } ) {
 			},
 		],
 		url,
+		reportID: 'adminbar_admin-bar-sessions-ga4_component_reportArgs',
 	};
 
 	const analytics4Data = useSelect( ( select ) =>

@@ -139,7 +139,7 @@ exports[`MostEngagingPagesWidget should render the generic error variant when th
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Most engaging pages
         </h2>
@@ -201,7 +201,7 @@ exports[`MostEngagingPagesWidget should render the insufficient permissions erro
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Most engaging pages
         </h2>

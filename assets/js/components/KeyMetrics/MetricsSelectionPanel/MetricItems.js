@@ -40,11 +40,11 @@ export default function MetricItems( { savedMetrics } ) {
 	const displayInSelectionPanel = useInViewSelect(
 		( select ) => {
 			return ( metric ) =>
-				KEY_METRICS_WIDGETS[ metric ].displayInSelectionPanel(
+				KEY_METRICS_WIDGETS[ metric ].displayInSelectionPanel( {
 					select,
 					isViewOnlyDashboard,
-					metric
-				);
+					slug: metric,
+				} );
 		},
 		[ isViewOnlyDashboard ]
 	);

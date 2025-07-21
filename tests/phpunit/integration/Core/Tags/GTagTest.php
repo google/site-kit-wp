@@ -202,4 +202,31 @@ class GTagTest extends TestCase {
 		// Verify that this returns the correct URL for the different tag ID.
 		$this->assertEquals( 'https://www.googletagmanager.com/gtag/js?id=' . static::TEST_TAG_ID_2, $this->gtag->get_gtag_src() );
 	}
+
+	/**
+	 * @dataProvider provider_google_tag_gateway_data
+	 */
+	public function test_get_gtag_developer_id( $data ) {
+		global $wp_scripts;
+
+		self::enable_feature( 'googleTagGateway' );
+
+		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
+		$google_tag_gateway_settings->set( $data['settings'] );
+
+		unset( $wp_scripts->registered[ GTag::HANDLE ] );
+
+		do_action( 'wp_enqueue_scripts' );
+
+		$scripts = wp_scripts();
+		$script  = $scripts->registered[ GTag::HANDLE ];
+
+		$this->assertEquals( 'gtag("set", "developer_id.dZTNiMT", true);', $script->extra['after'][4] );
+
+		if ( $data['settings']['isEnabled'] && $data['settings']['isGTGHealthy'] && $data['settings']['isScriptAccessEnabled'] ) {
+			$this->assertEquals( 'gtag("set", "developer_id.dZmZmYj", true);', $script->extra['after'][5] );
+		} else {
+			$this->assertNotContains( 'gtag("set", "developer_id.dZmZmYj", true);', $script->extra['after'] );
+		}
+	}
 }

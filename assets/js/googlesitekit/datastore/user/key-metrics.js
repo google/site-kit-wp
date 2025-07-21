@@ -541,11 +541,11 @@ const baseSelectors = {
 					widget.displayInWidgetArea &&
 					typeof widget.displayInWidgetArea === 'function'
 				) {
-					return widget.displayInWidgetArea(
+					return widget.displayInWidgetArea( {
 						select,
-						isViewOnly,
-						slug
-					);
+						isViewOnlyDashboard: isViewOnly,
+						slug,
+					} );
 				}
 
 				return true;

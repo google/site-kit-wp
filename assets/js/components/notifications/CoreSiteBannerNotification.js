@@ -20,21 +20,27 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import BannerNotification from './BannerNotification';
+import BannerNotification, {
+	TYPES,
+} from '../../googlesitekit/notifications/components/layout/BannerNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import { useBreakpoint } from '../../hooks/useBreakpoint';
+import { getStickyHeaderHeightWithoutNav } from '../../util/scroll';
+import { finiteNumberOrZero } from '../../util/finite-number-or-zero';
+import useNotificationEvents from '../../googlesitekit/notifications/hooks/useNotificationEvents';
 
 function CoreSiteBannerNotification( {
 	content,
@@ -48,61 +54,64 @@ function CoreSiteBannerNotification( {
 	learnMoreURL,
 	title,
 } ) {
+	const trackEvents = useNotificationEvents( id );
+
 	const { dismissNotification, acceptNotification } =
 		useDispatch( CORE_SITE );
-	const viewContext = useViewContext();
 
-	const handleOnView = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_remote-site-notification`,
-			'view_notification',
-			id
-		);
-	}, [ id, viewContext ] );
+	const viewContext = useViewContext();
+	const breakpoint = useBreakpoint();
+
+	// Intersection observer for tracking view event.
+	const [ isViewed, setIsViewed ] = useState( false );
+	const bannerNotificationRef = useRef();
+	const intersectionEntry = useIntersection( bannerNotificationRef, {
+		rootMargin: `${ -finiteNumberOrZero(
+			getStickyHeaderHeightWithoutNav( breakpoint )
+		) }px 0px 0px 0px`,
+		threshold: 0,
+	} );
+
+	useEffect( () => {
+		if ( ! isViewed && intersectionEntry?.isIntersecting ) {
+			trackEvents.view();
+			setIsViewed( true );
+		}
+	}, [ viewContext, isViewed, intersectionEntry, trackEvents ] );
 
 	const onCTAClick = useCallback( () => {
 		acceptNotification( id );
-		trackEvent(
-			`${ viewContext }_remote-site-notification`,
-			'confirm_notification',
-			id
-		);
-	}, [ id, acceptNotification, viewContext ] );
+	}, [ id, acceptNotification ] );
 
-	const onDismiss = useCallback( () => {
+	const onDismissClick = useCallback( () => {
 		dismissNotification( id );
-		trackEvent(
-			`${ viewContext }_remote-site-notification`,
-			'dismiss_notification',
-			id
-		);
-	}, [ id, dismissNotification, viewContext ] );
-
-	const onLearnMoreClick = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_remote-site-notification`,
-			'click_learn_more_link',
-			id
-		);
-	}, [ id, viewContext ] );
+	}, [ id, dismissNotification ] );
 
 	return (
 		<BannerNotification
-			key={ id }
-			id={ id }
+			ref={ bannerNotificationRef }
+			notificationID={ id }
+			type={ TYPES.WARNING }
 			title={ title }
 			description={ content }
-			learnMoreURL={ learnMoreURL }
-			learnMoreLabel={ learnMoreLabel }
-			ctaLink={ ctaURL }
-			ctaLabel={ ctaLabel }
-			ctaTarget={ ctaTarget }
-			dismiss={ dismissLabel }
-			isDismissible={ dismissible }
-			onCTAClick={ onCTAClick }
-			onView={ handleOnView }
-			onDismiss={ onDismiss }
-			onLearnMoreClick={ onLearnMoreClick }
+			learnMoreLink={ {
+				label: learnMoreLabel,
+				href: learnMoreURL,
+			} }
+			ctaButton={ {
+				label: ctaLabel,
+				href: ctaURL,
+				target: ctaTarget,
+				onClick: onCTAClick,
+			} }
+			dismissButton={
+				dismissible
+					? {
+							label: dismissLabel,
+							onClick: onDismissClick,
+					  }
+					: undefined
+			}
 		/>
 	);
 }

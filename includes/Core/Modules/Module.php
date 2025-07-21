@@ -357,8 +357,6 @@ abstract class Module {
 				$restore_defers[] = $oauth_client->get_client()->withDefer( true );
 
 				$current_user = wp_get_current_user();
-				// Adds the current user to the active consumers list.
-				$oauth_client->add_active_consumer( $current_user );
 			}
 
 			$request = $this->create_data_request( $data );

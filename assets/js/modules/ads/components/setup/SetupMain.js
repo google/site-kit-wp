@@ -36,6 +36,7 @@ import SetupForm from './SetupForm';
 import SupportLink from '../../../../components/SupportLink';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import Typography from '../../../../components/Typography';
 
 export default function SetupMain( { finishSetup } ) {
 	const isAdBlockerActive = useSelect( ( select ) =>
@@ -49,9 +50,14 @@ export default function SetupMain( { finishSetup } ) {
 					<AdsIcon width="40" height="40" />
 				</div>
 
-				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+				<Typography
+					as="h3"
+					className="googlesitekit-setup-module__title"
+					size="small"
+					type="headline"
+				>
 					{ _x( 'Ads', 'Service name', 'google-site-kit' ) }
-				</h2>
+				</Typography>
 			</div>
 			<div className="googlesitekit-setup-module__step">
 				<AdBlockerWarning moduleSlug="ads" />
