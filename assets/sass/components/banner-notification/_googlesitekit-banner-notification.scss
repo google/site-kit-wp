@@ -25,6 +25,10 @@
 		.googlesitekit-banner__description p {
 			font-size: $fs-body-sm;
 
+			@media (min-width: $width-tablet + 1 + px) {
+				font-size: $fs-body-md;
+			}
+
 			a {
 				color: unset;
 				text-decoration: underline;
