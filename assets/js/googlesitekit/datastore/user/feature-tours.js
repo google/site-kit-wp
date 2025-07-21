@@ -29,6 +29,7 @@ import { isPlainObject, isNull } from 'lodash';
 import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
+	createReducer,
 	createRegistrySelector,
 	combineStores,
 	createRegistryControl,
@@ -60,9 +61,8 @@ const fetchGetDismissedToursStore = createFetchStore( {
 	baseName: 'getDismissedTours',
 	controlCallback: () =>
 		get( 'core', 'user', 'dismissed-tours', {}, { useCache: false } ),
-	reducerCallback: ( state, dismissedTourSlugs ) => ( {
-		...state,
-		dismissedTourSlugs,
+	reducerCallback: createReducer( ( state, dismissedTourSlugs ) => {
+		state.dismissedTourSlugs = dismissedTourSlugs;
 	} ),
 } );
 
@@ -307,56 +307,42 @@ const baseControls = {
 
 const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case DISMISS_TOUR: {
+		case DISMISS_TOUR:
 			const { slug } = payload;
 			const { dismissedTourSlugs = [] } = state;
 			if ( dismissedTourSlugs.includes( slug ) ) {
-				return state;
+				break;
 			}
-			return {
-				...state,
-				currentTour:
-					state.currentTour?.slug === slug ? null : state.currentTour,
-				dismissedTourSlugs: dismissedTourSlugs.concat( slug ),
-			};
-		}
 
-		case RECEIVE_CURRENT_TOUR: {
-			return {
-				...state,
-				currentTour: payload.tour,
-				shownTour: payload.tour,
-			};
-		}
+			state.currentTour =
+				state.currentTour?.slug === slug ? null : state.currentTour;
+			state.dismissedTourSlugs = dismissedTourSlugs.concat( slug );
+			break;
 
-		case RECEIVE_READY_TOURS: {
+		case RECEIVE_CURRENT_TOUR:
+			state.currentTour = payload.tour;
+			state.shownTour = payload.tour;
+			break;
+
+		case RECEIVE_READY_TOURS:
 			const { viewContext, viewTours } = payload;
-			return {
-				...state,
-				viewTours: {
-					...state.viewTours,
-					[ viewContext ]: viewTours,
-				},
-			};
-		}
 
-		case RECEIVE_TOURS: {
-			return {
-				...state,
-				tours: payload.tours,
+			state.viewTours = {
+				...state.viewTours,
+				[ viewContext ]: viewTours,
 			};
-		}
+			break;
 
-		case RECEIVE_LAST_DISMISSED_AT: {
-			return {
-				...state,
-				lastDismissedAt: payload.timestamp,
-			};
-		}
+		case RECEIVE_TOURS:
+			state.tours = payload.tours;
+			break;
 
-		default: {
-			return state;
-		}
+		case RECEIVE_LAST_DISMISSED_AT:
+			state.lastDismissedAt = payload.timestamp;
+			break;
+
+		default:
+			break;
 	}
 };
 
