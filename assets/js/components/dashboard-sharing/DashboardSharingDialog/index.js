@@ -59,6 +59,7 @@ import ShareIcon from '../../../../svg/icons/share.svg';
 import Link from '../../Link';
 import DashboardSharingSettings from '../DashboardSharingSettings';
 import Footer from './Footer';
+import Typography from '../../Typography';
 
 export default function DashboardSharingDialog() {
 	const [ shouldFocusResetButton, setShouldFocusResetButton ] =
@@ -215,7 +216,12 @@ export default function DashboardSharingDialog() {
 						) }
 
 						<div className="googlesitekit-dialog__header-titles">
-							<h2 className="googlesitekit-dialog__title">
+							<Typography
+								as="h2"
+								className="googlesitekit-dialog__title"
+								size="medium"
+								type="headline"
+							>
 								{ settingsDialogOpen &&
 									__(
 										'Dashboard sharing & permissions',
@@ -227,7 +233,7 @@ export default function DashboardSharingDialog() {
 										'Reset dashboard sharing permissions',
 										'google-site-kit'
 									) }
-							</h2>
+							</Typography>
 
 							<p
 								className={ classnames(
