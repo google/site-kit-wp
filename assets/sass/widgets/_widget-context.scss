@@ -22,7 +22,7 @@
 
 	.mdc-layout-grid {
 		@media screen and (min-width: $bp-nonMobile) {
-			padding: 10px $grid-gap-desktop;
+			padding: $grid-gap-desktop;
 		}
 	}
 }
