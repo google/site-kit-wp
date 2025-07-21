@@ -25,6 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { createValidatedAction } from '../../data/utils';
+import { createReducer } from 'googlesitekit-data';
 
 const DO_NAVIGATE_TO = 'DO_NAVIGATE_TO';
 const SET_NAVIGATING_TO = 'SET_NAVIGATING_TO';
@@ -74,19 +75,16 @@ export const controls = {
 	},
 };
 
-export function reducer( state, { type, payload } ) {
+export const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_NAVIGATING_TO: {
-			return {
-				...state,
-				navigatingTo: payload.url,
-			};
-		}
-		default: {
-			return state;
-		}
+		case SET_NAVIGATING_TO:
+			state.navigatingTo = payload.url;
+			break;
+
+		default:
+			break;
 	}
-}
+} );
 
 export const resolvers = {};
 
