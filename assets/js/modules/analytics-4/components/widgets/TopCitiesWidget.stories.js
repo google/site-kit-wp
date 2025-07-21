@@ -48,6 +48,7 @@ const reportOptions = {
 		},
 	],
 	limit: 4,
+	reportID: 'analytics-4_top-cities-widget_widget_topCitiesReportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(

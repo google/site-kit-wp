@@ -76,6 +76,8 @@ describe( 'TopTrafficSourceDrivingAddToCartWidget', () => {
 						name: 'addToCarts',
 					},
 				],
+				reportID:
+					'analytics-4_top-traffic-source-driving-add-to-cart-widget_widget_totalAddToCartReportOptions',
 			},
 			{
 				...dates,
@@ -87,6 +89,8 @@ describe( 'TopTrafficSourceDrivingAddToCartWidget', () => {
 				],
 				limit: 1,
 				orderBy: 'addToCarts',
+				reportID:
+					'analytics-4_top-traffic-source-driving-add-to-cart-widget_widget_trafficSourceReportOptions',
 			},
 		];
 
@@ -116,6 +120,8 @@ describe( 'TopTrafficSourceDrivingAddToCartWidget', () => {
 						name: 'addToCarts',
 					},
 				],
+				reportID:
+					'analytics-4_top-traffic-source-driving-add-to-cart-widget_widget_totalAddToCartReportOptions',
 			},
 			{
 				...dates,
@@ -127,6 +133,8 @@ describe( 'TopTrafficSourceDrivingAddToCartWidget', () => {
 				],
 				limit: 1,
 				orderBy: 'addToCarts',
+				reportID:
+					'analytics-4_top-traffic-source-driving-add-to-cart-widget_widget_trafficSourceReportOptions',
 			},
 		];
 

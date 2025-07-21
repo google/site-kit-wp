@@ -231,6 +231,8 @@ describe( 'SettingsCardVisitorGroups', () => {
 				);
 			} );
 
+			await waitForRegistry();
+
 			switchControl.click();
 
 			await waitFor( () => {

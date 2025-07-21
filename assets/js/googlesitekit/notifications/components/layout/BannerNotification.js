@@ -23,6 +23,11 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
@@ -33,95 +38,129 @@ import LearnMoreLink from '../../../../components/Banner/LearnMoreLink';
 import CTAButton from '../../../../components/Banner/CTAButton';
 import DismissButton from '../../../../components/Banner/DismissButton';
 import { Cell, Grid, Row } from '../../../../material-components';
+import WarningDesktopSVG from '@/svg/graphics/warning-banner.svg?url';
+import ErrorDesktopSVG from '@/svg/graphics/error-banner.svg?url';
 
 export const TYPES = {
 	INFO: 'info',
+	ERROR: 'error',
 	WARNING: 'warning',
 };
-export default function BannerNotification( {
-	notificationID,
-	type = TYPES.INFO,
-	learnMoreLink,
-	dismissButton,
-	ctaButton,
-	dismissOptions,
-	gaTrackingEventArgs,
-	...props
-} ) {
-	const trackEvents = useNotificationEvents(
-		notificationID,
-		gaTrackingEventArgs?.category
-	);
 
-	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
-
-	const handleDismissWithTrackEvent = async ( event ) => {
-		await dismissButton?.onClick?.( event );
-		trackEvents.dismiss(
-			gaTrackingEventArgs?.label,
-			gaTrackingEventArgs?.value
+const BannerNotification = forwardRef(
+	(
+		{
+			notificationID,
+			type = TYPES.INFO,
+			learnMoreLink,
+			dismissButton,
+			ctaButton,
+			dismissOnCTAClick,
+			dismissOptions,
+			gaTrackingEventArgs,
+			...props
+		},
+		ref
+	) => {
+		const trackEvents = useNotificationEvents(
+			notificationID,
+			gaTrackingEventArgs?.category
 		);
-		dismissNotification( notificationID, {
-			...dismissOptions,
-		} );
-	};
 
-	const handleCTAClickWithTrackEvent = async ( event ) => {
-		trackEvents.confirm(
-			gaTrackingEventArgs?.label,
-			gaTrackingEventArgs?.value
+		const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
+		const handleDismissWithTrackEvent = async ( event ) => {
+			await dismissButton?.onClick?.( event );
+			trackEvents.dismiss(
+				gaTrackingEventArgs?.label,
+				gaTrackingEventArgs?.value
+			);
+			dismissNotification( notificationID, {
+				...dismissOptions,
+			} );
+		};
+
+		const handleCTAClickWithTrackEvent = async ( event ) => {
+			trackEvents.confirm(
+				gaTrackingEventArgs?.label,
+				gaTrackingEventArgs?.value
+			);
+			await ctaButton?.onClick?.( event );
+
+			if ( dismissOnCTAClick ) {
+				dismissNotification( notificationID, {
+					...dismissOptions,
+				} );
+			}
+		};
+
+		const handleLearnMoreClickWithTrackEvent = async ( event ) => {
+			trackEvents.clickLearnMore(
+				gaTrackingEventArgs?.label,
+				gaTrackingEventArgs?.value
+			);
+			await learnMoreLink?.onClick?.( event );
+		};
+
+		let SVGData = props?.svg;
+
+		if ( ! SVGData && type !== TYPES.INFO ) {
+			SVGData = {
+				desktop: undefined,
+				mobile: undefined,
+				verticalPosition: 'center',
+			};
+
+			if ( type === TYPES.WARNING ) {
+				SVGData.desktop = WarningDesktopSVG;
+			}
+
+			if ( type === TYPES.ERROR ) {
+				SVGData.desktop = ErrorDesktopSVG;
+			}
+		}
+
+		return (
+			<div
+				ref={ ref }
+				className={ classnames(
+					'googlesitekit-banner-notification',
+					`googlesitekit-banner-notification--${ type }`
+				) }
+			>
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							<Banner
+								learnMoreLink={
+									learnMoreLink && {
+										...learnMoreLink,
+										onClick:
+											handleLearnMoreClickWithTrackEvent,
+									}
+								}
+								dismissButton={
+									dismissButton && {
+										...dismissButton,
+										onClick: handleDismissWithTrackEvent,
+									}
+								}
+								ctaButton={
+									ctaButton && {
+										...ctaButton,
+										onClick: handleCTAClickWithTrackEvent,
+									}
+								}
+								svg={ SVGData }
+								{ ...props }
+							/>
+						</Cell>
+					</Row>
+				</Grid>
+			</div>
 		);
-		await ctaButton?.onClick?.( event );
-	};
-
-	const handleLearnMoreClickWithTrackEvent = async ( event ) => {
-		trackEvents.clickLearnMore(
-			gaTrackingEventArgs?.label,
-			gaTrackingEventArgs?.value
-		);
-		await learnMoreLink?.onClick?.( event );
-	};
-
-	const SVGData = props?.svg;
-
-	return (
-		<div
-			className={ classnames(
-				'googlesitekit-banner-notification',
-				`googlesitekit-banner-notification--${ type }`
-			) }
-		>
-			<Grid>
-				<Row>
-					<Cell size={ 12 }>
-						<Banner
-							learnMoreLink={
-								learnMoreLink && {
-									...learnMoreLink,
-									onClick: handleLearnMoreClickWithTrackEvent,
-								}
-							}
-							dismissButton={
-								dismissButton && {
-									...dismissButton,
-									onClick: handleDismissWithTrackEvent,
-								}
-							}
-							ctaButton={
-								ctaButton && {
-									...ctaButton,
-									onClick: handleCTAClickWithTrackEvent,
-								}
-							}
-							svg={ SVGData }
-							{ ...props }
-						/>
-					</Cell>
-				</Row>
-			</Grid>
-		</div>
-	);
-}
+	}
+);
 
 BannerNotification.propTypes = {
 	notificationID: PropTypes.string.isRequired,
@@ -131,6 +170,7 @@ BannerNotification.propTypes = {
 	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
 	ctaButton: PropTypes.shape( CTAButton.propTypes ),
+	dismissOnCTAClick: PropTypes.bool,
 	dismissOptions: PropTypes.object,
 	gaTrackingEventArgs: PropTypes.shape( {
 		category: PropTypes.string,
@@ -138,3 +178,5 @@ BannerNotification.propTypes = {
 		value: PropTypes.number,
 	} ),
 };
+
+export default BannerNotification;

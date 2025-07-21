@@ -75,6 +75,7 @@ class ReportParsers {
 	 *
 	 * @since 1.99.0
 	 * @since 1.130.0 Moved into ReportParsers for shared used between Report and PivotReport.
+	 * @since 1.157.0 Added support for dateRangeName and compareDateRangeName parameters.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_DateRange[] An array of AnalyticsData DateRange objects.
@@ -99,16 +100,29 @@ class ReportParsers {
 			$date_ranges[] = Date::parse_date_range( 'last-28-days', 1 );
 		}
 
-		$date_ranges = array_map(
-			function ( $date_range ) {
-				list ( $start_date, $end_date ) = $date_range;
-				$date_range                     = new Google_Service_AnalyticsData_DateRange();
-				$date_range->setStartDate( $start_date );
-				$date_range->setEndDate( $end_date );
+		// Get date range names if provided.
+		$date_range_name         = $data['dateRangeName'] ?? '';
+		$compare_date_range_name = $data['compareDateRangeName'] ?? '';
 
-				return $date_range;
+		$date_ranges = array_map(
+			function ( $date_range, $index ) use ( $date_range_name, $compare_date_range_name ) {
+				list ( $start_date, $end_date ) = $date_range;
+
+				$date_range_obj = new Google_Service_AnalyticsData_DateRange();
+				$date_range_obj->setStartDate( $start_date );
+				$date_range_obj->setEndDate( $end_date );
+
+				// Set date range names if provided.
+				if ( 0 === $index && ! empty( $date_range_name ) ) {
+					$date_range_obj->setName( $date_range_name );
+				} elseif ( 1 === $index && ! empty( $compare_date_range_name ) ) {
+					$date_range_obj->setName( $compare_date_range_name );
+				}
+
+				return $date_range_obj;
 			},
-			$date_ranges
+			$date_ranges,
+			array_keys( $date_ranges )
 		);
 
 		return $date_ranges;

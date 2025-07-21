@@ -51,6 +51,8 @@ const reportOptions = {
 	],
 	limit: 1,
 	orderBy: 'sessionKeyEventRate',
+	reportID:
+		'analytics-4_top-converting-traffic-source-widget_widget_reportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
