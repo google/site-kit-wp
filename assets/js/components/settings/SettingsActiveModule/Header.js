@@ -35,6 +35,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
+import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { NEW_MODULES, BETA_MODULES, EXPERIMENTAL_MODULES } from '../constants';
 import { Grid, Row, Cell } from '../../../material-components';
@@ -68,6 +69,10 @@ export default function Header( { slug } ) {
 	);
 	const requirementsError = useSelect( ( select ) =>
 		select( CORE_MODULES )?.getCheckRequirementsError( slug )
+	);
+
+	const isNavigatingToAdminReAuthURL = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
 	);
 
 	const openHeader = useCallback( () => {
@@ -123,7 +128,9 @@ export default function Header( { slug } ) {
 			<Button
 				href={ adminReauthURL }
 				onClick={ onActionClick }
-				disabled={ requirementsError ? true : false }
+				disabled={
+					!! ( requirementsError || isNavigatingToAdminReAuthURL )
+				}
 				inverse
 			>
 				{ sprintf(
