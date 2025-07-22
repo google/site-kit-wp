@@ -32,9 +32,9 @@ import { Button } from 'googlesitekit-components';
 export default function DismissButton( {
 	className,
 	label = __( 'Maybe later', 'google-site-kit' ),
-	tertiary = true,
 	onClick,
 	disabled,
+	tertiary = true,
 } ) {
 	if ( ! onClick ) {
 		return null;
@@ -55,9 +55,9 @@ export default function DismissButton( {
 DismissButton.propTypes = {
 	className: PropTypes.string,
 	label: PropTypes.string,
-	tertiary: PropTypes.bool,
 	onClick: PropTypes.func,
 	disabled: PropTypes.bool,
+	tertiary: PropTypes.bool,
 	dismissOptions: PropTypes.shape( {
 		expiresInSeconds: PropTypes.number,
 		skipHidingFromQueue: PropTypes.bool,
