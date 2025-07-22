@@ -304,7 +304,7 @@ const baseControls = {
 	),
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case DISMISS_TOUR:
 			const { slug } = payload;
@@ -343,7 +343,7 @@ const baseReducer = ( state, { type, payload } ) => {
 		default:
 			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getDismissedFeatureTourSlugs() {
