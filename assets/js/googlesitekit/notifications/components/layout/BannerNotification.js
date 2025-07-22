@@ -55,8 +55,6 @@ const BannerNotification = forwardRef(
 			learnMoreLink,
 			dismissButton,
 			ctaButton,
-			dismissOnCTAClick,
-			dismissOptions,
 			gaTrackingEventArgs,
 			...props
 		},
@@ -75,8 +73,9 @@ const BannerNotification = forwardRef(
 				gaTrackingEventArgs?.label,
 				gaTrackingEventArgs?.value
 			);
+
 			dismissNotification( notificationID, {
-				...dismissOptions,
+				...dismissButton?.dismissOptions,
 			} );
 		};
 
@@ -87,9 +86,9 @@ const BannerNotification = forwardRef(
 			);
 			await ctaButton?.onClick?.( event );
 
-			if ( dismissOnCTAClick ) {
+			if ( ctaButton?.dismissOnClick ) {
 				dismissNotification( notificationID, {
-					...dismissOptions,
+					...ctaButton?.dismissOptions,
 				} );
 			}
 		};
@@ -128,7 +127,7 @@ const BannerNotification = forwardRef(
 					`googlesitekit-banner-notification--${ type }`
 				) }
 			>
-				<Grid>
+				<Grid className="googlesitekit-page-content">
 					<Row>
 						<Cell size={ 12 }>
 							<Banner
@@ -170,8 +169,6 @@ BannerNotification.propTypes = {
 	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
 	ctaButton: PropTypes.shape( CTAButton.propTypes ),
-	dismissOnCTAClick: PropTypes.bool,
-	dismissOptions: PropTypes.object,
 	gaTrackingEventArgs: PropTypes.shape( {
 		category: PropTypes.string,
 		label: PropTypes.string,
