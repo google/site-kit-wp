@@ -65,10 +65,11 @@ class GTag {
 	 * @since 1.124.0
 	 */
 	public function register() {
-		// Set up gtag state early in case hat script is needed.
-		add_action( 'wp_enqueue_scripts', fn() => do_action( 'googlesitekit_setup_gtag', $this ), 0 );
-		add_action( 'wp_enqueue_scripts', fn() => $this->maybe_print_hat_script(), 1 );
 		add_action( 'wp_enqueue_scripts', fn() => $this->enqueue_gtag_script(), 20 );
+		// The wp_enqueue_scripts action is hooked on wp_head @ 1;
+		// The hat script needs to be hooked in after for tag state to be available.
+		// This also avoids printing from within the "enqueue" action.
+		add_action( 'wp_head', fn() => $this->maybe_print_hat_script(), 2 );
 
 		add_filter(
 			'wp_resource_hints',
@@ -157,6 +158,9 @@ JS;
 	 * @return void
 	 */
 	protected function enqueue_gtag_script() {
+		// $this->tags and $this->commands will be populated via this action's handlers.
+		do_action( 'googlesitekit_setup_gtag', $this );
+
 		if ( empty( $this->tags ) ) {
 			return;
 		}
