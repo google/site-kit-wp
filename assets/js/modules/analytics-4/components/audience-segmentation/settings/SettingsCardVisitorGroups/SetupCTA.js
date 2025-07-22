@@ -37,7 +37,7 @@ import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../../util';
 
-export default function SetupCTA() {
+export default function SetupCTA( { trackGAEvent = trackEvent } ) {
 	const viewContext = useViewContext();
 
 	const [ showErrorModal, setShowErrorModal ] = useState( false );
@@ -70,7 +70,7 @@ export default function SetupCTA() {
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );
 
 	function handleEnableGroups() {
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_audiences-setup-cta-settings`,
 			'enable_groups'
 		).finally( onEnableGroups );

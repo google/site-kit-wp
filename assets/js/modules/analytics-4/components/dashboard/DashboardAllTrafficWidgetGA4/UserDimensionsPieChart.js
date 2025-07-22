@@ -60,8 +60,14 @@ import useViewContext from '../../../../../hooks/useViewContext';
 import { getTooltipHelp } from './utils';
 
 export default function UserDimensionsPieChart( props ) {
-	const { dimensionName, dimensionValue, gatheringData, loaded, report } =
-		props;
+	const {
+		dimensionName,
+		dimensionValue,
+		gatheringData,
+		loaded,
+		report,
+		trackGAEvent = trackEvent,
+	} = props;
 
 	const [ selectable, setSelectable ] = useState( false );
 	const [ isTooltipOpen, setIsTooltipOpen ] = useState( false );
@@ -106,7 +112,7 @@ export default function UserDimensionsPieChart( props ) {
 
 			const label = target.dataset.rowLabel;
 			if ( label === '(other)' || label === '(not set)' ) {
-				trackEvent(
+				trackGAEvent(
 					`${ viewContext }_all-traffic-widget`,
 					'help_click',
 					label
@@ -164,6 +170,7 @@ export default function UserDimensionsPieChart( props ) {
 		dimensionColor,
 		viewContext,
 		isTooltipOpen,
+		trackGAEvent,
 	] );
 
 	const dataMap = extractAnalyticsDataForPieChart( report, {
@@ -323,7 +330,7 @@ export default function UserDimensionsPieChart( props ) {
 				[ UI_ACTIVE_ROW_INDEX ]: index,
 			} );
 
-			trackEvent(
+			trackGAEvent(
 				`${ viewContext }_all-traffic-widget`,
 				'slice_select',
 				`${ dimensionName }:${ newDimensionValue }`
@@ -386,7 +393,7 @@ export default function UserDimensionsPieChart( props ) {
 						[ UI_ACTIVE_ROW_INDEX ]: row,
 					} );
 
-					trackEvent(
+					trackGAEvent(
 						`${ viewContext }_all-traffic-widget`,
 						'slice_select',
 						`${ dimensionName }:${ newDimensionValue }`

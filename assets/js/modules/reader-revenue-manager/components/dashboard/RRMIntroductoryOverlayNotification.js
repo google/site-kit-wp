@@ -48,6 +48,7 @@ export const RRM_INTRODUCTORY_OVERLAY_NOTIFICATION =
 export default function RRMIntroductoryOverlayNotification( {
 	id,
 	Notification,
+	trackGAEvent = trackEvent,
 } ) {
 	const viewContext = useViewContext();
 
@@ -80,7 +81,7 @@ export default function RRMIntroductoryOverlayNotification( {
 	};
 
 	const handleLearnMoreClick = () => {
-		trackEvent(
+		trackGAEvent(
 			gaTrackingEventArgs.category,
 			'click_learn_more_link',
 			gaTrackingEventArgs.label
@@ -152,4 +153,5 @@ export default function RRMIntroductoryOverlayNotification( {
 RRMIntroductoryOverlayNotification.propTypes = {
 	id: PropTypes.string,
 	Notification: PropTypes.elementType,
+	trackGAEvent: PropTypes.func,
 };

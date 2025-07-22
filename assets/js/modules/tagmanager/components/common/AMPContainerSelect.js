@@ -41,7 +41,10 @@ import ContainerSelect from './ContainerSelect';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 
-export default function AMPContainerSelect( { hasModuleAccess } ) {
+export default function AMPContainerSelect( {
+	hasModuleAccess,
+	trackGAEvent = trackEvent,
+} ) {
 	const viewContext = useViewContext();
 
 	const accountID = useSelect( ( select ) =>
@@ -73,7 +76,7 @@ export default function AMPContainerSelect( { hasModuleAccess } ) {
 					newContainerID === CONTAINER_CREATE
 						? 'change_amp_container_new'
 						: 'change_amp_container';
-				trackEvent( `${ viewContext }_tagmanager`, eventAction );
+				trackGAEvent( `${ viewContext }_tagmanager`, eventAction );
 
 				setAMPContainerID( newContainerID );
 				setInternalAMPContainerID( newInternalContainerID || '' );
@@ -84,6 +87,7 @@ export default function AMPContainerSelect( { hasModuleAccess } ) {
 			setAMPContainerID,
 			setInternalAMPContainerID,
 			viewContext,
+			trackGAEvent,
 		]
 	);
 
@@ -122,4 +126,5 @@ export default function AMPContainerSelect( { hasModuleAccess } ) {
 // eslint-disable-next-line sitekit/acronym-case
 AMPContainerSelect.propTypes = {
 	hasModuleAccess: PropTypes.bool,
+	trackGAEvent: PropTypes.func,
 };

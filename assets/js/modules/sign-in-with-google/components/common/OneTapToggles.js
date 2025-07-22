@@ -35,7 +35,7 @@ import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
-export default function OneTapToggles() {
+export default function OneTapToggles( { trackGAEvent = trackEvent } ) {
 	const viewContext = useViewContext();
 	const oneTapEnabled = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getOneTapEnabled()
@@ -48,20 +48,20 @@ export default function OneTapToggles() {
 	);
 
 	const trackOneTapToggleChange = useCallback( () => {
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_sign-in-with-google-settings`,
 			! oneTapEnabled ? 'enable_one_tap' : 'disable_one_tap'
 		);
-	}, [ viewContext, oneTapEnabled ] );
+	}, [ viewContext, oneTapEnabled, trackGAEvent ] );
 
 	const trackOneTapOnAllPagesToggleChange = useCallback( () => {
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_sign-in-with-google-settings`,
 			! oneTapOnAllPages
 				? 'enable_one_tap_on_all_pages'
 				: 'disable_one_tap_on_all_pages'
 		);
-	}, [ viewContext, oneTapOnAllPages ] );
+	}, [ viewContext, oneTapOnAllPages, trackGAEvent ] );
 
 	const onOneTapChange = useCallback( () => {
 		setOneTapEnabled( ! oneTapEnabled );

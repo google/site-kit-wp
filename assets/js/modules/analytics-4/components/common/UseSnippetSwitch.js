@@ -36,7 +36,10 @@ import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 
-export default function UseSnippetSwitch( { description } ) {
+export default function UseSnippetSwitch( {
+	description,
+	trackGAEvent = trackEvent,
+} ) {
 	const viewContext = useViewContext();
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
@@ -46,12 +49,12 @@ export default function UseSnippetSwitch( { description } ) {
 	const onChange = useCallback( () => {
 		const newUseSnippet = ! useSnippet;
 		setUseSnippet( newUseSnippet );
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_analytics`,
 			newUseSnippet ? 'enable_tag' : 'disable_tag',
 			'ga4'
 		);
-	}, [ useSnippet, setUseSnippet, viewContext ] );
+	}, [ useSnippet, setUseSnippet, viewContext, trackGAEvent ] );
 
 	if ( useSnippet === undefined ) {
 		return null;
@@ -72,4 +75,5 @@ export default function UseSnippetSwitch( { description } ) {
 
 UseSnippetSwitch.propTypes = {
 	description: PropTypes.node,
+	trackGAEvent: PropTypes.func,
 };

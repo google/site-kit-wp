@@ -37,7 +37,7 @@ const SetupSuccessContentWithIntersectionObserver =
 export const SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION =
 	'settings_visitor_groups_setup_success_notification';
 
-export default function SetupSuccess() {
+export default function SetupSuccess( { trackGAEvent = trackEvent } ) {
 	const viewContext = useViewContext();
 	const { dismissItem } = useDispatch( CORE_USER );
 
@@ -67,7 +67,7 @@ export default function SetupSuccess() {
 	return (
 		<SetupSuccessContentWithIntersectionObserver
 			onInView={ () => {
-				trackEvent(
+				trackGAEvent(
 					`${ viewContext }_audiences-setup-cta-settings-success`,
 					'view_notification'
 				);

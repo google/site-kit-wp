@@ -62,6 +62,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 	WidgetNull,
 	WidgetReportError,
 	Widget,
+	trackGAEvent = trackEvent,
 } ) {
 	const viewOnlyDashboard = useViewOnly();
 
@@ -168,14 +169,14 @@ function DashboardTopEarningPagesWidgetGA4( {
 	useEffect( () => {
 		if ( inView && ! hasBeenInView ) {
 			if ( isAdSenseLinked ) {
-				trackEvent(
+				trackGAEvent(
 					`${ viewContext }_top-earning-pages-widget`,
 					'view_widget'
 				);
 			}
 
 			if ( ! isAdSenseLinked ) {
-				trackEvent(
+				trackGAEvent(
 					`${ viewContext }_top-earning-pages-widget`,
 					'view_notification'
 				);
@@ -183,10 +184,10 @@ function DashboardTopEarningPagesWidgetGA4( {
 
 			setHasBeenInView( true );
 		}
-	}, [ inView, viewContext, isAdSenseLinked, hasBeenInView ] );
+	}, [ inView, viewContext, isAdSenseLinked, hasBeenInView, trackGAEvent ] );
 
 	const onClickAdSenseLinkedCTA = () => {
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_top-earning-pages-widget`,
 			'click_learn_more_link'
 		);
@@ -320,6 +321,7 @@ DashboardTopEarningPagesWidgetGA4.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetNull: PropTypes.elementType.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
+	trackGAEvent: PropTypes.func,
 };
 
 export default compose(

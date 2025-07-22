@@ -44,8 +44,13 @@ import {
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 
-export default function WebDataStreamSelect( props ) {
-	const { hasModuleAccess, isDisabled, className, onChange } = props;
+export default function WebDataStreamSelect( {
+	hasModuleAccess,
+	isDisabled,
+	className,
+	onChange,
+	trackGAEvent = trackEvent,
+} ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
@@ -86,7 +91,7 @@ export default function WebDataStreamSelect( props ) {
 					?.webStreamData?.measurementId || '' // eslint-disable-line sitekit/acronym-case
 			);
 
-			trackEvent(
+			trackGAEvent(
 				`${ viewContext }_analytics`,
 				newID === WEBDATASTREAM_CREATE
 					? 'change_webdatastream_new'
@@ -105,6 +110,7 @@ export default function WebDataStreamSelect( props ) {
 			updateSettingsForMeasurementID,
 			viewContext,
 			onChange,
+			trackGAEvent,
 		]
 	);
 

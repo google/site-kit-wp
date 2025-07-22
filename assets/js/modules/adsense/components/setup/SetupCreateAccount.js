@@ -39,7 +39,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { ErrorNotices, UserProfile } from '../common';
 import useViewContext from '../../../../hooks/useViewContext';
 
-export default function SetupCreateAccount() {
+export default function SetupCreateAccount( { trackGAEvent = trackEvent } ) {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_adsense`;
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
@@ -53,10 +53,10 @@ export default function SetupCreateAccount() {
 	const createAccountHandler = useCallback(
 		async ( event ) => {
 			event.preventDefault();
-			await trackEvent( eventCategory, 'create_account' );
+			await trackGAEvent( eventCategory, 'create_account' );
 			global.open( signUpURL, '_blank' );
 		},
-		[ signUpURL, eventCategory ]
+		[ signUpURL, eventCategory, trackGAEvent ]
 	);
 
 	return (

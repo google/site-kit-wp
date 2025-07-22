@@ -44,7 +44,9 @@ import {
 import { parseAccountIDFromExistingTag } from '../../util';
 import Notice from '../../../../components/Notice';
 
-export default function AdBlockingRecoveryToggle() {
+export default function AdBlockingRecoveryToggle( {
+	trackGAEvent = trackEvent,
+} ) {
 	const viewContext = useViewContext();
 
 	const adBlockingRecoverySnippet = useSelect( ( select ) =>
@@ -96,7 +98,7 @@ export default function AdBlockingRecoveryToggle() {
 		} );
 		setUseAdBlockingRecoverySnippet( toggleValue );
 
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_adsense-abr`,
 			toggleValue ? 'enable_tag' : 'disable_tag',
 			'abr_tag'
@@ -110,7 +112,7 @@ export default function AdBlockingRecoveryToggle() {
 		} );
 		setUseAdBlockingRecoveryErrorSnippet( toggleValue );
 
-		trackEvent(
+		trackGAEvent(
 			`${ viewContext }_adsense-abr`,
 			toggleValue ? 'enable_tag' : 'disable_tag',
 			'error_protection_tag'
@@ -132,14 +134,14 @@ export default function AdBlockingRecoveryToggle() {
 		existingAdBlockingRecoveryTag === accountID
 	) {
 		existingAdBlockingRecoveryTagMessage = __(
-			'You’ve already enabled an ad blocking recovery message on your site. We recommend using Site Kit to manage this to get the most out of AdSense.',
+			"You've already enabled an ad blocking recovery message on your site. We recommend using Site Kit to manage this to get the most out of AdSense.",
 			'google-site-kit'
 		);
 	} else if ( existingAdBlockingRecoveryTag ) {
 		existingAdBlockingRecoveryTagMessage = sprintf(
 			/* translators: %s: account ID */
 			__(
-				'Site Kit detected Ad Blocking Recovery code for a different account %s on your site. For a better ad blocking recovery experience, you should remove Ad Blocking Recovery code that’s not linked to this AdSense account.',
+				"Site Kit detected Ad Blocking Recovery code for a different account %s on your site. For a better ad blocking recovery experience, you should remove Ad Blocking Recovery code that's not linked to this AdSense account.",
 				'google-site-kit'
 			),
 			parseAccountIDFromExistingTag( existingAdBlockingRecoveryTag )
@@ -197,7 +199,7 @@ export default function AdBlockingRecoveryToggle() {
 						<p>
 							{ createInterpolateElement(
 								__(
-									'If a site visitor’s ad blocker browser extension blocks the message you create in AdSense, a default, non-customizable ad blocking recovery message will display instead. <a>Learn more</a>',
+									"If a site visitor's ad blocker browser extension blocks the message you create in AdSense, a default, non-customizable ad blocking recovery message will display instead. <a>Learn more</a>",
 									'google-site-kit'
 								),
 								{

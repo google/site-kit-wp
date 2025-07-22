@@ -35,7 +35,11 @@ import {
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import SetupAccountSiteUI from './SetupAccountSiteUI';
 
-export default function Ready( { site, finishSetup } ) {
+export default function Ready( {
+	site,
+	finishSetup,
+	trackGAEvent = trackEvent,
+} ) {
 	const [ acknowledgedDisabledAutoAds, setAcknowledgedDisabledAutoAds ] =
 		useState( false );
 
@@ -61,19 +65,19 @@ export default function Ready( { site, finishSetup } ) {
 	const enableAutoAdsHandler = useCallback(
 		( event ) => {
 			event.preventDefault();
-			trackEvent( `${ viewContext }_adsense`, 'enable_auto_ads' );
+			trackGAEvent( `${ viewContext }_adsense`, 'enable_auto_ads' );
 			global.open( enableAutoAdsURL, '_blank' );
 		},
-		[ enableAutoAdsURL, viewContext ]
+		[ enableAutoAdsURL, viewContext, trackGAEvent ]
 	);
 
 	const acknowledgeDisabledAutoAdsHandler = useCallback(
 		( event ) => {
 			event.preventDefault();
-			trackEvent( `${ viewContext }_adsense`, 'disable_auto_ads' );
+			trackGAEvent( `${ viewContext }_adsense`, 'disable_auto_ads' );
 			setAcknowledgedDisabledAutoAds( true );
 		},
-		[ viewContext ]
+		[ viewContext, trackGAEvent ]
 	);
 
 	const continueSetupHandler = useCallback( async () => {

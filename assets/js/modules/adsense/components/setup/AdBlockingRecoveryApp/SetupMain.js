@@ -48,7 +48,7 @@ import CreateMessageStep from './steps/CreateMessageStep';
 import PlaceTagsStep from './steps/PlaceTagsStep';
 import { MODULE_SLUG_ADSENSE } from '../../../constants';
 
-export default function SetupMain() {
+export default function SetupMain( { trackGAEvent = trackEvent } ) {
 	const viewContext = useViewContext();
 
 	const settingsURL = useSelect( ( select ) =>
@@ -112,7 +112,7 @@ export default function SetupMain() {
 
 	const onCancel = useCallback( async () => {
 		if ( activeStep === 0 ) {
-			await trackEvent(
+			await trackGAEvent(
 				`${ viewContext }_adsense-abr`,
 				'cancel_setup',
 				'on_place_tag_step'
@@ -126,7 +126,7 @@ export default function SetupMain() {
 		}
 
 		if ( createMessageCTAClicked ) {
-			await trackEvent(
+			await trackGAEvent(
 				`${ viewContext }_adsense-abr`,
 				'cancel_setup',
 				'on_final_step'
@@ -140,7 +140,7 @@ export default function SetupMain() {
 
 		const { error } = await saveSettings();
 
-		await trackEvent(
+		await trackGAEvent(
 			`${ viewContext }_adsense-abr`,
 			'cancel_setup',
 			'on_create_message_step'
@@ -165,6 +165,7 @@ export default function SetupMain() {
 		setUseAdBlockingRecoverySnippet,
 		settingsURL,
 		viewContext,
+		trackGAEvent,
 	] );
 
 	useEffect( () => {
@@ -206,7 +207,7 @@ export default function SetupMain() {
 					</Step>
 					<Step
 						title={ __(
-							'Create your site’s ad blocking recovery message (required)',
+							"Create your site's ad blocking recovery message (required)",
 							'google-site-kit'
 						) }
 						className="googlesitekit-ad-blocking-recovery__step googlesitekit-ad-blocking-recovery__step-create-message"

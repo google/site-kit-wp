@@ -22,6 +22,7 @@
 import classnames from 'classnames';
 import { useCallbackOne } from 'use-memo-one';
 import { useMount } from 'react-use';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -65,7 +66,10 @@ import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 import Typography from '../../../../components/Typography';
 
-export default function SetupMainPAX( { finishSetup } ) {
+export default function SetupMainPAX( {
+	finishSetup,
+	trackGAEvent = trackEvent,
+} ) {
 	const [ openDialog, setOpenDialog ] = useState( false );
 	const [ showPaxAppQueryParam, setShowPaxAppQueryParam ] =
 		useQueryArg( PAX_PARAM_SETUP_STEP );
@@ -149,7 +153,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 			return;
 		}
 
-		trackEvent( `${ viewContext }_pax`, 'pax_campaign_created' );
+		trackGAEvent( `${ viewContext }_pax`, 'pax_campaign_created' );
 
 		setUserID( customerData.userId );
 		setCustomerID( customerData.customerId );
@@ -166,7 +170,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 			setConversionTrackingEnabled( true );
 			await saveConversionTrackingSettings();
 		}
-	}, [ setExtCustomerID, setPaxConversionID, viewContext ] );
+	}, [ setExtCustomerID, setPaxConversionID, viewContext, trackGAEvent ] );
 
 	const registry = useRegistry();
 	const onCompleteSetup = useCallbackOne( async () => {
@@ -179,9 +183,9 @@ export default function SetupMainPAX( { finishSetup } ) {
 				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
 			}
 		);
-		await trackEvent( `${ viewContext }_pax`, 'pax_setup_completed' );
+		await trackGAEvent( `${ viewContext }_pax`, 'pax_setup_completed' );
 		finishSetup( redirectURL );
-	}, [ registry, finishSetup, viewContext ] );
+	}, [ registry, finishSetup, viewContext, trackGAEvent ] );
 
 	const isWooCommerceRedirectModalDismissed = useSelect( ( select ) =>
 		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
@@ -201,10 +205,10 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 	const onLaunch = useCallback(
 		( app ) => {
-			trackEvent( `${ viewContext }_pax`, 'pax_launch' );
+			trackGAEvent( `${ viewContext }_pax`, 'pax_launch' );
 			paxAppRef.current = app;
 		},
-		[ viewContext ]
+		[ viewContext, trackGAEvent ]
 	);
 
 	const onSetupCallback = useCallback( async () => {
@@ -214,7 +218,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		}
 
 		// awaiting because `createAccount` may trigger a navigation.
-		await trackEvent( viewContext, 'start_setup_pax' );
+		await trackGAEvent( viewContext, 'start_setup_pax' );
 
 		createAccount();
 	}, [
@@ -223,6 +227,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		setOpenDialog,
 		createAccount,
 		viewContext,
+		trackGAEvent,
 	] );
 
 	const setupNewAdsAccountSupportURL = useSelect( ( select ) =>
@@ -381,6 +386,11 @@ export default function SetupMainPAX( { finishSetup } ) {
 		</div>
 	);
 }
+
+SetupMainPAX.propTypes = {
+	finishSetup: PropTypes.func,
+	trackGAEvent: PropTypes.func,
+};
 
 SetupMainPAX.defaultProps = {
 	finishSetup: () => {},

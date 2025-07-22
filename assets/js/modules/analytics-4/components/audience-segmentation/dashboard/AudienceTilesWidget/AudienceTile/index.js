@@ -81,6 +81,7 @@ export default function AudienceTile( {
 	isPartialData,
 	isTileHideable,
 	onHideTile,
+	trackGAEvent = trackEvent,
 } ) {
 	const breakpoint = useBreakpoint();
 	const viewContext = useViewContext();
@@ -176,7 +177,7 @@ export default function AudienceTile( {
 									title={ infoTooltip }
 									tooltipClassName="googlesitekit-info-tooltip__content--audience"
 									onOpen={ () =>
-										trackEvent(
+										trackGAEvent(
 											`${ viewContext }_audiences-tile`,
 											'view_tile_tooltip',
 											audienceSlug
@@ -197,7 +198,7 @@ export default function AudienceTile( {
 									'google-site-kit'
 								) }
 								onTooltipOpen={ () => {
-									trackEvent(
+									trackGAEvent(
 										`${ viewContext }_audiences-tile`,
 										'view_tile_partial_data_tooltip',
 										audienceSlug
@@ -326,4 +327,5 @@ AudienceTile.propTypes = {
 	isPartialData: PropTypes.bool,
 	isTileHideable: PropTypes.bool,
 	onHideTile: PropTypes.func,
+	trackGAEvent: PropTypes.func,
 };

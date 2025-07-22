@@ -33,12 +33,14 @@ import { ErrorNotices } from '../common';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 
-export default function SetupAccountPendingTasks() {
+export default function SetupAccountPendingTasks( {
+	trackGAEvent = trackEvent,
+} ) {
 	const viewContext = useViewContext();
 
 	const onButtonClick = useCallback( () => {
-		trackEvent( `${ viewContext }_adsense`, 'review_tasks' );
-	}, [ viewContext ] );
+		trackGAEvent( `${ viewContext }_adsense`, 'review_tasks' );
+	}, [ viewContext, trackGAEvent ] );
 
 	const serviceAccountURL = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getServiceAccountURL()
@@ -48,7 +50,7 @@ export default function SetupAccountPendingTasks() {
 		<Fragment>
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
 				{ __(
-					'Your account isn’t ready to show ads yet',
+					"Your account isn't ready to show ads yet",
 					'google-site-kit'
 				) }
 			</h3>

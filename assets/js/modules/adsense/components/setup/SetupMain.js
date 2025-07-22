@@ -56,7 +56,10 @@ import { useRefocus } from '../../../../hooks/useRefocus';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import Typography from '../../../../components/Typography';
 
-export default function SetupMain( { finishSetup } ) {
+export default function SetupMain( {
+	finishSetup,
+	trackGAEvent = trackEvent,
+} ) {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_adsense`;
 
@@ -237,15 +240,19 @@ export default function SetupMain( { finishSetup } ) {
 
 	useEffect( () => {
 		if ( accountStatus !== undefined ) {
-			trackEvent( eventCategory, 'receive_account_state', accountStatus );
+			trackGAEvent(
+				eventCategory,
+				'receive_account_state',
+				accountStatus
+			);
 		}
-	}, [ eventCategory, accountStatus ] );
+	}, [ eventCategory, accountStatus, trackGAEvent ] );
 
 	useEffect( () => {
 		if ( siteStatus !== undefined ) {
-			trackEvent( eventCategory, 'receive_site_state', siteStatus );
+			trackGAEvent( eventCategory, 'receive_site_state', siteStatus );
 		}
-	}, [ eventCategory, siteStatus ] );
+	}, [ eventCategory, siteStatus, trackGAEvent ] );
 
 	let viewComponent;
 
@@ -297,4 +304,5 @@ export default function SetupMain( { finishSetup } ) {
 
 SetupMain.propTypes = {
 	finishSetup: PropTypes.func,
+	trackGAEvent: PropTypes.func,
 };

@@ -27,11 +27,11 @@ import { __ } from '@wordpress/i18n';
  */
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { trackEvent } from '../../../../util';
+import { trackEvent } from '../../../../util/tracking';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import useViewContext from '../../../../hooks/useViewContext';
 
-export default function AccountSelect() {
+export default function AccountSelect( { trackGAEvent = trackEvent } ) {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_adsense`;
 
@@ -51,10 +51,10 @@ export default function AccountSelect() {
 			const newAccountID = item.dataset.value;
 			if ( accountID !== newAccountID ) {
 				setAccountID( newAccountID );
-				trackEvent( eventCategory, 'change_account' );
+				trackGAEvent( eventCategory, 'change_account' );
 			}
 		},
-		[ accountID, eventCategory, setAccountID ]
+		[ accountID, eventCategory, setAccountID, trackGAEvent ]
 	);
 
 	if ( ! hasResolvedAccounts ) {
