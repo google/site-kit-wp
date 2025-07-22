@@ -233,4 +233,57 @@ class GTagTest extends TestCase {
 			$this->assertNotContains( 'gtag("set", "developer_id.dZmZmYj", true);', $script->extra['after'] );
 		}
 	}
+
+	public function test_hat_script_presence_in_wp_head__no_gtg() {
+		$output = $this->capture_action( 'wp_head' ); // includes wp_enqueue_scripts
+
+		$this->assertStringNotContainsString( 'google_tags_first_party', $output );
+	}
+
+	public function test_hat_script_presence_in_wp_head__with_gtg() {
+		$this->enable_feature( 'googleTagGateway' );
+		( new Google_Tag_Gateway_Settings( $this->options ) )->set(
+			array(
+				'isEnabled'             => true,
+				'isGTGHealthy'          => true,
+				'isScriptAccessEnabled' => true,
+			)
+		);
+
+		$output = $this->capture_action( 'wp_head' ); // includes wp_enqueue_scripts
+
+		$this->assertStringContainsString( 'google_tags_first_party', $output );
+	}
+
+	public function test_gtg_enqueues_script_per_tag() {
+		$this->enable_feature( 'googleTagGateway' );
+		( new Google_Tag_Gateway_Settings( $this->options ) )->set(
+			array(
+				'isEnabled'             => true,
+				'isGTGHealthy'          => true,
+				'isScriptAccessEnabled' => true,
+			)
+		);
+		remove_all_filters( 'googlesitekit_setup_gtag' );
+		remove_all_filters( 'wp_enqueue_scripts' );
+		$gtag = new GTag( $this->options );
+		$gtag->register();
+		$gtag->add_tag( 'GT-98765' );
+		$gtag->add_tag( 'AW-55555' );
+		$gtag->add_tag( 'G-123456' );
+
+		do_action( 'wp_enqueue_scripts' );
+
+		$gtg_scripts = array_filter( wp_scripts()->registered, fn( $s ) => str_contains( $s->src, '/measurement.php' ) );
+		$gtg_handles = wp_list_pluck( $gtg_scripts, 'handle' );
+
+		$this->assertEqualSets(
+			array(
+				GTag::get_handle_for_tag( 'AW-55555' ),
+				GTag::get_handle_for_tag( 'G-123456' ),
+				GTag::get_handle_for_tag( 'GT-98765' ),
+			),
+			$gtg_handles
+		);
+	}
 }
