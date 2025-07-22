@@ -167,9 +167,9 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface, Tag_With_Linker_I
 		// Retain this comment for detection of Site Kit placed tag.
 		$snippet_comment = sprintf( "<!-- %s -->\n", esc_html__( 'Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
 
-		$block_on_consent_attributes = $this->get_tag_blocked_on_consent_attribute();
+		$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
 
-		if ( $block_on_consent_attributes ) {
+		if ( $block_on_consent_attrs ) {
 			$tag = $this->add_legacy_block_on_consent_attributes( $tag, $block_on_consent_attrs );
 		}
 
