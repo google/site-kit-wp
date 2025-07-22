@@ -36,7 +36,7 @@ import useModuleGatheringZeroData from '../../hooks/useModuleGatheringZeroData';
 import BannerNotification, {
 	TYPES,
 } from '../../googlesitekit/notifications/components/layout/BannerNotification';
-import SVGGraphic from '@/svg/graphics/gathering-data.svg?url';
+import SVGGraphic from '@/svg/graphics/banner-gathering-data.svg?url';
 
 export default function GatheringDataNotification( { id, Notification } ) {
 	const connectMoreServicesURL = useSelect( ( select ) =>
