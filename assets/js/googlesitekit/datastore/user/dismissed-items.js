@@ -176,10 +176,11 @@ const baseActions = {
 
 const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case 'SET_IS_ITEM_DISMISSING':
+		case 'SET_IS_ITEM_DISMISSING': {
 			const { slug, isDismissing } = payload;
 			state.isDismissingItems = { [ slug ]: isDismissing };
 			break;
+		}
 
 		default:
 			break;
