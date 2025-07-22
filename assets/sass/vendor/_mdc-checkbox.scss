@@ -7,6 +7,52 @@
 		@include mdc-checkbox-focus-indicator-color($c-content-on-primary-container);
 
 		box-sizing: content-box;
+		flex: 0 0 14px;
+		height: 14px;
+		padding: 13px;
+		width: 14px;
+
+		&::before,
+		&::after {
+			background-color: $c-site-kit-sk-900;
+		}
+
+		&:hover {
+			&::before {
+				opacity: 0.24;
+				z-index: 0;
+			}
+		}
+
+		&:not(.mdc-ripple-upgraded):active::after {
+			opacity: 0.08;
+		}
+
+		.mdc-checkbox__background {
+			background-color: transparent;
+			left: 11px;
+			top: 11px;
+
+			.mdc-checkbox__checkmark {
+				height: 9px;
+				left: 1px;
+				top: 2px;
+				width: 12px;
+			}
+			.mdc-checkbox__checkmark-path {
+				stroke-width: 2px;
+			}
+
+			&::before {
+				background-color: transparent;
+				border: 2px solid $c-black;
+				height: 280%;
+				left: -90%;
+				top: -90%;
+				transform: scale(1);
+				width: 280%;
+			}
+		}
 
 		// Overriding WordPress load-styles.php
 		.mdc-checkbox__native-control {
@@ -31,6 +77,42 @@
 			vertical-align: middle;
 			width: 100%;
 			z-index: 1;
+
+			&:focus {
+				~ .mdc-checkbox__background::before {
+					opacity: 1;
+				}
+			}
+
+			&:enabled:not(:checked, :indeterminate),
+			&:checked:enabled {
+				~ .mdc-checkbox__background {
+					border-color: $c-black;
+				}
+			}
+
+			&:enabled:not(:checked, :indeterminate) {
+				~ .mdc-checkbox__background {
+					background-color: transparent;
+				}
+			}
+
+			&[disabled]:not(:checked, :indeterminate) {
+				~ .mdc-checkbox__background {
+					border-color: rgba($c-interactive-on-disable-container, 0.32);
+				}
+			}
+
+			&[disabled]:checked:not(:indeterminate) {
+				~ .mdc-checkbox__background {
+					background-color: rgba($c-interactive-on-disable-container, 0.08);
+					border-color: transparent;
+
+					.mdc-checkbox__checkmark-path {
+						stroke: rgba($c-interactive-on-disable-container, 0.32);
+					}
+				}
+			}
 		}
 
 		// The Checkbox component has an essential padding of 11 pixels to accommodate
