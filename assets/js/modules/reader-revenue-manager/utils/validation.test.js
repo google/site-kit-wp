@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { isValidPublicationID, isValidSnippetMode } from './validation';
-import { isURLUsingHTTPS } from '../../../../js/util/is-url-using-https';
+import { isURLUsingHTTPS } from '../../../util/is-url-using-https';
 
 describe( 'utility functions', () => {
 	describe( 'isValidPublicationID', () => {
