@@ -22,8 +22,8 @@
 import {
 	isValidPublicationID,
 	isValidSnippetMode,
-	isURLUsingHTTPS,
 } from './validation';
+import { isURLUsingHTTPS } from '../../../util/is-url-using-https';
 
 describe( 'utility functions', () => {
 	describe( 'isValidPublicationID', () => {
