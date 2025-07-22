@@ -277,6 +277,7 @@ class GTagTest extends TestCase {
 		$gtg_scripts = array_filter( wp_scripts()->registered, fn( $s ) => str_contains( $s->src, '/measurement.php' ) );
 		$gtg_handles = wp_list_pluck( $gtg_scripts, 'handle' );
 
+		// Assert all added tags are registered with their own handles.
 		$this->assertEqualSets(
 			array(
 				GTag::get_handle_for_tag( 'AW-55555' ),
@@ -284,6 +285,19 @@ class GTagTest extends TestCase {
 				GTag::get_handle_for_tag( 'GT-98765' ),
 			),
 			$gtg_handles
+		);
+
+		// Assert all GTG handles are enqueued.
+		$this->assertEquals(
+			array(
+				true,
+				true,
+				true,
+			),
+			array_map(
+				fn ( $handle ) => wp_script_is( $handle, 'enqueued' ),
+				array_values( $gtg_handles )
+			)
 		);
 	}
 }
