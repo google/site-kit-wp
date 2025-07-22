@@ -274,7 +274,10 @@ class GTagTest extends TestCase {
 
 		do_action( 'wp_enqueue_scripts' );
 
-		$gtg_scripts = array_filter( wp_scripts()->registered, fn( $s ) => str_contains( $s->src, '/measurement.php' ) );
+		$gtg_scripts = array_filter(
+			wp_scripts()->registered,
+			fn( $s ) => false !== strpos( $s->src, '/gtg/measurement.php' )
+		);
 		$gtg_handles = wp_list_pluck( $gtg_scripts, 'handle' );
 
 		// Assert all added tags are registered with their own handles.
