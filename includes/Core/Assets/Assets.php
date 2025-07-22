@@ -1014,13 +1014,6 @@ final class Assets {
 			return $tag;
 		}
 
-		// Abort adding async/defer for scripts that have this script as a dependency.
-		foreach ( wp_scripts()->registered as $script ) {
-			if ( in_array( $handle, $script->deps, true ) ) {
-				return $tag;
-			}
-		}
-
 		// Add the attribute if it hasn't already been added.
 		if ( ! preg_match( ":\s$script_execution(=|>|\s):", $tag ) ) {
 			$tag = preg_replace( ':(?=></script>):', " $script_execution", $tag, 1 );

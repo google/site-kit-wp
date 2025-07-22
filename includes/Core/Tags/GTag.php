@@ -10,9 +10,6 @@
 
 namespace Google\Site_Kit\Core\Tags;
 
-use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -28,35 +25,20 @@ class GTag {
 	const HANDLE = 'google_gtagjs';
 
 	/**
-	 * Options instance.
-	 *
-	 * @var Options
-	 */
-	private $options;
-
-	/**
 	 * Holds an array of gtag ID's and their inline config elements.
 	 *
 	 * @var array $tags Array of tag ID's and their configs.
 	 */
-	private $tags = array();
+	protected $tags = array();
+
 	/**
 	 * Holds an array of gtag commands, their parameters and command positions.
 	 *
 	 * @var array $commands Array of gtag config commands.
 	 */
-	private $commands = array();
+	protected $commands = array();
 
-	/**
-	 * Constructor.
-	 *
-	 * @since 1.142.0
-	 *
-	 * @param Options $options Option API instance.
-	 */
-	public function __construct( Options $options ) {
-		$this->options = $options;
-	}
+	protected $tag_handles = array();
 
 	/**
 	 * Register method called after class instantiation.
@@ -67,20 +49,8 @@ class GTag {
 	 * @return void
 	 */
 	public function register() {
-		add_action( 'wp_enqueue_scripts', $this->get_method_proxy( 'enqueue_gtag_script' ), 20 );
-
-		add_filter(
-			'wp_resource_hints',
-			function ( $urls, $relation_type ) {
-				if ( 'dns-prefetch' === $relation_type ) {
-					$urls[] = '//www.googletagmanager.com';
-				}
-
-				return $urls;
-			},
-			10,
-			2
-		);
+		add_action( 'wp_enqueue_scripts', fn() => $this->enqueue_gtag_script(), 20 );
+		add_filter( 'script_loader_tag', $this->get_method_proxy( 'add_script_comments' ), 20, 2 );
 	}
 
 	/**
@@ -131,49 +101,99 @@ class GTag {
 	 * @return void
 	 */
 	protected function enqueue_gtag_script() {
+		$this->set_developer_id();
 		// $this->tags and $this->commands will be populated via this action's handlers.
 		do_action( 'googlesitekit_setup_gtag', $this );
 
-		if ( empty( $this->tags ) ) {
+		$this->register_tags();
+		$this->register_primary_script();
+
+		wp_enqueue_script( self::HANDLE );
+	}
+
+	protected function set_developer_id() {
+		$this->add_command( 'set', array( 'developer_id.dZTNiMT', true ) );
+	}
+
+	protected function register_tags() {
+		if ( empty( $this->tags[0] ) ) {
 			return;
 		}
+		// Load the GTag scripts using the first tag ID - it doesn't matter which is used,
+		// all registered tags will be set up with a config command regardless
+		// of which is used to load the source.
+		$this->register_tag( $this->tags[0]['tag_id'] );
+	}
 
-		$gtag_src = $this->get_gtag_src();
+	protected function register_tag( $tag_id ) {
+		$handle = $this->get_handle_for_tag( $tag_id );
 
-		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-		wp_enqueue_script( self::HANDLE, $gtag_src, false, null, false );
-		wp_script_add_data( self::HANDLE, 'script_execution', 'async' );
+		wp_register_script(
+			$handle,
+			$this->get_tag_src( $tag_id ),
+			array(),
+			null,
+		);
+		// Use SK execution instead of WP strategy
+		wp_script_add_data( $handle, 'script_execution', 'async' );
 
+		$this->tag_handles[] = $handle;
+	}
+
+	/**
+	 * @param $tag_id
+	 *
+	 * @return string
+	 */
+	public static function get_handle_for_tag( $tag_id ) {
+		return self::HANDLE . '-' . $tag_id;
+	}
+
+	/**
+	 * Returns the gtag source URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The gtag source URL.
+	 */
+	protected function get_tag_src( $tag_id ) {
+		return 'https://www.googletagmanager.com/gtag/js?id=' . $tag_id;
+	}
+
+	protected function register_primary_script() {
+		wp_register_script( self::HANDLE, false, $this->tag_handles );
 		// Note that `gtag()` may already be defined via the `Consent_Mode` output, but this is safe to call multiple times.
-		wp_add_inline_script( self::HANDLE, 'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}' );
+		$this->add_inline_script( 'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}' );
+		$this->add_inline_script( 'gtag("js", new Date());' );
 
 		foreach ( $this->commands as $command ) {
-			wp_add_inline_script( self::HANDLE, $this->get_gtag_call_for_command( $command ), $command['position'] );
-		}
-
-		wp_add_inline_script( self::HANDLE, 'gtag("js", new Date());' );
-		wp_add_inline_script( self::HANDLE, 'gtag("set", "developer_id.dZTNiMT", true);' ); // Site Kit developer ID.
-
-		if ( $this->is_google_tag_gateway_active() ) {
-			wp_add_inline_script( self::HANDLE, 'gtag("set", "developer_id.dZmZmYj", true);' );
+			$this->add_inline_script(
+				$this->get_gtag_call_for_command( $command ),
+				$command['position']
+			);
 		}
 
 		foreach ( $this->tags as $tag ) {
-			wp_add_inline_script( self::HANDLE, $this->get_gtag_call_for_tag( $tag ) );
+			$this->add_inline_script( $this->get_gtag_call_for_tag( $tag ) );
+		}
+	}
+
+	protected function add_inline_script( $data, $position = 'after' ) {
+		wp_add_inline_script( self::HANDLE, $data, $position );
+	}
+
+	protected function add_script_comments( $tag, $handle ) {
+		// Add the opening comment before the first tag.
+		if ( isset( $this->tag_handles[0] ) && $handle === $this->tag_handles[0] ) {
+			$comment_start = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google tag (gtag.js) snippet added by Site Kit', 'google-site-kit' ) );
+			return $comment_start . $tag;
 		}
 
-		$filter_google_gtagjs = function ( $tag, $handle ) {
-			if ( self::HANDLE !== $handle ) {
-				return $tag;
-			}
+		// It isn't possible to add the closing comment since the snippet is an alias
+		// so it does not pass through this filter.
+		// The tag provided by Google also does not have a closing comment so this is consistent.
 
-			$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google tag (gtag.js) snippet added by Site Kit', 'google-site-kit' ) );
-			$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google tag (gtag.js) snippet added by Site Kit', 'google-site-kit' ) );
-
-			return $snippet_comment_begin . $tag . $snippet_comment_end;
-		};
-
-		add_filter( 'script_loader_tag', $filter_google_gtagjs, 20, 2 );
+		return $tag;
 	}
 
 	/**
@@ -212,64 +232,5 @@ class GTag {
 		);
 
 		return sprintf( 'gtag(%s);', implode( ',', $gtag_args ) );
-	}
-
-	/**
-	 * Returns the gtag source URL.
-	 *
-	 * @since 1.124.0
-	 * @since 1.142.0 Provides support for Google tag gateway.
-	 *
-	 * @return string|false The gtag source URL. False if no tags are added.
-	 */
-	public function get_gtag_src() {
-		if ( empty( $this->tags ) ) {
-			return false;
-		}
-
-		// Load the GTag scripts using the first tag ID - it doesn't matter which is used,
-		// all registered tags will be set up with a config command regardless
-		// of which is used to load the source.
-		$tag_id = rawurlencode( $this->tags[0]['tag_id'] );
-
-		// If Google tag gateway is active, use the proxy URL to load the GTag script.
-		if ( $this->is_google_tag_gateway_active() ) {
-			return add_query_arg(
-				array(
-					'id' => $tag_id,
-					's'  => '/gtag/js',
-				),
-				plugins_url( 'gtg/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE )
-			);
-		}
-
-		return 'https://www.googletagmanager.com/gtag/js?id=' . $tag_id;
-	}
-
-	/**
-	 * Checks if Google tag gateway is active.
-	 *
-	 * @since 1.142.0
-	 *
-	 * @return bool True if Google tag gateway is active, false otherwise.
-	 */
-	protected function is_google_tag_gateway_active() {
-		if ( ! Feature_Flags::enabled( 'googleTagGateway' ) ) {
-			return false;
-		}
-
-		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
-
-		$settings = $google_tag_gateway_settings->get();
-
-		$required_settings = array( 'isEnabled', 'isGTGHealthy', 'isScriptAccessEnabled' );
-
-		foreach ( $required_settings as $setting ) {
-			if ( ! isset( $settings[ $setting ] ) || ! $settings[ $setting ] ) {
-				return false;
-			}
-		}
-
-		return true;
 	}
 }
