@@ -46,6 +46,9 @@ class GTagTest extends TestCase {
 
 	public function set_up() {
 		parent::set_up();
+		wp_scripts()->registered = array();
+		wp_scripts()->queue      = array();
+		wp_scripts()->done       = array();
 
 		$context       = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->options = new Options( $context );
@@ -73,6 +76,8 @@ class GTagTest extends TestCase {
 	}
 
 	public function test_gtag_script_src() {
+		do_action( 'wp_enqueue_scripts' );
+
 		$scripts = wp_scripts();
 		$script  = $scripts->registered[ GTag::HANDLE ];
 
@@ -81,6 +86,8 @@ class GTagTest extends TestCase {
 	}
 
 	public function test_gtag_script_contains_gtag_call() {
+		do_action( 'wp_enqueue_scripts' );
+
 		$scripts = wp_scripts();
 		$script  = $scripts->registered[ GTag::HANDLE ];
 
@@ -98,7 +105,10 @@ class GTagTest extends TestCase {
 		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
 		$google_tag_gateway_settings->set( $data['settings'] );
 
-		$this->assertEquals( $data['expected_src'], $this->gtag->get_gtag_src() );
+		do_action( 'wp_enqueue_scripts' );
+		$registered_srcs = wp_list_pluck( wp_scripts()->registered, 'src' );
+
+		$this->assertContains( $data['expected_src'], $registered_srcs );
 	}
 
 	public function provider_google_tag_gateway_data() {
@@ -112,7 +122,7 @@ class GTagTest extends TestCase {
 						'isGTGHealthy'          => true,
 						'isScriptAccessEnabled' => true,
 					),
-					'expected_src' => plugins_url( 'gtg/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?id=' . static::TEST_TAG_ID_1 . '&s=/gtag/js',
+					'expected_src' => plugins_url( 'gtg/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?id=' . static::TEST_TAG_ID_1 . '&#038;s=/gtag/js',
 				),
 			),
 			'isEnabled false'             => array(
@@ -159,6 +169,8 @@ class GTagTest extends TestCase {
 	}
 
 	public function test_gtag_script_commands() {
+		do_action( 'wp_enqueue_scripts' );
+
 		$scripts = wp_scripts();
 		$script  = $scripts->registered[ GTag::HANDLE ];
 
@@ -171,10 +183,6 @@ class GTagTest extends TestCase {
 
 	public function test_gtag_with_tag_config() {
 		$this->gtag->add_tag( static::TEST_TAG_ID_2, static::TEST_TAG_ID_2_CONFIG );
-
-		// Remove already enqueued script to avoid duplication of output.
-		global $wp_scripts;
-		unset( $wp_scripts->registered[ GTag::HANDLE ] );
 
 		do_action( 'wp_enqueue_scripts' );
 
@@ -207,14 +215,10 @@ class GTagTest extends TestCase {
 	 * @dataProvider provider_google_tag_gateway_data
 	 */
 	public function test_get_gtag_developer_id( $data ) {
-		global $wp_scripts;
-
 		self::enable_feature( 'googleTagGateway' );
 
 		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
 		$google_tag_gateway_settings->set( $data['settings'] );
-
-		unset( $wp_scripts->registered[ GTag::HANDLE ] );
 
 		do_action( 'wp_enqueue_scripts' );
 
