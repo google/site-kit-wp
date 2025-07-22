@@ -74,7 +74,7 @@ class Contribute_With_Google_Block {
 			'init',
 			function () {
 				register_block_type(
-					dirname( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '/dist/assets/js/blocks/reader-revenue-manager/contribute-with-google/block.json',
+					dirname( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '/dist/assets/blocks/reader-revenue-manager/contribute-with-google/block.json',
 					array(
 						'render_callback' => array( $this, 'render_callback' ),
 					)

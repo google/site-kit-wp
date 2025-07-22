@@ -10,7 +10,7 @@ exports[`GoogleTagIDMismatchNotification should render the "alternative GA4 Conf
       class="googlesitekit-banner-notification googlesitekit-banner-notification--warning"
     >
       <div
-        class="mdc-layout-grid"
+        class="mdc-layout-grid googlesitekit-page-content"
       >
         <div
           class="mdc-layout-grid__inner"
@@ -83,7 +83,7 @@ exports[`GoogleTagIDMismatchNotification should render the "alternative GA4 Conf
       class="googlesitekit-banner-notification googlesitekit-banner-notification--warning"
     >
       <div
-        class="mdc-layout-grid"
+        class="mdc-layout-grid googlesitekit-page-content"
       >
         <div
           class="mdc-layout-grid__inner"

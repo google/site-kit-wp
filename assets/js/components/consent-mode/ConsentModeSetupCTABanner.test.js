@@ -30,6 +30,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 
 describe( 'ConsentModeSetupCTABanner', () => {
 	let registry;
@@ -60,6 +61,13 @@ describe( 'ConsentModeSetupCTABanner', () => {
 		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				CONSENT_MODE_SETUP_CTA_WIDGET_SLUG,
+				notification
+			);
 	} );
 
 	it( 'should render the banner', async () => {

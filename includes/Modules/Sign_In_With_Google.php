@@ -316,7 +316,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			$assets[] = new Script(
 				'blocks-sign-in-with-google',
 				array(
-					'src'           => $this->context->url( 'dist/assets/js/blocks/sign-in-with-google/index.js' ),
+					'src'           => $this->context->url( 'dist/assets/blocks/sign-in-with-google/index.js' ),
 					'dependencies'  => array(),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
@@ -324,7 +324,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			$assets[] = new Stylesheet(
 				'blocks-sign-in-with-google-editor-styles',
 				array(
-					'src'           => $this->context->url( 'dist/assets/js/blocks/sign-in-with-google/editor-styles.css' ),
+					'src'           => $this->context->url( 'dist/assets/blocks/sign-in-with-google/editor-styles.css' ),
 					'dependencies'  => array(),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
