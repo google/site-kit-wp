@@ -27,7 +27,7 @@ if ( typeof global.googlesitekit === 'undefined' ) {
 
 global.googlesitekit.data = Data;
 
-// This is only exported for Jest and is not used in production.
+// This is only exported for Jest.
 export default Data;
 
 export * from './googlesitekit/data';
