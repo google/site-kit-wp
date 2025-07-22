@@ -123,6 +123,16 @@ WithBadge.args = {
 	badge: <NewBadge />,
 };
 
+export const DisabledChecked = Template.bind( {} );
+DisabledChecked.args = {
+	id: 'googlesitekit-checkbox-9',
+	name: 'googlesitekit__checkbox-9',
+	value: 'value-9',
+	label: 'Disabled Checkbox',
+	disabled: true,
+	checked: true,
+};
+
 export function VRTStory() {
 	// The loading spinner uses a GIF rather than CSS animation therefore we can't
 	// pause the animation for VRTs, so we don't include the `Loading` version of
