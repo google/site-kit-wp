@@ -232,23 +232,40 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 			};
 			break;
 
-		case RECEIVE_PERMALINK_PARAM:
+		case RECEIVE_PERMALINK_PARAM: {
 			state.permaLink = payload.permaLink;
 			break;
+		}
 
-		case SET_SITE_KIT_AUTO_UPDATES_ENABLED:
+		case SET_SITE_KIT_AUTO_UPDATES_ENABLED: {
+			if ( ! state.siteInfo ) {
+				state.siteInfo = {};
+			}
+
 			state.siteInfo.siteKitAutoUpdatesEnabled =
 				payload.siteKitAutoUpdatesEnabled;
-			break;
 
-		case SET_KEY_METRICS_SETUP_COMPLETED_BY:
+			break;
+		}
+
+		case SET_KEY_METRICS_SETUP_COMPLETED_BY: {
+			if ( ! state.siteInfo ) {
+				state.siteInfo = {};
+			}
+
 			state.siteInfo.keyMetricsSetupCompletedBy =
 				payload.keyMetricsSetupCompletedBy;
 			break;
+		}
 
-		case SET_SETUP_ERROR_CODE:
+		case SET_SETUP_ERROR_CODE: {
+			if ( ! state.siteInfo ) {
+				state.siteInfo = {};
+			}
+
 			state.siteInfo.setupErrorCode = payload.setupErrorCode;
 			break;
+		}
 
 		default:
 			break;
