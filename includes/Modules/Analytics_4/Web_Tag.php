@@ -199,7 +199,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface, Tag_With_Linker_I
 	 * This mechanism for blocking the tag is deprecated and the Consent Mode feature should be used instead.
 	 *
 	 * @since 1.122.0
-	 * @since n.e.x.t Remove src from signature & replacement.
+	 * @since 1.158.0 Remove src from signature & replacement.
 	 *
 	 * @param string $tag                    The script tag.
 	 * @param string $block_on_consent_attrs The attributes to add to the script tag to block it until user consent is granted.

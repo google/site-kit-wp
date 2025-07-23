@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Modules;
 /**
  * Trait for a module that sets inline data.
  *
- * @since n.e.x.t
+ * @since 1.158.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ trait Module_With_Inline_Data_Trait {
 	/**
 	 * Registers the hook to add required scopes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.158.0
 	 */
 	private function register_inline_data() {
 		add_filter(

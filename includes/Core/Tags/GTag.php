@@ -345,7 +345,7 @@ JS;
 	/**
 	 * Gets the script tag handle for a given tag ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.158.0
 	 *
 	 * @param string $tag_id Tag ID.
 	 * @return string
