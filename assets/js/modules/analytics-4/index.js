@@ -821,7 +821,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				ga4ModuleConnected &&
 				hasGTMScope &&
 				isGA4ModuleOwner &&
-				! isWebDataStreamAvailable
+				isWebDataStreamAvailable === false
 			);
 		},
 	},

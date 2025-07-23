@@ -24,7 +24,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import BannerNotification, {
 	TYPES,
 } from '../../googlesitekit/notifications/components/layout/BannerNotification';
@@ -49,6 +49,11 @@ export default function WebDataStreamNotAvailableNotification( {
 		select( CORE_SITE ).getModuleSettingsEditURL( MODULE_SLUG_ANALYTICS_4 )
 	);
 
+	const { setIsWebDataStreamAvailable } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const resetWebDataStreamAvailability = () => {
+		setIsWebDataStreamAvailable( false );
+	};
 	const isNavigatingToSettingsEditURL = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo( analyticsSettingsEditURL )
 	);
@@ -74,9 +79,11 @@ export default function WebDataStreamNotAvailableNotification( {
 					label: __( 'Update Analytics settings', 'google-site-kit' ),
 					href: analyticsSettingsEditURL,
 					disabled: isNavigatingToSettingsEditURL,
+					onClick: resetWebDataStreamAvailability,
 				} }
 				dismissButton={ {
 					label: __( 'Maybe later', 'google-site-kit' ),
+					onClick: resetWebDataStreamAvailability,
 					dismissOptions: {
 						expiresInSeconds: MINUTE_IN_SECONDS * 55,
 					},
