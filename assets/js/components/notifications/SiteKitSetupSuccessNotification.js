@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,7 +34,6 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import useQueryArg from '../../hooks/useQueryArg';
 import BannerNotification from '../../googlesitekit/notifications/components/layout/BannerNotification';
-import Link from '../Link';
 import SuccessSetupSVG from '@/svg/graphics/banner-site-kit-setup-success.svg?url';
 
 export default function SiteKitSetupSuccessNotification( {
@@ -59,15 +58,15 @@ export default function SiteKitSetupSuccessNotification( {
 					'Congrats on completing the setup for Site Kit!',
 					'google-site-kit'
 				) }
-				description={ createInterpolateElement(
-					__(
-						'Connect more services to see more stats. <a>Go to Settings</a>',
-						'google-site-kit'
-					),
-					{
-						a: <Link href={ connectMoreServicesURL } />,
-					}
+				description={ __(
+					'Connect more services to see more stats.',
+					'google-site-kit'
 				) }
+				learnMoreLink={ {
+					href: connectMoreServicesURL,
+					label: __( 'Go to Settings', 'google-site-kit' ),
+					external: false,
+				} }
 				dismissButton={ {
 					label: __( 'Got it!', 'google-site-kit' ),
 					onClick: onDismiss,
