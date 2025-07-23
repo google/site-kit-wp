@@ -58,8 +58,9 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const fullScreenSelectionLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-metric-selection' )
 	);
-	const isNavigatingToCTALink = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigatingTo( ctaLink )
+	const isNavigatingToCTALink = useSelect(
+		( select ) =>
+			ctaLink && select( CORE_LOCATION ).isNavigatingTo( ctaLink )
 	);
 
 	const intersectionEntry = useIntersection( trackingRef, {
