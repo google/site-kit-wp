@@ -373,13 +373,32 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			function ( array $scopes ) {
 				$oauth_client = $this->authentication->get_oauth_client();
 
+				// For new users connecting for the first time, always require the edit scope.
+				// For existing users who already have the edit scope, continue requiring it.
+				// For existing users who only have the readonly scope, don't require the edit
+				// scope. This ensures they don't have to reconnect.
+				$is_authenticated = $this->authentication->is_authenticated();
+
+				if ( ! $is_authenticated ) {
+					// New user connecting for the first time - require edit scope.
+					$scopes[] = self::EDIT_SCOPE;
+				} else {
+					// Existing user - only require edit scope if they already have it.
+					$granted_scopes = $oauth_client->get_granted_scopes();
+
+					if ( in_array( self::EDIT_SCOPE, $granted_scopes, true ) ) {
+						$scopes[] = self::EDIT_SCOPE;
+					}
+				}
+
 				$needs_tagmanager_scope = false;
 
 				if ( $oauth_client->has_sufficient_scopes(
-					array(
-						self::READONLY_SCOPE,
-						self::EDIT_SCOPE,
-						'https://www.googleapis.com/auth/tagmanager.readonly',
+					array_merge(
+						$scopes,
+						array(
+							'https://www.googleapis.com/auth/tagmanager.readonly',
+						)
 					)
 				) ) {
 					$needs_tagmanager_scope = true;
@@ -389,10 +408,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					// Unsatisfied Scopes notification to be displayed without the Additional Permissions Required
 					// modal also appearing.
 				} elseif ( ! $oauth_client->has_sufficient_scopes(
-					array(
-						self::READONLY_SCOPE,
-						self::EDIT_SCOPE,
-					)
+					$scopes
 				) ) {
 					$needs_tagmanager_scope = true;
 				}
