@@ -49,6 +49,7 @@ import ConnectedIcon from '../../../../svg/icons/connected.svg';
 import WarningIcon from '../../../../svg/icons/warning-v2.svg';
 import ChevronDown from '../../../../svg/icons/chevron-down-v2.svg';
 import IconWrapper from '../../IconWrapper';
+import { useDispatch } from '../../../googlesitekit-data';
 
 export default function Header( { slug } ) {
 	const viewContext = useViewContext();
@@ -70,6 +71,8 @@ export default function Header( { slug } ) {
 	const requirementsError = useSelect( ( select ) =>
 		select( CORE_MODULES )?.getCheckRequirementsError( slug )
 	);
+
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const isNavigatingToAdminReAuthURL = useSelect(
 		( select ) =>
@@ -104,8 +107,11 @@ export default function Header( { slug } ) {
 	}, [ history, slug, viewContext, isOpen ] );
 
 	const onActionClick = useCallback(
-		( event ) => event.stopPropagation(),
-		[]
+		( event ) => {
+			event.stopPropagation();
+			navigateTo( adminReauthURL );
+		},
+		[ navigateTo, adminReauthURL ]
 	);
 
 	useKeyCodesInside(
@@ -128,11 +134,8 @@ export default function Header( { slug } ) {
 	} else {
 		moduleStatus = (
 			<Button
-				href={ adminReauthURL }
 				onClick={ onActionClick }
-				disabled={
-					!! ( requirementsError || isNavigatingToAdminReAuthURL )
-				}
+				disabled={ requirementsError || isNavigatingToAdminReAuthURL }
 				inverse
 			>
 				{ sprintf(
