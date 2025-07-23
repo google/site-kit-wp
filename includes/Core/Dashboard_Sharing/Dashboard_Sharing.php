@@ -30,7 +30,7 @@ class Dashboard_Sharing {
 	 * Constructor.
 	 *
 	 * @since 1.82.0
-	 * @since n.e.x.t Remove $user_options and $context params.
+	 * @since 1.158.0 Remove $user_options and $context params.
 	 */
 	public function __construct() {
 		$this->view_only_pointer = new View_Only_Pointer();
