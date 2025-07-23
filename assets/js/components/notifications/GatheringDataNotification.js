@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,6 +40,8 @@ import BannerNotification, {
 import SVGGraphic from '@/svg/graphics/banner-gathering-data.svg?url';
 
 export default function GatheringDataNotification( { id, Notification } ) {
+	const [ isNavigating, setIsNavigating ] = useState( false );
+
 	const connectMoreServicesURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getConnectMoreServicesURL()
 	);
@@ -97,12 +100,15 @@ export default function GatheringDataNotification( { id, Notification } ) {
 						expiresInSeconds: DAY_IN_SECONDS,
 						skipHidingFromQueue: true,
 					},
+					onClick: () => setIsNavigating( true ),
+					inProgress: isNavigating,
 				} }
 				dismissButton={ {
 					label: __( 'Got it', 'google-site-kit' ),
 					dismissOptions: {
 						expiresInSeconds: DAY_IN_SECONDS,
 					},
+					disabled: isNavigating,
 				} }
 				svg={ {
 					desktop: SVGGraphic,
