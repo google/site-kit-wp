@@ -12,8 +12,7 @@ namespace Google\Site_Kit\Core\Authentication\Clients;
 
 use Exception;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
-use Google\Site_Kit\Core\Authentication\Helpers\Block_External;
-use Google\Site_Kit\Core\Util\URL;
+use Google\Site_Kit\Core\HTTP\Middleware;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Client;
 use WP_HTTP_Proxy;
 
@@ -153,7 +152,7 @@ final class Client_Factory {
 
 		// Respect WordPress HTTP request blocking settings.
 		$config['handler']->push(
-			Block_External::block_external_request( $config )
+			Middleware::block_external_request()
 		);
 
 		/**

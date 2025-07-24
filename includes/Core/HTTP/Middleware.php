@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Authentication\Helpers\Block_External
+ * Class Google\Site_Kit\Core\HTTP\Middleware
  *
  * @package   Google\Site_Kit
  * @copyright 2025 Google LLC
@@ -8,27 +8,24 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Authentication\Helpers;
+namespace Google\Site_Kit\Core\HTTP;
 
-use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Exception\RequestException;
 use WP_Http;
 
 /**
- * Class for blocking external requests.
+ * Guzzle Middleware.
  *
  * @since n.e.x.t
- * @access private
- * @ignore
  */
-class Block_External {
+class Middleware {
 
 	/**
-	 * Guzzle Handler for blocking external requests.
+	 * Middleware for blocking external requests using WordPress block_request.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return callable A Guzzle handler that blocks external requests.
+	 * @return callable Returns a function that blocks external requests using WordPress block_request.
 	 */
 	public static function block_external_request() {
 		return static function ( callable $handler ) {
@@ -36,7 +33,7 @@ class Block_External {
 				$uri = $request->getUri();
 
 				$wp_http = new WP_Http();
-				if ( is_string( $uri ) && $wp_http->block_request( $uri ) ) {
+				if ( $wp_http->block_request( $uri ) ) {
 					throw new RequestException(
 						__( 'User has blocked requests through HTTP.', 'default' ),
 						$request
