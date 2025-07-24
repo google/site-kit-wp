@@ -348,7 +348,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'setup-success-notification-site-kit': {
 		Component: SiteKitSetupSuccessNotification,
-		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: () => {
 			const notification = getQueryArg( location.href, 'notification' );

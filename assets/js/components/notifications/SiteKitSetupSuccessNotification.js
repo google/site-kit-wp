@@ -74,7 +74,7 @@ export default function SiteKitSetupSuccessNotification( {
 				} }
 				svg={ {
 					desktop: SuccessSetupSVG,
-					verticalPosition: 'center',
+					verticalPosition: 'bottom',
 				} }
 			/>
 		</Notification>

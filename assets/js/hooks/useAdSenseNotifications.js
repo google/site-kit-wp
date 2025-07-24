@@ -70,7 +70,7 @@ export default function useAdSenseNotifications() {
 					return <NotificationFromServer { ...notification } />;
 				},
 				priority: notification.priority,
-				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+				areaSlug: NOTIFICATION_AREAS.HEADER,
 				isDismissible: notification.isDismissible,
 			} );
 
