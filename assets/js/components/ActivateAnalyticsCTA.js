@@ -123,6 +123,7 @@ export default function ActivateAnalyticsCTA( { children } ) {
 				<SpinnerButton
 					onClick={ onClickCallback }
 					isSaving={ inProgress }
+					disabled={ inProgress }
 				>
 					{ analyticsModuleActive
 						? __( 'Complete setup', 'google-site-kit' )
