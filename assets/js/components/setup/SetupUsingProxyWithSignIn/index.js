@@ -135,16 +135,18 @@ export default function SetupUsingProxyWithSignIn() {
 						<Cell size={ 12 }>
 							{ getQueryArg( location.href, 'notification' ) ===
 								'reset_success' && (
-								<Notice
-									id="reset_success"
-									title={ __(
-										'Site Kit by Google was successfully reset.',
-										'google-site-kit'
-									) }
-									type={ TYPES.SUCCESS }
-								/>
+								<Fragment>
+									<Notice
+										id="reset_success"
+										title={ __(
+											'Site Kit by Google was successfully reset.',
+											'google-site-kit'
+										) }
+										type={ TYPES.SUCCESS }
+									/>
+									<br />
+								</Fragment>
 							) }
-							<br />
 							<Layout rounded>
 								<Splash>
 									{ ( { complete, inProgressFeedback } ) => (
