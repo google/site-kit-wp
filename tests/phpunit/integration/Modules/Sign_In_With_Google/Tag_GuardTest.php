@@ -55,8 +55,6 @@ class Tag_GuardTest extends TestCase {
 
 	public function tear_down() {
 		parent::tear_down();
-		update_option( 'home', $this->reset_site_url );
-		update_option( 'siteurl', $this->reset_site_url );
 		unset( $_SERVER['HTTPS'] );
 		unset( $_SERVER['SCRIPT_NAME'] );
 	}
@@ -66,7 +64,7 @@ class Tag_GuardTest extends TestCase {
 		$_SERVER['HTTPS'] = 'on';
 		update_option( 'siteurl', 'https://example.com/' );
 		update_option( 'home', 'https://example.com/' );
-		$this->settings->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
+		$this->settings->set( array( 'clientID' => '1234567890.apps.googleusercontent.com' ) );
 
 		$this->assertTrue( $this->guard->can_activate() );
 	}

@@ -33,60 +33,52 @@ class Web_TagTest extends TestCase {
 	private $web_tag;
 
 	/**
-	 * Settings object.
+	 * Example settings object.
 	 *
-	 * @var Sign_In_With_Google_Settings
+	 * @var array
 	 */
-	private $settings;
-
-	/**
-	 * Context object.
-	 *
-	 * @var Context
-	 */
-	private $context;
+	private $siwg_settings = array(
+		'clientID'         => 'test-client-id.app.googleusercontent.com',
+		'text'             => Sign_In_With_Google_Settings::TEXT_SIGN_IN_WITH_GOOGLE['value'],
+		'theme'            => Sign_In_With_Google_Settings::THEME_LIGHT['value'],
+		'shape'            => 'rectangular',
+		'oneTapEnabled'    => false,
+		'oneTapOnAllPages' => false,
+	);
 
 	public function set_up() {
 		parent::set_up();
 
-		$this->context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$this->settings = new Sign_In_With_Google_Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$this->settings->set( array( 'clientID' => 'test-client-id.googleusercontent.com' ) );
-
 		$this->web_tag = new Web_Tag(
-			'test-client-id.googleusercontent.com',
-			'sign-in-with-google',
-			$this->settings,
-			$this->context
+			'test-client-id.app.googleusercontent.com',
+			'sign-in-with-google'
 		);
+		$this->web_tag->set_settings( $this->siwg_settings );
+		$this->web_tag->register();
 	}
 
 	public function test_render_on_wp_footer() {
 		// This WordPress core action fails the test with a deprecation notice so removing it temporarily.
 		remove_action( 'wp_footer', 'the_block_template_skip_link' );
 
-		$this->web_tag->register();
-
 		$output = $this->capture_action( 'wp_footer' );
 
 		// Check that the Sign in with Google script is rendered.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
 		$this->assertStringContainsString( 'google.accounts.id.initialize', $output );
-		$this->assertStringContainsString( 'test-client-id.googleusercontent.com', $output );
+		$this->assertStringContainsString( 'test-client-id.app.googleusercontent.com', $output );
 
 		// Restore the WordPress action.
 		add_action( 'wp_footer', 'the_block_template_skip_link' );
 	}
 
 	public function test_render_on_login_footer() {
-		$this->web_tag->register();
-
 		$output = $this->capture_action( 'login_footer' );
 
 		// Check that the Sign in with Google script is rendered.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
 		$this->assertStringContainsString( 'google.accounts.id.initialize', $output );
-		$this->assertStringContainsString( 'test-client-id.googleusercontent.com', $output );
+		$this->assertStringContainsString( 'test-client-id.app.googleusercontent.com', $output );
 	}
 
 	public function test_register() {

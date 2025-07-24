@@ -35,27 +35,56 @@ class Web_Tag extends Module_Web_Tag {
 	private $settings;
 
 	/**
-	 * Context instance.
+	 * Whether the current page is the WordPress login page.
+	 *
+	 * `is_login()` isn't available until WP 6.1.
 	 *
 	 * @since n.e.x.t
-	 * @var \Google\Site_Kit\Context
+	 * @var bool
 	 */
-	private $context;
+	private $is_wp_login;
 
 	/**
-	 * Constructor.
+	 * Redirect to URL.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	private $redirect_to;
+
+	/**
+	 * Sets the module settings.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string                   $tag_id      Tag ID.
-	 * @param string                   $module_slug Module slug.
-	 * @param Settings                 $settings    Module settings instance.
-	 * @param \Google\Site_Kit\Context $context     Context instance.
+	 * @param array $settings Module settings as array.
 	 */
-	public function __construct( $tag_id, $module_slug, Settings $settings, \Google\Site_Kit\Context $context ) {
-		parent::__construct( $tag_id, $module_slug );
+	public function set_settings( array $settings ) {
 		$this->settings = $settings;
-		$this->context  = $context;
+	}
+
+	/**
+	 * Sets whether the current page is the WordPress login page.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param bool $is_wp_login Whether the current page is the WordPress login page.
+	 */
+	public function set_is_wp_login( $is_wp_login ) {
+		$this->is_wp_login = $is_wp_login;
+	}
+
+	/**
+	 * Sets the redirect to URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $redirect_to Redirect to URL.
+	 */
+	public function set_redirect_to( $redirect_to ) {
+		if ( ! empty( $redirect_to ) ) {
+			$this->redirect_to = trim( $redirect_to );
+		}
 	}
 
 	/**
@@ -66,9 +95,9 @@ class Web_Tag extends Module_Web_Tag {
 	public function register() {
 		// Render the Sign in with Google script that converts placeholder
 		// <div>s with Sign in with Google buttons.
-		add_action( 'wp_footer', $this->get_method_proxy( 'render_signinwithgoogle_scripts' ) );
+		add_action( 'wp_footer', $this->get_method_proxy( 'render' ) );
 		// Output the Sign in with Google JS on the WordPress login page.
-		add_action( 'login_footer', $this->get_method_proxy( 'render_signinwithgoogle_scripts' ) );
+		add_action( 'login_footer', $this->get_method_proxy( 'render' ) );
 
 		$this->do_init_tag_action();
 	}
@@ -82,47 +111,39 @@ class Web_Tag extends Module_Web_Tag {
 	 *                rendered the code to replace buttons.
 	 * @since n.e.x.t moved from main Sign_In_With_Google class to Web_Tag.
 	 */
-	protected function render_signinwithgoogle_scripts() {
-		// `is_login()` isn't available until WP 6.1.
-		$is_wp_login          = false !== stripos( wp_login_url(), $_SERVER['SCRIPT_NAME'] ?? '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+	protected function render() {
 		$is_woocommerce       = class_exists( 'woocommerce' );
 		$is_woocommerce_login = did_action( 'woocommerce_login_form_start' );
 
-		$settings  = $this->settings->get();
 		$login_uri = add_query_arg( 'action', 'googlesitekit_auth', wp_login_url() );
 
-		$redirect_to = $this->context->input()->filter( INPUT_GET, 'redirect_to' );
-		if ( ! empty( $redirect_to ) ) {
-			$redirect_to = trim( $redirect_to );
-		}
-
 		$btn_args = array(
-			'theme' => $settings['theme'],
-			'text'  => $settings['text'],
-			'shape' => $settings['shape'],
+			'theme' => $this->settings['theme'],
+			'text'  => $this->settings['text'],
+			'shape' => $this->settings['shape'],
 		);
 
 		// Whether this is a WordPress/WooCommerce login page.
-		$is_login_page = $is_wp_login || $is_woocommerce_login;
+		$is_login_page = $this->is_wp_login || $is_woocommerce_login;
 
 		// Check to see if we should show the One Tap prompt on this page.
 		//
 		// If this is not the WordPress or WooCommerce login page, check to
 		// see if "One Tap enabled on all pages" is set first. If it isnt:
 		// don't render the Sign in with Google JS.
-		$should_show_one_tap_prompt = ! empty( $settings['oneTapEnabled'] ) && (
+		$should_show_one_tap_prompt = ! empty( $this->settings['oneTapEnabled'] ) && (
 			// If One Tap is enabled at all, it should always appear on a login
 			// page.
 			$is_login_page ||
 			// Only show the prompt on other pages if the setting is enabled and
 			// the user isn't already signed in.
-			( $settings['oneTapOnAllPages'] && ! is_user_logged_in() )
+			( $this->settings['oneTapOnAllPages'] && ! is_user_logged_in() )
 		);
 
 		// Set the cookie time to live to 5 minutes. If the redirect_to is
 		// empty, set the cookie to expire immediately.
 		$cookie_expire_time = 300000;
-		if ( empty( $redirect_to ) ) {
+		if ( empty( $this->redirect_to ) ) {
 			$cookie_expire_time *= -1;
 		}
 
@@ -132,7 +153,7 @@ class Web_Tag extends Module_Web_Tag {
 		?>
 ( () => {
 	async function handleCredentialResponse( response ) {
-		<?php if ( $is_woocommerce && ! $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		<?php if ( $is_woocommerce && ! $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		response.integration = 'woocommerce';
 		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		try {
@@ -142,7 +163,7 @@ class Web_Tag extends Module_Web_Tag {
 				body: new URLSearchParams( response )
 			} );
 
-			<?php if ( empty( $redirect_to ) && ! $is_login_page && $should_show_one_tap_prompt ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+			<?php if ( empty( $this->redirect_to ) && ! $is_login_page && $should_show_one_tap_prompt ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 				location.reload();
 			<?php else : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 				if ( res.ok && res.redirected ) {
@@ -155,19 +176,19 @@ class Web_Tag extends Module_Web_Tag {
 	}
 
 	google.accounts.id.initialize( {
-		client_id: '<?php echo esc_js( $settings['clientID'] ); ?>',
+		client_id: '<?php echo esc_js( $this->settings['clientID'] ); ?>',
 		callback: handleCredentialResponse,
 		library_name: 'Site-Kit'
 	} );
 
-	<?php if ( $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php if ( $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		const buttonDivToAddToLoginForm = document.createElement( 'div' );
 		buttonDivToAddToLoginForm.classList.add( 'googlesitekit-sign-in-with-google__frontend-output-button' );
 
 		document.getElementById( 'login' ).insertBefore( buttonDivToAddToLoginForm, document.getElementById( 'loginform' ) );
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-	<?php if ( ! is_user_logged_in() || $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php if ( ! is_user_logged_in() || $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 			<?php
 			/**
 			 * Render SiwG buttons for all `<div>` elements with the "magic
@@ -185,10 +206,10 @@ class Web_Tag extends Module_Web_Tag {
 		google.accounts.id.prompt();
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-	<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php if ( ! empty( $this->redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		const expires = new Date();
 		expires.setTime( expires.getTime() + <?php echo esc_js( $cookie_expire_time ); ?> );
-		document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires=" + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
+		document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $this->redirect_to ); ?>;expires=" + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
 		<?php
@@ -198,18 +219,9 @@ class Web_Tag extends Module_Web_Tag {
 		$inline_script = preg_replace( '/\s*([{};\(\)\+:,=])\s*/', '$1', $inline_script );
 
 		// Output the Sign in with Google script.
-		print( "\n<!-- Sign in with Google button added by Site Kit -->\n" );
+		printf( "\n<!-- %s -->\n", esc_html__( 'Sign in with Google button added by Site Kit', 'google-site-kit' ) );
 		BC_Functions::wp_print_script_tag( array( 'src' => 'https://accounts.google.com/gsi/client' ) );
 		BC_Functions::wp_print_inline_script_tag( $inline_script );
-		print( "\n<!-- End Sign in with Google button added by Site Kit -->\n" );
-	}
-
-	/**
-	 * Outputs snippet.
-	 *
-	 * @since n.e.x.t
-	 */
-	protected function render() {
-		// Do nothing, script is rendered via hooks.
+		printf( "\n<!-- %s -->\n", esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ) );
 	}
 }

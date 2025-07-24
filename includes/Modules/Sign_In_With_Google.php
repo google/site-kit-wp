@@ -502,7 +502,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		$settings  = $this->get_settings()->get();
 		$client_id = $settings['clientID'];
 
-		$tag = new Web_Tag( $client_id, self::MODULE_SLUG, $this->get_settings(), $this->context );
+		$tag = new Web_Tag( $client_id, self::MODULE_SLUG );
 
 		if ( $tag->is_tag_blocked() ) {
 			return;
@@ -514,6 +514,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			return;
 		}
 
+		$tag->set_settings( $this->get_settings()->get() );
+		$tag->set_is_wp_login( false !== stripos( wp_login_url(), $_SERVER['SCRIPT_NAME'] ?? '' ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$tag->set_redirect_to( $this->context->input()->filter( INPUT_GET, 'redirect_to' ) );
 		$tag->register();
 	}
 
