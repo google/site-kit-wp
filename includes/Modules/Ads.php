@@ -448,7 +448,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	/**
 	 * Gets required inline data for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.158.0
 	 *
 	 * @return array An array of the module's inline data.
 	 */

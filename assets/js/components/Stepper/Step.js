@@ -25,11 +25,19 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { STEP_STATUS } from './constants';
+import Typography from '../Typography';
 
 export default function Step( { children, title, stepStatus } ) {
 	return (
 		<div className="googlesitekit-stepper__step-info">
-			<h2 className="googlesitekit-stepper__step-title">{ title }</h2>
+			<Typography
+				as="h2"
+				className="googlesitekit-stepper__step-title"
+				size="medium"
+				type="title"
+			>
+				{ title }
+			</Typography>
 			<div className="googlesitekit-stepper__step-content-container">
 				{ stepStatus === STEP_STATUS.ACTIVE && (
 					<div className="googlesitekit-stepper__step-content">

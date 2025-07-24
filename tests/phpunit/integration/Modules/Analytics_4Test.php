@@ -1260,6 +1260,7 @@ class Analytics_4Test extends TestCase {
 				'create-account-ticket',
 				'enhanced-measurement-settings',
 				'create-custom-dimension',
+				'set-is-web-data-stream-available',
 				'sync-custom-dimensions',
 				'custom-dimension-data-available',
 				'set-google-tag-id-mismatch',
@@ -1295,6 +1296,7 @@ class Analytics_4Test extends TestCase {
 				'create-account-ticket',
 				'enhanced-measurement-settings',
 				'create-custom-dimension',
+				'set-is-web-data-stream-available',
 				'sync-custom-dimensions',
 				'custom-dimension-data-available',
 				'set-google-tag-id-mismatch',
@@ -4925,6 +4927,62 @@ class Analytics_4Test extends TestCase {
 			$test_resource_data_availability_transient_custom_dimension,
 			$test_resource_data_availability_transient_property,
 		);
+	}
+
+	public function test_get_inline_data() {
+		// Test when module is not connected.
+		$analytics = new Analytics_4( $this->context );
+
+		$inline_data = $analytics->get_inline_data();
+		$this->assertSame( array(), $inline_data );
+
+		// Test when module is connected.
+		$this->analytics->get_settings()->merge(
+			array(
+				'accountID'       => 'abc',
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '1',
+				'measurementID'   => 'G-AAAABBBBCC',
+			)
+		);
+
+		// Set up test data in transients.
+		$transients = new Transients( $this->context );
+		$transients->set( 'googlesitekit_inline_tag_id_mismatch', 'test-mismatch' );
+		$transients->set( 'googlesitekit_web_data_stream_availability', true );
+		$transients->set(
+			Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT,
+			array( 'event1', 'event2' )
+		);
+		$transients->set(
+			Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT,
+			array( 'lost_event1' )
+		);
+		$transients->set(
+			Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT,
+			array( 'events' => array( 'badge_event1' ) )
+		);
+
+		$inline_data = $this->analytics->get_inline_data();
+
+		// Verify the structure exists and contains expected keys.
+		$this->assertArrayHasKey( 'analytics-4', $inline_data );
+		$analytics_data = $inline_data['analytics-4'];
+
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $analytics_data );
+		$this->assertArrayHasKey( 'resourceAvailabilityDates', $analytics_data );
+		$this->assertArrayHasKey( 'tagIDMismatch', $analytics_data );
+		$this->assertArrayHasKey( 'newEvents', $analytics_data );
+		$this->assertArrayHasKey( 'lostEvents', $analytics_data );
+		$this->assertArrayHasKey( 'newBadgeEvents', $analytics_data );
+		$this->assertArrayHasKey( 'isWebDataStreamAvailable', $analytics_data );
+
+		// Verify the transient data.
+		$this->assertSame( 'test-mismatch', $analytics_data['tagIDMismatch'] );
+		$this->assertSame( array( 'event1', 'event2' ), $analytics_data['newEvents'] );
+		$this->assertSame( array( 'lost_event1' ), $analytics_data['lostEvents'] );
+		$this->assertSame( array( 'badge_event1' ), $analytics_data['newBadgeEvents'] );
+		$this->assertSame( true, $analytics_data['isWebDataStreamAvailable'] );
 	}
 
 	/**

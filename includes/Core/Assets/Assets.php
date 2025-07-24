@@ -1014,9 +1014,9 @@ final class Assets {
 			return $tag;
 		}
 
-		// Abort adding async/defer for scripts that have this script as a dependency.
+		// Abort adding async/defer for scripts that have this script as a dependency, unless it is an alias.
 		foreach ( wp_scripts()->registered as $script ) {
-			if ( in_array( $handle, $script->deps, true ) ) {
+			if ( $script->src && in_array( $handle, $script->deps, true ) ) {
 				return $tag;
 			}
 		}
