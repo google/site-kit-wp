@@ -140,6 +140,8 @@ describe( 'AudienceTileError', () => {
 		expect( getByText( 'Insufficient permissions' ) ).toBeInTheDocument();
 
 		expect( container ).toMatchSnapshot();
+
+		await act( waitForDefaultTimeouts );
 	} );
 
 	it( 'should correctly render the generic error variant', async () => {
