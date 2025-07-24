@@ -20,7 +20,8 @@
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
-import { addQueryArgs } from '@wordpress/url';
+import { addQueryArgs, getQueryArg } from '@wordpress/url';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -43,6 +44,8 @@ import useViewContext from '../../../hooks/useViewContext';
 import Header from './Header';
 import Splash from './Splash';
 import Actions from './Actions';
+import Notice from '../../Notice';
+import { TYPES } from '../../Notice/constants';
 
 export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
@@ -130,6 +133,18 @@ export default function SetupUsingProxyWithSignIn() {
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
+							{ getQueryArg( location.href, 'notification' ) ===
+								'reset_success' && (
+								<Notice
+									id="reset_success"
+									title={ __(
+										'Site Kit by Google was successfully reset.',
+										'google-site-kit'
+									) }
+									type={ TYPES.SUCCESS }
+								/>
+							) }
+							<br />
 							<Layout rounded>
 								<Splash>
 									{ ( { complete, inProgressFeedback } ) => (
