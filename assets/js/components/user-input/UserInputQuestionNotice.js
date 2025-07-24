@@ -35,7 +35,7 @@ export default function UserInputQuestionNotice( { className } ) {
 			) }
 		>
 			{ __(
-				'You can always edit your answers later in Settings',
+				'Even if multiple options apply to your site, select the one that applies the most. You can also answer or edit your response later in Settings.',
 				'google-site-kit'
 			) }
 		</p>

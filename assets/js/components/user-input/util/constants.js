@@ -93,14 +93,14 @@ export const USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING = {
  */
 export function getUserInputQuestions() {
 	const description = __(
-		'Based on your answer, Site Kit will suggest the metrics you see on your dashboard to help you track how close you’re getting to your specific goals',
+		'Which option most closely matches the purpose of your site?',
 		'google-site-kit'
 	);
 
 	return [
 		{
 			title: __(
-				'What is the main purpose of this site?',
+				'Tell us your main goal to get tailored metrics',
 				'google-site-kit'
 			),
 			description,

@@ -19,9 +19,9 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-setup {
+		background-color: $c-base;
 
 		@include googlesitekit-inner-padding;
-		padding-top: 10px;
 
 		.googlesitekit-opt-in {
 			margin-bottom: 8px;
@@ -69,7 +69,6 @@
 		}
 
 		.googlesitekit-setup__splash {
-			border-bottom: 1px solid $c-border-light;
 			padding-left: 10px;
 			padding-right: 10px;
 		}

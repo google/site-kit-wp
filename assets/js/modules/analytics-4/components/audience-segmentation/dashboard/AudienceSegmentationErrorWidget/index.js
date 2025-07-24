@@ -47,6 +47,7 @@ const ErrorWidgetContentWithIntersectionObserver =
 function AudienceSegmentationErrorWidget( {
 	Widget,
 	errors,
+	failedAudiences,
 	onRetry,
 	showRetryButton,
 } ) {
@@ -79,6 +80,7 @@ function AudienceSegmentationErrorWidget( {
 		<ErrorWidgetContentWithIntersectionObserver
 			Widget={ Widget }
 			errors={ errorsArray }
+			failedAudiences={ failedAudiences }
 			onRetry={ handleRetry }
 			onRequestAccess={ () => {
 				trackEvent(
@@ -104,6 +106,7 @@ AudienceSegmentationErrorWidget.propTypes = {
 		PropTypes.object,
 		PropTypes.arrayOf( PropTypes.object ),
 	] ).isRequired,
+	failedAudiences: PropTypes.arrayOf( PropTypes.string ),
 	onRetry: PropTypes.func,
 	showRetryButton: PropTypes.bool,
 };

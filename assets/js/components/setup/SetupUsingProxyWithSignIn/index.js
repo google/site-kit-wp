@@ -43,6 +43,7 @@ import useViewContext from '../../../hooks/useViewContext';
 import Header from './Header';
 import Splash from './Splash';
 import Actions from './Actions';
+import ProgressSegments from '../../ProgressSegments';
 
 export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
@@ -79,7 +80,9 @@ export default function SetupUsingProxyWithSignIn() {
 						'start_setup_with_analytics'
 					);
 
-					moduleReauthURL = response.moduleReauthURL;
+					moduleReauthURL = addQueryArgs( response.moduleReauthURL, {
+						showProgress: true,
+					} );
 				}
 			}
 
@@ -126,6 +129,8 @@ export default function SetupUsingProxyWithSignIn() {
 	return (
 		<Fragment>
 			<Header />
+			{ /* We'll want to show the progress bar in a neutral state, as we don't actually know how many segments there will be at this point. */ }
+			<ProgressSegments currentSegment={ 0 } totalSegments={ 7 } />
 			<div className="googlesitekit-setup">
 				<Grid>
 					<Row>

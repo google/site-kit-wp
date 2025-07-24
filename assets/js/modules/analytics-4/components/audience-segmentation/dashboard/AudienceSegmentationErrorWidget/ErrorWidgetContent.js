@@ -42,8 +42,68 @@ import { isInsufficientPermissionsError } from '../../../../../../util/errors';
 import ReportErrorActions from '../../../../../../components/ReportErrorActions';
 import GetHelpLink from '../GetHelpLink';
 
+function ErrorContent( {
+	failedAudiences,
+	showRetryButton,
+	onRetry,
+	onRequestAccess,
+	errors,
+	hasInsufficientPermissionsError,
+} ) {
+	if ( failedAudiences.length ) {
+		return (
+			<div>
+				<p>Failed to create the following audiences:</p>
+				<ul style={ { listStyle: 'initial' } }>
+					{ failedAudiences.map( ( audience ) => (
+						<li style={ { marginLeft: '2em' } } key={ audience }>
+							{ audience }
+						</li>
+					) ) }
+				</ul>
+				<Button onClick={ onRetry } danger>
+					{ __( 'Retry', 'google-site-kit' ) }
+				</Button>
+			</div>
+		);
+	}
+
+	if ( showRetryButton && onRetry ) {
+		return (
+			<Button onClick={ onRetry } danger>
+				{ __( 'Retry', 'google-site-kit' ) }
+			</Button>
+		);
+	}
+
+	return (
+		<ReportErrorActions
+			moduleSlug="analytics-4"
+			error={ errors }
+			GetHelpLink={
+				hasInsufficientPermissionsError ? GetHelpLink : undefined
+			}
+			hideGetHelpLink={ ! hasInsufficientPermissionsError }
+			buttonVariant="danger"
+			getHelpClassName="googlesitekit-error-retry-text"
+			onRetry={ onRetry }
+			onRequestAccess={ onRequestAccess }
+		/>
+	);
+}
+
 const ErrorWidgetContent = forwardRef(
-	( { Widget, errors, onRetry, onRequestAccess, showRetryButton }, ref ) => {
+	(
+		{
+			Widget,
+			errors,
+			failedAudiences,
+			onRetry,
+			onRequestAccess,
+			showRetryButton,
+		},
+		ref
+	) => {
 		const breakpoint = useBreakpoint();
 		const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 		const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
@@ -76,28 +136,16 @@ const ErrorWidgetContent = forwardRef(
 									  ) }
 							</h3>
 							<div className="googlesitekit-widget-audience-segmentation-error__actions">
-								{ showRetryButton && onRetry ? (
-									<Button onClick={ onRetry } danger>
-										{ __( 'Retry', 'google-site-kit' ) }
-									</Button>
-								) : (
-									<ReportErrorActions
-										moduleSlug="analytics-4"
-										error={ errors }
-										GetHelpLink={
-											hasInsufficientPermissionsError
-												? GetHelpLink
-												: undefined
-										}
-										hideGetHelpLink={
-											! hasInsufficientPermissionsError
-										}
-										buttonVariant="danger"
-										getHelpClassName="googlesitekit-error-retry-text"
-										onRetry={ onRetry }
-										onRequestAccess={ onRequestAccess }
-									/>
-								) }
+								<ErrorContent
+									failedAudiences={ failedAudiences }
+									showRetryButton={ showRetryButton }
+									onRetry={ onRetry }
+									onRequestAccess={ onRequestAccess }
+									errors={ errors }
+									hasInsufficientPermissionsError={
+										hasInsufficientPermissionsError
+									}
+								/>
 							</div>
 						</Cell>
 						{ ! isMobileBreakpoint && ! isTabletBreakpoint && (
@@ -136,6 +184,7 @@ const ErrorWidgetContent = forwardRef(
 ErrorWidgetContent.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	errors: PropTypes.arrayOf( PropTypes.object ).isRequired,
+	failedAudiences: PropTypes.arrayOf( PropTypes.string ),
 	onRetry: PropTypes.func.isRequired,
 	onRequestAccess: PropTypes.func.isRequired,
 	showRetryButton: PropTypes.bool,
