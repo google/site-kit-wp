@@ -114,7 +114,7 @@ function CoreSiteBannerNotifications() {
 					return <CoreSiteBannerNotification { ...notification } />;
 				},
 				priority: notification.priority,
-				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+				areaSlug: NOTIFICATION_AREAS.HEADER,
 				isDismissible: notification.isDismissible,
 			} );
 
