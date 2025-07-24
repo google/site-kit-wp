@@ -35,6 +35,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
+import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { NEW_MODULES, BETA_MODULES, EXPERIMENTAL_MODULES } from '../constants';
 import { Grid, Row, Cell } from '../../../material-components';
@@ -48,6 +49,7 @@ import ConnectedIcon from '../../../../svg/icons/connected.svg';
 import WarningIcon from '../../../../svg/icons/warning-v2.svg';
 import ChevronDown from '../../../../svg/icons/chevron-down-v2.svg';
 import IconWrapper from '../../IconWrapper';
+import { useDispatch } from '../../../googlesitekit-data';
 
 export default function Header( { slug } ) {
 	const viewContext = useViewContext();
@@ -68,6 +70,14 @@ export default function Header( { slug } ) {
 	);
 	const requirementsError = useSelect( ( select ) =>
 		select( CORE_MODULES )?.getCheckRequirementsError( slug )
+	);
+
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	const isNavigatingToAdminReAuthURL = useSelect(
+		( select ) =>
+			adminReauthURL &&
+			select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
 	);
 
 	const openHeader = useCallback( () => {
@@ -97,8 +107,11 @@ export default function Header( { slug } ) {
 	}, [ history, slug, viewContext, isOpen ] );
 
 	const onActionClick = useCallback(
-		( event ) => event.stopPropagation(),
-		[]
+		( event ) => {
+			event.stopPropagation();
+			navigateTo( adminReauthURL );
+		},
+		[ navigateTo, adminReauthURL ]
 	);
 
 	useKeyCodesInside(
@@ -121,9 +134,8 @@ export default function Header( { slug } ) {
 	} else {
 		moduleStatus = (
 			<Button
-				href={ adminReauthURL }
 				onClick={ onActionClick }
-				disabled={ requirementsError ? true : false }
+				disabled={ requirementsError || isNavigatingToAdminReAuthURL }
 				inverse
 			>
 				{ sprintf(

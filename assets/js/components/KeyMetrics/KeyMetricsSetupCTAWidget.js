@@ -58,6 +58,10 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const fullScreenSelectionLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-metric-selection' )
 	);
+	const isNavigatingToCTALink = useSelect(
+		( select ) =>
+			ctaLink && select( CORE_LOCATION ).isNavigatingTo( ctaLink )
+	);
 
 	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
@@ -116,9 +120,11 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 		navigateTo( fullScreenSelectionLink );
 	}, [ trackEventCategory, navigateTo, fullScreenSelectionLink ] );
 
-	const onGetTailoredMetricsClick = useCallback( () => {
-		trackEvent( trackEventCategory, 'confirm_get_tailored_metrics' );
-	}, [ trackEventCategory ] );
+	const onGetTailoredMetricsClick = useCallback( async () => {
+		await trackEvent( trackEventCategory, 'confirm_get_tailored_metrics' );
+
+		navigateTo( ctaLink );
+	}, [ trackEventCategory, navigateTo, ctaLink ] );
 
 	if ( ! displayCTAWidget ) {
 		return <WidgetNull />;
@@ -145,6 +151,8 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 					label: __( 'Get tailored metrics', 'google-site-kit' ),
 					href: ctaLink,
 					onClick: onGetTailoredMetricsClick,
+					disabled: isNavigatingToCTALink,
+					inProgress: isNavigatingToCTALink,
 				} }
 				svg={ {
 					desktop: BannerSVGDesktop,
