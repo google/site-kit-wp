@@ -126,6 +126,10 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 
 	const hideCTAButton = ! hasUserRecoverableModules;
 
+	if ( inProgress && ! hasUserRecoverableModules ) {
+		return null;
+	}
+
 	return (
 		<Notification>
 			<BannerNotification
