@@ -28,16 +28,16 @@ import initStoryshots from '@storybook/addon-storyshots';
 import { puppeteerTest } from '@storybook/addon-storyshots-puppeteer';
 
 const customizePage = ( page ) => {
-	page.on( 'pageerror', ( msg ) => {
+	page.on( 'pageerror', ( error ) => {
 		throw new Error(
-			`Page error detected during story rendering:\n${ msg.text() }`
+			`Page error detected during story rendering:\n${ error.message }`
 		);
 	} );
 
-	page.on( 'console', ( msg ) => {
-		if ( msg.type() === 'error' ) {
+	page.on( 'console', ( message ) => {
+		if ( message.type() === 'error' ) {
 			throw new Error(
-				`Console error detected during story rendering:\n${ msg.text() }`
+				`Console error detected during story rendering:\n${ message.text() }`
 			);
 		}
 	} );
