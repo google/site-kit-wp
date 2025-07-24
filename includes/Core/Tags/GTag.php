@@ -104,7 +104,7 @@ class GTag {
 (window,%s,'google_tags_first_party');
 JS;
 
-		printf( "\n<!-- %s -->\n", esc_html__( 'Google tags first party snippet added by Site Kit', 'google-site-kit' ) );
+		printf( "\n<!-- %s -->\n", esc_html__( 'Google tag gateway for advertisers snippet added by Site Kit', 'google-site-kit' ) );
 		BC_Functions::wp_print_inline_script_tag(
 			sprintf( $js, wp_json_encode( $tag_ids ) )
 		);
