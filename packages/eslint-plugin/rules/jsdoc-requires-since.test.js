@@ -245,8 +245,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
 			`,
 			errors: [
 				{
-					message:
-						'The @since tag requires a valid semVer value or the "n.e.x.t" label.',
+					message: `The @since tag requires a valid semVer value or the "${ NEXT_VERSION }" label.`,
 				},
 			],
 		},
