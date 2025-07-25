@@ -28,6 +28,7 @@ import { get } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
+	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { CORE_USER, PERMISSION_READ_SHARED_MODULE_DATA } from './constants';
@@ -47,9 +48,8 @@ const fetchGetCapabilitiesStore = createFetchStore( {
 			useCache: false,
 		} );
 	},
-	reducerCallback: ( state, capabilities ) => ( {
-		...state,
-		capabilities,
+	reducerCallback: createReducer( ( state, capabilities ) => {
+		state.capabilities = capabilities;
 	} ),
 } );
 
@@ -131,38 +131,24 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case CLEAR_PERMISSION_SCOPE_ERROR: {
-			return {
-				...state,
-				permissionError: null,
-			};
-		}
+		case CLEAR_PERMISSION_SCOPE_ERROR:
+			state.permissionError = null;
+			break;
 
-		case SET_PERMISSION_SCOPE_ERROR: {
-			const { permissionError } = payload;
+		case SET_PERMISSION_SCOPE_ERROR:
+			state.permissionError = payload.permissionError;
+			break;
 
-			return {
-				...state,
-				permissionError,
-			};
-		}
+		case RECEIVE_CAPABILITIES:
+			state.capabilities = payload.capabilities;
+			break;
 
-		case RECEIVE_CAPABILITIES: {
-			const { capabilities } = payload;
-
-			return {
-				...state,
-				capabilities,
-			};
-		}
-
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getCapabilities() {

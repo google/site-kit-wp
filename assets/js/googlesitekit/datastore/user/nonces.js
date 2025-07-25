@@ -22,6 +22,7 @@
 import { get } from 'googlesitekit-api';
 import {
 	commonActions,
+	createReducer,
 	createRegistrySelector,
 	combineStores,
 } from 'googlesitekit-data';
@@ -38,9 +39,8 @@ const fetchGetNoncesStore = createFetchStore( {
 			useCache: false,
 		} );
 	},
-	reducerCallback: ( state, nonces ) => ( {
-		...state,
-		nonces,
+	reducerCallback: createReducer( ( state, nonces ) => {
+		state.nonces = nonces;
 	} ),
 } );
 
@@ -67,22 +67,16 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case RECEIVE_NONCES: {
-			const { nonces } = payload;
+		case RECEIVE_NONCES:
+			state.nonces = payload.nonces;
+			break;
 
-			return {
-				...state,
-				nonces,
-			};
-		}
-
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getNonces() {

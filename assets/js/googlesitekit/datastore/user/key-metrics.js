@@ -75,6 +75,12 @@ const baseInitialState = {
 	keyMetricsSettings: undefined,
 };
 
+const fetchStoreReducerCallback = createReducer(
+	( state, keyMetricsSettings ) => {
+		state.keyMetricsSettings = keyMetricsSettings;
+	}
+);
+
 const fetchGetKeyMetricsSettingsStore = createFetchStore( {
 	baseName: 'getKeyMetricsSettings',
 	controlCallback: () =>
@@ -84,20 +90,14 @@ const fetchGetKeyMetricsSettingsStore = createFetchStore( {
 			// make requests to Google APIs so it's not a slow request.
 			useCache: false,
 		} ),
-	reducerCallback: ( state, keyMetricsSettings ) => ( {
-		...state,
-		keyMetricsSettings,
-	} ),
+	reducerCallback: fetchStoreReducerCallback,
 } );
 
 const fetchSaveKeyMetricsSettingsStore = createFetchStore( {
 	baseName: 'saveKeyMetricsSettings',
 	controlCallback: ( settings ) =>
 		set( 'core', 'user', 'key-metrics', { settings } ),
-	reducerCallback: ( state, keyMetricsSettings ) => ( {
-		...state,
-		keyMetricsSettings,
-	} ),
+	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
 	validateParams: ( settings ) => {
 		invariant( isPlainObject( settings ), 'Settings should be an object.' );

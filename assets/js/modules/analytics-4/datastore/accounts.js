@@ -66,15 +66,12 @@ const fetchGetAccountSummariesStore = createFetchStore( {
 	argsToParams: ( pageToken ) => {
 		return { pageToken };
 	},
-	reducerCallback( state, response ) {
-		return {
-			...state,
-			accountSummaries: [
-				...( state.accountSummaries || [] ),
-				...populateAccountSummaries( response.accountSummaries || [] ),
-			],
-		};
-	},
+	reducerCallback: createReducer( ( state, response ) => {
+		state.accountSummaries = [
+			...( state.accountSummaries || [] ),
+			...populateAccountSummaries( response.accountSummaries || [] ),
+		];
+	} ),
 } );
 
 const fetchCreateAccountStore = createFetchStore( {
@@ -87,13 +84,12 @@ const fetchCreateAccountStore = createFetchStore( {
 			data
 		);
 	},
-	// eslint-disable-next-line sitekit/acronym-case
-	reducerCallback: ( state, { accountTicketId: accountTicketID } ) => {
-		return {
-			...state,
-			accountTicketID,
-		};
-	},
+	reducerCallback: createReducer(
+		// eslint-disable-next-line sitekit/acronym-case
+		( state, { accountTicketId: accountTicketID } ) => {
+			state.accountTicketID = accountTicketID;
+		}
+	),
 	argsToParams: ( data ) => {
 		return { data };
 	},

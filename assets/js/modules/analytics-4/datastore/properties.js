@@ -146,15 +146,15 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 			measurementID,
 		} );
 	},
-	reducerCallback( state, googleTagSettings, { measurementID } ) {
-		return {
-			...state,
-			googleTagSettings: {
-				...state.googleTagSettings,
-				[ measurementID ]: googleTagSettings,
-			},
-		};
-	},
+	reducerCallback: createReducer(
+		( state, googleTagSettings, { measurementID } ) => {
+			if ( ! state.googleTagSettings ) {
+				state.googleTagSettings = {};
+			}
+
+			state.googleTagSettings[ measurementID ] = googleTagSettings;
+		}
+	),
 	argsToParams( measurementID ) {
 		return { measurementID };
 	},
@@ -175,15 +175,13 @@ const fetchSetGoogleTagIDMismatch = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, hasMismatchedTag ) {
-		return {
-			...state,
-			moduleData: {
-				...state.moduleData,
-				hasMismatchedTag: !! hasMismatchedTag,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, hasMismatchedTag ) => {
+		if ( ! state.moduleData ) {
+			state.moduleData = {};
+		}
+
+		state.moduleData.hasMismatchedTag = !! hasMismatchedTag;
+	} ),
 	argsToParams( hasMismatchedTag ) {
 		return { hasMismatchedTag };
 	},

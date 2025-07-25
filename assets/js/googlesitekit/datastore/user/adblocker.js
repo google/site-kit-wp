@@ -25,7 +25,7 @@ import { detectAnyAdblocker } from 'just-detect-adblock';
 /**
  * Internal dependencies
  */
-import { commonActions } from 'googlesitekit-data';
+import { commonActions, createReducer } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 
 // Actions
@@ -91,22 +91,16 @@ export const controls = {
 	},
 };
 
-export const reducer = ( state, { payload, type } ) => {
+export const reducer = createReducer( ( state, { payload, type } ) => {
 	switch ( type ) {
-		case RECEIVE_IS_ADBLOCKER_ACTIVE: {
-			const { isAdBlockerActive } = payload;
+		case RECEIVE_IS_ADBLOCKER_ACTIVE:
+			state.isAdBlockerActive = payload.isAdBlockerActive;
+			break;
 
-			return {
-				...state,
-				isAdBlockerActive,
-			};
-		}
-
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 export const resolvers = {
 	*isAdBlockerActive() {

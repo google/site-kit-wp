@@ -27,6 +27,7 @@ import invariant from 'invariant';
 import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
+	createReducer,
 	createRegistrySelector,
 	combineStores,
 } from 'googlesitekit-data';
@@ -36,12 +37,9 @@ import { createValidatedAction } from '../../data/utils';
 
 const { getRegistry } = commonActions;
 
-function reducerCallback( state, expirableItems ) {
-	return {
-		...state,
-		expirableItems,
-	};
-}
+const reducerCallback = createReducer( ( state, expirableItems ) => {
+	state.expirableItems = expirableItems;
+} );
 
 const fetchGetExpirableItemsStore = createFetchStore( {
 	baseName: 'getExpirableItems',

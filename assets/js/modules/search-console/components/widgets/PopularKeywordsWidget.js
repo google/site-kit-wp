@@ -136,7 +136,7 @@ export default function PopularKeywordsWidget( { Widget } ) {
 		},
 	];
 
-	const rows = ( report || [] ).sort(
+	const rows = [ ...( report || [] ) ].sort(
 		( { ctr: ctrA = 0 }, { ctr: ctrB = 0 } ) => ctrB - ctrA
 	);
 
