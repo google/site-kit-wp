@@ -172,6 +172,7 @@ export default function UserDimensionsPieChart( props ) {
 		withOthers: true,
 		tooltipCallback: ( row, previousDateRangeRow, rowData ) => {
 			const absValue = row?.metricValues?.[ 0 ]?.value || 0;
+
 			const difference =
 				previousDateRangeRow?.metricValues?.[ 0 ]?.value > 0
 					? ( absValue * 100 ) /
@@ -179,20 +180,37 @@ export default function UserDimensionsPieChart( props ) {
 					  100
 					: 100;
 
-			const svgArrow = getChartDifferenceArrow( difference );
-			const statInfo = sprintf(
-				/* translators: 1: numeric value of users, 2: up or down arrow , 3: different change in percentage, %%: percent symbol */
-				_x(
-					'Users: <strong>%1$s</strong> <em>%2$s %3$s%%</em>',
-					'Stat information for the user dimensions chart tooltip',
-					'google-site-kit'
-				),
-				numberFormat( absValue ),
-				svgArrow,
-				numberFormat( Math.abs( difference ), {
-					maximumFractionDigits: 2,
-				} )
-			);
+			const formattedValue = numberFormat( absValue );
+
+			let statInfo;
+
+			if ( previousDateRangeRow ) {
+				const svgArrow = getChartDifferenceArrow( difference );
+
+				statInfo = sprintf(
+					/* translators: 1: numeric value of users, 2: up or down arrow , 3: different change in percentage, %%: percent symbol */
+					_x(
+						'Users: <strong>%1$s</strong> <em>%2$s %3$s%%</em>',
+						'Stat information shown in the user dimensions chart tooltip when comparison data is available',
+						'google-site-kit'
+					),
+					formattedValue,
+					svgArrow,
+					numberFormat( Math.abs( difference ), {
+						maximumFractionDigits: 2,
+					} )
+				);
+			} else {
+				statInfo = sprintf(
+					/* translators: 1: numeric value of users */
+					_x(
+						'Users: <strong>%1$s</strong>',
+						'Stat information shown in the user dimensions chart tooltip when no comparison data is available',
+						'google-site-kit'
+					),
+					formattedValue
+				);
+			}
 
 			const rowLabel = rowData[ 0 ].toLowerCase();
 			const dimensionClassName = `googlesitekit-visualization-tooltip-${ rowLabel.replace(
