@@ -166,13 +166,16 @@ export default function DashboardPopularKeywordsWidget( props ) {
 				}
 
 				return (
-					<Link
+					<div>
+						{searchAnalyticsURL?(<Link
 						href={ searchAnalyticsURL }
 						external
 						hideExternalIndicator
 					>
 						{ fieldValue }
-					</Link>
+					</Link>):(<div>{fieldValue}</div>)}
+					
+					</div>
 				);
 			},
 		},
