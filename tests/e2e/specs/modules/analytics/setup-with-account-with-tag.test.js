@@ -7,6 +7,7 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
+	createWaitForFetchRequestsWithDebounce,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setAnalyticsExistingPropertyID,
@@ -141,6 +142,8 @@ describe( 'setting up the Analytics module with an existing account and existing
 		useRequestInterception( getRequestResponseMappings() );
 	} );
 
+	let waitForFetchRequests;
+
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await activatePlugin( 'e2e-tests-analytics-existing-tag' );
@@ -159,9 +162,13 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await page.waitForSelector(
 			'.googlesitekit-settings-connect-module--analytics-4'
 		);
+
+		waitForFetchRequests = createWaitForFetchRequestsWithDebounce();
 	} );
 
 	afterEach( async () => {
+		await waitForFetchRequests();
+
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
