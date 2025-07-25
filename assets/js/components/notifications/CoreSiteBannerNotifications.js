@@ -110,8 +110,12 @@ function CoreSiteBannerNotifications() {
 			}
 
 			registerNotification( notification.id, {
-				Component() {
-					return <CoreSiteBannerNotification { ...notification } />;
+				Component( { Notification } ) {
+					return (
+						<Notification>
+							<CoreSiteBannerNotification { ...notification } />
+						</Notification>
+					);
 				},
 				priority: notification.priority,
 				areaSlug: NOTIFICATION_AREAS.HEADER,
