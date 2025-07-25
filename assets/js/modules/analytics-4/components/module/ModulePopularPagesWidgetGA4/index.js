@@ -97,6 +97,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			},
 		],
 		limit: 10,
+		reportID: 'analytics-4_module-popular-pages-widget-ga4_widget_args',
 	};
 
 	const error = useSelect( ( select ) =>

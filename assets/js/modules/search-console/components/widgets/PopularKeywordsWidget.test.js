@@ -70,6 +70,8 @@ describe( 'PopularKeywordsWidget', () => {
 			} ),
 			dimensions: 'query',
 			limit: 100,
+			reportID:
+				'search-console_popular-keywords-widget_widget_reportOptions',
 		};
 
 		provideSearchConsoleMockReport( registry, reportOptions );

@@ -218,10 +218,10 @@
 
 			.googlesitekit-cta__header_text {
 				color: $c-surfaces-on-background-variant;
-				font-family: $f-primary;
-				font-size: $fs-label-sm;
+
+				// Override the Typography styles to match the CTA tile style.
 				font-weight: $fw-normal;
-				letter-spacing: $ls-xs;
+				line-height: $lh-headline-md;
 				margin: 0 0 10px;
 			}
 
@@ -257,7 +257,6 @@
 				button:not(.googlesitekit-cta-link),
 				a.mdc-button {
 					align-self: flex-end;
-					font-weight: $fw-medium;
 					min-height: 32px;
 					padding: 6px 16px;
 

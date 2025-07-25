@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.8
 Requires PHP:      7.4
-Stable tag:        1.156.0
+Stable tag:        1.158.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,21 +109,29 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.156.0 =
+= 1.158.0 =
+
+**Added**
+
+* Add unique descriptor to report requests. See [#7348](https://github.com/google/site-kit-wp/issues/7348).
 
 **Enhanced**
 
-* Update the Google tag gateway for advertisers (formerly First-party mode) `measurement.php` proxy script to the latest version. See [#10952](https://github.com/google/site-kit-wp/issues/10952).
-* Correct the casing for the terms "dashboard" and "dashboard sharing" in user-facing copy. See [#10842](https://github.com/google/site-kit-wp/issues/10842).
-* Update the popup maker tracking script to reference `PUM` object from the global scope. See [#10812](https://github.com/google/site-kit-wp/issues/10812).
-* Update Analytics and AdSense notification styles. See [#10392](https://github.com/google/site-kit-wp/issues/10392).
-* Add a new “Info Banner” layout to redesign the GatheringDataNotification banner component. See [#10386](https://github.com/google/site-kit-wp/issues/10386).
-* Add a new “Warning Banner” layout and apply it to redesign the `ZeroDataNotification` component. See [#10385](https://github.com/google/site-kit-wp/issues/10385).
-* Track GA event when the Reader Revenue Manager post-level setting is changed and the post is saved in the block editor. See [#10333](https://github.com/google/site-kit-wp/issues/10333).
+* Update Google tag gateway for advertisers to work as expected in various tagging scenarios. See [#11122](https://github.com/google/site-kit-wp/issues/11122).
+* Fix bug that could cause some WooCommerce events to have inaccurate prices. See [#10974](https://github.com/google/site-kit-wp/issues/10974).
+* Update heading styles. See [#10905](https://github.com/google/site-kit-wp/issues/10905).
+* Update the style for generic notification banners received from Site Kit service. See [#10425](https://github.com/google/site-kit-wp/issues/10425).
+* Update the "successful setup" banner notification styles. See [#10388](https://github.com/google/site-kit-wp/issues/10388).
+* Remove active consumers and activity metrics tracking functionality. See [#10189](https://github.com/google/site-kit-wp/issues/10189).
+* Set a max-width for Site Kit content. See [#9599](https://github.com/google/site-kit-wp/issues/9599).
+* Update button font weight to be consistent with the design system. See [#8856](https://github.com/google/site-kit-wp/issues/8856).
+* Update AdSense settings view layout to move “Account Status” below “Publisher ID” and “Site Status” for better alignment with other modules. See [#7958](https://github.com/google/site-kit-wp/issues/7958).
 
 **Fixed**
 
-* Fix bug that could cause permission scope errors not to appear. See [#10920](https://github.com/google/site-kit-wp/issues/10920).
-* Update modal dialogs to restore focus to previously clicked elements when the modal dialog is closed. See [#10548](https://github.com/google/site-kit-wp/issues/10548).
+* Update Sign in with Google setup banner CTA to show spinner when in progress. See [#10962](https://github.com/google/site-kit-wp/issues/10962).
+* Prevent flicker when Setup CTA is clicked and notification should not re-appear when you cancel setup. See [#10961](https://github.com/google/site-kit-wp/issues/10961).
+* Fix issue when a React component has been updated after unmount. See [#10845](https://github.com/google/site-kit-wp/issues/10845).
+* Fix error resolution behaviour in search funnel widget. See [#8434](https://github.com/google/site-kit-wp/issues/8434).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

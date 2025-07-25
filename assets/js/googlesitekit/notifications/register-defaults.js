@@ -318,6 +318,8 @@ export const DEFAULT_NOTIFICATIONS = {
 					},
 				],
 				limit: 3,
+				reportID:
+					'notifications_top-earning-pages-success-notification_reportOptions',
 			};
 
 			// Ensure resolution of the report has completed before showing this
@@ -346,7 +348,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'setup-success-notification-site-kit': {
 		Component: SiteKitSetupSuccessNotification,
-		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: () => {
 			const notification = getQueryArg( location.href, 'notification' );
@@ -814,6 +816,8 @@ export const DEFAULT_NOTIFICATIONS = {
 					{ metric: { metricName: 'totalAdRevenue' }, desc: true },
 				],
 				limit: 1,
+				reportID:
+					'notifications_analytics-adsense-linked-overlay_reportArgs',
 			};
 
 			const reportData = await resolveSelect(

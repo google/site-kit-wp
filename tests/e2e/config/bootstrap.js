@@ -173,6 +173,12 @@ const IGNORE_CONSOLE_MESSAGES = [
 		matcher: 'startsWith',
 		pattern: 'Warning: You are importing createRoot from',
 	},
+	// Gutenberg blockEditor.transformStyles warnings within the block editor.
+	{
+		matcher: 'includes',
+		pattern:
+			'wp.blockEditor.transformStyles Failed to transform CSS. JSHandle@error',
+	},
 ];
 
 /**

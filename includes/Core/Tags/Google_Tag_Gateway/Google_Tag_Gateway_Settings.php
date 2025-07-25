@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Setting;
  * Class to store user Google Tag Gateway settings.
  *
  * @since 1.141.0
- * @since n.e.x.t Renamed from First_Party_Mode_Settings to Google_Tag_Gateway_Settings.
+ * @since 1.157.0 Renamed from First_Party_Mode_Settings to Google_Tag_Gateway_Settings.
  * @access private
  * @ignore
  */

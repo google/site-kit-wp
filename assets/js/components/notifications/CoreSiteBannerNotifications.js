@@ -28,8 +28,8 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
-import NotificationFromServer from '../NotificationFromServer';
 import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
+import CoreSiteBannerNotification from './CoreSiteBannerNotification';
 
 const MAX_SECONDS_FOR_SURVEY = 5;
 
@@ -38,7 +38,7 @@ const MAX_SECONDS_FOR_SURVEY = 5;
  *
  * This is a side-effect component that does not render anything directly.
  *
- * @since n.e.x.t
+ * @since 1.157.0
  *
  * @return {null} Returns null as this component does not render anything directly.
  */
@@ -111,10 +111,10 @@ function CoreSiteBannerNotifications() {
 
 			registerNotification( notification.id, {
 				Component() {
-					return <NotificationFromServer { ...notification } />;
+					return <CoreSiteBannerNotification { ...notification } />;
 				},
 				priority: notification.priority,
-				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+				areaSlug: NOTIFICATION_AREAS.HEADER,
 				isDismissible: notification.isDismissible,
 			} );
 

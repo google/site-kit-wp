@@ -145,6 +145,8 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 		dimensionFilters: {
 			sessionDefaultChannelGrouping: [ 'Organic Search' ],
 		},
+		reportID:
+			'search-console_search-funnel-widget-ga4_widget_ga4OverviewArgs',
 	};
 
 	const ga4StatsArgs = {
@@ -162,6 +164,7 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 				},
 			},
 		],
+		reportID: 'search-console_search-funnel-widget-ga4_widget_ga4StatsArgs',
 	};
 	const ga4VisitorsOverviewAndStatsArgs = {
 		...ga4Dates,
@@ -185,6 +188,8 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 				},
 			},
 		],
+		reportID:
+			'search-console_search-funnel-widget-ga4_widget_ga4VisitorsOverviewAndStatsArgs',
 	};
 
 	if ( isURL( url ) ) {
@@ -296,21 +301,21 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 		);
 	} );
 
-	const ga4Error = useSelect( ( select ) => {
+	const ga4Errors = useSelect( ( select ) => {
 		if ( ! isGA4Connected || showRecoverableAnalytics ) {
-			return null;
+			return [];
 		}
 
 		const { getErrorForSelector } = select( MODULES_ANALYTICS_4 );
 
-		return (
-			getErrorForSelector( 'getReport', [ ga4OverviewArgs ] ) ||
-			getErrorForSelector( 'getReport', [ ga4StatsArgs ] ) ||
+		return [
+			getErrorForSelector( 'getReport', [ ga4OverviewArgs ] ),
+			getErrorForSelector( 'getReport', [ ga4StatsArgs ] ),
 			getErrorForSelector( 'getReport', [
 				ga4VisitorsOverviewAndStatsArgs,
-			] ) ||
-			getErrorForSelector( 'getKeyEvents', [] )
-		);
+			] ),
+			getErrorForSelector( 'getKeyEvents', [] ),
+		].filter( Boolean );
 	} );
 
 	const isGA4GatheringData = useInViewSelect(
@@ -370,7 +375,7 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 				handleStatsSelection={ setSelectedStats }
 				selectedStats={ selectedStats }
 				dateRangeLength={ dateRangeLength }
-				error={ ga4Error }
+				errors={ ga4Errors }
 				WidgetReportError={ WidgetReportError }
 				showRecoverableAnalytics={ showRecoverableAnalytics }
 			/>

@@ -48,6 +48,8 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Ads\AMP_Tag;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
+use Google\Site_Kit\Core\Modules\Module_With_Inline_Data;
+use Google\Site_Kit\Core\Modules\Module_With_Inline_Data_Trait;
 
 /**
  * Class representing the Ads module.
@@ -56,12 +58,13 @@ use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
  * @access private
  * @ignore
  */
-final class Ads extends Module implements Module_With_Assets, Module_With_Debug_Fields, Module_With_Scopes, Module_With_Settings, Module_With_Tag, Module_With_Deactivation, Module_With_Persistent_Registration {
+final class Ads extends Module implements Module_With_Inline_Data, Module_With_Assets, Module_With_Debug_Fields, Module_With_Scopes, Module_With_Settings, Module_With_Tag, Module_With_Deactivation, Module_With_Persistent_Registration {
 	use Module_With_Assets_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Tag_Trait;
 	use Method_Proxy_Trait;
+	use Module_With_Inline_Data_Trait;
 
 	/**
 	 * Module slug name.
@@ -103,9 +106,9 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+		$this->register_inline_data();
 		// Ads tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_modules_data' ) );
 		add_filter(
 			'googlesitekit_ads_measurement_connection_checks',
 			function ( $checks ) {
@@ -256,27 +259,6 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		return $modules_data;
 	}
 
-	/**
-	 * Populates module data to pass to JS via _googlesitekitModulesData.
-	 *
-	 * @since 1.126.0
-	 *
-	 * @param array $modules_data Inline modules data.
-	 * @return array Inline modules data.
-	 */
-	private function inline_modules_data( $modules_data ) {
-		if ( ! Feature_Flags::enabled( 'adsPax' ) ) {
-			return $modules_data;
-		}
-
-		if ( empty( $modules_data['ads'] ) ) {
-			$modules_data['ads'] = array();
-		}
-
-		$modules_data['ads']['supportedConversionEvents'] = $this->get_supported_conversion_events();
-
-		return $modules_data;
-	}
 
 	/**
 	 * Gets required Google OAuth scopes for the module.
@@ -461,5 +443,24 @@ final class Ads extends Module implements Module_With_Assets, Module_With_Debug_
 		}
 
 		return array_unique( $events );
+	}
+
+	/**
+	 * Gets required inline data for the module.
+	 *
+	 * @since 1.158.0
+	 *
+	 * @return array An array of the module's inline data.
+	 */
+	public function get_inline_data() {
+		if ( ! Feature_Flags::enabled( 'adsPax' ) ) {
+			return array();
+		}
+
+		return array(
+			self::MODULE_SLUG => array(
+				'supportedConversionEvents' => $this->get_supported_conversion_events(),
+			),
+		);
 	}
 }
