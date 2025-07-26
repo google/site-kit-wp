@@ -66,8 +66,12 @@ export default function useAdSenseNotifications() {
 			}
 
 			registerNotification( notification.id, {
-				Component() {
-					return <CoreSiteBannerNotification { ...notification } />;
+				Component( { Notification } ) {
+					return (
+						<Notification>
+							<CoreSiteBannerNotification { ...notification } />
+						</Notification>
+					);
 				},
 				priority: notification.priority,
 				areaSlug: NOTIFICATION_AREAS.HEADER,
