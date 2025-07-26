@@ -20,15 +20,8 @@
 
 	.googlesitekit-error-handler {
 
-		.googlesitekit-publisher-win__desc p {
-			align-items: center;
-			display: flex;
-			flex-wrap: wrap;
-			gap: $grid-gap-phone;
-
-			@media (min-width: $bp-tablet) {
-				gap: $grid-gap-desktop;
-			}
+		.mdc-button {
+			@include mdc-button-filled-accessible($c-utility-error);
 		}
 	}
 }
