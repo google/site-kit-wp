@@ -44,6 +44,7 @@ import {
 } from './util/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import Typography from '../Typography';
 
 export default function UserInputSelectOptions( {
 	slug,
@@ -202,7 +203,12 @@ export default function UserInputSelectOptions( {
 			smSize={ 4 }
 		>
 			{ showInstructions && (
-				<p className="googlesitekit-user-input__select-instruction">
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
+					className="googlesitekit-user-input__select-instruction"
+				>
 					<span>
 						{ sprintf(
 							/* translators: %s: number of answers allowed. */
@@ -215,7 +221,7 @@ export default function UserInputSelectOptions( {
 							max
 						) }
 					</span>
-				</p>
+				</Typography>
 			) }
 			<div
 				className="googlesitekit-user-input__select-options"

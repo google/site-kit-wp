@@ -38,6 +38,7 @@ import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import Link from '../../../../../../components/Link';
 import NoAudienceBannerGraphic from '../../../../../../../svg/graphics/no-audience-banner-graphic.svg';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '../AudienceSelectionPanel/constants';
+import Typography from '../../../../../../components/Typography';
 
 export default function PlaceholderTile( { Widget } ) {
 	const hasConfigurableNonDefaultAudiences = useSelect( ( select ) => {
@@ -90,7 +91,12 @@ export default function PlaceholderTile( { Widget } ) {
 									'google-site-kit'
 							  ) }
 					</h3>
-					<p className="googlesitekit-audience-segmentation-tile-placeholder__description">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-audience-segmentation-tile-placeholder__description"
+					>
 						{ hasConfigurableNonDefaultAudiences
 							? createInterpolateElement(
 									__(
@@ -121,7 +127,7 @@ export default function PlaceholderTile( { Widget } ) {
 										AnalyticsLink,
 									}
 							  ) }
-					</p>
+					</Typography>
 				</div>
 			</div>
 		</Widget>

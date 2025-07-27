@@ -32,6 +32,7 @@ import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Notice from './Notice';
 import useViewContext from '../../../../hooks/useViewContext';
+import Typography from '../../../../components/Typography';
 
 export default function AccountCreateLegacy() {
 	const accounts = useSelect( ( select ) =>
@@ -86,28 +87,28 @@ export default function AccountCreateLegacy() {
 			/>
 
 			{ ! isCreateAccount && accounts && accounts.length === 0 && (
-				<p>
+				<Typography as="p" type="body" size="medium">
 					{ __(
 						'Looks like you don’t have an Analytics account yet. Once you create it, click on "Re-fetch my account" and Site Kit will locate it.',
 						'google-site-kit'
 					) }
-				</p>
+				</Typography>
 			) }
 
 			{ isCreateAccount && (
 				<Fragment>
-					<p>
+					<Typography as="p" type="body" size="medium">
 						{ __(
 							'To create a new account, click the button below which will open the Google Analytics account creation screen in a new window.',
 							'google-site-kit'
 						) }
-					</p>
-					<p>
+					</Typography>
+					<Typography as="p" type="body" size="medium">
 						{ __(
 							'Once completed, click the link below to re-fetch your accounts to continue.',
 							'google-site-kit'
 						) }
-					</p>
+					</Typography>
 				</Fragment>
 			) }
 

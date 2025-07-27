@@ -42,6 +42,7 @@ import {
 	useBreakpoint,
 } from '../../../../../hooks/useBreakpoint';
 import LeanCTABanner from '../../../../../components/LeanCTABanner';
+import Typography from '../../../../../components/Typography';
 
 export default function ConnectAnalyticsCTAWidget( { Widget } ) {
 	const breakpoint = useBreakpoint();
@@ -57,7 +58,7 @@ export default function ConnectAnalyticsCTAWidget( { Widget } ) {
 	);
 
 	const content = isTabletBreakpoint ? (
-		<p>
+		<Typography as="p" type="body" size="medium">
 			{ createInterpolateElement(
 				__(
 					'Google Analytics is disconnected, your audience metrics can’t be displayed. <a>Connect Google Analytics</a>',
@@ -67,15 +68,15 @@ export default function ConnectAnalyticsCTAWidget( { Widget } ) {
 					a: <Link onClick={ handleConnectModule } secondary />,
 				}
 			) }
-		</p>
+		</Typography>
 	) : (
 		<Fragment>
-			<p>
+			<Typography as="p" type="body" size="medium">
 				{ __(
 					'Google Analytics is disconnected, your audience metrics can’t be displayed',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 			<Link onClick={ handleConnectModule } secondary>
 				{ __( 'Connect Google Analytics', 'google-site-kit' ) }
 			</Link>

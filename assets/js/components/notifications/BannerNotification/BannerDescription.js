@@ -30,6 +30,7 @@ import { Fragment, isValidElement } from '@wordpress/element';
 import { sanitizeHTML } from '../../../util/sanitize';
 import Link from '../../Link';
 import { LEARN_MORE_TARGET } from './constants';
+import Typography from '../../Typography';
 
 export default function BannerDescription( props ) {
 	const {
@@ -71,10 +72,14 @@ export default function BannerDescription( props ) {
 			{ isValidElement( description ) ? (
 				<Fragment>
 					{ description }
-					{ learnMore && <p>{ learnMore }</p> }
+					{ learnMore && (
+						<Typography as="p" type="body" size="medium">
+							{ learnMore }
+						</Typography>
+					) }
 				</Fragment>
 			) : (
-				<p>
+				<Typography as="p" type="body" size="medium">
 					<span
 						dangerouslySetInnerHTML={ sanitizeHTML( description, {
 							ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
@@ -82,7 +87,7 @@ export default function BannerDescription( props ) {
 						} ) }
 					/>{ ' ' }
 					{ learnMore }
-				</p>
+				</Typography>
 			) }
 		</div>
 	);

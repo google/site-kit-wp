@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { ProgressBar } from 'googlesitekit-components';
+import Typography from '../Typography';
 
 export default function SettingsStatuses( { statuses } ) {
 	if ( ! statuses || statuses.length === 0 ) {
@@ -45,11 +46,16 @@ export default function SettingsStatuses( { statuses } ) {
 			);
 		}
 		return (
-			<p className="googlesitekit-settings-module__meta-item-data">
+			<Typography
+				as="p"
+				type="body"
+				size="medium"
+				className="googlesitekit-settings-module__meta-item-data"
+			>
 				{ status
 					? __( 'Enabled', 'google-site-kit' )
 					: __( 'Disabled', 'google-site-kit' ) }
-			</p>
+			</Typography>
 		);
 	}
 

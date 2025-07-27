@@ -52,6 +52,7 @@ import WebDataStreamField from './WebDataStreamField';
 import EnhancedMeasurementSwitch from '../EnhancedMeasurementSwitch';
 import useViewContext from '../../../../../hooks/useViewContext';
 import SetupEnhancedConversionTrackingNotice from '../../../../../components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
+import Typography from '../../../../../components/Typography';
 
 export default function AccountCreate() {
 	const [ isNavigating, setIsNavigating ] = useState( false );
@@ -225,12 +226,12 @@ export default function AccountCreate() {
 				{ __( 'Create your Analytics account', 'google-site-kit' ) }
 			</h3>
 
-			<p>
+			<Typography as="p" type="body" size="medium">
 				{ __(
 					'We’ve pre-filled the required information for your new account. Confirm or edit any details:',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 
 			<div className="googlesitekit-setup-module__inputs">
 				<Cell size={ 6 }>
@@ -265,7 +266,7 @@ export default function AccountCreate() {
 				/>
 			</div>
 
-			<p>
+			<Typography as="p" type="body" size="medium">
 				{ hasRequiredScope && (
 					<span>
 						{ __(
@@ -282,7 +283,7 @@ export default function AccountCreate() {
 						) }
 					</span>
 				) }
-			</p>
+			</Typography>
 
 			<div className="googlesitekit-setup-module__action">
 				<Button

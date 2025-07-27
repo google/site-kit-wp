@@ -40,6 +40,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { safelySort } from '../../../util';
+import Typography from '../../Typography';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
 import PreviewBlock from '../../PreviewBlock';
 
@@ -132,7 +133,12 @@ export default function SelectionPanelFooter( {
 	const itemCountElement = isLoading ? (
 		<PreviewBlock width="89px" height="20px" />
 	) : (
-		<p className="googlesitekit-selection-panel-footer__item-count">
+		<Typography
+			as="p"
+			type="body"
+			size="medium"
+			className="googlesitekit-selection-panel-footer__item-count"
+		>
 			{ createInterpolateElement(
 				sprintf(
 					/* translators: 1: Number of selected items. 2: Maximum number of items that can be selected. */
@@ -149,7 +155,7 @@ export default function SelectionPanelFooter( {
 					),
 				}
 			) }
-		</p>
+		</Typography>
 	);
 
 	return (

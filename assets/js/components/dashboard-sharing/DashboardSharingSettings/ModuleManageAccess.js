@@ -28,6 +28,7 @@ import { createInterpolateElement } from '@wordpress/element';
  */
 import PropTypes from 'prop-types';
 import { Select, Tooltip } from 'googlesitekit-components';
+import Typography from '../../Typography';
 
 const viewAccessOptions = [
 	{
@@ -50,7 +51,12 @@ export default function ModuleManageAccess( {
 } ) {
 	if ( sharedOwnershipModule ) {
 		return (
-			<p className="googlesitekit-dashboard-sharing-settings__note">
+			<Typography
+				as="p"
+				type="body"
+				size="medium"
+				className="googlesitekit-dashboard-sharing-settings__note"
+			>
 				<span>
 					{ __(
 						'Any admin signed in with Google',
@@ -68,7 +74,7 @@ export default function ModuleManageAccess( {
 						<Icon icon={ info } size={ 18 } />
 					</span>
 				</Tooltip>
-			</p>
+			</Typography>
 		);
 	}
 
@@ -87,7 +93,12 @@ export default function ModuleManageAccess( {
 
 	if ( ownerUsername ) {
 		return (
-			<p className="googlesitekit-dashboard-sharing-settings__note">
+			<Typography
+				as="p"
+				type="body"
+				size="medium"
+				className="googlesitekit-dashboard-sharing-settings__note"
+			>
 				{ createInterpolateElement(
 					sprintf(
 						/* translators: %s: user who manages the module. */
@@ -128,7 +139,7 @@ export default function ModuleManageAccess( {
 						<Icon icon={ info } size={ 18 } />
 					</span>
 				</Tooltip>
-			</p>
+			</Typography>
 		);
 	}
 
