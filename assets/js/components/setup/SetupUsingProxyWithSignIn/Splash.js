@@ -45,6 +45,7 @@ import {
 } from '../../../googlesitekit/datastore/user/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import Typography from '../../Typography';
 
 export default function Splash( { children } ) {
 	const analyticsModuleAvailable = useSelect( ( select ) =>
@@ -139,9 +140,14 @@ export default function Splash( { children } ) {
 					</Cell>
 
 					<Cell { ...cellDetailsProp }>
-						<h1 className="googlesitekit-setup__title">
+						<Typography
+							as="h1"
+							className="googlesitekit-setup__title"
+							size="large"
+							type="headline"
+						>
 							{ title }
-						</h1>
+						</Typography>
 
 						<p className="googlesitekit-setup__description">
 							{ ! showLearnMoreLink && description }

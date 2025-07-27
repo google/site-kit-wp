@@ -24,23 +24,21 @@
 	margin: $grid-gap-phone;
 
 	@media (min-width: $bp-tablet) {
-		bottom: 32px;
+		bottom: $grid-gap-desktop * 1.5;
 		box-shadow: 0 8px $grid-gap-desktop 0 rgba(0, 0, 0, 0.25);
-		inset-inline-end: 32px;
+		inset-inline-end: $grid-gap-desktop * 1.5;
 		margin: 0;
 		max-width: 348px;
 		position: fixed;
 		z-index: $z-index-sk-overlay-notification;
 	}
 
-	@media (min-width: $bp-desktop) {
-		bottom: 22px;
-		inset-inline-end: 42px;
-		right: 42px;
+	@media (min-width: $bp-xxlarge) {
+		inset-inline-end: calc(((100vw - #{$page-content-max-width}) / 2));
+	}
 
-		html[dir="rtl"] & {
-			right: unset;
-		}
+	@media (min-width: $bp-xxxlarge) {
+		inset-inline-end: calc(((100vw - #{$page-content-max-width}) / 2) - (#{$grid-gap-desktop}));
 	}
 
 	.googlesitekit-overlay-card__graphic {
@@ -112,5 +110,15 @@
 		.mdc-button--raised {
 			gap: 0 6px;
 		}
+	}
+}
+
+.folded .googlesitekit-overlay-card {
+	@media (min-width: $bp-xxlarge) {
+		inset-inline-end: calc(((100vw - #{$page-content-max-width} + 124px ) / 2));
+	}
+
+	@media (min-width: $bp-xxxlarge) {
+		inset-inline-end: calc(((100vw - #{$page-content-max-width} + 124px ) / 2) - (#{$grid-gap-desktop}));
 	}
 }

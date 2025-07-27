@@ -33,6 +33,7 @@ export default function LearnMoreLink( {
 	href,
 	className,
 	label = __( 'Learn more', 'google-site-kit' ),
+	external = true,
 	onClick = () => {},
 } ) {
 	if ( ! href ) {
@@ -44,7 +45,7 @@ export default function LearnMoreLink( {
 			href={ href }
 			className={ className }
 			onClick={ onClick }
-			external
+			external={ external }
 		>
 			{ label }
 		</Link>
@@ -55,5 +56,6 @@ LearnMoreLink.propTypes = {
 	href: PropTypes.string.isRequired,
 	className: PropTypes.string,
 	label: PropTypes.string,
+	external: PropTypes.bool,
 	onClick: PropTypes.func,
 };

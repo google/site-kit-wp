@@ -30,6 +30,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Inline_Data;
+use Google\Site_Kit\Core\Modules\Module_With_Inline_Data_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -109,7 +111,7 @@ use WP_Post;
  * @access private
  * @ignore
  */
-final class Analytics_4 extends Module implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State, Module_With_Tag {
+final class Analytics_4 extends Module implements Module_With_Inline_Data, Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State, Module_With_Tag {
 
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
@@ -118,6 +120,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	use Module_With_Settings_Trait;
 	use Module_With_Data_Available_State_Trait;
 	use Module_With_Tag_Trait;
+	use Module_With_Inline_Data_Trait;
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
@@ -216,6 +219,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+
+		$this->register_inline_data();
 
 		$synchronize_property = new Synchronize_Property(
 			$this,
@@ -359,14 +364,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			10,
 			2
 		);
-
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ), 10 );
-
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_tag_id_mismatch' ), 15 );
-
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_resource_availability_dates_data' ) );
-
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_conversion_reporting_events_detection' ), 15 );
 
 		add_filter(
 			'googlesitekit_auth_scopes',
@@ -742,6 +739,9 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				'service' => '',
 			),
 			'POST:set-google-tag-id-mismatch'           => array(
+				'service' => '',
+			),
+			'POST:set-is-web-data-stream-available'     => array(
 				'service' => '',
 			),
 			'POST:create-audience'                      => array(
@@ -1762,8 +1762,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				$property_id    = self::normalize_property_id( $settings['propertyID'] );
 
 				return $analyticsadmin
-				->properties_keyEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-				->listPropertiesKeyEvents( $property_id );
+					->properties_keyEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					->listPropertiesKeyEvents( $property_id );
 			case 'POST:set-google-tag-id-mismatch':
 				if ( ! isset( $data['hasMismatchedTag'] ) ) {
 					throw new Missing_Required_Param_Exception( 'hasMismatchedTag' );
@@ -1771,12 +1771,30 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 				if ( false === $data['hasMismatchedTag'] ) {
 					return function () {
-						return $this->transients->delete( 'googlesitekit_inline_tag_id_mismatch' );
+						$this->transients->delete( 'googlesitekit_inline_tag_id_mismatch' );
+						return false;
 					};
 				}
 
 				return function () use ( $data ) {
-					return $this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
+					$this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
+					return $data['hasMismatchedTag'];
+				};
+			case 'POST:set-is-web-data-stream-available':
+				if ( ! isset( $data['isWebDataStreamAvailable'] ) ) {
+					throw new Missing_Required_Param_Exception( 'isWebDataStreamAvailable' );
+				}
+
+				if ( true === $data['isWebDataStreamAvailable'] ) {
+					return function () use ( $data ) {
+						$this->transients->set( 'googlesitekit_web_data_stream_availability', $data['isWebDataStreamAvailable'] );
+						return $data['isWebDataStreamAvailable'];
+					};
+				}
+
+				return function () {
+					$this->transients->delete( 'googlesitekit_web_data_stream_availability' );
+					return false;
 				};
 		}
 
@@ -2414,63 +2432,54 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 * Populates custom dimension data to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.113.0
+	 * @since 1.158.0 Renamed method to `get_inline_custom_dimensions_data()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
-	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
 	 */
-	private function inline_custom_dimensions_data( $modules_data ) {
+	private function get_inline_custom_dimensions_data() {
 		if ( $this->is_connected() ) {
-			// Add the data under the `analytics-4` key to make it clear it's scoped to this module.
-			$modules_data['analytics-4'] = array(
+			return array(
 				'customDimensionsDataAvailable' => $this->custom_dimensions_data_available->get_data_availability(),
 			);
 		}
-
-		return $modules_data;
 	}
 
 	/**
 	 * Populates tag ID mismatch value to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.130.0
+	 * @since 1.158.0 Renamed method to `get_inline_tag_id_mismatch()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
-	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
 	 */
-	protected function inline_tag_id_mismatch( $modules_data ) {
+	private function get_inline_tag_id_mismatch() {
 		if ( $this->is_connected() ) {
 			$tag_id_mismatch = $this->transients->get( 'googlesitekit_inline_tag_id_mismatch' );
 
-			// Add the data under the `analytics-4` key to make it clear it's scoped to this module.
-			// No need to check if `analytics-4` key is present, as this hook is added with higher
-			// priority than inline_custom_dimensions_data where this key is set.
-			$modules_data['analytics-4']['tagIDMismatch'] = $tag_id_mismatch;
+			return array(
+				'tagIDMismatch' => $tag_id_mismatch,
+			);
 		}
 
-		return $modules_data;
+		return array();
 	}
 
 	/**
 	 * Populates resource availability dates data to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.127.0
+	 * @since 1.158.0 Renamed method to `get_inline_resource_availability_dates_data()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
-	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
 	 */
-	private function inline_resource_availability_dates_data( $modules_data ) {
+	private function get_inline_resource_availability_dates_data() {
 		if ( $this->is_connected() ) {
-			// Add the data under the `analytics-4` key to make it clear it's scoped to this module.
-			// If `analytics-4` key already exists, merge the data.
-			$modules_data['analytics-4'] = array_merge(
-				$modules_data['analytics-4'] ?? array(),
-				array(
-					'resourceAvailabilityDates' => $this->resource_data_availability_date->get_all_resource_dates(),
-				)
+			return array(
+				'resourceAvailabilityDates' => $this->resource_data_availability_date->get_all_resource_dates(),
 			);
 		}
 
-		return $modules_data;
+		return array();
 	}
 
 	/**
@@ -2694,23 +2703,65 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 * Populates conversion reporting event data to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.139.0
+	 * @since 1.158.0 Renamed method to `get_inline_conversion_reporting_events_detection()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
-	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
 	 */
-	public function inline_conversion_reporting_events_detection( $modules_data ) {
+	private function get_inline_conversion_reporting_events_detection() {
 		if ( ! $this->is_connected() ) {
-			return $modules_data;
+			return array();
 		}
 
 		$detected_events  = $this->transients->get( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
 		$lost_events      = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
 		$new_events_badge = $this->transients->get( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
 
-		$modules_data['analytics-4']['newEvents']      = is_array( $detected_events ) ? $detected_events : array();
-		$modules_data['analytics-4']['lostEvents']     = is_array( $lost_events ) ? $lost_events : array();
-		$modules_data['analytics-4']['newBadgeEvents'] = is_array( $new_events_badge ) ? $new_events_badge['events'] : array();
+		return array(
+			'newEvents'      => is_array( $detected_events ) ? $detected_events : array(),
+			'lostEvents'     => is_array( $lost_events ) ? $lost_events : array(),
+			'newBadgeEvents' => is_array( $new_events_badge ) ? $new_events_badge['events'] : array(),
+		);
+	}
 
-		return $modules_data;
+	/**
+	 * Gets required inline data for the module.
+	 *
+	 * @since 1.158.0
+	 *
+	 * @return array An array of the module's inline data.
+	 */
+	public function get_inline_data() {
+		if ( ! $this->is_connected() ) {
+			return array();
+		}
+
+		$inline_data = array();
+
+		// Custom dimensions data.
+		$inline_data['customDimensionsDataAvailable'] = $this->custom_dimensions_data_available->get_data_availability();
+
+		// Resource availability dates data.
+		$inline_data['resourceAvailabilityDates'] = $this->resource_data_availability_date->get_all_resource_dates();
+
+		// Tag ID mismatch data.
+		$tag_id_mismatch              = $this->transients->get( 'googlesitekit_inline_tag_id_mismatch' );
+		$inline_data['tagIDMismatch'] = $tag_id_mismatch;
+
+		// Conversion reporting events detection data.
+		$detected_events  = $this->transients->get( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
+		$lost_events      = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
+		$new_events_badge = $this->transients->get( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
+
+		$inline_data['newEvents']      = is_array( $detected_events ) ? $detected_events : array();
+		$inline_data['lostEvents']     = is_array( $lost_events ) ? $lost_events : array();
+		$inline_data['newBadgeEvents'] = is_array( $new_events_badge ) ? $new_events_badge['events'] : array();
+
+		// Web data stream availability data.
+		$is_web_data_stream_available            = $this->transients->get( 'googlesitekit_web_data_stream_availability' );
+		$inline_data['isWebDataStreamAvailable'] = $is_web_data_stream_available;
+
+		return array(
+			self::MODULE_SLUG => $inline_data,
+		);
 	}
 }
