@@ -37,6 +37,7 @@ import DisplaySetting from '../../../../components/DisplaySetting';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { useFeature } from './../../../../hooks/useFeature';
 import SettingsStatuses from '../../../../components/settings/SettingsStatuses';
+import Typography from '../../../../components/Typography';
 
 export default function SettingsView() {
 	const paxEnabled = useFeature( 'adsPax' );
@@ -100,14 +101,19 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Conversion ID', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						{ conversionIDValue === '' &&
 							__( 'None', 'google-site-kit' ) }
 						{ conversionIDValue ||
 							( typeof conversionIDValue === 'undefined' && (
 								<DisplaySetting value={ conversionIDValue } />
 							) ) }
-					</p>
+					</Typography>
 				</div>
 			) }
 
@@ -116,14 +122,19 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Customer ID', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						{ extCustomerID === '' &&
 							__( 'None', 'google-site-kit' ) }
 						{ extCustomerID ||
 							( typeof extCustomerID === 'undefined' && (
 								<DisplaySetting value={ extCustomerID } />
 							) ) }
-					</p>
+					</Typography>
 				</div>
 			) }
 

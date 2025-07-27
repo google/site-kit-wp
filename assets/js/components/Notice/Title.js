@@ -20,11 +20,21 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
+/**
+ * Internal dependencies
+ */
+import Typography from '../Typography';
+
 export default function Title( { className, children } ) {
 	return (
-		<p className={ classnames( 'googlesitekit-notice__title', className ) }>
+		<Typography
+			as="p"
+			type="body"
+			size="medium"
+			className={ classnames( 'googlesitekit-notice__title', className ) }
+		>
 			{ children }
-		</p>
+		</Typography>
 	);
 }
 

@@ -32,6 +32,7 @@ import { forwardRef } from '@wordpress/element';
  */
 import StarFill from '../../../../../svg/icons/star-fill.svg';
 import { Grid, Cell, Row } from '../../../../material-components';
+import Typography from '../../../../components/Typography';
 
 const SubtleNotification = forwardRef(
 	(
@@ -66,10 +67,17 @@ const SubtleNotification = forwardRef(
 						</div>
 
 						<div className="googlesitekit-subtle-notification__content">
-							<p>{ title }</p>
-							<p className="googlesitekit-subtle-notification__secondary_description">
+							<Typography as="p" type="body" size="medium">
+								{ title }
+							</Typography>
+							<Typography
+								as="p"
+								type="body"
+								size="medium"
+								className="googlesitekit-subtle-notification__secondary_description"
+							>
 								{ description }
-							</p>
+							</Typography>
 						</div>
 						<div className="googlesitekit-subtle-notification__action">
 							{ ! reverseCTAs && dismissCTA }

@@ -56,6 +56,7 @@ import UserInputQuestionNotice from './UserInputQuestionNotice';
 import useQueryArg from '../../hooks/useQueryArg';
 import ErrorNotice from '../ErrorNotice';
 import LoadingWrapper from '../LoadingWrapper';
+import Typography from '../Typography';
 import CancelUserInputButton from './CancelUserInputButton';
 import { hasErrorForAnswer } from './util/validation';
 import Portal from '../Portal';
@@ -222,9 +223,14 @@ export default function UserInputPreview( props ) {
 		>
 			<div className="googlesitekit-user-input__preview-contents">
 				{ ! settingsView && (
-					<p className="googlesitekit-user-input__preview-subheader">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-user-input__preview-subheader"
+					>
 						{ __( 'Review your answers', 'google-site-kit' ) }
-					</p>
+					</Typography>
 				) }
 				{ settingsView && (
 					<div className="googlesitekit-settings-user-input__heading-container">
@@ -233,12 +239,17 @@ export default function UserInputPreview( props ) {
 							width="275px"
 							height="16px"
 						>
-							<p className="googlesitekit-settings-user-input__heading">
+							<Typography
+								as="p"
+								type="body"
+								size="medium"
+								className="googlesitekit-settings-user-input__heading"
+							>
 								{ __(
 									'Edit your answers for more personalized metrics:',
 									'google-site-kit'
 								) }
-							</p>
+							</Typography>
 						</LoadingWrapper>
 					</div>
 				) }

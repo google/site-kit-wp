@@ -29,6 +29,7 @@ import { Fragment } from '@wordpress/element';
  */
 import { sanitizeHTML } from '../../../../util';
 import ErrorNotice from '../../../../components/ErrorNotice';
+import Typography from '../../../../components/Typography';
 
 export default function Description( {
 	className = 'googlesitekit-publisher-win__desc',
@@ -40,7 +41,7 @@ export default function Description( {
 	return (
 		<Fragment>
 			<div className={ className }>
-				<p>
+				<Typography as="p" type="body" size="medium">
 					<span
 						dangerouslySetInnerHTML={ sanitizeHTML( text, {
 							ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
@@ -48,7 +49,7 @@ export default function Description( {
 						} ) }
 					/>{ ' ' }
 					{ learnMoreLink }
-				</p>
+				</Typography>
 			</div>
 			{ errorText && <ErrorNotice message={ errorText } /> }
 			{ children }

@@ -27,6 +27,7 @@ import PropTypes from 'prop-types';
 import { numFmt, expandNumFmtOptions } from '../../util';
 import ChangeBadge from '../ChangeBadge';
 import MetricTileWrapper from './MetricTileWrapper';
+import Typography from '../Typography';
 
 export default function MetricTileNumeric( {
 	metricValue,
@@ -47,9 +48,14 @@ export default function MetricTileNumeric( {
 				<div className="googlesitekit-km-widget-tile__metric">
 					{ numFmt( metricValue, formatOptions ) }
 				</div>
-				<p className="googlesitekit-km-widget-tile__subtext">
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
+					className="googlesitekit-km-widget-tile__subtext"
+				>
 					{ subText }
-				</p>
+				</Typography>
 			</div>
 			<div className="googlesitekit-km-widget-tile__metric-change-container">
 				<ChangeBadge

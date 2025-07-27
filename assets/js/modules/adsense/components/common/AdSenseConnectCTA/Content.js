@@ -71,9 +71,14 @@ const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 		<Fragment>
 			<Row>
 				<Cell size={ 12 }>
-					<p className="googlesitekit-setup__intro-title">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-setup__intro-title"
+					>
 						{ __( 'Connect Service', 'google-site-kit' ) }
-					</p>
+					</Typography>
 					<div className="googlesitekit-setup-module">
 						<div className="googlesitekit-setup-module__logo">
 							<AdSenseIcon width="33" height="33" />
@@ -118,7 +123,13 @@ const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 									<div className="googlesitekit-setup-module--adsense__stage-caption-indicator" />
 									<div>
 										<h4>{ title }</h4>
-										<p>{ description }</p>
+										<Typography
+											as="p"
+											type="body"
+											size="medium"
+										>
+											{ description }
+										</Typography>
 									</div>
 								</li>
 							)

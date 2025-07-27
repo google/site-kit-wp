@@ -33,6 +33,7 @@ import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { escapeURI } from '../../../../util/escape-uri';
+import Typography from '../../../../components/Typography';
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>
@@ -83,9 +84,14 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Account', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<DisplaySetting value={ accountID } />
-					</p>
+					</Typography>
 				</div>
 
 				{ ( ! isAMP || isSecondaryAMP ) && (
@@ -109,13 +115,23 @@ export default function SettingsView() {
 									</span>
 								) }
 							</h5>
-							<p className="googlesitekit-settings-module__meta-item-data">
+							<Typography
+								as="p"
+								type="body"
+								size="medium"
+								className="googlesitekit-settings-module__meta-item-data"
+							>
 								<DisplaySetting value={ containerID } />
-							</p>
+							</Typography>
 						</div>
 						{ editWebContainerURL && (
 							<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
-								<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
+								<Typography
+									as="p"
+									type="body"
+									size="medium"
+									className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny"
+								>
 									<Link href={ editWebContainerURL } external>
 										{ createInterpolateElement(
 											sprintf(
@@ -141,7 +157,7 @@ export default function SettingsView() {
 											}
 										) }
 									</Link>
-								</p>
+								</Typography>
 							</div>
 						) }
 					</Fragment>
@@ -168,13 +184,23 @@ export default function SettingsView() {
 									</span>
 								) }
 							</h5>
-							<p className="googlesitekit-settings-module__meta-item-data">
+							<Typography
+								as="p"
+								type="body"
+								size="medium"
+								className="googlesitekit-settings-module__meta-item-data"
+							>
 								<DisplaySetting value={ ampContainerID } />
-							</p>
+							</Typography>
 						</div>
 						{ editAMPContainerURL && (
 							<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
-								<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
+								<Typography
+									as="p"
+									type="body"
+									size="medium"
+									className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny"
+								>
 									<Link href={ editAMPContainerURL } external>
 										{ createInterpolateElement(
 											sprintf(
@@ -200,7 +226,7 @@ export default function SettingsView() {
 											}
 										) }
 									</Link>
-								</p>
+								</Typography>
 							</div>
 						) }
 					</Fragment>
@@ -213,7 +239,12 @@ export default function SettingsView() {
 						{ __( 'Tag Manager Code Snippet', 'google-site-kit' ) }
 					</h5>
 
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						{ useSnippet && (
 							<span>
 								{ __(
@@ -230,15 +261,15 @@ export default function SettingsView() {
 								) }
 							</span>
 						) }
-					</p>
+					</Typography>
 
 					{ hasExistingTag && (
-						<p>
+						<Typography as="p" type="body" size="medium">
 							{ __(
 								'Placing two tags at the same time is not recommended.',
 								'google-site-kit'
 							) }
-						</p>
+						</Typography>
 					) }
 				</div>
 			</div>

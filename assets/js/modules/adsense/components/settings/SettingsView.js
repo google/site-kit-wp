@@ -29,6 +29,7 @@ import { useSelect } from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { ProgressBar } from 'googlesitekit-components';
 import Link from '../../../../components/Link';
+import Typography from '../../../../components/Typography';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ErrorNotices } from '../common';
@@ -125,15 +126,25 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Publisher ID', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						className="googlesitekit-settings-module__meta-item-data"
+						type="body"
+						size="medium"
+					>
 						<DisplaySetting value={ accountID } />
-					</p>
+					</Typography>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Site Status', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						className="googlesitekit-settings-module__meta-item-data"
+						type="body"
+						size="medium"
+					>
 						{ siteStatusLabel + ' ' }
 						<Link
 							href={ siteStatusURL }
@@ -146,7 +157,7 @@ export default function SettingsView() {
 						>
 							{ siteStatusLinkLabel }
 						</Link>
-					</p>
+					</Typography>
 				</div>
 			</div>
 
@@ -155,9 +166,14 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Account Status', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						className="googlesitekit-settings-module__meta-item-data"
+						type="body"
+						size="medium"
+					>
 						{ accountStatusLabel }
-					</p>
+					</Typography>
 				</div>
 			</div>
 
@@ -166,9 +182,14 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'AdSense Code', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						className="googlesitekit-settings-module__meta-item-data"
+						type="body"
+						size="medium"
+					>
 						{ snippetLabel }
-					</p>
+					</Typography>
 				</div>
 			</div>
 
@@ -177,9 +198,14 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Excluded from ads', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						className="googlesitekit-settings-module__meta-item-data"
+						type="body"
+						size="medium"
+					>
 						{ autoAdsDisabledMessage }
-					</p>
+					</Typography>
 				</div>
 			</div>
 
@@ -189,14 +215,19 @@ export default function SettingsView() {
 						<h5 className="googlesitekit-settings-module__meta-item-type">
 							{ __( 'Web Stories Ad Unit', 'google-site-kit' ) }
 						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
+						<Typography
+							as="p"
+							className="googlesitekit-settings-module__meta-item-data"
+							type="body"
+							size="medium"
+						>
 							{ ! webStoriesAdUnit && (
 								<span>{ __( 'None', 'google-site-kit' ) }</span>
 							) }
 							{ webStoriesAdUnit && (
 								<DisplaySetting value={ webStoriesAdUnit } />
 							) }
-						</p>
+						</Typography>
 					</div>
 				</div>
 			) }
@@ -213,16 +244,26 @@ export default function SettingsView() {
 								) }
 							</h5>
 							{ ! useAdBlockingRecoverySnippet && (
-								<p className="googlesitekit-settings-module__meta-item-data">
+								<Typography
+									as="p"
+									className="googlesitekit-settings-module__meta-item-data"
+									type="body"
+									size="medium"
+								>
 									{ __(
 										'Ad blocking recovery message is not placed',
 										'google-site-kit'
 									) }
-								</p>
+								</Typography>
 							) }
 							{ useAdBlockingRecoverySnippet && (
 								<Fragment>
-									<p className="googlesitekit-settings-module__meta-item-data">
+									<Typography
+										as="p"
+										className="googlesitekit-settings-module__meta-item-data"
+										type="body"
+										size="medium"
+									>
 										{ useAdBlockingRecoveryErrorSnippet
 											? __(
 													'Ad blocking recovery message enabled with error protection code',
@@ -232,8 +273,13 @@ export default function SettingsView() {
 													'Ad blocking recovery message enabled without error protection code',
 													'google-site-kit'
 											  ) }
-									</p>
-									<p className="googlesitekit-settings-module__meta-item-data">
+									</Typography>
+									<Typography
+										as="p"
+										className="googlesitekit-settings-module__meta-item-data"
+										type="body"
+										size="medium"
+									>
 										{ createInterpolateElement(
 											__(
 												'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense. <a>Configure your message</a>',
@@ -250,7 +296,7 @@ export default function SettingsView() {
 												),
 											}
 										) }
-									</p>
+									</Typography>
 								</Fragment>
 							) }
 						</div>

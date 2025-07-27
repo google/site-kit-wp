@@ -38,6 +38,7 @@ import { MODULES_ADSENSE } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { ErrorNotices, UserProfile } from '../common';
 import useViewContext from '../../../../hooks/useViewContext';
+import Typography from '../../../../components/Typography';
 
 export default function SetupCreateAccount() {
 	const viewContext = useViewContext();
@@ -67,12 +68,12 @@ export default function SetupCreateAccount() {
 
 			<ErrorNotices />
 
-			<p>
+			<Typography as="p" type="body" size="medium">
 				{ __(
 					'Once you create your account, Site Kit will place AdSense code on every page across your site. This means your site will be automatically optimized to help you earn money from your content.',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 
 			<UserProfile />
 
@@ -82,7 +83,12 @@ export default function SetupCreateAccount() {
 				</Button>
 			</div>
 
-			<p className="googlesitekit-setup-module__footer-text">
+			<Typography
+				as="p"
+				type="body"
+				size="medium"
+				className="googlesitekit-setup-module__footer-text"
+			>
 				{ existingTag &&
 					sprintf(
 						/* translators: 1: client ID, 2: user email address, 3: account ID */
@@ -117,7 +123,7 @@ export default function SetupCreateAccount() {
 							),
 						}
 					) }
-			</p>
+			</Typography>
 		</Fragment>
 	);
 }

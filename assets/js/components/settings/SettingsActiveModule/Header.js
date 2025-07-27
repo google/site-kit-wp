@@ -35,6 +35,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
+import Typography from '../../Typography';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { NEW_MODULES, BETA_MODULES, EXPERIMENTAL_MODULES } from '../constants';
@@ -130,7 +131,11 @@ export default function Header( { slug } ) {
 	let moduleStatus = null;
 
 	if ( connected ) {
-		moduleStatus = <p>{ __( 'Connected', 'google-site-kit' ) }</p>;
+		moduleStatus = (
+			<Typography as="p" type="body" size="medium">
+				{ __( 'Connected', 'google-site-kit' ) }
+			</Typography>
+		);
 	} else {
 		moduleStatus = (
 			<Button

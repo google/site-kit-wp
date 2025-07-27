@@ -35,6 +35,7 @@ import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/c
 import { ErrorNotices } from '../../common';
 import SetupUseSnippetSwitch from '../SetupUseSnippetSwitch';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
+import Typography from '../../../../../components/Typography';
 export default function SetupAccountSiteUI( {
 	heading,
 	description,
@@ -55,7 +56,9 @@ export default function SetupAccountSiteUI( {
 
 			<ErrorNotices />
 
-			<p>{ description }</p>
+			<Typography as="p" type="body" size="medium">
+				{ description }
+			</Typography>
 
 			<SetupUseSnippetSwitch />
 

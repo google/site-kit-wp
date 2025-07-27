@@ -334,12 +334,17 @@ class SetupUsingGCP extends Component {
 																	'google-site-kit'
 																) }
 															</Typography>
-															<p className="googlesitekit-setup__description">
+															<Typography
+																as="p"
+																type="body"
+																size="medium"
+																className="googlesitekit-setup__description"
+															>
 																{ __(
 																	'Please sign into your Google account to begin.',
 																	'google-site-kit'
 																) }
-															</p>
+															</Typography>
 															<Button
 																href="#"
 																onClick={

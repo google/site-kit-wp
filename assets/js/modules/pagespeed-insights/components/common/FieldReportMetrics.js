@@ -38,6 +38,7 @@ import ReportErrorActions from '../../../../components/ReportErrorActions';
 import { getReportErrorMessage } from '../../../../util/errors';
 import { CATEGORY_AVERAGE } from '../../util/constants';
 import ErrorNotice from '../../../../components/ErrorNotice';
+import Typography from '../../../../components/Typography';
 
 export default function FieldReportMetrics( { data, error } ) {
 	const {
@@ -74,12 +75,12 @@ export default function FieldReportMetrics( { data, error } ) {
 					<h3>
 						{ __( 'Field data unavailable', 'google-site-kit' ) }
 					</h3>
-					<p>
+					<Typography as="p" type="body" size="medium">
 						{ __(
 							'Field data shows how real users actually loaded and interacted with your page. We don’t have enough real-world experience and speed data for this page. It may be new, or not enough users with Chrome browsers have visited it yet.',
 							'google-site-kit'
 						) }
-					</p>
+					</Typography>
 				</div>
 			</div>
 		);
@@ -95,7 +96,7 @@ export default function FieldReportMetrics( { data, error } ) {
 	return (
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
-				<p>
+				<Typography as="p" type="body" size="medium">
 					{ createInterpolateElement(
 						__(
 							'Field data shows how real users actually loaded and interacted with your page over time. <LearnMoreLink />',
@@ -105,7 +106,7 @@ export default function FieldReportMetrics( { data, error } ) {
 							LearnMoreLink: <MetricsLearnMoreLink />,
 						}
 					) }
-				</p>
+				</Typography>
 			</div>
 			<table
 				className={ classnames(

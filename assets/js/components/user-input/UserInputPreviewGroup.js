@@ -47,6 +47,7 @@ import {
 } from './util/constants';
 import Link from '../Link';
 import LoadingWrapper from '../LoadingWrapper';
+import Typography from '../Typography';
 import ChevronDownIcon from '../../../svg/icons/chevron-down.svg';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import UserInputPreviewAnswers from './UserInputPreviewAnswers';
@@ -176,7 +177,9 @@ export default function UserInputPreviewGroup( {
 				) }
 			>
 				<LoadingWrapper loading={ loading } width="340px" height="21px">
-					<p>{ title }</p>
+					<Typography as="p" type="body" size="medium">
+						{ title }
+					</Typography>
 				</LoadingWrapper>
 				<LoadingWrapper
 					loading={ loading }
@@ -210,7 +213,11 @@ export default function UserInputPreviewGroup( {
 							<Subtitle />
 						</div>
 					) }
-					{ ! Subtitle && <p>{ subtitle }</p> }
+					{ ! Subtitle && (
+						<Typography as="p" type="body" size="medium">
+							{ subtitle }
+						</Typography>
+					) }
 				</div>
 			</LoadingWrapper>
 

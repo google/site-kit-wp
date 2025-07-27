@@ -36,6 +36,7 @@ import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
 import useActivateModuleCallback from '../../hooks/useActivateModuleCallback';
 import Link from '../Link';
+import Typography from '../Typography';
 import GhostCardGreenSVG from './GhostCardGreenSVG';
 import GhostCardRedSVG from './GhostCardRedSVG';
 import MetricTileHeader from './MetricTileHeader';
@@ -95,7 +96,12 @@ export default function ConnectModuleCTATile( { moduleSlug } ) {
 					) }
 
 					<div className="googlesitekit-km-connect-module-cta-tile__content">
-						<p className="googlesitekit-km-connect-module-cta-tile__text">
+						<Typography
+							as="p"
+							type="body"
+							size="medium"
+							className="googlesitekit-km-connect-module-cta-tile__text"
+						>
 							{ combinedMetrics
 								? sprintf(
 										/* translators: %s: module name */
@@ -113,7 +119,7 @@ export default function ConnectModuleCTATile( { moduleSlug } ) {
 										),
 										module.name
 								  ) }
-						</p>
+						</Typography>
 						<Link onClick={ handleConnectModule } secondary>
 							{ sprintf(
 								/* translators: %s: module name */
