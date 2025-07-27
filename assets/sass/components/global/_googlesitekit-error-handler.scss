@@ -20,6 +20,10 @@
 
 	.googlesitekit-error-handler {
 
+		.googlesitekit-banner__content {
+			overflow: auto;
+		}
+
 		.mdc-button {
 			@include mdc-button-filled-accessible($c-utility-error);
 		}
