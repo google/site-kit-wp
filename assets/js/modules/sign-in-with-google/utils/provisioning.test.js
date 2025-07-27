@@ -23,27 +23,33 @@ import { sanitizeProvisioningParams } from './provisioning';
 
 describe( 'modules/sign-in-with-google provisioning utilities', () => {
 	describe( 'sanitizeProvisioningParams', () => {
-		it( 'should return params as-is when required parameters are missing', () => {
-			const params = {
-				appname: '',
-				sitename: 'Test Site',
-				siteorigin: 'https://example.com',
-			};
+		it.each( [
+			[
+				'missing appname',
+				{
+					appname: '',
+					sitename: 'Test Site',
+					siteorigin: 'https://example.com',
+				},
+			],
+			[
+				'missing sitename',
+				{
+					appname: 'Test App',
+					sitename: '',
+					siteorigin: 'https://example.com',
+				},
+			],
+			[
+				'missing siteorigin',
+				{
+					appname: 'Test App',
+					sitename: 'Test Site',
+					siteorigin: '',
+				},
+			],
+		] )( 'should return params as-is when %s', ( _, params ) => {
 			expect( sanitizeProvisioningParams( params ) ).toEqual( params );
-
-			const params2 = {
-				appname: 'Test App',
-				sitename: '',
-				siteorigin: 'https://example.com',
-			};
-			expect( sanitizeProvisioningParams( params2 ) ).toEqual( params2 );
-
-			const params3 = {
-				appname: 'Test App',
-				sitename: 'Test Site',
-				siteorigin: '',
-			};
-			expect( sanitizeProvisioningParams( params3 ) ).toEqual( params3 );
 		} );
 
 		it( 'should not mutate the original params object', () => {
@@ -59,80 +65,82 @@ describe( 'modules/sign-in-with-google provisioning utilities', () => {
 			expect( originalParams ).toEqual( originalCopy );
 		} );
 
-		it( 'should replace invalid characters with hyphens', () => {
-			const params = {
-				appname: 'Test@App!Site#Name',
-				sitename: 'Test Site',
-				siteorigin: 'https://example.com',
-			};
+		it.each( [
+			[
+				'invalid characters with hyphens',
+				'Test@App!Site#Name',
+				'Test-App-Site-Name',
+			],
+			[
+				'consecutive spaces and hyphens',
+				'Test   App---Site  Name',
+				'Test App-Site Name',
+			],
+			[ 'valid appnames', 'Valid App Name', 'Valid App Name' ],
+			[
+				'mixed invalid characters',
+				'App$Name%With&Symbols*',
+				'App-Name-With-Symbols-',
+			],
+		] )(
+			'should sanitize %s correctly',
+			( _, inputAppname, expectedAppname ) => {
+				const params = {
+					appname: inputAppname,
+					sitename: 'Test Site',
+					siteorigin: 'https://example.com',
+				};
 
-			const result = sanitizeProvisioningParams( params );
+				const result = sanitizeProvisioningParams( params );
 
-			expect( result.appname ).toBe( 'Test-App-Site-Name' );
-		} );
+				expect( result.appname ).toBe( expectedAppname );
+			}
+		);
 
-		it( 'should reduce consecutive spaces and hyphens to single characters', () => {
-			const params = {
-				appname: 'Test   App---Site  Name',
-				sitename: 'Test Site',
-				siteorigin: 'https://example.com',
-			};
+		it.each( [
+			[ 'short input', 'Hi!', 'https://example.com' ],
+			[ 'URL with subdomain', 'x', 'https://sub.example.com:8080/path' ],
+			[ 'only spaces and hyphens', '   ---   ', 'https://example.com' ],
+			[ 'invalid URL', 'z', 'invalid-url' ],
+		] )(
+			'should generate fallback name for %s',
+			( _, inputAppname, siteorigin ) => {
+				const params = {
+					appname: inputAppname,
+					sitename: 'Test Site',
+					siteorigin,
+				};
 
-			const result = sanitizeProvisioningParams( params );
+				const result = sanitizeProvisioningParams( params );
 
-			expect( result.appname ).toBe( 'Test App-Site Name' );
-		} );
+				expect( result.appname ).toMatch(
+					/^site-kit-siwg-[a-f0-9]{16}$/
+				);
+			}
+		);
 
-		it( 'should generate fallback name when result is less than 4 characters', () => {
-			const params = {
-				appname: 'Hi!',
-				sitename: 'Test Site',
-				siteorigin: 'https://example.com',
-			};
+		it.each( [
+			[
+				'basic truncation',
+				'This is a very long application name that exceeds thirty characters',
+				'This is a very long applicatio',
+				30,
+			],
+		] )(
+			'should handle %s',
+			( _, inputAppname, expectedAppname, expectedLength ) => {
+				const params = {
+					appname: inputAppname,
+					sitename: 'Test Site',
+					siteorigin: 'https://example.com',
+				};
 
-			const result = sanitizeProvisioningParams( params );
+				const result = sanitizeProvisioningParams( params );
 
-			expect( result.appname ).toMatch( /^site-kit-siwg-[a-f0-9]{16}$/ );
-		} );
-
-		it( 'should use hostname for MD5 when generating fallback', () => {
-			const params = {
-				appname: 'Hi!',
-				sitename: 'Test Site',
-				siteorigin: 'https://sub.example.com:8080/path',
-			};
-
-			const result = sanitizeProvisioningParams( params );
-
-			// The MD5 should be generated from 'sub.example.com'
-			expect( result.appname ).toMatch( /^site-kit-siwg-[a-f0-9]{16}$/ );
-		} );
-
-		it( 'should use full siteorigin for MD5 when URL parsing fails', () => {
-			const params = {
-				appname: 'Hi!',
-				sitename: 'Test Site',
-				siteorigin: 'invalid-url',
-			};
-
-			const result = sanitizeProvisioningParams( params );
-
-			expect( result.appname ).toMatch( /^site-kit-siwg-[a-f0-9]{16}$/ );
-		} );
-
-		it( 'should truncate appname to 30 characters maximum', () => {
-			const params = {
-				appname:
-					'This is a very long application name that exceeds thirty characters',
-				sitename: 'Test Site',
-				siteorigin: 'https://example.com',
-			};
-
-			const result = sanitizeProvisioningParams( params );
-
-			expect( result.appname ).toHaveLength( 30 );
-			expect( result.appname ).toBe( 'This is a very long applicatio' );
-		} );
+				expect( result.appname ).toBe( expectedAppname );
+				expect( result.appname ).toHaveLength( expectedLength );
+			}
+		);
 
 		it( 'should remove trailing hyphen after truncation', () => {
 			const params = {
@@ -146,31 +154,6 @@ describe( 'modules/sign-in-with-google provisioning utilities', () => {
 
 			expect( result.appname.length ).toBeLessThanOrEqual( 30 );
 			expect( result.appname.endsWith( '-' ) ).toBe( false );
-		} );
-
-		it( 'should preserve valid appnames between 4-30 characters', () => {
-			const params = {
-				appname: 'Valid App Name',
-				sitename: 'Test Site',
-				siteorigin: 'https://example.com',
-			};
-
-			const result = sanitizeProvisioningParams( params );
-
-			expect( result.appname ).toBe( 'Valid App Name' );
-		} );
-
-		it( 'should handle appnames with only spaces and hyphens', () => {
-			const params = {
-				appname: '   ---   ',
-				sitename: 'Test Site',
-				siteorigin: 'https://example.com',
-			};
-
-			const result = sanitizeProvisioningParams( params );
-
-			// Should be reduced to a single space/hyphen, then fall back to MD5
-			expect( result.appname ).toMatch( /^site-kit-siwg-[a-f0-9]{16}$/ );
 		} );
 
 		it( 'should preserve other params unchanged', () => {
