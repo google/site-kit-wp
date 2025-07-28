@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
+import Typography from '../../../../components/Typography';
+
 export default function Title( { title } ) {
 	return (
-		<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
+		<Typography
+			as="h3"
+			type="headline"
+			size="small"
+			className="googlesitekit-heading-2 googlesitekit-publisher-win__title"
+		>
 			{ title }
-		</h3>
+		</Typography>
 	);
 }
