@@ -38,6 +38,7 @@ import ReportErrorActions from '../../../../components/ReportErrorActions';
 import { getReportErrorMessage } from '../../../../util/errors';
 import { CATEGORY_AVERAGE } from '../../util/constants';
 import ErrorNotice from '../../../../components/ErrorNotice';
+import Typography from '../../../../components/Typography';
 
 export default function FieldReportMetrics( { data, error } ) {
 	const {
@@ -71,9 +72,9 @@ export default function FieldReportMetrics( { data, error } ) {
 		return (
 			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics googlesitekit-pagespeed-insights-web-vitals-metrics--field-data-unavailable">
 				<div className="googlesitekit-pagespeed-insights-web-vitals-metrics__field-data-unavailable-content">
-					<h3>
+					<Typography as="h3" type="headline" size="small">
 						{ __( 'Field data unavailable', 'google-site-kit' ) }
-					</h3>
+					</Typography>
 					<p>
 						{ __(
 							'Field data shows how real users actually loaded and interacted with your page. We don’t have enough real-world experience and speed data for this page. It may be new, or not enough users with Chrome browsers have visited it yet.',
