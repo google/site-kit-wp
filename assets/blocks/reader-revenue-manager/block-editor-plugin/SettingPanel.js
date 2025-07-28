@@ -28,6 +28,7 @@ import { PluginDocumentSettingPanel as EditorSettingPanel } from '@wordpress-cor
  */
 import GoogleLogoIcon from '../../../svg/graphics/logo-g.svg';
 import SettingsForm from './SettingsForm';
+import Typography from '../../../js/components/Typography';
 
 export default function SettingPanel() {
 	// The `PluginDocumentSettingPanel` component is deprecated/removed in `@wordpress-core/edit-post`, so
@@ -44,7 +45,9 @@ export default function SettingPanel() {
 			icon={ <GoogleLogoIcon height="16" width="16" /> }
 		>
 			<section>
-				<h3>{ __( 'Reader Revenue Manager', 'google-site-kit' ) }</h3>
+				<Typography as="h3" size="small" type="headline">
+					{ __( 'Reader Revenue Manager', 'google-site-kit' ) }
+				</Typography>
 				<SettingsForm />
 			</section>
 		</PluginDocumentSettingPanel>
