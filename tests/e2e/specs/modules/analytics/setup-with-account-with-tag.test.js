@@ -163,10 +163,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 			'.googlesitekit-settings-connect-module--analytics-4'
 		);
 
-		waitForFetchRequests = createEnhancedWaitForFetchRequests( {
-			debug: false,
-			useAbortController: false,
-		} );
+		waitForFetchRequests = createEnhancedWaitForFetchRequests();
 	} );
 
 	afterEach( async () => {

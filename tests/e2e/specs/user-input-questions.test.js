@@ -195,10 +195,7 @@ describe( 'User Input Settings', () => {
 		await setSearchConsoleProperty();
 		await page.setRequestInterception( true );
 
-		waitForFetchRequests = createEnhancedWaitForFetchRequests( {
-			debug: false,
-			useAbortController: false,
-		} );
+		waitForFetchRequests = createEnhancedWaitForFetchRequests();
 	} );
 
 	afterEach( async () => {

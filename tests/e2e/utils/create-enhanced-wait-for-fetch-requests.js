@@ -17,11 +17,14 @@
  */
 
 /**
- * Waits for network requests to complete, and terminate on timeout.
+ * Waits for network requests to complete using a progressive strategy:
+ *
+ * 1. Uses `page.waitForNetworkIdle()` to wait for network idle state.
+ * 2. If that times out, it tracks active requests and waits for them to complete
  *
  * Within E2E tests, cleanup functions can disconnect the plugin and form other actions which cause
  * pending requests from previous pages to error. This utility waits for all requests to complete
- * or aborts any which cannot be completed within the specified timeout so that tests can be isolated.
+ * using a combination of network idle and request tracking, ensuring that tests can be isolated.
  *
  * @since n.e.x.t
  *
@@ -29,7 +32,6 @@
  * @param {number}  options.timeout            Maximum time to wait for requests in milliseconds.
  * @param {number}  options.debounceTime       Time to wait after last request before resolving.
  * @param {number}  options.networkIdleTimeout Time to wait for network idle.
- * @param {boolean} options.useAbortController Whether to abort pending requests on timeout.
  * @param {boolean} options.debug              Enable debug logging.
  * @return {Function} Wait function.
  */
@@ -37,8 +39,7 @@ export function createEnhancedWaitForFetchRequests( {
 	timeout = 60000, // 60 seconds max wait
 	debounceTime = 500, // Increased from 250ms for CI stability
 	networkIdleTimeout = 15000, // 15 seconds for network idle
-	useAbortController = true,
-	debug = process.env.DEBUG_E2E_REQUESTS === '1',
+	debug = false,
 } = {} ) {
 	const activeRequests = new Map();
 	const abortControllers = new Map();
@@ -64,7 +65,7 @@ export function createEnhancedWaitForFetchRequests( {
 		const requestID = `req_${ ++requestCounter }_${ Date.now() }`; // eslint-disable-line
 		const url = req.url();
 
-		// Skip non-Site Kit requests unless they're WordPress API calls
+		// Skip requests unless they're Site Kit WordPress API calls.
 		if (
 			! url.includes( 'google-site-kit' ) &&
 			! url.includes( 'wp-json' )
@@ -74,20 +75,14 @@ export function createEnhancedWaitForFetchRequests( {
 
 		log( `Tracking request ${ requestID }:`, url );
 
-		// Store request info
+		// Store request info.
 		activeRequests.set( requestID, {
 			id: requestID,
 			url,
-			// Use Date.now() for performance timing measurements in E2E tests
+			// Use Date.now() for performance timing measurements in E2E tests.
 			startTime: Date.now(), // eslint-disable-line
 			request: req,
 		} );
-
-		// Set up abort controller if enabled
-		if ( useAbortController ) {
-			const controller = new AbortController();
-			abortControllers.set( requestID, controller );
-		}
 
 		// Wait for response or timeout
 		page.waitForResponse(
@@ -125,11 +120,11 @@ export function createEnhancedWaitForFetchRequests( {
 					activeRequests.delete( requestID );
 					abortControllers.delete( requestID );
 				}
-				// Return null to avoid breaking Promise.all
+				// Return null to avoid breaking Promise.all.
 				return null;
 			} );
 
-		// Reset debounce timer
+		// Reset debounce timer.
 		if ( debounceTimer ) {
 			clearTimeout( debounceTimer );
 		}
@@ -145,7 +140,7 @@ export function createEnhancedWaitForFetchRequests( {
 			`Waiting for ${ activeRequests.size } active requests to complete...`
 		);
 
-		// Strategy 1: Use page.waitForNetworkIdle() as primary mechanism
+		// Strategy 1: Use page.waitForNetworkIdle() as primary mechanism.
 		try {
 			log( 'Attempting waitForNetworkIdle...' );
 			await page.waitForNetworkIdle( { timeout: networkIdleTimeout } );
@@ -160,7 +155,7 @@ export function createEnhancedWaitForFetchRequests( {
 			log( 'Network idle timeout, falling back to request tracking' );
 		}
 
-		// Strategy 2: Wait for tracked requests with debounce
+		// Strategy 2: Wait for tracked requests with debounce.
 		return new Promise( ( resolve ) => {
 			const checkCompletion = () => {
 				if ( activeRequests.size === 0 ) {
@@ -178,47 +173,12 @@ export function createEnhancedWaitForFetchRequests( {
 				debounceTimer = setTimeout( checkCompletion, debounceTime );
 			};
 
-			// Strategy 3: Emergency timeout with request abortion
-			const emergencyTimeout = setTimeout( () => {
-				if ( debounceTimer ) {
-					clearTimeout( debounceTimer );
-				}
-
-				log(
-					`Emergency timeout reached. Aborting ${ activeRequests.size } remaining requests`
-				);
-
-				if ( useAbortController ) {
-					// Attempt to abort remaining requests
-					for ( const [
-						requestID,
-						controller,
-					] of abortControllers ) {
-						try {
-							controller.abort();
-							log( `Aborted request ${ requestID }` );
-						} catch ( abortError ) {
-							log(
-								`Failed to abort request ${ requestID }:`,
-								abortError.message
-							);
-						}
-					}
-				}
-
-				// Force cleanup
-				activeRequests.clear();
-				abortControllers.clear();
-				resolve();
-			}, timeout );
-
 			// Start checking
 			checkCompletion();
 
 			// Clean up timeout when resolved
 			const originalResolve = resolve;
 			resolve = ( ...args ) => {
-				clearTimeout( emergencyTimeout );
 				if ( debounceTimer ) {
 					clearTimeout( debounceTimer );
 				}
