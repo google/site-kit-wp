@@ -45,7 +45,7 @@ import { getCellProps } from './utils';
 
 export default function OptionalCells( {
 	canViewSharedAnalytics4,
-	error,
+	errors,
 	showGA4,
 	showKeyEventsCTA,
 	showRecoverableGA4,
@@ -84,11 +84,11 @@ export default function OptionalCells( {
 			{ ! showRecoverableGA4 &&
 				canViewSharedAnalytics4 &&
 				analyticsModuleActiveAndConnected &&
-				error && (
+				errors.length > 0 && (
 					<Cell { ...halfCellProps }>
 						<WidgetReportError
 							moduleSlug="analytics-4"
-							error={ error }
+							error={ errors }
 						/>
 					</Cell>
 				) }
@@ -114,7 +114,7 @@ export default function OptionalCells( {
 
 OptionalCells.propTypes = {
 	canViewSharedAnalytics4: PropTypes.bool.isRequired,
-	error: PropTypes.object,
+	error: PropTypes.arrayOf( PropTypes.object ),
 	showGA4: PropTypes.bool.isRequired,
 	showKeyEventsCTA: PropTypes.bool.isRequired,
 	showRecoverableGA4: PropTypes.bool,

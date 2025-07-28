@@ -22,7 +22,7 @@ const FONT_WAIT_TIMEOUT_MS = 5000;
 /**
  * Creates a promise that resolves after a specified delay.
  *
- * @since n.e.x.t
+ * @since 1.158.0
  *
  * @param {number} ms The delay in milliseconds.
  * @return {Promise<void>} A promise that resolves after the delay.
@@ -37,7 +37,7 @@ const waitForTimeout = ( ms ) =>
  * Scenarios don't support passing function props therefore waiting logic
  * is implemented here and triggered via text props.
  *
- * @since n.e.x.t
+ * @since 1.158.0
  *
  * @param {Object} page     The Puppeteer page object.
  * @param {Object} scenario The scenario configuration.

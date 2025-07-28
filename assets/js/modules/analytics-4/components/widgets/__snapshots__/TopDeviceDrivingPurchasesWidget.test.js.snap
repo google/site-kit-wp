@@ -71,7 +71,7 @@ exports[`TopDeviceDrivingPurchasesWidget should render the generic error variant
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top device driving purchases
         </h2>
@@ -133,7 +133,7 @@ exports[`TopDeviceDrivingPurchasesWidget should render the insufficient permissi
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top device driving purchases
         </h2>

@@ -807,7 +807,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 *
 	 * @since 1.142.0
 	 * @since 1.146.0 Added isWooCommerceActive and isWooCommerceRegistrationEnabled to the inline data.
-	 * @since n.e.x.t Renamed method to `get_inline_data()`, and modified it to return a new array rather than populating a passed filter value.
+	 * @since 1.158.0 Renamed method to `get_inline_data()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
 	 * @return array An array of the module's inline data.
 	 */
