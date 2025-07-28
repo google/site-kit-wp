@@ -54,9 +54,9 @@ function CTA( {
 					{ headerText && (
 						<Typography
 							as="h2"
-							className="googlesitekit-cta__header_text"
 							size="small"
 							type="label"
+							className="googlesitekit-cta__header_text"
 						>
 							{ headerText }
 						</Typography>
@@ -68,8 +68,8 @@ function CTA( {
 				{ title && (
 					<Typography
 						as="h3"
-						size="medium"
-						type="body"
+						size="small"
+						type="title"
 						className="googlesitekit-cta__title"
 					>
 						{ title }
