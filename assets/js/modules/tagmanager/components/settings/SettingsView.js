@@ -130,7 +130,7 @@ export default function SettingsView() {
 									as="p"
 									type="body"
 									size="medium"
-									className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny"
+									className="googlesitekit-settings-module__meta-item-data"
 								>
 									<Link href={ editWebContainerURL } external>
 										{ createInterpolateElement(
@@ -199,7 +199,7 @@ export default function SettingsView() {
 									as="p"
 									type="body"
 									size="medium"
-									className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny"
+									className="googlesitekit-settings-module__meta-item-data"
 								>
 									<Link href={ editAMPContainerURL } external>
 										{ createInterpolateElement(

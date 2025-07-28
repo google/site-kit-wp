@@ -70,12 +70,7 @@ const SubtleNotification = forwardRef(
 							<Typography as="p" type="body" size="medium">
 								{ title }
 							</Typography>
-							<Typography
-								as="p"
-								type="body"
-								size="medium"
-								className="googlesitekit-subtle-notification__secondary_description"
-							>
+							<Typography as="p" type="body" size="medium">
 								{ description }
 							</Typography>
 						</div>

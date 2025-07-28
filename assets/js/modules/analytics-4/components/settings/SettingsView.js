@@ -144,7 +144,7 @@ export default function SettingsView() {
 						as="p"
 						type="body"
 						size="medium"
-						className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny"
+						className="googlesitekit-settings-module__meta-item-data"
 					>
 						<Link href={ editAccountSettingsURL } external>
 							{ createInterpolateElement(
@@ -216,7 +216,7 @@ export default function SettingsView() {
 						as="p"
 						type="body"
 						size="medium"
-						className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny"
+						className="googlesitekit-settings-module__meta-item-data"
 					>
 						<Link href={ editDataStreamSettingsURL } external>
 							{ createInterpolateElement(
