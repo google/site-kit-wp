@@ -85,8 +85,8 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 				<Fragment>
 					<Typography
 						as="h3"
-						type="headline"
-						size="small"
+						type="body"
+						size="medium"
 						className="googlesitekit-setup-module__title"
 					>
 						{ __(
@@ -132,8 +132,8 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 				<Fragment>
 					<Typography
 						as="h3"
-						type="headline"
-						size="small"
+						type="body"
+						size="medium"
 						className="googlesitekit-setup-module__title"
 					>
 						{ __(
