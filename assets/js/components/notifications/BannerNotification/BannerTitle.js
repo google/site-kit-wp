@@ -24,6 +24,7 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import Badge from '../../Badge';
+import Typography from '../../Typography';
 
 export default function BannerTitle( props ) {
 	const {
@@ -41,10 +42,15 @@ export default function BannerTitle( props ) {
 
 	return (
 		<div className="googlesitekit-publisher-win__title-image-wrapper">
-			<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
+			<Typography
+				as="h3"
+				type="headline"
+				size="small"
+				className="googlesitekit-heading-2 googlesitekit-publisher-win__title"
+			>
 				{ title }
 				{ badgeLabel && <Badge label={ badgeLabel } /> }
-			</h3>
+			</Typography>
 
 			{ WinImageSVG && (
 				<div
