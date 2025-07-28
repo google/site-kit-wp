@@ -22,6 +22,7 @@
 import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import Typography from '../../../../components/Typography';
 
 export default function UserProfile() {
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
@@ -37,7 +38,12 @@ export default function UserProfile() {
 	}
 
 	return (
-		<p className="googlesitekit-setup-module__user">
+		<Typography
+			as="p"
+			type="body"
+			size="medium"
+			className="googlesitekit-setup-module__user"
+		>
 			<img
 				className="googlesitekit-setup-module__user-image"
 				src={ userPicture }
@@ -46,6 +52,6 @@ export default function UserProfile() {
 			<span className="googlesitekit-setup-module__user-email">
 				{ userEmail }
 			</span>
-		</p>
+		</Typography>
 	);
 }

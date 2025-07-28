@@ -41,6 +41,7 @@ import {
 } from '../common';
 import SetupEnhancedMeasurementSwitch from './SetupEnhancedMeasurementSwitch';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
+import Typography from '../../../../components/Typography';
 
 export default function SetupFormFields() {
 	const accounts =
@@ -79,12 +80,17 @@ export default function SetupFormFields() {
 	return (
 		<Fragment>
 			{ !! accounts.length && (
-				<p className="googlesitekit-margin-bottom-0">
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
+					className="googlesitekit-margin-bottom-0"
+				>
 					{ __(
 						'Please select the account information below. You can change this later in your settings.',
 						'google-site-kit'
 					) }
-				</p>
+				</Typography>
 			) }
 
 			<div className="googlesitekit-setup-module__inputs">

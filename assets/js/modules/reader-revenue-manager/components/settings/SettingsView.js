@@ -35,6 +35,7 @@ import {
 } from '../../constants';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { PublicationOnboardingStateNotice } from '../common';
+import Typography from '../../../../components/Typography';
 
 export default function SettingsView() {
 	const publicationID = useSelect( ( select ) =>
@@ -102,18 +103,28 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Publication', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<DisplaySetting value={ publicationID } />
-					</p>
+					</Typography>
 				</div>
 
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Default Product ID', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<DisplaySetting value={ productID } />
-					</p>
+					</Typography>
 				</div>
 			</div>
 
@@ -124,13 +135,18 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Display CTAs', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<DisplaySetting
 							value={
 								SNIPPET_MODES[ snippetMode ] || snippetMode
 							}
 						/>
-					</p>
+					</Typography>
 				</div>
 
 				{ 'post_types' === snippetMode && (
@@ -141,9 +157,14 @@ export default function SettingsView() {
 								'google-site-kit'
 							) }
 						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
+						<Typography
+							as="p"
+							type="body"
+							size="medium"
+							className="googlesitekit-settings-module__meta-item-data"
+						>
 							<DisplaySetting value={ postTypes } />
-						</p>
+						</Typography>
 					</div>
 				) }
 			</div>

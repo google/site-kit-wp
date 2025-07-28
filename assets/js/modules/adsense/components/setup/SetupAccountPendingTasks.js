@@ -32,6 +32,7 @@ import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ErrorNotices } from '../common';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
+import Typography from '../../../../components/Typography';
 
 export default function SetupAccountPendingTasks() {
 	const viewContext = useViewContext();
@@ -55,12 +56,12 @@ export default function SetupAccountPendingTasks() {
 
 			<ErrorNotices />
 
-			<p>
+			<Typography as="p" type="body" size="medium">
 				{ __(
 					'You need to fix some things before we can connect Site Kit to your AdSense account',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 
 			<SetupUseSnippetSwitch />
 

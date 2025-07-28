@@ -27,6 +27,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { sanitizeHTML } from '../../../../util';
 import { MODULES_PAGESPEED_INSIGHTS } from '../../datastore/constants';
+import Typography from '../../../../components/Typography';
 
 export default function SettingsView() {
 	const dashboardPermalink = useSelect( ( select ) =>
@@ -43,7 +44,10 @@ export default function SettingsView() {
 	);
 
 	return (
-		<p
+		<Typography
+			as="p"
+			type="body"
+			size="medium"
 			dangerouslySetInnerHTML={ sanitizeHTML( content, {
 				ALLOWED_TAGS: [ 'a' ],
 				ALLOWED_ATTR: [ 'href' ],

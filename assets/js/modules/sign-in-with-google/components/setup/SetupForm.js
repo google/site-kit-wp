@@ -45,6 +45,7 @@ import { Button } from 'googlesitekit-components';
 import Link from '../../../../components/Link';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import PreviewBlock from '../../../../components/PreviewBlock';
+import Typography from '../../../../components/Typography';
 import MediaErrorHandler from '../../../../components/MediaErrorHandler';
 const LazyGraphicSVG = lazy( () =>
 	import( '../../../../../svg/graphics/sign-in-with-google-setup.svg' )
@@ -101,7 +102,12 @@ export default function SetupForm() {
 					moduleSlug={ MODULES_SIGN_IN_WITH_GOOGLE }
 					storeName={ MODULES_SIGN_IN_WITH_GOOGLE }
 				/>
-				<p className="googlesitekit-setup-module__step-description">
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
+					className="googlesitekit-setup-module__step-description"
+				>
 					{ createInterpolateElement(
 						sprintf(
 							/* translators: %1$s: Sign in with Google service name */
@@ -119,13 +125,18 @@ export default function SetupForm() {
 							a: <Link href={ learnMoreURL } external />,
 						}
 					) }
-				</p>
-				<p className="googlesitekit-margin-bottom-0">
+				</Typography>
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
+					className="googlesitekit-margin-bottom-0"
+				>
 					{ __(
 						'Add your client ID here to complete setup:',
 						'google-site-kit'
 					) }
-				</p>
+				</Typography>
 				<div className="googlesitekit-setup-module__inputs">
 					<ClientIDTextField existingClientID={ existingClientID } />
 				</div>

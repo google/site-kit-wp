@@ -31,6 +31,7 @@ import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ErrorNotices } from '../common';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
+import Typography from '../../../../components/Typography';
 
 export default function SetupAccountCreateSite() {
 	const viewContext = useViewContext();
@@ -59,12 +60,12 @@ export default function SetupAccountCreateSite() {
 
 			<ErrorNotices />
 
-			<p>
+			<Typography as="p" type="body" size="medium">
 				{ __(
 					'We’ve detected that you haven’t added this site to your AdSense account yet',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 
 			<div className="googlesitekit-setup-module__action">
 				<Button onClick={ addSiteHandler } href={ addSiteURL }>

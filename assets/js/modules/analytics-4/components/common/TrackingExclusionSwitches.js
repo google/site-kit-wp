@@ -28,6 +28,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import Typography from '../../../../components/Typography';
 
 export const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
 export const TRACKING_CONTENT_CREATORS = 'contentCreators';
@@ -145,7 +146,9 @@ export default function TrackingExclusionSwitches() {
 						</div>
 					) }
 				</div>
-				<p>{ message }</p>
+				<Typography as="p" type="body" size="medium">
+					{ message }
+				</Typography>
 			</div>
 		</div>
 	);

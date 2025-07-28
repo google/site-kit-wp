@@ -235,7 +235,10 @@ export default function DashboardSharingDialog() {
 									) }
 							</Typography>
 
-							<p
+							<Typography
+								as="p"
+								type="body"
+								size="medium"
 								className={ classnames(
 									'googlesitekit-dialog__subtitle',
 									{
@@ -269,7 +272,7 @@ export default function DashboardSharingDialog() {
 										'Warning: Resetting these permissions will remove view-only access for all users. Are you sure you want to reset all dashboard Sharing permissions?',
 										'google-site-kit'
 									) }
-							</p>
+							</Typography>
 						</div>
 					</div>
 
