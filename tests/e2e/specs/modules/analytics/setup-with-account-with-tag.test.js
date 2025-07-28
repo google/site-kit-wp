@@ -164,7 +164,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 		);
 
 		waitForFetchRequests = createEnhancedWaitForFetchRequests( {
-			debug: true,
+			debug: false,
 			useAbortController: false,
 		} );
 	} );

@@ -196,7 +196,7 @@ describe( 'User Input Settings', () => {
 		await page.setRequestInterception( true );
 
 		waitForFetchRequests = createEnhancedWaitForFetchRequests( {
-			debug: true,
+			debug: false,
 			useAbortController: false,
 		} );
 	} );
