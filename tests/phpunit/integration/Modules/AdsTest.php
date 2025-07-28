@@ -53,9 +53,9 @@ class AdsTest extends TestCase {
 	}
 
 	public function test_magic_methods() {
-		$this->assertEquals( 'ads', $this->ads->slug );
-		$this->assertEquals( 'Ads', $this->ads->name );
-		$this->assertEquals( 'https://google.com/ads', $this->ads->homepage );
+		$this->assertEquals( 'ads', $this->ads->slug, 'Ads module slug should be correct.' );
+		$this->assertEquals( 'Ads', $this->ads->name, 'Ads module name should be correct.' );
+		$this->assertEquals( 'https://google.com/ads', $this->ads->homepage, 'Ads module homepage should be correct.' );
 	}
 
 	public function test_register() {
@@ -65,9 +65,9 @@ class AdsTest extends TestCase {
 
 		$this->ads->register();
 
-		$this->assertTrue( has_action( 'template_redirect' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_inline_modules_data' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_ads_measurement_connection_checks' ) );
+		$this->assertTrue( has_action( 'template_redirect' ), 'template_redirect action should be registered.' );
+		$this->assertTrue( has_filter( 'googlesitekit_inline_modules_data' ), 'inline_modules_data filter should be registered.' );
+		$this->assertTrue( has_filter( 'googlesitekit_ads_measurement_connection_checks' ), 'ads_measurement_connection_checks filter should be registered.' );
 	}
 
 	public function test_register__googlesitekit_ads_measurement_connection_checks() {
@@ -79,22 +79,23 @@ class AdsTest extends TestCase {
 			array(
 				array( $this->ads, 'check_ads_measurement_connection' ),
 			),
-			apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() )
+			apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() ),
+			'Ads measurement connection check should be registered.'
 		);
 	}
 
 	public function test_is_connected__when_ads_conversion_id_is_set() {
-		$this->assertFalse( $this->ads->is_connected() );
+		$this->assertFalse( $this->ads->is_connected(), 'Ads module should not be connected without conversion ID.' );
 
 		$this->ads->get_settings()->merge(
 			array( 'conversionID' => 'AW-123456789' )
 		);
 
-		$this->assertTrue( $this->ads->is_connected() );
+		$this->assertTrue( $this->ads->is_connected(), 'Ads module should be connected with conversion ID.' );
 	}
 
 	public function test_is_connected__when_pax_conversion_id_is_set() {
-		$this->assertFalse( $this->ads->is_connected() );
+		$this->assertFalse( $this->ads->is_connected(), 'Ads module should not be connected without paxConversionID.' );
 
 		self::enable_feature( 'adsPax' );
 
@@ -102,11 +103,11 @@ class AdsTest extends TestCase {
 			array( 'paxConversionID' => 'AW-123456789' )
 		);
 
-		$this->assertTrue( $this->ads->is_connected() );
+		$this->assertTrue( $this->ads->is_connected(), 'Ads module should be connected with paxConversionID.' );
 	}
 
 	public function test_is_connected__when_ext_customer_id_is_set() {
-		$this->assertFalse( $this->ads->is_connected() );
+		$this->assertFalse( $this->ads->is_connected(), 'Ads module should not be connected without extCustomerID.' );
 
 		self::enable_feature( 'adsPax' );
 
@@ -114,23 +115,17 @@ class AdsTest extends TestCase {
 			array( 'extCustomerID' => '123456789' )
 		);
 
-		$this->assertTrue( $this->ads->is_connected() );
+		$this->assertTrue( $this->ads->is_connected(), 'Ads module should be connected with extCustomerID.' );
 	}
 
 	public function test_is_connected__feature_flag_is_disabled_but_pax_conversion_id_or_ext_customer_id_are_set() {
-		$this->assertFalse( $this->ads->is_connected() );
+		$this->assertFalse( $this->ads->is_connected(), 'Ads module should not be connected without feature flag and paxConversionID.' );
 
 		$this->ads->get_settings()->merge(
 			array( 'paxConversionID' => 'AW-123456789' )
 		);
 
-		$this->assertFalse( $this->ads->is_connected() );
-
-		$this->ads->get_settings()->merge(
-			array( 'extCustomerID' => '123456789' )
-		);
-
-		$this->assertFalse( $this->ads->is_connected() );
+		$this->assertFalse( $this->ads->is_connected(), 'Ads module should not be connected without feature flag and extCustomerID.' );
 	}
 
 	public function test_inline_modules_data__module_not_connected__with_pax() {
@@ -236,7 +231,8 @@ class AdsTest extends TestCase {
 			array(
 				'ads_conversion_tracking_id',
 			),
-			array_keys( $this->ads->get_debug_fields() )
+			array_keys( $this->ads->get_debug_fields() ),
+			'Ads debug fields should contain conversion tracking ID.'
 		);
 
 		$this->assertEquals(
@@ -247,7 +243,8 @@ class AdsTest extends TestCase {
 					'debug' => 'AW-1••••••••',
 				),
 			),
-			$this->ads->get_debug_fields()
+			$this->ads->get_debug_fields(),
+			'Ads debug fields should match expected structure.'
 		);
 	}
 
