@@ -6,9 +6,7 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
- */
-
-// No longer need to disable assertion message checks as messages have been added
+ * */
 
 namespace Google\Site_Kit\Tests\Core\Authentication;
 

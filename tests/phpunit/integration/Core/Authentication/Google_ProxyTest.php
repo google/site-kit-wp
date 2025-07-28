@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// No longer need to disable assertion message checks as messages have been added
-
 namespace Google\Site_Kit\Tests\Core\Authentication;
 
 use Google\Site_Kit\Context;
