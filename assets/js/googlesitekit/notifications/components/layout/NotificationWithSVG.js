@@ -29,6 +29,7 @@ import {
 } from '../../../../hooks/useBreakpoint';
 import { Cell, Grid, Row } from '../../../../material-components';
 import Error from '../common/Error';
+import Typography from '../../../../components/Typography';
 
 export default function NotificationWithSVG( {
 	id,
@@ -79,9 +80,14 @@ export default function NotificationWithSVG( {
 											lgSize={ primaryCellSizes?.lg || 6 }
 											className="googlesitekit-setup-cta-banner__primary-cell"
 										>
-											<h3 className="googlesitekit-setup-cta-banner__title">
+											<Typography
+												as="h3"
+												type="headline"
+												size="small"
+												className="googlesitekit-setup-cta-banner__title"
+											>
 												{ title }
-											</h3>
+											</Typography>
 
 											{ description }
 
