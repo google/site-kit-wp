@@ -58,11 +58,11 @@ class AdSenseTest extends TestCase {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 
-		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
+		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ), 'Auth scopes should be empty before AdSense module registration.' );
 
 		$adsense->register();
 
-		$this->assertNotEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
+		$this->assertNotEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ), 'Auth scopes should not be empty after AdSense module registration.' );
 	}
 
 	public function test_register_template_redirect_amp() {
@@ -77,9 +77,9 @@ class AdSenseTest extends TestCase {
 		remove_all_filters( 'amp_post_template_data' );
 
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'wp_body_open' ) );
-		$this->assertFalse( has_filter( 'the_content' ) );
-		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+		$this->assertFalse( has_action( 'wp_body_open' ), 'WP body open action should not be hooked when module is not connected.' );
+		$this->assertFalse( has_filter( 'the_content' ), 'The content filter should not be hooked when module is not connected.' );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should not be hooked when module is not connected.' );
 
 		$adsense->get_settings()->merge(
 			array(
@@ -89,9 +89,9 @@ class AdSenseTest extends TestCase {
 		);
 
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'wp_body_open' ) );
-		$this->assertTrue( has_filter( 'the_content' ) );
-		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+		$this->assertTrue( has_action( 'wp_body_open' ), 'WP body open action should be hooked when module is connected.' );
+		$this->assertTrue( has_filter( 'the_content' ), 'The content filter should be hooked when module is connected.' );
+		$this->assertTrue( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should be hooked when module is connected.' );
 
 		// Tag not hooked when blocked.
 		remove_all_actions( 'wp_body_open' );
@@ -100,17 +100,17 @@ class AdSenseTest extends TestCase {
 		add_filter( 'googlesitekit_adsense_tag_amp_blocked', '__return_true' );
 
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'wp_body_open' ) );
-		$this->assertFalse( has_filter( 'the_content' ) );
-		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+		$this->assertFalse( has_action( 'wp_body_open' ), 'WP body open action should not be hooked when tag is blocked.' );
+		$this->assertFalse( has_filter( 'the_content' ), 'The content filter should not be hooked when tag is blocked.' );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should not be hooked when tag is blocked.' );
 
 		// Tag hooked when AMP specifically not blocked.
 		add_filter( 'googlesitekit_adsense_tag_amp_blocked', '__return_false' );
 
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'wp_body_open' ) );
-		$this->assertTrue( has_filter( 'the_content' ) );
-		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+		$this->assertTrue( has_action( 'wp_body_open' ), 'WP body open action should be hooked when AMP is not blocked.' );
+		$this->assertTrue( has_filter( 'the_content' ), 'The content filter should be hooked when AMP is not blocked.' );
+		$this->assertTrue( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should be hooked when AMP is not blocked.' );
 	}
 
 	public function test_register_template_redirect_non_amp() {
@@ -140,7 +140,7 @@ class AdSenseTest extends TestCase {
 		add_filter( 'googlesitekit_adsense_tag_blocked', '__return_true' );
 
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'wp_head' ) );
+		$this->assertFalse( has_action( 'wp_head' ), 'WP head action should not be hooked when tag is blocked.' );
 
 		// Tag hooked when only AMP blocked.
 		remove_all_actions( 'wp_head' );
@@ -148,7 +148,7 @@ class AdSenseTest extends TestCase {
 		add_filter( 'googlesitekit_adsense_tag_amp_blocked', '__return_true' );
 
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'wp_head' ) );
+		$this->assertTrue( has_action( 'wp_head' ), 'WP head action should be hooked when only AMP is blocked.' );
 	}
 
 	public function test_register__reset_analytics_adsense_link_settings() {
@@ -181,8 +181,8 @@ class AdSenseTest extends TestCase {
 
 		$analytics_settings = $analytics->get_settings()->get();
 
-		$this->assertFalse( $analytics_settings['adSenseLinked'] );
-		$this->assertEquals( $analytics_settings['adSenseLinkedLastSyncedAt'], 0 );
+		$this->assertFalse( $analytics_settings['adSenseLinked'], 'AdSense linked setting should be reset when AdSense account ID changes.' );
+		$this->assertEquals( $analytics_settings['adSenseLinkedLastSyncedAt'], 0, 'AdSense linked last synced timestamp should be reset when AdSense account ID changes.' );
 	}
 
 	public function test_register__if_analytics_is_active_sync_adsense_link_settings() {
@@ -206,7 +206,8 @@ class AdSenseTest extends TestCase {
 
 		$this->assertEquals(
 			did_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED ),
-			1
+			1,
+			'AdSense linked synchronization cron action should be triggered once.'
 		);
 	}
 
@@ -235,9 +236,9 @@ class AdSenseTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_head' );
 
-		$this->assertStringContainsString( 'Google AdSense snippet added by Site Kit', $output );
+		$this->assertStringContainsString( 'Google AdSense snippet added by Site Kit', $output, 'Output should contain the Google AdSense snippet.' );
 
-		$this->assertStringContainsString( 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-12345678&amp;host=ca-host-pub-2644536267352236', $output );
+		$this->assertStringContainsString( 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-12345678&amp;host=ca-host-pub-2644536267352236', $output, 'Output should contain the correct AdSense script URL with client ID.' );
 
 		if ( $enabled ) {
 			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
@@ -258,11 +259,11 @@ class AdSenseTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_head' );
 
-		$this->assertStringContainsString( 'google-adsense-platform-account', $output );
-		$this->assertStringContainsString( 'ca-host-pub-2644536267352236', $output );
+		$this->assertStringContainsString( 'google-adsense-platform-account', $output, 'Output should contain AdSense platform account meta tag.' );
+		$this->assertStringContainsString( 'ca-host-pub-2644536267352236', $output, 'Output should contain the correct AdSense host ID.' );
 
-		$this->assertStringContainsString( 'google-adsense-platform-domain', $output );
-		$this->assertStringContainsString( 'sitekit.withgoogle.com', $output );
+		$this->assertStringContainsString( 'google-adsense-platform-domain', $output, 'Output should contain AdSense platform domain meta tag.' );
+		$this->assertStringContainsString( 'sitekit.withgoogle.com', $output, 'Output should contain the correct AdSense domain.' );
 	}
 
 	/**
