@@ -44,6 +44,7 @@ import {
 } from '../../datastore/constants';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import SupportLink from '../../../../components/SupportLink';
+import Typography from '../../../../components/Typography';
 
 export default function PublicationCreate( { onCompleteSetup } ) {
 	const publications = useSelect( ( select ) =>
@@ -82,12 +83,17 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 		<div className="googlesitekit-setup-module__publication-create-screen">
 			{ ! hasPublication && (
 				<Fragment>
-					<h3 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+					<Typography
+						as="h3"
+						type="headline"
+						size="small"
+						className="googlesitekit-setup-module__title"
+					>
 						{ __(
 							'To complete your Reader Revenue Manager account setup you will need to create a publication and set up Reader Revenue Manager in Publisher Center.',
 							'google-site-kit'
 						) }
-					</h3>
+					</Typography>
 					<p className="googlesitekit-setup-module__description">
 						{ createInterpolateElement(
 							__(
@@ -124,12 +130,17 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 			) }
 			{ hasPublication && (
 				<Fragment>
-					<h3 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+					<Typography
+						as="h3"
+						type="headline"
+						size="small"
+						className="googlesitekit-setup-module__title"
+					>
 						{ __(
 							'You have successfully created your publication and it is now awaiting review. This might take up to 2 weeks.',
 							'google-site-kit'
 						) }
-					</h3>
+					</Typography>
 					<div className="googlesitekit-setup-module__action">
 						<SpinnerButton onClick={ handleCompleteSetupClick }>
 							{ __( 'Complete setup', 'google-site-kit' ) }
