@@ -197,6 +197,7 @@ describe( 'User Input Settings', () => {
 
 		waitForFetchRequests = createEnhancedWaitForFetchRequests( {
 			debug: true,
+			useAbortController: false,
 		} );
 	} );
 
