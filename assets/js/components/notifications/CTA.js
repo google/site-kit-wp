@@ -66,7 +66,14 @@ function CTA( {
 			) }
 			<div className="googlesitekit-cta__body">
 				{ title && (
-					<h3 className="googlesitekit-cta__title">{ title }</h3>
+					<Typography
+						as="h3"
+						size="medium"
+						type="body"
+						className="googlesitekit-cta__title"
+					>
+						{ title }
+					</Typography>
 				) }
 				{ description && typeof description === 'string' && (
 					<p className="googlesitekit-cta__description">
