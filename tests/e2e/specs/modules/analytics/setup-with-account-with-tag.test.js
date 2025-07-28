@@ -7,7 +7,7 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
-	createWaitForFetchRequestsWithDebounce,
+	createEnhancedWaitForFetchRequests,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setAnalyticsExistingPropertyID,
@@ -163,7 +163,9 @@ describe( 'setting up the Analytics module with an existing account and existing
 			'.googlesitekit-settings-connect-module--analytics-4'
 		);
 
-		waitForFetchRequests = createWaitForFetchRequestsWithDebounce();
+		waitForFetchRequests = createEnhancedWaitForFetchRequests( {
+			debug: true,
+		} );
 	} );
 
 	afterEach( async () => {

@@ -23,6 +23,7 @@ export {
 	createWaitForFetchRequests,
 	createWaitForFetchRequestsWithDebounce,
 } from './create-wait-for-fetch-requests';
+export { createEnhancedWaitForFetchRequests } from './create-enhanced-wait-for-fetch-requests';
 export { deactivateUtilityPlugins } from './deactivate-utility-plugins';
 export { evalWithWPData } from './eval-with-wp-data';
 export { fetchPageContent } from './fetch-page-content';
