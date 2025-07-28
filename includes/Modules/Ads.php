@@ -36,6 +36,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Core\Util\Plugin_Status;
+use Google\Site_Kit\Modules\Ads\Enhanced_Conversions;
 use Google\Site_Kit\Modules\Ads\PAX_Config;
 use Google\Site_Kit\Modules\Ads\Settings;
 use Google\Site_Kit\Modules\Ads\Has_Tag_Guard;
@@ -48,7 +49,6 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Ads\AMP_Tag;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
-use Google\Site_Kit\Modules\Ads\Enhanced_Conversions;
 use Google\Site_Kit\Core\Modules\Module_With_Inline_Data;
 use Google\Site_Kit\Core\Modules\Module_With_Inline_Data_Trait;
 
