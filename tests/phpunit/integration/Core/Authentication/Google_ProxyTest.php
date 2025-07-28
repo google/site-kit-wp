@@ -146,7 +146,8 @@ class Google_ProxyTest extends TestCase {
 				'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
 				'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
 			),
-			$this->google_proxy->get_site_fields()
+			$this->google_proxy->get_site_fields(),
+			'Site fields should contain all required site information.'
 		);
 	}
 
@@ -207,7 +208,7 @@ class Google_ProxyTest extends TestCase {
 		$success_response_data = $this->google_proxy->are_site_fields_synced( $credentials );
 
 		// Ensure matching response array returns true.
-		$this->assertEquals( $success_response_data, true, 'Matching response array should return true.' ); // PHPCS: line 342
+		$this->assertEquals( $success_response_data, true, 'Matching response array should return true.' );
 
 		// Mock non matching response.
 		$mock_non_matching_response = array( 'incorrect', 'keys' );
@@ -216,7 +217,7 @@ class Google_ProxyTest extends TestCase {
 		$failure_response_data = $this->google_proxy->are_site_fields_synced( $credentials );
 
 		// Ensure non-matching response array returns false.
-		$this->assertEquals( $failure_response_data, false, 'Non-matching response array should return false.' ); // PHPCS: line 343
+		$this->assertEquals( $failure_response_data, false, 'Non-matching response array should return false.' );
 	}
 
 	/**
@@ -224,12 +225,12 @@ class Google_ProxyTest extends TestCase {
 	 */
 	public function test_url_handles_staging() {
 		$url = $this->google_proxy->url();
-		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL, 'URL should be production base URL by default.' ); // PHPCS: line 353
+		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL, 'URL should be production base URL by default.' );
 
 		define( 'GOOGLESITEKIT_PROXY_URL', Google_Proxy::STAGING_BASE_URL );
 
 		$url = $this->google_proxy->url();
-		$this->assertEquals( $url, Google_Proxy::STAGING_BASE_URL, 'URL should be staging base URL when constant is set.' ); // PHPCS: line 371
+		$this->assertEquals( $url, Google_Proxy::STAGING_BASE_URL, 'URL should be staging base URL when constant is set.' );
 	}
 
 	/**
@@ -240,7 +241,7 @@ class Google_ProxyTest extends TestCase {
 
 		$url = $this->google_proxy->url();
 
-		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL, 'URL should be production base URL for invalid constant.' ); // PHPCS: line 372
+		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL, 'URL should be production base URL for invalid constant.' );
 	}
 
 	/**
@@ -250,7 +251,7 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals(
 			$expected,
 			$this->google_proxy->sanitize_base_url( $input ),
-			'Sanitized base URL should match expected.' // PHPCS: line 404
+			'Sanitized base URL should match expected.'
 		);
 	}
 
@@ -297,7 +298,8 @@ class Google_ProxyTest extends TestCase {
 			array(
 				'user_roles' => 'editor',
 			),
-			$this->google_proxy->get_user_fields()
+			$this->google_proxy->get_user_fields(),
+			'User fields should contain editor role for single role user.'
 		);
 
 		// WordPress technically allows for multiple roles, and some plugins
@@ -308,7 +310,8 @@ class Google_ProxyTest extends TestCase {
 			array(
 				'user_roles' => 'editor,shop_vendor',
 			),
-			$this->google_proxy->get_user_fields()
+			$this->google_proxy->get_user_fields(),
+			'User fields should contain multiple roles when user has multiple roles.'
 		);
 	}
 
@@ -324,7 +327,8 @@ class Google_ProxyTest extends TestCase {
 			array(
 				'user_roles' => 'administrator,network_administrator',
 			),
-			$this->google_proxy->get_user_fields()
+			$this->google_proxy->get_user_fields(),
+			'User fields should contain administrator and network_administrator roles for super admin.'
 		);
 	}
 
@@ -338,10 +342,10 @@ class Google_ProxyTest extends TestCase {
 		$response_data = $this->google_proxy->unregister_site( $credentials );
 
 		// Ensure the request was made with the proper URL and body parameters.
-		$this->assertEquals( $expected_url, $this->request_url, 'Unregister site request URL should match expected.' ); // PHPCS: line 550
-		$this->assertEquals( 'POST', $this->request_args['method'], 'Unregister site request method should be POST.' ); // PHPCS: line 551
-		$this->assertArrayHasKey( 'Authorization', $this->request_args['headers'], 'Unregister site request should have Authorization header.' ); // PHPCS: line 553
-		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Unregister site Authorization header should match access token.' ); // PHPCS: line 554
+		$this->assertEquals( $expected_url, $this->request_url, 'Unregister site request URL should match expected.' );
+		$this->assertEquals( 'POST', $this->request_args['method'], 'Unregister site request method should be POST.' );
+		$this->assertArrayHasKey( 'Authorization', $this->request_args['headers'], 'Unregister site request should have Authorization header.' );
+		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Unregister site Authorization header should match access token.' );
 
 		// Ensure success response data is correct.
 		$this->assertEquals( $expected_success_response, $response_data, 'Unregister site should return expected success response data.' );
@@ -362,10 +366,10 @@ class Google_ProxyTest extends TestCase {
 		$this->google_proxy->register_site();
 
 		// Ensure the request was made with the proper URL and body parameters.
-		$this->assertEquals( $expected_url, $this->request_url, 'Register site request URL should match expected.' ); // PHPCS: line 591
-		$this->assertEquals( 'POST', $this->request_args['method'], 'Register site request method should be POST.' ); // PHPCS: line 592
-		$this->assertArrayHasKey( 'Authorization', $this->request_args['headers'], 'Register site request should have Authorization header.' ); // PHPCS: line 594
-		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Register site Authorization header should match access token.' ); // PHPCS: line 595
+		$this->assertEquals( $expected_url, $this->request_url, 'Register site request URL should match expected.' );
+		$this->assertEquals( 'POST', $this->request_args['method'], 'Register site request method should be POST.' );
+		$this->assertArrayHasKey( 'Authorization', $this->request_args['headers'], 'Register site request should have Authorization header.' );
+		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Register site Authorization header should match access token.' );
 	}
 
 	public function test_sync_site_fields() {
@@ -470,20 +474,20 @@ class Google_ProxyTest extends TestCase {
 		$meta_key = ( new User_Options( $context ) )->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
 
 		// Test there are no connected users to begin with.
-		$this->assertEquals( 0, $this->google_proxy->count_connected_users(), 'Should be zero connected users initially.' ); // PHPCS: line 405
+		$this->assertEquals( 0, $this->google_proxy->count_connected_users(), 'Should be zero connected users initially.' );
 
 		// Create and connect an administrator.
 		$administrator_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		update_user_meta( $administrator_id, $meta_key, 'test-access-token' );
-		$this->assertEquals( 1, $this->google_proxy->count_connected_users(), 'Should be one connected user after connecting admin.' ); // PHPCS: line 467
+		$this->assertEquals( 1, $this->google_proxy->count_connected_users(), 'Should be one connected user after connecting admin.' );
 
 		// Create another administrator who is not connected.
 		$administrator_2_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$this->assertEquals( 1, $this->google_proxy->count_connected_users(), 'Should still be one connected user after adding unconnected admin.' ); // PHPCS: line 468
+		$this->assertEquals( 1, $this->google_proxy->count_connected_users(), 'Should still be one connected user after adding unconnected admin.' );
 
 		// Connect administrator_2.
 		update_user_meta( $administrator_2_id, $meta_key, 'test-access-token' );
-		$this->assertEquals( 2, $this->google_proxy->count_connected_users(), 'Should be two connected users after connecting second admin.' ); // PHPCS: line 493
+		$this->assertEquals( 2, $this->google_proxy->count_connected_users(), 'Should be two connected users after connecting second admin.' );
 	}
 
 	/**
@@ -497,7 +501,7 @@ class Google_ProxyTest extends TestCase {
 	 * @group ms-required
 	 */
 	public function test_get_platform__multiste() {
-		$this->assertEquals( 'wordpress-multisite', Google_Proxy::get_platform(), 'Platform should be wordpress-multisite for multisite.' ); // PHPCS: line 502
+		$this->assertEquals( 'wordpress-multisite', Google_Proxy::get_platform(), 'Platform should be wordpress-multisite for multisite.' );
 	}
 
 	public function test_send_survey_trigger() {
@@ -527,11 +531,11 @@ class Google_ProxyTest extends TestCase {
 		$trigger_id   = '1234';
 		$response     = $this->google_proxy->send_survey_trigger( $credentials, $access_token, $trigger_id );
 
-		$this->assertEquals( $expected_url, $this->request_url, 'Survey trigger request URL should match expected.' ); // PHPCS: line 506
+		$this->assertEquals( $expected_url, $this->request_url, 'Survey trigger request URL should match expected.' );
 		$this->assertEquals( 'POST', $this->request_args['method'], 'Survey trigger request method should be POST.' );
 
 		$this->assertArrayHasKey( 'Authorization', $this->request_args['headers'], 'Survey trigger request should have Authorization header.' );
-		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Survey trigger Authorization header should match access token.' ); // PHPCS: line 513
+		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Survey trigger Authorization header should match access token.' );
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -542,7 +546,8 @@ class Google_ProxyTest extends TestCase {
 					'language'   => 'en_US',
 				),
 			),
-			json_decode( $this->request_args['body'], true )
+			json_decode( $this->request_args['body'], true ),
+			'Survey trigger request body should contain site credentials and trigger context.'
 		);
 
 		$this->assertEqualSetsWithIndex( $expected_success_response, $response, 'Survey trigger should return expected response data.' );
@@ -568,7 +573,7 @@ class Google_ProxyTest extends TestCase {
 
 		$response = $this->google_proxy->send_survey_event( $credentials, $access_token, $session, $event );
 
-		$this->assertEquals( $expected_url, $this->request_url, 'Survey event request URL should match expected.' ); // PHPCS: line 520
+		$this->assertEquals( $expected_url, $this->request_url, 'Survey event request URL should match expected.' );
 		$this->assertEquals( 'POST', $this->request_args['method'], 'Survey event request method should be POST.' );
 
 		$this->assertArrayHasKey( 'Authorization', $this->request_args['headers'], 'Survey event request should have Authorization header.' );
