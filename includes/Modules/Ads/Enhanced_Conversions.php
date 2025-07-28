@@ -10,8 +10,6 @@
 
 namespace Google\Site_Kit\Modules\Ads;
 
-use Google\Site_Kit\Context;
-
 /**
  * Class Enhanced_Conversions.
  *
@@ -22,41 +20,11 @@ use Google\Site_Kit\Context;
 class Enhanced_Conversions {
 
 	/**
-	 * Context instance.
-	 *
-	 * @since 1.128.0
-	 * @var Context
-	 */
-	private $context;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since 1.128.0
-	 *
-	 * @param Context $context Context instance.
-	 */
-	public function __construct( Context $context ) {
-		$this->context = $context;
-	}
-
-	/**
-	 * Registers the module.
+	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since n.e.x.t
 	 */
 	public function register() {
-	}
-
-	/**
-	 * Checks if the Terms of Service for Enhanced Conversions are accepted.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return bool True if accepted, false otherwise.
-	 */
-	public function is_tos_accepted() {
-		return false;
 	}
 
 	/**
@@ -71,32 +39,10 @@ class Enhanced_Conversions {
 	}
 
 	/**
-	 * Enqueues the necessary scripts for Enhanced Conversions.
+	 * Conditionally enqueues the necessary script for Enhanced Conversions.
 	 *
 	 * @since n.e.x.t
 	 */
-	public function enqueue_gtag_user_data() {
-	}
-
-	/**
-	 * Gets the debug fields for Enhanced Conversions.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return array Debug fields.
-	 */
-	public function get_debug_fields() {
-		return array();
-	}
-
-	/**
-	 * Collects user data for Enhanced Conversions.
-	 *
-	 * This method is called to collect user data for Enhanced Conversions.
-	 * It should be implemented to gather the necessary data.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function collect_plugin_user_data() {
+	public function maybe_enqueue_gtag_user_data() {
 	}
 }

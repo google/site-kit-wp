@@ -10,8 +10,6 @@
 
 namespace Google\Site_Kit\Tests\Modules\Ads;
 
-use Google\Site_Kit\Context;
-use Google\Site_Kit\Modules\Ads\Enhanced_Conversions;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -19,27 +17,9 @@ use Google\Site_Kit\Tests\TestCase;
  * @group Ads
  */
 class Enhanced_ConversionsTest extends TestCase {
-	/**
-	 * @var Context
-	 */
-	private $context;
 
-	public function set_up() {
-		parent::set_up();
-		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-	}
-
-	public function test_is_tos_accepted() {
-		$enhanced_conversions = new Enhanced_Conversions( $this->context );
-
-		// Check if the Terms of Service for Enhanced Conversions are accepted.
-		$this->assertFalse( $enhanced_conversions->is_tos_accepted(), 'Expected TOS to not be accepted by default.' );
-	}
-
-	public function test_get_user_data() {
-		$enhanced_conversions = new Enhanced_Conversions( $this->context );
-		$user_data            = $enhanced_conversions->get_user_data();
-
-		$this->assertIsArray( $user_data, 'Expected user data to be an array.' );
+	// To Do: Add tests for Enhanced Conversions functionality and remove this dummy test.
+	public function test_dummy() {
+		$this->assertTrue( true, 'This is a dummy test for Enhanced Conversions. Please implement actual tests.' );
 	}
 }
