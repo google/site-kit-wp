@@ -8,7 +8,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+// No longer need to disable assertion message checks as messages have been added
 
 namespace Google\Site_Kit\Tests\Core\Authentication;
 
@@ -41,13 +41,13 @@ class Connected_Proxy_URLTest extends SettingsTestCase {
 		$connected_proxy_url->register();
 
 		$connected_proxy_url->set( 'https://example.com' );
-		$this->assertTrue( $connected_proxy_url->matches_url( 'https://example.com/' ) );
+		$this->assertTrue( $connected_proxy_url->matches_url( 'https://example.com/' ), 'URL should match when trailing slash is added.' );
 
 		$connected_proxy_url->set( 'https://example.com/subdirectory' );
-		$this->assertTrue( $connected_proxy_url->matches_url( 'https://example.com/subdirectory/' ) );
+		$this->assertTrue( $connected_proxy_url->matches_url( 'https://example.com/subdirectory/' ), 'URL should match when trailing slash is added to subdirectory.' );
 
 		$connected_proxy_url->set( 'https://example.com/' );
-		$this->assertTrue( $connected_proxy_url->matches_url( 'https://example.com/' ) );
+		$this->assertTrue( $connected_proxy_url->matches_url( 'https://example.com/' ), 'URL should match when both have trailing slashes.' );
 	}
 
 	/**

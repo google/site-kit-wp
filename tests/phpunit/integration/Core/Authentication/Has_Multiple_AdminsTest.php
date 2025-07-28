@@ -8,7 +8,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+// No longer need to disable assertion message checks as messages have been added
 
 namespace Google\Site_Kit\Tests\Core\Authentication;
 
@@ -42,13 +42,13 @@ class Has_Multiple_AdminsTest extends TestCase {
 		$has_multiple_admins = new Has_Multiple_Admins( $this->transients );
 
 		// Should return FALSE since we don't have multiple admins yet.
-		$this->assertFalse( $has_multiple_admins->get() );
+		$this->assertFalse( $has_multiple_admins->get(), 'Should return false when there are no admin users' );
 
 		// Create a second admin, the first one (with ID=1) we already have.
 		$this->factory()->user->create( array( 'role' => 'administrator' ) );
 
 		// Delete the transient and check that we have multiple admins now.
 		$this->transients->delete( Has_Multiple_Admins::OPTION );
-		$this->assertTrue( $has_multiple_admins->get() );
+		$this->assertTrue( $has_multiple_admins->get(), 'Should return true when there are multiple admin users' );
 	}
 }

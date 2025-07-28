@@ -8,7 +8,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+// No longer need to disable assertion message checks as messages have been added
 
 namespace Google\Site_Kit\Tests\Core\Authentication;
 
@@ -29,12 +29,12 @@ class ProfileTest extends TestCase {
 		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$profile      = new Profile( $user_options );
 
-		$this->assertFalse( $profile->get() );
+		$this->assertFalse( $profile->get(), 'Profile should not exist before being set' );
 
 		// get() is a simple wrapper for fetching the option value.
 		$user_options->set( Profile::OPTION, 'test-profile' );
 
-		$this->assertEquals( 'test-profile', $profile->get() );
+		$this->assertEquals( 'test-profile', $profile->get(), 'Profile should return the set value' );
 	}
 
 	public function test_has() {
@@ -45,13 +45,13 @@ class ProfileTest extends TestCase {
 		$profile      = new Profile( $user_options, $client );
 
 		// has() requires an array with 'email' and 'photo'
-		$this->assertFalse( $profile->has() );
+		$this->assertFalse( $profile->has(), 'Profile should not exist when not set' );
 		$user_options->set( Profile::OPTION, array() );
-		$this->assertFalse( $profile->has() );
+		$this->assertFalse( $profile->has(), 'Profile should not exist with empty array' );
 		$user_options->set( Profile::OPTION, array( 'email' => '' ) );
-		$this->assertFalse( $profile->has() );
+		$this->assertFalse( $profile->has(), 'Profile should not exist with empty email and no photo' );
 		$user_options->set( Profile::OPTION, array( 'email' => 'user@example.com' ) );
-		$this->assertFalse( $profile->has() );
+		$this->assertFalse( $profile->has(), 'Profile should not exist with email but no photo' );
 		$user_options->set(
 			Profile::OPTION,
 			array(
@@ -59,7 +59,7 @@ class ProfileTest extends TestCase {
 				'photo' => '',
 			)
 		);
-		$this->assertFalse( $profile->has() );
+		$this->assertFalse( $profile->has(), 'Profile should not exist with email but empty photo' );
 		$user_options->set(
 			Profile::OPTION,
 			array(
@@ -67,7 +67,7 @@ class ProfileTest extends TestCase {
 				'photo' => '',
 			)
 		);
-		$this->assertFalse( $profile->has() );
+		$this->assertFalse( $profile->has(), 'Profile should not exist with empty email and empty photo' );
 		$user_options->set(
 			Profile::OPTION,
 			array(
@@ -75,7 +75,7 @@ class ProfileTest extends TestCase {
 				'photo' => 'test-photo.jpg',
 			)
 		);
-		$this->assertFalse( $profile->has() );
+		$this->assertFalse( $profile->has(), 'Profile should not exist with empty email but valid photo' );
 
 		$user_options->set(
 			Profile::OPTION,
@@ -84,7 +84,7 @@ class ProfileTest extends TestCase {
 				'photo' => 'test-photo.jpg',
 			)
 		);
-		$this->assertTrue( $profile->has() );
+		$this->assertTrue( $profile->has(), 'Profile should exist with valid email and photo' );
 	}
 
 	public function test_set() {
@@ -93,7 +93,7 @@ class ProfileTest extends TestCase {
 		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$profile      = new Profile( $user_options );
 
-		$this->assertFalse( $user_options->get( Profile::OPTION ) );
+		$this->assertFalse( $user_options->get( Profile::OPTION ), 'Profile option should not exist initially' );
 
 		$profile->set(
 			array(
@@ -107,7 +107,8 @@ class ProfileTest extends TestCase {
 				'email' => 'user@example.com',
 				'photo' => 'test-photo.jpg',
 			),
-			$user_options->get( Profile::OPTION )
+			$user_options->get( Profile::OPTION ),
+			'Profile should store email and photo correctly'
 		);
 	}
 }

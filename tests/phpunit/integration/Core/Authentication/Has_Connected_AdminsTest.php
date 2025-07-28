@@ -8,7 +8,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+// No longer need to disable assertion message checks as messages have been added
 
 namespace Google\Site_Kit\Tests\Core\Authentication;
 
@@ -52,7 +52,7 @@ class Has_Connected_AdminsTest extends TestCase {
 
 		delete_option( Has_Connected_Admins::OPTION );
 		// Even though there is an admin, the user is not connected until they have an access token.
-		$this->assertFalse( $setting->get() );
+		$this->assertFalse( $setting->get(), 'Setting should be false when admin has no access token.' );
 
 		add_user_meta(
 			$user_id,
@@ -60,15 +60,15 @@ class Has_Connected_AdminsTest extends TestCase {
 			'test-access-token'
 		);
 
-		$this->assertTrue( $setting->get() );
-		$this->assertTrue( get_option( Has_Connected_Admins::OPTION ) );
+		$this->assertTrue( $setting->get(), 'Setting should be true when admin has access token.' );
+		$this->assertTrue( get_option( Has_Connected_Admins::OPTION ), 'Option should be set to true when admin has access token.' );
 	}
 
 	public function test_get_with_option_value() {
 		$setting = new Has_Connected_Admins( $this->options, $this->user_options );
 		update_option( Has_Connected_Admins::OPTION, true );
 
-		$this->assertTrue( $setting->get() );
+		$this->assertTrue( $setting->get(), 'Setting should return true when option is set to true.' );
 	}
 
 	public function test_option_is_set_when_access_token_added_and_deleted_together() {
@@ -81,16 +81,16 @@ class Has_Connected_AdminsTest extends TestCase {
 		// Adding the access token meta sets the option.
 		add_user_meta( $user_id, $meta_key, 'test-access-token' );
 		$this->assertOptionExists( Has_Connected_Admins::OPTION );
-		$this->assertTrue( $setting->get() );
+		$this->assertTrue( $setting->get(), 'Setting should be true when access token is added.' );
 
 		// Deleting an access token deletes the option as well.
 		delete_user_meta( $user_id, $meta_key );
 		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
-		$this->assertFalse( $setting->get() );
+		$this->assertFalse( $setting->get(), 'Setting should be false when access token is deleted.' );
 		// The option is now set as `false` as there are no longer any connected admins.
-		$this->assertTrue( $setting->has() );
+		$this->assertTrue( $setting->has(), 'Setting should exist after access token deletion.' );
 		$this->assertOptionExists( Has_Connected_Admins::OPTION );
-		$this->assertFalse( $setting->get() );
+		$this->assertFalse( $setting->get(), 'Setting should return false when no connected admins exist.' );
 	}
 
 	public function test_option_is_set_for_administrators_only() {
@@ -104,14 +104,14 @@ class Has_Connected_AdminsTest extends TestCase {
 		// Editors can't currently authenticate, but if they could it would not count as a connected admin.
 		add_user_meta( $editor_id, $meta_key, 'test-access-token' );
 		$this->assertOptionNotExists( Has_Connected_Admins::OPTION );
-		$this->assertFalse( $setting->get() );
+		$this->assertFalse( $setting->get(), 'Setting should be false when only editor has access token.' );
 
 		// Adding an access token for an admin will set the option to true.
 		add_user_meta( $admin_id, $meta_key, 'test-access-token' );
 		$this->assertOptionExists( Has_Connected_Admins::OPTION );
-		$this->assertTrue( $setting->get() );
+		$this->assertTrue( $setting->get(), 'Setting should be true when admin has access token.' );
 		// Even if the option is deleted, the setting will still return true.
 		delete_option( Has_Connected_Admins::OPTION );
-		$this->assertTrue( $setting->get() );
+		$this->assertTrue( $setting->get(), 'Setting should return true even when option is deleted but admin has access token.' );
 	}
 }
