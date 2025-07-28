@@ -879,7 +879,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the audience is syncing.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.158.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean)} `true` if the audience is syncing, `false` if not.
@@ -889,7 +889,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the audience sync has completed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.158.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean)} `true` if the audience sync has completed, `false` if not.

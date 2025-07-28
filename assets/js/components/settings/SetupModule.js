@@ -136,7 +136,7 @@ export default function SetupModule( { slug, name, description } ) {
 				<Link
 					onClick={ onSetup }
 					href=""
-					disabled={ ! canActivateModule }
+					disabled={ ! canActivateModule || isSaving }
 					arrow
 				>
 					{ sprintf(

@@ -21,6 +21,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
+use Google\Site_Kit\Core\Modules\Module_With_Inline_Data;
+use Google\Site_Kit\Core\Modules\Module_With_Inline_Data_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
@@ -52,12 +54,13 @@ use WP_User;
  * @access private
  * @ignore
  */
-final class Sign_In_With_Google extends Module implements Module_With_Assets, Module_With_Settings, Module_With_Deactivation, Module_With_Debug_Fields, Module_With_Tag {
+final class Sign_In_With_Google extends Module implements Module_With_Inline_Data, Module_With_Assets, Module_With_Settings, Module_With_Deactivation, Module_With_Debug_Fields, Module_With_Tag {
 
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Tag_Trait;
+	use Module_With_Inline_Data_Trait;
 
 	/**
 	 * Module slug name.
@@ -130,9 +133,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	 * @since 1.141.0 Add functionality to allow users to disconnect their own account and admins to disconnect any user.
 	 */
 	public function register() {
-		add_filter( 'wp_login_errors', array( $this, 'handle_login_errors' ) );
+		$this->register_inline_data();
 
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_module_data' ), 10 );
+		add_filter( 'wp_login_errors', array( $this, 'handle_login_errors' ) );
 
 		add_action(
 			'login_form_' . self::ACTION_AUTH,
@@ -313,7 +316,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			$assets[] = new Script(
 				'blocks-sign-in-with-google',
 				array(
-					'src'           => $this->context->url( 'dist/assets/js/blocks/sign-in-with-google/index.js' ),
+					'src'           => $this->context->url( 'dist/assets/blocks/sign-in-with-google/index.js' ),
 					'dependencies'  => array(),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
@@ -321,7 +324,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 			$assets[] = new Stylesheet(
 				'blocks-sign-in-with-google-editor-styles',
 				array(
-					'src'           => $this->context->url( 'dist/assets/js/blocks/sign-in-with-google/editor-styles.css' ),
+					'src'           => $this->context->url( 'dist/assets/blocks/sign-in-with-google/editor-styles.css' ),
 					'dependencies'  => array(),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
@@ -800,18 +803,19 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 	}
 
 	/**
-	 * Exposes inline module data to JS via _googlesitekitModulesData.
+	 * Gets required inline data for the module.
 	 *
 	 * @since 1.142.0
 	 * @since 1.146.0 Added isWooCommerceActive and isWooCommerceRegistrationEnabled to the inline data.
+	 * @since 1.158.0 Renamed method to `get_inline_data()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
-	 * @param array $modules_data Inline modules data.
-	 * @return array Inline modules data.
+	 * @return array An array of the module's inline data.
 	 */
-	protected function inline_module_data( $modules_data ) {
+	public function get_inline_data() {
 		$inline_data = array();
 
 		$existing_client_id = $this->existing_client_id->get();
+
 		if ( $existing_client_id ) {
 			$inline_data['existingClientID'] = $existing_client_id;
 		}
@@ -822,10 +826,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Assets, Mo
 		$inline_data['isWooCommerceActive']              = $is_woocommerce_active;
 		$inline_data['isWooCommerceRegistrationEnabled'] = $is_woocommerce_active && 'yes' === $woocommerce_registration_enabled;
 
-		// Add the data under the `sign-in-with-google` key to make it clear it's scoped to this module.
-		$modules_data['sign-in-with-google'] = $inline_data;
-
-		return $modules_data;
+		return array(
+			self::MODULE_SLUG => $inline_data,
+		);
 	}
 
 	/**
