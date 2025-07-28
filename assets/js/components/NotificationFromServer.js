@@ -47,7 +47,7 @@ import Link from './Link';
  * @param {Object}     props                Component props.
  * @param {string}     props.id             Notification ID/slug.
  * @param {string}     props.title          Notification title/heading.
- * @param {?ReactNode} props.content        Decsription for notification.
+ * @param {?ReactNode} props.content        Description for notification.
  * @param {string}     props.ctaLabel       Label for the call-to-action button.
  * @param {?string}    props.ctaTarget      `target` for the call-to-action link, e.g. `_blank`. Optional.
  * @param {?string}    props.ctaURL         URL for the call-to-action link.
@@ -79,9 +79,11 @@ function NotificationFromServer( {
 				description={
 					<Description
 						learnMoreLink={
-							<Link href={ learnMoreURL } external>
-								{ learnMoreLabel }
-							</Link>
+							!! learnMoreURL && !! learnMoreLabel ? (
+								<Link href={ learnMoreURL } external>
+									{ learnMoreLabel }
+								</Link>
+							) : undefined
 						}
 						text={ content }
 					/>
