@@ -29,6 +29,7 @@ import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from './SetupSuccess';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import SettingsCardVisitorGroups from './';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 
 function Template() {
 	return <SettingsCardVisitorGroups />;
@@ -54,7 +55,7 @@ export const WithSetupSuccessNotification = Template.bind( {} );
 WithSetupSuccessNotification.storyName = 'With setup success notification';
 WithSetupSuccessNotification.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_UI ).setValue( 'showSetupSuccess', true );
 	},
 };
 WithSetupSuccessNotification.scenario = {};
