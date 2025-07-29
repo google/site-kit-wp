@@ -19,7 +19,7 @@ exports[`BannerNotification should not wrap the description in a paragraph when 
             class="googlesitekit-publisher-win__title-image-wrapper"
           >
             <h3
-              class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
+              class="googlesitekit-typography googlesitekit-heading-2 googlesitekit-publisher-win__title googlesitekit-typography--headline googlesitekit-typography--small"
             >
               Hey there!
             </h3>
@@ -59,7 +59,7 @@ exports[`BannerNotification should wrap the description in a paragraph when the 
             class="googlesitekit-publisher-win__title-image-wrapper"
           >
             <h3
-              class="googlesitekit-heading-2 googlesitekit-publisher-win__title"
+              class="googlesitekit-typography googlesitekit-heading-2 googlesitekit-publisher-win__title googlesitekit-typography--headline googlesitekit-typography--small"
             >
               Hey there!
             </h3>

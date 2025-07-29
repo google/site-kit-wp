@@ -15,7 +15,7 @@ exports[`LeastEngagingPagesWidget should render correctly with the expected metr
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Least engaging pages
           </h3>
@@ -154,7 +154,7 @@ exports[`LeastEngagingPagesWidget should render the generic error variant when t
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Data loading failed
         </h3>
@@ -216,7 +216,7 @@ exports[`LeastEngagingPagesWidget should render the insufficient permissions err
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Insufficient permissions
         </h3>
@@ -267,7 +267,7 @@ exports[`LeastEngagingPagesWidget should render the loading state while resolvin
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Least engaging pages
           </h3>

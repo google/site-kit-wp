@@ -15,7 +15,7 @@ exports[`TopTrafficSourceDrivingLeadsWidget should render correctly with the exp
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Top traffic source driving leads
           </h3>
@@ -86,7 +86,7 @@ exports[`TopTrafficSourceDrivingLeadsWidget should render the generic error vari
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Data loading failed
         </h3>
@@ -148,7 +148,7 @@ exports[`TopTrafficSourceDrivingLeadsWidget should render the insufficient permi
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Insufficient permissions
         </h3>
@@ -199,7 +199,7 @@ exports[`TopTrafficSourceDrivingLeadsWidget should render the loading state whil
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Top traffic source driving leads
           </h3>
