@@ -56,8 +56,15 @@ class Web_TagTest extends TestCase {
 		$this->web_tag->set_settings( $this->siwg_settings );
 	}
 
+	public function tear_down() {
+		parent::tear_down();
+
+		unset( $_SERVER['SCRIPT_NAME'] );
+	}
+
 	public function test_render_on_wp_footer() {
 		remove_all_actions( 'wp_footer' );
+		$_SERVER['SCRIPT_NAME'] = wp_login_url();
 
 		$this->web_tag->register();
 
@@ -67,6 +74,55 @@ class Web_TagTest extends TestCase {
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
 		$this->assertStringContainsString( 'google.accounts.id.initialize', $output );
 		$this->assertStringContainsString( 'test-client-id.app.googleusercontent.com', $output );
+
+		// Renders the button with the correct clientID and redirect_uri.
+		$this->web_tag->set_settings(
+			array(
+				'clientID' => '1234567890.googleusercontent.com',
+				'text'     => Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
+				'theme'    => Settings::THEME_LIGHT['value'],
+				'shape'    => Settings::SHAPE_RECTANGULAR['value'],
+			)
+		);
+
+		// Render the button.
+		$output = $this->capture_action( 'wp_footer' );
+
+		// Check the rendered button contains the expected data.
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
+
+		$this->assertStringContainsString( "client_id:'1234567890.googleusercontent.com'", $output );
+		$this->assertStringContainsString( "fetch('http://example.org/wp-login.php?action=googlesitekit_auth'", $output );
+
+		$this->assertStringContainsString( sprintf( '"text":"%s"', Settings::TEXT_CONTINUE_WITH_GOOGLE['value'] ), $output );
+		$this->assertStringContainsString( sprintf( '"theme":"%s"', Settings::THEME_LIGHT['value'] ), $output );
+		$this->assertStringContainsString( sprintf( '"shape":"%s"', Settings::SHAPE_RECTANGULAR['value'] ), $output );
+
+		// The Sign in with Google JS should always render, even on the front
+		// page.
+		$_SERVER['SCRIPT_NAME'] = '/index.php';
+		$output                 = $this->capture_action( 'wp_footer' );
+
+		// The button shouldn't be rendered on a non-login page.
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
+
+		// Enable the Sign in with Google One Tap on all pages.
+		$this->web_tag->set_settings(
+			array(
+				'clientID'         => '1234567890.googleusercontent.com',
+				'text'             => Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
+				'theme'            => Settings::THEME_LIGHT['value'],
+				'shape'            => Settings::SHAPE_RECTANGULAR['value'],
+				'oneTapEnabled'    => true,
+				'oneTapOnAllPages' => true,
+			)
+		);
+
+		// Now the button should be rendered on a non-login page.
+		$output = $this->capture_action( 'wp_footer' );
+
+		// Check the rendered button contains the expected data.
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
 	}
 
 	public function test_render_on_login_footer() {
