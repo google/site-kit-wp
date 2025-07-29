@@ -60,12 +60,19 @@ export function createEnhancedWaitForFetchRequests( {
 			return;
 		}
 
+		// Throw if there is already a request with this ID in the map.
+		if ( activeRequests.has( requestID ) ) {
+			// eslint-disable-next-line no-console
+			console.error(
+				`Duplicate request ID detected: ${ requestID } for URL: ${ url }`
+			);
+			throw new Error( `Duplicate request ID detected: ${ requestID }` );
+		}
+
 		// Collect request to track their completion.
 		activeRequests.set( requestID, {
 			id: requestID,
 			url,
-			// Use Date.now() for performance timing measurements in E2E tests.
-			startTime: Date.now(), // eslint-disable-line
 			request: req,
 		} );
 
