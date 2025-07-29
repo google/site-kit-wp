@@ -30,6 +30,7 @@ import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import * as tracking from '../../../../../../util/tracking';
 import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from './SetupSuccess';
 import SettingsCardVisitorGroups from './';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -74,7 +75,6 @@ describe( 'SettingsCardVisitorGroups', () => {
 	} );
 
 	it( 'should render the setup success notification once groups are configured', async () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: [ 'audienceA', 'audienceB' ],
 			isAudienceSegmentationWidgetHidden: false,
@@ -83,6 +83,8 @@ describe( 'SettingsCardVisitorGroups', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAudienceSegmentationSetupCompletedBy( userID + 1 );
+
+		registry.dispatch( CORE_UI ).setValue( 'showSetupSuccess', true );
 
 		const { getByText, waitForRegistry } = render(
 			<SettingsCardVisitorGroups />,

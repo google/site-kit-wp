@@ -28,6 +28,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { Cell, Grid, Row } from '../../../../../../material-components';
 import useViewContext from '../../../../../../hooks/useViewContext';
@@ -47,6 +48,10 @@ export default function SettingsCardVisitorGroups() {
 	);
 	const audienceSegmentationSetupCompletedBy = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAudienceSegmentationSetupCompletedBy()
+	);
+
+	const showSetupSuccess = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'showSetupSuccess' )
 	);
 
 	const { setAudienceSegmentationWidgetHidden, saveUserAudienceSettings } =
@@ -97,7 +102,7 @@ export default function SettingsCardVisitorGroups() {
 							{ showSetupCTA && <SetupCTA /> }
 							{ ! showSetupCTA && (
 								<Fragment>
-									<SetupSuccess />
+									{ showSetupSuccess && <SetupSuccess /> }
 									<Switch
 										label={ __(
 											'Display visitor groups in dashboard',

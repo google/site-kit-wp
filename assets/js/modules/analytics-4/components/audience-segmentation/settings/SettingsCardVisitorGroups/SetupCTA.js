@@ -30,6 +30,7 @@ import { ProgressBar } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../../datastore/constants';
 import Link from '../../../../../../components/Link';
 import { AudienceErrorModal } from '../../dashboard';
@@ -46,9 +47,14 @@ export default function SetupCTA() {
 		setShowErrorModal( true );
 	}, [ setShowErrorModal ] );
 
+	const { setValue } = useDispatch( CORE_UI );
+
 	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
 		useEnableAudienceGroup( {
 			redirectURL: global.location.href,
+			onSuccess: () => {
+				setValue( 'showSetupSuccess', true );
+			},
 			onError,
 		} );
 

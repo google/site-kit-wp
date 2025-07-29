@@ -29,7 +29,7 @@ import { addQueryArgs } from '@wordpress/url';
 import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../../googlesitekit/widgets/default-areas';
 import { CORE_LOCATION } from '../../../../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '../../../../../../../googlesitekit/datastore/ui/constants';
 import { trackEvent } from '../../../../../../../util';
 import useViewContext from '../../../../../../../hooks/useViewContext';
 import { useDispatch, useSelect } from 'googlesitekit-data';
@@ -53,12 +53,10 @@ const SetupSuccessContent = forwardRef( ( props, ref ) => {
 	} );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const { dismissItem } = useDispatch( CORE_USER );
+	const { setValue } = useDispatch( CORE_UI );
 
 	function dismissNotificationForUser() {
-		return dismissItem(
-			SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
-		);
+		setValue( 'showSetupSuccess', false );
 	}
 
 	function handleDismiss() {
