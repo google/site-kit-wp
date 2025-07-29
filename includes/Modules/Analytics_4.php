@@ -1247,7 +1247,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				$account_ticket_request = new Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest();
 				$account_ticket_request->setSiteId( $credentials['oauth2_client_id'] );
 				$account_ticket_request->setSiteSecret( $credentials['oauth2_client_secret'] );
-				$account_ticket_request->setRedirectUri( $this->get_provisioning_redirect_uri( $show_progress ) );
+				$account_ticket_request->setShowProgress( $show_progress );
+				$account_ticket_request->setRedirectUri( $this->get_provisioning_redirect_uri() );
 				$account_ticket_request->setAccount( $account );
 
 				return $this->get_service( 'analyticsprovisioning' )
@@ -2066,12 +2067,11 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 *
 	 * @since 1.98.0
 	 *
-	 * @param boolean $show_progress Whether to show the progress bar on the service screens.
 	 * @return string Provisioning redirect URI.
 	 */
-	private function get_provisioning_redirect_uri( $show_progress ) {
+	private function get_provisioning_redirect_uri() {
 		return $this->authentication->get_google_proxy()
-			->get_site_fields( $show_progress )['analytics_redirect_uri'];
+			->get_site_fields()['analytics_redirect_uri'];
 	}
 
 	/**

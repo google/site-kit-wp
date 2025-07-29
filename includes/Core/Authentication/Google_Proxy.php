@@ -319,21 +319,16 @@ class Google_Proxy {
 	 *
 	 * @since 1.5.0
 	 *
-	 * @param boolean $show_progress Whether to show the progress bar on the service screens.
 	 * @return array Associative array of $query_arg => $value pairs.
 	 */
-	public function get_site_fields( $show_progress = false ) {
-		$analytics_redirect_uri = add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) );
-		if ( $show_progress ) {
-			$analytics_redirect_uri = add_query_arg( 'showProgress', 1, $analytics_redirect_uri );
-		}
+	public function get_site_fields() {
 		return array(
 			'name'                   => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
 			'url'                    => $this->context->get_canonical_home_url(),
 			'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
 			'action_uri'             => admin_url( 'index.php' ),
 			'return_uri'             => $this->context->admin_url( 'splash' ),
-			'analytics_redirect_uri' => $analytics_redirect_uri,
+			'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
 		);
 	}
 
