@@ -799,6 +799,8 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				// The getOwnerID() selector relies on the resolution
 				// of the getSettings() resolver.
 				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				// Preload module data.
+				resolveSelect( MODULES_ANALYTICS_4 ).getModuleData(),
 				// The isWebDataStreamAvailable property is set within the
 				// syncGoogleTagSettings() action.
 				dispatch( MODULES_ANALYTICS_4 ).syncGoogleTagSettings(),
