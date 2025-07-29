@@ -40,7 +40,6 @@ export function createEnhancedWaitForFetchRequests( {
 	networkIdleTimeout = 15000,
 } = {} ) {
 	const activeRequests = new Map();
-	let requestCounter = 0;
 	let debounceTimer;
 	let completionTimer;
 	let isListening = true;
@@ -50,10 +49,7 @@ export function createEnhancedWaitForFetchRequests( {
 			return;
 		}
 
-		// Use Date.now() for unique request IDs as this is for E2E test debugging,
-		// not user-facing functionality that requires reference date consistency.
-		// eslint-disable-next-line no-restricted-syntax
-		const requestID = `req_${ ++requestCounter }_${ Date.now() }`; // eslint-disable-line
+		const requestID = req._requestId; // eslint-disable-line sitekit/acronym-case
 		const url = req.url();
 
 		// Skip requests unless they're Site Kit WordPress API calls.
