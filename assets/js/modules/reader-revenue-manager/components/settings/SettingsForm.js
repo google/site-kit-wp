@@ -40,6 +40,7 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { getProductIDLabel } from '../../../../../../assets/js/modules/reader-revenue-manager/utils/settings';
 import Notice from '../../../../components/Notice';
 import ErrorNotice from '../../../../components/ErrorNotice';
+import Typography from '../../../../components/Typography';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const publicationID = useSelect( ( select ) =>
@@ -181,20 +182,25 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				) }
 			</div>
 			<div className="googlesitekit-settings-module__fields-group">
-				<h4 className="googlesitekit-settings-module__fields-group-title">
+				<Typography
+					as="h4"
+					size="small"
+					type="title"
+					className="googlesitekit-settings-module__fields-group-title"
+				>
 					{ __( 'CTA Placement', 'google-site-kit' ) }
-				</h4>
+				</Typography>
 				<div className="googlesitekit-rrm-settings-edit__snippet-mode">
 					<SnippetModeSelect hasModuleAccess={ hasModuleAccess } />
 				</div>
 				{ snippetMode === 'post_types' && (
 					<div className="googlesitekit-rrm-settings-edit__post-types">
-						<h5>
+						<Typography as="h5" size="small" type="label">
 							{ __(
 								'Select the content types where you want your CTAs to appear:',
 								'google-site-kit'
 							) }
-						</h5>
+						</Typography>
 						<PostTypesSelect hasModuleAccess={ hasModuleAccess } />
 					</div>
 				) }
