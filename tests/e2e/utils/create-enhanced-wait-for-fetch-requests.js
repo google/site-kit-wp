@@ -28,31 +28,22 @@
  *
  * @since n.e.x.t
  *
- * @param {Object}  options                    Configuration options.
- * @param {number}  options.timeout            Maximum time to wait for requests in milliseconds.
- * @param {number}  options.debounceTime       Time to wait after last request before resolving.
- * @param {number}  options.networkIdleTimeout Time to wait for network idle.
- * @param {boolean} options.debug              Enable debug logging.
+ * @param {Object} options                    Configuration options.
+ * @param {number} options.timeout            Maximum time to wait for requests in milliseconds.
+ * @param {number} options.debounceTime       Time to wait after last request before resolving.
+ * @param {number} options.networkIdleTimeout Time to wait for network idle.
  * @return {Function} Wait function.
  */
 export function createEnhancedWaitForFetchRequests( {
-	timeout = 60000, // 60 seconds max wait
-	debounceTime = 500, // Increased from 250ms for CI stability
-	networkIdleTimeout = 15000, // 15 seconds for network idle
-	debug = false,
+	timeout = 60000,
+	debounceTime = 500,
+	networkIdleTimeout = 15000,
 } = {} ) {
 	const activeRequests = new Map();
-	const abortControllers = new Map();
 	let requestCounter = 0;
 	let debounceTimer;
+	let completionTimer;
 	let isListening = true;
-
-	const log = ( message, ...args ) => {
-		if ( debug ) {
-			// eslint-disable-next-line no-console
-			console.debug( `[EnhancedFetchWait] ${ message }`, ...args );
-		}
-	};
 
 	const listener = ( req ) => {
 		if ( ! isListening || req.resourceType() !== 'fetch' ) {
@@ -73,9 +64,7 @@ export function createEnhancedWaitForFetchRequests( {
 			return;
 		}
 
-		log( `Tracking request ${ requestID }:`, url );
-
-		// Store request info.
+		// Collect request to track their completion.
 		activeRequests.set( requestID, {
 			id: requestID,
 			url,
@@ -90,35 +79,13 @@ export function createEnhancedWaitForFetchRequests( {
 			{ timeout }
 		)
 			.then( ( response ) => {
-				const duration =
-					Date.now() - activeRequests.get( requestID )?.startTime; // eslint-disable-line
-				log(
-					`Request ${ requestID } completed in ${ duration }ms:`,
-					response.status(),
-					url
-				);
 				activeRequests.delete( requestID );
-				abortControllers.delete( requestID );
 				return response;
 			} )
-			.catch( ( error ) => {
+			.catch( () => {
 				const requestInfo = activeRequests.get( requestID );
 				if ( requestInfo ) {
-					const duration = Date.now() - requestInfo.startTime; // eslint-disable-line
-					if ( error.message?.includes( 'Timeout' ) ) {
-						log(
-							`Request ${ requestID } timed out after ${ duration }ms:`,
-							url
-						);
-					} else {
-						log(
-							`Request ${ requestID } failed after ${ duration }ms:`,
-							error.message,
-							url
-						);
-					}
 					activeRequests.delete( requestID );
-					abortControllers.delete( requestID );
 				}
 				// Return null to avoid breaking Promise.all.
 				return null;
@@ -136,51 +103,36 @@ export function createEnhancedWaitForFetchRequests( {
 		isListening = false;
 		page.off( 'request', listener );
 
-		log(
-			`Waiting for ${ activeRequests.size } active requests to complete...`
-		);
-
 		// Strategy 1: Use page.waitForNetworkIdle() as primary mechanism.
 		try {
-			log( 'Attempting waitForNetworkIdle...' );
 			await page.waitForNetworkIdle( { timeout: networkIdleTimeout } );
-			log( 'Network idle achieved' );
 
-			// Double-check if we still have active requests
+			// If all requests are already idle, we can resolve immediately.
 			if ( activeRequests.size === 0 ) {
-				log( 'All requests completed via network idle' );
 				return;
 			}
 		} catch ( error ) {
-			log( 'Network idle timeout, falling back to request tracking' );
+			// If network idle times out, we fall back to tracking active requests.
 		}
 
 		// Strategy 2: Wait for tracked requests with debounce.
 		return new Promise( ( resolve ) => {
 			const checkCompletion = () => {
 				if ( activeRequests.size === 0 ) {
-					log( 'All tracked requests completed' );
 					resolve();
 					return;
 				}
 
-				log(
-					`Still waiting for ${ activeRequests.size } requests:`,
-					Array.from( activeRequests.values() ).map( ( r ) => r.url )
-				);
-
-				// Reset debounce timer
-				debounceTimer = setTimeout( checkCompletion, debounceTime );
+				completionTimer = setTimeout( checkCompletion, debounceTime );
 			};
 
-			// Start checking
 			checkCompletion();
 
-			// Clean up timeout when resolved
+			// Wrap the original resolve function to clear the completion timer and resolve the promise.
 			const originalResolve = resolve;
 			resolve = ( ...args ) => {
-				if ( debounceTimer ) {
-					clearTimeout( debounceTimer );
+				if ( completionTimer ) {
+					clearTimeout( completionTimer );
 				}
 				originalResolve( ...args );
 			};

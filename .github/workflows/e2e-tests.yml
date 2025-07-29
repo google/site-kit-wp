@@ -159,6 +159,26 @@ jobs:
         run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
       - name: Run the tests (10/10)
         run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (11/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (12/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (13/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (14/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (15/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (16/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (17/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (18/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (19/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
+      - name: Run the tests (20/10)
+        run: npm run test:e2e -- tests/e2e/specs/modules/analytics/setup-with-account-with-tag.test.js tests/e2e/specs/user-input-questions.test.js
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
