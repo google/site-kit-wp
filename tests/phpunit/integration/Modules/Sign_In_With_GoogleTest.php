@@ -43,6 +43,13 @@ class Sign_In_With_GoogleTest extends TestCase {
 	 */
 	private $server_data;
 
+	/**
+	 * Reset site URL.
+	 *
+	 * @var string
+	 */
+	private $reset_site_url;
+
 	public function set_up() {
 		parent::set_up();
 
@@ -56,6 +63,15 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		// Restore the original $_SERVER data.
 		$_SERVER = $this->server_data;
+
+		// Reset these values to avoid affecting other tests.
+		if ( isset( $this->reset_site_url ) ) {
+			update_option( 'home', $this->reset_site_url );
+			update_option( 'siteurl', $this->reset_site_url );
+			$this->reset_site_url = null;
+		}
+		unset( $_SERVER['HTTPS'] );
+		unset( $_SERVER['SCRIPT_NAME'] );
 	}
 
 	public function test_magic_methods() {
@@ -91,7 +107,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 	}
 
 	public function test_render_button_in_wp_login_form() {
-		$reset_site_url = site_url();
+		$this->reset_site_url = site_url();
 		update_option( 'home', 'http://example.com/' );
 		update_option( 'siteurl', 'http://example.com/' );
 
@@ -124,12 +140,6 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Render the button.
 		$output = apply_filters( 'login_form_top', '' );
 		$this->assertStringContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output );
-
-		// Reset these values to avoid affecting other tests.
-		update_option( 'home', $reset_site_url );
-		update_option( 'siteurl', $reset_site_url );
-		unset( $_SERVER['HTTPS'] );
-		unset( $_SERVER['SCRIPT_NAME'] );
 	}
 
 	public function test_handle_disconnect_user__bad_nonce() {

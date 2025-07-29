@@ -14,7 +14,7 @@ namespace Google\Site_Kit\Tests\Modules\Sign_In_With_Google;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Web_Tag;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
@@ -39,8 +39,8 @@ class Web_TagTest extends TestCase {
 	 */
 	private $siwg_settings = array(
 		'clientID'         => 'test-client-id.app.googleusercontent.com',
-		'text'             => Sign_In_With_Google_Settings::TEXT_SIGN_IN_WITH_GOOGLE['value'],
-		'theme'            => Sign_In_With_Google_Settings::THEME_LIGHT['value'],
+		'text'             => Settings::TEXT_SIGN_IN_WITH_GOOGLE['value'],
+		'theme'            => Settings::THEME_LIGHT['value'],
 		'shape'            => 'rectangular',
 		'oneTapEnabled'    => false,
 		'oneTapOnAllPages' => false,
@@ -54,12 +54,12 @@ class Web_TagTest extends TestCase {
 			'sign-in-with-google'
 		);
 		$this->web_tag->set_settings( $this->siwg_settings );
-		$this->web_tag->register();
 	}
 
 	public function test_render_on_wp_footer() {
-		// This WordPress core action fails the test with a deprecation notice so removing it temporarily.
-		remove_action( 'wp_footer', 'the_block_template_skip_link' );
+		remove_all_actions( 'wp_footer' );
+
+		$this->web_tag->register();
 
 		$output = $this->capture_action( 'wp_footer' );
 
@@ -67,12 +67,13 @@ class Web_TagTest extends TestCase {
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
 		$this->assertStringContainsString( 'google.accounts.id.initialize', $output );
 		$this->assertStringContainsString( 'test-client-id.app.googleusercontent.com', $output );
-
-		// Restore the WordPress action.
-		add_action( 'wp_footer', 'the_block_template_skip_link' );
 	}
 
 	public function test_render_on_login_footer() {
+		remove_all_actions( 'login_footer' );
+
+		$this->web_tag->register();
+
 		$output = $this->capture_action( 'login_footer' );
 
 		// Check that the Sign in with Google script is rendered.
@@ -82,6 +83,9 @@ class Web_TagTest extends TestCase {
 	}
 
 	public function test_register() {
+		remove_all_actions( 'wp_footer' );
+		remove_all_actions( 'login_footer' );
+
 		$this->web_tag->register();
 
 		// Verify that the hooks are registered.

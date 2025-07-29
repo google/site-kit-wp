@@ -56,7 +56,6 @@ class Tag_GuardTest extends TestCase {
 	public function tear_down() {
 		parent::tear_down();
 		unset( $_SERVER['HTTPS'] );
-		unset( $_SERVER['SCRIPT_NAME'] );
 	}
 
 	public function test_can_activate() {
