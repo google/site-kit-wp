@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -65,12 +66,36 @@ export default function useAdSenseNotifications() {
 				return;
 			}
 
+			/**
+			 * Adjust the notification props to match the expected
+			 * `NotificationFromServer` component props, which vary
+			 * slightly from the attributes returned from the REST API.
+			 */
+			const notificationProps = { ...notification };
+
+			// Some notifications do not include a `title` property, so supply
+			// a default.
+			if ( ! notificationProps.title ) {
+				notificationProps.title = __(
+					'Notice about your AdSense account',
+					'google-site-kit'
+				);
+			}
+
+			if (
+				! notificationProps.content?.length &&
+				!! notificationProps.description?.length
+			) {
+				notificationProps.content = notificationProps.description;
+				delete notificationProps.description;
+			}
+
 			registerNotification( notification.id, {
 				Component() {
-					return <NotificationFromServer { ...notification } />;
+					return <NotificationFromServer { ...notificationProps } />;
 				},
 				priority: notification.priority,
-				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+				areaSlug: NOTIFICATION_AREAS.HEADER,
 				isDismissible: notification.isDismissible,
 			} );
 

@@ -200,7 +200,7 @@
 	/**
 	 * Returns the price of a product formatted with decimal places if necessary.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.158.0
 	 *
 	 * @param {string} price                 The price to parse.
 	 * @param {number} [currencyMinorUnit=2] The number decimals to show in the currency.
