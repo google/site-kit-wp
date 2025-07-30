@@ -344,18 +344,24 @@ class Google_ProxyTest extends TestCase {
 		// Ensure the request was made with the proper URL and body parameters.
 		$this->assertEquals( $expected_url, $this->request_url, 'Unregister site request URL should match expected.' );
 		$this->assertEquals( 'POST', $this->request_args['method'], 'Unregister site request method should be POST.' );
-		$this->assertArrayHasKey( 'Authorization', $this->request_args['headers'], 'Unregister site request should have Authorization header.' );
-		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Unregister site Authorization header should match access token.' );
+		$this->assertEqualSetsWithIndex(
+			array(
+				'site_id'     => $site_id,
+				'site_secret' => $site_secret,
+			),
+			$this->request_args['body'],
+			'Unregister site request body should contain site ID and secret.'
+		);
 
 		// Ensure success response data is correct.
-		$this->assertEquals( $expected_success_response, $response_data, 'Unregister site should return expected success response data.' );
+		$this->assertEquals( $expected_success_response, $response_data, 'Unregister site response data should match expected.' );
 
 		$expected_error_response = array( 'error' => "invalid 'site_id' or 'site_secret'" );
 		$this->mock_http_request( $expected_url, $expected_error_response, 400 );
 
 		// Ensure error with correct message is returned for error response.
 		$error_response_data = $this->google_proxy->unregister_site( $credentials );
-		$this->assertWPErrorWithMessage( $expected_error_response['error'], $error_response_data, 'Should return WP_Error with expected error message for invalid credentials.' );
+		$this->assertWPErrorWithMessage( $expected_error_response['error'], $error_response_data, 'Error response should match expected response shape.' );
 	}
 
 	public function test_register_site() {
@@ -368,8 +374,26 @@ class Google_ProxyTest extends TestCase {
 		// Ensure the request was made with the proper URL and body parameters.
 		$this->assertEquals( $expected_url, $this->request_url, 'Register site request URL should match expected.' );
 		$this->assertEquals( 'POST', $this->request_args['method'], 'Register site request method should be POST.' );
-		$this->assertArrayHasKey( 'Authorization', $this->request_args['headers'], 'Register site request should have Authorization header.' );
-		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Register site Authorization header should match access token.' );
+		$this->assertEqualSets(
+			array(
+				'action_uri',
+				'analytics_redirect_uri',
+				'application_name',
+				'hl',
+				'mode',
+				'name',
+				'nonce',
+				'redirect_uri',
+				'return_uri',
+				'scope',
+				'service_version',
+				'supports',
+				'url',
+				'user_roles',
+			),
+			array_keys( $this->request_args['body'] ),
+			'Register site request body should contain all required parameters.'
+		);
 	}
 
 	public function test_sync_site_fields() {
