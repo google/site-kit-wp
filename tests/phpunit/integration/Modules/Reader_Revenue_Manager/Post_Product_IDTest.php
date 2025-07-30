@@ -47,13 +47,13 @@ class Post_Product_IDTest extends TestCase {
 	public function test_product_id_meta_registered() {
 		$registered = registered_meta_key_exists( 'post', 'googlesitekit_rrm_test_publication_id:productID' );
 
-		$this->assertTrue( $registered );
+		$this->assertTrue( $registered, 'Post_Product_ID meta should be registered.' );
 	}
 
 	public function test_show_in_rest() {
 		$meta_key     = 'googlesitekit_rrm_test_publication_id:productID';
 		$show_in_rest = get_registered_meta_keys( 'post' )[ $meta_key ]['show_in_rest'];
 
-		$this->assertTrue( $show_in_rest );
+		$this->assertTrue( $show_in_rest, 'Post_Product_ID meta should be available in REST API.' );
 	}
 }

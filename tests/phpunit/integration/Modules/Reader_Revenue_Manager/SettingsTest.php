@@ -68,7 +68,8 @@ class SettingsTest extends SettingsTestCase {
 				'productIDs'                        => array(),
 				'paymentOption'                     => '',
 			),
-			get_option( Settings::OPTION )
+			get_option( Settings::OPTION ),
+			'RRM Settings should match the default values.'
 		);
 	}
 
@@ -80,7 +81,8 @@ class SettingsTest extends SettingsTestCase {
 				'postTypes',
 				'paymentOption',
 			),
-			$this->settings->get_view_only_keys()
+			$this->settings->get_view_only_keys(),
+			'RRM Settings view-only keys should match expected.'
 		);
 	}
 
@@ -143,7 +145,7 @@ class SettingsTest extends SettingsTestCase {
 		$options[ $setting ] = $value;
 		$this->settings->set( $options );
 		$options = get_option( $options_key );
-		$this->assertEquals( $expected_value, $options[ $setting ] );
+		$this->assertEquals( $expected_value, $options[ $setting ], 'RRM Settings sanitization should match expected value.' );
 	}
 
 	/**

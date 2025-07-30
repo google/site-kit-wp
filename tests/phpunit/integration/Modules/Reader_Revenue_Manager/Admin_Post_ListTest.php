@@ -112,7 +112,7 @@ class Admin_Post_ListTest extends TestCase {
 		);
 		$expected = array_merge( $columns, array( 'rrm_product_id' => 'Reader Revenue CTA' ) );
 		$filtered = $this->admin_post_list->add_column( $columns );
-		$this->assertEquals( $expected, $filtered );
+		$this->assertEquals( $expected, $filtered, 'Admin_Post_List add_column should return the expected columns.' );
 	}
 
 	public function test_fill_column_none() {
@@ -123,7 +123,7 @@ class Admin_Post_ListTest extends TestCase {
 		$this->admin_post_list->fill_column( 'rrm_product_id', $post_id );
 		$output = ob_get_clean();
 
-		$this->assertStringContainsString( 'None', $output );
+		$this->assertStringContainsString( 'None', $output, 'Admin_Post_List fill_column should output "None" for none.' );
 	}
 
 	public function test_fill_column_product_id() {
@@ -134,7 +134,7 @@ class Admin_Post_ListTest extends TestCase {
 		$this->admin_post_list->fill_column( 'rrm_product_id', $post_id );
 		$output = ob_get_clean();
 
-		$this->assertStringContainsString( 'premium', $output );
+		$this->assertStringContainsString( 'premium', $output, 'Admin_Post_List fill_column should output the product name for product_id.' );
 	}
 
 	public function test_fill_column_openaccess() {
@@ -145,7 +145,7 @@ class Admin_Post_ListTest extends TestCase {
 		$this->admin_post_list->fill_column( 'rrm_product_id', $post_id );
 		$output = ob_get_clean();
 
-		$this->assertStringContainsString( 'Open access', $output );
+		$this->assertStringContainsString( 'Open access', $output, 'Admin_Post_List fill_column should output "Open access" for openaccess.' );
 	}
 
 	public function test_save_field_invalid_nonce() {
@@ -154,7 +154,7 @@ class Admin_Post_ListTest extends TestCase {
 		$_REQUEST['rrm_product_id'] = 'ABCD:basic';
 
 		$this->admin_post_list->save_field( $post_id );
-		$this->assertNotEquals( 'ABCD:basic', $this->post_product_id->get( $post_id ) );
+		$this->assertNotEquals( 'ABCD:basic', $this->post_product_id->get( $post_id ), 'Admin_Post_List save_field should not update product_id with invalid nonce.' );
 	}
 
 	public function test_save_field() {
@@ -169,6 +169,6 @@ class Admin_Post_ListTest extends TestCase {
 		$_REQUEST['rrm_product_id'] = 'ABCD:basic';
 
 		$this->admin_post_list->save_field( $post_id );
-		$this->assertEquals( 'ABCD:basic', $this->post_product_id->get( $post_id ) );
+		$this->assertEquals( 'ABCD:basic', $this->post_product_id->get( $post_id ), 'Admin_Post_List save_field should update product_id with valid nonce.' );
 	}
 }

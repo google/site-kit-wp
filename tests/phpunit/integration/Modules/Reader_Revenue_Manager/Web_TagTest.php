@@ -46,7 +46,7 @@ class Web_TagTest extends TestCase {
 		$footer_html = $this->capture_action( 'wp_footer' );
 
 		foreach ( self::EXPECTED_SNIPPET_STRINGS as $snippet_string ) {
-			$this->assertStringContainsString( $snippet_string, $footer_html );
+			$this->assertStringContainsString( $snippet_string, $footer_html, 'Footer HTML should contain expected Reader Revenue Manager snippet: ' . $snippet_string );
 		}
 	}
 }
