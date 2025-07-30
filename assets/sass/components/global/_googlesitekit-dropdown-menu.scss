@@ -29,6 +29,15 @@
 		text-decoration: none;
 	}
 
+	.mdc-list-item {
+		&:hover {
+			&::before {
+				background-color: $c-interactive-tertiary-hover;
+				opacity: 1;
+			}
+		}
+	}
+
 	&.googlesitekit-dropdown-menu__icon-menu {
 
 		.mdc-button--dropdown {
