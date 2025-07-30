@@ -64,7 +64,7 @@ export default function Description( {
 				className
 			) }
 		>
-			{ renderDescription() }
+			{ renderDescription() }{ ' ' }
 			{ learnMoreLink?.href && <LearnMoreLink { ...learnMoreLink } /> }
 			{ additionalDescription && (
 				<div className="googlesitekit-banner__additional-description">
