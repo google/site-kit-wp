@@ -25,7 +25,7 @@ import Typography from '../Typography';
 export default function SettingsGroup( { title, children } ) {
 	return (
 		<div className="googlesitekit-module-settings-group">
-			<Typography as="h4" size="large" type="title">
+			<Typography as="h4" size="medium" type="title">
 				{ title }
 			</Typography>
 			{ children }
