@@ -86,10 +86,8 @@ export const selectors = {
 				siteorigin: homeURL ? new URL( homeURL ).origin : homeURL,
 			};
 
-			const sanitizedQuery = sanitizeProvisioningParams( query );
-
 			return select( MODULES_SIGN_IN_WITH_GOOGLE ).getServiceURL( {
-				query: sanitizedQuery,
+				query: sanitizeProvisioningParams( query ),
 			} );
 		}
 	),
