@@ -131,8 +131,10 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 	const { dismissPrompt } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const isNavigatingToRecoveryPageURL = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigatingTo( recoveryPageURL )
+	const isNavigatingToRecoveryPageURL = useSelect(
+		( select ) =>
+			recoveryPageURL &&
+			select( CORE_LOCATION ).isNavigatingTo( recoveryPageURL )
 	);
 
 	const referenceDateInMilliseconds = stringToDate( referenceDate ).getTime();
