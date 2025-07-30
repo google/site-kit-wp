@@ -55,7 +55,7 @@ class Tag_GuardTest extends TestCase {
 		$_SERVER['HTTPS'] = 'on';
 		update_option( 'siteurl', 'https://example.com/' );
 		update_option( 'home', 'https://example.com/' );
-		$this->settings->set( array( 'clientID' => '1234567890.apps.googleusercontent.com' ) );
+		$this->settings->merge( array( 'clientID' => '1234567890.apps.googleusercontent.com' ) );
 
 		$this->assertTrue( $this->guard->can_activate() );
 	}
@@ -65,7 +65,7 @@ class Tag_GuardTest extends TestCase {
 		unset( $_SERVER['HTTPS'] );
 		update_option( 'siteurl', 'http://example.com/' );
 		update_option( 'home', 'http://example.com/' );
-		$this->settings->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
+		$this->settings->merge( array( 'clientID' => '1234567890.googleusercontent.com' ) );
 
 		$this->assertFalse( $this->guard->can_activate() );
 	}
@@ -75,7 +75,7 @@ class Tag_GuardTest extends TestCase {
 		$_SERVER['HTTPS'] = 'on';
 		update_option( 'siteurl', 'https://example.com/' );
 		update_option( 'home', 'https://example.com/' );
-		$this->settings->set( array( 'clientID' => '' ) );
+		$this->settings->merge( array( 'clientID' => '' ) );
 
 		$this->assertFalse( $this->guard->can_activate() );
 	}
@@ -85,7 +85,7 @@ class Tag_GuardTest extends TestCase {
 		$_SERVER['HTTPS'] = 'on';
 		update_option( 'siteurl', 'https://example.com/' );
 		update_option( 'home', 'https://example.com/' );
-		$this->settings->set( array( 'clientID' => null ) );
+		$this->settings->merge( array( 'clientID' => null ) );
 
 		$this->assertFalse( $this->guard->can_activate() );
 	}
