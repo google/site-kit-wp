@@ -131,11 +131,11 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	}
 
 	public function test_magic_methods() {
-		$this->assertEquals( 'reader-revenue-manager', $this->reader_revenue_manager->slug );
-		$this->assertEquals( 'Reader Revenue Manager', $this->reader_revenue_manager->name );
-		$this->assertEquals( 'https://publishercenter.google.com', $this->reader_revenue_manager->homepage );
-		$this->assertEquals( 'Reader Revenue Manager helps publishers grow, retain, and engage their audiences, creating new revenue opportunities', $this->reader_revenue_manager->description );
-		$this->assertEquals( 10, $this->reader_revenue_manager->order ); // Since order is not set, it uses the default value.
+		$this->assertEquals( 'reader-revenue-manager', $this->reader_revenue_manager->slug, 'Reader Revenue Manager module slug should be correct.' );
+		$this->assertEquals( 'Reader Revenue Manager', $this->reader_revenue_manager->name, 'Reader Revenue Manager module name should be correct.' );
+		$this->assertEquals( 'https://publishercenter.google.com', $this->reader_revenue_manager->homepage, 'Reader Revenue Manager module homepage should be correct.' );
+		$this->assertEquals( 'Reader Revenue Manager helps publishers grow, retain, and engage their audiences, creating new revenue opportunities', $this->reader_revenue_manager->description, 'Reader Revenue Manager module description should be correct.' );
+		$this->assertEquals( 10, $this->reader_revenue_manager->order, 'Reader Revenue Manager module order should be correct.' ); // Since order is not set, it uses the default value.
 	}
 
 	public function test_get_scopes() {
@@ -143,13 +143,15 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			array(
 				'https://www.googleapis.com/auth/subscribewithgoogle.publications.readonly',
 			),
-			$this->reader_revenue_manager->get_scopes()
+			$this->reader_revenue_manager->get_scopes(),
+			'Reader Revenue Manager module should have correct scopes.'
 		);
 	}
 
 	public function test_service_classes_exist() {
 		$this->assertTrue(
-			class_exists( 'Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle' )
+			class_exists( 'Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle' ),
+			'SubscribewithGoogle service class should exist.'
 		);
 	}
 
@@ -159,7 +161,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'publications',
 				'sync-publication-onboarding-state',
 			),
-			$this->reader_revenue_manager->get_datapoints()
+			$this->reader_revenue_manager->get_datapoints(),
+			'Reader Revenue Manager module should have correct datapoints.'
 		);
 	}
 
@@ -202,8 +205,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$publication = $result[0];
 
-		$this->assertEquals( 'Test Property', $publication->getDisplayName() );
-		$this->assertEquals( 'ABCDEFGH', $publication->getPublicationId() );
+		$this->assertEquals( 'Test Property', $publication->getDisplayName(), 'Publication display name should be correct.' );
+		$this->assertEquals( 'ABCDEFGH', $publication->getPublicationId(), 'Publication ID should be correct.' );
 
 		$expected_filter = 'filter=' . join(
 			' OR ',
@@ -215,7 +218,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals( $expected_filter, urldecode( $filter ) );
+		$this->assertEquals( $expected_filter, urldecode( $filter ), 'URL filter should match expected format.' );
 	}
 
 	public function test_get_publications__domain() {
@@ -257,8 +260,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$publication = $result[0];
 
-		$this->assertEquals( 'Test Property', $publication->getDisplayName() );
-		$this->assertEquals( 'ABCDEFGH', $publication->getPublicationId() );
+		$this->assertEquals( 'Test Property', $publication->getDisplayName(), 'Publication display name should be correct for domain test.' );
+		$this->assertEquals( 'ABCDEFGH', $publication->getPublicationId(), 'Publication ID should be correct for domain test.' );
 
 		$expected_filter = 'filter=' . join(
 			' OR ',
@@ -270,7 +273,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals( $expected_filter, urldecode( $filter ) );
+		$this->assertEquals( $expected_filter, urldecode( $filter ), 'Domain filter should match expected format.' );
 	}
 
 	public function test_sync_publication_onboarding_state_onboarding_state_unchanged() {
@@ -311,7 +314,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 
 		$this->assertNotWPError( $result );
-		$this->assertEquals( (object) array(), $result );
+		$this->assertEquals( (object) array(), $result, 'Sync result should be empty object when onboarding state is unchanged.' );
 	}
 
 	public function test_sync_publication_onboarding_state_onboarding_state_changed() {
@@ -359,8 +362,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 
 		$this->assertNotWPError( $result );
-		$this->assertEquals( 'ONBOARDING_COMPLETE', $result->publicationOnboardingState );
-		$this->assertEquals( 'ABCDEFGH', $result->publicationID );
+		$this->assertEquals( 'ONBOARDING_COMPLETE', $result->publicationOnboardingState, 'Publication onboarding state should be updated to complete.' );
+		$this->assertEquals( 'ABCDEFGH', $result->publicationID, 'Publication ID should be correct in sync result.' );
 	}
 
 	public function test_sync_publication_onboarding_state_publication_not_found() {
@@ -401,7 +404,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 
 		$this->assertWPError( $result );
-		$this->assertEquals( 'publication_not_found', $result->get_error_code() );
+		$this->assertEquals( 'publication_not_found', $result->get_error_code(), 'Error code should indicate publication not found.' );
 	}
 
 	public function test_sync_publication_onboarding_state_no_publication_id() {
@@ -419,8 +422,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 
 		$this->assertWPError( $result );
-		$this->assertEquals( 'missing_required_param', $result->get_error_code() );
-		$this->assertEquals( 'Request parameter is empty: publicationID.', $result->get_error_message() );
+		$this->assertEquals( 'missing_required_param', $result->get_error_code(), 'Error code should indicate missing required parameter.' );
+		$this->assertEquals( 'Request parameter is empty: publicationID.', $result->get_error_message(), 'Error message should indicate missing publication ID.' );
 	}
 
 	public function test_sync_publication_onboarding_state_no_publication_onboarding_state() {
@@ -438,15 +441,15 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 
 		$this->assertWPError( $result );
-		$this->assertEquals( 'missing_required_param', $result->get_error_code() );
-		$this->assertEquals( 'Request parameter is empty: publicationOnboardingState.', $result->get_error_message() );
+		$this->assertEquals( 'missing_required_param', $result->get_error_code(), 'Error code should indicate missing required parameter for onboarding state.' );
+		$this->assertEquals( 'Request parameter is empty: publicationOnboardingState.', $result->get_error_message(), 'Error message should indicate missing publication onboarding state.' );
 	}
 
 	public function test_is_connected() {
 		$options                = new Options( $this->context );
 		$reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $options );
 
-		$this->assertFalse( $reader_revenue_manager->is_connected() );
+		$this->assertFalse( $reader_revenue_manager->is_connected(), 'Reader Revenue Manager should not be connected without publication ID.' );
 
 		$options->set(
 			Settings::OPTION,
@@ -455,7 +458,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->assertTrue( $reader_revenue_manager->is_connected() );
+		$this->assertTrue( $reader_revenue_manager->is_connected(), 'Reader Revenue Manager should be connected with publication ID.' );
 	}
 
 	public function test_on_deactivation() {
@@ -465,7 +468,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$reader_revenue_manager = new Reader_Revenue_Manager( $this->context, $options );
 		$reader_revenue_manager->on_deactivation();
 
-		$this->assertOptionNotExists( Settings::OPTION );
+		$this->assertOptionNotExists( Settings::OPTION, 'Settings option should not exist after deactivation.' );
 	}
 
 	public function data_product_ids__singular() {
