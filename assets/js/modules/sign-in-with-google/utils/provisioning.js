@@ -1,5 +1,5 @@
 /**
- * Provisioning utilities.
+ * Provisioning utilities for Sign in with Google app creation.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -22,7 +22,8 @@
 import md5 from 'md5';
 
 /**
- * Sanitizes provisioning parameters for SiwG client ID creation.
+ * Sanitizes provisioning parameters for Sign in with Google
+ * client ID creation.
  *
  * @since n.e.x.t
  *
