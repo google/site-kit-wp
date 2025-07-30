@@ -41,37 +41,24 @@ class Sign_In_With_GoogleTest extends TestCase {
 	 *
 	 * @var array
 	 */
-	private $server_data;
+	private static $server_data = array();
 
-	/**
-	 * Reset site URL.
-	 *
-	 * @var string
-	 */
-	private $reset_site_url;
+	public static function set_up_before_class() {
+		parent::set_up_before_class();
+
+		self::$server_data = $_SERVER;
+	}
 
 	public function set_up() {
 		parent::set_up();
 
-		// Store the original $_SERVER data.
-		$this->server_data = $_SERVER;
-		$this->module      = new Sign_In_With_Google( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
+		$this->module = new Sign_In_With_Google( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
 	}
 
 	public function tear_down() {
 		parent::tear_down();
 
-		// Restore the original $_SERVER data.
-		$_SERVER = $this->server_data;
-
-		// Reset these values to avoid affecting other tests.
-		if ( isset( $this->reset_site_url ) ) {
-			update_option( 'home', $this->reset_site_url );
-			update_option( 'siteurl', $this->reset_site_url );
-			$this->reset_site_url = null;
-		}
-		unset( $_SERVER['HTTPS'] );
-		unset( $_SERVER['SCRIPT_NAME'] );
+		$_SERVER = self::$server_data;
 	}
 
 	public function test_magic_methods() {
@@ -107,7 +94,6 @@ class Sign_In_With_GoogleTest extends TestCase {
 	}
 
 	public function test_render_button_in_wp_login_form() {
-		$this->reset_site_url = site_url();
 		update_option( 'home', 'http://example.com/' );
 		update_option( 'siteurl', 'http://example.com/' );
 
