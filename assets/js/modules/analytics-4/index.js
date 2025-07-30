@@ -121,10 +121,10 @@ import {
 import AudienceSegmentationSetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 } from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTABanner';
-import WebDataStreamNotAvailableNotification, {
-	WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
-} from './components/notifications/WebDataStreamNotAvailableNotification';
-import GoogleTagIDMismatchNotification from './components/notifications/GoogleTagIDMismatchNotification';
+import {
+	WebDataStreamNotAvailableNotification,
+	GoogleTagIDMismatchNotification,
+} from './components/notifications';
 import { isValidPropertyID, isValidWebDataStreamID } from './utils/validation';
 import {
 	LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
@@ -779,7 +779,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		isDismissible: true,
 		dismissRetries: 1,
 	},
-	[ WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION ]: {
+	'web-data-stream-not-available-notification': {
 		Component: WebDataStreamNotAvailableNotification,
 		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.HEADER,

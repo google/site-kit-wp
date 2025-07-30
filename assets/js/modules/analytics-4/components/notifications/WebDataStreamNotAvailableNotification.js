@@ -34,9 +34,6 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MINUTE_IN_SECONDS } from '../../../../util';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 
-export const WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION =
-	'web-data-stream-not-available-notification';
-
 export default function WebDataStreamNotAvailableNotification( {
 	id,
 	Notification,
