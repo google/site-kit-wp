@@ -322,14 +322,10 @@ export const NoDataInComparisonDateRange = Template.bind( {} );
 NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
 NoDataInComparisonDateRange.args = {
 	setupRegistry: ( registry ) => {
-		allTrafficReportOptions.forEach( ( options, index ) => {
-			if ( index === 0 ) {
-				provideReportWithIncreasedOtherDimension( registry, options );
-			} else {
-				provideAnalyticsReportWithoutDateRangeData( registry, options, {
-					emptyRowBehavior: 'remove',
-				} );
-			}
+		allTrafficReportOptions.forEach( ( options ) => {
+			provideAnalyticsReportWithoutDateRangeData( registry, options, {
+				emptyRowBehavior: 'remove',
+			} );
 		} );
 	},
 };
