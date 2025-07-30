@@ -1,5 +1,5 @@
 /**
- * Provisioning utility tests.
+ * Sign in with Google provisioning utility tests.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
