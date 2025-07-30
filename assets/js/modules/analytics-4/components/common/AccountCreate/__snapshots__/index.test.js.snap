@@ -5,6 +5,7 @@ exports[`AccountCreate renders correctly in a loading state 1`] = `
   <div
     class="mdc-linear-progress mdc-linear-progress--indeterminate"
     role="progressbar"
+    style="height: 4px;"
   >
     <div
       class="mdc-linear-progress__buffering-dots"
