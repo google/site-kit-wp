@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
@@ -101,7 +99,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$this->assertEquals(
 			$this->reader_revenue_manager->get_scopes(),
-			apply_filters( 'googlesitekit_auth_scopes', array() )
+			apply_filters( 'googlesitekit_auth_scopes', array() ),
+			'Reader Revenue Manager scopes should be properly registered and available through the auth scopes filter.'
 		);
 	}
 
@@ -115,7 +114,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		foreach ( Reader_Revenue_Manager::PRODUCT_ID_NOTIFICATIONS as $notification ) {
 			$dismissed_items->add( $notification );
 
-			$this->assertTrue( $dismissed_items->is_dismissed( $notification ) );
+			$this->assertTrue( $dismissed_items->is_dismissed( $notification ), 'Product ID notification should be dismissed after adding it to dismissed items.' );
 		}
 
 		$this->reader_revenue_manager->get_settings()->merge(
@@ -126,7 +125,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		// Verify that the product ID notification dismissals are reset.
 		foreach ( Reader_Revenue_Manager::PRODUCT_ID_NOTIFICATIONS as $notification ) {
-			$this->assertFalse( $dismissed_items->is_dismissed( $notification ) );
+			$this->assertFalse( $dismissed_items->is_dismissed( $notification ), 'Product ID notification dismissals should be reset when publication ID changes.' );
 		}
 	}
 
@@ -201,7 +200,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$result = $this->reader_revenue_manager->get_data( 'publications' );
 
 		$this->assertNotWPError( $result );
-		$this->assertContainsOnlyInstancesOf( Publication::class, $result );
+		$this->assertContainsOnlyInstancesOf( Publication::class, $result, 'Publications result should contain only Publication instances for URL-based property.' );
 
 		$publication = $result[0];
 
@@ -256,7 +255,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$result = $this->reader_revenue_manager->get_data( 'publications' );
 
 		$this->assertNotWPError( $result );
-		$this->assertContainsOnlyInstancesOf( Publication::class, $result );
+		$this->assertContainsOnlyInstancesOf( Publication::class, $result, 'Publications result should contain only Publication instances for domain-based property.' );
 
 		$publication = $result[0];
 
@@ -545,11 +544,11 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$footer_html = $this->capture_action( 'wp_footer' );
 
 		if ( $expected_product_id ) {
-			$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
-			$this->assertStringContainsString( 'https://news.google.com/swg/js/v1/swg-basic.js', $footer_html ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-			$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':' . $expected_product_id . '","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
+			$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html, 'Footer HTML should contain the Google Reader Revenue Manager snippet comment when product ID is expected.' );
+			$this->assertStringContainsString( 'https://news.google.com/swg/js/v1/swg-basic.js', $footer_html, 'Footer HTML should contain the SWG basic JavaScript URL when product ID is expected.' ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+			$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':' . $expected_product_id . '","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html, 'Footer HTML should contain the SWG basic subscriptions initialization script with correct product ID when product ID is expected.' );
 		} else {
-			$this->assertStringNotContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
+			$this->assertStringNotContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html, 'Footer HTML should not contain the Google Reader Revenue Manager snippet comment when no product ID is expected.' );
 		}
 	}
 
@@ -611,11 +610,11 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$footer_html = $this->capture_action( 'wp_footer' );
 
 		if ( $expected_product_id ) {
-			$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
-			$this->assertStringContainsString( 'https://news.google.com/swg/js/v1/swg-basic.js', $footer_html );
-			$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':' . $expected_product_id . '","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html );
+			$this->assertStringContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html, 'Footer HTML should contain the Google Reader Revenue Manager snippet comment for non-singular pages when product ID is expected.' );
+			$this->assertStringContainsString( 'https://news.google.com/swg/js/v1/swg-basic.js', $footer_html, 'Footer HTML should contain the SWG basic JavaScript URL for non-singular pages when product ID is expected.' );
+			$this->assertStringContainsString( '(self.SWG_BASIC=self.SWG_BASIC||[]).push(basicSubscriptions=>{basicSubscriptions.init({"type":"NewsArticle","isPartOfType":["Product"],"isPartOfProductId":"' . $publication_id . ':' . $expected_product_id . '","clientOptions":{"theme":"light","lang":"en-US"}});});', $footer_html, 'Footer HTML should contain the SWG basic subscriptions initialization script with correct product ID for non-singular pages when product ID is expected.' );
 		} else {
-			$this->assertStringNotContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html );
+			$this->assertStringNotContainsString( 'Google Reader Revenue Manager snippet added by Site Kit', $footer_html, 'Footer HTML should not contain the Google Reader Revenue Manager snippet comment for non-singular pages when no product ID is expected.' );
 		}
 	}
 
@@ -728,7 +727,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$access = $module->check_service_entity_access();
 
 		$this->assertNotWPError( $access );
-		$this->assertEquals( false, $access );
+		$this->assertEquals( false, $access, 'Service entity access should be false when publication is unavailable.' );
 	}
 
 	public function test_product_id_setting_registered() {
@@ -744,7 +743,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$registered = registered_meta_key_exists( 'post', 'googlesitekit_rrm_' . $publication_id . ':productID' );
 
-		$this->assertTrue( $registered );
+		$this->assertTrue( $registered, 'Product ID meta key should be registered when publication ID is set.' );
 	}
 
 	public function test_publication_id_empty_product_id_setting_not_registered() {
@@ -760,7 +759,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$registered = registered_meta_key_exists( 'post', 'googlesitekit_rrm_' . $publication_id . ':productID' );
 
-		$this->assertFalse( $registered );
+		$this->assertFalse( $registered, 'Product ID meta key should not be registered when publication ID is empty.' );
 	}
 
 	public function test_block_editor_assets_set_up() {
