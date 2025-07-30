@@ -46,8 +46,6 @@
 	}
 
 	h3,
-	h4,
-	h5,
 	h6 {
 		color: $c-surfaces-on-surface;
 		font-family: $f-secondary;
@@ -59,13 +57,6 @@
 		font-size: $fs-headline-sm;
 		font-weight: $fw-normal;
 		line-height: $lh-headline-sm;
-	}
-
-	h4,
-	.googlesitekit-heading-4 {
-		font-size: $fs-title-lg;
-		font-weight: $fw-bold;
-		line-height: $lh-title-lg;
 	}
 
 	.googlesitekit-subheading-1 {
