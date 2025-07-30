@@ -46,9 +46,21 @@ import getMultiDimensionalObjectFromParams from '../utils/get-multi-dimensional-
 
 describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
-		await page.waitForSelector( '.googlesitekit-user-input__question', {
-			timeout: 15000, // The UserInputApp needs more time to load to pass consistently.
-		} );
+		// The UserInputApp needs more time to load to pass consistently.
+		const extendedTimeout = 20000;
+
+		try {
+			await page.waitForNetworkIdle( { timeout: extendedTimeout } );
+			await page.waitForSelector( '.googlesitekit-user-input__question', {
+				timeout: extendedTimeout,
+			} );
+		} catch ( error ) {
+			if ( error.name === 'TimeoutError' ) {
+				throw new Error(
+					"Timeout caused by await page.waitForSelector( '.googlesitekit-user-input__question' )."
+				);
+			}
+		}
 
 		await step( 'select purpose', async () => {
 			await expect( page ).toClick( '#purpose-publish_blog' );
@@ -78,18 +90,26 @@ describe( 'User Input Settings', () => {
 
 		await pageWait();
 
-		await step(
-			'wait for settings submission',
-			Promise.all( [
-				expect( page ).toClick(
-					'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--complete',
-					{ text: /complete setup/i }
-				),
-				// Navigation and network idle needs more time to complete to consistently pass.
-				page.waitForNavigation( { timeout: 15000 } ),
-				page.waitForNetworkIdle( { timeout: 15000 } ),
-			] )
-		);
+		try {
+			await step(
+				'wait for settings submission',
+				Promise.all( [
+					expect( page ).toClick(
+						'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--complete',
+						{ text: /complete setup/i }
+					),
+					// Navigation and network idle needs more time to complete to consistently pass.
+					page.waitForNavigation( { timeout: extendedTimeout } ),
+					page.waitForNetworkIdle( { timeout: extendedTimeout } ),
+				] )
+			);
+		} catch ( error ) {
+			if ( error.name === 'TimeoutError' ) {
+				throw new Error(
+					"Timeout caused by expect( page ).toClick( '.googlesitekit-user-input__question .googlesitekit-user-input__buttons--complete' )."
+				);
+			}
+		}
 
 		await step(
 			'wait for a Key Metric tile to successfully appear',
