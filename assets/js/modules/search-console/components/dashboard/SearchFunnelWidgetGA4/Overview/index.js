@@ -53,7 +53,7 @@ export default function Overview( props ) {
 		selectedStats,
 		handleStatsSelection,
 		dateRangeLength,
-		error,
+		errors,
 		WidgetReportError,
 		showRecoverableAnalytics,
 	} = props;
@@ -97,7 +97,7 @@ export default function Overview( props ) {
 	const showGA4 =
 		canViewSharedAnalytics4 &&
 		ga4ModuleConnected &&
-		! error &&
+		! errors.length &&
 		! showRecoverableAnalytics;
 
 	const onGA4NewBadgeLearnMoreClick = useCallback( () => {
@@ -134,7 +134,7 @@ export default function Overview( props ) {
 
 				<OptionalCells
 					canViewSharedAnalytics4={ canViewSharedAnalytics4 }
-					error={ error }
+					errors={ errors }
 					showGA4={ showGA4 }
 					showKeyEventsCTA={ showKeyEventsCTA }
 					showRecoverableAnalytics={ showRecoverableAnalytics }
@@ -152,6 +152,6 @@ Overview.propTypes = {
 	searchConsoleData: PropTypes.arrayOf( PropTypes.object ),
 	selectedStats: PropTypes.number.isRequired,
 	handleStatsSelection: PropTypes.func.isRequired,
-	error: PropTypes.object,
+	errors: PropTypes.arrayOf( PropTypes.object ),
 	WidgetReportError: PropTypes.elementType.isRequired,
 };

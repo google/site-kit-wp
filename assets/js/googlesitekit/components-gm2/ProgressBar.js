@@ -28,7 +28,6 @@ import {
 	BREAKPOINT_XLARGE,
 	useBreakpoint,
 } from '../../hooks/useBreakpoint';
-import invariant from 'invariant';
 
 export default function ProgressBar( {
 	className,
@@ -36,36 +35,41 @@ export default function ProgressBar( {
 	compress,
 	indeterminate,
 	height,
-	smallHeight,
-	tabletHeight,
-	desktopHeight,
+	verticalSpacing,
+	mobileVerticalSpacing,
+	tabletVerticalSpacing,
+	desktopVerticalSpacing,
 	progress,
 } ) {
 	const breakpoint = useBreakpoint();
 
-	let progressBarHeight = height;
+	let progressBarVerticalSpacing = verticalSpacing;
 
-	if ( BREAKPOINT_SMALL === breakpoint && smallHeight !== undefined ) {
-		progressBarHeight = smallHeight;
+	if (
+		BREAKPOINT_SMALL === breakpoint &&
+		mobileVerticalSpacing !== undefined
+	) {
+		progressBarVerticalSpacing = mobileVerticalSpacing;
 	} else if (
 		BREAKPOINT_TABLET === breakpoint &&
-		tabletHeight !== undefined
+		tabletVerticalSpacing !== undefined
 	) {
-		progressBarHeight = tabletHeight;
+		progressBarVerticalSpacing = tabletVerticalSpacing;
 	} else if (
 		( BREAKPOINT_XLARGE === breakpoint ||
 			BREAKPOINT_DESKTOP === breakpoint ) &&
-		desktopHeight !== undefined
+		desktopVerticalSpacing !== undefined
 	) {
-		progressBarHeight = desktopHeight;
+		progressBarVerticalSpacing = desktopVerticalSpacing;
 	}
 
 	let margin;
 
-	if ( progressBarHeight !== undefined ) {
-		// 4px is the height of the progress bar. Therefore the height must be at least 4px.
-		invariant( progressBarHeight >= 4, 'height must be >= 4.' );
-		margin = Math.round( ( progressBarHeight - 4 ) / 2 );
+	if ( progressBarVerticalSpacing !== undefined ) {
+		margin =
+			progressBarVerticalSpacing === 0
+				? 0
+				: Math.round( progressBarVerticalSpacing / 2 );
 	}
 
 	const transform = progress ? `scaleX(${ progress })` : undefined;
@@ -73,7 +77,11 @@ export default function ProgressBar( {
 	return (
 		<div
 			role="progressbar"
-			style={ { marginTop: margin, marginBottom: margin } }
+			style={ {
+				marginTop: margin,
+				marginBottom: margin,
+				...( height && { height: `${ height }px` } ),
+			} }
 			className={ classnames( 'mdc-linear-progress', className, {
 				'mdc-linear-progress--indeterminate': indeterminate,
 				'mdc-linear-progress--small': small,
@@ -102,9 +110,10 @@ ProgressBar.propTypes = {
 	indeterminate: PropTypes.bool,
 	progress: PropTypes.number,
 	height: PropTypes.number,
-	smallHeight: PropTypes.number,
-	tabletHeight: PropTypes.number,
-	desktopHeight: PropTypes.number,
+	verticalSpacing: PropTypes.number,
+	mobileVerticalSpacing: PropTypes.number,
+	tabletVerticalSpacing: PropTypes.number,
+	desktopVerticalSpacing: PropTypes.number,
 };
 
 ProgressBar.defaultProps = {
@@ -113,4 +122,5 @@ ProgressBar.defaultProps = {
 	compress: false,
 	indeterminate: true,
 	progress: 0,
+	height: 4,
 };

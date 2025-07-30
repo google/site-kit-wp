@@ -27,7 +27,7 @@ import { isPlainObject, isBoolean } from 'lodash';
 /**
  * Internal dependencies
  */
-import { commonActions } from 'googlesitekit-data';
+import { commonActions, createReducer } from 'googlesitekit-data';
 import { CORE_UI } from './constants';
 
 const SET_VALUES = 'SET_VALUES';
@@ -115,31 +115,20 @@ export const actions = {
 
 export const controls = {};
 
-export const reducer = ( state, { type, payload } ) => {
+export const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_VALUES: {
-			const { values } = payload;
+		case SET_VALUES:
+			Object.assign( state, payload.values );
+			break;
 
-			return {
-				...state,
-				...values,
-			};
-		}
+		case SET_VALUE:
+			state[ payload.key ] = payload.value;
+			break;
 
-		case SET_VALUE: {
-			const { key, value } = payload;
-
-			return {
-				...state,
-				[ key ]: value,
-			};
-		}
-
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 export const resolvers = {};
 

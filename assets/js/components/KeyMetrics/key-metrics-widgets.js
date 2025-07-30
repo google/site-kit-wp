@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * WordPress dependencies
  */
@@ -81,14 +79,15 @@ import {
  *
  * @since 1.121.0
  *
- * @param {Function} select              Data store select function.
- * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
+ * @param {Object}   options                     Options object.
+ * @param {Function} options.select              Data store select function.
+ * @param {boolean}  options.isViewOnlyDashboard Whether the current dashboard is view only.
  * @return {boolean} Whether to display the widget.
  */
-function shouldDisplayWidgetWithAnalytics4AndAdSenseLinked(
+function shouldDisplayWidgetWithAnalytics4AndAdSenseLinked( {
 	select,
-	isViewOnlyDashboard
-) {
+	isViewOnlyDashboard,
+} ) {
 	if ( ! isViewOnlyDashboard ) {
 		return true;
 	}
@@ -116,14 +115,15 @@ function shouldDisplayWidgetWithAnalytics4AndAdSenseLinked(
  *
  * @since 1.113.0
  *
- * @param {Function} select              Data store select function.
- * @param {boolean}  isViewOnlyDashboard Whether the current dashboard is view only.
+ * @param {Object}   options                     Options object.
+ * @param {Function} options.select              Data store select function.
+ * @param {boolean}  options.isViewOnlyDashboard Whether the current dashboard is view only.
  * @return {boolean} Whether to display the widget.
  */
-function shouldDisplayWidgetWithCustomDimensions(
+function shouldDisplayWidgetWithCustomDimensions( {
 	select,
-	isViewOnlyDashboard
-) {
+	isViewOnlyDashboard,
+} ) {
 	if ( ! isViewOnlyDashboard ) {
 		return true;
 	}
@@ -218,7 +218,7 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		requiredCustomDimensions: [ 'googlesitekit_post_type' ],
-		displayInSelectionPanel: ( select ) =>
+		displayInSelectionPanel: ( { select } ) =>
 			select( CORE_USER ).isKeyMetricActive(
 				KM_ANALYTICS_POPULAR_PRODUCTS
 			) || select( CORE_SITE ).getProductPostType(),

@@ -126,6 +126,10 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 
 	const hideCTAButton = ! hasUserRecoverableModules;
 
+	if ( inProgress && ! hasUserRecoverableModules ) {
+		return null;
+	}
+
 	return (
 		<Notification>
 			<BannerNotification
@@ -206,14 +210,12 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 								className: classnames( {
 									'googlesitekit-banner__cta': hideCTAButton,
 								} ),
+								dismissOptions: hideCTAButton
+									? {
+											dismissExpires: DAY_IN_SECONDS,
+									  }
+									: undefined,
 						  }
-				}
-				dismissOptions={
-					hideCTAButton
-						? {
-								dismissExpires: DAY_IN_SECONDS,
-						  }
-						: undefined
 				}
 			/>
 		</Notification>

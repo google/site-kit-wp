@@ -131,14 +131,6 @@ export default function SettingsView() {
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Account Status', 'google-site-kit' ) }
-					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						{ accountStatusLabel }
-					</p>
-				</div>
-				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Site Status', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
@@ -154,6 +146,17 @@ export default function SettingsView() {
 						>
 							{ siteStatusLinkLabel }
 						</Link>
+					</p>
+				</div>
+			</div>
+
+			<div className="googlesitekit-settings-module__meta-items">
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Account Status', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ accountStatusLabel }
 					</p>
 				</div>
 			</div>
@@ -200,7 +203,7 @@ export default function SettingsView() {
 
 			{ adBlockingRecoverySetupStatus?.length > 0 && (
 				<div className="googlesitekit-settings-module__meta-items">
-					{ loading && <ProgressBar height={ 90 } small /> }
+					{ loading && <ProgressBar verticalSpacing={ 86 } small /> }
 					{ ! loading && (
 						<div className="googlesitekit-settings-module__meta-item">
 							<h5 className="googlesitekit-settings-module__meta-item-type">
@@ -257,7 +260,7 @@ export default function SettingsView() {
 
 			{ ! adBlockingRecoverySetupStatus?.length && (
 				<Fragment>
-					{ loading && <ProgressBar height={ 135 } small /> }
+					{ loading && <ProgressBar verticalSpacing={ 131 } small /> }
 					{ ! loading && <AdBlockingRecoverySetupCTANotice /> }
 				</Fragment>
 			) }

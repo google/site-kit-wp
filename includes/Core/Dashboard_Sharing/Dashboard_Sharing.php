@@ -10,10 +10,6 @@
 
 namespace Google\Site_Kit\Core\Dashboard_Sharing;
 
-use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Activity_Metrics;
-
 /**
  * Class for handling Dashboard Sharing.
  *
@@ -22,32 +18,6 @@ use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Activity_Metrics;
  * @ignore
  */
 class Dashboard_Sharing {
-
-	/**
-	 * Plugin context.
-	 *
-	 * @since 1.82.0
-	 * @var Context
-	 */
-	private $context;
-
-	/**
-	 * User_Options object.
-	 *
-	 * @since 1.82.0
-	 *
-	 * @var User_Options
-	 */
-	private $user_options = null;
-
-	/**
-	 * Activity_Metrics instance.
-	 *
-	 * @since 1.82.0
-	 * @var Activity_Metrics
-	 */
-	protected $activity_metrics;
-
 	/**
 	 * View_Only_Pointer instance.
 	 *
@@ -60,14 +30,9 @@ class Dashboard_Sharing {
 	 * Constructor.
 	 *
 	 * @since 1.82.0
-	 *
-	 * @param Context      $context      Plugin context.
-	 * @param User_Options $user_options Optional. User Option API instance. Default is a new instance.
+	 * @since 1.158.0 Remove $user_options and $context params.
 	 */
-	public function __construct( Context $context, User_Options $user_options = null ) {
-		$this->context           = $context;
-		$this->user_options      = $user_options ?: new User_Options( $this->context );
-		$this->activity_metrics  = new Activity_Metrics( $this->context, $this->user_options );
+	public function __construct() {
 		$this->view_only_pointer = new View_Only_Pointer();
 	}
 
@@ -77,7 +42,6 @@ class Dashboard_Sharing {
 	 * @since 1.82.0
 	 */
 	public function register() {
-		$this->activity_metrics->register();
 		$this->view_only_pointer->register();
 	}
 }

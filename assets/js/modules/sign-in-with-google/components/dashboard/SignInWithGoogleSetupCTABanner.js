@@ -26,6 +26,7 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import { __, _x, sprintf } from '@wordpress/i18n';
+import { useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -40,6 +41,8 @@ import BannerSVGDesktop from '@/svg/graphics/banner-sign-in-with-google-setup-ct
 import BannerSVGMobile from '@/svg/graphics/banner-sign-in-with-google-setup-cta-mobile.svg?url';
 
 export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
+	const [ isSaving, setIsSaving ] = useState( false );
+
 	const learnMoreURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
 			MODULE_SLUG_SIGN_IN_WITH_GOOGLE
@@ -54,6 +57,11 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 	const onSetupActivate = useActivateModuleCallback(
 		MODULE_SLUG_SIGN_IN_WITH_GOOGLE
 	);
+
+	const onSetupCallback = useCallback( () => {
+		setIsSaving( true );
+		onSetupActivate();
+	}, [ onSetupActivate, setIsSaving ] );
 
 	return (
 		<Notification>
@@ -96,10 +104,16 @@ export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 							'google-site-kit'
 						)
 					),
-					onClick: onSetupActivate,
+					onClick: onSetupCallback,
+					inProgress: isSaving,
+					dismissOnClick: true,
+					dismissOptions: {
+						skipHidingFromQueue: true,
+					},
 				} }
 				dismissButton={ {
 					label: __( 'Maybe later', 'google-site-kit' ),
+					disabled: isSaving,
 				} }
 				svg={ {
 					desktop: BannerSVGDesktop,

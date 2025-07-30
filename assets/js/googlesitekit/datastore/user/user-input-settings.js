@@ -37,9 +37,10 @@ import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
 const { receiveError, clearError } = errorStoreActions;
 
-function fetchStoreReducerCallback( state, inputSettings ) {
-	return { ...state, inputSettings, savedInputSettings: inputSettings };
-}
+const fetchStoreReducerCallback = createReducer( ( state, inputSettings ) => {
+	state.inputSettings = inputSettings;
+	state.savedInputSettings = inputSettings;
+} );
 
 const fetchGetUserInputSettingsStore = createFetchStore( {
 	baseName: 'getUserInputSettings',

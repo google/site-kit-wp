@@ -1,5 +1,7 @@
 /**
- * Site Kit by Google, Copyright 2023 Google LLC
+ * AdSense DashboardMainEffectComponent component.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +16,13 @@
  * limitations under the License.
  */
 
-export const LEARN_MORE_TARGET = {
-	EXTERNAL: 'external',
-	INTERNAL: 'internal',
-};
+/**
+ * Internal dependencies
+ */
+import useAdSenseNotifications from '../../../hooks/useAdSenseNotifications';
+
+export default function DashboardMainEffectComponent() {
+	useAdSenseNotifications();
+
+	return null;
+}

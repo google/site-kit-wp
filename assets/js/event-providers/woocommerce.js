@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -132,7 +132,7 @@
 		tax = null
 	) {
 		const formattedData = {
-			value,
+			value: formatPrice( value ),
 			currency,
 			items: [],
 		};
@@ -170,7 +170,7 @@
 		const mappedItem = {
 			item_id: id,
 			item_name: name,
-			price,
+			price: formatPrice( price ),
 		};
 
 		if ( quantity ) {
@@ -195,5 +195,18 @@
 		}
 
 		return mappedItem;
+	}
+
+	/**
+	 * Returns the price of a product formatted with decimal places if necessary.
+	 *
+	 * @since 1.158.0
+	 *
+	 * @param {string} price                 The price to parse.
+	 * @param {number} [currencyMinorUnit=2] The number decimals to show in the currency.
+	 * @return {number} The price of the product with decimals.
+	 */
+	function formatPrice( price, currencyMinorUnit = 2 ) {
+		return parseInt( price, 10 ) / 10 ** currencyMinorUnit;
 	}
 } )( global.jQuery );
