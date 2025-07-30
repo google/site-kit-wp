@@ -77,14 +77,11 @@ const fetchGetSurveyTimeoutsStore = createFetchStore( {
 			{ useCache: false }
 		);
 	},
-	reducerCallback( state, surveyTimeouts ) {
-		return {
-			...state,
-			surveyTimeouts: Array.isArray( surveyTimeouts )
-				? surveyTimeouts
-				: [],
-		};
-	},
+	reducerCallback: createReducer( ( state, surveyTimeouts ) => {
+		state.surveyTimeouts = Array.isArray( surveyTimeouts )
+			? surveyTimeouts
+			: [];
+	} ),
 } );
 
 const fetchGetSurveyStore = createFetchStore( {
@@ -92,18 +89,15 @@ const fetchGetSurveyStore = createFetchStore( {
 	controlCallback() {
 		return get( 'core', 'user', 'survey', {} );
 	},
-	reducerCallback: ( state, { survey } ) => {
+	reducerCallback: createReducer( ( state, { survey } ) => {
 		const {
 			survey_payload: currentSurvey = null,
 			session: currentSurveySession = null,
 		} = survey ? survey : {};
 
-		return {
-			...state,
-			currentSurvey,
-			currentSurveySession,
-		};
-	},
+		state.currentSurvey = currentSurvey;
+		state.currentSurveySession = currentSurveySession;
+	} ),
 } );
 
 const baseInitialState = {
