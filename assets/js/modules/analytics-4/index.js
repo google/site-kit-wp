@@ -123,7 +123,7 @@ import AudienceSegmentationSetupCTABanner, {
 } from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTABanner';
 import WebDataStreamNotAvailableNotification, {
 	WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
-} from '../../components/notifications/WebDataStreamNotAvailableNotification';
+} from './components/notifications/WebDataStreamNotAvailableNotification';
 import GoogleTagIDMismatchNotification from './components/notifications/GoogleTagIDMismatchNotification';
 import { isValidPropertyID, isValidWebDataStreamID } from './utils/validation';
 import {

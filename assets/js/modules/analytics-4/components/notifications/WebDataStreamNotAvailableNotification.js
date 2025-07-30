@@ -27,12 +27,12 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import BannerNotification, {
 	TYPES,
-} from '../../googlesitekit/notifications/components/layout/BannerNotification';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MINUTE_IN_SECONDS } from '../../util';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+} from '../../../../googlesitekit/notifications/components/layout/BannerNotification';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { MINUTE_IN_SECONDS } from '../../../../util';
+import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 
 export const WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION =
 	'web-data-stream-not-available-notification';
