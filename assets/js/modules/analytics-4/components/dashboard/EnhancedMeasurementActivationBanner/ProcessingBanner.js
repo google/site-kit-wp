@@ -79,7 +79,8 @@ export default function ProcessingBanner( { id, Notification, onDismiss } ) {
 					onClick: onDismiss,
 				} }
 				waitingProgress={ {
-					height: 4, // The progress bar height is set to 7px via CSS. This value removes margins within the ProgressBar component.
+					verticalSpacing: 0, // Remove vertical spacing to show the banner flush to the header.
+					height: 7,
 					indeterminate: true,
 				} }
 				helpText={ __(
