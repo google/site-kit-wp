@@ -34,7 +34,7 @@
 	}
 
 	@media (min-width: $bp-xxlarge) {
-		inset-inline-end: calc(((100vw - #{$page-content-max-width}  / 2)));
+		inset-inline-end: calc(((100vw - #{$page-content-max-width}) / 2));
 	}
 
 	@media (min-width: $bp-xxxlarge) {

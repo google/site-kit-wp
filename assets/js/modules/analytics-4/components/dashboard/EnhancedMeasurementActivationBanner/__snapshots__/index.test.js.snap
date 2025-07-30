@@ -8,7 +8,7 @@ exports[`EnhancedMeasurementActivationBanner should render the in progress step 
     <div
       class="mdc-linear-progress googlesitekit-banner__progress-bar mdc-linear-progress--indeterminate"
       role="progressbar"
-      style="margin-top: 0px; margin-bottom: 0px;"
+      style="margin-top: 0px; margin-bottom: 0px; height: 7px;"
     >
       <div
         class="mdc-linear-progress__buffering-dots"
