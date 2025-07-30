@@ -43,6 +43,7 @@ class Tag_GuardTest extends TestCase {
 
 		$this->settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 		$this->guard    = new Tag_Guard( $this->settings );
+		$this->settings->register();
 	}
 
 	public function tear_down() {

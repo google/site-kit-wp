@@ -46,6 +46,18 @@ class Web_TagTest extends TestCase {
 		'oneTapOnAllPages' => false,
 	);
 
+	/**
+	 * Initial SCRIPT_NAME.
+	 *
+	 * @var string
+	 */
+	private static $initial_script_name;
+
+	public static function set_up_before_class() {
+		parent::set_up_before_class();
+		self::$initial_script_name = $_SERVER['SCRIPT_NAME'];
+	}
+
 	public function set_up() {
 		parent::set_up();
 
@@ -59,7 +71,7 @@ class Web_TagTest extends TestCase {
 	public function tear_down() {
 		parent::tear_down();
 
-		unset( $_SERVER['SCRIPT_NAME'] );
+		$_SERVER['SCRIPT_NAME'] = self::$initial_script_name;
 	}
 
 	public function test_render_on_wp_footer() {
