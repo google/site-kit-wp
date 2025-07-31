@@ -39,7 +39,7 @@ export function createEnhancedWaitForFetchRequests( {
 	debounceTime = 500,
 	networkIdleTimeout = 15000,
 } = {} ) {
-	const activeRequests = new Map();
+	const activeRequests = new Set();
 
 	const listener = ( req ) => {
 		if ( req.resourceType() !== 'fetch' ) {
@@ -57,12 +57,8 @@ export function createEnhancedWaitForFetchRequests( {
 			return;
 		}
 
-		// Collect request to track their completion.
-		activeRequests.set( requestID, {
-			id: requestID,
-			url,
-			request: req,
-		} );
+		// Collect request ID to track completion.
+		activeRequests.add( requestID );
 
 		// Wait for response or timeout
 		page.waitForResponse(
@@ -74,12 +70,8 @@ export function createEnhancedWaitForFetchRequests( {
 				return response;
 			} )
 			.catch( () => {
-				const requestInfo = activeRequests.get( requestID );
-				if ( requestInfo ) {
-					activeRequests.delete( requestID );
-				}
-				// Return null to avoid breaking Promise.all.
-				return null;
+				// Clean up request ID on error
+				activeRequests.delete( requestID );
 			} );
 	};
 
