@@ -21,31 +21,82 @@
  * since the function was called to complete.
  *
  * @since 1.25.0
+ * @since n.e.x.t Updated to use progressive strategy for waiting for requests.
  *
+ * @param {Object} options                    Options for the wait function.
+ * @param {number} options.networkIdleTimeout Time to wait for network idle.
+ * @param {number} options.responseTimeout    Maximum time to wait for requests in milliseconds.
  * @return {Function} Wait function.
  */
-export function createWaitForFetchRequests() {
-	const responsePromises = [];
+export function createWaitForFetchRequests( {
+	networkIdleTimeout = 15000,
+	responseTimeout = 60000,
+} = {} ) {
+	const activeRequests = new Set();
 
 	const listener = ( req ) => {
-		if ( req.resourceType() === 'fetch' ) {
-			const promise = page.waitForResponse(
-				// eslint-disable-next-line sitekit/acronym-case
-				( res ) => res.request()._requestId === req._requestId
-			);
-			// A promise may be rejected if the execution context it was
-			// captured in no longer exists (e.g. previous page) which
-			// is necessary in some cases, and can be ignored since
-			// there is nothing to wait for any more.
-			responsePromises.push( promise.catch( () => {} ) );
+		if ( req.resourceType() !== 'fetch' ) {
+			return;
 		}
+
+		const requestID = req._requestId; // eslint-disable-line sitekit/acronym-case
+		const url = req.url();
+
+		// Skip requests unless they're Site Kit WordPress API calls.
+		if (
+			! url.includes( 'google-site-kit' ) &&
+			! url.includes( 'wp-json' )
+		) {
+			return;
+		}
+
+		// Collect request ID to track completion.
+		activeRequests.add( requestID );
+
+		// Wait for response or timeout
+		page.waitForResponse(
+			( res ) => res.request()._requestID === req._requestID,
+			{ timeout: responseTimeout }
+		)
+			.then( ( response ) => {
+				activeRequests.delete( requestID );
+				return response;
+			} )
+			.catch( () => {
+				// Clean up request ID on error
+				activeRequests.delete( requestID );
+			} );
 	};
 
 	page.on( 'request', listener );
 
-	return () => {
+	return async () => {
 		page.off( 'request', listener );
 
-		return Promise.all( responsePromises );
+		// Strategy 1: Use page.waitForNetworkIdle() as primary mechanism.
+		try {
+			await page.waitForNetworkIdle( { timeout: networkIdleTimeout } );
+
+			// If all requests are already idle, we can resolve immediately.
+			if ( activeRequests.size === 0 ) {
+				return;
+			}
+		} catch ( error ) {
+			// If network idle times out, we fall back to tracking active requests.
+		}
+
+		// Strategy 2: Wait for tracked requests to be resolved.
+		return new Promise( ( resolve ) => {
+			const checkCompletion = () => {
+				if ( activeRequests.size === 0 ) {
+					resolve();
+					return;
+				}
+
+				setTimeout( checkCompletion, 500 );
+			};
+
+			checkCompletion();
+		} );
 	};
 }

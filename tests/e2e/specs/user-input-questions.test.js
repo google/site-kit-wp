@@ -34,7 +34,7 @@ import {
 	step,
 	setSearchConsoleProperty,
 	setupAnalytics4,
-	createEnhancedWaitForFetchRequests,
+	createWaitForFetchRequests,
 } from '../utils';
 import {
 	STRATEGY_CARTESIAN,
@@ -199,7 +199,7 @@ describe( 'User Input Settings', () => {
 		await setSearchConsoleProperty();
 		await page.setRequestInterception( true );
 
-		waitForFetchRequests = createEnhancedWaitForFetchRequests();
+		waitForFetchRequests = createWaitForFetchRequests();
 	} );
 
 	afterEach( async () => {
