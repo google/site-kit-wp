@@ -36,7 +36,7 @@ exports[`ConnectGA4CTATileWidget should render a title when only a single Connec
               class="googlesitekit-km-connect-module-cta-tile__content"
             >
               <p
-                class="googlesitekit-km-connect-module-cta-tile__text"
+                class="googlesitekit-typography googlesitekit-km-connect-module-cta-tile__text googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 Analytics is disconnected, metric can’t be displayed
               </p>
@@ -79,7 +79,7 @@ exports[`ConnectGA4CTATileWidget should render the Connect GA4 CTA tile 1`] = `
               class="googlesitekit-km-connect-module-cta-tile__content"
             >
               <p
-                class="googlesitekit-km-connect-module-cta-tile__text"
+                class="googlesitekit-typography googlesitekit-km-connect-module-cta-tile__text googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 Analytics is disconnected, some of your metrics can’t be displayed
               </p>

@@ -25,7 +25,7 @@ exports[`GoogleTagIDMismatchNotification should render the "alternative GA4 Conf
                 class="googlesitekit-banner__content"
               >
                 <p
-                  class="googlesitekit-banner__title"
+                  class="googlesitekit-typography googlesitekit-banner__title googlesitekit-typography--body googlesitekit-typography--medium"
                 >
                   Update Site Kit's Analytics configuration to continue seeing Analytics data on the dashboard
                 </p>
@@ -100,7 +100,7 @@ exports[`GoogleTagIDMismatchNotification should render the "alternative GA4 Conf
                 class="googlesitekit-banner__content"
               >
                 <p
-                  class="googlesitekit-banner__title"
+                  class="googlesitekit-typography googlesitekit-banner__title googlesitekit-typography--body googlesitekit-typography--medium"
                 >
                   Your Google tag configuration has changed
                 </p>

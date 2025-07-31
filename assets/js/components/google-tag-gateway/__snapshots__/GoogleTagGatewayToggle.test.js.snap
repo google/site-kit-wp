@@ -52,7 +52,7 @@ exports[`GoogleTagGatewayToggle should render in default state 1`] = `
       </div>
     </div>
     <p
-      class="googlesitekit-module-settings-group__helper-text"
+      class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--medium"
     >
       Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. 
       <a
@@ -132,7 +132,7 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
       </div>
     </div>
     <p
-      class="googlesitekit-module-settings-group__helper-text"
+      class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--medium"
     >
       Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. 
       <a
@@ -167,7 +167,7 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
         class="googlesitekit-notice__content"
       >
         <p
-          class="googlesitekit-notice__title"
+          class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--body googlesitekit-typography--medium"
         >
           Your server’s current settings prevent Google tag gateway for advertisers from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. 
           <a
@@ -228,7 +228,7 @@ exports[`GoogleTagGatewayToggle should render in loading state if the server req
       </div>
     </div>
     <p
-      class="googlesitekit-module-settings-group__helper-text"
+      class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--medium"
     >
       Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. 
       <a

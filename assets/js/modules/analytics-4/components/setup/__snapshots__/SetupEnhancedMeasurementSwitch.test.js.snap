@@ -13,7 +13,7 @@ exports[`SetupEnhancedMeasurementSwitch should not render the switch when enhanc
       Enhanced measurement is enabled for this web data stream
     </div>
     <p
-      class="googlesitekit-module-settings-group__helper-text"
+      class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--medium"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
@@ -79,7 +79,7 @@ exports[`SetupEnhancedMeasurementSwitch should render with the switch defaulting
       Enable enhanced measurement
     </label>
     <p
-      class="googlesitekit-module-settings-group__helper-text"
+      class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--medium"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a

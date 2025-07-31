@@ -4,7 +4,7 @@ exports[`SetupForm should render the form correctly 1`] = `
 <div>
   <form>
     <p
-      class="googlesitekit-margin-bottom-0"
+      class="googlesitekit-typography googlesitekit-margin-bottom-0 googlesitekit-typography--body googlesitekit-typography--medium"
     >
       Select your preferred publication to connect with Site Kit
     </p>

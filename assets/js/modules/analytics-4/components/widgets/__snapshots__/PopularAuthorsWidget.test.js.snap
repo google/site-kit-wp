@@ -39,7 +39,7 @@ exports[`PopularAuthorsWidget should render correctly with the expected metrics 
                 class="googlesitekit-table__body-item"
               >
                 <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                  class="googlesitekit-typography googlesitekit-km-widget-tile__table-plain-text googlesitekit-typography--body googlesitekit-typography--medium"
                 >
                   User 2
                 </p>
@@ -59,7 +59,7 @@ exports[`PopularAuthorsWidget should render correctly with the expected metrics 
                 class="googlesitekit-table__body-item"
               >
                 <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                  class="googlesitekit-typography googlesitekit-km-widget-tile__table-plain-text googlesitekit-typography--body googlesitekit-typography--medium"
                 >
                   User 3
                 </p>
@@ -79,7 +79,7 @@ exports[`PopularAuthorsWidget should render correctly with the expected metrics 
                 class="googlesitekit-table__body-item"
               >
                 <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                  class="googlesitekit-typography googlesitekit-km-widget-tile__table-plain-text googlesitekit-typography--body googlesitekit-typography--medium"
                 >
                   User 1
                 </p>

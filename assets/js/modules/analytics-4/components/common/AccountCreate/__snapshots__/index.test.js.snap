@@ -39,7 +39,9 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
     >
       Create your Analytics account
     </h3>
-    <p>
+    <p
+      class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+    >
       We’ve pre-filled the required information for your new account. Confirm or edit any details:
     </p>
     <div
@@ -275,7 +277,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
           Enable enhanced measurement
         </label>
         <p
-          class="googlesitekit-module-settings-group__helper-text"
+          class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--medium"
         >
           This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
           <a
@@ -300,7 +302,9 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
         </p>
       </div>
     </div>
-    <p>
+    <p
+      class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+    >
       <span>
         You will be redirected to Google Analytics to accept the terms of service.
       </span>

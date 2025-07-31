@@ -38,7 +38,7 @@ exports[`TopTrafficSourceWidget renders correctly with no data in comparison dat
               Organic Search
             </div>
             <p
-              class="googlesitekit-km-widget-tile__subtext"
+              class="googlesitekit-typography googlesitekit-km-widget-tile__subtext googlesitekit-typography--body googlesitekit-typography--medium"
             >
               100% of total traffic
             </p>
@@ -97,7 +97,7 @@ exports[`TopTrafficSourceWidget should render correctly with the expected metric
               Organic Search
             </div>
             <p
-              class="googlesitekit-km-widget-tile__subtext"
+              class="googlesitekit-typography googlesitekit-km-widget-tile__subtext googlesitekit-typography--body googlesitekit-typography--medium"
             >
               100% of total traffic
             </p>
@@ -354,7 +354,7 @@ exports[`TopTrafficSourceWidget should retry both reports when an error is encou
               Organic Search
             </div>
             <p
-              class="googlesitekit-km-widget-tile__subtext"
+              class="googlesitekit-typography googlesitekit-km-widget-tile__subtext googlesitekit-typography--body googlesitekit-typography--medium"
             >
               100% of total traffic
             </p>

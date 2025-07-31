@@ -21,7 +21,7 @@ exports[`PlaceholderTile should render correctly when there are no configurable 
             Create more visitor groups
           </h3>
           <p
-            class="googlesitekit-audience-segmentation-tile-placeholder__description"
+            class="googlesitekit-typography googlesitekit-audience-segmentation-tile-placeholder__description googlesitekit-typography--body googlesitekit-typography--medium"
           >
             Learn more about how to group site visitors in 
             <a
@@ -72,7 +72,7 @@ exports[`PlaceholderTile when there are configurable non default audiences avail
             Compare your group to other groups
           </h3>
           <p
-            class="googlesitekit-audience-segmentation-tile-placeholder__description"
+            class="googlesitekit-typography googlesitekit-audience-segmentation-tile-placeholder__description googlesitekit-typography--body googlesitekit-typography--medium"
           >
             <button
               class="googlesitekit-cta-link googlesitekit-cta-link--secondary"

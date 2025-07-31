@@ -22,7 +22,9 @@ exports[`NoAudienceBannerWidget with a view-only user who's never populated thei
           <div
             class="googlesitekit-lean-cta-banner__body-content"
           >
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               You don’t have any visitor groups selected. 
               <button
                 class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
@@ -70,7 +72,9 @@ exports[`NoAudienceBannerWidget with a view-only user who's previously populated
           <div
             class="googlesitekit-lean-cta-banner__body-content"
           >
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               It looks like your visitor groups aren’t available anymore. 
               <button
                 class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
@@ -118,7 +122,9 @@ exports[`NoAudienceBannerWidget with an authenticated user who's never populated
           <div
             class="googlesitekit-lean-cta-banner__body-content"
           >
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               You don’t have any visitor groups selected. 
               <button
                 class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
@@ -131,7 +137,9 @@ exports[`NoAudienceBannerWidget with an authenticated user who's never populated
               </button>
               .
             </p>
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               You can deactivate this widget in 
               <button
                 class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
@@ -179,7 +187,9 @@ exports[`NoAudienceBannerWidget with an authenticated user who's previously popu
           <div
             class="googlesitekit-lean-cta-banner__body-content"
           >
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               It looks like your visitor groups aren’t available anymore. 
               <button
                 class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
@@ -192,7 +202,9 @@ exports[`NoAudienceBannerWidget with an authenticated user who's previously popu
               </button>
               .
             </p>
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               You can deactivate this widget in 
               <button
                 class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
