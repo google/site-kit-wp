@@ -40,17 +40,6 @@ export function createWaitForFetchRequests( {
 		}
 
 		const requestID = req._requestId; // eslint-disable-line sitekit/acronym-case
-		const url = req.url();
-
-		// Skip requests unless they're Site Kit WordPress API calls.
-		if (
-			! url.includes( 'google-site-kit' ) &&
-			! url.includes( 'wp-json' )
-		) {
-			return;
-		}
-
-		// Collect request ID to track completion.
 		activeRequests.add( requestID );
 
 		// Wait for response or timeout
