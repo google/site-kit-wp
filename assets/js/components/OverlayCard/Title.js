@@ -20,9 +20,19 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import Typography from '../Typography';
 
 export default function Title( { children } ) {
-	return <h3 className="googlesitekit-overlay-card__title">{ children }</h3>;
+	return (
+		<Typography
+			as="h3"
+			size="medium"
+			type="title"
+			className="googlesitekit-overlay-card__title"
+		>
+			{ children }
+		</Typography>
+	);
 }
 
 Title.propTypes = {

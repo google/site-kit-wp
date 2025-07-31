@@ -91,12 +91,16 @@ export default function useAdSenseNotifications() {
 			}
 
 			registerNotification( notification.id, {
-				Component() {
-					return <NotificationFromServer { ...notificationProps } />;
+				Component( { Notification } ) {
+					return (
+						<Notification>
+							<NotificationFromServer { ...notificationProps } />
+						</Notification>
+					);
 				},
 				priority: notification.priority,
 				areaSlug: NOTIFICATION_AREAS.HEADER,
-				isDismissible: notification.isDismissible,
+				isDismissible: true, // AdSense alerts are always dismissible, but these will persist only for an hour in `<NotificationFromServer>`.
 			} );
 
 			setRegisteredNotifications( ( previousRegisteredNotifications ) => {

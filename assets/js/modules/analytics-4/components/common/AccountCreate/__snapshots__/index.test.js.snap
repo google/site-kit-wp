@@ -35,7 +35,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
 <div>
   <div>
     <h3
-      class="googlesitekit-heading-4"
+      class="googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--large"
     >
       Create your Analytics account
     </h3>
