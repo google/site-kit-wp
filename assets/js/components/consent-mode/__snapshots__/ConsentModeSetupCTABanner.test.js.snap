@@ -56,10 +56,8 @@ exports[`ConsentModeSetupCTABanner should render the banner 1`] = `
                 <div
                   class="googlesitekit-notice__action"
                 >
-                  <a
+                  <button
                     class="mdc-button googlesitekit-banner__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
-                    href="http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings"
-                    role="button"
                     target="_self"
                   >
                     <span
@@ -67,7 +65,7 @@ exports[`ConsentModeSetupCTABanner should render the banner 1`] = `
                     >
                       Enable consent mode
                     </span>
-                  </a>
+                  </button>
                   <button
                     class="mdc-button mdc-button--tertiary"
                     target="_self"
