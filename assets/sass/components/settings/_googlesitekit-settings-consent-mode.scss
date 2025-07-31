@@ -101,6 +101,10 @@
 		flex-direction: column;
 		gap: 10px;
 		justify-content: center;
+
+		.googlesitekit-notice {
+			margin: 1.5em 0;
+		}
 	}
 
 	.googlesitekit-settings-consent-mode-requirement__consent-api-detected-wrapper {
