@@ -40,11 +40,9 @@ export function createEnhancedWaitForFetchRequests( {
 	networkIdleTimeout = 15000,
 } = {} ) {
 	const activeRequests = new Map();
-	let debounceTimer;
-	let isListening = true;
 
 	const listener = ( req ) => {
-		if ( ! isListening || req.resourceType() !== 'fetch' ) {
+		if ( req.resourceType() !== 'fetch' ) {
 			return;
 		}
 
@@ -83,17 +81,11 @@ export function createEnhancedWaitForFetchRequests( {
 				// Return null to avoid breaking Promise.all.
 				return null;
 			} );
-
-		// Reset debounce timer.
-		if ( debounceTimer ) {
-			clearTimeout( debounceTimer );
-		}
 	};
 
 	page.on( 'request', listener );
 
 	return async () => {
-		isListening = false;
 		page.off( 'request', listener );
 
 		// Strategy 1: Use page.waitForNetworkIdle() as primary mechanism.
