@@ -284,3 +284,21 @@
 		right: $grid-gap-desktop * 1.5;
 	}
 }
+
+.folded .googlesitekit-notice-snackbar--bottom-right {
+	@media (min-width: $bp-wpAdminBarTablet) {
+		right: calc(((100vw - #{$page-content-max-width}) / 2) + 16px);
+	}
+
+	@media (min-width: $page-content-max-width) {
+		right: calc(((100vw - #{$page-content-max-width}) / 2) + 16px);
+	}
+
+	@media (max-width: $bp-xxxlarge) {
+		right: 32px;
+	}
+
+	@media (max-width: $bp-nonTablet) {
+		right: 26px;
+	}
+}
