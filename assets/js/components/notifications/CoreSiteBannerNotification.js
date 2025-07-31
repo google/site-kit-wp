@@ -51,7 +51,7 @@ function CoreSiteBannerNotification( { id, ...props } ) {
 			onCTAClick={ onCTAClick }
 			onDismissClick={ onDismissClick }
 			{ ...props }
-			id
+			id={ id }
 		/>
 	);
 }
