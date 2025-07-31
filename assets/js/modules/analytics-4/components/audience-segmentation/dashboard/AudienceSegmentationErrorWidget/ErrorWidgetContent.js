@@ -64,7 +64,7 @@ const ErrorWidgetContent = forwardRef(
 				>
 					<Row>
 						<Cell smSize={ 6 } mdSize={ 8 } lgSize={ 7 }>
-							<h3 className="googlesitekit-publisher-win__title">
+							<h3>
 								{ hasInsufficientPermissionsError
 									? __(
 											'Insufficient permissions',
