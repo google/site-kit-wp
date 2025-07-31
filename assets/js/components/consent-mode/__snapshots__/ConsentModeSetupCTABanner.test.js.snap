@@ -31,7 +31,9 @@ exports[`ConsentModeSetupCTABanner should render the banner 1`] = `
                 <div
                   class="googlesitekit-banner__description"
                 >
-                  Consent mode interacts with your Consent Management Platform (CMP) or custom implementation for obtaining visitor consent, such as a cookie consent banner.
+                  <span>
+                    Consent mode interacts with your Consent Management Platform (CMP) or custom implementation for obtaining visitor consent, such as a cookie consent banner.
+                  </span>
                    
                   <a
                     aria-label="Learn more (opens in a new tab)"
