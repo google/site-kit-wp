@@ -28,23 +28,6 @@
 			}
 		}
 
-		.googlesitekit-publisher-win__title {
-			display: grid;
-			font-family: $f-primary;
-			font-size: $fs-title-lg;
-			font-weight: $fw-medium;
-			line-height: $lh-title-lg;
-			margin: 0 0 14px;
-
-			@media (min-width: $bp-nonMobile) {
-				place-content: start;
-			}
-
-			@media (min-width: $bp-desktop) {
-				margin: 14px 0;
-			}
-		}
-
 		.googlesitekit-report-error-actions {
 			align-items: flex-start;
 			display: flex;
