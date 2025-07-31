@@ -180,30 +180,6 @@
 	}
 }
 
-.googlesitekit-settings-notice-ua-cutoff-warning,
-.googlesitekit-settings-notice-adsense-status-migration {
-	max-width: none;
-
-	.googlesitekit-settings-notice__icon {
-		padding-top: 10px;
-	}
-
-	.googlesitekit-settings-notice__body {
-		align-items: center;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 14px;
-	}
-
-	.googlesitekit-settings-notice__text {
-		flex: 1 1 50%;
-	}
-}
-
-.googlesitekit-settings-notice-ua-cutoff-warning__notice {
-	margin: 0 14px 0 0;
-}
-
 .googlesitekit-settings-notice-adsense-top-earning-pages-widget {
 	align-items: normal;
 	flex-flow: column wrap;
