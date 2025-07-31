@@ -31,23 +31,10 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import BannerNotification, {
-	TYPES,
-} from '../../googlesitekit/notifications/components/layout/BannerNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import NotificationFromServer from '../NotificationFromServer';
 
-function CoreSiteBannerNotification( {
-	content,
-	ctaLabel,
-	ctaTarget,
-	ctaURL,
-	dismissLabel,
-	dismissible,
-	id,
-	learnMoreLabel,
-	learnMoreURL,
-	title,
-} ) {
+function CoreSiteBannerNotification( { id, ...props } ) {
 	const { dismissNotification, acceptNotification } =
 		useDispatch( CORE_SITE );
 
@@ -60,29 +47,11 @@ function CoreSiteBannerNotification( {
 	}, [ id, dismissNotification ] );
 
 	return (
-		<BannerNotification
-			notificationID={ id }
-			type={ TYPES.WARNING }
-			title={ title }
-			description={ content }
-			learnMoreLink={ {
-				label: learnMoreLabel,
-				href: learnMoreURL,
-			} }
-			ctaButton={ {
-				label: ctaLabel,
-				href: ctaURL,
-				target: ctaTarget,
-				onClick: onCTAClick,
-			} }
-			dismissButton={
-				dismissible
-					? {
-							label: dismissLabel,
-							onClick: onDismissClick,
-					  }
-					: undefined
-			}
+		<NotificationFromServer
+			onCTAClick={ onCTAClick }
+			onDismissClick={ onDismissClick }
+			{ ...props }
+			id
 		/>
 	);
 }
