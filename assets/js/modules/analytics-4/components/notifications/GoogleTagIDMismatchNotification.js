@@ -181,7 +181,7 @@ export default function GoogleTagIDMismatchNotification( {
 
 	if ( newAnalyticsProperty ) {
 		return (
-			<Notification className="googlesitekit-publisher-win">
+			<Notification>
 				<BannerNotification
 					notificationID={ id }
 					type={ TYPES.WARNING }
@@ -226,7 +226,7 @@ export default function GoogleTagIDMismatchNotification( {
 
 	if ( newGoogleTagID ) {
 		return (
-			<Notification className="googlesitekit-publisher-win">
+			<Notification>
 				<BannerNotification
 					notificationID={ id }
 					type={ TYPES.WARNING }
