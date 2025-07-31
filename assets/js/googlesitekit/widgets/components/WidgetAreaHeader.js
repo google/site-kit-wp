@@ -31,6 +31,7 @@ import { Fragment } from '@wordpress/element';
  */
 import WidgetNewBadge from './WidgetNewBadge';
 import { useWindowWidth } from '../../../hooks/useWindowSize';
+import Typography from '../../../components/Typography';
 
 export default function WidgetAreaHeader( {
 	slug,
@@ -50,10 +51,15 @@ export default function WidgetAreaHeader( {
 			{ Icon && <Icon width={ 33 } height={ 33 } /> }
 
 			{ title && (
-				<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
+				<Typography
+					as="h3"
+					type="headline"
+					size="small"
+					className="googlesitekit-widget-area-header__title"
+				>
 					{ title }
 					<WidgetNewBadge slug={ slug } />
-				</h3>
+				</Typography>
 			) }
 
 			{ ( subtitle || CTA ) && (

@@ -17,7 +17,9 @@ exports[`AudienceSegmentationErrorWidget default error state should render corre
           <div
             class="mdc-layout-grid__cell mdc-layout-grid__cell--span-7-desktop mdc-layout-grid__cell--span-8-tablet"
           >
-            <h3>
+            <h3
+              class="googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--large"
+            >
               Your visitor groups data loading failed
             </h3>
             <div
@@ -68,7 +70,9 @@ exports[`AudienceSegmentationErrorWidget insufficient permissions error state sh
           <div
             class="mdc-layout-grid__cell mdc-layout-grid__cell--span-7-desktop mdc-layout-grid__cell--span-8-tablet"
           >
-            <h3>
+            <h3
+              class="googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--large"
+            >
               Insufficient permissions
             </h3>
             <div
@@ -93,7 +97,7 @@ exports[`AudienceSegmentationErrorWidget insufficient permissions error state sh
                 <div
                   class="googlesitekit-error-retry-text"
                 >
-                  Contact your administrator. Trouble getting access? 
+                  Contact your administrator. Trouble getting access?
                   <a
                     aria-label="Get help (opens in a new tab)"
                     class="googlesitekit-cta-link"
@@ -140,7 +144,9 @@ exports[`AudienceSegmentationErrorWidget should render a retry button when \`onR
           <div
             class="mdc-layout-grid__cell mdc-layout-grid__cell--span-7-desktop mdc-layout-grid__cell--span-8-tablet"
           >
-            <h3>
+            <h3
+              class="googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--large"
+            >
               Your visitor groups data loading failed
             </h3>
             <div

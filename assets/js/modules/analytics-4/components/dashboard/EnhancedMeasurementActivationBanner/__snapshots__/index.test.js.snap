@@ -57,7 +57,9 @@ exports[`EnhancedMeasurementActivationBanner should render the in progress step 
                 <div
                   class="googlesitekit-banner__description"
                 >
-                  Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.
+                  <span>
+                    Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.
+                  </span>
                    
                   <a
                     aria-label="Learn more (opens in a new tab)"
@@ -154,7 +156,9 @@ exports[`EnhancedMeasurementActivationBanner should render the setup step when e
                 <div
                   class="googlesitekit-banner__description"
                 >
-                  Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.
+                  <span>
+                    Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.
+                  </span>
                    
                   <a
                     aria-label="Learn more (opens in a new tab)"

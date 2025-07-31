@@ -52,6 +52,7 @@ import WebDataStreamField from './WebDataStreamField';
 import EnhancedMeasurementSwitch from '../EnhancedMeasurementSwitch';
 import useViewContext from '../../../../../hooks/useViewContext';
 import SetupEnhancedConversionTrackingNotice from '../../../../../components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
+import Typography from '../../../../../components/Typography';
 
 export default function AccountCreate() {
 	const [ isNavigating, setIsNavigating ] = useState( false );
@@ -221,9 +222,9 @@ export default function AccountCreate() {
 				storeName={ MODULES_ANALYTICS_4 }
 			/>
 
-			<h3 className="googlesitekit-heading-4">
+			<Typography as="h3" type="title" size="large">
 				{ __( 'Create your Analytics account', 'google-site-kit' ) }
-			</h3>
+			</Typography>
 
 			<p>
 				{ __(

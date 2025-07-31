@@ -31,7 +31,9 @@ exports[`GoogleTagIDMismatchNotification should render the "alternative GA4 Conf
                 <div
                   class="googlesitekit-banner__description"
                 >
-                  The Google Tag on your site is no longer associated with your current Google Analytics property "Test GA4 Property (1000)". It is now recording metrics to another Google Analytics property "Another GA4 Property (1001)". If you want to continue seeing Analytics data in the Site Kit dashboard, we suggest you update Site Kit’s Google Analytics configuration to show data for the property used in your Google Tag.
+                  <span>
+                    The Google Tag on your site is no longer associated with your current Google Analytics property "Test GA4 Property (1000)". It is now recording metrics to another Google Analytics property "Another GA4 Property (1001)". If you want to continue seeing Analytics data in the Site Kit dashboard, we suggest you update Site Kit’s Google Analytics configuration to show data for the property used in your Google Tag.
+                  </span>
                    
                 </div>
                 <div
@@ -103,7 +105,9 @@ exports[`GoogleTagIDMismatchNotification should render the "alternative GA4 Conf
                 <div
                   class="googlesitekit-banner__description"
                 >
-                  The Google tag for your Google Analytics configuration has changed from GT-123 to GT-NBQN9V2. To keep using your current Google Analytics property "Test GA4 Property (1000)", you need to configure Site Kit to place the new Google tag GT-NBQN9V2 instead.
+                  <span>
+                    The Google tag for your Google Analytics configuration has changed from GT-123 to GT-NBQN9V2. To keep using your current Google Analytics property "Test GA4 Property (1000)", you need to configure Site Kit to place the new Google tag GT-NBQN9V2 instead.
+                  </span>
                    
                 </div>
                 <div
