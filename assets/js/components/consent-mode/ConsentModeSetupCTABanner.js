@@ -87,7 +87,6 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 		}
 	}, [ triggerSurvey, usingProxy ] );
 
-	// Update the handleCTAClick callback to use CORE_LOCATION navigateTo to navigate to the adminSettingsURL only when the promises resolve, without errors.
 	const handleCTAClick = async () => {
 		setSaveError( null );
 		setConsentModeEnabled( true );
