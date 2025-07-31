@@ -119,7 +119,7 @@ function CoreSiteBannerNotifications() {
 				},
 				priority: notification.priority,
 				areaSlug: NOTIFICATION_AREAS.HEADER,
-				isDismissible: notification.isDismissible,
+				isDismissible: notification.dismissible,
 			} );
 
 			setRegisteredNotifications( ( previousRegisteredNotifications ) => {
