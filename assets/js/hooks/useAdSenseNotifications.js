@@ -31,7 +31,7 @@ import { MODULES_ADSENSE } from '../modules/adsense/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '../modules/adsense/constants';
 import { NOTIFICATION_AREAS } from '../googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '../googlesitekit/notifications/datastore/constants';
-import CoreSiteBannerNotification from '../components/notifications/CoreSiteBannerNotification';
+import NotificationFromServer from '../components/NotificationFromServer';
 
 export default function useAdSenseNotifications() {
 	const adSenseModuleConnected = useSelect( ( select ) =>
@@ -94,9 +94,7 @@ export default function useAdSenseNotifications() {
 				Component( { Notification } ) {
 					return (
 						<Notification>
-							<CoreSiteBannerNotification
-								{ ...notificationProps }
-							/>
+							<NotificationFromServer { ...notificationProps } />
 						</Notification>
 					);
 				},
