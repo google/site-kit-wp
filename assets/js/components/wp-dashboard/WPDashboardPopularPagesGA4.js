@@ -43,6 +43,7 @@ import TableOverflowContainer from '../TableOverflowContainer';
 import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
+import Typography from '../Typography';
 
 export default function WPDashboardPopularPagesGA4( {
 	WPDashboardReportError,
@@ -157,9 +158,9 @@ export default function WPDashboardPopularPagesGA4( {
 					isGatheringData || ! rows?.length,
 			} ) }
 		>
-			<h3>
+			<Typography as="h3" type="headline" size="small">
 				{ __( 'Top content over the last 28 days', 'google-site-kit' ) }
-			</h3>
+			</Typography>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ rows }

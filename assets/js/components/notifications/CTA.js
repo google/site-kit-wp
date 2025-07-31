@@ -54,9 +54,9 @@ function CTA( {
 					{ headerText && (
 						<Typography
 							as="h2"
-							className="googlesitekit-cta__header_text"
 							size="small"
 							type="label"
+							className="googlesitekit-cta__header_text"
 						>
 							{ headerText }
 						</Typography>
@@ -66,7 +66,14 @@ function CTA( {
 			) }
 			<div className="googlesitekit-cta__body">
 				{ title && (
-					<h3 className="googlesitekit-cta__title">{ title }</h3>
+					<Typography
+						as="h3"
+						size="small"
+						type="title"
+						className="googlesitekit-cta__title"
+					>
+						{ title }
+					</Typography>
 				) }
 				{ description && typeof description === 'string' && (
 					<p className="googlesitekit-cta__description">

@@ -82,7 +82,13 @@ export default function PublicationSelect( props ) {
 
 	if ( ! publicationsLoaded ) {
 		// Display progress bar while publications are loading.
-		return <ProgressBar smallHeight={ 80 } desktopHeight={ 88 } small />;
+		return (
+			<ProgressBar
+				mobileVerticalSpacing={ 76 }
+				desktopVerticalSpacing={ 84 }
+				small
+			/>
+		);
 	}
 
 	const isValidSelection =

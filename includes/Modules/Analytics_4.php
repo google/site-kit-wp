@@ -741,6 +741,9 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			'POST:set-google-tag-id-mismatch'           => array(
 				'service' => '',
 			),
+			'POST:set-is-web-data-stream-available'     => array(
+				'service' => '',
+			),
 			'POST:create-audience'                      => array(
 				'service'                => 'analyticsaudiences',
 				'scopes'                 => array( self::EDIT_SCOPE ),
@@ -1759,8 +1762,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				$property_id    = self::normalize_property_id( $settings['propertyID'] );
 
 				return $analyticsadmin
-				->properties_keyEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-				->listPropertiesKeyEvents( $property_id );
+					->properties_keyEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					->listPropertiesKeyEvents( $property_id );
 			case 'POST:set-google-tag-id-mismatch':
 				if ( ! isset( $data['hasMismatchedTag'] ) ) {
 					throw new Missing_Required_Param_Exception( 'hasMismatchedTag' );
@@ -1768,12 +1771,30 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 				if ( false === $data['hasMismatchedTag'] ) {
 					return function () {
-						return $this->transients->delete( 'googlesitekit_inline_tag_id_mismatch' );
+						$this->transients->delete( 'googlesitekit_inline_tag_id_mismatch' );
+						return false;
 					};
 				}
 
 				return function () use ( $data ) {
-					return $this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
+					$this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
+					return $data['hasMismatchedTag'];
+				};
+			case 'POST:set-is-web-data-stream-available':
+				if ( ! isset( $data['isWebDataStreamAvailable'] ) ) {
+					throw new Missing_Required_Param_Exception( 'isWebDataStreamAvailable' );
+				}
+
+				if ( true === $data['isWebDataStreamAvailable'] ) {
+					return function () use ( $data ) {
+						$this->transients->set( 'googlesitekit_web_data_stream_availability', $data['isWebDataStreamAvailable'] );
+						return $data['isWebDataStreamAvailable'];
+					};
+				}
+
+				return function () {
+					$this->transients->delete( 'googlesitekit_web_data_stream_availability' );
+					return false;
 				};
 		}
 
@@ -2421,8 +2442,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'customDimensionsDataAvailable' => $this->custom_dimensions_data_available->get_data_availability(),
 			);
 		}
-
-		return array();
 	}
 
 	/**
@@ -2712,16 +2731,34 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return array An array of the module's inline data.
 	 */
 	public function get_inline_data() {
-		$inline_data = array_merge(
-			$this->get_inline_custom_dimensions_data(),
-			$this->get_inline_resource_availability_dates_data(),
-			$this->get_inline_tag_id_mismatch(),
-			$this->get_inline_conversion_reporting_events_detection()
-		);
-
-		if ( empty( $inline_data ) ) {
+		if ( ! $this->is_connected() ) {
 			return array();
 		}
+
+		$inline_data = array();
+
+		// Custom dimensions data.
+		$inline_data['customDimensionsDataAvailable'] = $this->custom_dimensions_data_available->get_data_availability();
+
+		// Resource availability dates data.
+		$inline_data['resourceAvailabilityDates'] = $this->resource_data_availability_date->get_all_resource_dates();
+
+		// Tag ID mismatch data.
+		$tag_id_mismatch              = $this->transients->get( 'googlesitekit_inline_tag_id_mismatch' );
+		$inline_data['tagIDMismatch'] = $tag_id_mismatch;
+
+		// Conversion reporting events detection data.
+		$detected_events  = $this->transients->get( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
+		$lost_events      = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
+		$new_events_badge = $this->transients->get( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
+
+		$inline_data['newEvents']      = is_array( $detected_events ) ? $detected_events : array();
+		$inline_data['lostEvents']     = is_array( $lost_events ) ? $lost_events : array();
+		$inline_data['newBadgeEvents'] = is_array( $new_events_badge ) ? $new_events_badge['events'] : array();
+
+		// Web data stream availability data.
+		$is_web_data_stream_available            = $this->transients->get( 'googlesitekit_web_data_stream_availability' );
+		$inline_data['isWebDataStreamAvailable'] = $is_web_data_stream_available;
 
 		return array(
 			self::MODULE_SLUG => $inline_data,

@@ -23,6 +23,7 @@ import classNames from 'classnames';
  * Internal dependencies
  */
 import { Cell, Grid, Row } from '../../../../material-components';
+import Typography from '../../../../components/Typography';
 
 export default function SingleColumnNotificationWithSVG( {
 	id,
@@ -47,9 +48,14 @@ export default function SingleColumnNotificationWithSVG( {
 						>
 							<div className="googlesitekit-setup-cta-banner__cells">
 								<div className="googlesitekit-setup-cta-banner__primary-cell">
-									<h3 className="googlesitekit-setup-cta-banner__title">
+									<Typography
+										as="h3"
+										type="headline"
+										size="small"
+										className="googlesitekit-setup-cta-banner__title"
+									>
 										{ title }
-									</h3>
+									</Typography>
 
 									{ description }
 

@@ -16,7 +16,7 @@ exports[`AudienceTileError should correctly render the generic error variant 1`]
           class="googlesitekit-audience-segmentation-tile-error__message"
         >
           <h3
-            class="googlesitekit-audience-segmentation-tile-error__title"
+            class="googlesitekit-typography googlesitekit-audience-segmentation-tile-error__title googlesitekit-typography--headline googlesitekit-typography--small"
           >
             Data loading failed
           </h3>
@@ -61,7 +61,7 @@ exports[`AudienceTileError should correctly render the insufficient permissions 
           class="googlesitekit-audience-segmentation-tile-error__message"
         >
           <h3
-            class="googlesitekit-audience-segmentation-tile-error__title"
+            class="googlesitekit-typography googlesitekit-audience-segmentation-tile-error__title googlesitekit-typography--headline googlesitekit-typography--small"
           >
             Insufficient permissions
           </h3>

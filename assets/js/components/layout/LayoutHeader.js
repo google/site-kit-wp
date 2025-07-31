@@ -31,6 +31,7 @@ import { Component } from '@wordpress/element';
  */
 import { Cell, Grid, Row } from '../../material-components';
 import Link from '../Link';
+import Typography from '../Typography';
 
 class LayoutHeader extends Component {
 	render() {
@@ -55,10 +56,15 @@ class LayoutHeader extends Component {
 					<Row>
 						{ title && (
 							<Cell { ...titleCellProps }>
-								<h3 className="googlesitekit-subheading-1 googlesitekit-layout__header-title">
+								<Typography
+									as="h3"
+									size="small"
+									type="title"
+									className="googlesitekit-subheading-1 googlesitekit-layout__header-title"
+								>
 									{ title }
 									{ badge }
-								</h3>
+								</Typography>
 							</Cell>
 						) }
 						{ ctaLink && (
