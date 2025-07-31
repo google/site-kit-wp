@@ -260,7 +260,6 @@
 }
 
 .googlesitekit-notice-snackbar--bottom-right {
-	align-items: center;
 	bottom: 0;
 	gap: $grid-gap-phone;
 	position: fixed;
@@ -273,15 +272,15 @@
 		width: 100%;
 	}
 
+	@media (max-width: $bp-nonTablet) {
+		right: $grid-gap-desktop;
+	}
+
 	@media (min-width: $page-content-max-width) {
-		right: calc(((100vw - #{$page-content-max-width}) / 2) - 47px);
+		right: calc(((100vw - #{$page-content-max-width}) / 2) - (#{$grid-gap-desktop} * 2));
 	}
 
 	@media (max-width: $bp-xxxlarge) {
-		right: 32px;
-	}
-
-	@media (max-width: $bp-nonTablet) {
-		right: 26px;
+		right: $grid-gap-desktop * 1.5;
 	}
 }
