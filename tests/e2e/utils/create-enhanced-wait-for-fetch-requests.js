@@ -41,7 +41,6 @@ export function createEnhancedWaitForFetchRequests( {
 } = {} ) {
 	const activeRequests = new Map();
 	let debounceTimer;
-	let completionTimer;
 	let isListening = true;
 
 	const listener = ( req ) => {
@@ -109,7 +108,7 @@ export function createEnhancedWaitForFetchRequests( {
 			// If network idle times out, we fall back to tracking active requests.
 		}
 
-		// Strategy 2: Wait for tracked requests with debounce.
+		// Strategy 2: Wait for tracked requests to be resolved.
 		return new Promise( ( resolve ) => {
 			const checkCompletion = () => {
 				if ( activeRequests.size === 0 ) {
@@ -117,19 +116,10 @@ export function createEnhancedWaitForFetchRequests( {
 					return;
 				}
 
-				completionTimer = setTimeout( checkCompletion, debounceTime );
+				setTimeout( checkCompletion, debounceTime );
 			};
 
 			checkCompletion();
-
-			// Wrap the original resolve function to clear the completion timer and resolve the promise.
-			const originalResolve = resolve;
-			resolve = ( ...args ) => {
-				if ( completionTimer ) {
-					clearTimeout( completionTimer );
-				}
-				originalResolve( ...args );
-			};
 		} );
 	};
 }
