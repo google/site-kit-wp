@@ -35,6 +35,7 @@ import { ReactNode } from '@wordpress/element';
 import BannerNotification, {
 	TYPES,
 } from '../googlesitekit/notifications/components/layout/BannerNotification';
+import { HOUR_IN_SECONDS } from '../util';
 
 /**
  * Maps props received from the server (e.g. from a `select( CORE_SITE ).getNotifications()`
@@ -72,6 +73,16 @@ function NotificationFromServer( {
 	onCTAClick,
 	onDismissClick,
 } ) {
+	// Notifications from the server should not be dismissed permanently in the database.
+	// CoreSiteBannerNotifications are "marked as accepted/dismissed" on the server.
+	// AdSense Alerts are not dismissed permanently either, they keep coming back until the
+	// issue that raises the alert is resolved. Thus we expire the dismissal after an hour,
+	// which was the behaviour prevalent in the legacy BannerNotification component that cached
+	// dismissals for an hour in browser storage.
+	const dismissOptions = {
+		expiresInSeconds: HOUR_IN_SECONDS,
+	};
+
 	return (
 		<BannerNotification
 			notificationID={ id }
@@ -87,12 +98,14 @@ function NotificationFromServer( {
 				href: ctaURL,
 				target: ctaTarget,
 				onClick: onCTAClick,
+				dismissOptions,
 			} }
 			dismissButton={
 				dismissible
 					? {
 							label: dismissLabel,
 							onClick: onDismissClick,
+							dismissOptions,
 					  }
 					: undefined
 			}
