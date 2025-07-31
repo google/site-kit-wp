@@ -100,7 +100,7 @@ export default function useAdSenseNotifications() {
 				},
 				priority: notification.priority,
 				areaSlug: NOTIFICATION_AREAS.HEADER,
-				isDismissible: notification.isDismissible,
+				isDismissible: true, // AdSense alerts are always dismissible, but these will persist only for an hour in `<NotificationFromServer>`.
 			} );
 
 			setRegisteredNotifications( ( previousRegisteredNotifications ) => {
