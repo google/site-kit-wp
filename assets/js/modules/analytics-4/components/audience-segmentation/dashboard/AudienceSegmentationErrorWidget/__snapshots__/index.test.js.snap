@@ -97,7 +97,7 @@ exports[`AudienceSegmentationErrorWidget insufficient permissions error state sh
                 <div
                   class="googlesitekit-error-retry-text"
                 >
-                  Contact your administrator. Trouble getting access?
+                  Contact your administrator. Trouble getting access? 
                   <a
                     aria-label="Get help (opens in a new tab)"
                     class="googlesitekit-cta-link"
