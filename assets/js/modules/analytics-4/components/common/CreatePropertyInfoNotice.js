@@ -20,33 +20,33 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import SettingsNotice, {
-	TYPE_INFO,
-} from '../../../../components/SettingsNotice';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import Notice from '../../../../components/Notice/index';
+import { TYPES } from '../../../../components/Notice/constants';
 
-export default function Notice() {
+export default function CreatePropertyInfoNotice() {
 	const documentationURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
 	} );
 
 	return (
-		<SettingsNotice
-			type={ TYPE_INFO }
-			LearnMore={ () => (
-				<Link href={ documentationURL } external>
-					{ __( 'Learn more here.', 'google-site-kit' ) }
-				</Link>
-			) }
-			notice={ __(
-				'Got a Google Analytics property and want to find out how to use it with Site Kit?',
-				'google-site-kit'
+		<Notice
+			type={ TYPES.INFO }
+			description={ createInterpolateElement(
+				__(
+					'Got a Google Analytics property and want to find out how to use it with Site Kit? <a>Learn more</a>',
+					'google-site-kit'
+				),
+				{
+					a: <Link href={ documentationURL } external />,
+				}
 			) }
 		/>
 	);
