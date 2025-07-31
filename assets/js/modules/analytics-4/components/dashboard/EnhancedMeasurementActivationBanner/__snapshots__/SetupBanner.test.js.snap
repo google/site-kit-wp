@@ -31,7 +31,9 @@ exports[`SetupBanner should render correctly when the user does have the edit sc
                 <div
                   class="googlesitekit-banner__description"
                 >
-                  Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.
+                  <span>
+                    Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.
+                  </span>
                    
                   <a
                     aria-label="Learn more (opens in a new tab)"
@@ -127,7 +129,9 @@ exports[`SetupBanner should render correctly when the user does not have the edi
                 <div
                   class="googlesitekit-banner__description"
                 >
-                  Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required — you’ll be redirected to give permission for Site Kit to enable it on your behalf.
+                  <span>
+                    Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required — you’ll be redirected to give permission for Site Kit to enable it on your behalf.
+                  </span>
                    
                   <a
                     aria-label="Learn more (opens in a new tab)"

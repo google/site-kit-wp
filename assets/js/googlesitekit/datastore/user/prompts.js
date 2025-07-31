@@ -26,6 +26,7 @@ import invariant from 'invariant';
  */
 import { get, set } from 'googlesitekit-api';
 import {
+	createReducer,
 	createRegistrySelector,
 	commonActions,
 	combineStores,
@@ -36,13 +37,10 @@ import { createValidatedAction } from '../../data/utils';
 
 const { getRegistry } = commonActions;
 
-function reducerCallback( state, dismissedPrompts ) {
-	return {
-		...state,
-		dismissedPrompts:
-			typeof dismissedPrompts === 'object' ? dismissedPrompts : {},
-	};
-}
+const reducerCallback = createReducer( ( state, dismissedPrompts ) => {
+	state.dismissedPrompts =
+		typeof dismissedPrompts === 'object' ? dismissedPrompts : {};
+} );
 
 const fetchGetDismissedPromptsStore = createFetchStore( {
 	baseName: 'getDismissedPrompts',
@@ -133,21 +131,20 @@ const baseResolvers = {
 	},
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case 'SET_IS_PROMPT_DISMISSING':
 			const { slug, isDismissing } = payload;
-			return {
-				...state,
-				isDismissingPrompts: {
-					[ slug ]: isDismissing,
-				},
+
+			state.isDismissingPrompts = {
+				[ slug ]: isDismissing,
 			};
-		default: {
-			return state;
-		}
+			break;
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseSelectors = {
 	/**

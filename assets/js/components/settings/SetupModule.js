@@ -104,14 +104,17 @@ export default function SetupModule( { slug, name, description } ) {
 				<ModuleIcon slug={ slug } />
 			</div>
 			<div className="googlesitekit-settings-connect-module__heading">
-				<h3
+				<Typography
+					as="h3"
+					type="title"
+					size="small"
 					className="
 					googlesitekit-subheading-1
 					googlesitekit-settings-connect-module__title
 				"
 				>
 					{ name }
-				</h3>
+				</Typography>
 				<div className="googlesitekit-settings-connect-module__badges">
 					{ EXPERIMENTAL_MODULES.includes( slug ) && (
 						<Badge

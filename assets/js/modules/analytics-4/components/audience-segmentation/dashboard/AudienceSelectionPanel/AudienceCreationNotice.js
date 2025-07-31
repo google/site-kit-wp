@@ -296,13 +296,13 @@ export default function AudienceCreationNotice() {
 							className="googlesitekit-audience-selection-panel__audience-creation-notice-audience"
 						>
 							<div className="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details">
-								<h3>
+								<Typography as="h3" type="title" size="small">
 									{
 										SITE_KIT_AUDIENCE_DEFINITIONS[
 											audienceSlug
 										].displayName
 									}
-								</h3>
+								</Typography>
 								<Typography
 									as="p"
 									type="body"

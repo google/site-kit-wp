@@ -251,7 +251,9 @@ function ConfirmSitePurposeChangeModal( {
 			<DialogContent>
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
-						<h3>{ __( 'Current metrics', 'google-site-kit' ) }</h3>
+						<Typography as="h3" size="small" type="headline">
+							{ __( 'Current metrics', 'google-site-kit' ) }
+						</Typography>
 						{ !! currentMetricsSnapshot && (
 							<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive">
 								{ currentMetricsSnapshot.map( ( item ) => (
@@ -268,9 +270,9 @@ function ConfirmSitePurposeChangeModal( {
 						) }
 					</div>
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">
-						<h3>
+						<Typography as="h3" size="small" type="headline">
 							{ __( 'New tailored metrics', 'google-site-kit' ) }
-						</h3>
+						</Typography>
 						{ !! newMetrics && (
 							<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive">
 								{ newMetrics.map( ( item ) => (

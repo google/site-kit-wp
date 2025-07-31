@@ -183,9 +183,14 @@ export default function Header( { slug } ) {
 							className="googlesitekit-settings-module__heading-icon"
 						/>
 
-						<h3 className="googlesitekit-heading-4 googlesitekit-settings-module__title">
+						<Typography
+							as="h3"
+							type="title"
+							size="large"
+							className="googlesitekit-settings-module__title"
+						>
 							{ name }
-						</h3>
+						</Typography>
 
 						<div className="googlesitekit-settings-module__heading-badges">
 							{ EXPERIMENTAL_MODULES.includes( slug ) && (

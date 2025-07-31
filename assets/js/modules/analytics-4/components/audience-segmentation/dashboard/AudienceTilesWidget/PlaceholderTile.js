@@ -80,7 +80,12 @@ export default function PlaceholderTile( { Widget } ) {
 						}
 					) }
 				>
-					<h3 className="googlesitekit-audience-segmentation-tile-placeholder__title">
+					<Typography
+						as="h3"
+						type="title"
+						size="small"
+						className="googlesitekit-audience-segmentation-tile-placeholder__title"
+					>
 						{ hasConfigurableNonDefaultAudiences
 							? __(
 									'Compare your group to other groups',
@@ -90,7 +95,7 @@ export default function PlaceholderTile( { Widget } ) {
 									'Create more visitor groups',
 									'google-site-kit'
 							  ) }
-					</h3>
+					</Typography>
 					<Typography
 						as="p"
 						type="body"

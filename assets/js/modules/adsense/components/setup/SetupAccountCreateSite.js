@@ -51,12 +51,17 @@ export default function SetupAccountCreateSite() {
 
 	return (
 		<Fragment>
-			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
+			<Typography
+				as="h3"
+				type="title"
+				size="large"
+				className="googlesitekit-setup-module__title"
+			>
 				{ __(
 					'Add this site to your AdSense account',
 					'google-site-kit'
 				) }
-			</h3>
+			</Typography>
 
 			<ErrorNotices />
 

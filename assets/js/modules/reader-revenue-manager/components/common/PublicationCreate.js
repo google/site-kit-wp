@@ -83,12 +83,17 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 		<div className="googlesitekit-setup-module__publication-create-screen">
 			{ ! hasPublication && (
 				<Fragment>
-					<h3 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+					<Typography
+						as="h3"
+						type="body"
+						size="medium"
+						className="googlesitekit-setup-module__title"
+					>
 						{ __(
 							'To complete your Reader Revenue Manager account setup you will need to create a publication and set up Reader Revenue Manager in Publisher Center.',
 							'google-site-kit'
 						) }
-					</h3>
+					</Typography>
 					<Typography
 						as="p"
 						type="body"
@@ -130,12 +135,17 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 			) }
 			{ hasPublication && (
 				<Fragment>
-					<h3 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+					<Typography
+						as="h3"
+						type="body"
+						size="medium"
+						className="googlesitekit-setup-module__title"
+					>
 						{ __(
 							'You have successfully created your publication and it is now awaiting review. This might take up to 2 weeks.',
 							'google-site-kit'
 						) }
-					</h3>
+					</Typography>
 					<div className="googlesitekit-setup-module__action">
 						<SpinnerButton onClick={ handleCompleteSetupClick }>
 							{ __( 'Complete setup', 'google-site-kit' ) }

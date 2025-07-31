@@ -222,9 +222,9 @@ export default function AccountCreate() {
 				storeName={ MODULES_ANALYTICS_4 }
 			/>
 
-			<h3 className="googlesitekit-heading-4">
+			<Typography as="h3" type="title" size="large">
 				{ __( 'Create your Analytics account', 'google-site-kit' ) }
-			</h3>
+			</Typography>
 
 			<Typography as="p" type="body" size="medium">
 				{ __(

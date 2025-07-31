@@ -45,12 +45,17 @@ export default function SetupAccountNoClient() {
 
 	return (
 		<Fragment>
-			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
+			<Typography
+				as="h3"
+				type="title"
+				size="large"
+				className="googlesitekit-setup-module__title"
+			>
 				{ __(
 					'Looks like you need to upgrade your AdSense account',
 					'google-site-kit'
 				) }
-			</h3>
+			</Typography>
 
 			<ErrorNotices />
 

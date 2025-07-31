@@ -50,9 +50,14 @@ export default function SetupAccountSiteUI( {
 
 	return (
 		<Fragment>
-			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
+			<Typography
+				as="h3"
+				type="title"
+				size="large"
+				className="googlesitekit-setup-module__title"
+			>
 				{ heading }
-			</h3>
+			</Typography>
 
 			<ErrorNotices />
 

@@ -256,9 +256,9 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 				<Typography
 					as="h3"
-					className="googlesitekit-setup-module__title"
 					size="small"
 					type="headline"
+					className="googlesitekit-setup-module__title"
 				>
 					{ _x( 'Ads', 'Service name', 'google-site-kit' ) }
 				</Typography>
@@ -292,12 +292,16 @@ export default function SetupMainPAX( { finishSetup } ) {
 								lgSize={ 5 }
 								className="align-top"
 							>
-								<h3>
+								<Typography
+									as="h3"
+									type="headline"
+									size="small"
+								>
 									{ __(
 										'Set up a new Ads account',
 										'google-site-kit'
 									) }
-								</h3>
+								</Typography>
 								<Typography
 									as="p"
 									type="body"
@@ -341,12 +345,16 @@ export default function SetupMainPAX( { finishSetup } ) {
 								</span>
 							</Cell>
 							<Cell smSize={ 8 } mdSize={ 8 } lgSize={ 5 }>
-								<h3>
+								<Typography
+									as="h3"
+									type="headline"
+									size="small"
+								>
 									{ __(
 										'Connect an existing Ads account',
 										'google-site-kit'
 									) }
-								</h3>
+								</Typography>
 								<Typography
 									as="p"
 									type="body"
