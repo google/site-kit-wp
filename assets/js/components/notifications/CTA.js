@@ -76,9 +76,14 @@ function CTA( {
 					</Typography>
 				) }
 				{ description && typeof description === 'string' && (
-					<p className="googlesitekit-cta__description">
+					<Typography
+						as="p"
+						className="googlesitekit-cta__description"
+						type="body"
+						size="medium"
+					>
 						{ description }
-					</p>
+					</Typography>
 				) }
 				{ description && typeof description !== 'string' && (
 					<div className="googlesitekit-cta__description">

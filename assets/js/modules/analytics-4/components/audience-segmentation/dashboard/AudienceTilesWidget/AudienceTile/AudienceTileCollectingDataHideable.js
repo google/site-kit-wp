@@ -32,16 +32,22 @@ import { __ } from '@wordpress/i18n';
  */
 import Link from '../../../../../../../components/Link';
 import VisibilityIcon from '../../../../../../../../svg/icons/visibility.svg';
+import Typography from '../../../../../../../components/Typography';
 
 export default function AudienceTileCollectingDataHideable( { onHideTile } ) {
 	return (
 		<Fragment>
-			<p className="googlesitekit-audience-segmentation-tile__zero-data-description">
+			<Typography
+				as="p"
+				type="body"
+				size="medium"
+				className="googlesitekit-audience-segmentation-tile__zero-data-description"
+			>
 				{ __(
 					'You can hide this group until data is available.',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 			<Link
 				className="googlesitekit-audience-segmentation-tile-hide-cta"
 				onClick={ onHideTile }

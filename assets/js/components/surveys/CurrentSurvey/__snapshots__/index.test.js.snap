@@ -64,7 +64,9 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
             >
               <svg />
             </button>
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               Unhappy
             </p>
           </div>
@@ -79,7 +81,9 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
             >
               <svg />
             </button>
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               Dissatisfied
             </p>
           </div>
@@ -94,7 +98,9 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
             >
               <svg />
             </button>
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               Neutral
             </p>
           </div>
@@ -109,7 +115,9 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
             >
               <svg />
             </button>
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               Satisfied
             </p>
           </div>
@@ -124,7 +132,9 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
             >
               <svg />
             </button>
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               Delighted
             </p>
           </div>
@@ -199,7 +209,9 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
             >
               <svg />
             </button>
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               Unhappy
             </p>
           </div>
@@ -214,7 +226,9 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
             >
               <svg />
             </button>
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               Dissatisfied
             </p>
           </div>
@@ -229,7 +243,9 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
             >
               <svg />
             </button>
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               Neutral
             </p>
           </div>
@@ -244,7 +260,9 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
             >
               <svg />
             </button>
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               Satisfied
             </p>
           </div>
@@ -259,7 +277,9 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
             >
               <svg />
             </button>
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               Delighted
             </p>
           </div>

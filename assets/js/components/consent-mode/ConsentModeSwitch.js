@@ -32,6 +32,7 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import Link from '../Link';
+import Typography from '../Typography';
 import LoadingWrapper from '../LoadingWrapper';
 import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
 import { DAY_IN_SECONDS, trackEvent } from '../../util';
@@ -138,12 +139,17 @@ export default function ConsentModeSwitch( { loading } ) {
 				}
 				{ saveError && <ErrorNotice message={ saveError.message } /> }
 				{ ! loading && isConsentModeEnabled && (
-					<p className="googlesitekit-settings-consent-mode-switch__enabled-notice">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-consent-mode-switch__enabled-notice"
+					>
 						{ __(
 							'Site Kit added the necessary code to your tag to comply with Consent Mode.',
 							'google-site-kit'
 						) }
-					</p>
+					</Typography>
 				) }
 				{
 					<LoadingWrapper
@@ -156,7 +162,7 @@ export default function ConsentModeSwitch( { loading } ) {
 						tabletWidth="540px"
 						tabletHeight="84px"
 					>
-						<p>
+						<Typography as="p" type="body" size="medium">
 							{ createInterpolateElement(
 								__(
 									'Consent mode will help adjust tracking on your site, so only visitors who have explicitly given consent are tracked. <br />This is required in some parts of the world, like the European Economic Area. <a>Learn more</a>',
@@ -182,7 +188,7 @@ export default function ConsentModeSwitch( { loading } ) {
 									),
 								}
 							) }
-						</p>
+						</Typography>
 					</LoadingWrapper>
 				}
 			</div>

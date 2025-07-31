@@ -40,6 +40,7 @@ import SettingsPlugin from './SettingsPlugin';
 import ConnectedIcon from '../../../svg/icons/connected.svg';
 import PreviewBlock from '../PreviewBlock';
 import SettingsCardVisitorGroups from '../../modules/analytics-4/components/audience-segmentation/settings/SettingsCardVisitorGroups';
+import Typography from '../Typography';
 
 export default function SettingsAdmin() {
 	const configuredAudiences = useSelect( ( select ) =>
@@ -165,7 +166,12 @@ export default function SettingsAdmin() {
 							<Row>
 								<Cell size={ 12 }>
 									<div className="googlesitekit-settings-module__meta-items">
-										<p className="googlesitekit-settings-module__status">
+										<Typography
+											as="p"
+											type="body"
+											size="medium"
+											className="googlesitekit-settings-module__status"
+										>
 											{ __(
 												'Site Kit is connected',
 												'google-site-kit'
@@ -176,7 +182,7 @@ export default function SettingsAdmin() {
 													height={ 8 }
 												/>
 											</span>
-										</p>
+										</Typography>
 									</div>
 								</Cell>
 							</Row>

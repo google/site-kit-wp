@@ -255,7 +255,9 @@ exports[`AudienceTile Partial data badge should render a partial data badge for 
                   class="googlesitekit-audience-segmentation-tile-metric__no-data"
                 >
                   No data to show
-                  <p>
+                  <p
+                    class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+                  >
                     Update Analytics to track metric
                   </p>
                   <button
@@ -534,7 +536,9 @@ exports[`AudienceTile Partial data badge should render a partial data badge for 
                   class="googlesitekit-audience-segmentation-tile-metric__no-data"
                 >
                   No data to show
-                  <p>
+                  <p
+                    class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+                  >
                     Update Analytics to track metric
                   </p>
                   <button
@@ -802,7 +806,9 @@ exports[`AudienceTile should render the AudienceTile component 1`] = `
                   class="googlesitekit-audience-segmentation-tile-metric__no-data"
                 >
                   No data to show
-                  <p>
+                  <p
+                    class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+                  >
                     Update Analytics to track metric
                   </p>
                   <button
@@ -860,12 +866,12 @@ exports[`AudienceTile with zero data, in the partial data state should render th
           >
             <svg />
             <p
-              class="googlesitekit-audience-segmentation-tile__zero-data-description"
+              class="googlesitekit-typography googlesitekit-audience-segmentation-tile__zero-data-description googlesitekit-typography--body googlesitekit-typography--medium"
             >
               Site Kit is collecting data for this group.
             </p>
             <p
-              class="googlesitekit-audience-segmentation-tile__zero-data-description"
+              class="googlesitekit-typography googlesitekit-audience-segmentation-tile__zero-data-description googlesitekit-typography--body googlesitekit-typography--medium"
             >
               You can hide this group until data is available.
             </p>

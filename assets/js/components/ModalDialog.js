@@ -41,6 +41,7 @@ import {
 	SpinnerButton,
 } from 'googlesitekit-components';
 import ExclamationIcon from '../../svg/icons/warning.svg';
+import Typography from './Typography';
 
 function ModalDialog( {
 	className = '',
@@ -82,7 +83,18 @@ function ModalDialog( {
 			</DialogTitle>
 			{
 				// Ensure we don't render anything at all if subtitle is falsy, as Dialog expects all its children to be elements and a falsy value will result in an error.
-				subtitle ? <p className="mdc-dialog__lead">{ subtitle }</p> : []
+				subtitle ? (
+					<Typography
+						as="p"
+						className="mdc-dialog__lead"
+						type="body"
+						size="medium"
+					>
+						{ subtitle }
+					</Typography>
+				) : (
+					[]
+				)
 			}
 			<DialogContent>
 				{ hasProvides && (
@@ -102,7 +114,12 @@ function ModalDialog( {
 					</section>
 				) }
 				{ dependentModules && (
-					<p className="mdc-dialog__dependencies">
+					<Typography
+						as="p"
+						className="mdc-dialog__dependencies"
+						type="body"
+						size="medium"
+					>
 						{ createInterpolateElement(
 							sprintf(
 								/* translators: %s is replaced with the dependent modules. */
@@ -116,7 +133,7 @@ function ModalDialog( {
 								strong: <strong />,
 							}
 						) }
-					</p>
+					</Typography>
 				) }
 			</DialogContent>
 			<DialogFooter>

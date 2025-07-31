@@ -37,6 +37,7 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import Typography from '../../../../components/Typography';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
@@ -44,7 +45,6 @@ import {
 } from '../../datastore/constants';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import SupportLink from '../../../../components/SupportLink';
-import Typography from '../../../../components/Typography';
 
 export default function PublicationCreate( { onCompleteSetup } ) {
 	const publications = useSelect( ( select ) =>
@@ -94,7 +94,12 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 							'google-site-kit'
 						) }
 					</Typography>
-					<p className="googlesitekit-setup-module__description">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-setup-module__description"
+					>
 						{ createInterpolateElement(
 							__(
 								'Once you have created your publication, it is submitted for review. <a>Learn more</a>',
@@ -113,7 +118,7 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 								),
 							}
 						) }
-					</p>
+					</Typography>
 					<div className="googlesitekit-setup-module__action">
 						<Button
 							href={ createPublicationURL }

@@ -35,6 +35,7 @@ import {
 import { SettingsNotice } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import DisplaySetting from '../../../../components/DisplaySetting';
+import Typography from '../../../../components/Typography';
 
 export default function SettingsView() {
 	const clientID = useSelect( ( select ) =>
@@ -95,9 +96,14 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Client ID', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<DisplaySetting value={ clientID } />
-					</p>
+					</Typography>
 				</div>
 			</div>
 
@@ -106,27 +112,42 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Button text', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<DisplaySetting value={ buttonTextLabel } />
-					</p>
+					</Typography>
 				</div>
 
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Button theme', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<DisplaySetting value={ buttonThemeLabel } />
-					</p>
+					</Typography>
 				</div>
 
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Button shape', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<DisplaySetting value={ buttonShapeLabel } />
-					</p>
+					</Typography>
 				</div>
 			</div>
 
@@ -135,7 +156,12 @@ export default function SettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'One Tap sign in', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						{ ! oneTapEnabled && (
 							<DisplaySetting
 								value={ __( 'Disabled', 'google-site-kit' ) }
@@ -156,7 +182,7 @@ export default function SettingsView() {
 								}
 							/>
 						) }
-					</p>
+					</Typography>
 				</div>
 			</div>
 
@@ -166,7 +192,12 @@ export default function SettingsView() {
 						{ __( 'User registration', 'google-site-kit' ) }
 					</h5>
 					{ anyoneCanRegister !== undefined && (
-						<p className="googlesitekit-settings-module__meta-item-data">
+						<Typography
+							as="p"
+							type="body"
+							size="medium"
+							className="googlesitekit-settings-module__meta-item-data"
+						>
 							<DisplaySetting
 								value={
 									anyoneCanRegister
@@ -174,7 +205,7 @@ export default function SettingsView() {
 										: __( 'Disabled', 'google-site-kit' )
 								}
 							/>
-						</p>
+						</Typography>
 					) }
 				</div>
 			</div>

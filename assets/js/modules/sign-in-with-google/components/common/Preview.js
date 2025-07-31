@@ -28,6 +28,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
 import { getLocale } from '../../../../util';
+import Typography from '../../../../components/Typography';
 
 export default function Preview() {
 	const [ scriptLoaded, setScriptLoaded ] = useState( false );
@@ -79,9 +80,14 @@ export default function Preview() {
 
 	return (
 		<div className="googlesitekit-sign-in-with-google__preview">
-			<p className="googlesitekit-sign-in-with-google__preview--label">
+			<Typography
+				as="p"
+				type="body"
+				size="medium"
+				className="googlesitekit-sign-in-with-google__preview--label"
+			>
 				{ __( 'Preview', 'google-site-kit' ) }
-			</p>
+			</Typography>
 			<div ref={ containerRef } />
 			<div className="googlesitekit-sign-in-with-google__preview--protector" />
 		</div>

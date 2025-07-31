@@ -29,6 +29,7 @@ import PropTypes from 'prop-types';
 import UserRoleSelect from '../UserRoleSelect';
 import Notice from '../../Notice';
 import Link from '../../Link';
+import Typography from '../../Typography';
 
 const ModuleViewAccess = forwardRef(
 	(
@@ -77,12 +78,17 @@ const ModuleViewAccess = forwardRef(
 		}
 
 		return (
-			<p className="googlesitekit-dashboard-sharing-settings__note">
+			<Typography
+				as="p"
+				type="body"
+				size="medium"
+				className="googlesitekit-dashboard-sharing-settings__note"
+			>
 				{ __(
 					'Contact managing user to manage view access',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 		);
 	}
 );

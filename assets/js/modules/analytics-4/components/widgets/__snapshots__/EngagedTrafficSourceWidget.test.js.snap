@@ -38,7 +38,7 @@ exports[`EngagedTrafficSourceWidget should render correctly with the expected me
               Organic Search
             </div>
             <p
-              class="googlesitekit-km-widget-tile__subtext"
+              class="googlesitekit-typography googlesitekit-km-widget-tile__subtext googlesitekit-typography--body googlesitekit-typography--medium"
             >
               100% of 55 engaged sessions
             </p>

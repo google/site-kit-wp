@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import Typography from '../Typography';
 
 export default function Details() {
 	const userPicture = useSelect( ( select ) =>
@@ -49,15 +50,23 @@ export default function Details() {
 				/>
 			) }
 			<div className="googlesitekit-user-menu__details-info">
-				<p className="googlesitekit-user-menu__details-info__name">
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
+					className="googlesitekit-user-menu__details-info__name"
+				>
 					{ userFullName }
-				</p>
-				<p
+				</Typography>
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
 					className="googlesitekit-user-menu__details-info__email"
 					aria-label={ __( 'Email', 'google-site-kit' ) }
 				>
 					{ userEmail }
-				</p>
+				</Typography>
 			</div>
 		</div>
 	);

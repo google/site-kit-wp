@@ -54,6 +54,7 @@ import { MODULE_SLUG_ADSENSE } from '../../constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 import SurveyViewTrigger from '../../../../components/surveys/SurveyViewTrigger';
 import Banner from '../../../../components/Banner';
+import Typography from '../../../../components/Typography';
 import BannerSVGDesktop from '@/svg/graphics/banner-ad-blocking-recovery-setup-cta-mobile.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-ad-blocking-recovery-setup-cta.svg?url';
 
@@ -217,7 +218,7 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 				) }
 				description={
 					<Fragment>
-						<p>
+						<Typography as="p" type="body" size="medium">
 							{ __(
 								'Display a message to give site visitors with an ad blocker the option to allow ads on your site.',
 								'google-site-kit'
@@ -229,13 +230,13 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 							>
 								{ __( 'Learn more', 'google-site-kit' ) }
 							</Link>
-						</p>
-						<p>
+						</Typography>
+						<Typography as="p" type="body" size="medium">
 							{ __(
 								'Publishers see up to 1 in 5 users choose to allow ads once they encounter an ad blocking recovery message*',
 								'google-site-kit'
 							) }
-						</p>
+						</Typography>
 					</Fragment>
 				}
 				dismissButton={ {

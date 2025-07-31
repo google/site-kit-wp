@@ -37,6 +37,7 @@ import { MODULES_ADS } from '../../datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { isValidConversionID } from '../../utils/validation';
 import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
+import Typography from '../../../../components/Typography';
 
 export default function ConversionIDTextField( {
 	helperText,
@@ -81,9 +82,14 @@ export default function ConversionIDTextField( {
 			) }
 
 			{ helperText && (
-				<p className="googlesitekit-settings-module__fields-group-helper-text">
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
+					className="googlesitekit-settings-module__fields-group-helper-text"
+				>
 					{ helperText }
-				</p>
+				</Typography>
 			) }
 
 			<TextField

@@ -20,6 +20,7 @@
 import { useWindowWidth } from '../../../../hooks/useWindowSize';
 import { Cell, Grid, Row } from '../../../../material-components';
 import Title from '../common/Title';
+import Typography from '../../../../components/Typography';
 
 export default function NotificationWithSmallRightSVG( {
 	actions,
@@ -54,9 +55,14 @@ export default function NotificationWithSmallRightSVG( {
 					{ actions }
 					{ footer && (
 						<div className="googlesitekit-publisher-win__footer">
-							<p className="googlesitekit-enhanced-measurement-setup-banner__footer-notice">
+							<Typography
+								as="p"
+								type="body"
+								size="medium"
+								className="googlesitekit-enhanced-measurement-setup-banner__footer-notice"
+							>
 								{ footer }
-							</p>
+							</Typography>
 						</div>
 					) }
 				</Cell>

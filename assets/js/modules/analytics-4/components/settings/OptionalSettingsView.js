@@ -29,6 +29,7 @@ import { useSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
+import Typography from '../../../../components/Typography';
 
 export default function OptionalSettingsView() {
 	const useSnippet = useSelect( ( select ) =>
@@ -51,7 +52,12 @@ export default function OptionalSettingsView() {
 					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Excluded from Analytics', 'google-site-kit' ) }
 					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						{ !! trackingDisabled.length &&
 							trackingDisabled
 								.map(
@@ -70,7 +76,7 @@ export default function OptionalSettingsView() {
 								'Analytics is currently enabled for all visitors',
 								'google-site-kit'
 							) }
-					</p>
+					</Typography>
 				</div>
 			</div>
 
@@ -84,13 +90,18 @@ export default function OptionalSettingsView() {
 							<h5 className="googlesitekit-settings-module__meta-item-type">
 								{ __( 'Ads Conversion ID', 'google-site-kit' ) }
 							</h5>
-							<p className="googlesitekit-settings-module__meta-item-data">
+							<Typography
+								as="p"
+								type="body"
+								size="medium"
+								className="googlesitekit-settings-module__meta-item-data"
+							>
 								{ !! adsConversionID && (
 									<DisplaySetting value={ adsConversionID } />
 								) }
 								{ ! adsConversionID &&
 									__( 'None', 'google-site-kit' ) }
-							</p>
+							</Typography>
 						</div>
 					</div>
 				) }

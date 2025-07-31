@@ -32,6 +32,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
+import Typography from '../../../../components/Typography';
 
 export default function AccountCreate() {
 	const viewContext = useViewContext();
@@ -71,18 +72,18 @@ export default function AccountCreate() {
 				storeName={ MODULES_TAGMANAGER }
 			/>
 
-			<p>
+			<Typography as="p" type="body" size="medium">
 				{ __(
 					'To create a new account, click the button below which will open the Google Tag Manager account creation screen in a new window.',
 					'google-site-kit'
 				) }
-			</p>
-			<p>
+			</Typography>
+			<Typography as="p" type="body" size="medium">
 				{ __(
 					'Once completed, click the link below to re-fetch your accounts to continue.',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 
 			<div className="googlesitekit-setup-module__action">
 				<Button onClick={ createAccountHandler }>
