@@ -30,6 +30,9 @@ import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-
 import { CORE_EDIT_SITE } from '../common/constants';
 import Edit from './Edit';
 import metadata from './block.json';
+import { withBlockTracking } from '@/js/modules/reader-revenue-manager/common/withBlockTracking';
+
+const EditWithTracking = withBlockTracking( Edit );
 
 async function registerBlock() {
 	// Since we aren't currently able to use the Site Kit `useSelect()` in the components,
@@ -46,13 +49,19 @@ async function registerBlock() {
 	const isSiteEditor = !! select( CORE_EDIT_SITE );
 
 	registerBlockType( metadata.name, {
-		edit() {
+		// eslint-disable-next-line sitekit/acronym-case
+		edit( { clientId: blockID } ) {
 			// Don't render the block in the site editor. Site editor support will be added in a future issue.
 			if ( isSiteEditor ) {
 				return null;
 			}
 
-			return <Edit />;
+			return (
+				<EditWithTracking
+					blockID={ blockID }
+					label={ metadata.title }
+				/>
+			);
 		},
 		supports: {
 			// Don't allow the block to be inserted in the site editor.
