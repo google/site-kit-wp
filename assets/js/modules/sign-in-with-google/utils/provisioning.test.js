@@ -189,6 +189,36 @@ describe( 'modules/sign-in-with-google provisioning utilities', () => {
 			expect( result.appname.endsWith( '-' ) ).toBe( false );
 		} );
 
+		it.each( [
+			[
+				'basic sitename truncation',
+				'This is a very long site name that exceeds thirty characters',
+				'This is a very long site name ',
+				30,
+			],
+			[
+				'sitename exactly 30 characters',
+				'This site name is exactly 30ch',
+				'This site name is exactly 30ch',
+				30,
+			],
+			[ 'short sitename unchanged', 'Short Site', 'Short Site', 10 ],
+		] )(
+			'should handle sitename %s',
+			( _, inputSitename, expectedSitename, expectedLength ) => {
+				const params = {
+					appname: 'Test App',
+					sitename: inputSitename,
+					siteorigin: 'https://example.com',
+				};
+
+				const result = sanitizeProvisioningParams( params );
+
+				expect( result.sitename ).toBe( expectedSitename );
+				expect( result.sitename ).toHaveLength( expectedLength );
+			}
+		);
+
 		it( 'should preserve other params unchanged', () => {
 			const params = {
 				appname: 'Test App',

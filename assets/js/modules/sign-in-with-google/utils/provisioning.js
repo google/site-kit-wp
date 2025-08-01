@@ -80,5 +80,10 @@ export function sanitizeProvisioningParams( params ) {
 
 	sanitizedParams.appname = sanitizedAppname;
 
+	// Truncate sitename to a max of 30 characters.
+	if ( sitename.length > 30 ) {
+		sanitizedParams.sitename = sitename.substring( 0, 30 );
+	}
+
 	return sanitizedParams;
 }
