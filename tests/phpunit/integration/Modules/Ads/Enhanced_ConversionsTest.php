@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Modules\Ads;
 
+use Google\Site_Kit\Modules\Ads\Enhanced_Conversions;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -18,8 +19,58 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Enhanced_ConversionsTest extends TestCase {
 
-	// To Do: Add tests for Enhanced Conversions functionality and remove this dummy test.
-	public function test_dummy() {
-		$this->assertTrue( true, 'This is a dummy test for Enhanced Conversions. Please implement actual tests.' );
+	public function test_get_normalized_value() {
+		$enhanced_conversions = new Enhanced_Conversions();
+
+		$test_cases = array(
+			' Example Value '       => 'example value',
+			' John Doe'             => 'john doe',
+			'MixedCaseValue '       => 'mixedcasevalue',
+			'  12345 '              => '12345',
+			'  '                    => '',
+			'  Special!@#Value$%^ ' => 'special!@#value$%^',
+		);
+
+		foreach ( $test_cases as $input => $expected ) {
+			$normalized = $enhanced_conversions::get_normalized_value( $input );
+			$this->assertEquals( $expected, $normalized, "Failed for input: '$input'" );
+		}
+	}
+
+	public function test_get_normalized_email() {
+		$enhanced_conversions = new Enhanced_Conversions();
+
+		$test_cases = array(
+			' foo@bar.com '               => 'foo@bar.com',
+			' FOO@BAR.COM  '              => 'foo@bar.com',
+			'Foo@Bar.Com '                => 'foo@bar.com',
+			'fo.o@bar.com '               => 'fo.o@bar.com',
+			' foo.bar@gmail.com '         => 'foobar@gmail.com',
+			' foo.bar@googlemail.com '    => 'foobar@googlemail.com',
+			'"fo.o@ba.r"@gmail.com '      => '"foo@bar"@gmail.com',
+			' "fo.o@ba.r"@googlemail.com' => '"foo@bar"@googlemail.com',
+		);
+
+		foreach ( $test_cases as $input => $expected ) {
+			$normalized = $enhanced_conversions::get_normalized_email( $input );
+			$this->assertEquals( $expected, $normalized, "Failed for input: '$input'" );
+		}
+	}
+
+	public function test_get_hashed_value() {
+		$enhanced_conversions = new Enhanced_Conversions();
+
+		$test_cases = array(
+			'example value',
+			'john doe',
+			'mixedcasevalue',
+			'12345',
+			'special!@#value$%^',
+		);
+
+		foreach ( $test_cases as $input ) {
+			$hashed = $enhanced_conversions::get_hashed_value( $input );
+			$this->assertEquals( hash( 'sha256', $input ), $hashed, "Failed for input: '$input'" );
+		}
 	}
 }
