@@ -262,7 +262,7 @@ function PopularProductsWidget( props ) {
 			// this widget provides it directly to the MetricTileTable component.
 			// This is to accommodate a link behavior within the tooltip when the Metrics Selection Panel is open.
 			infoTooltip={ showTooltip ? infoTooltip : null }
-			ZeroState={ () => zeroStateMessage }
+			ZeroState={ () => <span>{ zeroStateMessage }</span> }
 			error={ error }
 			moduleSlug="analytics-4"
 		/>

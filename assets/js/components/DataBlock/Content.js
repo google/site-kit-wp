@@ -34,6 +34,7 @@ import Sparkline from './Sparkline';
 import Badge from '../Badge';
 import Change from './Change';
 import SourceLink from '../SourceLink';
+import Typography from '../Typography';
 
 export default function Content( {
 	title = '',
@@ -56,7 +57,10 @@ export default function Content( {
 	return (
 		<Fragment>
 			<div className="googlesitekit-data-block__title-datapoint-wrapper">
-				<h3
+				<Typography
+					as="h3"
+					size="small"
+					type="title"
 					className="
 						googlesitekit-subheading-1
 						googlesitekit-data-block__title
@@ -74,7 +78,7 @@ export default function Content( {
 					<span className="googlesitekit-data-block__title-inner">
 						{ title }
 					</span>
-				</h3>
+				</Typography>
 
 				{ ! gatheringData && (
 					<div className="googlesitekit-data-block__datapoint">

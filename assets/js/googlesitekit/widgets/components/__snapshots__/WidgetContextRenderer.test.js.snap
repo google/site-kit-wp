@@ -17,7 +17,7 @@ exports[`WidgetContextRenderer should render the registered widget area with a s
         class="googlesitekit-widget-area-header mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
       >
         <h3
-          class="googlesitekit-widget-area-header__title googlesitekit-heading-3"
+          class="googlesitekit-typography googlesitekit-widget-area-header__title googlesitekit-typography--headline googlesitekit-typography--small"
         >
           Dashboard Body
         </h3>
@@ -88,7 +88,7 @@ exports[`WidgetContextRenderer should render the registered widget areas 1`] = `
         class="googlesitekit-widget-area-header mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
       >
         <h3
-          class="googlesitekit-widget-area-header__title googlesitekit-heading-3"
+          class="googlesitekit-typography googlesitekit-widget-area-header__title googlesitekit-typography--headline googlesitekit-typography--small"
         >
           Dashboard Header
         </h3>
@@ -152,7 +152,7 @@ exports[`WidgetContextRenderer should render the registered widget areas 1`] = `
         class="googlesitekit-widget-area-header mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
       >
         <h3
-          class="googlesitekit-widget-area-header__title googlesitekit-heading-3"
+          class="googlesitekit-typography googlesitekit-widget-area-header__title googlesitekit-typography--headline googlesitekit-typography--small"
         >
           Dashboard Body
         </h3>
