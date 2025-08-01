@@ -43,9 +43,8 @@ import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/con
 import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_SETTINGS } from '../../../../../../../googlesitekit/constants';
 import * as tracking from '../../../../../../../util/tracking';
-import SetupSuccess, {
-	SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION,
-} from '.';
+import SetupSuccess from '.';
+import { CORE_UI } from '../../../../../../../googlesitekit/datastore/ui/constants';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -134,33 +133,11 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 		);
 	} );
 
-	it( 'should not render the setup success notification if dismissed', () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION,
-			] );
-
-		const { queryByText, queryByRole } = render( <SetupSuccess />, {
-			registry,
-		} );
-
-		expect(
-			queryByText(
-				'We’ve added the visitor groups section to your dashboard!'
-			)
-		).not.toBeInTheDocument();
-
-		expect(
-			queryByRole( 'button', { name: /Got it/i } )
-		).not.toBeInTheDocument();
-
-		expect(
-			queryByRole( 'button', { name: /Show me/i } )
-		).not.toBeInTheDocument();
-	} );
-
 	it( 'should dismiss the notification if "Got it" is clicked on', async () => {
+		expect(
+			registry.select( CORE_UI ).getValue( 'showSetupSuccess' )
+		).toBeUndefined();
+
 		const { queryByText, getByRole } = render( <SetupSuccess />, {
 			registry,
 		} );
@@ -176,10 +153,9 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 		// Allow the `trackEvent()` promise to resolve.
 		await waitForDefaultTimeouts();
 
-		expect( dismissItemSpy ).toHaveBeenCalledTimes( 1 );
-		expect( dismissItemSpy ).toHaveBeenCalledWith(
-			SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
-		);
+		expect(
+			registry.select( CORE_UI ).getValue( 'showSetupSuccess' )
+		).toBe( false );
 	} );
 
 	it( 'should track an event when "Got it" is clicked on', async () => {
@@ -203,6 +179,10 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 	} );
 
 	it( 'should dismiss the notification and navigate to dashboard if "Show me" is clicked on', async () => {
+		expect(
+			registry.select( CORE_UI ).getValue( 'showSetupSuccess' )
+		).toBeUndefined();
+
 		const { queryByText, getByRole } = render( <SetupSuccess />, {
 			registry,
 		} );
@@ -218,10 +198,9 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 		// Allow the `trackEvent()` promise to resolve.
 		await waitForDefaultTimeouts();
 
-		expect( dismissItemSpy ).toHaveBeenCalledTimes( 1 );
-		expect( dismissItemSpy ).toHaveBeenCalledWith(
-			SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
-		);
+		expect(
+			registry.select( CORE_UI ).getValue( 'showSetupSuccess' )
+		).toBe( false );
 
 		const expectedURL = addQueryArgs(
 			registry
@@ -257,23 +236,5 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 			'settings_audiences-setup-cta-settings-success',
 			'confirm_notification'
 		);
-	} );
-
-	it( 'should dismiss the notification if "Visitor groups" toggle is turned off', () => {
-		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
-			isAudienceSegmentationWidgetHidden: true,
-			configuredAudiences: null,
-		} );
-
-		const { container } = render( <SetupSuccess />, {
-			registry,
-		} );
-
-		expect( dismissItemSpy ).toHaveBeenCalledTimes( 1 );
-		expect( dismissItemSpy ).toHaveBeenCalledWith(
-			SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
-		);
-
-		expect( container ).toBeEmptyDOMElement();
 	} );
 } );

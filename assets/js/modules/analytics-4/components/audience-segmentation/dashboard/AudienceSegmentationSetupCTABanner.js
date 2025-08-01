@@ -101,7 +101,6 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 			{
 				Component: AudienceSegmentationSetupSuccessSubtleNotification,
 				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-				isDismissible: true,
 			}
 		);
 		dismissNotification( id );
