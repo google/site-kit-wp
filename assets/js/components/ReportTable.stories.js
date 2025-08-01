@@ -27,8 +27,8 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideModuleRegistrations,
-	WithTestRegistry,
 } from '../../../tests/js/utils';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import NewBadge from './NewBadge';
 
 function Template( args ) {
@@ -136,12 +136,18 @@ export default {
 	component: ReportTable,
 	decorators: [
 		( Story, { parameters } ) => {
+			const setupRegistry = ( registry ) => {
+				if ( parameters?.setupRegistry ) {
+					parameters.setupRegistry( registry );
+				}
+			};
+
 			return (
-				<WithTestRegistry features={ parameters.features || [] }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Layout>
-						<Story />
+						<Story { ...parameters } />
 					</Layout>
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

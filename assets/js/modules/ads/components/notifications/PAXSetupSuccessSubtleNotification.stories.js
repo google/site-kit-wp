@@ -25,7 +25,7 @@ import { withQuery } from '@storybook/addon-queryparams';
  * Internal dependencies
  */
 import PAXSetupSuccessSubtleNotification from './PAXSetupSuccessSubtleNotification';
-import { WithTestRegistry } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from '../../pax/constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 
@@ -33,7 +33,7 @@ const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-pax'
 )( PAXSetupSuccessSubtleNotification );
 
-function Template( { ...args } ) {
+function Template( args ) {
 	return <NotificationWithComponentProps { ...args } />;
 }
 
@@ -51,10 +51,16 @@ export default {
 	decorators: [
 		withQuery,
 		( Story, { parameters } ) => {
+			const setupRegistry = ( registry ) => {
+				if ( parameters?.setupRegistry ) {
+					parameters.setupRegistry( registry );
+				}
+			};
+
 			return (
-				<WithTestRegistry features={ parameters.features || [] }>
-					<Story />
-				</WithTestRegistry>
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story { ...parameters } />
+				</WithRegistrySetup>
 			);
 		},
 	],

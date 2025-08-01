@@ -21,11 +21,8 @@
  */
 import SettingsAdmin from './SettingsAdmin';
 import { Grid } from './../../../js/material-components';
-import {
-	provideModules,
-	provideSiteInfo,
-	WithTestRegistry,
-} from './../../../../tests/js/utils';
+import { provideModules, provideSiteInfo } from './../../../../tests/js/utils';
+import WithRegistrySetup from './../../../../tests/js/WithRegistrySetup';
 import settingsData from './../../../../storybook/__fixtures__/_googlesitekitLegacyData';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { CORE_SITE } from './../../googlesitekit/datastore/site/constants';
@@ -60,11 +57,11 @@ function Template() {
 	};
 
 	return (
-		<WithTestRegistry callback={ setupRegistry }>
+		<WithRegistrySetup func={ setupRegistry }>
 			<Grid>
 				<SettingsAdmin />
 			</Grid>
-		</WithTestRegistry>
+		</WithRegistrySetup>
 	);
 }
 
