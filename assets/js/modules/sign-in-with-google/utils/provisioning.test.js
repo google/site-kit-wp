@@ -80,10 +80,43 @@ describe( 'modules/sign-in-with-google provisioning utilities', () => {
 			[
 				'mixed invalid characters',
 				'App$Name%With&Symbols*',
-				'App-Name-With-Symbols-',
+				'App-Name-With-Symbols',
 			],
 		] )(
 			'should sanitize %s correctly',
+			( _, inputAppname, expectedAppname ) => {
+				const params = {
+					appname: inputAppname,
+					sitename: 'Test Site',
+					siteorigin: 'https://example.com',
+				};
+
+				const result = sanitizeProvisioningParams( params );
+
+				expect( result.appname ).toBe( expectedAppname );
+			}
+		);
+
+		it.each( [
+			[ 'leading hyphens', '---Valid App Name', 'Valid App Name' ],
+			[ 'trailing hyphens', 'Valid App Name---', 'Valid App Name' ],
+			[
+				'both leading and trailing hyphens',
+				'--Valid App Name--',
+				'Valid App Name',
+			],
+			[
+				'only hyphens after invalid character replacement',
+				'@@@Valid App Name@@@',
+				'Valid App Name',
+			],
+			[
+				'mixed case with hyphens',
+				'-App-Name-With-Hyphens-',
+				'App-Name-With-Hyphens',
+			],
+		] )(
+			'should trim hyphens for %s',
 			( _, inputAppname, expectedAppname ) => {
 				const params = {
 					appname: inputAppname,
@@ -155,6 +188,119 @@ describe( 'modules/sign-in-with-google provisioning utilities', () => {
 			expect( result.appname.length ).toBeLessThanOrEqual( 30 );
 			expect( result.appname.endsWith( '-' ) ).toBe( false );
 		} );
+
+		it.each( [
+			[
+				'basic sitename truncation',
+				'This is a very long site name that exceeds thirty characters',
+				'This is a very long site name',
+				29,
+			],
+			[
+				'sitename exactly 30 characters',
+				'This site name is exactly 30ch',
+				'This site name is exactly 30ch',
+				30,
+			],
+			[ 'short sitename unchanged', 'Short Site', 'Short Site', 10 ],
+		] )(
+			'should handle sitename %s',
+			( _, inputSitename, expectedSitename, expectedLength ) => {
+				const params = {
+					appname: 'Test App',
+					sitename: inputSitename,
+					siteorigin: 'https://example.com',
+				};
+
+				const result = sanitizeProvisioningParams( params );
+
+				expect( result.sitename ).toBe( expectedSitename );
+				expect( result.sitename ).toHaveLength( expectedLength );
+			}
+		);
+
+		it.each( [
+			[
+				'non-alphanumeric characters with spaces',
+				'My@Site#Name!',
+				'My Site Name',
+			],
+			[ 'multiple special characters', 'Site!!!Name???', 'Site Name' ],
+			[
+				'mixed characters with numbers',
+				'Site123@Name#456',
+				'Site123 Name 456',
+			],
+			[
+				'already valid sitename',
+				'Valid Site Name 123',
+				'Valid Site Name 123',
+			],
+			[
+				'sitename with sanitization and truncation',
+				'Very@Long#Site$Name%That&Exceeds*Thirty+Characters',
+				'Very Long Site Name That Excee',
+			],
+		] )(
+			'should sanitize sitename characters for %s',
+			( _, inputSitename, expectedSitename ) => {
+				const params = {
+					appname: 'Test App',
+					sitename: inputSitename,
+					siteorigin: 'https://example.com',
+				};
+
+				const result = sanitizeProvisioningParams( params );
+
+				expect( result.sitename ).toBe( expectedSitename );
+			}
+		);
+
+		it.each( [
+			[
+				'multiple consecutive spaces',
+				'Site    Name   With    Spaces',
+				'Site Name With Spaces',
+			],
+			[
+				'leading and trailing whitespace',
+				'   Site Name   ',
+				'Site Name',
+			],
+			[
+				'mixed spaces and special chars',
+				'  My@Site!!!Name  ',
+				'My Site Name',
+			],
+			[
+				'tabs and multiple spaces',
+				'Site\t\tName   With\tSpaces',
+				'Site Name With Spaces',
+			],
+			[
+				'special chars creating multiple spaces with trimming',
+				' !!!Site@@@Name!!! ',
+				'Site Name',
+			],
+			[
+				'long sitename with space normalization and truncation',
+				'  Very@@@Long    Site   Name   That   Should   Be   Truncated  ',
+				'Very Long Site Name That Shoul',
+			],
+		] )(
+			'should normalize spaces and trim for %s',
+			( _, inputSitename, expectedSitename ) => {
+				const params = {
+					appname: 'Test App',
+					sitename: inputSitename,
+					siteorigin: 'https://example.com',
+				};
+
+				const result = sanitizeProvisioningParams( params );
+
+				expect( result.sitename ).toBe( expectedSitename );
+			}
+		);
 
 		it( 'should preserve other params unchanged', () => {
 			const params = {
