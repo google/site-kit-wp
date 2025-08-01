@@ -47,7 +47,6 @@ export default function AnalyticsSettingsNotice( { hasModuleAccess } ) {
 	if ( ! hasModuleAccess ) {
 		return (
 			<Notice
-				className="googlesitekit-settings-notice"
 				type={ Notice.TYPES.WARNING }
 				description={ createInterpolateElement(
 					sprintf(

@@ -106,7 +106,7 @@ export default function AdditionalDescription( {
 								</Checkbox>
 							</div>
 						) ) }
-					<p className="googlesitekit-publisher-win__desc">
+					<p>
 						{ __(
 							'By recovering the selected modules, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
 							'google-site-kit'
@@ -115,7 +115,7 @@ export default function AdditionalDescription( {
 				</Fragment>
 			) }
 			{ ! hasMultipleRecoverableModules && (
-				<p className="googlesitekit-publisher-win__desc">
+				<p>
 					{ __(
 						'By recovering the module, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
 						'google-site-kit'

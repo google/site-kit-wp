@@ -1,5 +1,5 @@
 /**
- * SettingsNotice Stories.
+ * Analytics GA4 Notice component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -17,44 +17,37 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import SettingsNotice, { TYPE_WARNING, TYPE_SUGGESTION } from './';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import Link from '../Link';
+import Link from '../../../../components/Link';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import Notice from '../../../../components/Notice/index';
+import { TYPES } from '../../../../components/Notice/constants';
 
-function LearnMore() {
+export default function CreatePropertyInfoNotice() {
 	const documentationURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
 	} );
 
 	return (
-		<Link href={ documentationURL } external>
-			Learn more
-		</Link>
+		<Notice
+			type={ TYPES.INFO }
+			description={ createInterpolateElement(
+				__(
+					'Got a Google Analytics property and want to find out how to use it with Site Kit? <a>Learn more</a>',
+					'google-site-kit'
+				),
+				{
+					a: <Link href={ documentationURL } external />,
+				}
+			) }
+		/>
 	);
 }
-
-function Template( args ) {
-	return <SettingsNotice { ...args } />;
-}
-
-export const Warning = Template.bind( {} );
-Warning.args = {
-	type: TYPE_WARNING,
-	LearnMore,
-	notice: 'This is a warning.',
-};
-
-export const SuggestionNotice = Template.bind( {} );
-SuggestionNotice.args = {
-	type: TYPE_SUGGESTION,
-	LearnMore,
-	notice: 'This is a suggestion.',
-};
-
-export default {
-	title: 'Global/SettingsNotice',
-	component: SettingsNotice,
-};

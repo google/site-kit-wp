@@ -21,6 +21,11 @@
  */
 import invariant from 'invariant';
 
+/**
+ * Internal dependencies
+ */
+import { createReducer } from 'googlesitekit-data';
+
 // Actions
 const SET_MODULE_SETTINGS_PANEL_STATE = 'SET_MODULE_SETTINGS_PANEL_STATE';
 
@@ -58,7 +63,7 @@ export const actions = {
 	},
 };
 
-export const reducer = ( state, { type, payload } ) => {
+export const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case SET_MODULE_SETTINGS_PANEL_STATE: {
 			const { slug, value } = payload;
@@ -67,17 +72,14 @@ export const reducer = ( state, { type, payload } ) => {
 			settingsPanel.currentModule = 'closed' === value ? null : slug;
 			settingsPanel.isEditing = 'edit' === value;
 
-			return {
-				...state,
-				settingsPanel,
-			};
+			state.settingsPanel = settingsPanel;
+			break;
 		}
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 export const selectors = {
 	/**
