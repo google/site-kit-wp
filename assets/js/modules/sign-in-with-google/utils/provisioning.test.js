@@ -80,10 +80,43 @@ describe( 'modules/sign-in-with-google provisioning utilities', () => {
 			[
 				'mixed invalid characters',
 				'App$Name%With&Symbols*',
-				'App-Name-With-Symbols-',
+				'App-Name-With-Symbols',
 			],
 		] )(
 			'should sanitize %s correctly',
+			( _, inputAppname, expectedAppname ) => {
+				const params = {
+					appname: inputAppname,
+					sitename: 'Test Site',
+					siteorigin: 'https://example.com',
+				};
+
+				const result = sanitizeProvisioningParams( params );
+
+				expect( result.appname ).toBe( expectedAppname );
+			}
+		);
+
+		it.each( [
+			[ 'leading hyphens', '---Valid App Name', 'Valid App Name' ],
+			[ 'trailing hyphens', 'Valid App Name---', 'Valid App Name' ],
+			[
+				'both leading and trailing hyphens',
+				'--Valid App Name--',
+				'Valid App Name',
+			],
+			[
+				'only hyphens after invalid character replacement',
+				'@@@Valid App Name@@@',
+				'Valid App Name',
+			],
+			[
+				'mixed case with hyphens',
+				'-App-Name-With-Hyphens-',
+				'App-Name-With-Hyphens',
+			],
+		] )(
+			'should trim hyphens for %s',
 			( _, inputAppname, expectedAppname ) => {
 				const params = {
 					appname: inputAppname,

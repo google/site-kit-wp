@@ -52,6 +52,9 @@ export function sanitizeProvisioningParams( params ) {
 		match.includes( ' ' ) ? ' ' : '-'
 	);
 
+	// Trim hyphens from the beginning and end of the sanitized name.
+	sanitizedAppname = sanitizedAppname.replace( /^-+|-+$/g, '' );
+
 	// If the resulting name is less than 4 characters, replace with fallback.
 	if ( sanitizedAppname.length < 4 ) {
 		try {
