@@ -26,7 +26,7 @@ import { withQuery } from '@storybook/addon-queryparams';
  */
 import SetupSuccessSubtleNotification from './SetupSuccessSubtleNotification';
 import { MODULE_SLUG_ADS } from '../../constants';
-import { WithTestRegistry } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -53,10 +53,12 @@ export default {
 	decorators: [
 		withQuery,
 		( Story, { parameters } ) => {
+			const { setupRegistry = () => {}, ...rest } = parameters;
+
 			return (
-				<WithTestRegistry features={ parameters.features || [] }>
-					<Story />
-				</WithTestRegistry>
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story { ...rest } />
+				</WithRegistrySetup>
 			);
 		},
 	],

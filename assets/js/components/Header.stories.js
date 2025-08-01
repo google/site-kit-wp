@@ -38,7 +38,6 @@ import Null from './Null';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import {
 	createTestRegistry,
-	WithTestRegistry,
 	provideUserAuthentication,
 	provideSiteInfo,
 	provideModules,
@@ -63,16 +62,8 @@ import { MODULE_SLUG_SEARCH_CONSOLE } from '../modules/search-console/constants'
 import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../modules/pagespeed-insights/constants';
 
-function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
-	return (
-		<WithRegistrySetup func={ setupRegistry }>
-			<ViewContextProvider
-				value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
-			>
-				<Header { ...args } />
-			</ViewContextProvider>
-		</WithRegistrySetup>
-	);
+function Template( args ) {
+	return <Header { ...args } />;
 }
 
 export const PluginHeader = Template.bind( {} );
@@ -247,14 +238,20 @@ export default {
 	title: 'Components/Header',
 	component: Header,
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const registry = createTestRegistry();
 			provideSiteInfo( registry );
 
+			const { setupRegistry = () => {}, viewContext, ...rest } = args;
+
 			return (
-				<WithTestRegistry registry={ registry }>
-					<Story />
-				</WithTestRegistry>
+				<WithRegistrySetup func={ setupRegistry }>
+					<ViewContextProvider
+						value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+					>
+						<Story { ...rest } />
+					</ViewContextProvider>
+				</WithRegistrySetup>
 			);
 		},
 	],

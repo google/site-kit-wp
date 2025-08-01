@@ -19,11 +19,8 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	provideModules,
-	WithTestRegistry,
-} from './../../../tests/js/utils';
+import { createTestRegistry, provideModules } from './../../../tests/js/utils';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { createModuleStore } from './../googlesitekit/modules/create-module-store';
 import ReportZero from './ReportZero';
 
@@ -32,7 +29,7 @@ export function ReportZeroStory() {
 }
 ReportZeroStory.storyName = 'Report Zero';
 ReportZeroStory.decorators = [
-	( Story ) => {
+	( Story, { parameters } ) => {
 		const registry = createTestRegistry();
 		const testModuleDefinition = createModuleStore( 'test-module', {
 			storeName: 'modules/test-module',
@@ -45,10 +42,17 @@ ReportZeroStory.decorators = [
 			{ slug: 'test-module', name: 'Test Module' },
 		] );
 
+		const {
+			setupRegistry = () => {},
+			// eslint-disable-next-line no-unused-vars
+			viewContext,
+			...rest
+		} = parameters;
+
 		return (
-			<WithTestRegistry registry={ registry }>
-				<Story />
-			</WithTestRegistry>
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story { ...rest } />
+			</WithRegistrySetup>
 		);
 	},
 ];

@@ -19,12 +19,12 @@
  */
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import {
-	WithTestRegistry,
 	createTestRegistry,
 	muteFetch,
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
 function Template() {
@@ -86,17 +86,12 @@ export default {
 				)
 			);
 
-			if ( args.setupRegistry ) {
-				args.setupRegistry( registry );
-			}
+			const { setupRegistry = () => {} } = args;
 
 			return (
-				<WithTestRegistry
-					registry={ registry }
-					features={ args.features || [] }
-				>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

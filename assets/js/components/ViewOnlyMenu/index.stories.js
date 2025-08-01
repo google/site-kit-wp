@@ -26,7 +26,6 @@ import fetchMock from 'fetch-mock';
  */
 import {
 	createTestRegistry,
-	WithTestRegistry,
 	provideModules,
 	provideModuleRegistrations,
 	provideSiteConnection,
@@ -98,6 +97,14 @@ CanAuthenticate.decorators = [
 		);
 	},
 ];
+CanAuthenticate.args = {
+	setupRegistry: ( registry ) => {
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: true,
+			...commonModuleCapabilities,
+		} );
+	},
+};
 
 export const CannotAuthenticate = Template.bind( {} );
 CannotAuthenticate.storyName = 'Cannot Authenticate';
@@ -116,12 +123,20 @@ CannotAuthenticate.decorators = [
 		);
 	},
 ];
+CannotAuthenticate.args = {
+	setupRegistry: ( registry ) => {
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: false,
+			...commonModuleCapabilities,
+		} );
+	},
+};
 
 export default {
 	title: 'Components/ViewOnlyMenu',
 	component: ViewOnlyMenu,
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			const registry = createTestRegistry();
 			provideSiteConnection( registry );
 			provideModules( registry, [
@@ -141,6 +156,9 @@ export default {
 				},
 			] );
 			provideModuleRegistrations( registry );
+
+			const { setupRegistry = () => {} } = args;
+
 			registry
 				.dispatch( CORE_USER )
 				.receiveGetTracking( { enabled: false } );
@@ -156,9 +174,9 @@ export default {
 			);
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

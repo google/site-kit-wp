@@ -20,11 +20,8 @@
  * Internal dependencies
  */
 import ResetButton from './ResetButton';
-import {
-	WithTestRegistry,
-	createTestRegistry,
-	provideSiteInfo,
-} from '../../../tests/js/utils';
+import { createTestRegistry, provideSiteInfo } from '../../../tests/js/utils';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 
 function Template() {
 	return <ResetButton>Reset Site Kit Button</ResetButton>;
@@ -39,9 +36,9 @@ Default.decorators = [
 		provideSiteInfo( registry );
 
 		return (
-			<WithTestRegistry registry={ registry }>
+			<WithRegistrySetup func={ () => {} }>
 				<Story />
-			</WithTestRegistry>
+			</WithRegistrySetup>
 		);
 	},
 ];

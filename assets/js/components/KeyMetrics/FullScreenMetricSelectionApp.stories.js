@@ -22,8 +22,8 @@
 import {
 	createTestRegistry,
 	provideSiteInfo,
-	WithTestRegistry,
 } from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_METRIC_SELECTION } from '../../googlesitekit/constants';
 import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
@@ -48,7 +48,7 @@ export default {
 	title: 'Key Metrics/FullScreenMetricsSelectionApp',
 	component: FullScreenMetricsSelectionApp,
 	decorators: [
-		( Story, { args } ) => {
+		( Story ) => {
 			const registry = createTestRegistry();
 
 			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
@@ -56,12 +56,9 @@ export default {
 			provideSiteInfo( registry );
 
 			return (
-				<WithTestRegistry
-					registry={ registry }
-					features={ args.features || [] }
-				>
+				<WithRegistrySetup func={ () => {} }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],
