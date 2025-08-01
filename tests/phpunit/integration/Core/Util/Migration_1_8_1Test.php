@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Util;
 
@@ -76,7 +74,7 @@ class Migration_1_8_1Test extends TestCase {
 		remove_all_actions( 'admin_init' );
 		$this->migration->register();
 
-		$this->assertTrue( has_action( 'admin_init' ) );
+		$this->assertTrue( has_action( 'admin_init' ), 'Migration should register admin_init action.' );
 	}
 
 	public function test_migrate_without_using_proxy() {
@@ -85,7 +83,7 @@ class Migration_1_8_1Test extends TestCase {
 
 		$this->migration->migrate();
 		$this->assertNotIssuedAPIRequest();
-		$this->assertNotEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version() );
+		$this->assertNotEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version(), 'Database version should not be updated when not using proxy.' );
 	}
 
 	public function test_migrate_without_credentials() {
@@ -93,7 +91,7 @@ class Migration_1_8_1Test extends TestCase {
 
 		$this->migration->migrate();
 		$this->assertNotIssuedAPIRequest();
-		$this->assertNotEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version() );
+		$this->assertNotEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version(), 'Database version should not be updated when no credentials exist.' );
 	}
 
 	public function test_migrate_without_users() {
@@ -102,7 +100,7 @@ class Migration_1_8_1Test extends TestCase {
 
 		$this->migration->migrate();
 		$this->assertNotIssuedAPIRequest();
-		$this->assertEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version() );
+		$this->assertEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version(), 'Database version should be updated when using proxy but no users exist.' );
 	}
 
 	public function test_migrate_without_problem_cases() {
@@ -115,7 +113,7 @@ class Migration_1_8_1Test extends TestCase {
 		$this->migration->migrate();
 		$this->assertNotIssuedAPIRequest();
 		$this->assertHasSiteKitUserOptions( $valid_authenticated_user->ID );
-		$this->assertEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version() );
+		$this->assertEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version(), 'Database version should be updated after successful migration.' );
 	}
 
 	public function test_migrate_with_problem_cases() {
@@ -156,7 +154,7 @@ class Migration_1_8_1Test extends TestCase {
 		foreach ( $problem_cases as $user ) {
 			$this->assertNotHasSiteKitUserOptions( $user->ID );
 		}
-		$this->assertEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version() );
+		$this->assertEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version(), 'Database version should be updated after migration with problem cases.' );
 	}
 
 	public function test_migrate_with_problem_cases_and_api_error() {
@@ -182,7 +180,7 @@ class Migration_1_8_1Test extends TestCase {
 		foreach ( $problem_cases as $user ) {
 			$this->assertNotHasSiteKitUserOptions( $user->ID );
 		}
-		$this->assertEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version() );
+		$this->assertEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version(), 'Database version should be updated even when API returns error.' );
 	}
 
 	private function create_user( $role, $verification_type = false ) {

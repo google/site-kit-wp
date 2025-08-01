@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Assets;
 
 use Google\Site_Kit\Context;
@@ -31,17 +29,17 @@ class StylesheetTest extends TestCase {
 	public function test_get_handle() {
 		$style = new Stylesheet( 'test-handle', array() );
 
-		$this->assertEquals( 'test-handle', $style->get_handle() );
+		$this->assertEquals( 'test-handle', $style->get_handle(), 'Stylesheet handle should match the provided handle.' );
 	}
 
 	public function test_register() {
 		$style = new Stylesheet( 'test-handle', array() );
 
-		$this->assertFalse( wp_style_is( 'test-handle', 'registered' ) );
+		$this->assertFalse( wp_style_is( 'test-handle', 'registered' ), 'Stylesheet should not be registered initially.' );
 
 		$style->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertTrue( wp_style_is( 'test-handle', 'registered' ) );
+		$this->assertTrue( wp_style_is( 'test-handle', 'registered' ), 'Stylesheet should be registered after registration.' );
 	}
 
 	public function test_register_with_before_print_callback() {
@@ -57,7 +55,7 @@ class StylesheetTest extends TestCase {
 		);
 
 		$style->before_print();
-		$this->assertCount( 1, $invocations );
+		$this->assertCount( 1, $invocations, 'Before print callback should be invoked once.' );
 	}
 
 	public function test_registered_src() {
@@ -105,16 +103,16 @@ class StylesheetTest extends TestCase {
 
 	public function test_enqueue() {
 		$style = new Stylesheet( 'test-handle', array() );
-		$this->assertFalse( wp_style_is( 'test-handle', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'test-handle', 'enqueued' ), 'Stylesheet should not be enqueued initially.' );
 
 		$style->enqueue();
 
 		// Must be registered first
-		$this->assertFalse( wp_style_is( 'test-handle', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'test-handle', 'enqueued' ), 'Stylesheet should not be enqueued without registration.' );
 
 		$style->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$style->enqueue();
 
-		$this->assertTrue( wp_style_is( 'test-handle', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'test-handle', 'enqueued' ), 'Stylesheet should be enqueued after registration and enqueue.' );
 	}
 }

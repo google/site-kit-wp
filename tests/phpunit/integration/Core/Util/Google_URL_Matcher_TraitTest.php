@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Util;
 
@@ -38,9 +36,9 @@ class Google_URL_Matcher_TraitTest extends TestCase {
 	public function test_is_url_match( $url, $compare, $expected ) {
 		$result = $this->matcher->is_url_match( $url, $compare );
 		if ( $expected ) {
-			$this->assertTrue( $result );
+			$this->assertTrue( $result, 'URLs should match when expected.' );
 		} else {
-			$this->assertFalse( $result );
+			$this->assertFalse( $result, 'URLs should not match when not expected.' );
 		}
 	}
 
@@ -119,9 +117,9 @@ class Google_URL_Matcher_TraitTest extends TestCase {
 	public function test_is_domain_match( $domain, $compare, $expected ) {
 		$result = $this->matcher->is_domain_match( $domain, $compare );
 		if ( $expected ) {
-			$this->assertTrue( $result );
+			$this->assertTrue( $result, 'Domains should match when expected.' );
 		} else {
-			$this->assertFalse( $result );
+			$this->assertFalse( $result, 'Domains should not match when not expected.' );
 		}
 	}
 

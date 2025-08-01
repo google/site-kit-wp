@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Assets;
 
 use Google\Site_Kit\Context;
@@ -31,7 +29,7 @@ class Script_DataTest extends TestCase {
 	public function test_get_handle() {
 		$script = new Script_Data( 'test-handle', array() );
 
-		$this->assertEquals( 'test-handle', $script->get_handle() );
+		$this->assertEquals( 'test-handle', $script->get_handle(), 'Script handle should match the provided handle.' );
 	}
 
 	public function test_get_data_callback_before_print() {
@@ -46,13 +44,14 @@ class Script_DataTest extends TestCase {
 			)
 		);
 		$script->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->assertEmpty( wp_scripts()->get_data( 'test-handle', 'data' ) );
+		$this->assertEmpty( wp_scripts()->get_data( 'test-handle', 'data' ), 'Script data should be empty before print.' );
 
 		$script->before_print();
 
 		$this->assertStringContainsString(
 			'var testGlobal = ' . wp_json_encode( $data ),
-			wp_scripts()->get_data( 'test-handle', 'data' )
+			wp_scripts()->get_data( 'test-handle', 'data' ),
+			'Script data should contain the global variable with callback data after print.'
 		);
 	}
 }

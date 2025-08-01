@@ -6,9 +6,7 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
- */
-
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+ * */
 
 namespace Google\Site_Kit\Tests;
 
@@ -47,9 +45,9 @@ class PluginTest extends TestCase {
 	public function test_context() {
 		$plugin = new Plugin( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
-		$this->assertInstanceOf( 'Google\Site_Kit\Context', $plugin->context() );
+		$this->assertInstanceOf( 'Google\Site_Kit\Context', $plugin->context(), 'Plugin context should be an instance of Context class' );
 		// Test that the context provided is using the same file.
-		$this->assertEquals( plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $plugin->context()->path() );
+		$this->assertEquals( plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $plugin->context()->path(), 'Plugin context path should match the plugin directory path' );
 	}
 
 	// Ensure we're supplying the correct minimum version of PHP
@@ -61,15 +59,15 @@ class PluginTest extends TestCase {
 		$plugin_data = get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
 		if ( array_key_exists( 'RequiresPHP', $plugin_data ) ) {
-			$this->assertEquals( $plugin_data['RequiresPHP'], '7.4' );
+			$this->assertEquals( $plugin_data['RequiresPHP'], '7.4', 'Plugin should require PHP 7.4' );
 		}
 		if ( array_key_exists( 'RequiresWP', $plugin_data ) ) {
-			$this->assertEquals( $plugin_data['RequiresWP'], '5.2' );
+			$this->assertEquals( $plugin_data['RequiresWP'], '5.2', 'Plugin should require WordPress 5.2' );
 		}
 
 		// These fields are available in all versions of WordPress we support,
 		// so check for them unconditionally.
-		$this->assertEquals( $plugin_data['Name'], 'Site Kit by Google' );
+		$this->assertEquals( $plugin_data['Name'], 'Site Kit by Google', 'Plugin name should be "Site Kit by Google"' );
 	}
 
 	public function test_register() {
@@ -90,9 +88,9 @@ class PluginTest extends TestCase {
 		$mock_callback->expects( $this->once() )->method( 'callback' );
 		add_action( 'googlesitekit_init', array( $mock_callback, 'callback' ) );
 
-		$this->assertEquals( 0, did_action( 'googlesitekit_init' ) );
+		$this->assertEquals( 0, did_action( 'googlesitekit_init' ), 'googlesitekit_init action should not have been triggered yet' );
 		do_action( 'init' );
-		$this->assertEquals( 1, did_action( 'googlesitekit_init' ) );
+		$this->assertEquals( 1, did_action( 'googlesitekit_init' ), 'googlesitekit_init action should be triggered exactly once after init' );
 	}
 
 	public function test_register__init_keyMetrics() {
@@ -105,7 +103,7 @@ class PluginTest extends TestCase {
 		$this->register_rest_routes();
 
 		$routes = rest_get_server()->get_routes();
-		$this->assertArrayHasKey( '/' . REST_Routes::REST_ROOT . '/core/user/data/user-input-settings', $routes );
+		$this->assertArrayHasKey( '/' . REST_Routes::REST_ROOT . '/core/user/data/user-input-settings', $routes, 'REST API should register the user-input-settings endpoint' );
 	}
 
 	protected function assertActionRendersGeneratorTag( $action ) {
@@ -115,7 +113,8 @@ class PluginTest extends TestCase {
 
 		$this->assertStringContainsString(
 			'<meta name="generator" content="Site Kit by Google ' . GOOGLESITEKIT_VERSION . '"',
-			$output
+			$output,
+			sprintf( 'Action %s should render the Site Kit generator meta tag', $action )
 		);
 	}
 
@@ -129,7 +128,7 @@ class PluginTest extends TestCase {
 		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
 
 		$plugin = new Plugin( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->assertTrue( $plugin->context()->is_network_mode() );
+		$this->assertTrue( $plugin->context()->is_network_mode(), 'Plugin should be in network mode' );
 		remove_all_actions( 'network_admin_notices' );
 
 		$plugin->register();
@@ -139,20 +138,24 @@ class PluginTest extends TestCase {
 		$network_admin_notices = ob_get_clean();
 
 		// Regex is case-insensitive and dotall (s) to match over multiple lines.
-		$this->assertMatchesRegularExpression( '#<div class="notice notice-warning.*?not yet offer.*?</div>#is', $network_admin_notices );
+		$this->assertMatchesRegularExpression(
+			'#<div class="notice notice-warning.*?not yet offer.*?</div>#is',
+			$network_admin_notices,
+			'Network admin notices should contain a warning about network mode'
+		);
 	}
 
 	public function test_load_and_instance() {
 		// Clear out the plugin instance instantiated during bootstrap.
 		$this->force_set_property( 'Google\Site_Kit\Plugin', 'instance', null );
-		$this->assertNull( Plugin::instance() );
+		$this->assertNull( Plugin::instance(), 'Plugin instance should be null after resetting' );
 
-		$this->assertTrue( Plugin::load( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->assertTrue( Plugin::load( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), 'Plugin::load() should return true on first call' );
 		$plugin = Plugin::instance();
 
 		// Subsequent calls return false after the instance is loaded.
-		$this->assertFalse( Plugin::load( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->assertFalse( Plugin::load( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), 'Plugin::load() should return false on subsequent calls' );
 		// Instance returns the same instance every time.
-		$this->assertSame( $plugin, Plugin::instance() );
+		$this->assertSame( $plugin, Plugin::instance(), 'Plugin::instance() should return the same instance every time' );
 	}
 }

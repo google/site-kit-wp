@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Tags\Google_Tag_Gateway;
 
@@ -40,35 +38,37 @@ class Google_Tag_Gateway_CronTest extends TestCase {
 
 	public function test_register() {
 		$cron = new Google_Tag_Gateway_Cron( $this->settings, '__return_true' );
-		$this->assertFalse( has_action( Google_Tag_Gateway_Cron::CRON_ACTION ) );
+		$this->assertFalse( has_action( Google_Tag_Gateway_Cron::CRON_ACTION ), 'Cron action should not be registered initially.' );
 
 		$cron->register();
 
-		$this->assertTrue( has_action( Google_Tag_Gateway_Cron::CRON_ACTION ) );
+		$this->assertTrue( has_action( Google_Tag_Gateway_Cron::CRON_ACTION ), 'Cron action should be registered after registration.' );
 	}
 
 	public function test_register__given_callable() {
 		$spy  = new MethodSpy();
 		$cron = new Google_Tag_Gateway_Cron( $this->settings, array( $spy, 'func' ) );
 		$cron->register();
-		$this->assertTrue( empty( $spy->invocations['func'] ) );
+		$this->assertTrue( empty( $spy->invocations['func'] ), 'Spy should not be invoked before cron action.' );
 
 		do_action( Google_Tag_Gateway_Cron::CRON_ACTION );
 
-		$this->assertCount( 1, $spy->invocations['func'] );
+		$this->assertCount( 1, $spy->invocations['func'], 'Spy should be invoked once when cron action is triggered.' );
 	}
 
 	public function test_maybe_schedule_cron() {
 		$cron = new Google_Tag_Gateway_Cron( $this->settings, '__return_true' );
 
 		$this->assertFalse(
-			wp_next_scheduled( Google_Tag_Gateway_Cron::CRON_ACTION )
+			wp_next_scheduled( Google_Tag_Gateway_Cron::CRON_ACTION ),
+			'Cron should not be scheduled initially.'
 		);
 
 		$cron->maybe_schedule_cron();
 
 		$this->assertFalse(
-			wp_next_scheduled( Google_Tag_Gateway_Cron::CRON_ACTION )
+			wp_next_scheduled( Google_Tag_Gateway_Cron::CRON_ACTION ),
+			'Cron should not be scheduled when gateway is disabled.'
 		);
 
 		$this->settings->merge( array( 'isEnabled' => true ) );
@@ -76,7 +76,8 @@ class Google_Tag_Gateway_CronTest extends TestCase {
 		$cron->maybe_schedule_cron();
 
 		$this->assertNotEmpty(
-			wp_next_scheduled( Google_Tag_Gateway_Cron::CRON_ACTION )
+			wp_next_scheduled( Google_Tag_Gateway_Cron::CRON_ACTION ),
+			'Cron should be scheduled when gateway is enabled.'
 		);
 	}
 }

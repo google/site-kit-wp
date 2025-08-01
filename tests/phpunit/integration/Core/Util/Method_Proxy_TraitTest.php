@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Util;
 
@@ -33,7 +31,7 @@ class Method_Proxy_TraitTest extends TestCase {
 		$callback();
 		$callback();
 
-		$this->assertEquals( 2, $this->calls );
+		$this->assertEquals( 2, $this->calls, 'Method proxy should be called twice when callback is invoked twice.' );
 	}
 
 	public function test_method_proxy_once() {
@@ -43,7 +41,7 @@ class Method_Proxy_TraitTest extends TestCase {
 		$callback();
 		$callback();
 
-		$this->assertEquals( 1, $this->calls );
+		$this->assertEquals( 1, $this->calls, 'Method proxy once should only be called once even when callback is invoked twice.' );
 	}
 
 	private function hidden_function() {

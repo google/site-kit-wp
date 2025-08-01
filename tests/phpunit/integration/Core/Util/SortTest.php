@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Core\Util\Sort;
@@ -140,7 +138,8 @@ class SortTest extends TestCase {
 				$unsorted_array,
 				$orderby
 			),
-			$expected_sorted_array
+			$expected_sorted_array,
+			'Sorted array should match expected result for case-insensitive sorting.'
 		);
 	}
 }

@@ -41,23 +41,23 @@ class PointersTest extends TestCase {
 	}
 
 	public function test_register() {
-		$this->assertTrue( has_action( 'admin_enqueue_scripts' ) );
+		$this->assertTrue( has_action( 'admin_enqueue_scripts' ), 'Pointers should register the admin_enqueue_scripts action.' );
 	}
 
 	public function test_enqueue_pointers__no_hook_suffix() {
 		do_action( 'admin_enqueue_scripts' );
 
-		$this->assertFalse( wp_script_is( 'wp-pointer' ) );
-		$this->assertFalse( wp_style_is( 'wp-pointer' ) );
-		$this->assertFalse( has_action( 'admin_print_footer_scripts' ) );
+		$this->assertFalse( wp_script_is( 'wp-pointer' ), 'wp-pointer script should not be enqueued when no hook suffix.' );
+		$this->assertFalse( wp_style_is( 'wp-pointer' ), 'wp-pointer style should not be enqueued when no hook suffix.' );
+		$this->assertFalse( has_action( 'admin_print_footer_scripts' ), 'No admin_print_footer_scripts action should be present when no hook suffix.' );
 	}
 
 	public function test_enqueue_pointers__no_pointers() {
 		do_action( 'admin_enqueue_scripts', self::TEST_HOOK_SUFFIX );
 
-		$this->assertFalse( wp_script_is( 'wp-pointer' ) );
-		$this->assertFalse( wp_style_is( 'wp-pointer' ) );
-		$this->assertFalse( has_action( 'admin_print_footer_scripts' ) );
+		$this->assertFalse( wp_script_is( 'wp-pointer' ), 'wp-pointer script should not be enqueued when no pointers.' );
+		$this->assertFalse( wp_style_is( 'wp-pointer' ), 'wp-pointer style should not be enqueued when no pointers.' );
+		$this->assertFalse( has_action( 'admin_print_footer_scripts' ), 'No admin_print_footer_scripts action should be present when no pointers.' );
 	}
 
 	public function test_enqueue_pointers__no_active_pointers() {
@@ -79,9 +79,9 @@ class PointersTest extends TestCase {
 
 		do_action( 'admin_enqueue_scripts', self::TEST_HOOK_SUFFIX );
 
-		$this->assertFalse( wp_script_is( 'wp-pointer' ) );
-		$this->assertFalse( wp_style_is( 'wp-pointer' ) );
-		$this->assertFalse( has_action( 'admin_print_footer_scripts' ) );
+		$this->assertFalse( wp_script_is( 'wp-pointer' ), 'wp-pointer script should not be enqueued when no active pointers.' );
+		$this->assertFalse( wp_style_is( 'wp-pointer' ), 'wp-pointer style should not be enqueued when no active pointers.' );
+		$this->assertFalse( has_action( 'admin_print_footer_scripts' ), 'No admin_print_footer_scripts action should be present when no active pointers.' );
 	}
 
 	public function test_enqueue_pointers() {
@@ -103,16 +103,16 @@ class PointersTest extends TestCase {
 
 		do_action( 'admin_enqueue_scripts', self::TEST_HOOK_SUFFIX );
 
-		$this->assertTrue( wp_script_is( 'wp-pointer' ) );
-		$this->assertTrue( wp_style_is( 'wp-pointer' ) );
-		$this->assertTrue( has_action( 'admin_print_footer_scripts' ) );
+		$this->assertTrue( wp_script_is( 'wp-pointer' ), 'wp-pointer script should be enqueued when there are active pointers.' );
+		$this->assertTrue( wp_style_is( 'wp-pointer' ), 'wp-pointer style should be enqueued when there are active pointers.' );
+		$this->assertTrue( has_action( 'admin_print_footer_scripts' ), 'admin_print_footer_scripts action should be present when there are active pointers.' );
 
 		$output = $this->capture_action( 'admin_print_footer_scripts' );
 
-		$this->assertStringContainsString( 'test-slug', $output );
-		$this->assertStringContainsString( 'Test pointer title', $output );
-		$this->assertStringContainsString( 'Test pointer content.', $output );
-		$this->assertStringContainsString( '#test-target', $output );
+		$this->assertStringContainsString( 'test-slug', $output, 'Pointer output should contain the slug.' );
+		$this->assertStringContainsString( 'Test pointer title', $output, 'Pointer output should contain the title.' );
+		$this->assertStringContainsString( 'Test pointer content.', $output, 'Pointer output should contain the content.' );
+		$this->assertStringContainsString( '#test-target', $output, 'Pointer output should contain the target selector.' );
 	}
 
 	public function test_print_pointer_scripy() {
@@ -136,9 +136,9 @@ class PointersTest extends TestCase {
 
 		$output = $this->capture_action( 'admin_print_footer_scripts' );
 
-		$this->assertStringContainsString( 'test-slug', $output );
-		$this->assertStringContainsString( 'Test pointer title', $output );
-		$this->assertStringContainsString( 'Test pointer content.', $output );
-		$this->assertStringContainsString( '#test-target', $output );
+		$this->assertStringContainsString( 'test-slug', $output, 'Pointer output should contain the slug.' );
+		$this->assertStringContainsString( 'Test pointer title', $output, 'Pointer output should contain the title.' );
+		$this->assertStringContainsString( 'Test pointer content.', $output, 'Pointer output should contain the content.' );
+		$this->assertStringContainsString( '#test-target', $output, 'Pointer output should contain the target selector.' );
 	}
 }
