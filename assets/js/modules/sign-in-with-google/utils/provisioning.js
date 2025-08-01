@@ -46,12 +46,10 @@ export function sanitizeProvisioningParams( params ) {
 
 	// Start by replacing all invalid characters with hyphens in appname.
 	let sanitizedAppname = appname.replace( /[^a-zA-Z0-9\s-]/g, '-' );
-
 	// Reduce segments with 2+ consecutive spaces or hyphens to a single character.
 	sanitizedAppname = sanitizedAppname.replace( /[\s-]{2,}/g, ( match ) =>
 		match.includes( ' ' ) ? ' ' : '-'
 	);
-
 	// Trim hyphens from the beginning and end of the sanitized name.
 	sanitizedAppname = sanitizedAppname.replace( /^-+|-+$/g, '' );
 
@@ -80,10 +78,23 @@ export function sanitizeProvisioningParams( params ) {
 
 	sanitizedParams.appname = sanitizedAppname;
 
+	// Replace all non-alphanumeric characters with spaces in sitename.
+	let sanitizedSitename = sitename.replace( /[^a-zA-Z0-9\s]/g, ' ' );
+	// Normalize all whitespace characters (tabs, newlines, etc.) to spaces.
+	sanitizedSitename = sanitizedSitename.replace( /\s/g, ' ' );
+	// Replace multiple consecutive spaces with single spaces.
+	sanitizedSitename = sanitizedSitename.replace( / {2,}/g, ' ' );
+	// Trim whitespaces from beginning and end.
+	sanitizedSitename = sanitizedSitename.trim();
+
 	// Truncate sitename to a max of 30 characters.
-	if ( sitename.length > 30 ) {
-		sanitizedParams.sitename = sitename.substring( 0, 30 );
+	if ( sanitizedSitename.length > 30 ) {
+		sanitizedSitename = sanitizedSitename.substring( 0, 30 );
+		// Trim any trailing spaces created by truncation.
+		sanitizedSitename = sanitizedSitename.trimEnd();
 	}
+
+	sanitizedParams.sitename = sanitizedSitename;
 
 	return sanitizedParams;
 }
