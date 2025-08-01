@@ -20,6 +20,13 @@
  * External dependencies
  */
 import { useFirstMountState, useUnmount } from 'react-use';
+import { createMemoryHistory } from 'history';
+import { Router } from 'react-router';
+
+/**
+ * WordPress dependencies
+ */
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,14 +43,72 @@ import './polyfill-globals';
 import { setUsingCache } from 'googlesitekit-api';
 import { resetGlobals } from './utils/resetGlobals';
 import { bootstrapFetchMocks } from './fetch-mocks';
-import { WithTestRegistry } from '../tests/js/utils';
 import { enabledFeatures } from '../assets/js/features';
 import { Cell, Grid, Row } from '../assets/js/material-components';
-import { setEnabledFeatures } from '../tests/js/test-utils';
+import {
+	createTestRegistry,
+	provideUserInfo,
+	setEnabledFeatures,
+} from '../tests/js/test-utils';
+import InViewProvider from '../assets/js/components/InViewProvider';
+import { RegistryProvider } from '../assets/js/googlesitekit-data';
+import FeaturesProvider from '../assets/js/components/FeaturesProvider';
 
 setUsingCache( false );
 
 bootstrapFetchMocks();
+
+/**
+ * Wraps children components with a fresh test registry,
+ * which can be configured by its callback prop.
+ *
+ * @since 1.7.1
+ * @private
+ *
+ * @param {Object}    [props]          Component props.
+ * @param {Function}  [props.callback] Function which receives the registry instance.
+ * @param {WPElement} [props.children] Children components.
+ * @param {History}   [props.history]  History object for React Router. Defaults to MemoryHistory.
+ * @param {string}    [props.route]    Route to pass to history as starting route.
+ * @param {string[]}  [props.features] Feature flags to enable for this test registry provider.
+ * @param {Object}    [props.registry] Registry object; uses `createTestRegistry()` by default.
+ * @return {WPElement} Wrapped components.
+ */
+function WithTestRegistry( {
+	children,
+	callback,
+	features = [],
+	registry = createTestRegistry(),
+	history = createMemoryHistory(),
+	route = undefined,
+} = {} ) {
+	const featuresToEnable = new Set( features );
+	// Populate most basic data which should not affect any tests.
+	provideUserInfo( registry );
+
+	if ( route ) {
+		history.push( route );
+	}
+
+	if ( callback ) {
+		callback( registry );
+	}
+
+	const [ inViewState ] = useState( {
+		key: 'renderStory',
+		value: true,
+	} );
+
+	return (
+		<InViewProvider value={ inViewState }>
+			<RegistryProvider value={ registry }>
+				<FeaturesProvider value={ featuresToEnable }>
+					<Router history={ history }>{ children }</Router>
+				</FeaturesProvider>
+			</RegistryProvider>
+		</InViewProvider>
+	);
+}
 
 // Decorators run from last added to first. (Eg. In reverse order as listed.)
 export const decorators = [
