@@ -19,10 +19,10 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'web-data-stream-not-available-notification'
