@@ -20,11 +20,14 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import Typography from '../Typography';
 
 export default function SettingsGroup( { title, children } ) {
 	return (
 		<div className="googlesitekit-module-settings-group">
-			<h4>{ title }</h4>
+			<Typography as="h4" size="medium" type="title">
+				{ title }
+			</Typography>
 			{ children }
 		</div>
 	);

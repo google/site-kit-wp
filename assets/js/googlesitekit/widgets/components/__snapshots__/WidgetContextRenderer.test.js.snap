@@ -25,7 +25,7 @@ exports[`WidgetContextRenderer should render the registered widget area with a s
           class="googlesitekit-widget-area-header__details"
         >
           <h4
-            class="googlesitekit-widget-area-header__subtitle"
+            class="googlesitekit-typography googlesitekit-widget-area-header__subtitle googlesitekit-typography--body googlesitekit-typography--medium"
           >
             Component title
           </h4>
@@ -96,7 +96,7 @@ exports[`WidgetContextRenderer should render the registered widget areas 1`] = `
           class="googlesitekit-widget-area-header__details"
         >
           <h4
-            class="googlesitekit-widget-area-header__subtitle"
+            class="googlesitekit-typography googlesitekit-widget-area-header__subtitle googlesitekit-typography--body googlesitekit-typography--medium"
           >
             Cool stuff for yoursite.com
           </h4>
@@ -160,7 +160,7 @@ exports[`WidgetContextRenderer should render the registered widget areas 1`] = `
           class="googlesitekit-widget-area-header__details"
         >
           <h4
-            class="googlesitekit-widget-area-header__subtitle"
+            class="googlesitekit-typography googlesitekit-widget-area-header__subtitle googlesitekit-typography--body googlesitekit-typography--medium"
           >
             More cool stuff for yoursite.com
           </h4>

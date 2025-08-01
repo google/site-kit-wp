@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import Service from './Service';
+import Typography from '../Typography';
 
 export default function SharedServices() {
 	const viewableModules = useSelect( ( select ) =>
@@ -39,7 +40,9 @@ export default function SharedServices() {
 
 	return (
 		<li className="googlesitekit-view-only-menu__list-item">
-			<h4>{ __( 'Shared services', 'google-site-kit' ) }</h4>
+			<Typography as="h4" size="large" type="title">
+				{ __( 'Shared services', 'google-site-kit' ) }
+			</Typography>
 			<ul>
 				{ viewableModules.map( ( moduleSlug ) => (
 					<Service key={ moduleSlug } module={ moduleSlug } />

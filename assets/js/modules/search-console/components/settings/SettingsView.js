@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import DisplaySetting from '../../../../components/DisplaySetting';
+import Typography from '../../../../components/Typography';
 
 export default function SettingsView() {
 	const propertyID = useSelect( ( select ) =>
@@ -35,9 +36,14 @@ export default function SettingsView() {
 
 	return (
 		<div className="googlesitekit-settings-module__meta-item">
-			<h5 className="googlesitekit-settings-module__meta-item-type">
+			<Typography
+				as="h5"
+				size="medium"
+				type="label"
+				className="googlesitekit-settings-module__meta-item-type"
+			>
 				{ __( 'Connected Property', 'google-site-kit' ) }
-			</h5>
+			</Typography>
 			<p className="googlesitekit-settings-module__meta-item-data">
 				<DisplaySetting value={ propertyID } />
 			</p>
