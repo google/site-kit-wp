@@ -1,0 +1,13 @@
+{
+	"name": "site-kit-mcp-github",
+	"version": "1.0.0",
+	"description": "MCP server for fetching GitHub issues from google/site-kit-wp repository",
+	"main": "src/index.js",
+	"scripts": {
+		"start": "node src/index.js"
+	},
+	"dependencies": {
+		"@modelcontextprotocol/sdk": "^1.12.1",
+		"zod": "^3.25.60"
+	}
+}
