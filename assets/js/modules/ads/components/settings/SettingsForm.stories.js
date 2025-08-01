@@ -29,11 +29,8 @@ import { Cell, Grid, Row } from '../../../../material-components';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from '../../datastore/constants';
 import { MODULE_SLUG_ADS } from '../../constants';
-import {
-	createTestRegistry,
-	provideModules,
-	WithTestRegistry,
-} from '../../../../../../tests/js/utils';
+import { provideModules } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
 function Template( args ) {
 	return (
@@ -127,24 +124,24 @@ export default {
 	title: 'Modules/Ads/Settings/SettingsForm',
 	decorators: [
 		( Story, { args } ) => {
-			const registry = createTestRegistry();
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ADS,
-					active: true,
-					connected: true,
-				},
-			] );
+			const setupRegistry = ( registry ) => {
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ADS,
+						active: true,
+						connected: true,
+					},
+				] );
 
-			const { setupRegistry = () => {}, ...rest } = args;
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			};
 
 			return (
-				<WithTestRegistry
-					callback={ setupRegistry }
-					features={ args?.features || [] }
-				>
-					<Story { ...rest } />
-				</WithTestRegistry>
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story { ...args } />
+				</WithRegistrySetup>
 			);
 		},
 	],

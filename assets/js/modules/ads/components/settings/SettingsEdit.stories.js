@@ -30,7 +30,6 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from '../../datastore/constants';
 import { MODULE_SLUG_ADS } from '../../constants';
 import {
-	createTestRegistry,
 	provideModules,
 	WithTestRegistry,
 } from '../../../../../../tests/js/utils';
@@ -273,20 +272,23 @@ export default {
 	title: 'Modules/Ads/Settings/SettingsEdit',
 	decorators: [
 		( Story, { parameters } ) => {
-			const { setupRegistry = () => {}, ...rest } = parameters;
-			const registry = createTestRegistry();
+			const setupRegistry = ( registry ) => {
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ADS,
+						active: true,
+						connected: true,
+					},
+				] );
 
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ADS,
-					active: true,
-					connected: true,
-				},
-			] );
+				if ( parameters?.setupRegistry ) {
+					parameters.setupRegistry( registry );
+				}
+			};
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<Story { ...rest } />
+					<Story { ...parameters } />
 				</WithRegistrySetup>
 			);
 		},

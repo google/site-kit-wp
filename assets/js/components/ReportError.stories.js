@@ -21,7 +21,7 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import ReportError from './ReportError';
-import { createTestRegistry, provideModules } from '../../../tests/js/utils';
+import { provideModules } from '../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../util/errors';
@@ -324,22 +324,24 @@ export default {
 	component: ReportError,
 	decorators: [
 		( Story, { args } ) => {
-			const registry = createTestRegistry();
-			provideModules( registry, [
-				{ slug: 'test-module', name: 'Test Module' },
-			] );
+			const { viewContext, ...rest } = args;
 
-			const { setupRegistry = () => {}, viewContext, ...rest } = args;
+			const setupRegistry = ( registry ) => {
+				provideModules( registry, [
+					{ slug: 'test-module', name: 'Test Module' },
+				] );
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			};
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
 					<ViewContextProvider
 						value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
 					>
-						<ReportErrorWrapper
-							moduleSlug="analytics-4"
-							{ ...rest }
-						/>
+						<Story { ...rest } />
 					</ViewContextProvider>
 				</WithRegistrySetup>
 			);

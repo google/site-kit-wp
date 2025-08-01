@@ -136,17 +136,16 @@ export default {
 	component: ReportTable,
 	decorators: [
 		( Story, { parameters } ) => {
-			const {
-				setupRegistry = () => {},
-				// eslint-disable-next-line no-unused-vars
-				viewContext,
-				...rest
-			} = parameters;
+			const setupRegistry = ( registry ) => {
+				if ( parameters?.setupRegistry ) {
+					parameters.setupRegistry( registry );
+				}
+			};
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
 					<Layout>
-						<Story { ...rest } />
+						<Story { ...parameters } />
 					</Layout>
 				</WithRegistrySetup>
 			);

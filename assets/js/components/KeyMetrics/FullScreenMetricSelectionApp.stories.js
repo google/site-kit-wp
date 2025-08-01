@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	provideSiteInfo,
-} from '../../../../tests/js/utils';
+import { provideSiteInfo } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_METRIC_SELECTION } from '../../googlesitekit/constants';
@@ -48,15 +45,21 @@ export default {
 	title: 'Key Metrics/FullScreenMetricsSelectionApp',
 	component: FullScreenMetricsSelectionApp,
 	decorators: [
-		( Story ) => {
-			const registry = createTestRegistry();
+		( Story, { args } ) => {
+			const setupRegistry = ( registry ) => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveIsUserInputCompleted( false );
 
-			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
+				provideSiteInfo( registry );
 
-			provideSiteInfo( registry );
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			};
 
 			return (
-				<WithRegistrySetup func={ () => {} }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
 				</WithRegistrySetup>
 			);

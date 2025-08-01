@@ -37,7 +37,6 @@ import HelpMenuLink from './help/HelpMenuLink';
 import Null from './Null';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import {
-	createTestRegistry,
 	provideUserAuthentication,
 	provideSiteInfo,
 	provideModules,
@@ -239,10 +238,15 @@ export default {
 	component: Header,
 	decorators: [
 		( Story, { args } ) => {
-			const registry = createTestRegistry();
-			provideSiteInfo( registry );
+			const { viewContext, ...rest } = args;
 
-			const { setupRegistry = () => {}, viewContext, ...rest } = args;
+			const setupRegistry = ( registry ) => {
+				provideSiteInfo( registry );
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			};
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

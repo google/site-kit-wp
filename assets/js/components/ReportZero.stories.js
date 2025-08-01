@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry, provideModules } from './../../../tests/js/utils';
+import { provideModules } from './../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { createModuleStore } from './../googlesitekit/modules/create-module-store';
 import ReportZero from './ReportZero';
@@ -30,28 +30,26 @@ export function ReportZeroStory() {
 ReportZeroStory.storyName = 'Report Zero';
 ReportZeroStory.decorators = [
 	( Story, { parameters } ) => {
-		const registry = createTestRegistry();
-		const testModuleDefinition = createModuleStore( 'test-module', {
-			storeName: 'modules/test-module',
-		} );
-		registry.registerStore(
-			testModuleDefinition.STORE_NAME,
-			testModuleDefinition
-		);
-		provideModules( registry, [
-			{ slug: 'test-module', name: 'Test Module' },
-		] );
+		const setupRegistry = ( registry ) => {
+			const testModuleDefinition = createModuleStore( 'test-module', {
+				storeName: 'modules/test-module',
+			} );
+			registry.registerStore(
+				testModuleDefinition.STORE_NAME,
+				testModuleDefinition
+			);
+			provideModules( registry, [
+				{ slug: 'test-module', name: 'Test Module' },
+			] );
 
-		const {
-			setupRegistry = () => {},
-			// eslint-disable-next-line no-unused-vars
-			viewContext,
-			...rest
-		} = parameters;
+			if ( parameters?.setupRegistry ) {
+				parameters.setupRegistry( registry );
+			}
+		};
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
-				<Story { ...rest } />
+				<Story { ...parameters } />
 			</WithRegistrySetup>
 		);
 	},

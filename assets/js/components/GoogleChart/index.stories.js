@@ -113,9 +113,15 @@ export default {
 	title: 'Components/GoogleChart',
 	component: GoogleChart,
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
+			const setupRegistry = ( registry ) => {
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			};
+
 			return (
-				<WithRegistrySetup func={ () => {} }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
 				</WithRegistrySetup>
 			);

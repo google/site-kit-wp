@@ -33,7 +33,7 @@ const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-ads'
 )( SetupSuccessSubtleNotification );
 
-function Template( { ...args } ) {
+function Template( args ) {
 	return <NotificationWithComponentProps { ...args } />;
 }
 
@@ -53,11 +53,15 @@ export default {
 	decorators: [
 		withQuery,
 		( Story, { parameters } ) => {
-			const { setupRegistry = () => {}, ...rest } = parameters;
+			const setupRegistry = ( registry ) => {
+				if ( parameters?.setupRegistry ) {
+					parameters.setupRegistry( registry );
+				}
+			};
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<Story { ...rest } />
+					<Story { ...parameters } />
 				</WithRegistrySetup>
 			);
 		},

@@ -274,7 +274,7 @@ export default {
 					.dispatch( CORE_USER )
 					.receiveIsAdBlockerActive( false );
 
-				if ( args.setupRegistry ) {
+				if ( args?.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
 			};

@@ -63,9 +63,6 @@ export default {
 	component: AutoAdExclusionSwitches,
 	decorators: [
 		( Story, { args } ) => {
-			const { setupRegistry: storyRegistrySetup = () => {}, ...rest } =
-				args;
-
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -75,7 +72,9 @@ export default {
 					},
 				] );
 
-				storyRegistrySetup( registry );
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
 			};
 
 			return (
@@ -83,7 +82,7 @@ export default {
 					<div className="googlesitekit-setup">
 						<section className="googlesitekit-setup__wrapper">
 							<div className="googlesitekit-setup-module">
-								<Story { ...rest } />
+								<Story { ...args } />
 							</div>
 						</section>
 					</div>

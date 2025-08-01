@@ -25,7 +25,6 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import {
-	createTestRegistry,
 	provideModules,
 	provideModuleRegistrations,
 	provideSiteConnection,
@@ -137,41 +136,44 @@ export default {
 	component: ViewOnlyMenu,
 	decorators: [
 		( Story, { args } ) => {
-			const registry = createTestRegistry();
-			provideSiteConnection( registry );
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_SEARCH_CONSOLE,
-					owner: {
-						id: '1',
-						login: 'Admin 1',
+			const setupRegistry = ( registry ) => {
+				provideSiteConnection( registry );
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+						owner: {
+							id: '1',
+							login: 'Admin 1',
+						},
 					},
-				},
-				{
-					slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
-					owner: {
-						id: '2',
-						login: 'Admin 2',
+					{
+						slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
+						owner: {
+							id: '2',
+							login: 'Admin 2',
+						},
 					},
-				},
-			] );
-			provideModuleRegistrations( registry );
+				] );
+				provideModuleRegistrations( registry );
 
-			const { setupRegistry = () => {} } = args;
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetTracking( { enabled: false } );
 
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetTracking( { enabled: false } );
+				// Mock the tracking endpoint to allow checking/unchecking the tracking checkbox.
+				fetchMock.post(
+					RegExp( 'google-site-kit/v1/core/user/data/tracking' ),
+					( url, { body } ) => {
+						const { data } = JSON.parse( body );
 
-			// Mock the tracking endpoint to allow checking/unchecking the tracking checkbox.
-			fetchMock.post(
-				RegExp( 'google-site-kit/v1/core/user/data/tracking' ),
-				( url, { body } ) => {
-					const { data } = JSON.parse( body );
+						return { body: data };
+					}
+				);
 
-					return { body: data };
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
 				}
-			);
+			};
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

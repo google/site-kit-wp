@@ -19,7 +19,6 @@
  */
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import {
-	createTestRegistry,
 	muteFetch,
 	provideSiteInfo,
 	provideUserAuthentication,
@@ -61,32 +60,38 @@ export default {
 	title: 'Key Metrics/SettingsCardKeyMetrics',
 	decorators: [
 		( Story, { args } ) => {
-			const registry = createTestRegistry();
+			const setupRegistry = ( registry ) => {
+				provideUserAuthentication( registry );
+				provideSiteInfo( registry );
 
-			provideUserAuthentication( registry );
-			provideSiteInfo( registry );
+				registry
+					.dispatch( CORE_USER )
+					.receiveIsUserInputCompleted( false );
 
-			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [],
+					isWidgetHidden: false,
+				} );
 
-			registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-				widgetSlugs: [],
-				isWidgetHidden: false,
-			} );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetUserInputSettings( {} );
 
-			registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {} );
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/survey-trigger'
+					)
+				);
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/survey-timeouts'
+					)
+				);
 
-			muteFetch(
-				new RegExp(
-					'^/google-site-kit/v1/core/user/data/survey-trigger'
-				)
-			);
-			muteFetch(
-				new RegExp(
-					'^/google-site-kit/v1/core/user/data/survey-timeouts'
-				)
-			);
-
-			const { setupRegistry = () => {} } = args;
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			};
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

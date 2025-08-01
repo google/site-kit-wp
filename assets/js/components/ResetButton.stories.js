@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import ResetButton from './ResetButton';
-import { createTestRegistry, provideSiteInfo } from '../../../tests/js/utils';
+import { provideSiteInfo } from '../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 
 function Template() {
@@ -32,11 +32,12 @@ Default.storyName = 'ResetButton';
 
 Default.decorators = [
 	( Story ) => {
-		const registry = createTestRegistry();
-		provideSiteInfo( registry );
+		const setupRegistry = ( registry ) => {
+			provideSiteInfo( registry );
+		};
 
 		return (
-			<WithRegistrySetup func={ () => {} }>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
 			</WithRegistrySetup>
 		);
