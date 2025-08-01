@@ -20,13 +20,12 @@
  * Internal dependencies
  */
 import {
-	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	WithTestRegistry,
 } from '../../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
@@ -336,31 +335,33 @@ export default {
 	component: DashboardAllTrafficWidgetGA4,
 	decorators: [
 		( Story, { args } ) => {
-			const registry = createTestRegistry();
-			// Activate the module.
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ANALYTICS_4,
-					active: true,
-					connected: true,
-				},
-			] );
+			const setupRegistry = ( registry ) => {
+				// Activate the module.
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+				] );
 
-			provideModuleRegistrations( registry );
+				provideModuleRegistrations( registry );
 
-			// Set some site information.
-			provideSiteInfo( registry );
-			provideUserAuthentication( registry );
+				// Set some site information.
+				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
 
-			registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-06' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-06' );
 
-			// Call story-specific setup.
-			args.setupRegistry( registry );
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			};
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

@@ -32,7 +32,7 @@ import { MODULE_SLUG_ADS } from '../../constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-function Template( args ) {
+function Template( { args } ) {
 	return (
 		<div className="googlesitekit-layout">
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--ads">
@@ -55,7 +55,7 @@ function Template( args ) {
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.scenario = {};
-Default.args = {
+Default.parameters = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADS ).receiveGetSettings( {
 			conversionID: 'AW-123456789',
@@ -70,7 +70,7 @@ Empty.scenario = {};
 export const GoogleTagGatewayEnabled = Template.bind( null );
 GoogleTagGatewayEnabled.storyName = 'GoogleTagGatewayEnabled';
 GoogleTagGatewayEnabled.scenario = {};
-GoogleTagGatewayEnabled.args = {
+GoogleTagGatewayEnabled.parameters = {
 	features: [ 'googleTagGateway' ],
 	setupRegistry: ( registry ) => {
 		const gtgServerRequirementsEndpoint = new RegExp(
@@ -97,7 +97,7 @@ export const GoogleTagGatewayDisabledWithWarning = Template.bind( null );
 GoogleTagGatewayDisabledWithWarning.storyName =
 	'GoogleTagGatewayDisabledWithWarning';
 GoogleTagGatewayDisabledWithWarning.scenario = {};
-GoogleTagGatewayDisabledWithWarning.args = {
+GoogleTagGatewayDisabledWithWarning.parameters = {
 	features: [ 'googleTagGateway' ],
 	setupRegistry: ( registry ) => {
 		const gtgServerRequirementsEndpoint = new RegExp(
@@ -123,7 +123,7 @@ GoogleTagGatewayDisabledWithWarning.args = {
 export default {
 	title: 'Modules/Ads/Settings/SettingsForm',
 	decorators: [
-		( Story, { args } ) => {
+		( Story, { parameters } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -133,14 +133,14 @@ export default {
 					},
 				] );
 
-				if ( args?.setupRegistry ) {
-					args.setupRegistry( registry );
+				if ( parameters?.setupRegistry ) {
+					parameters.setupRegistry( registry );
 				}
 			};
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<Story { ...args } />
+					<Story { ...parameters } />
 				</WithRegistrySetup>
 			);
 		},
