@@ -34,6 +34,7 @@ import {
 	provideUserAuthentication,
 	render,
 	waitFor,
+	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -297,7 +298,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 			);
 		} );
 
-		it( 'should render the widget for the site with a setup completion time of more than three weeks', () => {
+		it( 'should render the widget for the site with a setup completion time of more than three weeks', async () => {
 			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 				...validSettings,
 				setupCompletedTimestamp: timestampThreeWeeksPrior,
@@ -326,6 +327,8 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 				'mainDashboard_adsense-abr-cta-widget',
 				'view_notification'
 			);
+
+			await waitForDefaultTimeouts();
 		} );
 
 		it( 'should trigger a survey when in-view', async () => {
