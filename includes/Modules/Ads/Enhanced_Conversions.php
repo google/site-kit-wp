@@ -47,6 +47,34 @@ class Enhanced_Conversions {
 	}
 
 	/**
+	 * Gets the formatted value for Enhanced Conversions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $value The value to format.
+	 * @return string Formatted value.
+	 */
+	public static function get_formatted_value( $value ) {
+		$value = self::get_normalized_value( $value );
+		$value = self::get_hashed_value( $value );
+		return $value;
+	}
+
+	/**
+	 * Gets the formatted email for Enhanced Conversions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $email The email address to format.
+	 * @return string Formatted email address.
+	 */
+	public static function get_formatted_email( $email ) {
+		$email = self::get_normalized_email( $email );
+		$email = self::get_hashed_value( $email );
+		return $email;
+	}
+
+	/**
 	 * Normalizes a value for Enhanced Conversions.
 	 *
 	 * @since n.e.x.t

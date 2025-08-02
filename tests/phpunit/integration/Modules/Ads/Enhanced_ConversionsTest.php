@@ -18,6 +18,52 @@ use Google\Site_Kit\Tests\TestCase;
  * @group Ads
  */
 class Enhanced_ConversionsTest extends TestCase {
+	public function test_get_formatted_value() {
+		$enhanced_conversions = new Enhanced_Conversions();
+
+		$test_cases = array(
+			'  example value ',
+			'john Doe',
+			'mixedCaseValue',
+			'12345  ',
+			'special!@#value$%^',
+		);
+
+		foreach ( $test_cases as $input ) {
+			$expected = $enhanced_conversions::get_hashed_value(
+				$enhanced_conversions::get_normalized_value( $input )
+			);
+
+			$formatted = $enhanced_conversions::get_formatted_value( $input );
+
+			$this->assertEquals( $expected, $formatted, "Failed for input: '$input'" );
+		}
+	}
+
+	public function test_get_formatted_email() {
+		$enhanced_conversions = new Enhanced_Conversions();
+
+		$test_cases = array(
+			' foo@bar.com ',
+			' FOO@BAR.COM  ',
+			'Foo@Bar.Com ',
+			'fo.o@bar.com ',
+			' foo.bar@gmail.com ',
+			' foo.bar@googlemail.com ',
+			'"fo.o@ba.r"@gmail.com ',
+			' "fo.o@ba.r"@googlemail.com',
+		);
+
+		foreach ( $test_cases as $input ) {
+			$expected = $enhanced_conversions::get_hashed_value(
+				$enhanced_conversions::get_normalized_email( $input )
+			);
+
+			$formatted = $enhanced_conversions::get_formatted_email( $input );
+
+			$this->assertEquals( $expected, $formatted, "Failed for input: '$input'" );
+		}
+	}
 
 	public function test_get_normalized_value() {
 		$enhanced_conversions = new Enhanced_Conversions();
