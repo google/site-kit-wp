@@ -34,8 +34,32 @@ class Enhanced_Conversions {
 	 *
 	 * @return array User data.
 	 */
-	public function get_user_data() {
-		return array();
+	protected function get_user_data() {
+		$user_data = array();
+
+		if ( ! is_user_logged_in() ) {
+			return $user_data;
+		}
+
+		$user = wp_get_current_user();
+
+		$first_name = $user->user_firstname;
+		$last_name  = $user->user_lastname;
+		$email      = $user->user_email;
+
+		if ( ! empty( $email ) ) {
+			$user_data['sha256_email_address'] = self::get_formatted_email( $email );
+		}
+
+		if ( ! empty( $first_name ) ) {
+			$user_data['address']['sha256_first_name'] = self::get_formatted_value( $first_name );
+		}
+
+		if ( ! empty( $last_name ) ) {
+			$user_data['address']['sha256_last_name'] = self::get_formatted_value( $last_name );
+		}
+
+		return $user_data;
 	}
 
 	/**

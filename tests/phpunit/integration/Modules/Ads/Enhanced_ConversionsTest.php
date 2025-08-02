@@ -18,6 +18,38 @@ use Google\Site_Kit\Tests\TestCase;
  * @group Ads
  */
 class Enhanced_ConversionsTest extends TestCase {
+
+	public function test_get_user_data() {
+		$enhanced_conversions = new Enhanced_Conversions();
+
+		$user = $this->factory()->user->create_and_get(
+			array(
+				'role'       => 'subscriber',
+				'user_email' => 'john@doe.com',
+				'first_name' => 'John',
+				'last_name'  => 'Doe',
+			)
+		);
+
+		wp_set_current_user( $user->ID );
+
+		$expected = array(
+			'sha256_email_address' => $enhanced_conversions::get_formatted_email( $user->user_email ),
+			'address'              => array(
+				'sha256_first_name' => $enhanced_conversions::get_formatted_value( $user->user_firstname ),
+				'sha256_last_name'  => $enhanced_conversions::get_formatted_value( $user->user_lastname ),
+			),
+		);
+
+		// Use reflection method to access the protected method.
+		$reflection = new \ReflectionClass( $enhanced_conversions );
+		$method     = $reflection->getMethod( 'get_user_data' );
+		$method->setAccessible( true );
+		$user_data = $method->invoke( $enhanced_conversions );
+
+		$this->assertEquals( $expected, $user_data, 'User data does not match expected values.' );
+	}
+
 	public function test_get_formatted_value() {
 		$enhanced_conversions = new Enhanced_Conversions();
 
