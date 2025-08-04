@@ -27,24 +27,38 @@ import { useState } from '@wordpress/element';
 import { Checkbox } from 'googlesitekit-components';
 import NewBadge from '../../components/NewBadge';
 
+function Container( { children } ) {
+	return (
+		<div style={ { backgroundColor: 'white', padding: '10px' } }>
+			{ children }
+		</div>
+	);
+}
+
 function Template( args ) {
 	const { label, ...rest } = args;
-	return <Checkbox { ...rest }>{ label }</Checkbox>;
+	return (
+		<Container>
+			<Checkbox { ...rest }>{ label }</Checkbox>
+		</Container>
+	);
 }
 
 function InteractiveTemplate( props ) {
 	const [ checked, setChecked ] = useState( false );
 	return (
-		<Checkbox
-			{ ...props }
-			onChange={ ( event ) => {
-				global.console.log( event.target.value );
-				setChecked( event.target.checked );
-			} }
-			checked={ checked }
-		>
-			Interactive Checkbox
-		</Checkbox>
+		<Container>
+			<Checkbox
+				{ ...props }
+				onChange={ ( event ) => {
+					global.console.log( event.target.value );
+					setChecked( event.target.checked );
+				} }
+				checked={ checked }
+			>
+				Interactive Checkbox
+			</Checkbox>
+		</Container>
 	);
 }
 
@@ -72,6 +86,16 @@ Disabled.args = {
 	value: 'value-3',
 	label: 'Disabled Checkbox',
 	disabled: true,
+};
+
+export const DisabledChecked = Template.bind( {} );
+DisabledChecked.args = {
+	id: 'googlesitekit-checkbox-9',
+	name: 'googlesitekit__checkbox-9',
+	value: 'value-9',
+	label: 'Disabled Checkbox',
+	disabled: true,
+	checked: true,
 };
 
 export const Loading = Template.bind( {} );
@@ -123,16 +147,6 @@ WithBadge.args = {
 	badge: <NewBadge />,
 };
 
-export const DisabledChecked = Template.bind( {} );
-DisabledChecked.args = {
-	id: 'googlesitekit-checkbox-9',
-	name: 'googlesitekit__checkbox-9',
-	value: 'value-9',
-	label: 'Disabled Checkbox',
-	disabled: true,
-	checked: true,
-};
-
 export function VRTStory() {
 	// The loading spinner uses a GIF rather than CSS animation therefore we can't
 	// pause the animation for VRTs, so we don't include the `Loading` version of
@@ -141,6 +155,7 @@ export function VRTStory() {
 		Default,
 		Checked,
 		Disabled,
+		DisabledChecked,
 		ComplexLabel,
 		Interactive,
 		WithDescription,

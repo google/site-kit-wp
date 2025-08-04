@@ -19,7 +19,12 @@
 
 		&:hover {
 			&::before {
-				opacity: 0.24;
+				background-color: $c-interactive-primary-press;
+				height: 36px; // 40px - 4px (border).
+				left: 2px;
+				opacity: 1;
+				top: 2px;
+				width: 36px; // 40px - 4px (border).
 				z-index: 0;
 			}
 		}
@@ -46,11 +51,11 @@
 			&::before {
 				background-color: transparent;
 				border: 2px solid $c-black;
-				height: 280%;
-				left: -90%;
-				top: -90%;
+				height: 36px; // 40px - 4px (border).
+				left: -11px;
+				top: -11px;
 				transform: scale(1);
-				width: 280%;
+				width: 36px; // 40px - 4px (border).
 			}
 		}
 
@@ -99,17 +104,17 @@
 
 			&[disabled]:not(:checked, :indeterminate) {
 				~ .mdc-checkbox__background {
-					border-color: rgba($c-interactive-on-disable-container, 0.32);
+					border-color: $c-interactive-on-disable-container;
 				}
 			}
 
 			&[disabled]:checked:not(:indeterminate) {
 				~ .mdc-checkbox__background {
-					background-color: rgba($c-interactive-on-disable-container, 0.08);
+					background-color: $c-interactive-on-disable-container;
 					border-color: transparent;
 
 					.mdc-checkbox__checkmark-path {
-						stroke: rgba($c-interactive-on-disable-container, 0.32);
+						stroke: $c-interactive-on-disable-container;
 					}
 				}
 			}
