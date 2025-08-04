@@ -17,15 +17,53 @@
  */
 
 /**
+ * External dependencies
+ */
+import md5 from 'md5';
+
+/**
  * Internal dependencies
  */
 import { sanitizeProvisioningParams } from './provisioning';
 
-describe( 'modules/sign-in-with-google provisioning utilities', () => {
-	describe( 'sanitizeProvisioningParams', () => {
+describe( 'sanitizeProvisioningParams', () => {
+	const validParams = {
+		appname: 'Test App',
+		sitename: 'Test Site',
+		siteorigin: 'https://example.com',
+	};
+
+	describe( 'missing or empty required parameters', () => {
+		it( 'returns params as-is when appname is missing', () => {
+			const params = {
+				sitename: 'Test Site',
+				siteorigin: 'https://example.com',
+			};
+
+			expect( sanitizeProvisioningParams( params ) ).toEqual( params );
+		} );
+
+		it( 'returns params as-is when sitename is missing', () => {
+			const params = {
+				appname: 'Test App',
+				siteorigin: 'https://example.com',
+			};
+
+			expect( sanitizeProvisioningParams( params ) ).toEqual( params );
+		} );
+
+		it( 'returns params as-is when siteorigin is missing', () => {
+			const params = {
+				appname: 'Test App',
+				sitename: 'Test Site',
+			};
+
+			expect( sanitizeProvisioningParams( params ) ).toEqual( params );
+		} );
+
 		it.each( [
 			[
-				'missing appname',
+				'appname',
 				{
 					appname: '',
 					sitename: 'Test Site',
@@ -33,7 +71,7 @@ describe( 'modules/sign-in-with-google provisioning utilities', () => {
 				},
 			],
 			[
-				'missing sitename',
+				'sitename',
 				{
 					appname: 'Test App',
 					sitename: '',
@@ -41,280 +79,244 @@ describe( 'modules/sign-in-with-google provisioning utilities', () => {
 				},
 			],
 			[
-				'missing siteorigin',
-				{
-					appname: 'Test App',
-					sitename: 'Test Site',
-					siteorigin: '',
-				},
+				'siteorigin',
+				{ appname: 'Test App', sitename: 'Test Site', siteorigin: '' },
 			],
-		] )( 'should return params as-is when %s', ( _, params ) => {
+		] )( 'returns params as-is when %s is empty', ( _, params ) => {
 			expect( sanitizeProvisioningParams( params ) ).toEqual( params );
 		} );
+	} );
 
-		it( 'should not mutate the original params object', () => {
-			const originalParams = {
-				appname: 'Test@App!',
-				sitename: 'Test Site',
+	describe( 'sitename sanitization', () => {
+		it( 'replaces non-alphanumeric characters with spaces', () => {
+			const params = {
+				...validParams,
+				sitename: 'Test@Site#123!',
+			};
+
+			const result = sanitizeProvisioningParams( params );
+
+			expect( result.sitename ).toBe( 'Test Site 123' );
+		} );
+
+		it( 'normalizes multiple whitespace characters to single spaces', () => {
+			const params = {
+				...validParams,
+				sitename: 'Test\t\tSite\n\nName   With  Spaces',
+			};
+
+			const result = sanitizeProvisioningParams( params );
+
+			expect( result.sitename ).toBe( 'Test Site Name With Spaces' );
+		} );
+
+		it( 'trims whitespace from beginning and end', () => {
+			const params = {
+				...validParams,
+				sitename: '   Test Site Name   ',
+			};
+
+			const result = sanitizeProvisioningParams( params );
+
+			expect( result.sitename ).toBe( 'Test Site Name' );
+		} );
+
+		it( 'handles combination of special characters and whitespace', () => {
+			const params = {
+				...validParams,
+				sitename: '  @#$ Test-Site_Name!!! \t\n  ',
+			};
+
+			const result = sanitizeProvisioningParams( params );
+
+			expect( result.sitename ).toBe( 'Test Site Name' );
+		} );
+	} );
+
+	describe( 'short sitename fallback', () => {
+		it( 'generates MD5-based fallback when sanitized sitename is less than 4 characters', () => {
+			const params = {
+				...validParams,
+				sitename: '@#$',
 				siteorigin: 'https://example.com',
 			};
-			const originalCopy = { ...originalParams };
+
+			const result = sanitizeProvisioningParams( params );
+			// The full fallback gets truncated to 30 characters
+			const fullFallback = `site-kit-siwg-${ md5( 'example.com' ) }`;
+			const expectedResult = fullFallback.substring( 0, 30 );
+
+			expect( result.sitename ).toBe( expectedResult );
+		} );
+
+		it( 'generates MD5-based fallback when sitename becomes empty after sanitization', () => {
+			const params = {
+				...validParams,
+				sitename: '!@#$%^&*()',
+				siteorigin: 'https://test.example.com',
+			};
+
+			const result = sanitizeProvisioningParams( params );
+			// The full fallback gets truncated to 30 characters
+			const fullFallback = `site-kit-siwg-${ md5( 'test.example.com' ) }`;
+			const expectedResult = fullFallback.substring( 0, 30 );
+
+			expect( result.sitename ).toBe( expectedResult );
+		} );
+
+		it( 'uses siteorigin for MD5 when URL parsing fails', () => {
+			const params = {
+				...validParams,
+				sitename: '!!',
+				siteorigin: 'invalid-url',
+			};
+
+			const result = sanitizeProvisioningParams( params );
+			// The full fallback gets truncated to 30 characters
+			const fullFallback = `site-kit-siwg-${ md5( 'invalid-url' ) }`;
+			const expectedResult = fullFallback.substring( 0, 30 );
+
+			expect( result.sitename ).toBe( expectedResult );
+		} );
+
+		it( 'does not apply fallback when sanitized sitename is exactly 4 characters', () => {
+			const params = {
+				...validParams,
+				sitename: 'Test',
+			};
+
+			const result = sanitizeProvisioningParams( params );
+
+			expect( result.sitename ).toBe( 'Test' );
+		} );
+	} );
+
+	describe( 'sitename truncation', () => {
+		it( 'truncates sitename to 30 characters', () => {
+			const longSitename =
+				'This is a very long site name that exceeds thirty characters';
+			const params = {
+				...validParams,
+				sitename: longSitename,
+			};
+
+			const result = sanitizeProvisioningParams( params );
+
+			expect( result.sitename ).toBe( 'This is a very long site name' );
+			expect( result.sitename.length ).toBe( 29 );
+		} );
+
+		it( 'trims trailing spaces after truncation', () => {
+			const params = {
+				...validParams,
+				sitename:
+					'This is a very long site name that has spaces at truncation point',
+			};
+
+			const result = sanitizeProvisioningParams( params );
+
+			expect( result.sitename ).toBe( 'This is a very long site name' );
+			expect( result.sitename.endsWith( ' ' ) ).toBe( false );
+		} );
+
+		it( 'does not truncate sitenames shorter than or equal to 30 characters', () => {
+			const params = {
+				...validParams,
+				sitename: 'Exactly thirty characters!!',
+			};
+
+			const result = sanitizeProvisioningParams( params );
+
+			expect( result.sitename ).toBe( 'Exactly thirty characters' );
+			expect( result.sitename.length ).toBe( 25 );
+		} );
+	} );
+
+	describe( 'parameter immutability', () => {
+		it( 'does not mutate the original params object', () => {
+			const originalParams = {
+				appname: 'Test App',
+				sitename: 'Test@Site#Name!',
+				siteorigin: 'https://example.com',
+				extraParam: 'should remain',
+			};
+			const paramsCopy = { ...originalParams };
 
 			sanitizeProvisioningParams( originalParams );
 
-			expect( originalParams ).toEqual( originalCopy );
+			expect( originalParams ).toEqual( paramsCopy );
 		} );
 
-		it.each( [
-			[
-				'invalid characters with hyphens',
-				'Test@App!Site#Name',
-				'Test-App-Site-Name',
-			],
-			[
-				'consecutive spaces and hyphens',
-				'Test   App---Site  Name',
-				'Test App-Site Name',
-			],
-			[ 'valid appnames', 'Valid App Name', 'Valid App Name' ],
-			[
-				'mixed invalid characters',
-				'App$Name%With&Symbols*',
-				'App-Name-With-Symbols',
-			],
-		] )(
-			'should sanitize %s correctly',
-			( _, inputAppname, expectedAppname ) => {
-				const params = {
-					appname: inputAppname,
-					sitename: 'Test Site',
-					siteorigin: 'https://example.com',
-				};
-
-				const result = sanitizeProvisioningParams( params );
-
-				expect( result.appname ).toBe( expectedAppname );
-			}
-		);
-
-		it.each( [
-			[ 'leading hyphens', '---Valid App Name', 'Valid App Name' ],
-			[ 'trailing hyphens', 'Valid App Name---', 'Valid App Name' ],
-			[
-				'both leading and trailing hyphens',
-				'--Valid App Name--',
-				'Valid App Name',
-			],
-			[
-				'only hyphens after invalid character replacement',
-				'@@@Valid App Name@@@',
-				'Valid App Name',
-			],
-			[
-				'mixed case with hyphens',
-				'-App-Name-With-Hyphens-',
-				'App-Name-With-Hyphens',
-			],
-		] )(
-			'should trim hyphens for %s',
-			( _, inputAppname, expectedAppname ) => {
-				const params = {
-					appname: inputAppname,
-					sitename: 'Test Site',
-					siteorigin: 'https://example.com',
-				};
-
-				const result = sanitizeProvisioningParams( params );
-
-				expect( result.appname ).toBe( expectedAppname );
-			}
-		);
-
-		it.each( [
-			[ 'short input', 'Hi!', 'https://example.com' ],
-			[ 'URL with subdomain', 'x', 'https://sub.example.com:8080/path' ],
-			[ 'only spaces and hyphens', '   ---   ', 'https://example.com' ],
-			[ 'invalid URL', 'z', 'invalid-url' ],
-		] )(
-			'should generate fallback name for %s',
-			( _, inputAppname, siteorigin ) => {
-				const params = {
-					appname: inputAppname,
-					sitename: 'Test Site',
-					siteorigin,
-				};
-
-				const result = sanitizeProvisioningParams( params );
-
-				expect( result.appname ).toMatch(
-					/^site-kit-siwg-[a-f0-9]{16}$/
-				);
-			}
-		);
-
-		it.each( [
-			[
-				'basic truncation',
-				'This is a very long application name that exceeds thirty characters',
-				'This is a very long applicatio',
-				30,
-			],
-		] )(
-			'should handle %s',
-			( _, inputAppname, expectedAppname, expectedLength ) => {
-				const params = {
-					appname: inputAppname,
-					sitename: 'Test Site',
-					siteorigin: 'https://example.com',
-				};
-
-				const result = sanitizeProvisioningParams( params );
-
-				expect( result.appname ).toBe( expectedAppname );
-				expect( result.appname ).toHaveLength( expectedLength );
-			}
-		);
-
-		it( 'should remove trailing hyphen after truncation', () => {
+		it( 'preserves extra parameters in the returned object', () => {
 			const params = {
-				appname:
-					'This is a very long app name-with trailing hyphen that needs truncation',
-				sitename: 'Test Site',
-				siteorigin: 'https://example.com',
-			};
-
-			const result = sanitizeProvisioningParams( params );
-
-			expect( result.appname.length ).toBeLessThanOrEqual( 30 );
-			expect( result.appname.endsWith( '-' ) ).toBe( false );
-		} );
-
-		it.each( [
-			[
-				'basic sitename truncation',
-				'This is a very long site name that exceeds thirty characters',
-				'This is a very long site name',
-				29,
-			],
-			[
-				'sitename exactly 30 characters',
-				'This site name is exactly 30ch',
-				'This site name is exactly 30ch',
-				30,
-			],
-			[ 'short sitename unchanged', 'Short Site', 'Short Site', 10 ],
-		] )(
-			'should handle sitename %s',
-			( _, inputSitename, expectedSitename, expectedLength ) => {
-				const params = {
-					appname: 'Test App',
-					sitename: inputSitename,
-					siteorigin: 'https://example.com',
-				};
-
-				const result = sanitizeProvisioningParams( params );
-
-				expect( result.sitename ).toBe( expectedSitename );
-				expect( result.sitename ).toHaveLength( expectedLength );
-			}
-		);
-
-		it.each( [
-			[
-				'non-alphanumeric characters with spaces',
-				'My@Site#Name!',
-				'My Site Name',
-			],
-			[ 'multiple special characters', 'Site!!!Name???', 'Site Name' ],
-			[
-				'mixed characters with numbers',
-				'Site123@Name#456',
-				'Site123 Name 456',
-			],
-			[
-				'already valid sitename',
-				'Valid Site Name 123',
-				'Valid Site Name 123',
-			],
-			[
-				'sitename with sanitization and truncation',
-				'Very@Long#Site$Name%That&Exceeds*Thirty+Characters',
-				'Very Long Site Name That Excee',
-			],
-		] )(
-			'should sanitize sitename characters for %s',
-			( _, inputSitename, expectedSitename ) => {
-				const params = {
-					appname: 'Test App',
-					sitename: inputSitename,
-					siteorigin: 'https://example.com',
-				};
-
-				const result = sanitizeProvisioningParams( params );
-
-				expect( result.sitename ).toBe( expectedSitename );
-			}
-		);
-
-		it.each( [
-			[
-				'multiple consecutive spaces',
-				'Site    Name   With    Spaces',
-				'Site Name With Spaces',
-			],
-			[
-				'leading and trailing whitespace',
-				'   Site Name   ',
-				'Site Name',
-			],
-			[
-				'mixed spaces and special chars',
-				'  My@Site!!!Name  ',
-				'My Site Name',
-			],
-			[
-				'tabs and multiple spaces',
-				'Site\t\tName   With\tSpaces',
-				'Site Name With Spaces',
-			],
-			[
-				'special chars creating multiple spaces with trimming',
-				' !!!Site@@@Name!!! ',
-				'Site Name',
-			],
-			[
-				'long sitename with space normalization and truncation',
-				'  Very@@@Long    Site   Name   That   Should   Be   Truncated  ',
-				'Very Long Site Name That Shoul',
-			],
-		] )(
-			'should normalize spaces and trim for %s',
-			( _, inputSitename, expectedSitename ) => {
-				const params = {
-					appname: 'Test App',
-					sitename: inputSitename,
-					siteorigin: 'https://example.com',
-				};
-
-				const result = sanitizeProvisioningParams( params );
-
-				expect( result.sitename ).toBe( expectedSitename );
-			}
-		);
-
-		it( 'should preserve other params unchanged', () => {
-			const params = {
-				appname: 'Test App',
-				sitename: 'Test Site',
-				siteorigin: 'https://example.com',
+				...validParams,
 				extraParam: 'should be preserved',
+				anotherParam: 123,
 			};
 
 			const result = sanitizeProvisioningParams( params );
 
-			expect( result.sitename ).toBe( 'Test Site' );
-			expect( result.siteorigin ).toBe( 'https://example.com' );
 			expect( result.extraParam ).toBe( 'should be preserved' );
+			expect( result.anotherParam ).toBe( 123 );
+		} );
+	} );
+
+	describe( 'edge cases', () => {
+		it( 'handles sitename with only spaces', () => {
+			const params = {
+				...validParams,
+				sitename: '   ',
+				siteorigin: 'https://example.com',
+			};
+
+			const result = sanitizeProvisioningParams( params );
+			// The full fallback gets truncated to 30 characters
+			const fullFallback = `site-kit-siwg-${ md5( 'example.com' ) }`;
+			const expectedResult = fullFallback.substring( 0, 30 );
+
+			expect( result.sitename ).toBe( expectedResult );
+		} );
+
+		it( 'handles complex URL parsing scenarios', () => {
+			const params = {
+				...validParams,
+				sitename: '!!',
+				siteorigin:
+					'https://subdomain.example.com:8080/path?query=value',
+			};
+
+			const result = sanitizeProvisioningParams( params );
+			// The full fallback gets truncated to 30 characters
+			const fullFallback = `site-kit-siwg-${ md5(
+				'subdomain.example.com'
+			) }`;
+			const expectedResult = fullFallback.substring( 0, 30 );
+
+			expect( result.sitename ).toBe( expectedResult );
+		} );
+
+		it( 'handles Unicode characters in sitename', () => {
+			const params = {
+				...validParams,
+				sitename: 'Tëst Ñámé 测试',
+			};
+
+			const result = sanitizeProvisioningParams( params );
+
+			expect( result.sitename ).toBe( 'T st m' );
+		} );
+
+		it( 'handles fallback generation when sitename contains only 3 valid characters', () => {
+			const params = {
+				...validParams,
+				sitename: 'a!b@c#',
+				siteorigin: 'https://example.com',
+			};
+
+			const result = sanitizeProvisioningParams( params );
+			const expectedHash = md5( 'example.com' ).substring( 0, 16 );
+
+			expect( result.sitename ).toBe( `site-kit-siwg-${ expectedHash }` );
 		} );
 	} );
 } );

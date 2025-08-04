@@ -44,48 +44,23 @@ export function sanitizeProvisioningParams( params ) {
 	// Work on a copy to avoid mutating the original object.
 	const sanitizedParams = { ...params };
 
-	// Start by replacing all invalid characters with hyphens in appname.
-	let sanitizedAppname = appname.replace( /[^a-zA-Z0-9\s-]/g, '-' );
-	// Reduce segments with 2+ consecutive spaces or hyphens to a single character.
-	sanitizedAppname = sanitizedAppname.replace( /[\s-]{2,}/g, ( match ) =>
-		match.includes( ' ' ) ? ' ' : '-'
-	);
-	// Trim hyphens from the beginning and end of the sanitized name.
-	sanitizedAppname = sanitizedAppname.replace( /^-+|-+$/g, '' );
-
-	// If the resulting name is less than 4 characters, replace with fallback.
-	if ( sanitizedAppname.length < 4 ) {
-		try {
-			const host = new URL( siteorigin ).hostname;
-			const hash = md5( host ).substring( 0, 16 ); // Truncate MD5 to fit in 30 chars.
-			sanitizedAppname = `site-kit-siwg-${ hash }`;
-		} catch ( error ) {
-			// If URL parsing fails, use the original siteorigin for MD5.
-			const hash = md5( siteorigin ).substring( 0, 16 ); // Truncate MD5 to fit in 30 chars.
-			sanitizedAppname = `site-kit-siwg-${ hash }`;
-		}
-	}
-
-	// Truncate to a max of 30 characters.
-	if ( sanitizedAppname.length > 30 ) {
-		sanitizedAppname = sanitizedAppname.substring( 0, 30 );
-
-		// If the final character is a hyphen after truncation, remove it.
-		if ( sanitizedAppname.endsWith( '-' ) ) {
-			sanitizedAppname = sanitizedAppname.slice( 0, -1 );
-		}
-	}
-
-	sanitizedParams.appname = sanitizedAppname;
-
 	// Replace all non-alphanumeric characters with spaces in sitename.
 	let sanitizedSitename = sitename.replace( /[^a-zA-Z0-9\s]/g, ' ' );
 	// Normalize all whitespace characters (tabs, newlines, etc.) to spaces.
-	sanitizedSitename = sanitizedSitename.replace( /\s/g, ' ' );
-	// Replace multiple consecutive spaces with single spaces.
-	sanitizedSitename = sanitizedSitename.replace( / {2,}/g, ' ' );
+	sanitizedSitename = sanitizedSitename.replace( /\s+/g, ' ' );
 	// Trim whitespaces from beginning and end.
 	sanitizedSitename = sanitizedSitename.trim();
+
+	// If the resulting name is less than 4 characters, replace with fallback.
+	if ( sanitizedSitename.split( ' ' ).join( '' ).length < 4 ) {
+		try {
+			const host = new URL( siteorigin ).hostname;
+			sanitizedSitename = `site-kit-siwg-${ md5( host ) }`;
+		} catch ( error ) {
+			// If URL parsing fails, use the original siteorigin for MD5.
+			sanitizedSitename = `site-kit-siwg-${ md5( siteorigin ) }`;
+		}
+	}
 
 	// Truncate sitename to a max of 30 characters.
 	if ( sanitizedSitename.length > 30 ) {
