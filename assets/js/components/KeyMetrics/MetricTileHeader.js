@@ -26,11 +26,19 @@ import PropTypes from 'prop-types';
  */
 import InfoTooltip from '../InfoTooltip';
 import VisuallyHidden from '../VisuallyHidden';
+import Typography from '../Typography';
 
 export default function MetricTileHeader( { title, infoTooltip, loading } ) {
 	return (
 		<div className="googlesitekit-km-widget-tile__title-container">
-			<h3 className="googlesitekit-km-widget-tile__title">{ title }</h3>
+			<Typography
+				as="h3"
+				size="small"
+				type="label"
+				className="googlesitekit-km-widget-tile__title"
+			>
+				{ title }
+			</Typography>
 			{ loading ? (
 				<VisuallyHidden>
 					<InfoTooltip title={ infoTooltip } />

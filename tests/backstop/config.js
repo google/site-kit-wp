@@ -23,7 +23,7 @@ module.exports = {
 	onBeforeScript: 'puppet/onBefore.js',
 	onReadyScript: 'puppet/onReady.js',
 	asyncCaptureLimit: 5,
-	asyncCompareLimit: 50,
+	asyncCompareLimit: 90,
 	debug: false,
 	debugWindow: false,
 	engine: 'puppeteer',
