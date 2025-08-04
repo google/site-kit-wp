@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Util;
 
@@ -36,12 +34,12 @@ class Exit_HandlerTest extends TestCase {
 				};
 			}
 		);
-		$this->assertArrayNotHasKey( 'invoke', $spy->invocations );
+		$this->assertArrayNotHasKey( 'invoke', $spy->invocations, 'Spy should not have invoke key before handler is called.' );
 
 		$handler->invoke();
 		$handler->invoke();
 		$handler->invoke();
 
-		$this->assertCount( 3, $spy->invocations['invoke'] );
+		$this->assertCount( 3, $spy->invocations['invoke'], 'Spy should be invoked three times when handler is called three times.' );
 	}
 }

@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Tags\Guards;
 
@@ -30,7 +28,7 @@ class Tag_Verify_GuardTest extends TestCase {
 
 	public function test_can_activate_by_default() {
 		// Should return TRUE when "tagverify" isn't set.
-		$this->assertTrue( $this->tagverify->can_activate() );
+		$this->assertTrue( $this->tagverify->can_activate(), 'Tag should be able to activate by default when tagverify is not set.' );
 	}
 
 	public function test_can_activate() {
