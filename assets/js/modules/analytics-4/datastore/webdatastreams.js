@@ -571,7 +571,7 @@ const baseSelectors = {
 				const propertyID =
 					select( MODULES_ANALYTICS_4 ).getPropertyID();
 				const loadedWebDataStreams =
-					isValidPropertyID( propertyID ) && hasModuleAccess !== false
+					isValidPropertyID( propertyID ) && hasModuleAccess
 						? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 								'getWebDataStreams',
 								[ propertyID ]
