@@ -80,17 +80,11 @@ const Banner = forwardRef(
 				<div className="googlesitekit-banner__content">
 					<Title>{ title }</Title>
 
-					<Description>
-						{ description }{ ' ' }
-						{ learnMoreLink?.href && (
-							<LearnMoreLink { ...learnMoreLink } />
-						) }
-						{ additionalDescription && (
-							<div className="googlesitekit-banner__additional-description">
-								{ additionalDescription }
-							</div>
-						) }
-					</Description>
+					<Description
+						description={ description }
+						learnMoreLink={ learnMoreLink }
+						additionalDescription={ additionalDescription }
+					/>
 
 					{ helpText && <HelpText>{ helpText }</HelpText> }
 

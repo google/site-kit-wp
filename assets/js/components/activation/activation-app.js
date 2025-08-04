@@ -37,6 +37,7 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import useViewContext from '../../hooks/useViewContext';
+import Typography from '../Typography';
 
 export function ActivationApp() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -89,12 +90,17 @@ export function ActivationApp() {
 			<Row>
 				<Cell size={ 12 }>
 					<Logo />
-					<h3 className="googlesitekit-heading-3 googlesitekit-activation__title">
+					<Typography
+						as="h3"
+						size="small"
+						type="headline"
+						className="googlesitekit-activation__title"
+					>
 						{ __(
 							'Congratulations, the Site Kit plugin is now activated',
 							'google-site-kit'
 						) }
-					</h3>
+					</Typography>
 					<Button
 						id="start-setup-link"
 						className="googlesitekit-start-setup"
