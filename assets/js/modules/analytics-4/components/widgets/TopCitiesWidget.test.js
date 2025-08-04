@@ -34,6 +34,7 @@ import {
 import TopCitiesWidget from './TopCitiesWidget';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import { DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
@@ -51,7 +52,7 @@ describe( 'TopCitiesWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 	} );
 
 	it( 'should render correctly with the expected metrics', async () => {
@@ -70,6 +71,8 @@ describe( 'TopCitiesWidget', () => {
 				},
 			],
 			limit: 4,
+			reportID:
+				'analytics-4_top-cities-widget_widget_topCitiesReportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );

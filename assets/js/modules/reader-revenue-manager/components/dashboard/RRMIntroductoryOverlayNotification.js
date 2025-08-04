@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { createInterpolateElement } from '@wordpress/element';
@@ -133,13 +138,18 @@ export default function RRMIntroductoryOverlayNotification( {
 					target: '_blank',
 					trailingIcon: <ExternalIcon width={ 13 } height={ 13 } />,
 				} }
-				dismissButton
 				GraphicDesktop={
 					ReaderRevenueManagerIntroductoryGraphicDesktop
 				}
 				GraphicMobile={ ReaderRevenueManagerIntroductoryGraphicMobile }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
+				dismissButton
 			/>
 		</Notification>
 	);
 }
+
+RRMIntroductoryOverlayNotification.propTypes = {
+	id: PropTypes.string,
+	Notification: PropTypes.elementType,
+};

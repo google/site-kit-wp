@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useWindowScroll, useKey } from 'react-use';
+import { useKey, useWindowScroll } from 'react-use';
 import classnames from 'classnames';
 
 /**
@@ -32,6 +32,7 @@ import {
 	useCallback,
 	useState,
 } from '@wordpress/element';
+import { ESCAPE } from '@wordpress/keycodes';
 import { arrowLeft, Icon } from '@wordpress/icons';
 
 /**
@@ -48,7 +49,6 @@ import {
 	SETTINGS_DIALOG,
 } from '../DashboardSharingSettings/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
-import { ESCAPE } from '@wordpress/keycodes';
 import Portal from '../../Portal';
 import {
 	Dialog,
@@ -59,10 +59,12 @@ import ShareIcon from '../../../../svg/icons/share.svg';
 import Link from '../../Link';
 import DashboardSharingSettings from '../DashboardSharingSettings';
 import Footer from './Footer';
+import Typography from '../../Typography';
 
 export default function DashboardSharingDialog() {
 	const [ shouldFocusResetButton, setShouldFocusResetButton ] =
 		useState( false );
+
 	const breakpoint = useBreakpoint();
 	const { y } = useWindowScroll();
 
@@ -144,19 +146,14 @@ export default function DashboardSharingDialog() {
 		closeSettingsDialog();
 	}, [ closeResetDialog, closeSettingsDialog, resetDialogOpen ] );
 
-	// Handle escape key for reset dialog
-	useKey(
-		( event ) => resetDialogOpen && ESCAPE === event.keyCode,
-		closeResetDialog
-	);
-
-	// Handle clicking on the scrim (outside the dialog)
+	// Handle scrim click for reset dialog.
 	useEffect( () => {
+		if ( ! resetDialogOpen ) {
+			return;
+		}
+
 		const handleScrimClick = ( event ) => {
-			if (
-				resetDialogOpen &&
-				event.target.classList.contains( 'mdc-dialog__scrim' )
-			) {
+			if ( event.target.classList.contains( 'mdc-dialog__scrim' ) ) {
 				closeResetDialog();
 			}
 		};
@@ -167,6 +164,12 @@ export default function DashboardSharingDialog() {
 			document.removeEventListener( 'click', handleScrimClick );
 		};
 	}, [ resetDialogOpen, closeResetDialog ] );
+
+	// Pressing the Escape key should close the reset dialog.
+	useKey(
+		( event ) => resetDialogOpen && ESCAPE === event.keyCode,
+		closeResetDialog
+	);
 
 	return (
 		<Portal>
@@ -213,19 +216,30 @@ export default function DashboardSharingDialog() {
 						) }
 
 						<div className="googlesitekit-dialog__header-titles">
-							<h2 className="googlesitekit-dialog__title">
-								{ settingsDialogOpen &&
-									__(
-										'Dashboard sharing & permissions',
-										'google-site-kit'
-									) }
+							<Typography
+								as="h2"
+								className="googlesitekit-dialog__title"
+								size="medium"
+								type="headline"
+							>
+								{ settingsDialogOpen && (
+									<span>
+										{ __(
+											'Dashboard sharing & permissions',
+											'google-site-kit'
+										) }
+									</span>
+								) }
 
-								{ resetDialogOpen &&
-									__(
-										'Reset Dashboard Sharing permissions',
-										'google-site-kit'
-									) }
-							</h2>
+								{ resetDialogOpen && (
+									<span>
+										{ __(
+											'Reset dashboard sharing permissions',
+											'google-site-kit'
+										) }
+									</span>
+								) }
+							</Typography>
 
 							<p
 								className={ classnames(
@@ -236,31 +250,39 @@ export default function DashboardSharingDialog() {
 									}
 								) }
 							>
-								{ settingsDialogOpen &&
-									createInterpolateElement(
-										__(
-											'Share a view-only version of your Site Kit dashboard with other WordPress roles. <a>Learn more</a>',
-											'google-site-kit'
-										),
-										{
-											a: (
-												<Link
-													aria-label={ __(
-														'Learn more about dashboard sharing',
-														'google-site-kit'
-													) }
-													href={ documentationURL }
-													external
-												/>
+								{ settingsDialogOpen && (
+									<span>
+										{ createInterpolateElement(
+											__(
+												'Share a view-only version of your Site Kit dashboard with other WordPress roles. <a>Learn more</a>',
+												'google-site-kit'
 											),
-										}
-									) }
+											{
+												a: (
+													<Link
+														aria-label={ __(
+															'Learn more about dashboard sharing',
+															'google-site-kit'
+														) }
+														href={
+															documentationURL
+														}
+														external
+													/>
+												),
+											}
+										) }
+									</span>
+								) }
 
-								{ resetDialogOpen &&
-									__(
-										'Warning: Resetting these permissions will remove view-only access for all users. Are you sure you want to reset all Dashboard Sharing permissions?',
-										'google-site-kit'
-									) }
+								{ resetDialogOpen && (
+									<span>
+										{ __(
+											'Warning: Resetting these permissions will remove view-only access for all users. Are you sure you want to reset all dashboard sharing permissions?',
+											'google-site-kit'
+										) }
+									</span>
+								) }
 							</p>
 						</div>
 					</div>

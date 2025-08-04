@@ -46,6 +46,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
@@ -70,10 +71,20 @@ describe( 'TopTrafficSourceWidget', () => {
 			compare: true,
 		} );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 	} );
 
 	it( 'should render correctly with the expected metrics', async () => {
+		provideAnalytics4MockReport( registry, {
+			...dateRangeDates,
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+			],
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_totalUsersReportOptions',
+		} );
 		provideAnalytics4MockReport( registry, {
 			...dateRangeDates,
 			dimensions: [ 'sessionDefaultChannelGroup' ],
@@ -84,15 +95,10 @@ describe( 'TopTrafficSourceWidget', () => {
 			],
 			limit: 1,
 			orderBy: 'totalUsers',
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_trafficSourceReportOptions',
 		} );
-		provideAnalytics4MockReport( registry, {
-			...dateRangeDates,
-			metrics: [
-				{
-					name: 'totalUsers',
-				},
-			],
-		} );
+
 		const { container, waitForRegistry } = render(
 			<TopTrafficSourceWidget { ...widgetProps } />,
 			{
@@ -115,6 +121,8 @@ describe( 'TopTrafficSourceWidget', () => {
 			],
 			limit: 1,
 			orderBy: 'totalUsers',
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_trafficSourceReportOptions',
 		};
 		const channelGroupReport = getAnalytics4MockResponse(
 			channelGroupReportOptions
@@ -144,6 +152,8 @@ describe( 'TopTrafficSourceWidget', () => {
 					name: 'totalUsers',
 				},
 			],
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_totalUsersReportOptions',
 		};
 		const totalUsersReport = getAnalytics4MockResponse(
 			totalUsersReportOptions

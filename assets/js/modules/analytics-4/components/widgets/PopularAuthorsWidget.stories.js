@@ -25,6 +25,7 @@ import {
 	KM_ANALYTICS_POPULAR_AUTHORS,
 } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
 import { provideModules } from '../../../../../../tests/js/utils';
 import { provideCustomDimensionError } from '../../utils/custom-dimensions';
@@ -68,6 +69,7 @@ const reportOptions = {
 	],
 	limit: 3,
 	keepEmptyRows: false,
+	reportID: 'analytics-4_popular-authors-widget_widget_reportOptions',
 };
 
 const propertyID = '12345';
@@ -196,7 +198,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

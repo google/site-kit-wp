@@ -17,52 +17,49 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+import { useMountedState } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import SimpleNotification from '../../../googlesitekit/notifications/components/layout/SimpleNotification';
-import ProgressBar from '../../../googlesitekit/components-gm2/ProgressBar';
+import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { DAY_IN_SECONDS } from '../../../util';
 import Description from './Description';
-import RecoverableActions from './RecoverableActions';
-import UnrecoverableActions from './UnrecoverableActions';
+import BannerNotification, {
+	TYPES,
+} from '../../../googlesitekit/notifications/components/layout/BannerNotification';
+import AdditionalDescription from './AdditionalDescription';
+import PreviewBlock from '../../PreviewBlock';
 
 export default function ModuleRecoveryAlert( { id, Notification } ) {
+	const [ selectedModuleSlugs, setSelectedModuleSlugs ] = useState( null );
+	const [ inProgress, setInProgress ] = useState( false );
+	const isMounted = useMountedState();
+
 	const recoverableModules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getRecoverableModules()
 	);
 
-	// TODO: Extract to selector.
-	const userRecoverableModuleSlugs = useSelect( ( select ) => {
-		const { getRecoverableModules, hasModuleAccess } =
-			select( CORE_MODULES );
-		const modules = getRecoverableModules();
+	const userRecoverableModuleSlugs = useSelect( ( select ) =>
+		select( CORE_MODULES ).getUserRecoverableModuleSlugs()
+	);
 
-		if ( modules === undefined ) {
-			return undefined;
-		}
-
-		const slugAccessEntries = Object.keys( modules ).map( ( slug ) => [
-			slug,
-			hasModuleAccess( slug ),
-		] );
-
-		if (
-			slugAccessEntries.some(
-				( [ , hasAccess ] ) => hasAccess === undefined
-			)
-		) {
-			return undefined;
-		}
-
-		return slugAccessEntries
-			.filter( ( [ , hasAccess ] ) => hasAccess )
-			.map( ( [ slug ] ) => slug );
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'dashboard-sharing'
+		);
 	} );
 
 	// The alert renders conditional copy and actions based on:
@@ -72,24 +69,85 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		Object.keys( recoverableModules || {} ).length > 1;
 	const hasUserRecoverableModules = !! userRecoverableModuleSlugs?.length;
 
-	// TODO: refactor loading state to use Skeleton components within the sub component.
+	const { recoverModules, clearRecoveredModules } =
+		useDispatch( CORE_MODULES );
+
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
+	const handleRecoverModules = useCallback( async () => {
+		setInProgress( true );
+
+		await clearRecoveredModules();
+
+		const recoveryResponse = await recoverModules( selectedModuleSlugs );
+
+		const successfullyRecoveredModules = Object.keys(
+			recoveryResponse?.response?.success || {}
+		).filter( ( slug ) => recoveryResponse.response.success[ slug ] );
+
+		// Only dismiss the notification if all modules were recovered successfully.
+		if (
+			userRecoverableModuleSlugs.length ===
+			successfullyRecoveredModules.length
+		) {
+			dismissNotification( id, { skipHidingFromQueue: false } );
+		}
+
+		// Only update state if the component is still mounted.
+		if ( isMounted() ) {
+			setSelectedModuleSlugs( null );
+			setInProgress( false );
+		}
+	}, [
+		id,
+		isMounted,
+		clearRecoveredModules,
+		dismissNotification,
+		recoverModules,
+		selectedModuleSlugs,
+		userRecoverableModuleSlugs,
+	] );
+
+	useEffect( () => {
+		if (
+			selectedModuleSlugs === null &&
+			Array.isArray( userRecoverableModuleSlugs )
+		) {
+			setSelectedModuleSlugs( userRecoverableModuleSlugs );
+		}
+	}, [ selectedModuleSlugs, userRecoverableModuleSlugs ] );
+
+	// Disable the CTA if no modules are selected to be restored.
+	const disableCTA = ! selectedModuleSlugs?.length;
+
 	const isLoading =
 		recoverableModules === undefined ||
 		userRecoverableModuleSlugs === undefined;
 
+	const hideCTAButton = ! hasUserRecoverableModules;
+
+	if ( inProgress && ! hasUserRecoverableModules ) {
+		return null;
+	}
+
 	return (
-		<Notification className="googlesitekit-publisher-win">
-			<SimpleNotification
+		<Notification>
+			<BannerNotification
+				notificationID={ id }
+				type={ TYPES.ERROR }
 				title={ __(
 					'Dashboard data for some services has been interrupted',
 					'google-site-kit'
 				) }
 				description={
 					isLoading ? (
-						<ProgressBar />
+						<Fragment>
+							<PreviewBlock width="auto" height="50px" />
+							<PreviewBlock width="auto" height="60px" />
+							<PreviewBlock width="220px" height="35px" />
+						</Fragment>
 					) : (
 						<Description
-							id={ id }
 							recoverableModules={ recoverableModules }
 							userRecoverableModuleSlugs={
 								userRecoverableModuleSlugs
@@ -103,31 +161,61 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 						/>
 					)
 				}
-				actions={
-					! isLoading &&
-					( hasUserRecoverableModules ? (
-						<RecoverableActions
-							id={ id }
-							recoverableModules={ recoverableModules }
-							userRecoverableModuleSlugs={
-								userRecoverableModuleSlugs
+				learnMoreLink={
+					! isLoading
+						? {
+								label: __( 'Learn more', 'google-site-kit' ),
+								href: documentationURL,
+						  }
+						: undefined
+				}
+				additionalDescription={
+					! isLoading && (
+						<AdditionalDescription
+							selectedModuleSlugs={ selectedModuleSlugs }
+							hasUserRecoverableModules={
+								hasUserRecoverableModules
 							}
 							hasMultipleRecoverableModules={
 								hasMultipleRecoverableModules
 							}
-						/>
-					) : (
-						<UnrecoverableActions
-							id={ id }
 							recoverableModules={ recoverableModules }
 							userRecoverableModuleSlugs={
 								userRecoverableModuleSlugs
 							}
-							hasMultipleRecoverableModules={
-								hasMultipleRecoverableModules
-							}
+							inProgress={ inProgress }
+							setSelectedModuleSlugs={ setSelectedModuleSlugs }
 						/>
-					) )
+					)
+				}
+				ctaButton={
+					hideCTAButton
+						? undefined
+						: {
+								label: __( 'Recover', 'google-site-kit' ),
+								onClick: handleRecoverModules,
+								inProgress,
+								disabled: disableCTA,
+						  }
+				}
+				dismissButton={
+					isLoading
+						? undefined
+						: {
+								label: __(
+									'Remind me later',
+									'google-site-kit'
+								),
+								tertiary: ! hideCTAButton,
+								className: classnames( {
+									'googlesitekit-banner__cta': hideCTAButton,
+								} ),
+								dismissOptions: hideCTAButton
+									? {
+											dismissExpires: DAY_IN_SECONDS,
+									  }
+									: undefined,
+						  }
 				}
 			/>
 		</Notification>

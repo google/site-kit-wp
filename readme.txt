@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.8
 Requires PHP:      7.4
-Stable tag:        1.154.0
+Stable tag:        1.158.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,23 +109,29 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.154.0 =
+= 1.158.0 =
+
+**Added**
+
+* Add unique descriptor to report requests. See [#7348](https://github.com/google/site-kit-wp/issues/7348).
 
 **Enhanced**
 
-* Add the `purchase` event tracking for the WooCommerce conversion tracking provider on block themes. See [#10747](https://github.com/google/site-kit-wp/issues/10747).
-* Add all WooCommerce conversion events to track when WooCommerce Analytics Addon is available. See [#10691](https://github.com/google/site-kit-wp/issues/10691).
-* Update WooCommerce events tracking to include additional information. See [#10672](https://github.com/google/site-kit-wp/issues/10672).
-* Update success subtle notifications to use the new `<Notice type="success">` component. See [#10432](https://github.com/google/site-kit-wp/issues/10432).
-* Refactor the usage of all “info type notice” components to use the new `<Notice type='info'>` component. See [#10430](https://github.com/google/site-kit-wp/issues/10430).
-* Refactor components used for warnings throughout the plugin. See [#10428](https://github.com/google/site-kit-wp/issues/10428).
-* Reset the dismissal state for the Reader Revenue Manager product ID notifications when the connected publication is changed, ensuring they can be shown again. See [#10311](https://github.com/google/site-kit-wp/issues/10311).
-* Fix tooltip issues on mobile/tablet viewports when user clicked outside of the tooltip area. See [#10101](https://github.com/google/site-kit-wp/issues/10101).
-* Add the accepted language information to the remove notifications requests. See [#8813](https://github.com/google/site-kit-wp/issues/8813).
+* Update Google tag gateway for advertisers to work as expected in various tagging scenarios. See [#11122](https://github.com/google/site-kit-wp/issues/11122).
+* Fix bug that could cause some WooCommerce events to have inaccurate prices. See [#10974](https://github.com/google/site-kit-wp/issues/10974).
+* Update heading styles. See [#10905](https://github.com/google/site-kit-wp/issues/10905).
+* Update the style for generic notification banners received from Site Kit service. See [#10425](https://github.com/google/site-kit-wp/issues/10425).
+* Update the "successful setup" banner notification styles. See [#10388](https://github.com/google/site-kit-wp/issues/10388).
+* Remove active consumers and activity metrics tracking functionality. See [#10189](https://github.com/google/site-kit-wp/issues/10189).
+* Set a max-width for Site Kit content. See [#9599](https://github.com/google/site-kit-wp/issues/9599).
+* Update button font weight to be consistent with the design system. See [#8856](https://github.com/google/site-kit-wp/issues/8856).
+* Update AdSense settings view layout to move “Account Status” below “Publisher ID” and “Site Status” for better alignment with other modules. See [#7958](https://github.com/google/site-kit-wp/issues/7958).
 
 **Fixed**
 
-* Fix error preventing the Reader Revenue Manager block editor plugin and Sign in With Google blocks from loading in the block editor. See [#10822](https://github.com/google/site-kit-wp/issues/10822).
-* Fix incorrect step navigation in feature tours. See [#10590](https://github.com/google/site-kit-wp/issues/10590).
+* Update Sign in with Google setup banner CTA to show spinner when in progress. See [#10962](https://github.com/google/site-kit-wp/issues/10962).
+* Prevent flicker when Setup CTA is clicked and notification should not re-appear when you cancel setup. See [#10961](https://github.com/google/site-kit-wp/issues/10961).
+* Fix issue when a React component has been updated after unmount. See [#10845](https://github.com/google/site-kit-wp/issues/10845).
+* Fix error resolution behaviour in search funnel widget. See [#8434](https://github.com/google/site-kit-wp/issues/8434).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

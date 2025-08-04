@@ -38,6 +38,7 @@ import GoogleChart from '../GoogleChart';
 import { UNIQUE_VISITORS_CHART_OPTIONS } from './chart-options';
 import { extractAnalytics4DashboardData } from '../../modules/analytics-4/utils/extract-dashboard-data';
 import { stringToDate } from '../../util';
+import Typography from '../Typography';
 
 export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 	const { WPDashboardReportError } = props;
@@ -78,6 +79,8 @@ export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 				},
 			},
 		],
+		reportID:
+			'dashboard_wp-dashboard-unique-visitors-ga4_component_reportArgs',
 	};
 
 	const data = useInViewSelect(
@@ -146,7 +149,7 @@ export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 
 	return (
 		<div className="googlesitekit-unique-visitors-chart-widget">
-			<h3>
+			<Typography as="h3" type="headline" size="small">
 				{ sprintf(
 					/* translators: %s: number of days */
 					_n(
@@ -157,7 +160,7 @@ export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 					),
 					dateRangeLength
 				) }
-			</h3>
+			</Typography>
 			<GoogleChart
 				chartType="LineChart"
 				data={ googleChartData }

@@ -20,7 +20,8 @@
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
-import { addQueryArgs } from '@wordpress/url';
+import { addQueryArgs, getQueryArg } from '@wordpress/url';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -37,11 +38,14 @@ import {
 	ANALYTICS_NOTICE_FORM_NAME,
 	ANALYTICS_NOTICE_CHECKBOX,
 } from '../constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { setItem } from '../../../googlesitekit/api/cache';
 import useViewContext from '../../../hooks/useViewContext';
 import Header from './Header';
 import Splash from './Splash';
 import Actions from './Actions';
+import Notice from '../../Notice';
+import { TYPES } from '../../Notice/constants';
 
 export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
@@ -69,7 +73,7 @@ export default function SetupUsingProxyWithSignIn() {
 
 			if ( connectAnalytics ) {
 				const { error, response } = await activateModule(
-					'analytics-4'
+					MODULE_SLUG_ANALYTICS_4
 				);
 
 				if ( ! error ) {
@@ -129,6 +133,20 @@ export default function SetupUsingProxyWithSignIn() {
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
+							{ getQueryArg( location.href, 'notification' ) ===
+								'reset_success' && (
+								<Fragment>
+									<Notice
+										id="reset_success"
+										title={ __(
+											'Site Kit by Google was successfully reset.',
+											'google-site-kit'
+										) }
+										type={ TYPES.SUCCESS }
+									/>
+									<br />
+								</Fragment>
+							) }
 							<Layout rounded>
 								<Splash>
 									{ ( { complete, inProgressFeedback } ) => (

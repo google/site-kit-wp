@@ -20,7 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useEffect, useState } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -28,6 +28,7 @@ import { useEffect, useState } from '@wordpress/element';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import whenActive from '../../../../../../util/when-active';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import AudienceTiles from './AudienceTiles';
 import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
@@ -46,8 +47,12 @@ function AudienceTilesWidget( { Widget } ) {
 		select( CORE_USER ).getConfiguredAudiences()
 	);
 
-	const [ availableAudiencesSynced, setAvailableAudiencesSynced ] =
-		useState( false );
+	const availableAudiencesSynced = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasSyncedAudiences()
+	);
+	const isSyncingAudiences = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isSyncingAudiences()
+	);
 	const { clearErrors, maybeSyncAvailableAudiences, syncAvailableAudiences } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
@@ -62,16 +67,16 @@ function AudienceTilesWidget( { Widget } ) {
 	);
 
 	useEffect( () => {
-		if ( ! availableAudiencesSynced && ! isSettingUpAudiences ) {
-			const syncAudiences = async () => {
-				await maybeSyncAvailableAudiences();
-				setAvailableAudiencesSynced( true );
-			};
-
-			syncAudiences();
+		if (
+			! availableAudiencesSynced &&
+			! isSyncingAudiences &&
+			! isSettingUpAudiences
+		) {
+			maybeSyncAvailableAudiences();
 		}
 	}, [
 		availableAudiencesSynced,
+		isSyncingAudiences,
 		isSettingUpAudiences,
 		maybeSyncAvailableAudiences,
 	] );
@@ -139,6 +144,6 @@ AudienceTilesWidget.propTypes = {
 	WidgetNull: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( { moduleName: 'analytics-4' } )(
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
 	AudienceTilesWidget
 );

@@ -21,6 +21,7 @@
  */
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import {
 	createTestRegistry,
 	provideModules,
@@ -43,6 +44,8 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 				name: 'totalUsers',
 			},
 		],
+		reportID:
+			'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs',
 	};
 
 	const reportOptions = [
@@ -58,6 +61,8 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 					desc: true,
 				},
 			],
+			reportID:
+				'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 		},
 		{
 			// Pie chart, with country dimension.
@@ -71,6 +76,8 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 					desc: true,
 				},
 			],
+			reportID:
+				'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 		},
 		{
 			// Pie chart, with deviceCategory dimension.
@@ -85,6 +92,8 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 				},
 			],
 			limit: 6,
+			reportID:
+				'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 		},
 		// Totals.
 		baseOptions,
@@ -98,6 +107,8 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 					name: 'totalUsers',
 				},
 			],
+			reportID:
+				'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs',
 		},
 		{
 			// Line chart.
@@ -116,6 +127,8 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 					},
 				},
 			],
+			reportID:
+				'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs',
 		},
 		{
 			// Gathering data check.
@@ -139,7 +152,7 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},

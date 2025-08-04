@@ -28,6 +28,7 @@ import { Cell, Row } from '../material-components';
 import ConnectedIcon from '../../svg/icons/connected.svg';
 import ExclamationIcon from '../../svg/icons/exclamation.svg';
 import IconWrapper from './IconWrapper';
+import Typography from './Typography';
 
 export default function PageHeader( props ) {
 	const { title, icon, className, status, statusText, fullWidth, children } =
@@ -52,23 +53,26 @@ export default function PageHeader( props ) {
 				{ title && (
 					<Cell { ...titleCellProps }>
 						{ icon }
-						<h1
+						<Typography
+							as="h1"
 							className={ classnames(
 								'googlesitekit-page-header__title',
 								className
 							) }
+							size="medium"
+							type="title"
 						>
 							{ title }
-						</h1>
+						</Typography>
 					</Cell>
 				) }
 				{ hasDetails && (
 					<Cell
-						alignBottom
-						mdAlignRight
 						smSize={ 4 }
 						mdSize={ 4 }
 						lgSize={ 6 }
+						alignBottom
+						mdAlignRight
 					>
 						<div className="googlesitekit-page-header__details">
 							{ status && (

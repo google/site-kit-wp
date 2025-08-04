@@ -31,7 +31,6 @@ import {
  */
 import {
 	deactivateUtilityPlugins,
-	pageWait,
 	resetSiteKit,
 	setAMPMode,
 	setupSiteKit,
@@ -193,7 +192,7 @@ describe( 'Tag Manager module setup', () => {
 				}
 			);
 
-			await pageWait( 1000 );
+			await page.waitForNetworkIdle();
 			await expect( page ).toClick( 'button', {
 				text: new RegExp( 'complete setup', 'i' ),
 			} );
@@ -287,7 +286,7 @@ describe( 'Tag Manager module setup', () => {
 				}
 			);
 
-			await pageWait( 1000 );
+			await page.waitForNetworkIdle();
 			await expect( page ).toClick( 'button', {
 				text: new RegExp( 'complete setup', 'i' ),
 			} );

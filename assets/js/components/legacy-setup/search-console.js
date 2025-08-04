@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
+
 /**
  * External dependencies
  */
@@ -37,7 +39,9 @@ import {
 	Select,
 	TextField,
 } from 'googlesitekit-components';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { trackEvent } from '../../util';
+import Typography from '../Typography';
 
 class SearchConsole extends Component {
 	constructor( props ) {
@@ -81,7 +85,7 @@ class SearchConsole extends Component {
 			try {
 				const properties = await get(
 					'modules',
-					'search-console',
+					MODULE_SLUG_SEARCH_CONSOLE,
 					'matched-sites',
 					undefined,
 					{ useCache: false }
@@ -145,7 +149,7 @@ class SearchConsole extends Component {
 	 * @param {boolean} isNew   Whether siteURL is for a new property.
 	 */
 	async insertPropertyToSearchConsole( siteURL, isNew = false ) {
-		await set( 'modules', 'search-console', 'site', { siteURL } );
+		await set( 'modules', MODULE_SLUG_SEARCH_CONSOLE, 'site', { siteURL } );
 
 		if ( isNew ) {
 			await trackEvent( 'search_console_setup', 'add_new_sc_property' );
@@ -217,13 +221,13 @@ class SearchConsole extends Component {
 			<Fragment>
 				<div className="googlesitekit-setup-module__inputs">
 					<Select
-						enhanced
 						name="siteProperty"
 						label={ __( 'Choose URL', 'google-site-kit' ) }
-						outlined
 						onEnhancedChange={ this.handleURLSelect }
 						options={ sitesList }
 						value={ selectedURL }
+						enhanced
+						outlined
 					/>
 				</div>
 				<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
@@ -238,18 +242,18 @@ class SearchConsole extends Component {
 	static connected() {
 		return (
 			<section className="googlesitekit-setup-module googlesitekit-setup-module--search-console">
-				<h2
-					className="
-					googlesitekit-heading-3
-					googlesitekit-setup-module__title
-				"
+				<Typography
+					as="h3"
+					className="googlesitekit-setup-module__title"
+					size="small"
+					type="headline"
 				>
 					{ _x(
 						'Search Console',
 						'Service name',
 						'google-site-kit'
 					) }
-				</h2>
+				</Typography>
 				<p className="googlesitekit-setup-module__text--no-margin">
 					{ __(
 						'Your Search Console is set up with Site Kit.',
@@ -270,8 +274,8 @@ class SearchConsole extends Component {
 					<TextField
 						label={ __( 'Website Address', 'google-site-kit' ) }
 						name="siteProperty"
-						outlined
 						value={ siteURL }
+						outlined
 					/>
 				</div>
 				<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
@@ -317,18 +321,18 @@ class SearchConsole extends Component {
 
 		return (
 			<section className="googlesitekit-setup-module googlesitekit-setup-module--search-console">
-				<h2
-					className="
-					googlesitekit-heading-3
-					googlesitekit-setup-module__title
-				"
+				<Typography
+					as="h3"
+					className="googlesitekit-setup-module__title"
+					size="small"
+					type="headline"
 				>
 					{ _x(
 						'Search Console',
 						'Service name',
 						'google-site-kit'
 					) }
-				</h2>
+				</Typography>
 
 				{ errorMsg && 0 < errorMsg.length && (
 					<p className="googlesitekit-error-text">{ errorMsg }</p>

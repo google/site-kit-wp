@@ -32,11 +32,12 @@ import { createInterpolateElement } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import Notice from '../../../../components/Notice';
 
 export default function AnalyticsSettingsNotice( { hasModuleAccess } ) {
 	const module = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( 'analytics-4' )
+		select( CORE_MODULES ).getModule( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const formattedOwnerName = module?.owner?.login
@@ -46,7 +47,6 @@ export default function AnalyticsSettingsNotice( { hasModuleAccess } ) {
 	if ( ! hasModuleAccess ) {
 		return (
 			<Notice
-				className="googlesitekit-settings-notice"
 				type={ Notice.TYPES.WARNING }
 				description={ createInterpolateElement(
 					sprintf(

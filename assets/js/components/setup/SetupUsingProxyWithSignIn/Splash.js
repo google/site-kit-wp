@@ -44,13 +44,15 @@ import {
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
 } from '../../../googlesitekit/datastore/user/constants';
 import { Cell, Grid, Row } from '../../../material-components';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import Typography from '../../Typography';
 
 export default function Splash( { children } ) {
 	const analyticsModuleAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
+		select( CORE_MODULES ).isModuleAvailable( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const isSecondAdmin = useSelect( ( select ) =>
 		select( CORE_SITE ).hasConnectedAdmins()
@@ -138,9 +140,14 @@ export default function Splash( { children } ) {
 					</Cell>
 
 					<Cell { ...cellDetailsProp }>
-						<h1 className="googlesitekit-setup__title">
+						<Typography
+							as="h1"
+							className="googlesitekit-setup__title"
+							size="large"
+							type="headline"
+						>
 							{ title }
-						</h1>
+						</Typography>
 
 						<p className="googlesitekit-setup__description">
 							{ ! showLearnMoreLink && description }

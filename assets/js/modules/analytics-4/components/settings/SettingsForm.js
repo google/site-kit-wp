@@ -34,10 +34,11 @@ import { useSelect } from 'googlesitekit-data';
 import { TrackingExclusionSwitches } from '../common';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import SettingsControls from './SettingsControls';
 import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
 import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
-import FirstPartyModeToggle from '../../../../components/first-party-mode/FirstPartyModeToggle';
+import GoogleTagGatewayToggle from '../../../../components/google-tag-gateway/GoogleTagGatewayToggle';
 import Link from '../../../../components/Link';
 import SettingsGroup from '../../../../components/settings/SettingsGroup';
 import { isValidAccountID } from '../../utils/validation';
@@ -45,7 +46,7 @@ import { useFeature } from '../../../../hooks/useFeature';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 
 export default function SettingsForm( { hasModuleAccess } ) {
-	const fpmEnabled = useFeature( 'firstPartyMode' );
+	const gtgEnabled = useFeature( 'googleTagGateway' );
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
@@ -64,7 +65,9 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			{ isValidAccountID( accountID ) && <TrackingExclusionSwitches /> }
 
 			{ hasModuleAccess && (
-				<EntityOwnershipChangeNotice slug={ [ 'analytics-4' ] } />
+				<EntityOwnershipChangeNotice
+					slug={ [ MODULE_SLUG_ANALYTICS_4 ] }
+				/>
 			) }
 
 			<SettingsGroup
@@ -83,17 +86,17 @@ export default function SettingsForm( { hasModuleAccess } ) {
 							a: (
 								<Link
 									href={ conversionTrackingDocumentationURL }
-									external
 									aria-label={ __(
 										'Learn more about conversion tracking',
 										'google-site-kit'
 									) }
+									external
 								/>
 							),
 						}
 					) }
 				</ConversionTrackingToggle>
-				{ fpmEnabled && <FirstPartyModeToggle /> }
+				{ gtgEnabled && <GoogleTagGatewayToggle /> }
 			</SettingsGroup>
 		</Fragment>
 	);

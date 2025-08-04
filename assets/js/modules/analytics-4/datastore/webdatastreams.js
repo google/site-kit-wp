@@ -34,6 +34,7 @@ import {
 } from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {
@@ -46,7 +47,7 @@ const fetchGetWebDataStreamsStore = createFetchStore( {
 	controlCallback( { propertyID } ) {
 		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'webdatastreams',
 			{ propertyID },
 			{
@@ -81,7 +82,7 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 	controlCallback( { propertyIDs } ) {
 		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'webdatastreams-batch',
 			{ propertyIDs },
 			{
@@ -118,10 +119,15 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 const fetchCreateWebDataStreamStore = createFetchStore( {
 	baseName: 'createWebDataStream',
 	controlCallback( { propertyID, displayName } ) {
-		return set( 'modules', 'analytics-4', 'create-webdatastream', {
-			propertyID,
-			displayName,
-		} );
+		return set(
+			'modules',
+			MODULE_SLUG_ANALYTICS_4,
+			'create-webdatastream',
+			{
+				propertyID,
+				displayName,
+			}
+		);
 	},
 	reducerCallback: createReducer(
 		( state, webDataStream, { propertyID } ) => {
@@ -501,7 +507,7 @@ const baseSelectors = {
 				for ( const datastream of datastreams[ propertyID ] ) {
 					const { _id: webDataStreamID, webStreamData } = datastream;
 					const {
-						defaultUri: defaultURI,
+						defaultUri: defaultURI, // eslint-disable-line sitekit/acronym-case
 						measurementId: measurementID, // eslint-disable-line sitekit/acronym-case
 					} = webStreamData;
 
@@ -565,7 +571,7 @@ const baseSelectors = {
 				const propertyID =
 					select( MODULES_ANALYTICS_4 ).getPropertyID();
 				const loadedWebDataStreams =
-					isValidPropertyID( propertyID ) && hasModuleAccess !== false
+					isValidPropertyID( propertyID ) && hasModuleAccess
 						? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 								'getWebDataStreams',
 								[ propertyID ]

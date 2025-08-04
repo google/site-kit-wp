@@ -38,6 +38,7 @@ import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import Link from '../../../../../../components/Link';
 import NoAudienceBannerGraphic from '../../../../../../../svg/graphics/no-audience-banner-graphic.svg';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '../AudienceSelectionPanel/constants';
+import Typography from '../../../../../../components/Typography';
 
 export default function PlaceholderTile( { Widget } ) {
 	const hasConfigurableNonDefaultAudiences = useSelect( ( select ) => {
@@ -63,7 +64,7 @@ export default function PlaceholderTile( { Widget } ) {
 	const { setValue } = useDispatch( CORE_UI );
 
 	const AnalyticsLink = (
-		<Link secondary href={ audienceLearnMoreURL } external />
+		<Link href={ audienceLearnMoreURL } secondary external />
 	);
 
 	return (
@@ -79,7 +80,12 @@ export default function PlaceholderTile( { Widget } ) {
 						}
 					) }
 				>
-					<h3 className="googlesitekit-audience-segmentation-tile-placeholder__title">
+					<Typography
+						as="h3"
+						type="title"
+						size="small"
+						className="googlesitekit-audience-segmentation-tile-placeholder__title"
+					>
 						{ hasConfigurableNonDefaultAudiences
 							? __(
 									'Compare your group to other groups',
@@ -89,7 +95,7 @@ export default function PlaceholderTile( { Widget } ) {
 									'Create more visitor groups',
 									'google-site-kit'
 							  ) }
-					</h3>
+					</Typography>
 					<p className="googlesitekit-audience-segmentation-tile-placeholder__description">
 						{ hasConfigurableNonDefaultAudiences
 							? createInterpolateElement(
@@ -101,13 +107,13 @@ export default function PlaceholderTile( { Widget } ) {
 										AnalyticsLink,
 										SelectGroupLink: (
 											<Link
-												secondary
 												onClick={ () =>
 													setValue(
 														AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 														true
 													)
 												}
+												secondary
 											/>
 										),
 									}

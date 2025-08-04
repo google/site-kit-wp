@@ -45,6 +45,7 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import { ADS_NOTIFICATIONS } from '../..';
 import { MODULES_ADS, PLUGINS } from '../../datastore/constants';
+import { MODULE_SLUG_ADS } from '../../constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
@@ -69,7 +70,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: false,
 				connected: false,
 			},
@@ -141,7 +142,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 				document.querySelector( '.mdc-dialog' )
 			).toBeInTheDocument();
 			// Dismissal should be triggered when the modal is opened.
-			expect( fetchMock ).toHaveFetchedTimes( 0 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 
 		it( 'should trigger WooCommerce redirect modal when both WooCommerce and Google For WooCommerce are active but Ads account is not connected', async () => {
@@ -178,7 +179,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 			).toBeInTheDocument();
 
 			// Dismissal should be triggered when the modal is opened.
-			expect( fetchMock ).toHaveFetchedTimes( 0 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 
 		it( 'should start Ads module activation when WooCommerce is not active', async () => {
@@ -219,7 +220,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 			expect(
 				registry
 					.select( CORE_MODULES )
-					.isDoingSetModuleActivation( 'ads' )
+					.isDoingSetModuleActivation( MODULE_SLUG_ADS )
 			).toBe( true );
 
 			// Dismissal should be triggered when the CTA is clicked.
@@ -267,7 +268,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 		it( 'is not active when Ads module is already connected', async () => {
 			provideModules( registry, [
 				{
-					slug: 'ads',
+					slug: MODULE_SLUG_ADS,
 					active: true,
 					connected: true,
 				},

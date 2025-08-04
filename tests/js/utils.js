@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
+
 /**
  * External dependencies
  */
@@ -497,6 +499,97 @@ export const provideNotifications = ( registry, extraData ) => {
 };
 
 /**
+ * Provides widget registration data to the given registry.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param {Object}   registry           Registry object to dispatch to.
+ * @param {Object[]} [extraWidgetAreas] List of widget area registration data objects to be merged with defaults. Default empty array.
+ * @param {Object[]} [extraWidgets]     List of widget registration data objects to be merged with defaults. Default empty array.
+ */
+export function provideWidgetRegistrations(
+	registry,
+	extraWidgetAreas = [],
+	extraWidgets = []
+) {
+	const extraWidgetAreasBySlug = extraWidgetAreas.reduce(
+		( acc, { slug, ...data } ) => {
+			return { ...acc, [ slug ]: { slug, ...data } };
+		},
+		{}
+	);
+
+	const extraWidgetsBySlug = extraWidgets.reduce(
+		( acc, { slug, ...data } ) => {
+			return { ...acc, [ slug ]: { slug, ...data } };
+		},
+		{}
+	);
+
+	const {
+		registerWidgetArea: realRegisterWidgetArea,
+		registerWidget: realRegisterWidget,
+		...Widgets
+	} = coreWidgets.createWidgets( registry );
+
+	// Track registered widget areas and widgets.
+	const registeredWidgetAreas = new Set();
+	const registeredWidgets = new Set();
+
+	// Decorate widget area registration with a function to apply extra data.
+	const testRegisterWidgetArea = ( slug, settings, contextSlugs ) => {
+		registeredWidgetAreas.add( slug );
+		return realRegisterWidgetArea(
+			slug,
+			{
+				...settings,
+				...extraWidgetAreasBySlug[ slug ],
+			},
+			contextSlugs
+		);
+	};
+
+	// Decorate widget registration with a function to apply extra data.
+	const testRegisterWidget = ( slug, settings, widgetAreaSlugs ) => {
+		registeredWidgets.add( slug );
+		return realRegisterWidget(
+			slug,
+			{
+				...settings,
+				...extraWidgetsBySlug[ slug ],
+			},
+			widgetAreaSlugs
+		);
+	};
+
+	Widgets.registerWidgetArea = testRegisterWidgetArea;
+	Widgets.registerWidget = testRegisterWidget;
+
+	// Register default widget areas and widgets from core.
+	coreWidgets.registerWidgets( Widgets );
+
+	// Register widgets from all core modules.
+	allCoreModules.forEach( ( { registerWidgets } ) =>
+		registerWidgets?.( Widgets )
+	);
+
+	// Register any additional widget areas provided that weren't registered by core.
+	Object.entries( extraWidgetAreasBySlug )
+		.filter( ( [ slug ] ) => ! registeredWidgetAreas.has( slug ) )
+		.forEach( ( [ slug, { contextSlugs, ...settings } ] ) =>
+			realRegisterWidgetArea( slug, settings, contextSlugs )
+		);
+
+	// Register any additional widgets provided that weren't registered by core.
+	Object.entries( extraWidgetsBySlug )
+		.filter( ( [ slug ] ) => ! registeredWidgets.has( slug ) )
+		.forEach( ( [ slug, { widgetAreaSlugs, ...settings } ] ) =>
+			realRegisterWidget( slug, settings, widgetAreaSlugs )
+		);
+}
+
+/**
  * Mutes a fetch request to the given URL once.
  *
  * Useful for mocking a request for the purpose of preventing a fetch error
@@ -627,6 +720,9 @@ export const waitForDefaultTimeouts = () => {
 
 /**
  * Creates a delay in the execution of subsequent code for a specified duration in milliseconds.
+ *
+ * Developers should consider using `waitForRegistry()`, instead of this helper,
+ * if state changes occur.
  *
  * @since 1.102.0
  *

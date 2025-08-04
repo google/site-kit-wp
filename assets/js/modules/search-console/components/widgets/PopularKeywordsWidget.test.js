@@ -37,6 +37,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_SEARCH_CONSOLE,
 } from '../../datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
@@ -56,7 +57,7 @@ describe( 'PopularKeywordsWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'search-console' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_SEARCH_CONSOLE ) );
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.setPropertyID( 'https://example.com' );
@@ -69,6 +70,8 @@ describe( 'PopularKeywordsWidget', () => {
 			} ),
 			dimensions: 'query',
 			limit: 100,
+			reportID:
+				'search-console_popular-keywords-widget_widget_reportOptions',
 		};
 
 		provideSearchConsoleMockReport( registry, reportOptions );

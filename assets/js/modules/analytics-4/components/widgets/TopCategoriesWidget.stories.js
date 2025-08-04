@@ -24,6 +24,7 @@ import {
 	KM_ANALYTICS_TOP_CATEGORIES,
 } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 import {
@@ -59,6 +60,7 @@ const reportOptions = {
 	],
 	limit: 3,
 	keepEmptyRows: false,
+	reportID: 'analytics-4_top-categories-widget_widget_reportOptions',
 };
 
 const propertyID = '12345';
@@ -297,7 +299,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

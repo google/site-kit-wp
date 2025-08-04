@@ -305,10 +305,10 @@ export default function UserInputPreview( props ) {
 								{ __( 'Save', 'google-site-kit' ) }
 							</SpinnerButton>
 							<Button
-								tertiary
 								className="googlesitekit-user-input__buttons--back"
 								onClick={ goBack }
 								disabled={ isScreenLoading }
+								tertiary
 							>
 								{ __( 'Back', 'google-site-kit' ) }
 							</Button>

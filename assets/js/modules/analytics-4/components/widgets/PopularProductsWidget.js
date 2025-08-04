@@ -45,6 +45,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../../components/KeyMetrics/constants';
 import {
@@ -93,6 +94,7 @@ function getPopularProductsWidgetReportOptions( select ) {
 		],
 		limit: 3,
 		keepEmptyRows: false,
+		reportID: 'analytics-4_popular-products-widget_widget_reportOptions',
 	};
 }
 
@@ -260,7 +262,7 @@ function PopularProductsWidget( props ) {
 			// this widget provides it directly to the MetricTileTable component.
 			// This is to accommodate a link behavior within the tooltip when the Metrics Selection Panel is open.
 			infoTooltip={ showTooltip ? infoTooltip : null }
-			ZeroState={ () => zeroStateMessage }
+			ZeroState={ () => <span>{ zeroStateMessage }</span> }
 			error={ error }
 			moduleSlug="analytics-4"
 		/>
@@ -274,7 +276,7 @@ PopularProductsWidget.propTypes = {
 
 export default compose(
 	whenActive( {
-		moduleName: 'analytics-4',
+		moduleName: MODULE_SLUG_ANALYTICS_4,
 		FallbackComponent: ConnectGA4CTATileWidget,
 	} ),
 	withCustomDimensions( {

@@ -32,7 +32,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { isValidPropertyID } from '../../utils/validation';
-import ErrorText from '../../../../components/ErrorText';
+import ErrorNotice from '../../../../components/ErrorNotice';
 
 export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 	const { hasModuleAccess, isDisabled } = props;
@@ -50,7 +50,7 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 	);
 
 	const properties = useSelect( ( select ) =>
-		hasModuleAccess !== false && ! isDisabled
+		hasModuleAccess && ! isDisabled
 			? select( MODULES_ANALYTICS_4 ).getPropertySummaries( accountID )
 			: []
 	);
@@ -60,7 +60,7 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 	);
 
 	const webDataStreams = useSelect( ( select ) =>
-		isValidPropertyID( propertyID ) && hasModuleAccess !== false
+		isValidPropertyID( propertyID ) && hasModuleAccess
 			? select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID )
 			: []
 	);
@@ -105,7 +105,7 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 		)
 	) {
 		return (
-			<ErrorText
+			<ErrorNotice
 				message={ sprintf(
 					/* translators: 1: Google Analytics Measurement ID. */
 					__(
@@ -114,13 +114,14 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 					),
 					measurementID
 				) }
+				skipRetryMessage
 			/>
 		);
 	}
 
 	if ( ! propertyAvailable && ! getPropertiesError ) {
 		return (
-			<ErrorText
+			<ErrorNotice
 				message={ sprintf(
 					/* translators: 1: Google Analytics Property ID. */
 					__(
@@ -129,6 +130,7 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 					),
 					propertyID
 				) }
+				skipRetryMessage
 			/>
 		);
 	}

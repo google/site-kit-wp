@@ -25,15 +25,17 @@ import {
 } from '../../../../../tests/js/utils';
 import { initialState } from './index';
 import { ENUM_CONVERSION_EVENTS, MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 
 describe( 'modules/ads module data', () => {
 	const baseModulesGlobalName = '_googlesitekitModulesData';
 	const baseData = {
-		'analytics-4': {
+		[ MODULE_SLUG_ANALYTICS_4 ]: {
 			newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 			lostEvents: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
 			newBadgeEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 			hasMismatchedTag: false,
+			isWebDataStreamAvailable: true,
 		},
 	};
 
@@ -97,7 +99,7 @@ describe( 'modules/ads module data', () => {
 					.getNewEvents();
 
 				expect( newEvents ).toEqual(
-					baseData[ 'analytics-4' ].newEvents
+					baseData[ MODULE_SLUG_ANALYTICS_4 ].newEvents
 				);
 
 				// Data must not be wiped after retrieving, as it could be used by other dependants.
@@ -144,7 +146,9 @@ describe( 'modules/ads module data', () => {
 					.getModuleData();
 
 				expect( moduleData ).toHaveProperty( dataKey );
-				expect( moduleData ).toEqual( baseData[ 'analytics-4' ] );
+				expect( moduleData ).toEqual(
+					baseData[ MODULE_SLUG_ANALYTICS_4 ]
+				);
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {

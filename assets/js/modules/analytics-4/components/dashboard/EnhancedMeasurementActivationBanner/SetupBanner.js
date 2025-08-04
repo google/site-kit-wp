@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
@@ -39,11 +39,9 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import { EDIT_SCOPE, FORM_SETUP } from '../../../datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import { DAY_IN_SECONDS } from '../../../../../util';
-import SuccessGreenSVG from '../../../../../../svg/graphics/ga4-success-green.svg';
-import Description from '../../../../../googlesitekit/notifications/components/common/Description';
-import LearnMoreLink from '../../../../../googlesitekit/notifications/components/common/LearnMoreLink';
-import ActionsCTALinkDismiss from '../../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
-import NotificationWithSmallRightSVG from '../../../../../googlesitekit/notifications/components/layout/NotificationWithSmallRightSVG';
+import SetupCTA from '../../../../../googlesitekit/notifications/components/layout/SetupCTA';
+import BannerSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta.svg?url';
+import BannerMobileSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta-mobile.svg?url';
 
 export default function SetupBanner( props ) {
 	const { id, Notification, errorNotice, isSaving, onDismiss, onSubmit } =
@@ -144,50 +142,38 @@ export default function SetupBanner( props ) {
 		  );
 
 	return (
-		<Notification
-			className="googlesitekit-publisher-win googlesitekit-enhanced-measurement-setup-banner"
-			onView={ handleView }
-		>
-			<NotificationWithSmallRightSVG
+		<Notification onView={ handleView }>
+			<SetupCTA
+				notificationID={ id }
 				title={ __(
 					'Understand how visitors interact with your content',
 					'google-site-kit'
 				) }
-				description={
-					<Description
-						text={ description }
-						learnMoreLink={
-							<LearnMoreLink
-								id={ id }
-								label={ __( 'Learn more', 'google-site-kit' ) }
-								url={ documentationURL }
-							/>
-						}
-						errorText={ errorNotice?.message }
-					/>
-				}
-				actions={
-					<Fragment>
-						<ActionsCTALinkDismiss
-							id={ id }
-							ctaLabel={ __( 'Enable now', 'google-site-kit' ) }
-							onCTAClick={ handleSubmitChanges }
-							dismissOnCTAClick={ false }
-							isSaving={ isSaving || isNavigatingToOAuthURL }
-							dismissLabel={ __(
-								'Maybe later',
-								'google-site-kit'
-							) }
-							onDismiss={ onDismiss }
-							ctaDismissOptions={ { skipHidingFromQueue: true } }
-						/>
-					</Fragment>
-				}
-				footer={ __(
+				description={ description }
+				errorText={ errorNotice?.message }
+				learnMoreLink={ {
+					href: documentationURL,
+				} }
+				ctaButton={ {
+					label: __( 'Enable now', 'google-site-kit' ),
+					onClick: handleSubmitChanges,
+					disabled: isSaving || isNavigatingToOAuthURL,
+					inProgress: isSaving || isNavigatingToOAuthURL,
+				} }
+				dismissButton={ {
+					label: __( 'Maybe later', 'google-site-kit' ),
+					onClick: onDismiss,
+					disabled: isSaving || isNavigatingToOAuthURL,
+				} }
+				helpText={ __(
 					'You can always add/edit this in the Site Kit Settings',
 					'google-site-kit'
 				) }
-				SVG={ SuccessGreenSVG }
+				svg={ {
+					desktop: BannerSVG,
+					mobile: BannerMobileSVG,
+					verticalPosition: 'center',
+				} }
 			/>
 		</Notification>
 	);

@@ -32,6 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import Link from '../../../../components/Link';
 import { getPreviousDate, numFmt } from '../../../../util';
 import {
@@ -118,6 +119,8 @@ export function getReportOptions( referenceDate ) {
 		],
 		limit: 3,
 		keepEmptyRows: false,
+		reportID:
+			'analytics-4_top-recent-trending-pages-widget_widget_reportOptions',
 	};
 
 	return reportOptions;
@@ -242,7 +245,7 @@ TopRecentTrendingPagesWidget.propTypes = {
 
 export default compose(
 	whenActive( {
-		moduleName: 'analytics-4',
+		moduleName: MODULE_SLUG_ANALYTICS_4,
 		FallbackComponent: ConnectGA4CTATileWidget,
 	} ),
 	withCustomDimensions( {

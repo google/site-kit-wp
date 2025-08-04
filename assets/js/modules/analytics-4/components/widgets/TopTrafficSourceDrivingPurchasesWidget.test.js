@@ -37,6 +37,7 @@ import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
@@ -56,7 +57,7 @@ describe( 'TopTrafficSourceDrivingPurchasesWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -76,6 +77,8 @@ describe( 'TopTrafficSourceDrivingPurchasesWidget', () => {
 						name: 'ecommercePurchases',
 					},
 				],
+				reportID:
+					'analytics-4_top-traffic-source-driving-purchases-widget_widget_totalPurchasesReportOptions',
 			},
 			{
 				...dates,
@@ -87,6 +90,8 @@ describe( 'TopTrafficSourceDrivingPurchasesWidget', () => {
 				],
 				limit: 1,
 				orderBy: 'ecommercePurchases',
+				reportID:
+					'analytics-4_top-traffic-source-driving-purchases-widget_widget_trafficSourceReportOptions',
 			},
 		];
 
@@ -116,6 +121,8 @@ describe( 'TopTrafficSourceDrivingPurchasesWidget', () => {
 						name: 'ecommercePurchases',
 					},
 				],
+				reportID:
+					'analytics-4_top-traffic-source-driving-purchases-widget_widget_totalPurchasesReportOptions',
 			},
 			{
 				...dates,
@@ -127,6 +134,8 @@ describe( 'TopTrafficSourceDrivingPurchasesWidget', () => {
 				],
 				limit: 1,
 				orderBy: 'ecommercePurchases',
+				reportID:
+					'analytics-4_top-traffic-source-driving-purchases-widget_widget_trafficSourceReportOptions',
 			},
 		];
 

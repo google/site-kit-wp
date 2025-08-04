@@ -49,6 +49,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '../../../../../../util/tracking';
 import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
 import {
@@ -124,6 +125,9 @@ function provideAudienceTilesMockReport(
 			{ name: 'screenPageViewsPerSession' },
 			{ name: 'screenPageViews' },
 		],
+		reportID: isSiteKitAudiencePartialData
+			? 'audience-segmentation_use-audience-tiles-reports_hook_newVsReturningReportOptions'
+			: 'audience-segmentation_use-audience-tiles-reports_hook_reportOptions',
 	};
 
 	const options = {
@@ -160,6 +164,8 @@ function provideAudienceTilesMockReport(
 		startDate,
 		endDate,
 		metrics: [ { name: 'screenPageViews' } ],
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_totalPageviewsReportOptions',
 	};
 
 	const totalPageviewsReportData = getAnalytics4MockResponse( options );
@@ -188,6 +194,8 @@ function provideAudienceTilesMockReport(
 			},
 		],
 		limit: 4,
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_topCitiesReportOptions',
 	};
 
 	const topContentReportOptions = {
@@ -204,6 +212,8 @@ function provideAudienceTilesMockReport(
 		},
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 3,
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_topContentReportOptions',
 	};
 
 	const topContentPageTitlesReportOptions = {
@@ -220,6 +230,8 @@ function provideAudienceTilesMockReport(
 		},
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 15,
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_topContentPageTitlesReportOptions',
 	};
 
 	[
@@ -283,7 +295,7 @@ describe( 'AudienceTilesWidget', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideModuleRegistrations( registry );
@@ -534,6 +546,8 @@ describe( 'AudienceTilesWidget', () => {
 			.select( MODULES_ANALYTICS_4 )
 			.hasAudiencePartialData( siteKitAudiences );
 
+		await act( waitForDefaultTimeouts );
+
 		await waitFor( () => {
 			expect( isSiteKitAudiencePartialData ).toBe( true );
 		} );
@@ -684,7 +698,7 @@ describe( 'AudienceTilesWidget', () => {
 			)
 		).toBeInTheDocument();
 
-		await act( () => waitForTimeouts( 150 ) );
+		await waitForRegistry();
 	} );
 
 	it( 'should track an event when the tooltip for an audience tab is viewed', async () => {
@@ -722,6 +736,7 @@ describe( 'AudienceTilesWidget', () => {
 		);
 
 		// Wait for the tooltip to appear, its delay is 100ms.
+		// waitForRegistry() is not suitable to use here as no state changes occur.
 		await waitForTimeouts( 100 );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(

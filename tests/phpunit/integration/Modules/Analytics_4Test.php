@@ -9,6 +9,8 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 namespace Google\Site_Kit\Tests\Modules;
 
 use Closure;
@@ -31,6 +33,8 @@ use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
@@ -51,12 +55,12 @@ use Google\Site_Kit\Tests\UserAuthenticationTrait;
 use Google\Site_Kit_Dependencies\Google\Service\Exception;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaListAudiencesResponse;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaConversionEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaCustomDimension;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListConversionEventsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaKeyEvent;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListCustomDimensionsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListKeyEventsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
@@ -1244,9 +1248,10 @@ class Analytics_4Test extends TestCase {
 				'container-lookup',
 				'container-destinations',
 				'google-tag-settings',
-				'conversion-events',
+				'key-events',
 				'create-property',
 				'create-webdatastream',
+				'non-shareable-report',
 				'pivot-report',
 				'properties',
 				'property',
@@ -1256,6 +1261,7 @@ class Analytics_4Test extends TestCase {
 				'create-account-ticket',
 				'enhanced-measurement-settings',
 				'create-custom-dimension',
+				'set-is-web-data-stream-available',
 				'sync-custom-dimensions',
 				'custom-dimension-data-available',
 				'set-google-tag-id-mismatch',
@@ -1279,9 +1285,10 @@ class Analytics_4Test extends TestCase {
 				'container-lookup',
 				'container-destinations',
 				'google-tag-settings',
-				'conversion-events',
+				'key-events',
 				'create-property',
 				'create-webdatastream',
+				'non-shareable-report',
 				'pivot-report',
 				'properties',
 				'property',
@@ -1291,6 +1298,7 @@ class Analytics_4Test extends TestCase {
 				'create-account-ticket',
 				'enhanced-measurement-settings',
 				'create-custom-dimension',
+				'set-is-web-data-stream-available',
 				'sync-custom-dimensions',
 				'custom-dimension-data-available',
 				'set-google-tag-id-mismatch',
@@ -2477,7 +2485,7 @@ class Analytics_4Test extends TestCase {
 	 *
 	 * @param string $access_token Access token, or empty string if none.
 	 */
-	public function test_get_conversion_events( $access_token ) {
+	public function test_get_key_events( $access_token ) {
 		$this->setup_user_authentication( $access_token );
 
 		$property_id = '123456789';
@@ -2495,9 +2503,9 @@ class Analytics_4Test extends TestCase {
 
 		$this->fake_handler_and_invoke_register_method( $property_id );
 
-		// Fetch conversion events.
+		// Fetch key events.
 		$data = $this->analytics->get_data(
-			'conversion-events',
+			'key-events',
 			array(
 				'propertyID' => $property_id,
 			)
@@ -2505,7 +2513,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertNotWPError( $data );
 
-		// Verify the conversion events are returned by checking an event name.
+		// Verify the key events are returned by checking an event name.
 		$this->assertEquals( 'some-event', $data[0]['eventName'] );
 
 		// Verify the request URL and params were correctly generated.
@@ -2514,7 +2522,7 @@ class Analytics_4Test extends TestCase {
 		$request_url = $this->request_handler_calls[0]['url'];
 
 		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
-		$this->assertEquals( "/v1beta/properties/$property_id/conversionEvents", $request_url['path'] );
+		$this->assertEquals( "/v1beta/properties/$property_id/keyEvents", $request_url['path'] );
 	}
 
 	public function test_get_enhanced_measurement_settings__required_params() {
@@ -3102,19 +3110,19 @@ class Analytics_4Test extends TestCase {
 						)
 					);
 
-				case "/v1beta/properties/$property_id/conversionEvents":
-					$conversion_event = new GoogleAnalyticsAdminV1betaConversionEvent();
-					$conversion_event->setName( "properties/$property_id/conversionEvents/some-name" );
-					$conversion_event->setEventName( 'some-event' );
+				case "/v1beta/properties/$property_id/keyEvents":
+					$key_event = new GoogleAnalyticsAdminV1betaKeyEvent();
+					$key_event->setName( "properties/$property_id/keyEvents/some-name" );
+					$key_event->setEventName( 'some-event' );
 
-					$conversion_events = new GoogleAnalyticsAdminV1betaListConversionEventsResponse();
-					$conversion_events->setConversionEvents( array( $conversion_event ) );
+					$key_events = new GoogleAnalyticsAdminV1betaListKeyEventsResponse();
+					$key_events->setKeyEvents( array( $key_event ) );
 
 					return new FulfilledPromise(
 						new Response(
 							200,
 							array(),
-							json_encode( $conversion_events )
+							json_encode( $key_events )
 						)
 					);
 
@@ -3911,6 +3919,42 @@ class Analytics_4Test extends TestCase {
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
 		$this->assertEquals( true, $inline_modules_data['analytics-4']['tagIDMismatch'] );
+	}
+
+	public function test_inline_conversion_reporting_events_detection_not_connected() {
+		$this->analytics->register();
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertArrayNotHasKey( 'analytics-4', $inline_modules_data );
+	}
+
+	public function test_inline_conversion_reporting_events_detection_connected() {
+		$this->analytics->register();
+
+		// Ensure the module is connected.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
+		);
+
+		$transients = new Transients( $this->context );
+
+		$transients->set( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT, array( 'detect_event_1', 'detect_event_2' ) );
+		$transients->set( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT, array( 'lost_event' ) );
+		$transients->set( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT, array( 'events' => array( 'new_badge_event_1', 'new_badge_event_2', 'new_badge_event_3' ) ) );
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals( array( 'detect_event_1', 'detect_event_2' ), $inline_modules_data['analytics-4']['newEvents'] );
+		$this->assertEquals( array( 'lost_event' ), $inline_modules_data['analytics-4']['lostEvents'] );
+		$this->assertEquals( array( 'new_badge_event_1', 'new_badge_event_2', 'new_badge_event_3' ), $inline_modules_data['analytics-4']['newBadgeEvents'] );
 	}
 
 	public function test_get_data__adsense_links() {
@@ -4887,6 +4931,62 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_get_inline_data() {
+		// Test when module is not connected.
+		$analytics = new Analytics_4( $this->context );
+
+		$inline_data = $analytics->get_inline_data();
+		$this->assertSame( array(), $inline_data );
+
+		// Test when module is connected.
+		$this->analytics->get_settings()->merge(
+			array(
+				'accountID'       => 'abc',
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '1',
+				'measurementID'   => 'G-AAAABBBBCC',
+			)
+		);
+
+		// Set up test data in transients.
+		$transients = new Transients( $this->context );
+		$transients->set( 'googlesitekit_inline_tag_id_mismatch', 'test-mismatch' );
+		$transients->set( 'googlesitekit_web_data_stream_availability', true );
+		$transients->set(
+			Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT,
+			array( 'event1', 'event2' )
+		);
+		$transients->set(
+			Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT,
+			array( 'lost_event1' )
+		);
+		$transients->set(
+			Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT,
+			array( 'events' => array( 'badge_event1' ) )
+		);
+
+		$inline_data = $this->analytics->get_inline_data();
+
+		// Verify the structure exists and contains expected keys.
+		$this->assertArrayHasKey( 'analytics-4', $inline_data );
+		$analytics_data = $inline_data['analytics-4'];
+
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $analytics_data );
+		$this->assertArrayHasKey( 'resourceAvailabilityDates', $analytics_data );
+		$this->assertArrayHasKey( 'tagIDMismatch', $analytics_data );
+		$this->assertArrayHasKey( 'newEvents', $analytics_data );
+		$this->assertArrayHasKey( 'lostEvents', $analytics_data );
+		$this->assertArrayHasKey( 'newBadgeEvents', $analytics_data );
+		$this->assertArrayHasKey( 'isWebDataStreamAvailable', $analytics_data );
+
+		// Verify the transient data.
+		$this->assertSame( 'test-mismatch', $analytics_data['tagIDMismatch'] );
+		$this->assertSame( array( 'event1', 'event2' ), $analytics_data['newEvents'] );
+		$this->assertSame( array( 'lost_event1' ), $analytics_data['lostEvents'] );
+		$this->assertSame( array( 'badge_event1' ), $analytics_data['newBadgeEvents'] );
+		$this->assertSame( true, $analytics_data['isWebDataStreamAvailable'] );
+	}
+
 	/**
 	 * @return Module_With_Scopes
 	 */
@@ -4915,11 +5015,15 @@ class Analytics_4Test extends TestCase {
 		return $this->analytics;
 	}
 
-	protected function set_up_check_service_entity_access( Module $module ) {
+	protected function set_up_check_service_entity_access( Module_With_Settings $module ) {
 		$module->get_settings()->merge(
 			array(
 				'propertyID' => '123456789',
 			)
+		);
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
 		);
 	}
 

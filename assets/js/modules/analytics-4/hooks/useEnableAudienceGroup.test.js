@@ -24,6 +24,7 @@ import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { availableAudiences as audiencesFixture } from '../datastore/__fixtures__';
@@ -85,7 +86,7 @@ describe( 'useEnableAudienceGroup', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},

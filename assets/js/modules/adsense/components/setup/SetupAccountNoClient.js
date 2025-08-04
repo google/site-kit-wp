@@ -34,6 +34,7 @@ import SupportLink from '../../../../components/SupportLink';
 import { ErrorNotices } from '../common';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
+import Typography from '../../../../components/Typography';
 
 export default function SetupAccountNoClient() {
 	const viewContext = useViewContext();
@@ -44,12 +45,17 @@ export default function SetupAccountNoClient() {
 
 	return (
 		<Fragment>
-			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
+			<Typography
+				as="h3"
+				type="title"
+				size="large"
+				className="googlesitekit-setup-module__title"
+			>
 				{ __(
 					'Looks like you need to upgrade your AdSense account',
 					'google-site-kit'
 				) }
-			</h3>
+			</Typography>
 
 			<ErrorNotices />
 
@@ -63,11 +69,11 @@ export default function SetupAccountNoClient() {
 						a: (
 							<SupportLink
 								path="/adsense/answer/6023158"
-								external
 								aria-label={ __(
 									'Learn more about updating your AdSense account',
 									'google-site-kit'
 								) }
+								external
 							/>
 						),
 					}

@@ -28,6 +28,7 @@ import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import PagesPerVisitWidget from './PagesPerVisitWidget';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { getAnalytics4MockResponse } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import {
@@ -49,6 +50,7 @@ const reportOptions = {
 			name: 'screenPageViews',
 		},
 	],
+	reportID: 'analytics-4_pages-per-visit-widget_widget_reportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -158,6 +160,32 @@ InsufficientPermissions.args = {
 	},
 };
 
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		const report = getAnalytics4MockResponse( reportOptions );
+		const noComparisonDataReport =
+			replaceValuesInAnalytics4ReportWithZeroData( report );
+
+		// Add 1 to the "screenPageViewsPerSession" value which is a TYPE_FLOAT
+		// which is set to always be between 0 and 1. Realistically, this value should be
+		// greater than 1, since a user views at least one page per session.
+		report.rows.forEach( ( row, index, rows ) => {
+			rows[ index ].metricValues[ 0 ].value = (
+				Number( row.metricValues[ 0 ].value ) + 1
+			).toString();
+		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( noComparisonDataReport, {
+				options: reportOptions,
+			} );
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
+
 export default {
 	title: 'Key Metrics/PagesPerVisit',
 	decorators: [
@@ -165,7 +193,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

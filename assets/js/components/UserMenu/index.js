@@ -215,7 +215,6 @@ export default function UserMenu() {
 					disabled={ isAutoCreatingCustomDimensionsForAudience }
 					ref={ menuButtonRef }
 					className="googlesitekit-header__dropdown mdc-button--dropdown googlesitekit-border-radius-round--tablet googlesitekit-border-radius-round--phone googlesitekit-border-radius-round googlesitekit-button-icon"
-					text
 					onClick={ handleMenu }
 					icon={
 						!! userPicture && (
@@ -242,7 +241,6 @@ export default function UserMenu() {
 							? undefined
 							: __( 'Account', 'google-site-kit' )
 					}
-					tooltip
 					tooltipEnterDelayInMS={ 500 }
 					customizedTooltip={
 						isAutoCreatingCustomDimensionsForAudience ? null : (
@@ -261,6 +259,8 @@ export default function UserMenu() {
 							</span>
 						)
 					}
+					text
+					tooltip
 				/>
 
 				<Menu
@@ -303,7 +303,7 @@ export default function UserMenu() {
 				<ModalDialog
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
-					handleDialog={ handleDialog }
+					handleCancel={ handleClose }
 					onClose={ handleClose }
 					title={ __( 'Disconnect', 'google-site-kit' ) }
 					subtitle={ __(

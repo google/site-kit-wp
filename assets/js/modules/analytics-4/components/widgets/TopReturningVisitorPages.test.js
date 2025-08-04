@@ -37,6 +37,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
@@ -60,7 +61,7 @@ describe( 'TopReturningVisitorPages', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
 	} );
 
@@ -84,6 +85,8 @@ describe( 'TopReturningVisitorPages', () => {
 			],
 			limit: 3,
 			keepEmptyRows: false,
+			reportID:
+				'analytics-4_top-returning-visitor-pages-widget_widget_reportOptions',
 		};
 
 		const pageTitlesReportOptions = {
@@ -100,6 +103,7 @@ describe( 'TopReturningVisitorPages', () => {
 				{ metric: { metricName: 'screenPageViews' }, desc: true },
 			],
 			limit: 15,
+			reportID: 'analytics-4_get-page-titles_store:selector_options',
 		};
 
 		const pageTitlesReport = getAnalytics4MockResponse(

@@ -38,7 +38,9 @@ import {
 	provideAnalytics4MockReport,
 } from '../../../analytics-4/utils/data-mock';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 
 const adSenseAccountID = 'pub-1234567890';
 
@@ -57,6 +59,7 @@ const reportOptions = {
 		},
 	],
 	limit: 3,
+	reportID: 'adsense_top-earning-content-widget_widget_reportOptions',
 };
 
 const pageTitlesReportOptions = {
@@ -72,6 +75,7 @@ const pageTitlesReportOptions = {
 	metrics: [ { name: 'screenPageViews' } ],
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 15,
+	reportID: 'analytics-4_get-page-titles_store:selector_options',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
@@ -224,12 +228,12 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 						active: true,
 						connected: true,
 					},
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

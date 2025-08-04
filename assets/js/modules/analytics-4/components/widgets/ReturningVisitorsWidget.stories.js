@@ -19,6 +19,7 @@
  */
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
@@ -30,6 +31,7 @@ import ReturningVisitorsWidget from './ReturningVisitorsWidget';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
 } from '../../utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
@@ -45,6 +47,7 @@ const reportOptions = {
 			name: 'activeUsers',
 		},
 	],
+	reportID: 'analytics-4_returning-visitors-widget_widget_reportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -142,6 +145,17 @@ InsufficientPermissions.args = {
 	},
 };
 
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideAnalyticsReportWithoutDateRangeData( registry, reportOptions, {
+			emptyRowBehavior: 'remove',
+		} );
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
+
 export default {
 	title: 'Key Metrics/ReturningVisitors',
 	decorators: [
@@ -149,7 +163,7 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},

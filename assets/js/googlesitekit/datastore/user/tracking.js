@@ -16,19 +16,24 @@
  * limitations under the License.
  */
 
+/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
+
 /**
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import {
+	createReducer,
+	commonActions,
+	combineStores,
+} from 'googlesitekit-data';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
 const { receiveError, clearError } = errorStoreActions;
 
-const fetchStoreReducerCallback = ( state, tracking ) => ( {
-	...state,
-	tracking,
+const fetchStoreReducerCallback = createReducer( ( state, tracking ) => {
+	state.tracking = tracking;
 } );
 
 const fetchGetTrackingStore = createFetchStore( {
@@ -87,19 +92,16 @@ const baseActions = {
 	},
 };
 
-export const baseReducer = ( state, { type, payload } ) => {
+export const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_TRACKING_ENABLED_SAVING_ACTION: {
-			return {
-				...state,
-				isSavingTrackingEnabled: payload.isSaving,
-			};
-		}
-		default: {
-			return state;
-		}
+		case SET_TRACKING_ENABLED_SAVING_ACTION:
+			state.isSavingTrackingEnabled = payload.isSaving;
+			break;
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*isTrackingEnabled() {

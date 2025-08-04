@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import Link from '../../../../../components/Link';
-import ModalDialog from '../../../../../components/ModalDialog';
+import RefocusableModalDialog from '../../../../../components/RefocusableModalDialog';
 import Portal from '../../../../../components/Portal';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
@@ -93,7 +93,7 @@ export default function AudienceErrorModal( {
 		} );
 	}
 
-	function handleDialog() {
+	function handleCancel() {
 		let action;
 
 		if ( hasOAuthError ) {
@@ -160,14 +160,13 @@ export default function AudienceErrorModal( {
 
 	return (
 		<Portal>
-			<ModalDialog
-				dialogActive
+			<RefocusableModalDialog
 				buttonLink={ buttonLink }
 				title={ errorTitle }
 				subtitle={ errorDescription }
 				handleConfirm={ handleConfirm }
 				confirmButton={ confirmButton }
-				handleDialog={ handleDialog }
+				handleCancel={ handleCancel }
 				onOpen={ () => {
 					let action;
 
@@ -182,8 +181,10 @@ export default function AudienceErrorModal( {
 					trackEvent( trackEventCategory, action );
 				} }
 				onClose={ onCancel }
-				danger
 				inProgress={ inProgress }
+				refocusQuerySelector="#audience_segmentation_setup_cta-notification .googlesitekit-banner__cta"
+				danger
+				dialogActive
 			/>
 		</Portal>
 	);

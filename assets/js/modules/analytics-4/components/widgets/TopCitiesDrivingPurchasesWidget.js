@@ -33,6 +33,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { ZeroDataMessage } from '../common';
 import { numFmt } from '../../../../util';
 import {
@@ -80,6 +81,8 @@ function TopCitiesDrivingPurchasesWidget( { Widget } ) {
 		],
 		limit: 3,
 		keepEmptyRows: false,
+		reportID:
+			'analytics-4_top-cities-driving-purchases-widget_widget_topCitiesReportOptions',
 	};
 
 	const topCitiesReport = useInViewSelect(
@@ -145,6 +148,6 @@ TopCitiesDrivingPurchasesWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( TopCitiesDrivingPurchasesWidget );

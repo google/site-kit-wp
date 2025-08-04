@@ -22,6 +22,7 @@
 import { get } from 'googlesitekit-api';
 import {
 	commonActions,
+	createReducer,
 	createRegistrySelector,
 	combineStores,
 } from 'googlesitekit-data';
@@ -42,12 +43,9 @@ const fetchGetAuthenticationStore = createFetchStore( {
 			useCache: false,
 		} );
 	},
-	reducerCallback: ( state, authentication ) => {
-		return {
-			...state,
-			authentication,
-		};
-	},
+	reducerCallback: createReducer( ( state, authentication ) => {
+		state.authentication = authentication;
+	} ),
 } );
 
 // Actions
@@ -90,27 +88,20 @@ const baseActions = {
 	},
 };
 
-export const baseReducer = ( state, { type, payload } ) => {
+export const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_AUTH_ERROR: {
-			return {
-				...state,
-				authError: payload.error,
-			};
-		}
+		case SET_AUTH_ERROR:
+			state.authError = payload.error;
+			break;
 
-		case CLEAR_AUTH_ERROR: {
-			return {
-				...state,
-				authError: null,
-			};
-		}
+		case CLEAR_AUTH_ERROR:
+			state.authError = null;
+			break;
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getAuthentication() {

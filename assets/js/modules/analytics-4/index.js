@@ -100,6 +100,7 @@ import {
 } from './components/dashboard';
 import { ModulePopularPagesWidgetGA4 } from './components/module';
 import {
+	AudienceSegmentationIntroductoryOverlayNotification,
 	AudienceTilesWidget,
 	ConnectAnalyticsCTAWidget,
 	InfoNoticeWidget,
@@ -107,30 +108,35 @@ import {
 } from './components/audience-segmentation/dashboard';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import AudienceSegmentationSetupSuccessSubtleNotification, {
-	AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
-} from './components/audience-segmentation/dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
+import {
+	SITE_KIT_VIEW_ONLY_CONTEXTS,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '../../googlesitekit/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import AudienceSegmentationSetupCTAWidget, {
+	PRIORITY,
+} from '../../googlesitekit/notifications/constants';
+import AudienceSegmentationSetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
-} from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTAWidget';
+} from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTABanner';
 import WebDataStreamNotAvailableNotification, {
 	WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
 } from '../../components/notifications/WebDataStreamNotAvailableNotification';
 import GoogleTagIDMismatchNotification from './components/notifications/GoogleTagIDMismatchNotification';
 import { isValidPropertyID, isValidWebDataStreamID } from './utils/validation';
-import { LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY } from './constants';
-import { PRIORITY } from '../../googlesitekit/notifications/constants';
+import {
+	LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
+	MODULE_SLUG_ANALYTICS_4,
+} from './constants';
 import ConversionReportingNotificationCTAWidget from './components/widgets/ConversionReportingNotificationCTAWidget';
+import { AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION } from './components/audience-segmentation/dashboard/AudienceSegmentationIntroductoryOverlayNotification';
 
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	modules.registerModule( 'analytics-4', {
+	modules.registerModule( MODULE_SLUG_ANALYTICS_4, {
 		storeName: MODULES_ANALYTICS_4,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
@@ -159,7 +165,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 		},
 		[
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
@@ -174,7 +180,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) => {
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
@@ -191,10 +197,11 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) => {
-				const isAnalyticsConnected =
-					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+				const isAnalyticsConnected = select(
+					CORE_MODULES
+				).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 
 				// If Analytics is not connected, we can return early.
 				if ( ! isAnalyticsConnected ) {
@@ -229,10 +236,11 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) => {
-				const isAnalyticsConnected =
-					select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+				const isAnalyticsConnected = select(
+					CORE_MODULES
+				).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
 				const isAudienceSegmentationWidgetHidden =
@@ -255,7 +263,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 2,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 		},
 		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
 	);
@@ -267,7 +275,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 3,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 		},
 		[ AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY ]
 	);
@@ -279,7 +287,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 4,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 		},
 		[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
 	);
@@ -294,7 +302,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
@@ -310,7 +318,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_POPULAR_AUTHORS
@@ -326,7 +334,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_CATEGORIES
@@ -342,7 +350,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_POPULAR_CONTENT
@@ -358,7 +366,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_POPULAR_PRODUCTS
@@ -374,7 +382,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_PAGES_PER_VISIT
@@ -390,7 +398,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_VISIT_LENGTH
@@ -406,7 +414,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_VISITS_PER_VISITOR
@@ -422,7 +430,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_MOST_ENGAGING_PAGES
@@ -438,7 +446,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_LEAST_ENGAGING_PAGES
@@ -454,7 +462,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES
@@ -470,7 +478,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_NEW_VISITORS
@@ -486,7 +494,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_RETURNING_VISITORS
@@ -502,7 +510,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE
@@ -518,7 +526,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART
@@ -534,7 +542,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS
@@ -550,7 +558,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES
@@ -566,7 +574,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE
@@ -582,7 +590,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE
@@ -598,7 +606,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_CITIES
@@ -614,7 +622,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS
@@ -630,7 +638,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS
@@ -646,7 +654,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART
@@ -662,7 +670,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES
@@ -678,7 +686,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES
@@ -694,7 +702,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) =>
 				select( CORE_USER ).isKeyMetricActive(
 					KM_ANALYTICS_TOP_COUNTRIES
@@ -709,60 +717,23 @@ export const registerWidgets = ( widgets ) => {
 			Component: ConversionReportingNotificationCTAWidget,
 			width: [ widgets.WIDGET_WIDTHS.FULL ],
 			priority: 0,
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
 };
 
 export const ANALYTICS_4_NOTIFICATIONS = {
-	[ AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION ]: {
-		Component: AudienceSegmentationSetupSuccessSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			const analyticsConnected = await resolveSelect(
-				CORE_MODULES
-			).isModuleConnected( 'analytics-4' );
-
-			if ( ! analyticsConnected ) {
-				return false;
-			}
-
-			await resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings();
-			await resolveSelect( CORE_USER ).getUserAudienceSettings();
-
-			const currentUserID = select( CORE_USER ).getID();
-
-			const audienceSegmentationSetupCompletedByUserID =
-				select(
-					MODULES_ANALYTICS_4
-				).getAudienceSegmentationSetupCompletedBy();
-
-			if (
-				currentUserID !== audienceSegmentationSetupCompletedByUserID
-			) {
-				return false;
-			}
-
-			const configuredAudiences =
-				select( CORE_USER ).getConfiguredAudiences();
-
-			// Only show this notification if the user has a set of configured audiences.
-			return Array.isArray( configuredAudiences );
-		},
-		isDismissible: true,
-	},
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
-		Component: AudienceSegmentationSetupCTAWidget,
-		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		Component: AudienceSegmentationSetupCTABanner,
+		priority: 130, // TODO: Revert this back to PRIORITY.SETUP_CTA_LOW after fixing https://github.com/google/site-kit-wp/issues/10890.
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			const analyticsConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( 'analytics-4' );
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 
 			if ( ! analyticsConnected ) {
 				return false;
@@ -770,7 +741,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 
 			await Promise.all( [
 				resolveSelect( CORE_MODULES ).isModuleConnected(
-					'analytics-4'
+					MODULE_SLUG_ANALYTICS_4
 				),
 				resolveSelect( CORE_USER ).getDismissedPrompts(),
 				select( CORE_USER ).getUserAudienceSettings(),
@@ -811,7 +782,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	[ WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION ]: {
 		Component: WebDataStreamNotAvailableNotification,
 		priority: PRIORITY.ERROR_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
@@ -833,8 +804,9 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				dispatch( MODULES_ANALYTICS_4 ).syncGoogleTagSettings(),
 			] );
 
-			const ga4ModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const ga4ModuleConnected = select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			);
 			const hasGTMScope = select( CORE_USER ).hasScope( GTM_SCOPE );
 
 			const loggedInUserID = select( CORE_USER ).getID();
@@ -849,14 +821,14 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				ga4ModuleConnected &&
 				hasGTMScope &&
 				isGA4ModuleOwner &&
-				! isWebDataStreamAvailable
+				isWebDataStreamAvailable === false
 			);
 		},
 	},
 	'google-tag-id-mismatch': {
 		Component: GoogleTagIDMismatchNotification,
 		priority: PRIORITY.ERROR_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: false,
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -876,8 +848,9 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				resolveSelect( MODULES_ANALYTICS_4 ).getModuleData(),
 			] );
 
-			const ga4ModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const ga4ModuleConnected = select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			);
 			const hasGTMScope = select( CORE_USER ).hasScope( GTM_SCOPE );
 
 			const loggedInUserID = select( CORE_USER ).getID();
@@ -898,8 +871,8 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 	'enhanced-measurement-notification': {
 		Component: EnhancedMeasurementActivationBanner,
-		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		priority: 140, // TODO: Revert this back to PRIORITY.SETUP_CTA_LOW after fixing https://github.com/google/site-kit-wp/issues/10890.
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
@@ -920,8 +893,9 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				resolveSelect( CORE_USER ).getDismissedItems(),
 			] );
 
-			const ga4ModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			const ga4ModuleConnected = select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			);
 
 			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 
@@ -931,7 +905,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			const hasModuleAccess =
 				ga4ModuleConnected &&
 				select( CORE_MODULES ).hasModuleOwnershipOrAccess(
-					'analytics-4'
+					MODULE_SLUG_ANALYTICS_4
 				);
 
 			// Check if the prompt with the legacy key used before the banner was refactored
@@ -959,6 +933,77 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			).isEnhancedMeasurementStreamEnabled( propertyID, webDataStreamID );
 
 			return isEnhancedMeasurementStreamEnabled === false;
+		},
+	},
+	[ AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION ]: {
+		Component: AudienceSegmentationIntroductoryOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
+			const ga4ModuleConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+			const ga4ModuleActive = await resolveSelect(
+				CORE_MODULES
+			).isModuleActive( MODULE_SLUG_ANALYTICS_4 );
+
+			// If the module is not connected or not active, we can return early
+			// to prevent additional audience settings being requested.
+			if ( ! ga4ModuleConnected || ! ga4ModuleActive ) {
+				return false;
+			}
+
+			const isViewOnly =
+				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
+
+			await Promise.all( [
+				// The isAudienceSegmentationWidgetHidden() selector relies on
+				// the resolution of the getUserAudienceSettings() resolver.
+				resolveSelect( CORE_USER ).getUserAudienceSettings(),
+				// The getAudienceSegmentationSetupCompletedBy() selector relies
+				// on the resolution of the getAudienceSettings() resolver.
+				resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings(),
+				// The getID() selector relies on the resolution
+				// of the getUser() resolver.
+				resolveSelect( CORE_USER ).getUser(),
+				// The canViewSharedModule() selector relies on the resolution
+				// of the getCapabilities() resolver.
+				isViewOnly
+					? resolveSelect( CORE_USER ).getCapabilities()
+					: Promise.resolve( [] ),
+			] );
+
+			const canViewModule =
+				! isViewOnly ||
+				select( CORE_USER ).canViewSharedModule(
+					MODULE_SLUG_ANALYTICS_4
+				);
+
+			const isAudienceSegmentationWidgetHidden =
+				select( CORE_USER ).isAudienceSegmentationWidgetHidden();
+
+			const audienceSegmentationSetupCompletedBy =
+				select(
+					MODULES_ANALYTICS_4
+				).getAudienceSegmentationSetupCompletedBy();
+			const userID = select( CORE_USER ).getID();
+
+			if (
+				canViewModule &&
+				isAudienceSegmentationWidgetHidden === false &&
+				Number.isInteger( audienceSegmentationSetupCompletedBy ) &&
+				audienceSegmentationSetupCompletedBy !== userID
+			) {
+				return true;
+			}
+
+			return false;
 		},
 	},
 };

@@ -33,6 +33,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { ZeroDataMessage } from '../common';
 import { numFmt } from '../../../../util';
 import {
@@ -63,6 +64,8 @@ function TopCountriesWidget( { Widget } ) {
 			},
 		],
 		limit: 4,
+		reportID:
+			'analytics-4_top-countries-widget_widget_topCountriesReportOptions',
 	};
 
 	const topCountriesReport = useInViewSelect(
@@ -133,6 +136,6 @@ TopCountriesWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( TopCountriesWidget );

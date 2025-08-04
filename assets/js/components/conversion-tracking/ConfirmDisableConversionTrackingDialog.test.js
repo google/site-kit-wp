@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import {
 	createTestRegistry,
 	provideModules,
@@ -35,7 +36,7 @@ describe( 'ConfirmDisableConversionTrackingDialog', () => {
 
 	it( 'should display appropriate subtitle', () => {
 		provideModules( registry, [
-			{ slug: 'ads', active: true, connected: true },
+			{ slug: MODULE_SLUG_ADS, active: true, connected: true },
 		] );
 
 		const { getByText } = render(
@@ -57,7 +58,7 @@ describe( 'ConfirmDisableConversionTrackingDialog', () => {
 
 	it( 'should display appropriate point items', () => {
 		provideModules( registry, [
-			{ slug: 'ads', active: true, connected: true },
+			{ slug: MODULE_SLUG_ADS, active: true, connected: true },
 		] );
 
 		const { getByText } = render(

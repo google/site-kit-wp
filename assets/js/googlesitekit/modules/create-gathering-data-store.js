@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
+
 /**
  * External dependencies
  */
@@ -28,6 +30,7 @@ import { set } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
+	createReducer,
 	createRegistryControl,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../data/create-fetch-store';
@@ -161,29 +164,22 @@ export const createGatheringDataStore = (
 		),
 	};
 
-	const reducer = ( state = initialState, { type, payload } ) => {
-		switch ( type ) {
-			case RECEIVE_GATHERING_DATA: {
-				const { gatheringData } = payload;
-				return {
-					...state,
-					gatheringData,
-				};
-			}
+	const reducer = createReducer(
+		( state = initialState, { type, payload } ) => {
+			switch ( type ) {
+				case RECEIVE_GATHERING_DATA:
+					state.gatheringData = payload.gatheringData;
+					break;
 
-			case RECEIVE_DATA_AVAILABLE_ON_LOAD: {
-				const { dataAvailableOnLoad } = payload;
-				return {
-					...state,
-					dataAvailableOnLoad,
-				};
-			}
+				case RECEIVE_DATA_AVAILABLE_ON_LOAD:
+					state.dataAvailableOnLoad = payload.dataAvailableOnLoad;
+					break;
 
-			default: {
-				return state;
+				default:
+					break;
 			}
 		}
-	};
+	);
 
 	const resolvers = {
 		*isGatheringData() {

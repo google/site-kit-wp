@@ -26,6 +26,7 @@ import invariant from 'invariant';
  */
 import { createReducer, createRegistrySelector } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 
 function getModuleDataProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -42,6 +43,7 @@ export const initialState = {
 		lostEvents: undefined,
 		newBadgeEvents: undefined,
 		hasMismatchedTag: undefined,
+		isWebDataStreamAvailable: undefined,
 	},
 };
 
@@ -68,14 +70,20 @@ export const actions = {
 export const reducer = createReducer( ( state, { payload, type } ) => {
 	switch ( type ) {
 		case RECEIVE_MODULE_DATA: {
-			const { tagIDMismatch, newEvents, lostEvents, newBadgeEvents } =
-				payload;
+			const {
+				tagIDMismatch,
+				newEvents,
+				lostEvents,
+				newBadgeEvents,
+				isWebDataStreamAvailable,
+			} = payload;
 
 			const moduleData = {
 				hasMismatchedTag: !! tagIDMismatch,
 				newEvents,
 				lostEvents,
 				newBadgeEvents,
+				isWebDataStreamAvailable,
 			};
 
 			state.moduleData = moduleData;
@@ -90,7 +98,8 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 
 export const resolvers = {
 	*getModuleData() {
-		const moduleData = global._googlesitekitModulesData?.[ 'analytics-4' ];
+		const moduleData =
+			global._googlesitekitModulesData?.[ MODULE_SLUG_ANALYTICS_4 ];
 
 		if ( ! moduleData ) {
 			return;
@@ -157,6 +166,17 @@ export const selectors = {
 	 * @return {Array|undefined} New badge events array.
 	 */
 	getNewBadgeEvents: getModuleDataProperty( 'newBadgeEvents' ),
+
+	/**
+	 * Checks if the Web Data Stream is available.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} TRUE if the Web Data Stream is available, FALSE if not, undefined if not loaded.
+	 */
+	isWebDataStreamAvailable: getModuleDataProperty(
+		'isWebDataStreamAvailable'
+	),
 };
 
 export default {

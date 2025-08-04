@@ -52,7 +52,7 @@ export default function ChangeMetricsLink() {
 	const renderChangeMetricLink =
 		Array.isArray( keyMetrics ) && keyMetrics?.length > 0;
 
-	useChangeMetricsFeatureTourEffect( renderChangeMetricLink );
+	useChangeMetricsFeatureTourEffect( { renderChangeMetricLink } );
 
 	if ( ! renderChangeMetricLink ) {
 		return null;
@@ -61,11 +61,11 @@ export default function ChangeMetricsLink() {
 	return (
 		<Fragment>
 			<Link
-				secondary
-				linkButton
 				className="googlesitekit-widget-area__cta-link googlesitekit-km-change-metrics-cta"
 				onClick={ openMetricsSelectionPanel }
 				leadingIcon={ <PencilIcon width={ 22 } height={ 22 } /> }
+				secondary
+				linkButton
 			>
 				{ __( 'Change metrics', 'google-site-kit' ) }
 			</Link>
