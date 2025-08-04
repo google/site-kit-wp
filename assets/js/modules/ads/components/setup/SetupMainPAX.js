@@ -63,6 +63,7 @@ import { WooCommerceRedirectModal } from '../common';
 import Link from '../../../../components/Link';
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
+import Typography from '../../../../components/Typography';
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );
@@ -253,9 +254,14 @@ export default function SetupMainPAX( { finishSetup } ) {
 					<AdsIcon width="40" height="40" />
 				</div>
 
-				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+				<Typography
+					as="h3"
+					size="small"
+					type="headline"
+					className="googlesitekit-setup-module__title"
+				>
 					{ _x( 'Ads', 'Service name', 'google-site-kit' ) }
-				</h2>
+				</Typography>
 			</div>
 			<div className="googlesitekit-setup-module__step">
 				<AdBlockerWarning moduleSlug="ads" />
@@ -286,12 +292,16 @@ export default function SetupMainPAX( { finishSetup } ) {
 								lgSize={ 5 }
 								className="align-top"
 							>
-								<h3>
+								<Typography
+									as="h3"
+									type="headline"
+									size="small"
+								>
 									{ __(
 										'Set up a new Ads account',
 										'google-site-kit'
 									) }
-								</h3>
+								</Typography>
 								<p className="instructions">
 									{ createInterpolateElement(
 										__(
@@ -330,12 +340,16 @@ export default function SetupMainPAX( { finishSetup } ) {
 								</span>
 							</Cell>
 							<Cell smSize={ 8 } mdSize={ 8 } lgSize={ 5 }>
-								<h3>
+								<Typography
+									as="h3"
+									type="headline"
+									size="small"
+								>
 									{ __(
 										'Connect an existing Ads account',
 										'google-site-kit'
 									) }
-								</h3>
+								</Typography>
 								<p className="instructions">
 									{ createInterpolateElement(
 										__(

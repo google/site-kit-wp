@@ -45,8 +45,6 @@
 		overflow: hidden;
 	}
 
-	h1,
-	h2,
 	h3,
 	h4,
 	h5,
@@ -54,27 +52,6 @@
 		color: $c-surfaces-on-surface;
 		font-family: $f-secondary;
 		line-height: 1.16;
-	}
-
-	h1,
-	.googlesitekit-heading-1 {
-		font-size: $fs-headline-lg;
-		font-weight: $fw-normal;
-		line-height: $lh-headline-lg;
-	}
-
-	h2,
-	.googlesitekit-heading-2 {
-		font-size: $fs-headline-md;
-		font-weight: $fw-normal;
-		line-height: $lh-headline-md;
-	}
-
-	h3,
-	.googlesitekit-heading-3 {
-		font-size: $fs-headline-sm;
-		font-weight: $fw-normal;
-		line-height: $lh-headline-sm;
 	}
 
 	h4,

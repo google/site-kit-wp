@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Modules;
 /**
  * Interface for a module that sets inline data.
  *
- * @since n.e.x.t
+ * @since 1.158.0
  * @access private
  * @ignore
  */
@@ -21,7 +21,7 @@ interface Module_With_Inline_Data {
 	/**
 	 * Gets required inline data for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.158.0
 	 *
 	 * @return array An array of the module's inline data.
 	 */

@@ -26,6 +26,7 @@ import PropTypes from 'prop-types';
  */
 import Link from '../Link';
 import CloseIcon from '../../../svg/icons/close.svg';
+import Typography from '../Typography';
 
 export default function SelectionPanelHeader( {
 	children,
@@ -35,7 +36,9 @@ export default function SelectionPanelHeader( {
 	return (
 		<header className="googlesitekit-selection-panel-header">
 			<div className="googlesitekit-selection-panel-header__row">
-				<h3>{ title }</h3>
+				<Typography as="h3" size="small" type="headline">
+					{ title }
+				</Typography>
 				<Link
 					className="googlesitekit-selection-panel-header__close"
 					onClick={ onCloseClick }

@@ -39,6 +39,7 @@ import { DAY_IN_SECONDS, WEEK_IN_SECONDS } from '../../util';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 import useViewContext from '../../hooks/useViewContext';
 import SetupCTA from '../../googlesitekit/notifications/components/layout/SetupCTA';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 
 export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 	const [ saveError, setSaveError ] = useState( null );
@@ -66,6 +67,7 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
 	};
 	const showTooltip = useShowTooltip( tooltipSettings );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const isDismissalFinal = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
@@ -104,6 +106,8 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 			setSaveError( error );
 			setConsentModeEnabled( false );
 			setIsSaving( false );
+		} else {
+			navigateTo( adminSettingsURL );
 		}
 	};
 
@@ -121,20 +125,23 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 				) }
 				ctaButton={ {
 					label: __( 'Enable consent mode', 'google-site-kit' ),
-					href: adminSettingsURL,
 					onClick: handleCTAClick,
 					inProgress: isSaving,
+					dismissOnClick: true,
+					dismissOptions: {
+						skipHidingFromQueue: true,
+					},
 				} }
 				dismissButton={ {
 					label: isDismissalFinal
 						? __( 'Don’t show again', 'google-site-kit' )
 						: __( 'Maybe later', 'google-site-kit' ),
 					onClick: showTooltip,
-				} }
-				dismissOptions={ {
-					expiresInSeconds: isDismissalFinal
-						? 0
-						: 2 * WEEK_IN_SECONDS,
+					dismissOptions: {
+						expiresInSeconds: isDismissalFinal
+							? 0
+							: 2 * WEEK_IN_SECONDS,
+					},
 				} }
 				svg={ {
 					desktop: BannerSVGDesktop,

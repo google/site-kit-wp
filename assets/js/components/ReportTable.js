@@ -113,6 +113,7 @@ export default function ReportTable( props ) {
 												badge,
 												primary,
 												className: columnClassName,
+												columnHeaderClassName,
 											},
 											colIndex
 										) => (
@@ -124,7 +125,8 @@ export default function ReportTable( props ) {
 														'googlesitekit-table__head-item--primary':
 															primary,
 													},
-													columnClassName
+													columnClassName,
+													columnHeaderClassName
 												) }
 												key={ `googlesitekit-table__head-row-badge-${ colIndex }` }
 											>
@@ -142,6 +144,7 @@ export default function ReportTable( props ) {
 											description,
 											primary,
 											className: columnClassName,
+											columnHeaderClassName,
 										},
 										colIndex
 									) => (
@@ -152,7 +155,8 @@ export default function ReportTable( props ) {
 													'googlesitekit-table__head-item--primary':
 														primary,
 												},
-												columnClassName
+												columnClassName,
+												columnHeaderClassName
 											) }
 											data-tooltip={ description }
 											key={ `googlesitekit-table__head-row-${ colIndex }` }
