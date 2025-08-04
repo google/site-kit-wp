@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Util;
 
@@ -43,7 +41,7 @@ class UninstallationTest extends TestCase {
 	public function test_register() {
 		remove_all_actions( 'googlesitekit_uninstallation' );
 		$this->uninstallation->register();
-		$this->assertTrue( has_action( 'googlesitekit_uninstallation' ) );
+		$this->assertTrue( has_action( 'googlesitekit_uninstallation' ), 'Uninstallation action should be registered.' );
 	}
 
 	public function test_uninstall_using_proxy() {
@@ -55,7 +53,7 @@ class UninstallationTest extends TestCase {
 		do_action( 'googlesitekit_uninstallation' );
 
 		// Assert HTTP request to proxy was made.
-		$this->assertTrue( $this->issued_delete_site_request );
+		$this->assertTrue( $this->issued_delete_site_request, 'Delete site request should be issued when using proxy.' );
 	}
 
 	public function test_uninstall_not_using_proxy() {
@@ -67,7 +65,7 @@ class UninstallationTest extends TestCase {
 		do_action( 'googlesitekit_uninstallation' );
 
 		// Assert no HTTP request was made.
-		$this->assertFalse( $this->issued_delete_site_request );
+		$this->assertFalse( $this->issued_delete_site_request, 'Delete site request should not be issued when not using proxy.' );
 	}
 
 	public function test_clear_scheduled_events__uninstall() {
@@ -75,7 +73,7 @@ class UninstallationTest extends TestCase {
 
 		// Assert scheduled events were set.
 		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
-			$this->assertNotEmpty( wp_next_scheduled( $event ) );
+			$this->assertNotEmpty( wp_next_scheduled( $event ), 'Scheduled event should be set before uninstallation.' );
 		}
 
 		remove_all_actions( 'googlesitekit_uninstallation' );
@@ -86,7 +84,7 @@ class UninstallationTest extends TestCase {
 
 		// Assert scheduled events were cleared.
 		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
-			$this->assertEmpty( wp_next_scheduled( $event ) );
+			$this->assertEmpty( wp_next_scheduled( $event ), 'Scheduled event should be cleared after uninstallation.' );
 		}
 	}
 
@@ -95,7 +93,7 @@ class UninstallationTest extends TestCase {
 
 		// Assert scheduled events were set.
 		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
-			$this->assertNotEmpty( wp_next_scheduled( $event ) );
+			$this->assertNotEmpty( wp_next_scheduled( $event ), 'Scheduled event should be set before reset.' );
 		}
 
 		remove_all_actions( 'googlesitekit_reset' );
@@ -106,7 +104,7 @@ class UninstallationTest extends TestCase {
 
 		// Assert scheduled events were cleared.
 		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
-			$this->assertEmpty( wp_next_scheduled( $event ) );
+			$this->assertEmpty( wp_next_scheduled( $event ), 'Scheduled event should be cleared after reset.' );
 		}
 	}
 
@@ -115,7 +113,7 @@ class UninstallationTest extends TestCase {
 
 		// Assert scheduled events were set.
 		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
-			$this->assertNotEmpty( wp_next_scheduled( $event ) );
+			$this->assertNotEmpty( wp_next_scheduled( $event ), 'Scheduled event should be set before deactivation.' );
 		}
 
 		remove_all_actions( 'googlesitekit_deactivation' );
@@ -126,7 +124,7 @@ class UninstallationTest extends TestCase {
 
 		// Assert scheduled events were cleared.
 		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
-			$this->assertEmpty( wp_next_scheduled( $event ) );
+			$this->assertEmpty( wp_next_scheduled( $event ), 'Scheduled event should be cleared after deactivation.' );
 		}
 	}
 

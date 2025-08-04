@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Util;
 
@@ -36,7 +34,7 @@ class Google_URL_NormalizerTest extends TestCase {
 	 */
 	public function test_normalize_url( $url, $expected ) {
 		$actual = $this->url_normalizer->normalize_url( $url );
-		$this->assertSame( $expected, $actual );
+		$this->assertSame( $expected, $actual, 'Normalized URL should match expected result.' );
 	}
 
 	public function data_normalize_url() {

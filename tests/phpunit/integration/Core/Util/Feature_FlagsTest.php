@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Util;
 
@@ -31,7 +29,7 @@ class Feature_FlagsTest extends TestCase {
 			)
 		);
 
-		$this->assertFalse( Feature_Flags::enabled( '' ) );
+		$this->assertFalse( Feature_Flags::enabled( '' ), 'Feature should be disabled when feature name is empty.' );
 	}
 
 	public function test_enabled_when_feature_name_is_non_string() {
@@ -43,7 +41,7 @@ class Feature_FlagsTest extends TestCase {
 		);
 
 		$feature = (object) array( 'foo' => 'bar' );
-		$this->assertFalse( Feature_Flags::enabled( $feature ) );
+		$this->assertFalse( Feature_Flags::enabled( $feature ), 'Feature should be disabled when feature name is not a string.' );
 	}
 
 	public function test_enabled_with_filter() {
@@ -63,7 +61,7 @@ class Feature_FlagsTest extends TestCase {
 			2
 		);
 
-		$this->assertTrue( Feature_Flags::enabled( 'test_feature' ) );
+		$this->assertTrue( Feature_Flags::enabled( 'test_feature' ), 'Feature should be enabled when filter returns true.' );
 	}
 
 	public function test_enabled_without_filter() {
@@ -74,6 +72,6 @@ class Feature_FlagsTest extends TestCase {
 			)
 		);
 
-		$this->assertFalse( Feature_Flags::enabled( 'test_feature' ) );
+		$this->assertFalse( Feature_Flags::enabled( 'test_feature' ), 'Feature should be disabled when no filter is set.' );
 	}
 }
