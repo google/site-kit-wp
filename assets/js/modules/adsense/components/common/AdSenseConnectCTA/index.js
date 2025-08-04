@@ -150,6 +150,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 								<SpinnerButton
 									onClick={ handleConnect }
 									isSaving={ isConnectingAdSense }
+									disabled={ isConnectingAdSense }
 								>
 									{ __( 'Connect now', 'google-site-kit' ) }
 								</SpinnerButton>

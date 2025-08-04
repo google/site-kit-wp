@@ -129,15 +129,12 @@ const reducer = createReducer( ( state, { type, payload } ) => {
 		case RECEIVE_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG: {
 			const { existingAdBlockingRecoveryTag } = payload;
 
-			return {
-				...state,
-				existingAdBlockingRecoveryTag,
-			};
+			state.existingAdBlockingRecoveryTag = existingAdBlockingRecoveryTag;
+			break;
 		}
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
 } );
 

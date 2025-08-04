@@ -146,15 +146,15 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 			measurementID,
 		} );
 	},
-	reducerCallback( state, googleTagSettings, { measurementID } ) {
-		return {
-			...state,
-			googleTagSettings: {
-				...state.googleTagSettings,
-				[ measurementID ]: googleTagSettings,
-			},
-		};
-	},
+	reducerCallback: createReducer(
+		( state, googleTagSettings, { measurementID } ) => {
+			if ( ! state.googleTagSettings ) {
+				state.googleTagSettings = {};
+			}
+
+			state.googleTagSettings[ measurementID ] = googleTagSettings;
+		}
+	),
 	argsToParams( measurementID ) {
 		return { measurementID };
 	},
@@ -175,15 +175,13 @@ const fetchSetGoogleTagIDMismatch = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, hasMismatchedTag ) {
-		return {
-			...state,
-			moduleData: {
-				...state.moduleData,
-				hasMismatchedTag: !! hasMismatchedTag,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, hasMismatchedTag ) => {
+		if ( ! state.moduleData ) {
+			state.moduleData = {};
+		}
+
+		state.moduleData.hasMismatchedTag = !! hasMismatchedTag;
+	} ),
 	argsToParams( hasMismatchedTag ) {
 		return { hasMismatchedTag };
 	},
@@ -195,16 +193,46 @@ const fetchSetGoogleTagIDMismatch = createFetchStore( {
 	},
 } );
 
+const fetchSetIsWebDataStreamAvailable = createFetchStore( {
+	baseName: 'setIsWebDataStreamAvailable',
+	controlCallback( { isWebDataStreamAvailable } ) {
+		return set(
+			'modules',
+			MODULE_SLUG_ANALYTICS_4,
+			'set-is-web-data-stream-available',
+			{
+				isWebDataStreamAvailable,
+			}
+		);
+	},
+	reducerCallback( state, isWebDataStreamAvailable ) {
+		return {
+			...state,
+			moduleData: {
+				...state.moduleData,
+				isWebDataStreamAvailable: !! isWebDataStreamAvailable,
+			},
+		};
+	},
+	argsToParams( isWebDataStreamAvailable ) {
+		return { isWebDataStreamAvailable };
+	},
+	validateParams( { isWebDataStreamAvailable } = {} ) {
+		invariant(
+			isBoolean( isWebDataStreamAvailable ),
+			'isWebDataStreamAvailable must be boolean.'
+		);
+	},
+} );
+
 // Actions
 const MATCHING_ACCOUNT_PROPERTY = 'MATCHING_ACCOUNT_PROPERTY';
 const SET_HAS_MISMATCHED_TAG = 'SET_HAS_MISMATCHED_GOOGLE_TAG_ID';
-const SET_IS_WEBDATASTREAM_AVAILABLE = 'SET_IS_WEBDATASTREAM_AVAILABLE';
 
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
 	isMatchingAccountProperty: false,
-	isWebDataStreamAvailable: true,
 };
 
 const baseActions = {
@@ -598,15 +626,15 @@ const baseActions = {
 	 * Sets whether the Web Data Stream is available.
 	 *
 	 * @since 1.99.0
+	 * @since n.e.x.t Updated to use the fetch store.
 	 *
 	 * @param {boolean} isWebDataStreamAvailable Whether the Web Data Stream is available.
-	 * @return {Object} Redux-style action.
+	 * @return {Object} Generator function.
 	 */
 	*setIsWebDataStreamAvailable( isWebDataStreamAvailable ) {
-		return {
-			type: SET_IS_WEBDATASTREAM_AVAILABLE,
-			payload: { isWebDataStreamAvailable },
-		};
+		return yield fetchSetIsWebDataStreamAvailable.actions.fetchSetIsWebDataStreamAvailable(
+			isWebDataStreamAvailable
+		);
 	},
 
 	/**
@@ -725,11 +753,6 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 		case SET_HAS_MISMATCHED_TAG: {
 			state.moduleData = state.moduleData || {};
 			state.moduleData.hasMismatchedTag = payload.hasMismatchedTag;
-			break;
-		}
-
-		case SET_IS_WEBDATASTREAM_AVAILABLE: {
-			state.isWebDataStreamAvailable = payload.isWebDataStreamAvailable;
 			break;
 		}
 
@@ -927,18 +950,6 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Checks if the Web Data Stream is available.
-	 *
-	 * @since 1.99.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean} TRUE if the Web Data Stream is available, otherwise FALSE.
-	 */
-	isWebDataStreamAvailable( state ) {
-		return state.isWebDataStreamAvailable;
-	},
-
-	/**
 	 * Checks if properties summaries are currently being loaded.
 	 *
 	 * This selector was introduced as a convenience for reusing the same loading logic across multiple
@@ -966,6 +977,7 @@ const store = combineStores(
 	fetchGetPropertyStore,
 	fetchGetGoogleTagSettingsStore,
 	fetchSetGoogleTagIDMismatch,
+	fetchSetIsWebDataStreamAvailable,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

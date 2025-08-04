@@ -32,7 +32,9 @@ exports[`AudienceCreationNotice should not render the missing scope notice if th
         <div
           class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details"
         >
-          <h3>
+          <h3
+            class="googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small"
+          >
             New visitors
           </h3>
           <p
@@ -62,7 +64,9 @@ exports[`AudienceCreationNotice should not render the missing scope notice if th
         <div
           class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details"
         >
-          <h3>
+          <h3
+            class="googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small"
+          >
             Returning visitors
           </h3>
           <p
@@ -123,7 +127,9 @@ exports[`AudienceCreationNotice should render the missing scope notice if the us
         <div
           class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details"
         >
-          <h3>
+          <h3
+            class="googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small"
+          >
             New visitors
           </h3>
           <p
@@ -153,7 +159,9 @@ exports[`AudienceCreationNotice should render the missing scope notice if the us
         <div
           class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details"
         >
-          <h3>
+          <h3
+            class="googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small"
+          >
             Returning visitors
           </h3>
           <p
@@ -241,7 +249,9 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
         <div
           class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details"
         >
-          <h3>
+          <h3
+            class="googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small"
+          >
             New visitors
           </h3>
           <p
@@ -271,7 +281,9 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
         <div
           class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details"
         >
-          <h3>
+          <h3
+            class="googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small"
+          >
             Returning visitors
           </h3>
           <p
@@ -332,7 +344,9 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
         <div
           class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details"
         >
-          <h3>
+          <h3
+            class="googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small"
+          >
             Returning visitors
           </h3>
           <p

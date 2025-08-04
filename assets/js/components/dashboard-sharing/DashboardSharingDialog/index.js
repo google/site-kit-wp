@@ -222,17 +222,23 @@ export default function DashboardSharingDialog() {
 								size="medium"
 								type="headline"
 							>
-								{ settingsDialogOpen &&
-									__(
-										'Dashboard sharing & permissions',
-										'google-site-kit'
-									) }
+								{ settingsDialogOpen && (
+									<span>
+										{ __(
+											'Dashboard sharing & permissions',
+											'google-site-kit'
+										) }
+									</span>
+								) }
 
-								{ resetDialogOpen &&
-									__(
-										'Reset dashboard sharing permissions',
-										'google-site-kit'
-									) }
+								{ resetDialogOpen && (
+									<span>
+										{ __(
+											'Reset dashboard sharing permissions',
+											'google-site-kit'
+										) }
+									</span>
+								) }
 							</Typography>
 
 							<p
@@ -244,31 +250,39 @@ export default function DashboardSharingDialog() {
 									}
 								) }
 							>
-								{ settingsDialogOpen &&
-									createInterpolateElement(
-										__(
-											'Share a view-only version of your Site Kit dashboard with other WordPress roles. <a>Learn more</a>',
-											'google-site-kit'
-										),
-										{
-											a: (
-												<Link
-													aria-label={ __(
-														'Learn more about dashboard sharing',
-														'google-site-kit'
-													) }
-													href={ documentationURL }
-													external
-												/>
+								{ settingsDialogOpen && (
+									<span>
+										{ createInterpolateElement(
+											__(
+												'Share a view-only version of your Site Kit dashboard with other WordPress roles. <a>Learn more</a>',
+												'google-site-kit'
 											),
-										}
-									) }
+											{
+												a: (
+													<Link
+														aria-label={ __(
+															'Learn more about dashboard sharing',
+															'google-site-kit'
+														) }
+														href={
+															documentationURL
+														}
+														external
+													/>
+												),
+											}
+										) }
+									</span>
+								) }
 
-								{ resetDialogOpen &&
-									__(
-										'Warning: Resetting these permissions will remove view-only access for all users. Are you sure you want to reset all dashboard Sharing permissions?',
-										'google-site-kit'
-									) }
+								{ resetDialogOpen && (
+									<span>
+										{ __(
+											'Warning: Resetting these permissions will remove view-only access for all users. Are you sure you want to reset all dashboard sharing permissions?',
+											'google-site-kit'
+										) }
+									</span>
+								) }
 							</p>
 						</div>
 					</div>

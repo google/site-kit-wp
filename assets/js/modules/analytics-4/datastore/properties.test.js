@@ -71,6 +71,9 @@ describe( 'modules/analytics-4 properties', () => {
 	const setGoogleTagIDMismatchEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/set-google-tag-id-mismatch'
 	);
+	const setWebDataStreamAvailabilityEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/set-is-web-data-stream-available'
+	);
 
 	const gtmAccountID = '6065484567';
 	const gtmContainerID = '98369876';
@@ -743,16 +746,23 @@ describe( 'modules/analytics-4 properties', () => {
 
 		describe( 'setIsWebDataStreamAvailable', () => {
 			it( 'sets the value of isWebDataStreamAvailable', async () => {
-				const isWebDataStreamAvailable = registry
+				const isWebDataStreamAvailable = false;
+
+				fetchMock.post( setWebDataStreamAvailabilityEndpoint, {
+					body: isWebDataStreamAvailable,
+					status: 200,
+				} );
+
+				const defaultIsWebDataStreamAvailable = registry
 					.select( MODULES_ANALYTICS_4 )
 					.isWebDataStreamAvailable();
 
-				// It is true by default.
-				expect( isWebDataStreamAvailable ).toBe( true );
+				// It is undefined by default.
+				expect( defaultIsWebDataStreamAvailable ).toBeUndefined();
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setIsWebDataStreamAvailable( false );
+					.setIsWebDataStreamAvailable( isWebDataStreamAvailable );
 
 				const updatedIsWebDataStreamAvailable = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -1075,6 +1085,7 @@ describe( 'modules/analytics-4 properties', () => {
 				global._googlesitekitModulesData = {
 					[ MODULE_SLUG_ANALYTICS_4 ]: {
 						tagIDMismatch: false,
+						isWebDataStreamAvailable: false,
 					},
 				};
 
@@ -1115,6 +1126,11 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
+				fetchMock.post( setWebDataStreamAvailabilityEndpoint, {
+					body: false,
+					status: 200,
+				} );
+
 				const ga4Settings = {
 					measurementID,
 					googleTagAccountID,
@@ -1138,7 +1154,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 3 );
+				expect( fetchMock ).toHaveFetchedTimes( 4 );
 				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
 					query: {
 						destinationID: measurementID,
@@ -1267,14 +1283,6 @@ describe( 'modules/analytics-4 properties', () => {
 					method: 'POST',
 				} );
 
-				// The web data stream is available.
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isWebDataStreamAvailable()
-				).toBe( true );
-
-				// but the Google Tag ID is mismatched.
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
@@ -1905,27 +1913,6 @@ describe( 'modules/analytics-4 properties', () => {
 					.hasMismatchedGoogleTagID();
 
 				expect( hasMismatchedGoogleTagID ).toBe( true );
-			} );
-		} );
-
-		describe( 'isWebDataStreamAvailable', () => {
-			it( 'returns a specific key in state', () => {
-				const isWebDataStreamAvailable = registry
-					.select( MODULES_ANALYTICS_4 )
-					.isWebDataStreamAvailable();
-
-				// It is true by default.
-				expect( isWebDataStreamAvailable ).toBe( true );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setIsWebDataStreamAvailable( false );
-
-				const updatedIsWebDataStreamAvailable = registry
-					.select( MODULES_ANALYTICS_4 )
-					.isWebDataStreamAvailable();
-
-				expect( updatedIsWebDataStreamAvailable ).toBe( false );
 			} );
 		} );
 

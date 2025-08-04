@@ -53,6 +53,7 @@ import SpinnerButton, {
 } from '../../../../../../googlesitekit/components-gm2/SpinnerButton';
 import AudienceCreationErrorNotice from './AudienceCreationErrorNotice';
 import Notice from '../../../../../../components/Notice';
+import Typography from '../../../../../../components/Typography';
 
 export default function AudienceCreationNotice() {
 	const viewContext = useViewContext();
@@ -290,13 +291,13 @@ export default function AudienceCreationNotice() {
 							className="googlesitekit-audience-selection-panel__audience-creation-notice-audience"
 						>
 							<div className="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details">
-								<h3>
+								<Typography as="h3" type="title" size="small">
 									{
 										SITE_KIT_AUDIENCE_DEFINITIONS[
 											audienceSlug
 										].displayName
 									}
-								</h3>
+								</Typography>
 								<p className="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description">
 									{
 										SITE_KIT_AUDIENCE_DEFINITIONS[
