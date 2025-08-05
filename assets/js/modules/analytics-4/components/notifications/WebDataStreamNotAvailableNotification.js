@@ -50,7 +50,7 @@ export default function WebDataStreamNotAvailableNotification( {
 		useDispatch( MODULES_ANALYTICS_4 );
 
 	const resetWebDataStreamAvailability = () => {
-		// Reset the web data stream availability by setting its value to false.
+		// Reset the web data stream availability by setting its value to FALSE.
 		// This means that the corresponding transient will be deleted on backend.
 		setIsWebDataStreamUnavailable( false );
 	};
