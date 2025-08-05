@@ -3,7 +3,6 @@
 exports[`GoogleTagIDMismatchNotification should render the "alternative GA4 Config found" notification variation 1`] = `
 <div>
   <section
-    class="googlesitekit-publisher-win"
     id="google-tag-id-mismatch"
   >
     <div
@@ -78,7 +77,6 @@ exports[`GoogleTagIDMismatchNotification should render the "alternative GA4 Conf
 exports[`GoogleTagIDMismatchNotification should render the "alternative GA4 Config not found" notification variation 1`] = `
 <div>
   <section
-    class="googlesitekit-publisher-win"
     id="google-tag-id-mismatch"
   >
     <div
