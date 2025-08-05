@@ -125,8 +125,9 @@ describe( 'module/sign-in-with-google service store', () => {
 				const decodedServiceURL = decodeServiceURL( clientIDURL );
 
 				expect( decodedServiceURL ).toMatchQueryParameters( {
-					appname: 'Test-Site-Name',
-					sitename: 'Test@Site!Name',
+					sitename: 'Test Site Name',
+					appname: 'Test@Site!Name',
+					siteorigin: 'http://example.com',
 				} );
 			} );
 
@@ -149,10 +150,10 @@ describe( 'module/sign-in-with-google service store', () => {
 
 				expect( decodedServiceURL ).toMatchQueryParameters(
 					expect.objectContaining( {
-						appname: expect.stringMatching(
+						sitename: expect.stringMatching(
 							/^site-kit-siwg-[a-f0-9]{16}$/
 						),
-						sitename: 'Hi!',
+						appname: 'Hi!',
 					} )
 				);
 			} );
@@ -178,8 +179,8 @@ describe( 'module/sign-in-with-google service store', () => {
 
 				expect( decodedServiceURL ).toMatchQueryParameters(
 					expect.objectContaining( {
-						appname: expect.stringMatching( /^.{1,30}$/ ),
-						sitename: longSiteName,
+						sitename: expect.stringMatching( /^.{1,30}$/ ),
+						appname: longSiteName,
 					} )
 				);
 			} );
