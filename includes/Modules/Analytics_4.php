@@ -742,7 +742,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			'POST:set-google-tag-id-mismatch'           => array(
 				'service' => '',
 			),
-			'POST:set-is-web-data-stream-available'     => array(
+			'POST:set-is-web-data-stream-unavailable'   => array(
 				'service' => '',
 			),
 			'POST:create-audience'                      => array(
@@ -1782,20 +1782,20 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					$this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
 					return $data['hasMismatchedTag'];
 				};
-			case 'POST:set-is-web-data-stream-available':
-				if ( ! isset( $data['isWebDataStreamAvailable'] ) ) {
-					throw new Missing_Required_Param_Exception( 'isWebDataStreamAvailable' );
+			case 'POST:set-is-web-data-stream-unavailable':
+				if ( ! isset( $data['isWebDataStreamUnavailable'] ) ) {
+					throw new Missing_Required_Param_Exception( 'isWebDataStreamUnavailable' );
 				}
 
-				if ( true === $data['isWebDataStreamAvailable'] ) {
-					return function () use ( $data ) {
-						$this->transients->set( 'googlesitekit_web_data_stream_availability', $data['isWebDataStreamAvailable'] );
-						return $data['isWebDataStreamAvailable'];
+				if ( true === $data['isWebDataStreamUnavailable'] ) {
+					return function () {
+						$this->transients->set( 'googlesitekit_web_data_stream_unavailable', true );
+						return true;
 					};
 				}
 
 				return function () {
-					$this->transients->delete( 'googlesitekit_web_data_stream_availability' );
+					$this->transients->delete( 'googlesitekit_web_data_stream_unavailable' );
 					return false;
 				};
 		}
@@ -2764,8 +2764,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$inline_data['newBadgeEvents'] = is_array( $new_events_badge ) ? $new_events_badge['events'] : array();
 
 		// Web data stream availability data.
-		$is_web_data_stream_available            = $this->transients->get( 'googlesitekit_web_data_stream_availability' );
-		$inline_data['isWebDataStreamAvailable'] = $is_web_data_stream_available;
+		$is_web_data_stream_unavailable            = $this->transients->get( 'googlesitekit_web_data_stream_unavailable' );
+		$inline_data['isWebDataStreamUnavailable'] = $is_web_data_stream_unavailable;
 
 		return array(
 			self::MODULE_SLUG => $inline_data,

@@ -801,7 +801,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
 				// Preload module data.
 				resolveSelect( MODULES_ANALYTICS_4 ).getModuleData(),
-				// The isWebDataStreamAvailable property is set within the
+				// The isWebDataStreamUnavailable property is set within the
 				// syncGoogleTagSettings() action.
 				dispatch( MODULES_ANALYTICS_4 ).syncGoogleTagSettings(),
 			] );
@@ -816,14 +816,14 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			const isGA4ModuleOwner =
 				ga4ModuleConnected && ga4OwnerID === loggedInUserID;
 
-			const isWebDataStreamAvailable =
-				select( MODULES_ANALYTICS_4 ).isWebDataStreamAvailable();
+			const isWebDataStreamUnavailable =
+				select( MODULES_ANALYTICS_4 ).isWebDataStreamUnavailable();
 
 			return (
 				ga4ModuleConnected &&
 				hasGTMScope &&
 				isGA4ModuleOwner &&
-				isWebDataStreamAvailable === false
+				isWebDataStreamUnavailable === true
 			);
 		},
 	},

@@ -46,10 +46,13 @@ export default function WebDataStreamNotAvailableNotification( {
 		select( CORE_SITE ).getModuleSettingsEditURL( MODULE_SLUG_ANALYTICS_4 )
 	);
 
-	const { setIsWebDataStreamAvailable } = useDispatch( MODULES_ANALYTICS_4 );
+	const { setIsWebDataStreamUnavailable } =
+		useDispatch( MODULES_ANALYTICS_4 );
 
 	const resetWebDataStreamAvailability = () => {
-		setIsWebDataStreamAvailable( false );
+		// Reset the web data stream availability by setting its value to false.
+		// This means that the corresponding transient will be deleted on backend.
+		setIsWebDataStreamUnavailable( false );
 	};
 	const isNavigatingToSettingsEditURL = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo( analyticsSettingsEditURL )

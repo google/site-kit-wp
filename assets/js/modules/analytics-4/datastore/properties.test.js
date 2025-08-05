@@ -71,8 +71,8 @@ describe( 'modules/analytics-4 properties', () => {
 	const setGoogleTagIDMismatchEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/set-google-tag-id-mismatch'
 	);
-	const setWebDataStreamAvailabilityEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/set-is-web-data-stream-available'
+	const setWebDataStreamUnavailabilityEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/set-is-web-data-stream-unavailable'
 	);
 
 	const gtmAccountID = '6065484567';
@@ -744,31 +744,33 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 		} );
 
-		describe( 'setIsWebDataStreamAvailable', () => {
-			it( 'sets the value of isWebDataStreamAvailable', async () => {
-				const isWebDataStreamAvailable = false;
+		describe( 'setIsWebDataStreamUnavailable', () => {
+			it( 'sets the value of isWebDataStreamUnavailable', async () => {
+				const isWebDataStreamUnavailable = true;
 
-				fetchMock.post( setWebDataStreamAvailabilityEndpoint, {
-					body: isWebDataStreamAvailable,
+				fetchMock.post( setWebDataStreamUnavailabilityEndpoint, {
+					body: isWebDataStreamUnavailable,
 					status: 200,
 				} );
 
-				const defaultIsWebDataStreamAvailable = registry
+				const defaultIsWebDataStreamUnavailable = registry
 					.select( MODULES_ANALYTICS_4 )
-					.isWebDataStreamAvailable();
+					.isWebDataStreamUnavailable();
 
 				// It is undefined by default.
-				expect( defaultIsWebDataStreamAvailable ).toBeUndefined();
+				expect( defaultIsWebDataStreamUnavailable ).toBeUndefined();
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setIsWebDataStreamAvailable( isWebDataStreamAvailable );
+					.setIsWebDataStreamUnavailable(
+						isWebDataStreamUnavailable
+					);
 
-				const updatedIsWebDataStreamAvailable = registry
+				const updatedIsWebDataStreamUnavailable = registry
 					.select( MODULES_ANALYTICS_4 )
-					.isWebDataStreamAvailable();
+					.isWebDataStreamUnavailable();
 
-				expect( updatedIsWebDataStreamAvailable ).toBe( false );
+				expect( updatedIsWebDataStreamUnavailable ).toBe( true );
 			} );
 		} );
 
@@ -1126,8 +1128,8 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
-				fetchMock.post( setWebDataStreamAvailabilityEndpoint, {
-					body: false,
+				fetchMock.post( setWebDataStreamUnavailabilityEndpoint, {
+					body: true,
 					status: 200,
 				} );
 
