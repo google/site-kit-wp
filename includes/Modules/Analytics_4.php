@@ -2765,7 +2765,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 		// Web data stream availability data.
 		$is_web_data_stream_unavailable            = $this->transients->get( 'googlesitekit_web_data_stream_unavailable' );
-		$inline_data['isWebDataStreamUnavailable'] = $is_web_data_stream_unavailable;
+		$inline_data['isWebDataStreamUnavailable'] = (bool) $is_web_data_stream_unavailable;
 
 		return array(
 			self::MODULE_SLUG => $inline_data,
