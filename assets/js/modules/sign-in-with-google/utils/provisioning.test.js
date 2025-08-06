@@ -34,30 +34,29 @@ describe( 'sanitizeProvisioningParams', () => {
 	};
 
 	describe( 'missing or empty required parameters', () => {
-		it( 'returns params as-is when appname is missing', () => {
-			const params = {
-				sitename: 'Test Site',
-				siteorigin: 'https://example.com',
-			};
-
-			expect( sanitizeProvisioningParams( params ) ).toEqual( params );
-		} );
-
-		it( 'returns params as-is when sitename is missing', () => {
-			const params = {
-				appname: 'Test App',
-				siteorigin: 'https://example.com',
-			};
-
-			expect( sanitizeProvisioningParams( params ) ).toEqual( params );
-		} );
-
-		it( 'returns params as-is when siteorigin is missing', () => {
-			const params = {
-				appname: 'Test App',
-				sitename: 'Test Site',
-			};
-
+		it.each( [
+			[
+				'appname',
+				{
+					sitename: 'Test Site',
+					siteorigin: 'https://example.com',
+				},
+			],
+			[
+				'sitename',
+				{
+					appname: 'Test App',
+					siteorigin: 'https://example.com',
+				},
+			],
+			[
+				'siteorigin',
+				{
+					appname: 'Test App',
+					sitename: 'Test Site',
+				},
+			],
+		] )( 'returns params as-is when %s is missing', ( _, params ) => {
 			expect( sanitizeProvisioningParams( params ) ).toEqual( params );
 		} );
 
@@ -114,92 +113,79 @@ describe( 'sanitizeProvisioningParams', () => {
 			expect( result.sitename ).toBe( expectedResult );
 		} );
 
-		it( 'replaces non-alphanumeric characters with spaces', () => {
+		it.each( [
+			[
+				'replaces non-alphanumeric characters (except hyphens) with spaces',
+				'Test@Site#123!',
+				'Test Site 123',
+			],
+			[
+				'preserves hyphens in sitename',
+				'Test-Site-Name',
+				'Test-Site-Name',
+			],
+			[
+				'handles combination of hyphens and other special characters',
+				'Test-Site@Name#123!',
+				'Test-Site Name 123',
+			],
+			[
+				'normalizes multiple whitespace characters to single spaces',
+				'Test\t\tSite\n\nName   With  Spaces',
+				'Test Site Name With Spaces',
+			],
+			[
+				'trims whitespace from beginning and end',
+				'   Test Site Name   ',
+				'Test Site Name',
+			],
+			[
+				'handles combination of special characters and whitespace',
+				'  @#$ Test-Site_Name!!! \t\n  ',
+				'Test-Site Name',
+			],
+		] )( '%s', ( _, inputSitename, expectedSitename ) => {
 			const params = {
 				...validParams,
-				sitename: 'Test@Site#123!',
+				sitename: inputSitename,
 			};
 
 			const result = sanitizeProvisioningParams( params );
 
-			expect( result.sitename ).toBe( 'Test Site 123' );
-		} );
-
-		it( 'normalizes multiple whitespace characters to single spaces', () => {
-			const params = {
-				...validParams,
-				sitename: 'Test\t\tSite\n\nName   With  Spaces',
-			};
-
-			const result = sanitizeProvisioningParams( params );
-
-			expect( result.sitename ).toBe( 'Test Site Name With Spaces' );
-		} );
-
-		it( 'trims whitespace from beginning and end', () => {
-			const params = {
-				...validParams,
-				sitename: '   Test Site Name   ',
-			};
-
-			const result = sanitizeProvisioningParams( params );
-
-			expect( result.sitename ).toBe( 'Test Site Name' );
-		} );
-
-		it( 'handles combination of special characters and whitespace', () => {
-			const params = {
-				...validParams,
-				sitename: '  @#$ Test-Site_Name!!! \t\n  ',
-			};
-
-			const result = sanitizeProvisioningParams( params );
-
-			expect( result.sitename ).toBe( 'Test Site Name' );
+			expect( result.sitename ).toBe( expectedSitename );
 		} );
 	} );
 
 	describe( 'short sitename fallback', () => {
-		it( 'generates MD5-based fallback when sanitized sitename is less than 4 characters', () => {
+		it.each( [
+			[
+				'generates MD5-based fallback when sanitized sitename is less than 4 characters',
+				'@#$',
+				'https://example.com',
+				'example.com',
+			],
+			[
+				'generates MD5-based fallback when sitename becomes empty after sanitization',
+				'!@#$%^&*()',
+				'https://test.example.com',
+				'test.example.com',
+			],
+			[
+				'uses siteorigin for MD5 when URL parsing fails',
+				'!!',
+				'invalid-url',
+				'invalid-url',
+			],
+		] )( '%s', ( _, inputSitename, siteorigin, expectedHashInput ) => {
 			const params = {
 				...validParams,
-				sitename: '@#$',
-				siteorigin: 'https://example.com',
+				sitename: inputSitename,
+				siteorigin,
 			};
 
 			const result = sanitizeProvisioningParams( params );
 			// The full fallback gets truncated to 30 characters
-			const fullFallback = `site-kit-siwg-${ md5( 'example.com' ) }`;
-			const expectedResult = fullFallback.substring( 0, 30 );
-
-			expect( result.sitename ).toBe( expectedResult );
-		} );
-
-		it( 'generates MD5-based fallback when sitename becomes empty after sanitization', () => {
-			const params = {
-				...validParams,
-				sitename: '!@#$%^&*()',
-				siteorigin: 'https://test.example.com',
-			};
-
-			const result = sanitizeProvisioningParams( params );
-			// The full fallback gets truncated to 30 characters
-			const fullFallback = `site-kit-siwg-${ md5( 'test.example.com' ) }`;
-			const expectedResult = fullFallback.substring( 0, 30 );
-
-			expect( result.sitename ).toBe( expectedResult );
-		} );
-
-		it( 'uses siteorigin for MD5 when URL parsing fails', () => {
-			const params = {
-				...validParams,
-				sitename: '!!',
-				siteorigin: 'invalid-url',
-			};
-
-			const result = sanitizeProvisioningParams( params );
-			// The full fallback gets truncated to 30 characters
-			const fullFallback = `site-kit-siwg-${ md5( 'invalid-url' ) }`;
+			const fullFallback = `site-kit-siwg-${ md5( expectedHashInput ) }`;
 			const expectedResult = fullFallback.substring( 0, 30 );
 
 			expect( result.sitename ).toBe( expectedResult );
