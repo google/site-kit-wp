@@ -93,7 +93,7 @@ DisabledChecked.args = {
 	id: 'googlesitekit-checkbox-9',
 	name: 'googlesitekit__checkbox-9',
 	value: 'value-9',
-	label: 'Disabled Checkbox',
+	label: 'Disabled Checked Checkbox',
 	disabled: true,
 	checked: true,
 };

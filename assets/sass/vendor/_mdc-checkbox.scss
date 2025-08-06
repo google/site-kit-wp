@@ -89,33 +89,35 @@
 				}
 			}
 
-			&:enabled:not(:checked, :indeterminate),
+			&:enabled:not(:checked),
 			&:checked:enabled {
 				~ .mdc-checkbox__background {
 					border-color: $c-black;
 				}
 			}
 
-			&:enabled:not(:checked, :indeterminate) {
-				~ .mdc-checkbox__background {
-					background-color: transparent;
-				}
-			}
-
-			&[disabled]:not(:checked, :indeterminate) {
+			&[disabled]:not(:checked) {
 				~ .mdc-checkbox__background {
 					border-color: $c-interactive-on-disable-container;
 				}
 			}
 
-			&[disabled]:checked:not(:indeterminate) {
+			&[disabled]:checked {
 				~ .mdc-checkbox__background {
-					background-color: $c-interactive-on-disable-container;
+					background-color: $c-interactive-disable-container;
 					border-color: transparent;
 
 					.mdc-checkbox__checkmark-path {
 						stroke: $c-interactive-on-disable-container;
 					}
+				}
+			}
+
+			/* stylelint-disable selector-not-notation -- The complex notation (not(:checked, :indeterminate))
+		    * doesn't seem to override the styles. */
+			&:enabled:not(:checked):not(:indeterminate) {
+				~ .mdc-checkbox__background {
+					background-color: transparent;
 				}
 			}
 		}
