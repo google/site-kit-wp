@@ -47,7 +47,7 @@ import getMultiDimensionalObjectFromParams from '../utils/get-multi-dimensional-
 describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
 		// The UserInputApp needs more time to load to pass consistently.
-		const extendedTimeout = 30000;
+		const extendedTimeout = 20000;
 
 		await page.waitForNetworkIdle( { timeout: extendedTimeout } );
 		await page.waitForSelector( '.googlesitekit-user-input__question', {
@@ -203,6 +203,7 @@ describe( 'User Input Settings', () => {
 	} );
 
 	afterEach( async () => {
+		await page.waitForNetworkIdle( { timeout: 15_000 } );
 		await waitForFetchRequests();
 
 		await deactivateUtilityPlugins();

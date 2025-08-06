@@ -167,6 +167,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 	} );
 
 	afterEach( async () => {
+		await page.waitForNetworkIdle( { timeout: 15_000 } );
 		await waitForFetchRequests();
 
 		await deactivateUtilityPlugins();
