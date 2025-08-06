@@ -74,6 +74,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 			const {
 				tagIDMismatch,
 				resourceAvailabilityDates,
+				customDimensionsDataAvailable,
 				newEvents,
 				lostEvents,
 				newBadgeEvents,
@@ -81,7 +82,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 			} = payload;
 
 			// Replace empty array value with empty object in resourceAvailabilityDates object.
-			Object.keys( resourceAvailabilityDates ).forEach( ( key ) => {
+			Object.keys( resourceAvailabilityDates || {} ).forEach( ( key ) => {
 				if ( Array.isArray( resourceAvailabilityDates[ key ] ) ) {
 					resourceAvailabilityDates[ key ] = {};
 				}
@@ -90,6 +91,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 			const moduleData = {
 				hasMismatchedTag: !! tagIDMismatch,
 				resourceAvailabilityDates,
+				customDimensionsDataAvailable,
 				newEvents,
 				lostEvents,
 				newBadgeEvents,
@@ -158,6 +160,18 @@ export const selectors = {
 	 */
 	getResourceDataAvailabilityDates: getModuleDataProperty(
 		'resourceAvailabilityDates'
+	),
+
+	/**
+	 * Gets the custom dimensions data availability object.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Object|undefined} Object mapping custom dimension slugs to their data availability state.
+	 */
+	getCustomDimensionsDataAvailable: getModuleDataProperty(
+		'customDimensionsDataAvailable'
 	),
 
 	/**

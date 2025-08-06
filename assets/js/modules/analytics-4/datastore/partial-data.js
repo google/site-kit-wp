@@ -157,12 +157,10 @@ const baseResolvers = {
 			return;
 		}
 
-		if ( select( MODULES_ANALYTICS_4 ).getModuleData() === undefined ) {
-			// Module data needs to be resolved to determine the resource data availability date.
-			yield commonActions.await(
-				resolveSelect( MODULES_ANALYTICS_4 ).getModuleData()
-			);
-		}
+		// Module data needs to be resolved to determine the resource data availability date.
+		yield commonActions.await(
+			resolveSelect( MODULES_ANALYTICS_4 ).getModuleData()
+		);
 
 		const resourceAvailabilityDates =
 			select( MODULES_ANALYTICS_4 ).getResourceDataAvailabilityDates();
