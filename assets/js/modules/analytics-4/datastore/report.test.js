@@ -678,9 +678,8 @@ describe( 'modules/analytics-4 report', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAvailableAudiences( fixtures.availableAudiences );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: fixtures.availableAudiences.reduce(
 							( acc, { name } ) => {
 								acc[ name ] = 20201220;
@@ -690,7 +689,8 @@ describe( 'modules/analytics-4 report', () => {
 						),
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				const options = {
 					startDate: '2022-11-02',
