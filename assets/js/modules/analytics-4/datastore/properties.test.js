@@ -956,6 +956,11 @@ describe( 'modules/analytics-4 properties', () => {
 						}
 					);
 
+				fetchMock.post( setWebDataStreamUnavailabilityEndpoint, {
+					body: true,
+					status: 200,
+				} );
+
 				fetchMock.postOnce( ga4SettingsEndpoint, {
 					body: {
 						...ga4Settings,
@@ -977,7 +982,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
 				expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, {
 					body: {
 						data: {
@@ -1083,7 +1088,7 @@ describe( 'modules/analytics-4 properties', () => {
 				).toEqual( googleTagID );
 			} );
 
-			it( 'should set `isWebDataStreamAvailable` to `false` when there is no Google Tag Container available', async () => {
+			it( 'should set `isWebDataStreamUnavailable` to `true` when there is no Google Tag Container available', async () => {
 				global._googlesitekitModulesData = {
 					[ MODULE_SLUG_ANALYTICS_4 ]: {
 						tagIDMismatch: false,
@@ -1177,8 +1182,8 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isWebDataStreamAvailable()
-				).toBe( false );
+						.isWebDataStreamUnavailable()
+				).toBe( true );
 
 				// Initially undefined.
 				expect(
@@ -1229,6 +1234,11 @@ describe( 'modules/analytics-4 properties', () => {
 					googleTagLastSyncedAtMs: 1670123456789,
 				} );
 
+				fetchMock.post( setWebDataStreamUnavailabilityEndpoint, {
+					body: true,
+					status: 200,
+				} );
+
 				fetchMock.getOnce( containerLookupEndpoint, {
 					body: containerMock,
 					status: 200,
@@ -1267,7 +1277,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 4 );
+				expect( fetchMock ).toHaveFetchedTimes( 5 );
 				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
 					query: {
 						destinationID: measurementID,
@@ -1320,6 +1330,11 @@ describe( 'modules/analytics-4 properties', () => {
 					googleTagAccountID,
 					googleTagContainerID,
 					googleTagLastSyncedAtMs: 1670123456789,
+				} );
+
+				fetchMock.post( setWebDataStreamUnavailabilityEndpoint, {
+					body: true,
+					status: 200,
 				} );
 
 				fetchMock.getOnce( containerLookupEndpoint, {

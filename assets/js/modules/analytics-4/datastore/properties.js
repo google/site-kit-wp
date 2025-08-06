@@ -708,7 +708,10 @@ const baseActions = {
 				! googleTagContainer
 			);
 
-			if ( ! googleTagContainer?.tagIds?.includes?.( googleTagID ) ) {
+			if (
+				googleTagContainer &&
+				! googleTagContainer.tagIds.includes( googleTagID )
+			) {
 				yield baseActions.setHasMismatchedGoogleTagID( true );
 			}
 		} else {
