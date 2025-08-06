@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Notifications;
 
 use Google\Site_Kit\Core\Notifications\Notification;
@@ -23,11 +21,11 @@ class NotificationTest extends TestCase {
 	public function test_get_slug() {
 		$notification = new Notification( 'test-slug', array() );
 
-		$this->assertEquals( 'test-slug', $notification->get_slug() );
+		$this->assertEquals( 'test-slug', $notification->get_slug(), 'Notification slug should match the provided value.' );
 
 		$notification = new Notification( null, array() );
 
-		$this->assertEquals( '', $notification->get_slug() );
+		$this->assertEquals( '', $notification->get_slug(), 'Notification slug should be empty when not provided.' );
 	}
 
 	public function test_prepare_for_js() {
@@ -59,7 +57,8 @@ class NotificationTest extends TestCase {
 				'dismissLabel'   => 'test-dismiss-label',
 				'id'             => 'test-slug',
 			),
-			$notification->prepare_for_js()
+			$notification->prepare_for_js(),
+			'Notification should be correctly prepared for JS.'
 		);
 	}
 }

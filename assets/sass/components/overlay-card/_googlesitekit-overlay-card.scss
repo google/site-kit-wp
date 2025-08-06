@@ -57,10 +57,6 @@
 		padding: $grid-gap-phone;
 
 		.googlesitekit-overlay-card__title {
-			font-size: $fs-title-md;
-			font-weight: $fw-medium;
-			letter-spacing: $ls-xxs;
-			line-height: $lh-title-md;
 			margin: 0 0 10px;
 		}
 
@@ -75,7 +71,8 @@
 		@media (min-width: $bp-tablet) {
 			padding: $grid-gap-desktop;
 
-			.googlesitekit-overlay-card__title {
+			.googlesitekit-typography.googlesitekit-overlay-card__title {
+				font-family: $f-secondary;
 				font-size: $fs-headline-sm;
 				font-weight: $fw-normal;
 				letter-spacing: unset;

@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Util;
 
@@ -26,7 +24,8 @@ class SanitizeTest extends TestCase {
 	public function test_sanitize_string_list( $data_list, $expected ) {
 		$this->assertEquals(
 			$expected,
-			Sanitize::sanitize_string_list( $data_list )
+			Sanitize::sanitize_string_list( $data_list ),
+			'Sanitized string list should match expected output.'
 		);
 	}
 

@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Util;
 
@@ -63,7 +61,7 @@ class Migration_1_123_0Test extends TestCase {
 
 		$migration->register();
 
-		$this->assertTrue( has_action( 'admin_init' ) );
+		$this->assertTrue( has_action( 'admin_init' ), 'Migration should register admin_init action.' );
 	}
 
 	public function test_migrate() {
@@ -105,13 +103,15 @@ class Migration_1_123_0Test extends TestCase {
 
 		$this->assertEquals(
 			$this->filter_settings( $analytics_4_settings, $migrated_keys ),
-			$this->filter_settings( $legacy_settings, $migrated_keys )
+			$this->filter_settings( $legacy_settings, $migrated_keys ),
+			'Migrated Analytics 4 settings should match legacy settings for migrated keys.'
 		);
 
 		// Verify that analytics-4 is now included in active modules.
 		$this->assertEquals(
 			$this->options->get( Modules::OPTION_ACTIVE_MODULES ),
-			array( 'pagespeed-insights', 'analytics', 'analytics-4' )
+			array( 'pagespeed-insights', 'analytics', 'analytics-4' ),
+			'Analytics 4 should be added to active modules after migration.'
 		);
 
 		// Verify that analytics-4 now has duplicate sharing settings.
@@ -130,10 +130,11 @@ class Migration_1_123_0Test extends TestCase {
 					'sharedRoles' => array( 'administrator' ),
 					'management'  => 'owner',
 				),
-			)
+			),
+			'Analytics 4 should have duplicate sharing settings after migration.'
 		);
 
-		$this->assertEquals( Migration_1_123_0::DB_VERSION, $this->get_db_version() );
+		$this->assertEquals( Migration_1_123_0::DB_VERSION, $this->get_db_version(), 'Database version should be updated after migration.' );
 	}
 
 	protected function filter_settings( $settings, $keys_to_filter ) {

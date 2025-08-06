@@ -140,7 +140,6 @@ export default function SettingsCardConsentMode() {
 									<Cell size={ 12 }>
 										<Notice
 											type={ Notice.TYPES.INFO }
-											className="googlesitekit-settings-notice"
 											description={ __(
 												'If you have Google Ads campaigns for this site, it’s highly recommended to enable Consent mode - otherwise, you won’t be able to collect any metrics on the effectiveness of your campaigns in regions like the European Economic Area.',
 												'google-site-kit'
