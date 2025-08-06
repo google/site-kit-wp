@@ -37,7 +37,7 @@ describe( 'blocks', () => {
 	 * Skips test on WordPress versions below 5.8.
 	 * We only support WP 5.8+ for blocks due to available feature and API.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.158.0
 	 *
 	 * @return {Promise<boolean>} Promise resolving to true if block support is available, false otherwise.
 	 */

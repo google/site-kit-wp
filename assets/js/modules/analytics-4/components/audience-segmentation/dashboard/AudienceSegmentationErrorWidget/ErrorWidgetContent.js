@@ -41,6 +41,7 @@ import AudienceSegmentationErrorSVG from '../../../../../../../svg/graphics/audi
 import { isInsufficientPermissionsError } from '../../../../../../util/errors';
 import ReportErrorActions from '../../../../../../components/ReportErrorActions';
 import GetHelpLink from '../GetHelpLink';
+import Typography from '../../../../../../components/Typography';
 
 const ErrorWidgetContent = forwardRef(
 	( { Widget, errors, onRetry, onRequestAccess, showRetryButton }, ref ) => {
@@ -64,7 +65,7 @@ const ErrorWidgetContent = forwardRef(
 				>
 					<Row>
 						<Cell smSize={ 6 } mdSize={ 8 } lgSize={ 7 }>
-							<h3 className="googlesitekit-publisher-win__title">
+							<Typography as="h3" type="title" size="large">
 								{ hasInsufficientPermissionsError
 									? __(
 											'Insufficient permissions',
@@ -74,7 +75,7 @@ const ErrorWidgetContent = forwardRef(
 											'Your visitor groups data loading failed',
 											'google-site-kit'
 									  ) }
-							</h3>
+							</Typography>
 							<div className="googlesitekit-widget-audience-segmentation-error__actions">
 								{ showRetryButton && onRetry ? (
 									<Button onClick={ onRetry } danger>

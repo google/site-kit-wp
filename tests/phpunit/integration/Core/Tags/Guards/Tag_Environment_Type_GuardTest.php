@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Tags\Guards;
 
@@ -23,7 +21,7 @@ class Tag_Environment_Type_GuardTest extends TestCase {
 			$this->markTestSkipped( 'Testing WP5.5.0 or later and skipping due to missing wp_get_environment_type() function.' );
 		}
 		$tagproduction = new Tag_Environment_Type_Guard();
-		$this->assertTrue( $tagproduction->can_activate() );
+		$this->assertTrue( $tagproduction->can_activate(), 'Tag should be able to activate on post 5.5 version.' );
 	}
 
 	public function test_can_activate_on_older_versions() {
@@ -32,7 +30,7 @@ class Tag_Environment_Type_GuardTest extends TestCase {
 			$this->markTestSkipped( 'Testing legacy environments without wp_get_environment_type() function.' );
 		}
 		$tagproduction = new Tag_Environment_Type_Guard();
-		$this->assertTrue( $tagproduction->can_activate() );
+		$this->assertTrue( $tagproduction->can_activate(), 'Tag should be able to activate on older versions.' );
 	}
 
 	public function test_can_not_activate_in_development() {
@@ -46,7 +44,7 @@ class Tag_Environment_Type_GuardTest extends TestCase {
 		$env_type      = wp_get_environment_type();
 		$tagproduction = new Tag_Environment_Type_Guard();
 		uopz_set_static( 'wp_get_environment_type', array( 'current_env' => 'development' ) );
-		$this->assertFalse( $tagproduction->can_activate() );
+		$this->assertFalse( $tagproduction->can_activate(), 'Tag should not be able to activate in development environment.' );
 		uopz_set_static( 'wp_get_environment_type', array( 'current_env' => $env_type ) );
 	}
 
@@ -61,7 +59,7 @@ class Tag_Environment_Type_GuardTest extends TestCase {
 		$env_type      = wp_get_environment_type();
 		$tagproduction = new Tag_Environment_Type_Guard();
 		uopz_set_static( 'wp_get_environment_type', array( 'current_env' => 'development' ) );
-		$this->assertFalse( $tagproduction->can_activate() );
+		$this->assertFalse( $tagproduction->can_activate(), 'Tag should not be able to activate in development environment by default.' );
 
 		remove_all_filters( 'googlesitekit_allowed_tag_environment_types' );
 		add_filter(
@@ -71,7 +69,7 @@ class Tag_Environment_Type_GuardTest extends TestCase {
 				return $allowed_environments;
 			}
 		);
-		$this->assertTrue( $tagproduction->can_activate() );
+		$this->assertTrue( $tagproduction->can_activate(), 'Tag should be able to activate in development environment when allowed.' );
 
 		uopz_set_static( 'wp_get_environment_type', array( 'current_env' => $env_type ) );
 	}

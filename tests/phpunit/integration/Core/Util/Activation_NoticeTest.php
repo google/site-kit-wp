@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Util;
 
@@ -49,11 +47,11 @@ class Activation_NoticeTest extends TestCase {
 
 	protected function assertAdminActivationNoticeRegistered() {
 		$admin_notices = apply_filters( 'googlesitekit_admin_notices', array() );
-		$this->assertCount( 1, $admin_notices );
+		$this->assertCount( 1, $admin_notices, 'Should have exactly one admin notice registered.' );
 
 		$notice = array_pop( $admin_notices );
-		$this->assertInstanceOf( 'Google\Site_Kit\Core\Admin\Notice', $notice );
-		$this->assertEquals( 'activated', $notice->get_slug() );
+		$this->assertInstanceOf( 'Google\Site_Kit\Core\Admin\Notice', $notice, 'Notice should be an instance of Notice class.' );
+		$this->assertEquals( 'activated', $notice->get_slug(), 'Notice slug should be "activated".' );
 	}
 
 	protected function assertAssetsEnqueued() {
@@ -66,13 +64,13 @@ class Activation_NoticeTest extends TestCase {
 		wp_styles()->queue = array();
 
 		// googlesitekit-fonts is only enqueued in AMP context, only need to check admin css.
-		$this->assertFalse( wp_style_is( 'googlesitekit-admin-css', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'googlesitekit-admin-css', 'enqueued' ), 'Admin CSS should not be enqueued initially.' );
 
 		// Set activation flag so that assets are enqueued.
 		$this->activation_flag->set_activation_flag( is_network_admin() );
 
 		do_action( 'admin_enqueue_scripts', 'plugins.php' );
 
-		$this->assertTrue( wp_style_is( 'googlesitekit-admin-css', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'googlesitekit-admin-css', 'enqueued' ), 'Admin CSS should be enqueued after activation flag is set.' );
 	}
 }

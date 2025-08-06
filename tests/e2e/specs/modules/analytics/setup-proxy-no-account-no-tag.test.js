@@ -100,7 +100,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 
 	it( 'displays account creation form when user has no Analytics account', async () => {
 		await page.waitForNetworkIdle();
-		await expect( page ).toMatchElement( '.googlesitekit-heading-4', {
+		await expect( page ).toMatchElement( '.googlesitekit-typography', {
 			text: /Create your Analytics account/i,
 		} );
 		await expect( page ).toMatchElement( '.mdc-button', {
@@ -109,7 +109,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 	} );
 
 	it( 'preserves user-filled values provided and auto-submits after approving permissions', async () => {
-		await page.waitForSelector( '.googlesitekit-heading-4' );
+		await page.waitForSelector( '.googlesitekit-typography' );
 
 		// Unfortunately, the view does not have a `form`, otherwise we could use `.toFillForm( el, fields )`
 		await expect( page ).toFill(
