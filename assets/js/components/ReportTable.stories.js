@@ -135,17 +135,17 @@ export default {
 	title: 'Components/ReportTable',
 	component: ReportTable,
 	decorators: [
-		( Story, { parameters } ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
-				if ( parameters?.setupRegistry ) {
-					parameters.setupRegistry( registry );
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
 				}
 			};
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
 					<Layout>
-						<Story { ...parameters } />
+						<Story { ...args } />
 					</Layout>
 				</WithRegistrySetup>
 			);

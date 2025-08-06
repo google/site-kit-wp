@@ -7,7 +7,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,11 +22,6 @@
 import { useFirstMountState, useUnmount } from 'react-use';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router';
-
-/**
- * WordPress dependencies
- */
-import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -58,57 +53,10 @@ setUsingCache( false );
 
 bootstrapFetchMocks();
 
-/**
- * Wraps children components with a fresh test registry,
- * which can be configured by its callback prop.
- *
- * @since 1.7.1
- * @private
- *
- * @param {Object}    [props]          Component props.
- * @param {Function}  [props.callback] Function which receives the registry instance.
- * @param {WPElement} [props.children] Children components.
- * @param {History}   [props.history]  History object for React Router. Defaults to MemoryHistory.
- * @param {string}    [props.route]    Route to pass to history as starting route.
- * @param {string[]}  [props.features] Feature flags to enable for this test registry provider.
- * @param {Object}    [props.registry] Registry object; uses `createTestRegistry()` by default.
- * @return {WPElement} Wrapped components.
- */
-function WithTestRegistry( {
-	children,
-	callback,
-	features = [],
-	registry = createTestRegistry(),
-	history = createMemoryHistory(),
-	route = undefined,
-} = {} ) {
-	const featuresToEnable = new Set( features );
-	// Populate most basic data which should not affect any tests.
-	provideUserInfo( registry );
-
-	if ( route ) {
-		history.push( route );
-	}
-
-	if ( callback ) {
-		callback( registry );
-	}
-
-	const [ inViewState ] = useState( {
-		key: 'renderStory',
-		value: true,
-	} );
-
-	return (
-		<InViewProvider value={ inViewState }>
-			<RegistryProvider value={ registry }>
-				<FeaturesProvider value={ featuresToEnable }>
-					<Router history={ history }>{ children }</Router>
-				</FeaturesProvider>
-			</RegistryProvider>
-		</InViewProvider>
-	);
-}
+const inViewState = {
+	key: 'renderStory',
+	value: true,
+};
 
 // Decorators run from last added to first. (Eg. In reverse order as listed.)
 export const decorators = [
@@ -149,17 +97,30 @@ export const decorators = [
 			setEnabledFeatures( features );
 		}
 
+		const registry = createTestRegistry();
+		const history = createMemoryHistory();
+		const featuresToEnable = new Set( features );
+
+		// Populate most basic data which should not affect any tests.
+		provideUserInfo( registry );
+
+		if ( route ) {
+			history.push( route );
+		}
+
+		// Expose registry as global for tinkering.
+		global.registry = registry;
+
 		return (
-			<WithTestRegistry
-				features={ features }
-				route={ route }
-				callback={ ( registry ) => {
-					// Expose registry as global for tinkering.
-					global.registry = registry;
-				} }
-			>
-				<Story />
-			</WithTestRegistry>
+			<InViewProvider value={ inViewState }>
+				<RegistryProvider value={ registry }>
+					<FeaturesProvider value={ featuresToEnable }>
+						<Router history={ history }>
+							<Story />
+						</Router>
+					</FeaturesProvider>
+				</RegistryProvider>
+			</InViewProvider>
 		);
 	},
 	( Story ) => {

@@ -49,7 +49,7 @@ ReportZeroStory.decorators = [
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
-				<Story { ...parameters } />
+				<Story />
 			</WithRegistrySetup>
 		);
 	},

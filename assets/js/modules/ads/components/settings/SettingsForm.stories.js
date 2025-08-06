@@ -32,7 +32,7 @@ import { MODULE_SLUG_ADS } from '../../constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-function Template( { args } ) {
+function Template( args ) {
 	return (
 		<div className="googlesitekit-layout">
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--ads">
@@ -72,6 +72,8 @@ GoogleTagGatewayEnabled.storyName = 'GoogleTagGatewayEnabled';
 GoogleTagGatewayEnabled.scenario = {};
 GoogleTagGatewayEnabled.parameters = {
 	features: [ 'googleTagGateway' ],
+};
+GoogleTagGatewayEnabled.args = {
 	setupRegistry: ( registry ) => {
 		const gtgServerRequirementsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
@@ -99,6 +101,8 @@ GoogleTagGatewayDisabledWithWarning.storyName =
 GoogleTagGatewayDisabledWithWarning.scenario = {};
 GoogleTagGatewayDisabledWithWarning.parameters = {
 	features: [ 'googleTagGateway' ],
+};
+GoogleTagGatewayDisabledWithWarning.args = {
 	setupRegistry: ( registry ) => {
 		const gtgServerRequirementsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
@@ -123,7 +127,7 @@ GoogleTagGatewayDisabledWithWarning.parameters = {
 export default {
 	title: 'Modules/Ads/Settings/SettingsForm',
 	decorators: [
-		( Story, { parameters } ) => {
+		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry, [
 					{
@@ -133,14 +137,14 @@ export default {
 					},
 				] );
 
-				if ( parameters?.setupRegistry ) {
-					parameters.setupRegistry( registry );
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
 				}
 			};
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<Story { ...parameters } />
+					<Story { ...args } />
 				</WithRegistrySetup>
 			);
 		},

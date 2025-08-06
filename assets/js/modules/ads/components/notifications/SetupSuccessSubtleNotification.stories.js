@@ -52,16 +52,10 @@ export default {
 	component: SetupSuccessSubtleNotification,
 	decorators: [
 		withQuery,
-		( Story, { parameters } ) => {
-			const setupRegistry = ( registry ) => {
-				if ( parameters?.setupRegistry ) {
-					parameters.setupRegistry( registry );
-				}
-			};
-
+		( Story, { args } ) => {
 			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<Story { ...parameters } />
+				<WithRegistrySetup func={ () => {} }>
+					<Story { ...args } />
 				</WithRegistrySetup>
 			);
 		},

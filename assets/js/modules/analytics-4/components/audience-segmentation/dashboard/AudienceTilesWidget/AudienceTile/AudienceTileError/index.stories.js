@@ -135,7 +135,7 @@ export default {
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<Story { ...args } />
+					<Story />
 				</WithRegistrySetup>
 			);
 		},

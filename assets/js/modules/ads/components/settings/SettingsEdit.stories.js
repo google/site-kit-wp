@@ -170,6 +170,9 @@ IcePaxEnabled.decorators = [
 
 export const GTGEnabled = Template.bind( null );
 GTGEnabled.storyName = 'With Google tag gateway enabled';
+GTGEnabled.parameters = {
+	features: [ 'googleTagGateway' ],
+};
 GTGEnabled.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
