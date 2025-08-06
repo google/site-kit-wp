@@ -501,7 +501,7 @@ export const provideNotifications = ( registry, extraData ) => {
 /**
  * Provides widget registration data to the given registry.
  *
- * @since n.e.x.t
+ * @since 1.159.0
  * @private
  *
  * @param {Object}   registry           Registry object to dispatch to.

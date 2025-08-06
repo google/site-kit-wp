@@ -626,7 +626,7 @@ const baseActions = {
 	 * Sets whether the Web Data Stream is available.
 	 *
 	 * @since 1.99.0
-	 * @since n.e.x.t Updated to use the fetch store.
+	 * @since 1.159.0 Updated to use the fetch store.
 	 *
 	 * @param {boolean} isWebDataStreamAvailable Whether the Web Data Stream is available.
 	 * @return {Object} Generator function.

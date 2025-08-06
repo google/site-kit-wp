@@ -170,7 +170,7 @@ export const selectors = {
 	/**
 	 * Checks if the Web Data Stream is available.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @return {boolean|undefined} TRUE if the Web Data Stream is available, FALSE if not, undefined if not loaded.
 	 */
