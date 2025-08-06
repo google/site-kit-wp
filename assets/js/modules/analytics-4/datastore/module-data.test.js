@@ -36,6 +36,15 @@ describe( 'modules/ads module data', () => {
 			newBadgeEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 			hasMismatchedTag: false,
 			isWebDataStreamAvailable: true,
+			resourceAvailabilityDates: {
+				audience: {
+					'properties/12345/audiences/1': 20201220,
+				},
+				customDimension: {},
+			},
+			customDimensionsDataAvailable: {
+				googlesitekit_post_type: true,
+			},
 		},
 	};
 
@@ -129,6 +138,11 @@ describe( 'modules/ads module data', () => {
 
 		describe.each( [
 			[ 'hasMismatchedGoogleTagID', 'hasMismatchedTag' ],
+			[ 'getResourceDataAvailabilityDates', 'resourceAvailabilityDates' ],
+			[
+				'getCustomDimensionsDataAvailable',
+				'customDimensionsDataAvailable',
+			],
 			[ 'getNewEvents', 'newEvents' ],
 			[ 'getLostEvents', 'lostEvents' ],
 			[ 'getNewBadgeEvents', 'newBadgeEvents' ],
