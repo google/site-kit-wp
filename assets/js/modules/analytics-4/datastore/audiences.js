@@ -30,6 +30,7 @@ import {
 import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import {
 	combineStores,
+	createReducer,
 	createRegistrySelector,
 	commonActions,
 } from 'googlesitekit-data';
@@ -747,43 +748,34 @@ const baseActions = {
 	},
 };
 
-const baseReducer = ( state, { type } ) => {
+const baseReducer = createReducer( ( state, { type } ) => {
 	switch ( type ) {
-		case START_AUDIENCES_SETUP: {
-			return {
-				...state,
-				isSettingUpAudiences: true,
+		case START_AUDIENCES_SETUP:
+			state.isSettingUpAudiences = true;
+			break;
+
+		case START_MAYBE_SYNC_AUDIENCES:
+			state.audienceSync = {
+				inProgress: true,
+				hasSynced: false,
 			};
-		}
-		case START_MAYBE_SYNC_AUDIENCES: {
-			return {
-				...state,
-				audienceSync: {
-					inProgress: true,
-					hasSynced: false,
-				},
+			break;
+
+		case FINISH_MAYBE_SYNC_AUDIENCES:
+			state.audienceSync = {
+				inProgress: false,
+				hasSynced: true,
 			};
-		}
-		case FINISH_MAYBE_SYNC_AUDIENCES: {
-			return {
-				...state,
-				audienceSync: {
-					inProgress: false,
-					hasSynced: true,
-				},
-			};
-		}
-		case FINISH_AUDIENCES_SETUP: {
-			return {
-				...state,
-				isSettingUpAudiences: false,
-			};
-		}
-		default: {
-			return state;
-		}
+			break;
+
+		case FINISH_AUDIENCES_SETUP:
+			state.isSettingUpAudiences = false;
+			break;
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {};
 

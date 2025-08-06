@@ -56,7 +56,7 @@ export default function PropertySelect( props ) {
 	);
 
 	const properties = useSelect( ( select ) =>
-		hasModuleAccess !== false && ! isDisabled
+		hasModuleAccess && ! isDisabled
 			? select( MODULES_ANALYTICS_4 ).getPropertySummaries( accountID ) ||
 			  []
 			: null

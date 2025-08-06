@@ -32,12 +32,10 @@ import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
  */
 import useViewContext from '../../hooks/useViewContext';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
-import SubtleNotification from '../../googlesitekit/notifications/components/layout/SubtleNotification';
+import Notice from '../Notice';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { USER_INPUT_LEGACY_SITE_PURPOSE_DISMISSED_ITEM_KEY } from './util/constants';
 import { trackEvent } from '../../util';
-import WarningSVG from '../../../svg/icons/warning.svg';
 
 export default function KeyMetricsSettingsSellProductsSubtleNotification() {
 	const viewContext = useViewContext();
@@ -85,19 +83,15 @@ export default function KeyMetricsSettingsSellProductsSubtleNotification() {
 	}
 
 	return (
-		<SubtleNotification
-			ref={ notificationRef }
-			className="googlesitekit-subtle-notification--warning"
+		<Notice
+			type={ Notice.TYPES.WARNING }
 			description={ __(
 				'To allow better personalization of suggested metrics, we have updated the answers list for this question with more accurate options. We recommend that you edit your answer.',
 				'google-site-kit'
 			) }
-			dismissCTA={
-				<Button onClick={ onDismiss } tertiary>
-					{ __( 'Got it', 'google-site-kit' ) }
-				</Button>
-			}
-			icon={ <WarningSVG width={ 24 } height={ 24 } /> }
+			dismissButton={ {
+				onClick: onDismiss,
+			} }
 		/>
 	);
 }
