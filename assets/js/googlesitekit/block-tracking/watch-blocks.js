@@ -16,11 +16,24 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { trackEvent } from '@/js/util';
 import { subscribe, select } from 'googlesitekit-data';
 import { VIEW_CONTEXT_WP_BLOCK_EDITOR } from '../constants';
 import { getBlocksTitles } from './get-blocks-titles';
 
+/**
+ * Watches for specific blocks being inserted in the WordPress block editor and tracks them.
+ *
+ * Sets up a subscription to monitor when blocks are added to the editor. When a tracked
+ * block is newly inserted and selected, it sends a Google Analytics event to track the insertion.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<string>} blocksToTrack Array of block names to track (e.g., 'google-site-kit/rrm-subscribe-with-google').
+ */
 export const watchBlocks = ( blocksToTrack ) => {
 	const getBlockTitle = getBlocksTitles( blocksToTrack );
 

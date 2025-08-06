@@ -16,8 +16,23 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { subscribe, select } from 'googlesitekit-data';
 
+/**
+ * Creates a function to retrieve block titles from the WordPress block editor inserter.
+ *
+ * Sets up a subscription to the block editor to retrieve block metadata from the inserter items.
+ * Once all requested block titles are found, the subscription is automatically unsubscribed.
+ * Returns a closure function that can be used to look up block titles by their ID.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<string>} blocks Array of block IDs to retrieve titles for.
+ * @return {Function} A function that takes a block ID and returns its title.
+ */
 export const getBlocksTitles = ( blocks ) => {
 	const blocksTitles = new Map();
 
