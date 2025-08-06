@@ -301,11 +301,11 @@ const baseSelectors = {
 	 * @param {string} resourceType Resource type.
 	 * @return {number} Resource data availability date. Undefined if not loaded.
 	 */
-	getResourceDataAvailabilityDate( state, resourceSlug, resourceType ) {
-		return state.moduleData.resourceAvailabilityDates?.[ resourceType ]?.[
-			resourceSlug
-		];
-	},
+	getResourceDataAvailabilityDate: createRegistrySelector(
+		( select ) => ( state, resourceSlug, resourceType ) =>
+			select( MODULES_ANALYTICS_4 ).getModuleData()
+				?.resourceAvailabilityDates?.[ resourceType ]?.[ resourceSlug ]
+	),
 
 	/**
 	 * Gets whether the given resource is in partial data state.

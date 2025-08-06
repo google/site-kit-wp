@@ -146,6 +146,8 @@ describe( 'modules/analytics-4 partial data', () => {
 	describe( 'selectors', () => {
 		describe( 'getResourceDataAvailabilityDates', () => {
 			it( 'uses a resolver to read data from _googlesitekitModulesData', async () => {
+				const originalModulesData = global._googlesitekitModulesData;
+
 				global._googlesitekitModulesData = {
 					[ MODULE_SLUG_ANALYTICS_4 ]: {
 						resourceAvailabilityDates,
@@ -168,9 +170,9 @@ describe( 'modules/analytics-4 partial data', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getResourceDataAvailabilityDates()
 				).toEqual( resourceAvailabilityDates );
-			} );
 
-			global._googlesitekitModulesData = undefined;
+				global._googlesitekitModulesData = originalModulesData;
+			} );
 		} );
 
 		describe( 'getResourceDataAvailabilityDate', () => {
@@ -550,7 +552,7 @@ describe( 'modules/analytics-4 partial data', () => {
 		} );
 
 		describe( 'isAudiencePartialData', () => {
-			it( 'returns whether the given auduence is in partial data', () => {
+			it( 'returns whether the given audience is in partial data', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsGatheringData( false );
