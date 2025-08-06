@@ -88,6 +88,32 @@ describe( 'sanitizeProvisioningParams', () => {
 	} );
 
 	describe( 'sitename sanitization', () => {
+		it( 'strips leading numbers from sitename', () => {
+			const params = {
+				...validParams,
+				sitename: '123Test Site',
+			};
+
+			const result = sanitizeProvisioningParams( params );
+
+			expect( result.sitename ).toBe( 'Test Site' );
+		} );
+
+		it( 'handles sitename that is only numbers', () => {
+			const params = {
+				...validParams,
+				sitename: '12345',
+				siteorigin: 'https://example.com',
+			};
+
+			const result = sanitizeProvisioningParams( params );
+			// Should trigger MD5 fallback since all numbers are stripped
+			const fullFallback = `site-kit-siwg-${ md5( 'example.com' ) }`;
+			const expectedResult = fullFallback.substring( 0, 30 );
+
+			expect( result.sitename ).toBe( expectedResult );
+		} );
+
 		it( 'replaces non-alphanumeric characters with spaces', () => {
 			const params = {
 				...validParams,
