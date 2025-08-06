@@ -18,7 +18,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 /**
  * Class for Web tag.
  *
- * @since n.e.x.t
+ * @since 1.159.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Module settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 * @var Settings
 	 */
 	private $settings;
@@ -39,7 +39,7 @@ class Web_Tag extends Module_Web_Tag {
 	 *
 	 * `is_login()` isn't available until WP 6.1.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 * @var bool
 	 */
 	private $is_wp_login;
@@ -47,7 +47,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Redirect to URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 * @var string
 	 */
 	private $redirect_to;
@@ -55,7 +55,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Sets the module settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @param array $settings Module settings as array.
 	 */
@@ -66,7 +66,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Sets whether the current page is the WordPress login page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @param bool $is_wp_login Whether the current page is the WordPress login page.
 	 */
@@ -77,7 +77,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Sets the redirect to URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @param string $redirect_to Redirect to URL.
 	 */
@@ -90,7 +90,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Registers tag hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 */
 	public function register() {
 		// Render the Sign in with Google script that converts placeholder
@@ -109,7 +109,7 @@ class Web_Tag extends Module_Web_Tag {
 	 * @since 1.139.0
 	 * @since 1.144.0 Renamed to `render_signinwithgoogle` and conditionally
 	 *                rendered the code to replace buttons.
-	 * @since n.e.x.t moved from main Sign_In_With_Google class to Web_Tag.
+	 * @since 1.159.0 moved from main Sign_In_With_Google class to Web_Tag.
 	 */
 	protected function render() {
 		$is_woocommerce       = class_exists( 'woocommerce' );

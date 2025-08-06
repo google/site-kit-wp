@@ -25,7 +25,7 @@ import md5 from 'md5';
  * Sanitizes provisioning parameters for Sign in with Google
  * client ID creation.
  *
- * @since n.e.x.t
+ * @since 1.159.0
  *
  * @param {Object} params              The parameters object to sanitize.
  * @param {string} [params.appname]    The app name parameter.
