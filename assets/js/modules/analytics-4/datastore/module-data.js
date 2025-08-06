@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { createReducer, createRegistrySelector } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4, RESOURCE_TYPES } from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 
 function getModuleDataProperty( propName ) {
@@ -36,6 +36,8 @@ function getModuleDataProperty( propName ) {
 }
 
 const RECEIVE_MODULE_DATA = 'RECEIVE_MODULE_DATA';
+const SET_RESOURCE_DATA_AVAILABILITY_DATE =
+	'SET_RESOURCE_DATA_AVAILABILITY_DATE';
 
 export const initialState = {
 	moduleData: {
@@ -64,6 +66,36 @@ export const actions = {
 		return {
 			payload: data,
 			type: RECEIVE_MODULE_DATA,
+		};
+	},
+
+	/**
+	 * Sets the data availability date for a specific resource.
+	 *
+	 * @since 1.127.0
+	 * @since n.e.x.t Moved to `module-data` store partial from `partial-data` store partial.
+	 *
+	 * @param {string} resourceSlug Resource slug.
+	 * @param {string} resourceType Resource type.
+	 * @param {number} date         Data availability date.
+	 * @return {Object} Redux-style action.
+	 */
+	setResourceDataAvailabilityDate( resourceSlug, resourceType, date ) {
+		invariant(
+			'string' === typeof resourceSlug && resourceSlug.length > 0,
+			'resourceSlug must be a non-empty string.'
+		);
+
+		invariant(
+			RESOURCE_TYPES.includes( resourceType ),
+			'resourceType must be a valid resource type.'
+		);
+
+		invariant( Number.isInteger( date ), 'date must be an integer.' );
+
+		return {
+			payload: { resourceSlug, resourceType, date },
+			type: SET_RESOURCE_DATA_AVAILABILITY_DATE,
 		};
 	},
 };
@@ -99,6 +131,26 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 			};
 
 			state.moduleData = moduleData;
+			break;
+		}
+
+		case SET_RESOURCE_DATA_AVAILABILITY_DATE: {
+			const { resourceSlug, resourceType, date } = payload;
+
+			if ( state.moduleData.resourceAvailabilityDates === undefined ) {
+				state.moduleData.resourceAvailabilityDates = {};
+			}
+
+			if (
+				state.moduleData.resourceAvailabilityDates[ resourceType ] ===
+				undefined
+			) {
+				state.moduleData.resourceAvailabilityDates[ resourceType ] = {};
+			}
+
+			state.moduleData.resourceAvailabilityDates[ resourceType ][
+				resourceSlug
+			] = date;
 			break;
 		}
 

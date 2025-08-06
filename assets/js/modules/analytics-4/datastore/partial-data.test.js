@@ -28,9 +28,12 @@ import {
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getPreviousDate, stringToDate } from '../../../util';
 import { properties } from './__fixtures__';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+	RESOURCE_TYPE_AUDIENCE,
+} from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
-import { RESOURCE_TYPE_AUDIENCE } from './partial-data';
 
 const testAudience1 = {
 	name: 'properties/12345/audiences/12345',
@@ -89,57 +92,6 @@ describe( 'modules/analytics-4 partial data', () => {
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: [ testAudience1, testAudience2 ],
-		} );
-	} );
-
-	describe( 'actions', () => {
-		describe( 'setResourceDataAvailabilityDate', () => {
-			it( 'requires resourceSlug to be a non-empty string', () => {
-				expect( () => {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.setResourceDataAvailabilityDate( '' );
-				} ).toThrow( 'resourceSlug must be a non-empty string.' );
-			} );
-
-			it( 'requires resourceType to be a valid resource type', () => {
-				expect( () => {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.setResourceDataAvailabilityDate( 'test', 'invalid' );
-				} ).toThrow( 'resourceType must be a valid resource type.' );
-			} );
-
-			it( 'requires date to be an integer', () => {
-				expect( () => {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.setResourceDataAvailabilityDate(
-							'test',
-							RESOURCE_TYPE_AUDIENCE,
-							'2020-20-20'
-						);
-				} ).toThrow( 'date must be an integer.' );
-			} );
-
-			it( 'sets the date for the resource', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setResourceDataAvailabilityDate(
-						testAudience1ResourceName,
-						RESOURCE_TYPE_AUDIENCE,
-						20201220
-					);
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getResourceDataAvailabilityDate(
-							testAudience1ResourceName,
-							RESOURCE_TYPE_AUDIENCE
-						)
-				).toEqual( 20201220 );
-			} );
 		} );
 	} );
 

@@ -29,26 +29,19 @@ import {
 	commonActions,
 	combineStores,
 	createRegistrySelector,
-	createReducer,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getDateString } from '../../../util';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
-
-export const RESOURCE_TYPE_AUDIENCE = 'audience';
-export const RESOURCE_TYPE_CUSTOM_DIMENSION = 'customDimension';
-export const RESOURCE_TYPE_PROPERTY = 'property';
-
-const RESOURCE_TYPES = [
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
 	RESOURCE_TYPE_AUDIENCE,
 	RESOURCE_TYPE_CUSTOM_DIMENSION,
 	RESOURCE_TYPE_PROPERTY,
-];
-
-const SET_RESOURCE_DATA_AVAILABILITY_DATE =
-	'SET_RESOURCE_DATA_AVAILABILITY_DATE';
+	RESOURCE_TYPES,
+} from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 
 const fetchSaveResourceDataAvailabilityDateStore = createFetchStore( {
 	baseName: 'saveResourceDataAvailabilityDate',
@@ -83,70 +76,14 @@ const fetchSaveResourceDataAvailabilityDateStore = createFetchStore( {
 	},
 } );
 
-const baseActions = {
-	/**
-	 * Sets the data availability date for a specific resource.
-	 *
-	 * @since 1.127.0
-	 *
-	 * @param {string} resourceSlug Resource slug.
-	 * @param {string} resourceType Resource type.
-	 * @param {number} date         Data availability date.
-	 * @return {Object} Redux-style action.
-	 */
-	setResourceDataAvailabilityDate( resourceSlug, resourceType, date ) {
-		invariant(
-			'string' === typeof resourceSlug && resourceSlug.length > 0,
-			'resourceSlug must be a non-empty string.'
-		);
-
-		invariant(
-			RESOURCE_TYPES.includes( resourceType ),
-			'resourceType must be a valid resource type.'
-		);
-
-		invariant( Number.isInteger( date ), 'date must be an integer.' );
-
-		return {
-			payload: { resourceSlug, resourceType, date },
-			type: SET_RESOURCE_DATA_AVAILABILITY_DATE,
-		};
-	},
-};
+const baseActions = {};
 
 const baseControls = {};
 
-const baseReducer = createReducer( ( state, { type, payload } ) => {
-	switch ( type ) {
-		case SET_RESOURCE_DATA_AVAILABILITY_DATE: {
-			const { resourceSlug, resourceType, date } = payload;
-
-			if ( state.moduleData.resourceAvailabilityDates === undefined ) {
-				state.moduleData.resourceAvailabilityDates = {};
-			}
-
-			if (
-				state.moduleData.resourceAvailabilityDates[ resourceType ] ===
-				undefined
-			) {
-				state.moduleData.resourceAvailabilityDates[ resourceType ] = {};
-			}
-
-			state.moduleData.resourceAvailabilityDates[ resourceType ][
-				resourceSlug
-			] = date;
-			break;
-		}
-
-		default: {
-			break;
-		}
-	}
-} );
-
 const baseResolvers = {
 	*getResourceDataAvailabilityDate( resourceSlug, resourceType ) {
-		const { select, resolveSelect } = yield commonActions.getRegistry();
+		const { dispatch, select, resolveSelect } =
+			yield commonActions.getRegistry();
 
 		if (
 			select( MODULES_ANALYTICS_4 ).getResourceDataAvailabilityDate(
@@ -224,7 +161,9 @@ const baseResolvers = {
 
 			// Return early if user is not authenticated.
 			if ( ! select( CORE_USER ).isAuthenticated() ) {
-				yield baseActions.setResourceDataAvailabilityDate(
+				yield dispatch(
+					MODULES_ANALYTICS_4
+				).setResourceDataAvailabilityDate(
 					resourceSlug,
 					resourceType,
 					0
@@ -260,7 +199,9 @@ const baseResolvers = {
 					report.rows[ 0 ].dimensionValues[ 0 ].value
 				);
 
-				yield baseActions.setResourceDataAvailabilityDate(
+				yield dispatch(
+					MODULES_ANALYTICS_4
+				).setResourceDataAvailabilityDate(
 					resourceSlug,
 					resourceType,
 					dataAvailabilityDate
@@ -272,7 +213,9 @@ const baseResolvers = {
 					dataAvailabilityDate
 				);
 			} else {
-				yield baseActions.setResourceDataAvailabilityDate(
+				yield dispatch(
+					MODULES_ANALYTICS_4
+				).setResourceDataAvailabilityDate(
 					resourceSlug,
 					resourceType,
 					0
@@ -496,7 +439,6 @@ const baseSelectors = {
 const store = combineStores( fetchSaveResourceDataAvailabilityDateStore, {
 	actions: baseActions,
 	controls: baseControls,
-	reducer: baseReducer,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,
 } );
