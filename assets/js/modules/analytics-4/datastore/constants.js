@@ -236,3 +236,13 @@ export const AUDIENCE_TYPE_SORT_ORDER = {
 
 export const AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX =
 	'audience-selection-panel-expirable-new-badge-';
+
+export const RESOURCE_TYPE_AUDIENCE = 'audience';
+export const RESOURCE_TYPE_CUSTOM_DIMENSION = 'customDimension';
+export const RESOURCE_TYPE_PROPERTY = 'property';
+
+export const RESOURCE_TYPES = [
+	RESOURCE_TYPE_AUDIENCE,
+	RESOURCE_TYPE_CUSTOM_DIMENSION,
+	RESOURCE_TYPE_PROPERTY,
+];

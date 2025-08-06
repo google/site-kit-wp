@@ -1079,9 +1079,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					availableAudiencesFixture[ 1 ], // Purchaser
 				];
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: availableAudiences.reduce(
 							( acc, { name } ) => {
 								acc[ name ] = 20201220;
@@ -1092,7 +1091,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						),
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				const options = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -2621,9 +2621,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					} );
 
 				// Simulate no data available state for "Purchasers".
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: availableAudiencesFixture.reduce(
 							( acc, { audienceSlug, name } ) => {
 								if ( 'purchasers' === audienceSlug ) {
@@ -2638,7 +2637,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						),
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				const configurableAudiences = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -2659,9 +2659,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					} );
 
 				// Simulate data available state for all available audiences.
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: availableAudiencesFixture.reduce(
 							( acc, { name } ) => {
 								acc[ name ] = 20201220;
@@ -2672,7 +2671,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						),
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				const configurableAudiences = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -2747,9 +2747,8 @@ describe( 'modules/analytics-4 audiences', () => {
 			beforeEach( () => {
 				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: availableAudiencesFixture.reduce(
 							( acc, { name } ) => {
 								acc[ name ] = 20201220;
@@ -2760,7 +2759,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						),
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -2836,9 +2836,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					getSiteKitAudiencesUserCountReportOptions,
 				} = registry.select( MODULES_ANALYTICS_4 );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: availableAudiencesFixture.reduce(
 							( acc, { name, audienceType } ) => {
 								if ( 'SITE_KIT_AUDIENCE' === audienceType ) {
@@ -2853,7 +2852,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						),
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				receiveGetAudienceSettings( {
 					availableAudiences: availableAudiencesFixture,

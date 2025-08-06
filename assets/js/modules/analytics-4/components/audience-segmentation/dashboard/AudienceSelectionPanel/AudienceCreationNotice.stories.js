@@ -86,9 +86,8 @@ export default {
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: availableAudiences.reduce(
 							( acc, { name } ) => {
 								acc[ name ] = 20201220;
@@ -98,7 +97,8 @@ export default {
 						),
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					accountID: '12345',

@@ -224,9 +224,14 @@ const baseResolvers = {
 			return;
 		}
 
-		const dataAvailableOnLoad =
-			global._googlesitekitModulesData?.[ MODULE_SLUG_ANALYTICS_4 ]
-				?.customDimensionsDataAvailable?.[ customDimension ];
+		// Module data needs to be resolved to determine the custom dimensions data availability state.
+		yield commonActions.await(
+			registry.resolveSelect( MODULES_ANALYTICS_4 ).getModuleData()
+		);
+
+		const dataAvailableOnLoad = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getCustomDimensionsDataAvailable()?.[ customDimension ];
 
 		// If dataAvailableOnLoad is true, set gatheringData to false and do nothing else.
 		if ( dataAvailableOnLoad ) {
