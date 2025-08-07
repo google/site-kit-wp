@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Ads;
 /**
  * Class Enhanced_Conversions.
  *
- * @since n.e.x.t
+ * @since 1.159.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Enhanced_Conversions {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 */
 	public function register() {
 	}
@@ -30,7 +30,7 @@ class Enhanced_Conversions {
 	/**
 	 * Gets the user data for Enhanced Conversions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @return array User data.
 	 */
@@ -65,7 +65,7 @@ class Enhanced_Conversions {
 	/**
 	 * Conditionally enqueues the necessary script for Enhanced Conversions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 */
 	public function maybe_enqueue_gtag_user_data() {
 	}

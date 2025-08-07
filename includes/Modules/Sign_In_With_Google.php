@@ -499,7 +499,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	/**
 	 * Registers the Sign in with Google tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 */
 	public function register_tag() {
 		$settings  = $this->get_settings()->get();

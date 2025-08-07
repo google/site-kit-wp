@@ -16,14 +16,14 @@ use WP_Http;
 /**
  * Guzzle Middleware.
  *
- * @since n.e.x.t
+ * @since 1.159.0
  */
 class Middleware {
 
 	/**
 	 * Middleware for blocking external requests using WordPress block_request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @return callable Returns a function that blocks external requests using WordPress block_request.
 	 */

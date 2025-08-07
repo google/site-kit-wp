@@ -71,8 +71,8 @@ describe( 'modules/analytics-4 properties', () => {
 	const setGoogleTagIDMismatchEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/set-google-tag-id-mismatch'
 	);
-	const setWebDataStreamAvailabilityEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/set-is-web-data-stream-available'
+	const setWebDataStreamUnavailabilityEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/set-is-web-data-stream-unavailable'
 	);
 
 	const gtmAccountID = '6065484567';
@@ -744,31 +744,33 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 		} );
 
-		describe( 'setIsWebDataStreamAvailable', () => {
-			it( 'sets the value of isWebDataStreamAvailable', async () => {
-				const isWebDataStreamAvailable = false;
+		describe( 'setIsWebDataStreamUnavailable', () => {
+			it( 'sets the value of isWebDataStreamUnavailable', async () => {
+				const isWebDataStreamUnavailable = true;
 
-				fetchMock.post( setWebDataStreamAvailabilityEndpoint, {
-					body: isWebDataStreamAvailable,
+				fetchMock.post( setWebDataStreamUnavailabilityEndpoint, {
+					body: isWebDataStreamUnavailable,
 					status: 200,
 				} );
 
-				const defaultIsWebDataStreamAvailable = registry
+				const defaultIsWebDataStreamUnavailable = registry
 					.select( MODULES_ANALYTICS_4 )
-					.isWebDataStreamAvailable();
+					.isWebDataStreamUnavailable();
 
 				// It is undefined by default.
-				expect( defaultIsWebDataStreamAvailable ).toBeUndefined();
+				expect( defaultIsWebDataStreamUnavailable ).toBeUndefined();
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setIsWebDataStreamAvailable( isWebDataStreamAvailable );
+					.setIsWebDataStreamUnavailable(
+						isWebDataStreamUnavailable
+					);
 
-				const updatedIsWebDataStreamAvailable = registry
+				const updatedIsWebDataStreamUnavailable = registry
 					.select( MODULES_ANALYTICS_4 )
-					.isWebDataStreamAvailable();
+					.isWebDataStreamUnavailable();
 
-				expect( updatedIsWebDataStreamAvailable ).toBe( false );
+				expect( updatedIsWebDataStreamUnavailable ).toBe( true );
 			} );
 		} );
 
@@ -954,6 +956,11 @@ describe( 'modules/analytics-4 properties', () => {
 						}
 					);
 
+				fetchMock.post( setWebDataStreamUnavailabilityEndpoint, {
+					body: true,
+					status: 200,
+				} );
+
 				fetchMock.postOnce( ga4SettingsEndpoint, {
 					body: {
 						...ga4Settings,
@@ -975,7 +982,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
 				expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, {
 					body: {
 						data: {
@@ -1081,7 +1088,7 @@ describe( 'modules/analytics-4 properties', () => {
 				).toEqual( googleTagID );
 			} );
 
-			it( 'should set `isWebDataStreamAvailable` to `false` when there is no Google Tag Container available', async () => {
+			it( 'should set `isWebDataStreamUnavailable` to `true` when there is no Google Tag Container available', async () => {
 				global._googlesitekitModulesData = {
 					[ MODULE_SLUG_ANALYTICS_4 ]: {
 						tagIDMismatch: false,
@@ -1126,8 +1133,8 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
-				fetchMock.post( setWebDataStreamAvailabilityEndpoint, {
-					body: false,
+				fetchMock.post( setWebDataStreamUnavailabilityEndpoint, {
+					body: true,
 					status: 200,
 				} );
 
@@ -1175,8 +1182,8 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isWebDataStreamAvailable()
-				).toBe( false );
+						.isWebDataStreamUnavailable()
+				).toBe( true );
 
 				// Initially undefined.
 				expect(
@@ -1227,6 +1234,11 @@ describe( 'modules/analytics-4 properties', () => {
 					googleTagLastSyncedAtMs: 1670123456789,
 				} );
 
+				fetchMock.post( setWebDataStreamUnavailabilityEndpoint, {
+					body: true,
+					status: 200,
+				} );
+
 				fetchMock.getOnce( containerLookupEndpoint, {
 					body: containerMock,
 					status: 200,
@@ -1265,7 +1277,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 4 );
+				expect( fetchMock ).toHaveFetchedTimes( 5 );
 				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
 					query: {
 						destinationID: measurementID,
@@ -1318,6 +1330,11 @@ describe( 'modules/analytics-4 properties', () => {
 					googleTagAccountID,
 					googleTagContainerID,
 					googleTagLastSyncedAtMs: 1670123456789,
+				} );
+
+				fetchMock.post( setWebDataStreamUnavailabilityEndpoint, {
+					body: true,
+					status: 200,
 				} );
 
 				fetchMock.getOnce( containerLookupEndpoint, {

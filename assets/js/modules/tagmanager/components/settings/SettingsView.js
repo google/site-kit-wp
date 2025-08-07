@@ -33,6 +33,7 @@ import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { escapeURI } from '../../../../util/escape-uri';
+import Typography from '../../../../components/Typography';
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>
@@ -80,9 +81,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Account', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ accountID } />
 					</p>
@@ -91,7 +97,12 @@ export default function SettingsView() {
 				{ ( ! isAMP || isSecondaryAMP ) && (
 					<Fragment>
 						<div className="googlesitekit-settings-module__meta-item">
-							<h5 className="googlesitekit-settings-module__meta-item-type">
+							<Typography
+								as="h5"
+								size="medium"
+								type="label"
+								className="googlesitekit-settings-module__meta-item-type"
+							>
 								{ isSecondaryAMP && (
 									<span>
 										{ __(
@@ -108,7 +119,7 @@ export default function SettingsView() {
 										) }
 									</span>
 								) }
-							</h5>
+							</Typography>
 							<p className="googlesitekit-settings-module__meta-item-data">
 								<DisplaySetting value={ containerID } />
 							</p>
@@ -150,7 +161,12 @@ export default function SettingsView() {
 				{ isAMP && (
 					<Fragment>
 						<div className="googlesitekit-settings-module__meta-item">
-							<h5 className="googlesitekit-settings-module__meta-item-type">
+							<Typography
+								as="h5"
+								size="medium"
+								type="label"
+								className="googlesitekit-settings-module__meta-item-type"
+							>
 								{ isSecondaryAMP && (
 									<span>
 										{ __(
@@ -167,7 +183,7 @@ export default function SettingsView() {
 										) }
 									</span>
 								) }
-							</h5>
+							</Typography>
 							<p className="googlesitekit-settings-module__meta-item-data">
 								<DisplaySetting value={ ampContainerID } />
 							</p>
@@ -209,9 +225,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Tag Manager Code Snippet', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ useSnippet && (
