@@ -1789,13 +1789,17 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 				if ( true === $data['isWebDataStreamUnavailable'] ) {
 					return function () {
-						$this->transients->set( 'googlesitekit_web_data_stream_unavailable', true );
+						$settings      = $this->get_settings()->get();
+						$transient_key = 'googlesitekit_web_data_stream_unavailable_' . $settings['webDataStreamID'];
+						$this->transients->set( $transient_key, true );
 						return true;
 					};
 				}
 
 				return function () {
-					$this->transients->delete( 'googlesitekit_web_data_stream_unavailable' );
+					$settings      = $this->get_settings()->get();
+					$transient_key = 'googlesitekit_web_data_stream_unavailable_' . $settings['webDataStreamID'];
+					$this->transients->delete( $transient_key );
 					return false;
 				};
 		}
@@ -2764,7 +2768,9 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$inline_data['newBadgeEvents'] = is_array( $new_events_badge ) ? $new_events_badge['events'] : array();
 
 		// Web data stream availability data.
-		$is_web_data_stream_unavailable            = $this->transients->get( 'googlesitekit_web_data_stream_unavailable' );
+		$settings                                  = $this->get_settings()->get();
+		$transient_key                             = 'googlesitekit_web_data_stream_unavailable_' . $settings['webDataStreamID'];
+		$is_web_data_stream_unavailable            = $this->transients->get( $transient_key );
 		$inline_data['isWebDataStreamUnavailable'] = (bool) $is_web_data_stream_unavailable;
 
 		return array(

@@ -4951,7 +4951,7 @@ class Analytics_4Test extends TestCase {
 		// Set up test data in transients.
 		$transients = new Transients( $this->context );
 		$transients->set( 'googlesitekit_inline_tag_id_mismatch', 'test-mismatch' );
-		$transients->set( 'googlesitekit_web_data_stream_unavailable', true );
+		$transients->set( 'googlesitekit_web_data_stream_unavailable_1', true );
 		$transients->set(
 			Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT,
 			array( 'event1', 'event2' )
