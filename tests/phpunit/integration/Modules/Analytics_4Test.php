@@ -1261,7 +1261,7 @@ class Analytics_4Test extends TestCase {
 				'create-account-ticket',
 				'enhanced-measurement-settings',
 				'create-custom-dimension',
-				'set-is-web-data-stream-available',
+				'set-is-web-data-stream-unavailable',
 				'sync-custom-dimensions',
 				'custom-dimension-data-available',
 				'set-google-tag-id-mismatch',
@@ -1298,7 +1298,7 @@ class Analytics_4Test extends TestCase {
 				'create-account-ticket',
 				'enhanced-measurement-settings',
 				'create-custom-dimension',
-				'set-is-web-data-stream-available',
+				'set-is-web-data-stream-unavailable',
 				'sync-custom-dimensions',
 				'custom-dimension-data-available',
 				'set-google-tag-id-mismatch',
@@ -4951,7 +4951,7 @@ class Analytics_4Test extends TestCase {
 		// Set up test data in transients.
 		$transients = new Transients( $this->context );
 		$transients->set( 'googlesitekit_inline_tag_id_mismatch', 'test-mismatch' );
-		$transients->set( 'googlesitekit_web_data_stream_availability', true );
+		$transients->set( 'googlesitekit_web_data_stream_unavailable_1', true );
 		$transients->set(
 			Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT,
 			array( 'event1', 'event2' )
@@ -4977,14 +4977,14 @@ class Analytics_4Test extends TestCase {
 		$this->assertArrayHasKey( 'newEvents', $analytics_data );
 		$this->assertArrayHasKey( 'lostEvents', $analytics_data );
 		$this->assertArrayHasKey( 'newBadgeEvents', $analytics_data );
-		$this->assertArrayHasKey( 'isWebDataStreamAvailable', $analytics_data );
+		$this->assertArrayHasKey( 'isWebDataStreamUnavailable', $analytics_data );
 
 		// Verify the transient data.
 		$this->assertSame( 'test-mismatch', $analytics_data['tagIDMismatch'] );
 		$this->assertSame( array( 'event1', 'event2' ), $analytics_data['newEvents'] );
 		$this->assertSame( array( 'lost_event1' ), $analytics_data['lostEvents'] );
 		$this->assertSame( array( 'badge_event1' ), $analytics_data['newBadgeEvents'] );
-		$this->assertSame( true, $analytics_data['isWebDataStreamAvailable'] );
+		$this->assertSame( true, $analytics_data['isWebDataStreamUnavailable'] );
 	}
 
 	/**
