@@ -180,7 +180,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 
 		// Sign in with Google tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
-		add_action( 'login_redirect', array( $this, 'register_tag' ) );
+		// Used to add the tag registration to the login footer in
+		// `/wp-login.php`, which doesn't use the `template_redirect` action
+		// like most WordPress pages.
+		add_action( 'login_init', array( $this, 'register_tag' ) );
 
 		// Check to see if the module is connected before registering the block.
 		if ( $this->is_connected() ) {
