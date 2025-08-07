@@ -65,11 +65,16 @@ export default function WidgetAreaHeader( {
 			{ ( subtitle || CTA ) && (
 				<div className="googlesitekit-widget-area-header__details">
 					{ subtitle && (
-						<h4 className="googlesitekit-widget-area-header__subtitle">
+						<Typography
+							as="h4"
+							size="medium"
+							type="body"
+							className="googlesitekit-widget-area-header__subtitle"
+						>
 							{ Subtitle && <Subtitle /> }
 							{ ! Subtitle && subtitle }
 							{ ! title && <WidgetNewBadge slug={ slug } /> }
-						</h4>
+						</Typography>
 					) }
 
 					{ ctaWithLargeWindow && (
