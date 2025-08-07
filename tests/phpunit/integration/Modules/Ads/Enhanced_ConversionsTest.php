@@ -77,6 +77,21 @@ class Enhanced_ConversionsTest extends TestCase {
 		$this->assertArrayNotHasKey( 'address', $user_data, 'Address key should not be present when name fields are empty.' );
 	}
 
+	public function test_get_user_data_not_logged_in() {
+		$enhanced_conversions = new Enhanced_Conversions();
+
+		// Ensure no user is logged in.
+		wp_set_current_user( 0 );
+
+		// Use reflection method to access the protected method.
+		$reflection = new \ReflectionClass( $enhanced_conversions );
+		$method     = $reflection->getMethod( 'get_user_data' );
+		$method->setAccessible( true );
+		$user_data = $method->invoke( $enhanced_conversions );
+
+		$this->assertEquals( array(), $user_data, 'User data should be empty when user is not logged in.' );
+	}
+
 	public function test_get_formatted_value() {
 		$enhanced_conversions = new Enhanced_Conversions();
 
