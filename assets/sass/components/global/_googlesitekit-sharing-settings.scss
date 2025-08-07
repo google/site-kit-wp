@@ -27,7 +27,7 @@
 
 			&:focus,
 			&:hover {
-				background-color: $c-alabaster;
+				background-color: $c-interactive-tertiary-hover;
 				color: rgba(0, 0, 0, 0.87);
 
 				&::before,
@@ -68,6 +68,13 @@
 		flex-wrap: wrap;
 		position: relative;
 		row-gap: 4px;
+
+		&:hover {
+			&::before {
+				background-color: $c-interactive-tertiary-hover;
+				opacity: 1;
+			}
+		}
 	}
 
 	.googlesitekit-user-role-select__button {
