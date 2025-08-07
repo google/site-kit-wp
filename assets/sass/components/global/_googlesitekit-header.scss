@@ -121,6 +121,20 @@
 			.mdc-button__label {
 				font-weight: $fw-normal;
 			}
+
+			&.googlesitekit-dropdown-menu__icon-menu {
+				.mdc-button--dropdown {
+					&:hover {
+						background-color: $c-interactive-tertiary-hover;
+						color: $c-neutral-n-900;
+
+						&::before {
+							background-color: $c-interactive-tertiary-hover !important;
+							opacity: 1;
+						}
+					}
+				}
+			}
 		}
 
 		.googlesitekit-date-range-selector {
@@ -148,6 +162,16 @@
 					padding-right: 8px;
 				}
 
+				&:hover {
+					background-color: $c-interactive-tertiary-hover !important;
+					color: $c-neutral-n-900;
+
+					&::before {
+						background-color: $c-interactive-tertiary-hover !important;
+						opacity: 1;
+					}
+				}
+
 				svg {
 
 					@media (max-width: $bp-mobileOnly) {
@@ -158,6 +182,18 @@
 
 			.mdc-menu-surface {
 				right: 0;
+			}
+
+			.mdc-list-item {
+				&:hover {
+					background-color: $c-interactive-tertiary-hover;
+					color: $c-neutral-n-900;
+
+					&::before {
+						background-color: $c-interactive-tertiary-hover;
+						opacity: 1;
+					}
+				}
 			}
 		}
 
