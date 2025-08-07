@@ -29,24 +29,12 @@ import { puppeteerTest } from '@storybook/addon-storyshots-puppeteer';
 
 const customizePage = ( page ) => {
 	page.on( 'pageerror', ( error ) => {
-		const pageURL = page.url();
-		const windowURL = global.location.href;
-		// eslint-disable-next-line no-console
-		console.log(
-			`Test accessable page URL log ${ pageURL } ${ windowURL } `
-		);
 		throw new Error(
 			`Page error detected during story rendering:\n${ error.message }`
 		);
 	} );
 
 	page.on( 'console', ( message ) => {
-		const pageURL = page.url();
-		const windowURL = global.location.href;
-		// eslint-disable-next-line no-console
-		console.log(
-			`Test accessable page URL log ${ pageURL } ${ windowURL } `
-		);
 		if ( message.type() === 'error' ) {
 			throw new Error(
 				`Console error detected during story rendering:\n${ message.text() }`
