@@ -84,7 +84,7 @@ export default function Navigation() {
 	/**
 	 * Handles the selection of a chip.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @param {Object} event The click event.
 	 * @return {void}
@@ -115,7 +115,7 @@ export default function Navigation() {
 	/**
 	 * Determines the sticky state of navigation based on scroll position.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @return {void}
 	 */
@@ -136,7 +136,7 @@ export default function Navigation() {
 	/**
 	 * Determines the selected state of a chip based on scroll position.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @param {Event} event The scroll event.
 	 * @return {void}
