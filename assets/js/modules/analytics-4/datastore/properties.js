@@ -625,7 +625,8 @@ const baseActions = {
 	/**
 	 * Sets whether the Web Data Stream is unavailable.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.99.0
+	 * @since 1.159.0 Updated to use the fetch store.
 	 *
 	 * @param {boolean} isWebDataStreamUnavailable Whether the Web Data Stream is unavailable.
 	 * @return {Object} Generator function.
