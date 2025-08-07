@@ -36,8 +36,8 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import CheckFill from '../../../../../../../../svg/icons/check-fill.svg';
 
-export const SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION =
-	'settings_visitor_groups_setup_success_notification';
+export const SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION =
+	'showSetupSuccess';
 
 const SetupSuccessContent = forwardRef( ( props, ref ) => {
 	const viewContext = useViewContext();
@@ -56,7 +56,7 @@ const SetupSuccessContent = forwardRef( ( props, ref ) => {
 	const { setValue } = useDispatch( CORE_UI );
 
 	function dismissNotificationForUser() {
-		setValue( 'showSetupSuccess', false );
+		setValue( SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION, false );
 	}
 
 	function handleDismiss() {

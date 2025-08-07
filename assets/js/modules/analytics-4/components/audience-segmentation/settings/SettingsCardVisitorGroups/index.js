@@ -35,7 +35,9 @@ import useViewContext from '../../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../../util';
 import Layout from '../../../../../../components/layout/Layout';
 import SetupCTA from './SetupCTA';
-import SetupSuccess from './SetupSuccess';
+import SetupSuccess, {
+	SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION,
+} from './SetupSuccess';
 
 export default function SettingsCardVisitorGroups() {
 	const viewContext = useViewContext();
@@ -51,7 +53,9 @@ export default function SettingsCardVisitorGroups() {
 	);
 
 	const showSetupSuccess = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( 'showSetupSuccess' )
+		select( CORE_UI ).getValue(
+			SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION
+		)
 	);
 
 	const { setAudienceSegmentationWidgetHidden, saveUserAudienceSettings } =

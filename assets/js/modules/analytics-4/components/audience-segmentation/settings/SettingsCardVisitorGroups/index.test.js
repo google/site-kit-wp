@@ -28,7 +28,7 @@ import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/consta
 import { VIEW_CONTEXT_SETTINGS } from '../../../../../../googlesitekit/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import * as tracking from '../../../../../../util/tracking';
-import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from './SetupSuccess';
+import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
 import SettingsCardVisitorGroups from './';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 
@@ -42,12 +42,6 @@ describe( 'SettingsCardVisitorGroups', () => {
 		registry = createTestRegistry();
 
 		provideUserAuthentication( registry );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION,
-			] );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
 	} );
@@ -84,7 +78,12 @@ describe( 'SettingsCardVisitorGroups', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setAudienceSegmentationSetupCompletedBy( userID + 1 );
 
-		registry.dispatch( CORE_UI ).setValue( 'showSetupSuccess', true );
+		registry
+			.dispatch( CORE_UI )
+			.setValue(
+				SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION,
+				true
+			);
 
 		const { getByText, waitForRegistry } = render(
 			<SettingsCardVisitorGroups />,

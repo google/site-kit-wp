@@ -25,11 +25,11 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
-import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from './SetupSuccess';
+import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import SettingsCardVisitorGroups from './';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 
 function Template() {
 	return <SettingsCardVisitorGroups />;
@@ -55,7 +55,12 @@ export const WithSetupSuccessNotification = Template.bind( {} );
 WithSetupSuccessNotification.storyName = 'With setup success notification';
 WithSetupSuccessNotification.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_UI ).setValue( 'showSetupSuccess', true );
+		registry
+			.dispatch( CORE_UI )
+			.setValue(
+				SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION,
+				true
+			);
 	},
 };
 WithSetupSuccessNotification.scenario = {};
@@ -65,12 +70,6 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetDismissedItems( [
-						SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION,
-					] );
-
 				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 					configuredAudiences: [ 'audienceA', 'audienceB' ],
 					isAudienceSegmentationWidgetHidden: false,

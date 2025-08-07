@@ -37,6 +37,7 @@ import { AudienceErrorModal } from '../../dashboard';
 import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../../util';
+import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
 
 export default function SetupCTA() {
 	const viewContext = useViewContext();
@@ -53,7 +54,10 @@ export default function SetupCTA() {
 		useEnableAudienceGroup( {
 			redirectURL: global.location.href,
 			onSuccess: () => {
-				setValue( 'showSetupSuccess', true );
+				setValue(
+					SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION,
+					true
+				);
 			},
 			onError,
 		} );

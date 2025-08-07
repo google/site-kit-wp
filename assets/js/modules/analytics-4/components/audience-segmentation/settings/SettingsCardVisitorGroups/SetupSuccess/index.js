@@ -27,8 +27,8 @@ import SetupSuccessContent from './SetupSuccessContent';
 const SetupSuccessContentWithIntersectionObserver =
 	withIntersectionObserver( SetupSuccessContent );
 
-export const SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION =
-	'settings_visitor_groups_setup_success_notification';
+export const SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION =
+	'showSetupSuccess';
 
 export default function SetupSuccess() {
 	const viewContext = useViewContext();

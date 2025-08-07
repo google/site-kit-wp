@@ -40,11 +40,13 @@ import {
 import { mockLocation } from '../../../../../../../../../tests/js/mock-browser-utils';
 import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../../googlesitekit/widgets/default-areas';
 import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_SETTINGS } from '../../../../../../../googlesitekit/constants';
 import * as tracking from '../../../../../../../util/tracking';
-import SetupSuccess from '.';
-import { CORE_UI } from '../../../../../../../googlesitekit/datastore/ui/constants';
+import SetupSuccess, {
+	SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION,
+} from '.';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -135,7 +137,9 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 
 	it( 'should dismiss the notification if "Got it" is clicked on', async () => {
 		expect(
-			registry.select( CORE_UI ).getValue( 'showSetupSuccess' )
+			registry
+				.select( CORE_UI )
+				.getValue( SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION )
 		).toBeUndefined();
 
 		const { queryByText, getByRole } = render( <SetupSuccess />, {
@@ -154,7 +158,9 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 		await waitForDefaultTimeouts();
 
 		expect(
-			registry.select( CORE_UI ).getValue( 'showSetupSuccess' )
+			registry
+				.select( CORE_UI )
+				.getValue( SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION )
 		).toBe( false );
 	} );
 
@@ -180,7 +186,9 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 
 	it( 'should dismiss the notification and navigate to dashboard if "Show me" is clicked on', async () => {
 		expect(
-			registry.select( CORE_UI ).getValue( 'showSetupSuccess' )
+			registry
+				.select( CORE_UI )
+				.getValue( SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION )
 		).toBeUndefined();
 
 		const { queryByText, getByRole } = render( <SetupSuccess />, {
@@ -199,7 +207,9 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 		await waitForDefaultTimeouts();
 
 		expect(
-			registry.select( CORE_UI ).getValue( 'showSetupSuccess' )
+			registry
+				.select( CORE_UI )
+				.getValue( SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION )
 		).toBe( false );
 
 		const expectedURL = addQueryArgs(
