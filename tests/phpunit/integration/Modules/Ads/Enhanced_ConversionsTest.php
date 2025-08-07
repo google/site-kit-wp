@@ -50,6 +50,33 @@ class Enhanced_ConversionsTest extends TestCase {
 		$this->assertEquals( $expected, $user_data, 'User data does not match expected values.' );
 	}
 
+	public function test_get_user_data_partial_info() {
+		$enhanced_conversions = new Enhanced_Conversions();
+
+		// Create user with only email (no first_name or last_name).
+		$user = $this->factory()->user->create_and_get(
+			array(
+				'user_email' => 'test@example.com',
+			)
+		);
+
+		wp_set_current_user( $user->ID );
+
+		$expected = array(
+			'sha256_email_address' => $enhanced_conversions::get_formatted_email( $user->user_email ),
+			// No 'address' key should be present since name fields are empty.
+		);
+
+		// Use reflection method to access the protected method.
+		$reflection = new \ReflectionClass( $enhanced_conversions );
+		$method     = $reflection->getMethod( 'get_user_data' );
+		$method->setAccessible( true );
+		$user_data = $method->invoke( $enhanced_conversions );
+
+		$this->assertEquals( $expected, $user_data, 'User data should only contain email when name fields are empty.' );
+		$this->assertArrayNotHasKey( 'address', $user_data, 'Address key should not be present when name fields are empty.' );
+	}
+
 	public function test_get_formatted_value() {
 		$enhanced_conversions = new Enhanced_Conversions();
 
