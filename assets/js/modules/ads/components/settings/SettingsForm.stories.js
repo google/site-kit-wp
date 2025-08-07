@@ -55,7 +55,7 @@ function Template( args ) {
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.scenario = {};
-Default.parameters = {
+Default.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADS ).receiveGetSettings( {
 			conversionID: 'AW-123456789',
