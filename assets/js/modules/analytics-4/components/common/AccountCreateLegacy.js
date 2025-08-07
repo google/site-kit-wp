@@ -30,7 +30,7 @@ import { Button, ProgressBar } from 'googlesitekit-components';
 import { trackEvent } from '../../../../util';
 import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import Notice from './Notice';
+import CreatePropertyInfoNotice from './CreatePropertyInfoNotice';
 import useViewContext from '../../../../hooks/useViewContext';
 
 export default function AccountCreateLegacy() {
@@ -79,7 +79,7 @@ export default function AccountCreateLegacy() {
 
 	return (
 		<div>
-			<Notice />
+			<CreatePropertyInfoNotice />
 			<StoreErrorNotices
 				moduleSlug="analytics-4"
 				storeName={ MODULES_ANALYTICS_4 }

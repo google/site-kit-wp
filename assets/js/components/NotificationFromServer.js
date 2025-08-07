@@ -32,15 +32,15 @@ import { ReactNode } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Notification } from '../googlesitekit/notifications/components';
-import SimpleNotification from '../googlesitekit/notifications/components/layout/SimpleNotification';
-import Description from '../googlesitekit/notifications/components/common/Description';
-import ActionsCTALinkDismiss from '../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
-import Link from './Link';
+import BannerNotification, {
+	TYPES,
+} from '../googlesitekit/notifications/components/layout/BannerNotification';
+import { HOUR_IN_SECONDS } from '../util';
 
 /**
- * Renders a notification from the server, usually from a
- * `select( CORE_SITE ).getNotifications()` selector call.
+ * Maps props received from the server (e.g. from a `select( CORE_SITE ).getNotifications()`
+ * selector call) to the props expected by the new BannerNotification component.
+ * .
  *
  * @since 1.157.0
  *
@@ -55,6 +55,8 @@ import Link from './Link';
  * @param {?string}    props.dismissLabel   Label for the dismiss button. Optional.
  * @param {?string}    props.learnMoreLabel Label for the "Learn More" link. Optional.
  * @param {?string}    props.learnMoreURL   URL for the "Learn More" link. Optional.
+ * @param {?Function}  props.onCTAClick     Callback to run when CTA is clicked. Optional.
+ * @param {?Function}  props.onDismissClick Callback to run when the Dismiss button is clicked. Optional.
  * @return {JSX.Element} Notification component.
  */
 function NotificationFromServer( {
@@ -68,43 +70,46 @@ function NotificationFromServer( {
 	dismissLabel,
 	learnMoreLabel,
 	learnMoreURL,
+	onCTAClick,
+	onDismissClick,
 } ) {
+	// Notifications from the server should not be dismissed permanently in the database.
+	// CoreSiteBannerNotifications are "marked as accepted/dismissed" on the server.
+	// AdSense Alerts are not dismissed permanently either, they keep coming back until the
+	// issue that raises the alert is resolved. Thus we expire the dismissal after an hour,
+	// which was the behaviour prevalent in the legacy BannerNotification component that cached
+	// dismissals for an hour in browser storage.
+	const dismissOptions = {
+		expiresInSeconds: HOUR_IN_SECONDS,
+	};
+
 	return (
-		<Notification
-			className="googlesitekit-notification-from-server"
-			id={ id }
-		>
-			<SimpleNotification
-				title={ title }
-				description={
-					<Description
-						learnMoreLink={
-							!! learnMoreURL && !! learnMoreLabel ? (
-								<Link href={ learnMoreURL } external>
-									{ learnMoreLabel }
-								</Link>
-							) : undefined
-						}
-						text={ content }
-					/>
-				}
-				actions={
-					<ActionsCTALinkDismiss
-						id={ id }
-						ctaLabel={ ctaLabel }
-						ctaURL={ ctaURL }
-						ctaTarget={ ctaTarget }
-						dismissLabel={
-							dismissible && dismissLabel
-								? dismissLabel
-								: undefined
-						}
-						dismissExpires={ 1 }
-						dismissOnCTAClick
-					/>
-				}
-			/>
-		</Notification>
+		<BannerNotification
+			notificationID={ id }
+			type={ TYPES.WARNING }
+			title={ title }
+			description={ content }
+			learnMoreLink={ {
+				label: learnMoreLabel,
+				href: learnMoreURL,
+			} }
+			ctaButton={ {
+				label: ctaLabel,
+				href: ctaURL,
+				target: ctaTarget,
+				onClick: onCTAClick,
+				dismissOptions,
+			} }
+			dismissButton={
+				dismissible
+					? {
+							label: dismissLabel,
+							onClick: onDismissClick,
+							dismissOptions,
+					  }
+					: undefined
+			}
+		/>
 	);
 }
 
@@ -119,6 +124,8 @@ NotificationFromServer.propTypes = {
 	dismissLabel: PropTypes.string,
 	learnMoreLabel: PropTypes.string,
 	learnMoreURL: PropTypes.string,
+	onCTAClick: PropTypes.func,
+	onDismissClick: PropTypes.func,
 };
 
 export default NotificationFromServer;

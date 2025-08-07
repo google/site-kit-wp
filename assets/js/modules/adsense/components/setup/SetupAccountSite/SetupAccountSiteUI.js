@@ -35,6 +35,7 @@ import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/c
 import { ErrorNotices } from '../../common';
 import SetupUseSnippetSwitch from '../SetupUseSnippetSwitch';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
+import Typography from '../../../../../components/Typography';
 export default function SetupAccountSiteUI( {
 	heading,
 	description,
@@ -49,9 +50,14 @@ export default function SetupAccountSiteUI( {
 
 	return (
 		<Fragment>
-			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
+			<Typography
+				as="h3"
+				type="title"
+				size="large"
+				className="googlesitekit-setup-module__title"
+			>
 				{ heading }
-			</h3>
+			</Typography>
 
 			<ErrorNotices />
 

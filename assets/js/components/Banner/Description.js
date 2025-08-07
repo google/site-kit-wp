@@ -20,7 +20,43 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-export default function Description( { className, children } ) {
+/**
+ * WordPress dependencies
+ */
+import { isValidElement } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { sanitizeHTML } from '../../util';
+import LearnMoreLink from './LearnMoreLink';
+
+export default function Description( {
+	className,
+	description,
+	learnMoreLink,
+	additionalDescription,
+	children,
+} ) {
+	const renderDescription = () => {
+		if ( isValidElement( description ) ) {
+			return description;
+		}
+
+		if ( 'string' === typeof description ) {
+			return (
+				<span
+					dangerouslySetInnerHTML={ sanitizeHTML( description, {
+						ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
+						ALLOWED_ATTR: [ 'href' ],
+					} ) }
+				/>
+			);
+		}
+
+		return description;
+	};
+
 	return (
 		<div
 			className={ classnames(
@@ -28,6 +64,13 @@ export default function Description( { className, children } ) {
 				className
 			) }
 		>
+			{ renderDescription() }{ ' ' }
+			{ learnMoreLink?.href && <LearnMoreLink { ...learnMoreLink } /> }
+			{ additionalDescription && (
+				<div className="googlesitekit-banner__additional-description">
+					{ additionalDescription }
+				</div>
+			) }
 			{ children }
 		</div>
 	);
@@ -35,5 +78,11 @@ export default function Description( { className, children } ) {
 
 Description.propTypes = {
 	className: PropTypes.string,
+	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
+	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),
+	additionalDescription: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.node,
+	] ),
 	children: PropTypes.node,
 };

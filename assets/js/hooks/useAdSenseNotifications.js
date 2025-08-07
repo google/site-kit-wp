@@ -90,13 +90,29 @@ export default function useAdSenseNotifications() {
 				delete notificationProps.description;
 			}
 
+			// This always shows the `dismissButton` in the `<NotificationFromServer>`
+			// layout component. AdSense alerts are always dismissible, but these
+			// will persist only for an hour in `<NotificationFromServer>`, allowing
+			// the alerts to resurface if the issue still persists.
+			if (
+				notificationProps.dismissible === undefined &&
+				notificationProps.isDismissible !== undefined
+			) {
+				notificationProps.dismissible = notificationProps.isDismissible;
+				delete notificationProps.isDismissible;
+			}
+
 			registerNotification( notification.id, {
-				Component() {
-					return <NotificationFromServer { ...notificationProps } />;
+				Component( { Notification } ) {
+					return (
+						<Notification>
+							<NotificationFromServer { ...notificationProps } />
+						</Notification>
+					);
 				},
 				priority: notification.priority,
 				areaSlug: NOTIFICATION_AREAS.HEADER,
-				isDismissible: notification.isDismissible,
+				isDismissible: true, // AdSense alerts are always dismissible, but these will persist only for an hour in `<NotificationFromServer>`.
 			} );
 
 			setRegisteredNotifications( ( previousRegisteredNotifications ) => {

@@ -23,6 +23,7 @@ import { get } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
+	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
@@ -35,12 +36,9 @@ const fetchGetConnectionStore = createFetchStore( {
 			useCache: false,
 		} );
 	},
-	reducerCallback: ( state, connection ) => {
-		return {
-			...state,
-			connection,
-		};
-	},
+	reducerCallback: createReducer( ( state, connection ) => {
+		state.connection = connection;
+	} ),
 } );
 
 const baseInitialState = {

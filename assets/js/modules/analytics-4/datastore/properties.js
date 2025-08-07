@@ -146,15 +146,15 @@ const fetchGetGoogleTagSettingsStore = createFetchStore( {
 			measurementID,
 		} );
 	},
-	reducerCallback( state, googleTagSettings, { measurementID } ) {
-		return {
-			...state,
-			googleTagSettings: {
-				...state.googleTagSettings,
-				[ measurementID ]: googleTagSettings,
-			},
-		};
-	},
+	reducerCallback: createReducer(
+		( state, googleTagSettings, { measurementID } ) => {
+			if ( ! state.googleTagSettings ) {
+				state.googleTagSettings = {};
+			}
+
+			state.googleTagSettings[ measurementID ] = googleTagSettings;
+		}
+	),
 	argsToParams( measurementID ) {
 		return { measurementID };
 	},
@@ -175,15 +175,13 @@ const fetchSetGoogleTagIDMismatch = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, hasMismatchedTag ) {
-		return {
-			...state,
-			moduleData: {
-				...state.moduleData,
-				hasMismatchedTag: !! hasMismatchedTag,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, hasMismatchedTag ) => {
+		if ( ! state.moduleData ) {
+			state.moduleData = {};
+		}
+
+		state.moduleData.hasMismatchedTag = !! hasMismatchedTag;
+	} ),
 	argsToParams( hasMismatchedTag ) {
 		return { hasMismatchedTag };
 	},
@@ -628,7 +626,7 @@ const baseActions = {
 	 * Sets whether the Web Data Stream is available.
 	 *
 	 * @since 1.99.0
-	 * @since n.e.x.t Updated to use the fetch store.
+	 * @since 1.159.0 Updated to use the fetch store.
 	 *
 	 * @param {boolean} isWebDataStreamAvailable Whether the Web Data Stream is available.
 	 * @return {Object} Generator function.

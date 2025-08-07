@@ -42,7 +42,9 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Sign_In_With_Google_Block;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Guard;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Matchers;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Web_Tag;
 use Google\Site_Kit\Modules\Sign_In_With_Google\WooCommerce_Authenticator;
 use WP_Error;
 use WP_User;
@@ -159,11 +161,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		add_action( 'show_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on the users own profile page.
 		add_action( 'edit_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on other users profile page to allow admins to disconnect others.
 
-		// Render the Sign in with Google script that converts placeholder
-		// <div>s with Sign in with Google buttons.
-		add_action( 'wp_footer', $this->get_method_proxy( 'render_signinwithgoogle' ) );
-		// Output the Sign in with Google JS on the WordPress login page.
-		add_action( 'login_footer', $this->get_method_proxy( 'render_signinwithgoogle' ) );
 		// Output the Sign in with Google <div> in the WooCommerce login form.
 		add_action( 'woocommerce_login_form_start', $this->get_method_proxy( 'render_signinwithgoogle_woocommerce' ) );
 		// Output the Sign in with Google <div> in any use of wp_login_form.
@@ -180,6 +177,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		);
 
 		add_action( 'woocommerce_before_customer_login_form', array( $this, 'handle_woocommerce_errors' ), 1 );
+
+		// Sign in with Google tag placement logic.
+		add_action( 'template_redirect', array( $this, 'register_tag' ) );
+		add_action( 'login_redirect', array( $this, 'register_tag' ) );
 
 		// Check to see if the module is connected before registering the block.
 		if ( $this->is_connected() ) {
@@ -408,140 +409,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	}
 
 	/**
-	 * Renders the Sign in with Google JS script tags, One Tap code, and
-	 * buttons.
-	 *
-	 * @since 1.139.0
-	 * @since 1.144.0 Renamed to `render_signinwithgoogle` and conditionally
-	 *                rendered the code to replace buttons.
-	 */
-	private function render_signinwithgoogle() {
-		// `is_login()` isn't available until WP 6.1.
-		$is_wp_login          = false !== stripos( wp_login_url(), $_SERVER['SCRIPT_NAME'] ?? '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-		$is_woocommerce       = class_exists( 'woocommerce' );
-		$is_woocommerce_login = did_action( 'woocommerce_login_form_start' );
-
-		$settings  = $this->get_settings()->get();
-		$login_uri = add_query_arg( 'action', self::ACTION_AUTH, wp_login_url() );
-
-		if ( ! $this->can_render_signinwithgoogle() ) {
-			return;
-		}
-
-		$redirect_to = $this->context->input()->filter( INPUT_GET, 'redirect_to' );
-		if ( ! empty( $redirect_to ) ) {
-			$redirect_to = trim( $redirect_to );
-		}
-
-		$btn_args = array(
-			'theme' => $settings['theme'],
-			'text'  => $settings['text'],
-			'shape' => $settings['shape'],
-		);
-
-		// Whether this is a WordPress/WooCommerce login page.
-		$is_login_page = $is_wp_login || $is_woocommerce_login;
-
-		// Check to see if we should show the One Tap prompt on this page.
-		//
-		// If this is not the WordPress or WooCommerce login page, check to
-		// see if "One Tap enabled on all pages" is set first. If it isnt:
-		// don't render the Sign in with Google JS.
-		$should_show_one_tap_prompt = ! empty( $settings['oneTapEnabled'] ) && (
-			// If One Tap is enabled at all, it should always appear on a login
-			// page.
-			$is_login_page ||
-			// Only show the prompt on other pages if the setting is enabled and
-			// the user isn't already signed in.
-			( $settings['oneTapOnAllPages'] && ! is_user_logged_in() )
-		);
-
-		// Set the cookie time to live to 5 minutes. If the redirect_to is
-		// empty, set the cookie to expire immediately.
-		$cookie_expire_time = 300000;
-		if ( empty( $redirect_to ) ) {
-			$cookie_expire_time *= -1;
-		}
-
-		// Render the Sign in with Google script.
-		ob_start();
-
-		?>
-( () => {
-	async function handleCredentialResponse( response ) {
-		<?php if ( $is_woocommerce && ! $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		response.integration = 'woocommerce';
-		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		try {
-			const res = await fetch( '<?php echo esc_js( $login_uri ); ?>', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-				body: new URLSearchParams( response )
-			} );
-
-			<?php if ( empty( $redirect_to ) && ! $is_login_page && $should_show_one_tap_prompt ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-				location.reload();
-			<?php else : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-				if ( res.ok && res.redirected ) {
-					location.assign( res.url );
-				}
-			<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		} catch( error ) {
-			console.error( error );
-		}
-	}
-
-	google.accounts.id.initialize( {
-		client_id: '<?php echo esc_js( $settings['clientID'] ); ?>',
-		callback: handleCredentialResponse,
-		library_name: 'Site-Kit'
-	} );
-
-	<?php if ( $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		const buttonDivToAddToLoginForm = document.createElement( 'div' );
-		buttonDivToAddToLoginForm.classList.add( 'googlesitekit-sign-in-with-google__frontend-output-button' );
-
-		document.getElementById( 'login' ).insertBefore( buttonDivToAddToLoginForm, document.getElementById( 'loginform' ) );
-	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-
-	<?php if ( ! is_user_logged_in() || $is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-			<?php
-			/**
-			 * Render SiwG buttons for all `<div>` elements with the "magic
-			 * class" on the page.
-			 *
-			 * Mainly used by Gutenberg blocks.
-			 */
-			?>
-		document.querySelectorAll( '.googlesitekit-sign-in-with-google__frontend-output-button' ).forEach( ( siwgButtonDiv ) => {
-			google.accounts.id.renderButton( siwgButtonDiv, <?php echo wp_json_encode( $btn_args ); ?> );
-		});
-	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-
-	<?php if ( $should_show_one_tap_prompt ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		google.accounts.id.prompt();
-	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-
-	<?php if ( ! empty( $redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		const expires = new Date();
-		expires.setTime( expires.getTime() + <?php echo esc_js( $cookie_expire_time ); ?> );
-		document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $redirect_to ); ?>;expires=" + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
-	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-} )();
-		<?php
-
-		// Strip all whitespace and unnecessary spaces.
-		$inline_script = preg_replace( '/\s+/', ' ', ob_get_clean() );
-		$inline_script = preg_replace( '/\s*([{};\(\)\+:,=])\s*/', '$1', $inline_script );
-
-		// Output the Sign in with Google script.
-		print( "\n<!-- Sign in with Google button added by Site Kit -->\n" );
-		BC_Functions::wp_print_script_tag( array( 'src' => 'https://accounts.google.com/gsi/client' ) );
-		BC_Functions::wp_print_inline_script_tag( $inline_script );
-		print( "\n<!-- End Sign in with Google button added by Site Kit -->\n" );
-	}
-
-	/**
 	 * Appends the Sign in with Google button to content of a WordPress filter.
 	 *
 	 * @since 1.149.0
@@ -630,13 +497,30 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	}
 
 	/**
-	 * Implements mandatory interface method.
+	 * Registers the Sign in with Google tag.
 	 *
-	 * This module doesn't use the usual tag registration within Site kit
-	 * to place its snippet. However, it does leverage the Tag_Placement functionality
-	 * to check if a tag is successfully placed or not within WordPress's Site Health.
+	 * @since 1.159.0
 	 */
 	public function register_tag() {
+		$settings  = $this->get_settings()->get();
+		$client_id = $settings['clientID'];
+
+		$tag = new Web_Tag( $client_id, self::MODULE_SLUG );
+
+		if ( $tag->is_tag_blocked() ) {
+			return;
+		}
+
+		$tag->use_guard( new Tag_Guard( $this->get_settings() ) );
+
+		if ( ! $tag->can_register() ) {
+			return;
+		}
+
+		$tag->set_settings( $this->get_settings()->get() );
+		$tag->set_is_wp_login( false !== stripos( wp_login_url(), $_SERVER['SCRIPT_NAME'] ?? '' ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$tag->set_redirect_to( $this->context->input()->filter( INPUT_GET, 'redirect_to' ) );
+		$tag->register();
 	}
 
 	/**

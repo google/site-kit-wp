@@ -26,6 +26,7 @@ import {
 	provideSiteInfo,
 	provideUserInfo,
 } from '../../../../../tests/js/utils';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
 
 describe( 'module/sign-in-with-google service store', () => {
@@ -103,6 +104,84 @@ describe( 'module/sign-in-with-google service store', () => {
 
 				expect( clientIDURL ).toMatchInlineSnapshot(
 					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fdevelopers.google.com%2Fidentity%2Fsite-kit%3Fappname%3DMy%2520Site%2520Name%26sitename%3DMy%2520Site%2520Name%26siteorigin%3Dhttp%253A%252F%252Fexample.com&Email=admin%40example.com"'
+				);
+			} );
+
+			it( 'sanitizes invalid characters in site name for appname parameter', () => {
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					adminURL: 'http://example.com/wp-admin',
+					ampMode: false,
+					currentEntityID: null,
+					currentEntityTitle: null,
+					currentEntityType: null,
+					currentEntityURL: null,
+					homeURL: 'http://example.com',
+					siteName: 'Test@Site!Name',
+				} );
+
+				const clientIDURL = registry
+					.select( MODULES_SIGN_IN_WITH_GOOGLE )
+					.getServiceClientIDProvisioningURL();
+				const decodedServiceURL = decodeServiceURL( clientIDURL );
+
+				expect( decodedServiceURL ).toMatchQueryParameters( {
+					sitename: 'Test Site Name',
+					appname: 'Test@Site!Name',
+					siteorigin: 'http://example.com',
+				} );
+			} );
+
+			it( 'generates fallback name for very short site names', () => {
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					adminURL: 'http://example.com/wp-admin',
+					ampMode: false,
+					currentEntityID: null,
+					currentEntityTitle: null,
+					currentEntityType: null,
+					currentEntityURL: null,
+					homeURL: 'http://example.com',
+					siteName: 'Hi!',
+				} );
+
+				const clientIDURL = registry
+					.select( MODULES_SIGN_IN_WITH_GOOGLE )
+					.getServiceClientIDProvisioningURL();
+				const decodedServiceURL = decodeServiceURL( clientIDURL );
+
+				expect( decodedServiceURL ).toMatchQueryParameters(
+					expect.objectContaining( {
+						sitename: expect.stringMatching(
+							/^site-kit-siwg-[a-f0-9]{16}$/
+						),
+						appname: 'Hi!',
+					} )
+				);
+			} );
+
+			it( 'truncates very long site names for appname parameter', () => {
+				const longSiteName =
+					'This is a very long site name that exceeds the thirty character limit for appname parameter';
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					adminURL: 'http://example.com/wp-admin',
+					ampMode: false,
+					currentEntityID: null,
+					currentEntityTitle: null,
+					currentEntityType: null,
+					currentEntityURL: null,
+					homeURL: 'http://example.com',
+					siteName: longSiteName,
+				} );
+
+				const clientIDURL = registry
+					.select( MODULES_SIGN_IN_WITH_GOOGLE )
+					.getServiceClientIDProvisioningURL();
+				const decodedServiceURL = decodeServiceURL( clientIDURL );
+
+				expect( decodedServiceURL ).toMatchQueryParameters(
+					expect.objectContaining( {
+						sitename: expect.stringMatching( /^.{1,30}$/ ),
+						appname: longSiteName,
+					} )
 				);
 			} );
 		} );
