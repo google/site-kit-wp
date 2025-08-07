@@ -24,13 +24,13 @@ import {
 	createTestRegistry,
 	provideUserAuthentication,
 } from '../../../../../../../../tests/js/utils';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_SETTINGS } from '../../../../../../googlesitekit/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import * as tracking from '../../../../../../util/tracking';
 import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
 import SettingsCardVisitorGroups from './';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
