@@ -29,8 +29,21 @@
 		text-decoration: none;
 	}
 
-	&.googlesitekit-dropdown-menu__icon-menu {
+	.mdc-list-item {
+		&::before {
+			background-color: transparent;
+		}
+		&:hover {
+			background-color: $c-interactive-tertiary-hover;
 
+			&::before {
+				background-color: $c-interactive-tertiary-hover;
+				opacity: 1;
+			}
+		}
+	}
+
+	&.googlesitekit-dropdown-menu__icon-menu {
 		.mdc-button--dropdown {
 			background-image: none;
 			color: $c-surfaces-on-surface-variant;
