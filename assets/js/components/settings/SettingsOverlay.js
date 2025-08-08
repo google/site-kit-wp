@@ -46,8 +46,8 @@ function SettingsOverlay( { compress } ) {
 				</div>
 				<Typography
 					as="h3"
-					size="small"
-					type="headline"
+					size="medium"
+					type="title"
 					className="
 				googlesitekit-heading-2
 				googlesitekit-overlay__title

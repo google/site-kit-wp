@@ -31,7 +31,9 @@ export default function WPConsentAPIRequirement( {
 } ) {
 	return (
 		<div className="googlesitekit-settings-consent-mode-requirement">
-			<h4>{ title }</h4>
+			<Typography as="h4" size="large" type="title">
+				{ title }
+			</Typography>
 			<Typography
 				as="p"
 				type="body"

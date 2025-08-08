@@ -204,7 +204,9 @@
 	}
 }
 .folded .googlesitekit-plugin .googlesitekit-user-input__question .googlesitekit-user-input__footer {
-	left: 36px;
+	@media (min-width: $bp-wpAdminBarTablet) {
+		left: 36px;
+	}
 }
 .auto-fold .googlesitekit-plugin .googlesitekit-user-input__error {
 	@media (min-width: $bp-wpAdminBarTablet) {
@@ -215,5 +217,7 @@
 	}
 }
 .folded .googlesitekit-plugin .googlesitekit-user-input__question .googlesitekit-user-input__error {
-	left: 36px;
+	@media (min-width: $bp-wpAdminBarTablet) {
+		left: 36px;
+	}
 }

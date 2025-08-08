@@ -284,7 +284,7 @@ export default function WPConsentAPIRequirements() {
 							footer={
 								<Notice
 									type={ Notice.TYPES.INFO }
-									className="googlesitekit-notice--small googlesitekit-settings-notice"
+									className="googlesitekit-notice--small"
 									description={ __(
 										"Make sure you have installed a plugin compatible with WP Consent API (Site Kit isn't able to verify the compatibility of all WP plugins).",
 										'google-site-kit'

@@ -83,9 +83,14 @@ export default function SettingsForm() {
 			{ isPaxView && (
 				<div>
 					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
+						<Typography
+							as="h5"
+							size="small"
+							type="label"
+							className="googlesitekit-settings-module__meta-item-type"
+						>
 							{ __( 'Conversion ID', 'google-site-kit' ) }
-						</h5>
+						</Typography>
 						<Typography
 							as="p"
 							type="body"
@@ -103,9 +108,14 @@ export default function SettingsForm() {
 						</Typography>
 					</div>
 					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
+						<Typography
+							as="h5"
+							size="medium"
+							type="label"
+							className="googlesitekit-settings-module__meta-item-type"
+						>
 							{ __( 'Customer ID', 'google-site-kit' ) }
-						</h5>
+						</Typography>
 						<Typography
 							as="p"
 							type="body"

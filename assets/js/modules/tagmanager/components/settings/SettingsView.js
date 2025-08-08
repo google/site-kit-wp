@@ -81,9 +81,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Account', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<Typography
 						as="p"
 						type="body"
@@ -97,7 +102,12 @@ export default function SettingsView() {
 				{ ( ! isAMP || isSecondaryAMP ) && (
 					<Fragment>
 						<div className="googlesitekit-settings-module__meta-item">
-							<h5 className="googlesitekit-settings-module__meta-item-type">
+							<Typography
+								as="h5"
+								size="medium"
+								type="label"
+								className="googlesitekit-settings-module__meta-item-type"
+							>
 								{ isSecondaryAMP && (
 									<span>
 										{ __(
@@ -114,7 +124,7 @@ export default function SettingsView() {
 										) }
 									</span>
 								) }
-							</h5>
+							</Typography>
 							<Typography
 								as="p"
 								type="body"
@@ -166,7 +176,12 @@ export default function SettingsView() {
 				{ isAMP && (
 					<Fragment>
 						<div className="googlesitekit-settings-module__meta-item">
-							<h5 className="googlesitekit-settings-module__meta-item-type">
+							<Typography
+								as="h5"
+								size="medium"
+								type="label"
+								className="googlesitekit-settings-module__meta-item-type"
+							>
 								{ isSecondaryAMP && (
 									<span>
 										{ __(
@@ -183,7 +198,7 @@ export default function SettingsView() {
 										) }
 									</span>
 								) }
-							</h5>
+							</Typography>
 							<Typography
 								as="p"
 								type="body"
@@ -235,9 +250,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Tag Manager Code Snippet', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 
 					<Typography
 						as="p"

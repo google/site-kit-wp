@@ -93,9 +93,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Client ID', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<Typography
 						as="p"
 						type="body"
@@ -109,9 +114,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Button text', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<Typography
 						as="p"
 						type="body"
@@ -123,9 +133,14 @@ export default function SettingsView() {
 				</div>
 
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Button theme', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<Typography
 						as="p"
 						type="body"
@@ -137,9 +152,14 @@ export default function SettingsView() {
 				</div>
 
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Button shape', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<Typography
 						as="p"
 						type="body"
@@ -153,9 +173,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'One Tap sign in', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<Typography
 						as="p"
 						type="body"
@@ -188,9 +213,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'User registration', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					{ anyoneCanRegister !== undefined && (
 						<Typography
 							as="p"

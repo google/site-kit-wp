@@ -75,7 +75,7 @@ describe( 'Dashboard Navigation', () => {
 	it( 'has a chip set', async () => {
 		const { container, waitForRegistry } = render(
 			<DashboardNavigation />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 		await waitForRegistry();
 
@@ -85,7 +85,7 @@ describe( 'Dashboard Navigation', () => {
 	it( 'has no default selection', async () => {
 		const { container, waitForRegistry } = render(
 			<DashboardNavigation />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 		await waitForRegistry();
 

@@ -127,9 +127,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Account', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<Typography
 						as="p"
 						type="body"
@@ -163,9 +168,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Property', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<Typography
 						as="p"
 						type="body"
@@ -176,7 +186,12 @@ export default function SettingsView() {
 					</Typography>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ createInterpolateElement(
 							__(
 								'<VisuallyHidden>Google Analytics</VisuallyHidden> Measurement ID',
@@ -186,7 +201,7 @@ export default function SettingsView() {
 								VisuallyHidden: <VisuallyHidden />,
 							}
 						) }
-					</h5>
+					</Typography>
 					<Typography
 						as="p"
 						type="body"
@@ -198,9 +213,14 @@ export default function SettingsView() {
 				</div>
 				{ googleTagID && (
 					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
+						<Typography
+							as="h5"
+							size="medium"
+							type="label"
+							className="googlesitekit-settings-module__meta-item-type"
+						>
 							{ __( 'Google Tag ID', 'google-site-kit' ) }
-						</h5>
+						</Typography>
 						<Typography
 							as="p"
 							type="body"
@@ -235,9 +255,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Code Snippet', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<Typography
 						as="p"
 						type="body"

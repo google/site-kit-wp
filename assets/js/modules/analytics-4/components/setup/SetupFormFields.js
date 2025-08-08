@@ -95,9 +95,13 @@ export default function SetupFormFields() {
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect onChange={ resetEnhancedMeasurementSetting } />
-				<PropertySelect onChange={ resetEnhancedMeasurementSetting } />
+				<PropertySelect
+					onChange={ resetEnhancedMeasurementSetting }
+					hasModuleAccess
+				/>
 				<WebDataStreamSelect
 					onChange={ resetEnhancedMeasurementSetting }
+					hasModuleAccess
 				/>
 			</div>
 

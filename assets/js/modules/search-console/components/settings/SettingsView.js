@@ -36,9 +36,14 @@ export default function SettingsView() {
 
 	return (
 		<div className="googlesitekit-settings-module__meta-item">
-			<h5 className="googlesitekit-settings-module__meta-item-type">
+			<Typography
+				as="h5"
+				size="medium"
+				type="label"
+				className="googlesitekit-settings-module__meta-item-type"
+			>
 				{ __( 'Connected Property', 'google-site-kit' ) }
-			</h5>
+			</Typography>
 			<Typography
 				as="p"
 				type="body"

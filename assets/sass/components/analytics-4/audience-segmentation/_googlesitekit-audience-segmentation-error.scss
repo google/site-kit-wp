@@ -26,18 +26,18 @@
 			@media (min-width: $bp-desktop) {
 				padding: 20px 36px;
 			}
-		}
 
-		.googlesitekit-publisher-win__title {
-			display: grid;
-			margin: 0 0 14px;
+			.googlesitekit-typography--title {
+				display: grid;
+				margin: 0 0 14px;
 
-			@media (min-width: $bp-nonMobile) {
-				place-content: start;
-			}
+				@media (min-width: $bp-nonMobile) {
+					place-content: start;
+				}
 
-			@media (min-width: $bp-desktop) {
-				margin: 14px 0;
+				@media (min-width: $bp-desktop) {
+					margin: 14px 0;
+				}
 			}
 		}
 

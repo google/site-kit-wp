@@ -107,12 +107,7 @@ export default function AdditionalDescription( {
 								</Checkbox>
 							</div>
 						) ) }
-					<Typography
-						as="p"
-						type="body"
-						size="medium"
-						className="googlesitekit-publisher-win__desc"
-					>
+					<Typography as="p" type="body" size="medium">
 						{ __(
 							'By recovering the selected modules, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
 							'google-site-kit'
@@ -121,12 +116,7 @@ export default function AdditionalDescription( {
 				</Fragment>
 			) }
 			{ ! hasMultipleRecoverableModules && (
-				<Typography
-					as="p"
-					type="body"
-					size="medium"
-					className="googlesitekit-publisher-win__desc"
-				>
+				<Typography as="p" type="body" size="medium">
 					{ __(
 						'By recovering the module, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
 						'google-site-kit'

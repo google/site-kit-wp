@@ -66,9 +66,14 @@ export default function SettingsStatuses( { statuses } ) {
 					key={ label }
 					className="googlesitekit-settings-module__meta-item"
 				>
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ label }
-					</h5>
+					</Typography>
 					{ renderStatus( status ) }
 				</div>
 			) ) }

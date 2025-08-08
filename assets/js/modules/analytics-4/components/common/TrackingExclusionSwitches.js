@@ -107,9 +107,14 @@ export default function TrackingExclusionSwitches() {
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
-			<h4 className="googlesitekit-settings-module__fields-group-title">
+			<Typography
+				as="h4"
+				size="small"
+				type="title"
+				className="googlesitekit-settings-module__fields-group-title"
+			>
 				{ __( 'Exclude Analytics', 'google-site-kit' ) }
-			</h4>
+			</Typography>
 
 			<div className="googlesitekit-settings-module__meta-item">
 				<div className="googlesitekit-settings-module__inline-items">

@@ -49,9 +49,14 @@ export default function OptionalSettingsView() {
 		<Fragment>
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Excluded from Analytics', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<Typography
 						as="p"
 						type="body"
@@ -87,9 +92,14 @@ export default function OptionalSettingsView() {
 				!! adsConversionID && (
 					<div className="googlesitekit-settings-module__meta-items">
 						<div className="googlesitekit-settings-module__meta-item">
-							<h5 className="googlesitekit-settings-module__meta-item-type">
+							<Typography
+								as="h5"
+								size="medium"
+								type="label"
+								className="googlesitekit-settings-module__meta-item-type"
+							>
 								{ __( 'Ads Conversion ID', 'google-site-kit' ) }
-							</h5>
+							</Typography>
 							<Typography
 								as="p"
 								type="body"

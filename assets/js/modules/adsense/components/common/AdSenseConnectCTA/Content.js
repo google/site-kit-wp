@@ -122,7 +122,13 @@ const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 								>
 									<div className="googlesitekit-setup-module--adsense__stage-caption-indicator" />
 									<div>
-										<h4>{ title }</h4>
+										<Typography
+											as="h4"
+											size="large"
+											type="title"
+										>
+											{ title }
+										</Typography>
 										<Typography
 											as="p"
 											type="body"
