@@ -121,20 +121,6 @@
 			.mdc-button__label {
 				font-weight: $fw-normal;
 			}
-
-			&.googlesitekit-dropdown-menu__icon-menu {
-				.mdc-button--dropdown {
-					&:hover {
-						background-color: $c-interactive-tertiary-hover;
-						color: $c-neutral-n-900;
-
-						&::before {
-							background-color: $c-interactive-tertiary-hover !important;
-							opacity: 1;
-						}
-					}
-				}
-			}
 		}
 
 		.googlesitekit-date-range-selector {
@@ -169,6 +155,7 @@
 					&::before {
 						background-color: $c-interactive-tertiary-hover !important;
 						opacity: 1;
+						transition: none;
 					}
 				}
 
@@ -192,6 +179,22 @@
 					&::before {
 						background-color: $c-interactive-tertiary-hover;
 						opacity: 1;
+						transition: none;
+					}
+				}
+			}
+		}
+
+		.googlesitekit-dropdown-menu.googlesitekit-dropdown-menu__icon-menu {
+			.mdc-button--dropdown {
+				&:hover {
+					background-color: $c-interactive-tertiary-hover;
+					color: $c-neutral-n-900;
+
+					&::before {
+						background-color: $c-interactive-tertiary-hover !important;
+						opacity: 1;
+						transition: none;
 					}
 				}
 			}
