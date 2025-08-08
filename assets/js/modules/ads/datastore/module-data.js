@@ -24,9 +24,15 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { createReducer, createRegistrySelector } from 'googlesitekit-data';
+import {
+	commonActions,
+	createReducer,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { AVAILABLE_PLUGINS, MODULES_ADS, PLUGINS } from './constants';
 import { controls } from '@/js/googlesitekit/datastore/site/info';
+import { MODULE_SLUG_ADS } from '../constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 function getModuleDataProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -64,13 +70,10 @@ export const actions = {
 	/**
 	 * Stores module data in the datastore.
 	 *
-	 * Because this is frequently-accessed data, this is usually sourced
-	 * from a global variable (`_googlesitekitModulesData`), set by PHP.
-	 *
 	 * @since 1.127.0
 	 * @private
 	 *
-	 * @param {Object} moduleData Module data, usually supplied via a global variable from PHP.
+	 * @param {Object} moduleData Module data object.
 	 * @return {Object} Redux-style action.
 	 */
 	receiveModuleData( moduleData ) {
@@ -99,14 +102,24 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 } );
 
 export const resolvers = {
+	/**
+	 * Resolves module data.
+	 *
+	 * @since 1.127.0
+	 * @since n.e.x.t Updated to use centralized module data access.
+	 */
 	*getModuleData() {
-		const moduleDataAds = global._googlesitekitModulesData?.ads;
+		const { resolveSelect } = yield commonActions.getRegistry();
 
-		if ( ! moduleDataAds ) {
+		const moduleData = yield commonActions.await(
+			resolveSelect( CORE_MODULES ).getModuleInlineData( MODULE_SLUG_ADS )
+		);
+
+		if ( ! moduleData ) {
 			return;
 		}
 
-		yield actions.receiveModuleData( moduleDataAds );
+		yield actions.receiveModuleData( moduleData );
 	},
 };
 
