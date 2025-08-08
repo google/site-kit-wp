@@ -34,6 +34,7 @@ import {
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { getDateString } from '../../../util';
 import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
@@ -194,9 +195,16 @@ const baseResolvers = {
 			return;
 		}
 
+		const { resolveSelect: resolveSel } = yield commonActions.getRegistry();
+
+		const moduleInlineData = yield commonActions.await(
+			resolveSel( CORE_MODULES ).getModuleInlineData(
+				MODULE_SLUG_ANALYTICS_4
+			)
+		);
+
 		const resourceAvailabilityDatesOnLoad =
-			global._googlesitekitModulesData?.[ MODULE_SLUG_ANALYTICS_4 ]
-				?.resourceAvailabilityDates;
+			moduleInlineData?.resourceAvailabilityDates;
 
 		if ( resourceAvailabilityDatesOnLoad ) {
 			yield baseActions.receiveResourceDataAvailabilityDates(

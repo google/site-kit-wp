@@ -34,6 +34,7 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
@@ -224,9 +225,16 @@ const baseResolvers = {
 			return;
 		}
 
+		const moduleInlineData = yield commonActions.await(
+			registry
+				.resolveSelect( CORE_MODULES )
+				.getModuleInlineData( MODULE_SLUG_ANALYTICS_4 )
+		);
+
 		const dataAvailableOnLoad =
-			global._googlesitekitModulesData?.[ MODULE_SLUG_ANALYTICS_4 ]
-				?.customDimensionsDataAvailable?.[ customDimension ];
+			moduleInlineData?.customDimensionsDataAvailable?.[
+				customDimension
+			];
 
 		// If dataAvailableOnLoad is true, set gatheringData to false and do nothing else.
 		if ( dataAvailableOnLoad ) {
