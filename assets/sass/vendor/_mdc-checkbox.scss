@@ -113,8 +113,10 @@
 				}
 			}
 
-			/* stylelint-disable selector-not-notation -- The complex notation (not(:checked, :indeterminate))
-		    * doesn't seem to override the styles. */
+			/* stylelint-disable selector-not-notation --
+			* The complex notation (not(:checked, :indeterminate))
+			* doesn't override the styles because a selector with two separate `:not()` clauses
+			* is more specific than a single combined `:not()`. */
 			&:enabled:not(:checked):not(:indeterminate) {
 				~ .mdc-checkbox__background {
 					background-color: transparent;
