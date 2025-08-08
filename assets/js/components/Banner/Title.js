@@ -29,7 +29,7 @@ export default function Title( { className, children } ) {
 	return (
 		<Typography
 			as="p"
-			type="body"
+			type="headline"
 			size="medium"
 			className={ classnames( 'googlesitekit-banner__title', className ) }
 		>
