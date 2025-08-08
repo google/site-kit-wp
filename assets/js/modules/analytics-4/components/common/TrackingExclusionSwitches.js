@@ -151,7 +151,9 @@ export default function TrackingExclusionSwitches() {
 						</div>
 					) }
 				</div>
-				<p>{ message }</p>
+				<Typography as="p" type="body" size="medium">
+					{ message }
+				</Typography>
 			</div>
 		</div>
 	);

@@ -11,7 +11,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the already enable
       Enhanced measurement is enabled for this web data stream
     </div>
     <p
-      class="googlesitekit-module-settings-group__helper-text"
+      class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--medium"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
@@ -77,7 +77,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the default state 
       Enable enhanced measurement
     </label>
     <p
-      class="googlesitekit-module-settings-group__helper-text"
+      class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--medium"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
@@ -144,7 +144,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the disabled state
       Enable enhanced measurement
     </label>
     <p
-      class="googlesitekit-module-settings-group__helper-text"
+      class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--medium"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a
@@ -203,7 +203,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the loading state 
       </div>
     </div>
     <p
-      class="googlesitekit-module-settings-group__helper-text"
+      class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--medium"
     >
       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
       <a

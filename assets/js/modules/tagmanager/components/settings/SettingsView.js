@@ -89,9 +89,14 @@ export default function SettingsView() {
 					>
 						{ __( 'Account', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<DisplaySetting value={ accountID } />
-					</p>
+					</Typography>
 				</div>
 
 				{ ( ! isAMP || isSecondaryAMP ) && (
@@ -120,13 +125,23 @@ export default function SettingsView() {
 									</span>
 								) }
 							</Typography>
-							<p className="googlesitekit-settings-module__meta-item-data">
+							<Typography
+								as="p"
+								type="body"
+								size="medium"
+								className="googlesitekit-settings-module__meta-item-data"
+							>
 								<DisplaySetting value={ containerID } />
-							</p>
+							</Typography>
 						</div>
 						{ editWebContainerURL && (
 							<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
-								<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
+								<Typography
+									as="p"
+									type="body"
+									size="medium"
+									className="googlesitekit-settings-module__meta-item-data"
+								>
 									<Link href={ editWebContainerURL } external>
 										{ createInterpolateElement(
 											sprintf(
@@ -152,7 +167,7 @@ export default function SettingsView() {
 											}
 										) }
 									</Link>
-								</p>
+								</Typography>
 							</div>
 						) }
 					</Fragment>
@@ -184,13 +199,23 @@ export default function SettingsView() {
 									</span>
 								) }
 							</Typography>
-							<p className="googlesitekit-settings-module__meta-item-data">
+							<Typography
+								as="p"
+								type="body"
+								size="medium"
+								className="googlesitekit-settings-module__meta-item-data"
+							>
 								<DisplaySetting value={ ampContainerID } />
-							</p>
+							</Typography>
 						</div>
 						{ editAMPContainerURL && (
 							<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
-								<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
+								<Typography
+									as="p"
+									type="body"
+									size="medium"
+									className="googlesitekit-settings-module__meta-item-data"
+								>
 									<Link href={ editAMPContainerURL } external>
 										{ createInterpolateElement(
 											sprintf(
@@ -216,7 +241,7 @@ export default function SettingsView() {
 											}
 										) }
 									</Link>
-								</p>
+								</Typography>
 							</div>
 						) }
 					</Fragment>
@@ -234,7 +259,12 @@ export default function SettingsView() {
 						{ __( 'Tag Manager Code Snippet', 'google-site-kit' ) }
 					</Typography>
 
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						{ useSnippet && (
 							<span>
 								{ __(
@@ -251,15 +281,15 @@ export default function SettingsView() {
 								) }
 							</span>
 						) }
-					</p>
+					</Typography>
 
 					{ hasExistingTag && (
-						<p>
+						<Typography as="p" type="body" size="medium">
 							{ __(
 								'Placing two tags at the same time is not recommended.',
 								'google-site-kit'
 							) }
-						</p>
+						</Typography>
 					) }
 				</div>
 			</div>

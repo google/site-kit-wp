@@ -27,27 +27,32 @@ import PropTypes from 'prop-types';
 import { Fragment } from '@wordpress/element';
 import { sprintf, __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import Typography from '../../Typography';
+
 export default function Errors( { recoveryErrors } ) {
 	return (
 		<div className="googlesitekit-module-recovery-errors">
 			{ Object.keys( recoveryErrors ).length === 1 && (
-				<p>
+				<Typography as="p" type="body" size="medium">
 					{ sprintf(
 						/* translators: %s: Error message */
 						__( 'Error: %s', 'google-site-kit' ),
 						Object.values( recoveryErrors )[ 0 ].message
 					) }
-				</p>
+				</Typography>
 			) }
 
 			{ Object.keys( recoveryErrors ).length > 1 && (
 				<Fragment>
-					<p>
+					<Typography as="p" type="body" size="medium">
 						{ __(
 							'The following modules failed to be recovered:',
 							'google-site-kit'
 						) }
-					</p>
+					</Typography>
 					<ul>
 						{ Object.keys( recoveryErrors ).map( ( module ) => (
 							<li key={ module }>

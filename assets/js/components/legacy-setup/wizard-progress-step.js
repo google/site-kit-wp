@@ -32,6 +32,7 @@ import { Component } from '@wordpress/element';
  */
 import ExclamationIcon from '../../../svg/icons/exclamation.svg';
 import CheckIcon from '../../../svg/icons/check.svg';
+import Typography from '../Typography';
 
 class WizardProgressStep extends Component {
 	render() {
@@ -98,9 +99,14 @@ class WizardProgressStep extends Component {
 						) }
 					</div>
 				</div>
-				<p className="googlesitekit-wizard-progress-step__text">
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
+					className="googlesitekit-wizard-progress-step__text"
+				>
 					{ title }
-				</p>
+				</Typography>
 			</div>
 		);
 	}

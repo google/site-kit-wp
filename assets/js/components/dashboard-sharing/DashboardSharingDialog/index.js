@@ -241,7 +241,10 @@ export default function DashboardSharingDialog() {
 								) }
 							</Typography>
 
-							<p
+							<Typography
+								as="p"
+								type="body"
+								size="medium"
 								className={ classnames(
 									'googlesitekit-dialog__subtitle',
 									{
@@ -283,7 +286,7 @@ export default function DashboardSharingDialog() {
 										) }
 									</span>
 								) }
-							</p>
+							</Typography>
 						</div>
 					</div>
 

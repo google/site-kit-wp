@@ -30,7 +30,7 @@ exports[`WPDashboardReportError should only render one error per module when the
               class="googlesitekit-notice__content"
             >
               <p
-                class="googlesitekit-notice__description"
+                class="googlesitekit-typography googlesitekit-notice__description googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 <span>
                   Error: Test error message (Please try again.)
@@ -89,7 +89,7 @@ exports[`WPDashboardReportError should only render one error per module when the
               class="googlesitekit-notice__content"
             >
               <p
-                class="googlesitekit-notice__description"
+                class="googlesitekit-typography googlesitekit-notice__description googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 <span>
                   Error: Test error message (Please try again.)

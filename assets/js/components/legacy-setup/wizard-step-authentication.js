@@ -93,21 +93,26 @@ class WizardStepAuthentication extends Component {
 									'google-site-kit'
 								) }
 							</Typography>
-							<p>
+							<Typography as="p" type="body" size="medium">
 								{ __(
 									'Please sign into your Google account to begin.',
 									'google-site-kit'
 								) }
-							</p>
+							</Typography>
 							{ needReauthenticate && (
-								<p className="googlesitekit-error-text">
+								<Typography
+									as="p"
+									type="body"
+									size="medium"
+									className="googlesitekit-error-text"
+								>
 									{ __(
 										'You did not grant access to one or more of the requested scopes. Please grant all scopes that you are prompted for.',
 										'google-site-kit'
 									) }
-								</p>
+								</Typography>
 							) }
-							<p>
+							<Typography as="p" type="body" size="medium">
 								<Button onClick={ this.onButtonClick }>
 									{ _x(
 										'Sign in with Google',
@@ -124,7 +129,7 @@ class WizardStepAuthentication extends Component {
 										{ __( 'Back', 'google-site-kit' ) }
 									</Button>
 								) }
-							</p>
+							</Typography>
 							<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
 								<OptIn />
 							</div>

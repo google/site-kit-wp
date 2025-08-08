@@ -180,9 +180,6 @@
 
 			.googlesitekit-settings-module__meta-item-data {
 				color: $c-surfaces-on-surface;
-				font-size: $fs-body-md;
-				letter-spacing: $ls-s;
-				line-height: $lh-body-md;
 				margin: 0;
 				overflow: hidden;
 				text-overflow: ellipsis;
@@ -194,13 +191,6 @@
 
 			.googlesitekit-settings-module__meta-item-data--wrap {
 				word-break: break-all;
-			}
-
-			.googlesitekit-settings-module__meta-item-data--tiny {
-				font-size: $fs-body-sm;
-				font-weight: $fw-normal;
-				letter-spacing: $ls-xs;
-				line-height: $lh-body-sm;
 			}
 
 			.googlesitekit-settings-module__meta-item-info {

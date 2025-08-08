@@ -28,6 +28,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
 import { MODULES_ADSENSE } from '../../datastore/constants';
+import Typography from '../../../../components/Typography';
 
 export const AUTO_ADS_LOGGED_IN_USERS = 'loggedinUsers';
 export const AUTO_ADS_CONTENT_CREATORS = 'contentCreators';
@@ -139,7 +140,9 @@ export default function AutoAdExclusionSwitches() {
 					</div>
 				) }
 			</div>
-			<p>{ message }</p>
+			<Typography as="p" type="body" size="medium">
+				{ message }
+			</Typography>
 		</fieldset>
 	);
 }

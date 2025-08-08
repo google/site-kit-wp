@@ -33,6 +33,7 @@ import { useCallback } from '@wordpress/element';
 import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import PreviewGraph from '../../../../../components/PreviewGraph';
+import Typography from '../../../../../components/Typography';
 import KeyEventsGraphIcon from '../../../../../../svg/graphics/cta-graph-goals.svg';
 import { trackEvent } from '../../../../../util';
 import useViewContext from '../../../../../hooks/useViewContext';
@@ -65,12 +66,17 @@ export default function CreateKeyEventCTA() {
 				/>
 			</div>
 			<div className="googlesitekit-analytics-cta__details">
-				<p className="googlesitekit-analytics-cta--description">
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
+					className="googlesitekit-analytics-cta--description"
+				>
 					{ __(
 						'Set up key events to track how well your site fulfills your business objectives',
 						'google-site-kit'
 					) }
-				</p>
+				</Typography>
 				<Button
 					href={ createKeyEventsSupportURL }
 					target="_blank"

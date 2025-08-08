@@ -268,12 +268,17 @@ export default function AudienceCreationNotice() {
 	return (
 		<div className="googlesitekit-audience-selection-panel__audience-creation-notice">
 			<div className="googlesitekit-audience-selection-panel__audience-creation-notice-header">
-				<p className="googlesitekit-audience-selection-panel__audience-creation-notice-title">
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
+					className="googlesitekit-audience-selection-panel__audience-creation-notice-title"
+				>
 					{ __(
 						'Create groups suggested by Site Kit',
 						'google-site-kit'
 					) }
-				</p>
+				</Typography>
 
 				<Link
 					className="googlesitekit-audience-selection-panel__audience-creation-notice-close"
@@ -298,13 +303,18 @@ export default function AudienceCreationNotice() {
 										].displayName
 									}
 								</Typography>
-								<p className="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description">
+								<Typography
+									as="p"
+									type="body"
+									size="medium"
+									className="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description"
+								>
 									{
 										SITE_KIT_AUDIENCE_DEFINITIONS[
 											audienceSlug
 										].description
 									}
-								</p>
+								</Typography>
 							</div>
 							<div className="googlesitekit-audience-selection-panel__audience-creation-notice-audience-button">
 								<SpinnerButton

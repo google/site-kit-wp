@@ -43,6 +43,7 @@ import CTA from './notifications/CTA';
 import ReportErrorActions from './ReportErrorActions';
 import useViewOnly from '../hooks/useViewOnly';
 import ErrorNotice from './ErrorNotice';
+import Typography from './Typography';
 
 export default function ReportError( { moduleSlug, error } ) {
 	const isViewOnly = useViewOnly();
@@ -128,13 +129,18 @@ export default function ReportError( { moduleSlug, error } ) {
 						message={ errorForNotice.message }
 					/>
 				) : (
-					<p key={ errorForNotice.message }>
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						key={ errorForNotice.message }
+					>
 						{ purify.sanitize( errorForNotice.message, {
 							// Ensures no HTML tags are passed as they would be
 							// escaped by React and appear as strings.
 							ALLOWED_TAGS: [],
 						} ) }
-					</p>
+					</Typography>
 				);
 			} ) }
 		</Fragment>

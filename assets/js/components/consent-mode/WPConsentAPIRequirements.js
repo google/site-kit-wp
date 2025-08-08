@@ -32,6 +32,7 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Grid, Cell, Row } from '../../material-components';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Link from '../Link';
+import Typography from '../Typography';
 import WPConsentAPIRequirement from './WPConsentAPIRequirement';
 import Tick from '../../../svg/icons/tick.svg';
 import { trackEvent } from '../../util';
@@ -97,12 +98,17 @@ export default function WPConsentAPIRequirements() {
 
 	return (
 		<Fragment>
-			<p className="googlesitekit-settings-consent-mode-requirements__description">
+			<Typography
+				as="p"
+				type="body"
+				size="medium"
+				className="googlesitekit-settings-consent-mode-requirements__description"
+			>
 				{ __(
 					'In order for consent mode to work properly, these requirements must be met:',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 			<Grid className="googlesitekit-settings-consent-mode-requirements__grid">
 				<Row>
 					<Cell { ...cellProps }>

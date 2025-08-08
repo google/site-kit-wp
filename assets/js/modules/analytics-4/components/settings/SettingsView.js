@@ -135,12 +135,22 @@ export default function SettingsView() {
 					>
 						{ __( 'Account', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<DisplaySetting value={ accountID } />
-					</p>
+					</Typography>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
-					<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<Link href={ editAccountSettingsURL } external>
 							{ createInterpolateElement(
 								__(
@@ -152,7 +162,7 @@ export default function SettingsView() {
 								}
 							) }
 						</Link>
-					</p>
+					</Typography>
 				</div>
 			</div>
 
@@ -166,9 +176,14 @@ export default function SettingsView() {
 					>
 						{ __( 'Property', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<DisplaySetting value={ propertyID } />
-					</p>
+					</Typography>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
 					<Typography
@@ -187,9 +202,14 @@ export default function SettingsView() {
 							}
 						) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<DisplaySetting value={ measurementID } />
-					</p>
+					</Typography>
 				</div>
 				{ googleTagID && (
 					<div className="googlesitekit-settings-module__meta-item">
@@ -201,13 +221,23 @@ export default function SettingsView() {
 						>
 							{ __( 'Google Tag ID', 'google-site-kit' ) }
 						</Typography>
-						<p className="googlesitekit-settings-module__meta-item-data">
+						<Typography
+							as="p"
+							type="body"
+							size="medium"
+							className="googlesitekit-settings-module__meta-item-data"
+						>
 							<DisplaySetting value={ googleTagID } />
-						</p>
+						</Typography>
 					</div>
 				) }
 				<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
-					<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<Link href={ editDataStreamSettingsURL } external>
 							{ createInterpolateElement(
 								__(
@@ -219,7 +249,7 @@ export default function SettingsView() {
 								}
 							) }
 						</Link>
-					</p>
+					</Typography>
 				</div>
 			</div>
 
@@ -233,7 +263,12 @@ export default function SettingsView() {
 					>
 						{ __( 'Code Snippet', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						{ useSnippet && (
 							<span>
 								{ __(
@@ -251,7 +286,7 @@ export default function SettingsView() {
 							</span>
 						) }
 						{ useSnippet === undefined && BLANK_SPACE }
-					</p>
+					</Typography>
 				</div>
 			</div>
 

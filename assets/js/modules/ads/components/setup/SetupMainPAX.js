@@ -302,7 +302,12 @@ export default function SetupMainPAX( { finishSetup } ) {
 										'google-site-kit'
 									) }
 								</Typography>
-								<p className="instructions">
+								<Typography
+									as="p"
+									type="body"
+									size="medium"
+									className="instructions"
+								>
 									{ createInterpolateElement(
 										__(
 											'Create your first Ads campaign, add billing information, and choose your conversion goals. To create a new Ads account, you’ll need to grant Site Kit additional permissions during the account creation process. <a>Learn more</a>',
@@ -319,7 +324,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 											),
 										}
 									) }
-								</p>
+								</Typography>
 								<SpinnerButton
 									onClick={ onSetupCallback }
 									disabled={ isNavigatingToOAuthURL }
@@ -350,7 +355,12 @@ export default function SetupMainPAX( { finishSetup } ) {
 										'google-site-kit'
 									) }
 								</Typography>
-								<p className="instructions">
+								<Typography
+									as="p"
+									type="body"
+									size="medium"
+									className="instructions"
+								>
 									{ createInterpolateElement(
 										__(
 											'To track conversions for your Ads campaign, you need to add your Conversion ID to Site Kit. You can always change the Conversion ID later in Site Kit Settings. <a>Learn more</a>',
@@ -368,7 +378,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 											br: <br />,
 										}
 									) }
-								</p>
+								</Typography>
 								<SetupFormPAX
 									finishSetup={ finishSetup }
 									isNavigatingToOAuthURL={

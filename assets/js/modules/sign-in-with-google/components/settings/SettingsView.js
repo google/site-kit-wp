@@ -101,9 +101,14 @@ export default function SettingsView() {
 					>
 						{ __( 'Client ID', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<DisplaySetting value={ clientID } />
-					</p>
+					</Typography>
 				</div>
 			</div>
 
@@ -117,9 +122,14 @@ export default function SettingsView() {
 					>
 						{ __( 'Button text', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<DisplaySetting value={ buttonTextLabel } />
-					</p>
+					</Typography>
 				</div>
 
 				<div className="googlesitekit-settings-module__meta-item">
@@ -131,9 +141,14 @@ export default function SettingsView() {
 					>
 						{ __( 'Button theme', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<DisplaySetting value={ buttonThemeLabel } />
-					</p>
+					</Typography>
 				</div>
 
 				<div className="googlesitekit-settings-module__meta-item">
@@ -145,9 +160,14 @@ export default function SettingsView() {
 					>
 						{ __( 'Button shape', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						<DisplaySetting value={ buttonShapeLabel } />
-					</p>
+					</Typography>
 				</div>
 			</div>
 
@@ -161,7 +181,12 @@ export default function SettingsView() {
 					>
 						{ __( 'One Tap sign in', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						{ ! oneTapEnabled && (
 							<DisplaySetting
 								value={ __( 'Disabled', 'google-site-kit' ) }
@@ -182,7 +207,7 @@ export default function SettingsView() {
 								}
 							/>
 						) }
-					</p>
+					</Typography>
 				</div>
 			</div>
 
@@ -197,7 +222,12 @@ export default function SettingsView() {
 						{ __( 'User registration', 'google-site-kit' ) }
 					</Typography>
 					{ anyoneCanRegister !== undefined && (
-						<p className="googlesitekit-settings-module__meta-item-data">
+						<Typography
+							as="p"
+							type="body"
+							size="medium"
+							className="googlesitekit-settings-module__meta-item-data"
+						>
 							<DisplaySetting
 								value={
 									anyoneCanRegister
@@ -205,7 +235,7 @@ export default function SettingsView() {
 										: __( 'Disabled', 'google-site-kit' )
 								}
 							/>
-						</p>
+						</Typography>
 					) }
 				</div>
 			</div>

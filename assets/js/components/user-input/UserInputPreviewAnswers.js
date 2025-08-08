@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import LoadingWrapper from '../LoadingWrapper';
+import Typography from '../Typography';
 
 export default function UserInputPreviewAnswers( {
 	loading,
@@ -31,7 +32,14 @@ export default function UserInputPreviewAnswers( {
 		<div className="googlesitekit-user-input__preview-answers">
 			<LoadingWrapper loading={ loading } width="340px" height="36px">
 				{ errorMessage && (
-					<p className="googlesitekit-error-text">{ errorMessage }</p>
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-error-text"
+					>
+						{ errorMessage }
+					</Typography>
 				) }
 
 				{ ! errorMessage &&

@@ -24,6 +24,7 @@ import classnames from 'classnames';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import Typography from '../Typography';
 
 export default function SetupEnhancedConversionTrackingNotice( {
 	className,
@@ -38,13 +39,16 @@ export default function SetupEnhancedConversionTrackingNotice( {
 	}
 
 	return (
-		<p
+		<Typography
+			as="p"
+			type="body"
+			size="medium"
 			className={ classnames(
 				className,
 				'googlesitekit-color--surfaces-on-background-variant'
 			) }
 		>
 			{ message }
-		</p>
+		</Typography>
 	);
 }

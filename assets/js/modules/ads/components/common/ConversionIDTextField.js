@@ -87,9 +87,14 @@ export default function ConversionIDTextField( {
 			) }
 
 			{ helperText && (
-				<p className="googlesitekit-settings-module__fields-group-helper-text">
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
+					className="googlesitekit-settings-module__fields-group-helper-text"
+				>
 					{ helperText }
-				</p>
+				</Typography>
 			) }
 
 			<TextField

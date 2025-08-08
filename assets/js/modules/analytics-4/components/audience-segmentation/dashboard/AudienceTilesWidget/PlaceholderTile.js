@@ -96,7 +96,12 @@ export default function PlaceholderTile( { Widget } ) {
 									'google-site-kit'
 							  ) }
 					</Typography>
-					<p className="googlesitekit-audience-segmentation-tile-placeholder__description">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-audience-segmentation-tile-placeholder__description"
+					>
 						{ hasConfigurableNonDefaultAudiences
 							? createInterpolateElement(
 									__(
@@ -127,7 +132,7 @@ export default function PlaceholderTile( { Widget } ) {
 										AnalyticsLink,
 									}
 							  ) }
-					</p>
+					</Typography>
 				</div>
 			</div>
 		</Widget>

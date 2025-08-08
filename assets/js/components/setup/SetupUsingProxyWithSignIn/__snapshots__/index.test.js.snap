@@ -178,13 +178,13 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                       class="googlesitekit-user-menu__details-info"
                     >
                       <p
-                        class="googlesitekit-user-menu__details-info__name"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__name googlesitekit-typography--body googlesitekit-typography--medium"
                       >
                         Wapuu WordPress PhD
                       </p>
                       <p
                         aria-label="Email"
-                        class="googlesitekit-user-menu__details-info__email"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__email googlesitekit-typography--body googlesitekit-typography--medium"
                       >
                         wapuu.wordpress@gmail.com
                       </p>
@@ -260,7 +260,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                       Set up Site Kit
                     </h1>
                     <p
-                      class="googlesitekit-setup__description"
+                      class="googlesitekit-typography googlesitekit-setup__description googlesitekit-typography--body googlesitekit-typography--medium"
                     >
                       Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard
                     </p>
@@ -515,13 +515,13 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                       class="googlesitekit-user-menu__details-info"
                     >
                       <p
-                        class="googlesitekit-user-menu__details-info__name"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__name googlesitekit-typography--body googlesitekit-typography--medium"
                       >
                         Wapuu WordPress PhD
                       </p>
                       <p
                         aria-label="Email"
-                        class="googlesitekit-user-menu__details-info__email"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__email googlesitekit-typography--body googlesitekit-typography--medium"
                       >
                         wapuu.wordpress@gmail.com
                       </p>
@@ -597,7 +597,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                       Set up Site Kit
                     </h1>
                     <p
-                      class="googlesitekit-setup__description"
+                      class="googlesitekit-typography googlesitekit-setup__description googlesitekit-typography--body googlesitekit-typography--medium"
                     >
                       Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard
                     </p>

@@ -36,6 +36,7 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Badge from '../Badge';
 import Link from '../Link';
+import Typography from '../Typography';
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
 import withIntersectionObserver from '../../util/withIntersectionObserver';
@@ -126,7 +127,12 @@ export default function GoogleTagGatewayToggle( { className } ) {
 					</div>
 				</div>
 			) }
-			<p className="googlesitekit-module-settings-group__helper-text">
+			<Typography
+				as="p"
+				type="body"
+				size="medium"
+				className="googlesitekit-module-settings-group__helper-text"
+			>
 				{ createInterpolateElement(
 					__(
 						'Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. <a>Learn more</a>',
@@ -151,7 +157,7 @@ export default function GoogleTagGatewayToggle( { className } ) {
 						),
 					}
 				) }
-			</p>
+			</Typography>
 			{ ! isLoading && ! hasMetServerRequirements && (
 				<SubtleNotificationWithIntersectionObserver
 					type={ Notice.TYPES.WARNING }

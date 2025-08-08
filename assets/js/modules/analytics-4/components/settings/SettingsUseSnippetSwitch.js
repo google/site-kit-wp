@@ -28,6 +28,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import UseSnippetSwitch from '../common/UseSnippetSwitch';
+import Typography from '../../../../components/Typography';
 
 export default function SettingsUseSnippetSwitch() {
 	const useSnippet = useSelect( ( select ) =>
@@ -47,7 +48,7 @@ export default function SettingsUseSnippetSwitch() {
 		description =
 			existingTag === measurementID ? (
 				<Fragment>
-					<p>
+					<Typography as="p" type="body" size="medium">
 						{ sprintf(
 							/* translators: %s: existing tag ID */
 							__(
@@ -56,17 +57,17 @@ export default function SettingsUseSnippetSwitch() {
 							),
 							existingTag
 						) }
-					</p>
-					<p>
+					</Typography>
+					<Typography as="p" type="body" size="medium">
 						{ __(
 							'Consider removing the existing tag to avoid loading both tags on your site',
 							'google-site-kit'
 						) }
-					</p>
+					</Typography>
 				</Fragment>
 			) : (
 				<Fragment>
-					<p>
+					<Typography as="p" type="body" size="medium">
 						{ sprintf(
 							/* translators: %s: existing tag ID */
 							__(
@@ -75,30 +76,30 @@ export default function SettingsUseSnippetSwitch() {
 							),
 							existingTag
 						) }
-					</p>
-					<p>
+					</Typography>
+					<Typography as="p" type="body" size="medium">
 						{ __(
 							'If you prefer to collect data using that existing tag, please select the corresponding account and property above',
 							'google-site-kit'
 						) }
-					</p>
+					</Typography>
 				</Fragment>
 			);
 	} else {
 		description = useSnippet ? (
-			<p>
+			<Typography as="p" type="body" size="medium">
 				{ __(
 					'Site Kit will add the code automatically',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 		) : (
-			<p>
+			<Typography as="p" type="body" size="medium">
 				{ __(
 					'Site Kit will not add the code to your site',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 		);
 	}
 

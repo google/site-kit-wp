@@ -177,7 +177,11 @@ class SiteVerification extends Component {
 
 		const loadingDiv = (
 			<Fragment>
-				{ loadingMsg && <p>{ loadingMsg }</p> }
+				{ loadingMsg && (
+					<Typography as="p" type="body" size="medium">
+						{ loadingMsg }
+					</Typography>
+				) }
 				<ProgressBar />
 			</Fragment>
 		);
@@ -218,12 +222,17 @@ class SiteVerification extends Component {
 					{ __( 'Verify URL', 'google-site-kit' ) }
 				</Typography>
 
-				<p className="googlesitekit-wizard-step__text">
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
+					className="googlesitekit-wizard-step__text"
+				>
 					{ __(
 						'Congratulations, your site has been verified!',
 						'google-site-kit'
 					) }
-				</p>
+				</Typography>
 			</Fragment>
 		);
 	}
@@ -247,15 +256,27 @@ class SiteVerification extends Component {
 					{ __( 'Verify URL', 'google-site-kit' ) }
 				</Typography>
 
-				<p className="googlesitekit-wizard-step__text">
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
+					className="googlesitekit-wizard-step__text"
+				>
 					{ __(
 						'We will need to verify your URL for Site Kit.',
 						'google-site-kit'
 					) }
-				</p>
+				</Typography>
 
 				{ errorMsg && 0 < errorMsg.length && (
-					<p className="googlesitekit-error-text">{ errorMsg }</p>
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-error-text"
+					>
+						{ errorMsg }
+					</Typography>
 				) }
 
 				{ isAuthenticated && this.renderForm() }

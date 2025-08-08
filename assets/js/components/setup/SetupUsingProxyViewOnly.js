@@ -118,7 +118,12 @@ export default function SetupUsingProxyViewOnly() {
 														'google-site-kit'
 													) }
 												</Typography>
-												<p className="googlesitekit-setup__description">
+												<Typography
+													as="p"
+													type="body"
+													size="medium"
+													className="googlesitekit-setup__description"
+												>
 													{ createInterpolateElement(
 														__(
 															"An administrator has granted you access to view this site's dashboard to view stats from all shared Google services. <a>Learn more</a>",
@@ -139,13 +144,17 @@ export default function SetupUsingProxyViewOnly() {
 															),
 														}
 													) }
-												</p>
-												<p>
+												</Typography>
+												<Typography
+													as="p"
+													type="body"
+													size="medium"
+												>
 													{ __(
 														'Get insights about how people find and use your site as well as how to improve and monetize your content, directly in your WordPress dashboard',
 														'google-site-kit'
 													) }
-												</p>
+												</Typography>
 
 												<OptIn />
 

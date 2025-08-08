@@ -38,6 +38,7 @@ import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import PlusIcon from '../../../svg/icons/plus.svg';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import Typography from '../Typography';
 
 export default function AddMetricCTATile( { Widget } ) {
 	const trackingRef = useRef();
@@ -90,9 +91,14 @@ export default function AddMetricCTATile( { Widget } ) {
 				<div className="googlesitekit-km-add-metric-cta-tile__icon">
 					<PlusIcon width={ 16 } height={ 16 } />
 				</div>
-				<p className="googlesitekit-km-add-metric-cta-tile__text">
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
+					className="googlesitekit-km-add-metric-cta-tile__text"
+				>
 					{ __( 'Add a metric', 'google-site-kit' ) }
-				</p>
+				</Typography>
 			</div>
 		</Widget>
 	);

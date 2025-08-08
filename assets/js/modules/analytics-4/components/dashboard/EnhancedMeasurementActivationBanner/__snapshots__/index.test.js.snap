@@ -50,7 +50,7 @@ exports[`EnhancedMeasurementActivationBanner should render the in progress step 
                 class="googlesitekit-banner__content"
               >
                 <p
-                  class="googlesitekit-banner__title"
+                  class="googlesitekit-typography googlesitekit-banner__title googlesitekit-typography--body googlesitekit-typography--medium"
                 >
                   Understand how visitors interact with your content
                 </p>
@@ -82,7 +82,7 @@ exports[`EnhancedMeasurementActivationBanner should render the in progress step 
                   </a>
                 </div>
                 <p
-                  class="googlesitekit-banner__help-text"
+                  class="googlesitekit-typography googlesitekit-banner__help-text googlesitekit-typography--body googlesitekit-typography--medium"
                 >
                   You can always add/edit this in the Site Kit Settings
                 </p>
@@ -149,7 +149,7 @@ exports[`EnhancedMeasurementActivationBanner should render the setup step when e
                 class="googlesitekit-banner__content"
               >
                 <p
-                  class="googlesitekit-banner__title"
+                  class="googlesitekit-typography googlesitekit-banner__title googlesitekit-typography--body googlesitekit-typography--medium"
                 >
                   Understand how visitors interact with your content
                 </p>
@@ -181,7 +181,7 @@ exports[`EnhancedMeasurementActivationBanner should render the setup step when e
                   </a>
                 </div>
                 <p
-                  class="googlesitekit-banner__help-text"
+                  class="googlesitekit-typography googlesitekit-banner__help-text googlesitekit-typography--body googlesitekit-typography--medium"
                 >
                   You can always add/edit this in the Site Kit Settings
                 </p>
@@ -249,12 +249,12 @@ exports[`EnhancedMeasurementActivationBanner should render the success step when
               class="googlesitekit-notice__content"
             >
               <p
-                class="googlesitekit-notice__title"
+                class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 You successfully enabled enhanced measurement for your site
               </p>
               <p
-                class="googlesitekit-notice__description"
+                class="googlesitekit-typography googlesitekit-notice__description googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 Your configured Analytics web data stream will now automatically measure interactions on your site in addition to standard page views measurement. 
                 <a

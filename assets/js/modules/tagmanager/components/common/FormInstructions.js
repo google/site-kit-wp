@@ -34,6 +34,7 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import Typography from '../../../../components/Typography';
 
 export default function FormInstructions( { isSetup } ) {
 	const isSecondaryAMP = useSelect( ( select ) =>
@@ -57,18 +58,18 @@ export default function FormInstructions( { isSetup } ) {
 		currentGTMGoogleTagID
 	) {
 		return (
-			<p>
+			<Typography as="p" type="body" size="medium">
 				{ __(
 					'Looks like you may be using Google Analytics within your Google Tag Manager configuration. Activate the Google Analytics module in Site Kit to see relevant insights in your dashboard.',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 		);
 	}
 
 	if ( isSecondaryAMP ) {
 		return (
-			<p>
+			<Typography as="p" type="body" size="medium">
 				{ isSetup
 					? __(
 							'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below. You can change these later in your settings.',
@@ -78,12 +79,12 @@ export default function FormInstructions( { isSetup } ) {
 							'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below.',
 							'google-site-kit'
 					  ) }
-			</p>
+			</Typography>
 		);
 	}
 
 	return (
-		<p>
+		<Typography as="p" type="body" size="medium">
 			{ isSetup
 				? __(
 						'Please select your Tag Manager account and container below. You can change these later in your settings.',
@@ -93,7 +94,7 @@ export default function FormInstructions( { isSetup } ) {
 						'Please select your Tag Manager account and container below',
 						'google-site-kit'
 				  ) }
-		</p>
+		</Typography>
 	);
 }
 

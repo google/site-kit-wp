@@ -91,7 +91,12 @@ export default function SettingsForm() {
 						>
 							{ __( 'Conversion ID', 'google-site-kit' ) }
 						</Typography>
-						<p className="googlesitekit-settings-module__meta-item-data">
+						<Typography
+							as="p"
+							type="body"
+							size="medium"
+							className="googlesitekit-settings-module__meta-item-data"
+						>
 							{ conversionIDValue === '' &&
 								__( 'None', 'google-site-kit' ) }
 							{ conversionIDValue ||
@@ -100,7 +105,7 @@ export default function SettingsForm() {
 										value={ conversionIDValue }
 									/>
 								) ) }
-						</p>
+						</Typography>
 					</div>
 					<div className="googlesitekit-settings-module__meta-item">
 						<Typography
@@ -111,14 +116,19 @@ export default function SettingsForm() {
 						>
 							{ __( 'Customer ID', 'google-site-kit' ) }
 						</Typography>
-						<p className="googlesitekit-settings-module__meta-item-data">
+						<Typography
+							as="p"
+							type="body"
+							size="medium"
+							className="googlesitekit-settings-module__meta-item-data"
+						>
 							{ extCustomerID === '' &&
 								__( 'None', 'google-site-kit' ) }
 							{ extCustomerID ||
 								( typeof extCustomerID === 'undefined' && (
 									<DisplaySetting value={ extCustomerID } />
 								) ) }
-						</p>
+						</Typography>
 					</div>
 				</div>
 			) }

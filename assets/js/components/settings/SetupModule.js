@@ -33,6 +33,7 @@ import { useState, useCallback } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import ModuleIcon from '../ModuleIcon';
+import Typography from '../Typography';
 import Spinner from '../Spinner';
 import Link from '../Link';
 import Badge from '../Badge';
@@ -45,7 +46,6 @@ import { NEW_MODULES, BETA_MODULES, EXPERIMENTAL_MODULES } from './constants';
 import { setItem } from '../../googlesitekit/api/cache';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-import Typography from '../Typography';
 
 export default function SetupModule( { slug, name, description } ) {
 	const viewContext = useViewContext();
@@ -132,11 +132,21 @@ export default function SetupModule( { slug, name, description } ) {
 					) }
 				</div>
 			</div>
-			<p className="googlesitekit-settings-connect-module__text">
+			<Typography
+				as="p"
+				className="googlesitekit-settings-connect-module__text"
+				type="body"
+				size="medium"
+			>
 				{ description }
-			</p>
+			</Typography>
 
-			<p className="googlesitekit-settings-connect-module__cta">
+			<Typography
+				as="p"
+				className="googlesitekit-settings-connect-module__cta"
+				type="body"
+				size="medium"
+			>
 				<Link
 					onClick={ onSetup }
 					href=""
@@ -149,7 +159,7 @@ export default function SetupModule( { slug, name, description } ) {
 						name
 					) }
 				</Link>
-			</p>
+			</Typography>
 
 			<ModuleSettingsWarning slug={ slug } />
 		</div>

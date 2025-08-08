@@ -39,7 +39,7 @@ exports[`TopCitiesDrivingAddToCartWidget should render correctly with the expect
                 class="googlesitekit-table__body-item"
               >
                 <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                  class="googlesitekit-typography googlesitekit-km-widget-tile__table-plain-text googlesitekit-typography--body googlesitekit-typography--medium"
                 >
                   Berlin
                 </p>
@@ -59,7 +59,7 @@ exports[`TopCitiesDrivingAddToCartWidget should render correctly with the expect
                 class="googlesitekit-table__body-item"
               >
                 <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                  class="googlesitekit-typography googlesitekit-km-widget-tile__table-plain-text googlesitekit-typography--body googlesitekit-typography--medium"
                 >
                   Cork
                 </p>
@@ -79,7 +79,7 @@ exports[`TopCitiesDrivingAddToCartWidget should render correctly with the expect
                 class="googlesitekit-table__body-item"
               >
                 <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                  class="googlesitekit-typography googlesitekit-km-widget-tile__table-plain-text googlesitekit-typography--body googlesitekit-typography--medium"
                 >
                   Dublin
                 </p>

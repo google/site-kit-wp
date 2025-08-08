@@ -42,6 +42,7 @@ import HelpMenu from '../help/HelpMenu';
 import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
 import ModuleSetupFooter from './ModuleSetupFooter';
+import Typography from '../Typography';
 
 export default function ModuleSetup( { moduleSlug } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -122,12 +123,17 @@ export default function ModuleSetup( { moduleSlug } ) {
 								<Grid>
 									<Row>
 										<Cell size={ 12 }>
-											<p className="googlesitekit-setup__intro-title">
+											<Typography
+												as="p"
+												type="body"
+												size="medium"
+												className="googlesitekit-setup__intro-title"
+											>
 												{ __(
 													'Connect Service',
 													'google-site-kit'
 												) }
-											</p>
+											</Typography>
 											<SetupComponent
 												module={ module }
 												finishSetup={ finishSetup }

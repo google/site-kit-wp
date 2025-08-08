@@ -26,12 +26,12 @@ exports[`AdBlockingRecoverySetupSuccessNotification should render notification a
               class="googlesitekit-notice__content"
             >
               <p
-                class="googlesitekit-notice__title"
+                class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 You successfully enabled the ad blocking recovery message
               </p>
               <p
-                class="googlesitekit-notice__description"
+                class="googlesitekit-typography googlesitekit-notice__description googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 Make sure to also create the message in 
                 <a

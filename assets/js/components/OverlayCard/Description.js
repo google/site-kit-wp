@@ -21,9 +21,21 @@
  */
 import PropTypes from 'prop-types';
 
+/**
+ * Internal dependencies
+ */
+import Typography from '../Typography';
+
 export default function Description( { children } ) {
 	return (
-		<p className="googlesitekit-overlay-card__description">{ children }</p>
+		<Typography
+			as="p"
+			type="body"
+			size="medium"
+			className="googlesitekit-overlay-card__description"
+		>
+			{ children }
+		</Typography>
 	);
 }
 
