@@ -37,7 +37,7 @@ import { Button } from 'googlesitekit-components';
 import CheckFill from '../../../../../../../../svg/icons/check-fill.svg';
 
 export const SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION =
-	'showSetupSuccess';
+	'show_settings_visitor_groups_success_notification';
 
 const SetupSuccessContent = forwardRef( ( props, ref ) => {
 	const viewContext = useViewContext();

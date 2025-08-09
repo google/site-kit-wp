@@ -22,13 +22,14 @@
 import useViewContext from '../../../../../../../hooks/useViewContext';
 import withIntersectionObserver from '../../../../../../../util/withIntersectionObserver';
 import { trackEvent } from '../../../../../../../util';
-import SetupSuccessContent from './SetupSuccessContent';
+import SetupSuccessContent, {
+	SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION,
+} from './SetupSuccessContent';
+
+export { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION };
 
 const SetupSuccessContentWithIntersectionObserver =
 	withIntersectionObserver( SetupSuccessContent );
-
-export const SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION =
-	'showSetupSuccess';
 
 export default function SetupSuccess() {
 	const viewContext = useViewContext();

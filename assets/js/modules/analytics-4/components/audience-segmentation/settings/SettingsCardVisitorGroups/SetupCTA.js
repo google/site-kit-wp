@@ -27,17 +27,17 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
+import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../../datastore/constants';
+import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
 import Link from '../../../../../../components/Link';
 import { AudienceErrorModal } from '../../dashboard';
 import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../../util';
-import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
 
 export default function SetupCTA() {
 	const viewContext = useViewContext();
