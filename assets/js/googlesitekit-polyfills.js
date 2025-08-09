@@ -20,6 +20,36 @@
 __webpack_public_path__ = `${ global._googlesitekitBaseData.assetsURL }js/`;
 
 async function loadPolyfills() {
+	// Add findLastIndex polyfill to prevent:
+	// `block-editor.js wp.blockEditor.transformStyles Failed to transform CSS.
+	// TypeError: tokenized.findLastIndex is not a function`
+	// errors blocks within Gutenberg built with node < v18.
+	if ( ! Array.prototype.findLastIndex ) {
+		Array.prototype.findLastIndex = function ( predicate, thisArg ) {
+			if ( this === null || this === undefined ) {
+				throw new TypeError(
+					'Array.prototype.findLastIndex called on null or undefined'
+				);
+			}
+			if ( typeof predicate !== 'function' ) {
+				throw new TypeError( 'predicate must be a function' );
+			}
+
+			const obj = Object( this );
+			const len = parseInt( obj.length ) || 0;
+
+			for ( let i = len - 1; i >= 0; i-- ) {
+				if ( i in obj ) {
+					const element = obj[ i ];
+					if ( predicate.call( thisArg, element, i, obj ) ) {
+						return i;
+					}
+				}
+			}
+			return -1;
+		};
+	}
+
 	if ( typeof global.IntersectionObserver === 'undefined' ) {
 		await import( 'intersection-observer' );
 	}
