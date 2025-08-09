@@ -75,12 +75,14 @@ export default function UserInputApp() {
 			return;
 		}
 
-		setIsSyncingAudiences( true );
-
 		setIsAccountCreatedVisible( true );
 		setTimeout( () => {
 			setIsAccountCreatedVisible( false );
 		}, 3000 );
+	}, [ accountCreated ] );
+
+	useEffect( () => {
+		setIsSyncingAudiences( true );
 
 		const syncAudiences = async () => {
 			// Sync audiences and custom dimensions, so the `PrimaryUserSetupWidget` component
@@ -105,11 +107,7 @@ export default function UserInputApp() {
 		};
 
 		syncAudiences();
-	}, [
-		accountCreated,
-		fetchSyncAvailableCustomDimensions,
-		syncAvailableAudiences,
-	] );
+	}, [ fetchSyncAvailableCustomDimensions, syncAvailableAudiences ] );
 
 	return (
 		<Fragment>
