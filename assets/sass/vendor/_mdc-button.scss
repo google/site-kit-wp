@@ -73,7 +73,7 @@
 		&:active,
 		&:focus {
 
-			@include mdc-button-filled-accessible($c-background-subtle);
+			@include mdc-button-filled-accessible($c-interactive-tertiary-hover);
 			text-decoration: none;
 		}
 
