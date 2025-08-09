@@ -24,10 +24,8 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import {
-	provideModules,
-	WithTestRegistry,
-} from '../../../../../../tests/js/utils';
+import { provideModules } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
@@ -93,9 +91,9 @@ export default {
 						<a href="http://test.test/?page=googlesitekit-settings" />
 					</div>
 					<div style={ { flex: 1 } }>
-						<WithTestRegistry callback={ setupRegistry }>
+						<WithRegistrySetup func={ setupRegistry }>
 							<Story />
-						</WithTestRegistry>
+						</WithRegistrySetup>
 					</div>
 				</div>
 			);

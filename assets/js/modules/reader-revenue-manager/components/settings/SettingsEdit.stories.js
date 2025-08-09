@@ -22,8 +22,8 @@
 import {
 	provideModuleRegistrations,
 	provideSiteInfo,
-	WithTestRegistry,
 } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { Grid, Row, Cell } from '../../../../material-components';
 import SettingsEdit from './SettingsEdit';
 import { publications } from '../../datastore/__fixtures__';
@@ -256,9 +256,9 @@ export default {
 			};
 
 			return (
-				<WithTestRegistry callback={ setupRegistry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

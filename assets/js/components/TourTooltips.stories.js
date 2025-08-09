@@ -34,7 +34,7 @@ import { Button } from 'googlesitekit-components';
 import Link from './../components/Link';
 import TourTooltips from './../components/TourTooltips';
 import { CORE_USER } from './../googlesitekit/datastore/user/constants';
-import { WithTestRegistry } from './../../../tests/js/utils';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { CORE_UI } from './../googlesitekit/datastore/ui/constants';
 
 // Create Mock WP Dashboard component to decouple tests to prevent future false negative.
@@ -420,7 +420,7 @@ function Template() {
 	};
 
 	return (
-		<WithTestRegistry callback={ setupRegistry }>
+		<WithRegistrySetup func={ setupRegistry }>
 			<TourControls />
 			<MockWPDashboard />
 			<TourTooltips
@@ -428,7 +428,7 @@ function Template() {
 				tourID="feature"
 				gaEventCategory="storybook"
 			/>
-		</WithTestRegistry>
+		</WithRegistrySetup>
 	);
 }
 
