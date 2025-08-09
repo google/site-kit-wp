@@ -34,6 +34,7 @@ import {
 	step,
 	setSearchConsoleProperty,
 	setupAnalytics4,
+	createWaitForFetchRequests,
 } from '../utils';
 import {
 	STRATEGY_CARTESIAN,
@@ -45,8 +46,12 @@ import getMultiDimensionalObjectFromParams from '../utils/get-multi-dimensional-
 
 describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
+		// The UserInputApp needs more time to load to pass consistently.
+		const extendedTimeout = 20000;
+
+		await page.waitForNetworkIdle( { timeout: extendedTimeout } );
 		await page.waitForSelector( '.googlesitekit-user-input__question', {
-			timeout: 15000, // The UserInputApp needs more time to load to pass consistently.
+			timeout: extendedTimeout,
 		} );
 
 		await step( 'select purpose', async () => {
@@ -85,8 +90,8 @@ describe( 'User Input Settings', () => {
 					{ text: /complete setup/i }
 				),
 				// Navigation and network idle needs more time to complete to consistently pass.
-				page.waitForNavigation( { timeout: 15000 } ),
-				page.waitForNetworkIdle( { timeout: 15000 } ),
+				page.waitForNavigation( { timeout: extendedTimeout } ),
+				page.waitForNetworkIdle( { timeout: extendedTimeout } ),
 			] )
 		);
 
@@ -184,6 +189,8 @@ describe( 'User Input Settings', () => {
 		} );
 	} );
 
+	let waitForFetchRequests;
+
 	beforeEach( async () => {
 		await activatePlugins(
 			'e2e-tests-proxy-setup',
@@ -191,9 +198,14 @@ describe( 'User Input Settings', () => {
 		);
 		await setSearchConsoleProperty();
 		await page.setRequestInterception( true );
+
+		waitForFetchRequests = createWaitForFetchRequests();
 	} );
 
 	afterEach( async () => {
+		await page.waitForNetworkIdle( { timeout: 15_000 } );
+		await waitForFetchRequests();
+
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
