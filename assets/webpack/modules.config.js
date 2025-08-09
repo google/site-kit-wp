@@ -85,6 +85,8 @@ module.exports = ( mode, rules, ANALYZE ) => {
 			'googlesitekit-user-input': './js/googlesitekit-user-input.js',
 			'googlesitekit-ad-blocking-recovery':
 				'./js/googlesitekit-ad-blocking-recovery.js',
+			'googlesitekit-block-tracking':
+				'./js/googlesitekit-block-tracking.js',
 			'googlesitekit-polyfills': './js/googlesitekit-polyfills.js',
 			'googlesitekit-components': './js/googlesitekit-components.js',
 			'googlesitekit-metric-selection':

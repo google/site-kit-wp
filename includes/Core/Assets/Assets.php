@@ -643,6 +643,17 @@ final class Assets {
 					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
 				)
 			),
+			new Script(
+				'googlesitekit-block-tracking',
+				array(
+					'src'           => $base_url . 'js/googlesitekit-block-tracking.js',
+					'dependencies'  => array(
+						'googlesitekit-tracking-data',
+						'googlesitekit-data',
+					),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+				)
+			),
 			new Stylesheet(
 				'googlesitekit-admin-css',
 				array(
