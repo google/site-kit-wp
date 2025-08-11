@@ -73,12 +73,12 @@ export default function SetupCreateAccount() {
 
 			<ErrorNotices />
 
-			<p>
+			<Typography as="p" size="medium" type="body">
 				{ __(
 					'Once you create your account, Site Kit will place AdSense code on every page across your site. This means your site will be automatically optimized to help you earn money from your content.',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 
 			<UserProfile />
 

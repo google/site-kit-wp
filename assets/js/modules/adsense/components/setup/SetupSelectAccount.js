@@ -42,12 +42,12 @@ export default function SetupSelectAccount() {
 
 			<ErrorNotices />
 
-			<p>
+			<Typography as="p" size="medium" type="body">
 				{ __(
 					'Looks like you have multiple AdSense accounts associated with your Google account. Select the account to use with Site Kit below.',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />

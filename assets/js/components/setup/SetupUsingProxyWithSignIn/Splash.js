@@ -183,7 +183,7 @@ export default function Splash( { children } ) {
 						{ DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ===
 							disconnectedReason &&
 							connectedProxyURL !== homeURL && (
-								<p>
+								<Typography as="p" size="medium" type="body">
 									{ sprintf(
 										/* translators: %s: Previous Connected Proxy URL */
 										__(
@@ -201,7 +201,7 @@ export default function Splash( { children } ) {
 										),
 										homeURL
 									) }
-								</p>
+								</Typography>
 							) }
 
 						{ analyticsModuleAvailable &&

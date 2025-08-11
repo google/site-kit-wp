@@ -34,6 +34,7 @@ import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants'
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
 import Link from '../../../../../../components/Link';
+import Typography from '../../../../../../components/Typography';
 import { AudienceErrorModal } from '../../dashboard';
 import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
 import useViewContext from '../../../../../../hooks/useViewContext';
@@ -97,15 +98,17 @@ export default function SetupCTA() {
 
 	return (
 		<div className="googlesitekit-settings-visitor-groups__setup">
-			<p>
+			<Typography as="p" size="medium" type="body">
 				{ __(
 					'To set up new visitor groups for your site, Site Kit needs to update your Google Analytics property.',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 			{ isSaving && (
 				<div className="googlesitekit-settings-visitor-groups__setup-progress">
-					<p>{ __( 'Enabling groups', 'google-site-kit' ) }</p>
+					<Typography as="p" size="medium" type="body">
+						{ __( 'Enabling groups', 'google-site-kit' ) }
+					</Typography>
 					<ProgressBar compress />
 				</div>
 			) }

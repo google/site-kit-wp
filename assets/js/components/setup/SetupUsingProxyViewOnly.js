@@ -140,12 +140,16 @@ export default function SetupUsingProxyViewOnly() {
 														}
 													) }
 												</p>
-												<p>
+												<Typography
+													as="p"
+													size="medium"
+													type="body"
+												>
 													{ __(
 														'Get insights about how people find and use your site as well as how to improve and monetize your content, directly in your WordPress dashboard',
 														'google-site-kit'
 													) }
-												</p>
+												</Typography>
 
 												<OptIn />
 

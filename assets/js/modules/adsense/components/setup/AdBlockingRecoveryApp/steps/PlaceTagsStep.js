@@ -37,6 +37,7 @@ import { Checkbox, SpinnerButton } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import ErrorNotice from '../../../../../../components/ErrorNotice';
 import Link from '../../../../../../components/Link';
+import Typography from '../../../../../../components/Typography';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../../util';
@@ -130,12 +131,12 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 
 	return (
 		<Fragment>
-			<p>
+			<Typography as="p" size="medium" type="body">
 				{ __(
 					'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense.',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 			<Checkbox
 				checked={ useAdBlockingRecoveryErrorSnippet }
 				id="ad-blocking-recovery-error-protection-tag-checkbox"

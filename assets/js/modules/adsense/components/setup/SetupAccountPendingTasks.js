@@ -61,12 +61,12 @@ export default function SetupAccountPendingTasks() {
 
 			<ErrorNotices />
 
-			<p>
+			<Typography as="p" size="medium" type="body">
 				{ __(
 					'You need to fix some things before we can connect Site Kit to your AdSense account',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 
 			<SetupUseSnippetSwitch />
 

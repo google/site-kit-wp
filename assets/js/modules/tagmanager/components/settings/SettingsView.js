@@ -254,12 +254,12 @@ export default function SettingsView() {
 					</p>
 
 					{ hasExistingTag && (
-						<p>
+						<Typography as="p" size="medium" type="body">
 							{ __(
 								'Placing two tags at the same time is not recommended.',
 								'google-site-kit'
 							) }
-						</p>
+						</Typography>
 					) }
 				</div>
 			</div>

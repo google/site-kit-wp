@@ -237,7 +237,7 @@ function ConfirmSitePurposeChangeModal( {
 			<DialogTitle>
 				{ __( 'Tailored metrics suggestions', 'google-site-kit' ) }
 			</DialogTitle>
-			<p>
+			<Typography as="p" size="medium" type="body">
 				{ __(
 					'You have changed your website purpose. We can suggest new tailored metrics for you based on your answers or you can keep your current metrics selection on your dashboard.',
 					'google-site-kit'
@@ -247,7 +247,7 @@ function ConfirmSitePurposeChangeModal( {
 					'You can always edit your metrics selection from the dashboard.',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 			<DialogContent>
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">

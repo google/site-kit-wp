@@ -59,7 +59,7 @@ export default function SetupAccountNoClient() {
 
 			<ErrorNotices />
 
-			<p>
+			<Typography as="p" size="medium" type="body">
 				{ createInterpolateElement(
 					__(
 						'To start using AdSense on your website, you need to upgrade your account to add “AdSense for content”. <a>Learn more</a>',
@@ -78,7 +78,7 @@ export default function SetupAccountNoClient() {
 						),
 					}
 				) }
-			</p>
+			</Typography>
 
 			<div className="googlesitekit-setup-module__action">
 				<Button

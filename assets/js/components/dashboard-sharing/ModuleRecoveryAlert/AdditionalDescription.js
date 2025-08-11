@@ -34,6 +34,7 @@ import { useSelect } from 'googlesitekit-data';
 import { Checkbox } from 'googlesitekit-components';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import Errors from './Errors';
+import Typography from '../../Typography';
 
 export default function AdditionalDescription( {
 	inProgress,
@@ -106,21 +107,21 @@ export default function AdditionalDescription( {
 								</Checkbox>
 							</div>
 						) ) }
-					<p>
+					<Typography as="p" size="medium" type="body">
 						{ __(
 							'By recovering the selected modules, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
 							'google-site-kit'
 						) }
-					</p>
+					</Typography>
 				</Fragment>
 			) }
 			{ ! hasMultipleRecoverableModules && (
-				<p>
+				<Typography as="p" size="medium" type="body">
 					{ __(
 						'By recovering the module, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
 						'google-site-kit'
 					) }
-				</p>
+				</Typography>
 			) }
 			{ Object.keys( recoveryErrors ).length > 0 && (
 				<Errors recoveryErrors={ recoveryErrors } />

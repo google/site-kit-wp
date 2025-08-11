@@ -64,7 +64,7 @@ export default function SetupMain( { finishSetup } ) {
 
 				{ ! isAdBlockerActive && (
 					<Fragment>
-						<p>
+						<Typography as="p" size="medium" type="body">
 							{ createInterpolateElement(
 								__(
 									'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns. <a>Learn more</a>',
@@ -84,7 +84,7 @@ export default function SetupMain( { finishSetup } ) {
 								'You can always change this later in Site Kit Settings.',
 								'google-site-kit'
 							) }
-						</p>
+						</Typography>
 
 						<SetupForm finishSetup={ finishSetup } />
 					</Fragment>

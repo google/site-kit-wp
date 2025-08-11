@@ -31,6 +31,7 @@ function Typography( {
 	size,
 	as: Component = 'span',
 	children,
+	...props
 } ) {
 	return (
 		<Component
@@ -40,6 +41,7 @@ function Typography( {
 				[ `googlesitekit-typography--${ size }` ]:
 					size && VALID_SIZES.includes( size ),
 			} ) }
+			{ ...props }
 		>
 			{ children }
 		</Component>

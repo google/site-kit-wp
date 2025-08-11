@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { SpinnerButton } from 'googlesitekit-components';
+import Typography from '../../../../../../../components/Typography';
 
 const CreateCustomDimensionCTA = forwardRef( ( { onClick, isSaving }, ref ) => {
 	return (
@@ -39,9 +40,9 @@ const CreateCustomDimensionCTA = forwardRef( ( { onClick, isSaving }, ref ) => {
 			className="googlesitekit-audience-segmentation-tile-metric__no-data"
 		>
 			{ __( 'No data to show', 'google-site-kit' ) }
-			<p>
+			<Typography as="p" size="medium" type="body">
 				{ __( 'Update Analytics to track metric', 'google-site-kit' ) }
-			</p>
+			</Typography>
 			<SpinnerButton
 				onClick={ onClick }
 				isSaving={ isSaving }

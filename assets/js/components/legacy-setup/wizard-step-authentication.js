@@ -93,12 +93,12 @@ class WizardStepAuthentication extends Component {
 									'google-site-kit'
 								) }
 							</Typography>
-							<p>
+							<Typography as="p" size="medium" type="body">
 								{ __(
 									'Please sign into your Google account to begin.',
 									'google-site-kit'
 								) }
-							</p>
+							</Typography>
 							{ needReauthenticate && (
 								<p className="googlesitekit-error-text">
 									{ __(
@@ -107,7 +107,7 @@ class WizardStepAuthentication extends Component {
 									) }
 								</p>
 							) }
-							<p>
+							<Typography as="p" size="medium" type="body">
 								<Button onClick={ this.onButtonClick }>
 									{ _x(
 										'Sign in with Google',
@@ -124,7 +124,7 @@ class WizardStepAuthentication extends Component {
 										{ __( 'Back', 'google-site-kit' ) }
 									</Button>
 								) }
-							</p>
+							</Typography>
 							<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
 								<OptIn />
 							</div>

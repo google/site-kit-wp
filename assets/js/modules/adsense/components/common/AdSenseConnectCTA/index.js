@@ -49,6 +49,7 @@ import { setItem } from '../../../../../googlesitekit/api/cache';
 import { trackEvent } from '../../../../../util';
 import ContentAutoUpdate from './ContentAutoUpdate';
 import SupportLink from '../../../../../components/SupportLink';
+import Typography from '../../../../../components/Typography';
 import useViewContext from '../../../../../hooks/useViewContext';
 
 export default function AdSenseConnectCTA( { onDismissModule } ) {
@@ -177,7 +178,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 						{ ...cellProps }
 						className="googlesitekit-setup-module__footer-text"
 					>
-						<p>
+						<Typography as="p" size="medium" type="body">
 							{ createInterpolateElement(
 								__(
 									'AdSense accounts are <a>subject to review and approval</a> by the Google AdSense team',
@@ -193,7 +194,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 									),
 								}
 							) }
-						</p>
+						</Typography>
 					</Cell>
 				</Row>
 			</Grid>

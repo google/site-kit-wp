@@ -36,6 +36,7 @@ import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/consta
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import Link from '../../../../../../components/Link';
+import Typography from '../../../../../../components/Typography';
 import { SelectionPanelHeader } from '../../../../../../components/SelectionPanel';
 
 export default function Header( { closePanel } ) {
@@ -61,7 +62,7 @@ export default function Header( { closePanel } ) {
 			onCloseClick={ closePanel }
 		>
 			{ ! isViewOnly && (
-				<p>
+				<Typography as="p" size="medium" type="body">
 					{ createInterpolateElement(
 						__(
 							'You can deactivate this widget in <link><strong>Settings</strong></link>',
@@ -78,7 +79,7 @@ export default function Header( { closePanel } ) {
 							strong: <strong />,
 						}
 					) }
-				</p>
+				</Typography>
 			) }
 		</SelectionPanelHeader>
 	);

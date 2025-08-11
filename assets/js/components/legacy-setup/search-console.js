@@ -293,12 +293,12 @@ class SearchConsole extends Component {
 		if ( loading ) {
 			return (
 				<Fragment>
-					<p>
+					<Typography as="p" size="medium" type="body">
 						{ __(
 							'We’re locating your Search Console account.',
 							'google-site-kit'
 						) }
-					</p>
+					</Typography>
 					<ProgressBar />
 				</Fragment>
 			);

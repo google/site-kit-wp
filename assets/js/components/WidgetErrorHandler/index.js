@@ -35,6 +35,7 @@ import CTA from '../notifications/CTA';
 import GenericErrorHandlerActions from '../GenericErrorHandlerActions';
 import ViewContextContext from '../Root/ViewContextContext';
 import { trackEvent } from '../../util';
+import Typography from '../Typography';
 
 class WidgetErrorHandler extends Component {
 	constructor( props ) {
@@ -85,12 +86,12 @@ class WidgetErrorHandler extends Component {
 				<CTA
 					description={
 						<Fragment>
-							<p>
+							<Typography as="p" size="medium" type="body">
 								{ __(
 									'An error prevented this Widget from being displayed properly. Report the exact contents of the error on the support forum to find out what caused it.',
 									'google-site-kit'
 								) }
-							</p>
+							</Typography>
 							<GenericErrorHandlerActions
 								message={ error.message }
 								componentStack={ info.componentStack }

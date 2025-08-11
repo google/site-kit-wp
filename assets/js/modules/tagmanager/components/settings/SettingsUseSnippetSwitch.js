@@ -26,6 +26,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import Typography from '../../../../components/Typography';
 import UseSnippetSwitch from '../common/UseSnippetSwitch';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 
@@ -48,7 +49,7 @@ export default function SettingsUseSnippetSwitch() {
 		description =
 			primaryContainerID === existingTag ? (
 				<Fragment>
-					<p>
+					<Typography as="p" size="medium" type="body">
 						{ sprintf(
 							/* translators: %s: existing tag ID */
 							__(
@@ -57,17 +58,17 @@ export default function SettingsUseSnippetSwitch() {
 							),
 							existingTag
 						) }
-					</p>
-					<p>
+					</Typography>
+					<Typography as="p" size="medium" type="body">
 						{ __(
 							'Consider removing the existing tag to avoid loading both tags on your site',
 							'google-site-kit'
 						) }
-					</p>
+					</Typography>
 				</Fragment>
 			) : (
 				<Fragment>
-					<p>
+					<Typography as="p" size="medium" type="body">
 						{ sprintf(
 							/* translators: %s: existing tag ID */
 							__(
@@ -76,30 +77,30 @@ export default function SettingsUseSnippetSwitch() {
 							),
 							existingTag
 						) }
-					</p>
-					<p>
+					</Typography>
+					<Typography as="p" size="medium" type="body">
 						{ __(
 							'If you prefer to collect data using that existing tag, please select the corresponding account and property above',
 							'google-site-kit'
 						) }
-					</p>
+					</Typography>
 				</Fragment>
 			);
 	} else {
 		description = useSnippet ? (
-			<p>
+			<Typography as="p" size="medium" type="body">
 				{ __(
 					'Site Kit will add the code automatically',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 		) : (
-			<p>
+			<Typography as="p" size="medium" type="body">
 				{ __(
 					'Site Kit will not add the code to your site',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 		);
 	}
 
