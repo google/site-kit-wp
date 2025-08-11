@@ -131,7 +131,11 @@ export default function Header( { slug } ) {
 	let moduleStatus = null;
 
 	if ( connected ) {
-		moduleStatus = <p>{ __( 'Connected', 'google-site-kit' ) }</p>;
+		moduleStatus = (
+			<Typography as="p" type="body" size="medium">
+				{ __( 'Connected', 'google-site-kit' ) }
+			</Typography>
+		);
 	} else {
 		moduleStatus = (
 			<Button

@@ -124,7 +124,13 @@ const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 										>
 											{ title }
 										</Typography>
-										<p>{ description }</p>
+										<Typography
+											as="p"
+											type="body"
+											size="medium"
+										>
+											{ description }
+										</Typography>
 									</div>
 								</li>
 							)

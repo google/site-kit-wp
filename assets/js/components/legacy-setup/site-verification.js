@@ -177,7 +177,11 @@ class SiteVerification extends Component {
 
 		const loadingDiv = (
 			<Fragment>
-				{ loadingMsg && <p>{ loadingMsg }</p> }
+				{ loadingMsg && (
+					<Typography as="p" type="body" size="medium">
+						{ loadingMsg }
+					</Typography>
+				) }
 				<ProgressBar />
 			</Fragment>
 		);

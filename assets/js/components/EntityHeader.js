@@ -32,6 +32,7 @@ import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
+import Typography from './Typography';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import BackspaceIcon from '../../svg/icons/keyboard-backspace.svg';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
@@ -128,7 +129,9 @@ function EntityHeader() {
 				ref={ headerDetailsRef }
 				className="googlesitekit-entity-header__details"
 			>
-				<p>{ currentEntityTitle }</p>
+				<Typography as="p" type="body" size="medium">
+					{ currentEntityTitle }
+				</Typography>
 				<Link
 					href={ entityURL }
 					aria-label={ entityURL }

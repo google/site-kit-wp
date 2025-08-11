@@ -31,6 +31,7 @@ import { forwardRef } from '@wordpress/element';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
+import Typography from '../../../../../components/Typography';
 import LightbulbIcon from '../../../../../../svg/icons/lightbulb.svg';
 
 const InfoNotice = forwardRef(
@@ -48,7 +49,9 @@ const InfoNotice = forwardRef(
 			>
 				<Icon width="20" height="20" />
 				<div className="googlesitekit-audience-segmentation-info-notice__body">
-					<p>{ content }</p>
+					<Typography as="p" type="body" size="medium">
+						{ content }
+					</Typography>
 
 					{ dismissLabel && (
 						<Button
