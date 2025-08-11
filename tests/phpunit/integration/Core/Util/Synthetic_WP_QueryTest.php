@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Util;
 
@@ -31,23 +29,23 @@ class Synthetic_WP_QueryTest extends TestCase {
 
 		// After parsing initial query, query vars should be populated.
 		$query->parse_query( $query_args );
-		$this->assertNotEmpty( $query->query_vars );
+		$this->assertNotEmpty( $query->query_vars, 'Query vars should be populated after parsing initial query.' );
 
 		// Set query vars to empty array to check below that it's not re-populated.
 		$query->query_vars = array();
 
 		// When parsing query again (by relying on `$query` property), the logic shouldn't run.
 		$query->parse_query();
-		$this->assertEmpty( $query->query_vars );
+		$this->assertEmpty( $query->query_vars, 'Query vars should remain empty when parsing without new query.' );
 
 		// When providing the same query again, the logic shouldn't run.
 		$query->parse_query( $query_args );
-		$this->assertEmpty( $query->query_vars );
+		$this->assertEmpty( $query->query_vars, 'Query vars should remain empty when parsing same query again.' );
 
 		// When setting a different `$query` property and parsing query, the logic should run.
 		$query->query = array( 'post_type' => 'attachment' );
 		$query->parse_query();
-		$this->assertNotEmpty( $query->query_vars );
+		$this->assertNotEmpty( $query->query_vars, 'Query vars should be populated when parsing different query.' );
 	}
 
 	public function test_get_posts_no_404() {
@@ -57,8 +55,8 @@ class Synthetic_WP_QueryTest extends TestCase {
 		// Non-existing page should not be a 404.
 		$query->parse_query( array( 'pagename' => 'invalid-page-slug' ) );
 		$query->get_posts();
-		$this->assertTrue( $query->is_page() );
-		$this->assertFalse( $query->is_404() );
+		$this->assertTrue( $query->is_page(), 'Non-existing page should be treated as page when 404 detection is disabled.' );
+		$this->assertFalse( $query->is_404(), 'Non-existing page should not be 404 when 404 detection is disabled.' );
 	}
 
 	public function test_get_posts_404_singular() {
@@ -88,20 +86,20 @@ class Synthetic_WP_QueryTest extends TestCase {
 		// Existing regular page.
 		$query->parse_query( array( 'pagename' => 'non-paginated-page' ) );
 		$query->get_posts();
-		$this->assertTrue( $query->is_page() );
-		$this->assertFalse( $query->is_404() );
+		$this->assertTrue( $query->is_page(), 'Existing regular page should be treated as page.' );
+		$this->assertFalse( $query->is_404(), 'Existing regular page should not be 404.' );
 
 		// Non-existing page.
 		$query->parse_query( array( 'pagename' => 'invalid-page-slug' ) );
 		$query->get_posts();
-		$this->assertFalse( $query->is_page() );
-		$this->assertTrue( $query->is_404() );
+		$this->assertFalse( $query->is_page(), 'Non-existing page should not be treated as page when 404 detection is enabled.' );
+		$this->assertTrue( $query->is_404(), 'Non-existing page should be 404 when 404 detection is enabled.' );
 
 		// Paginated content queried without pagination.
 		$query->parse_query( array( 'pagename' => 'paginated-page' ) );
 		$query->get_posts();
-		$this->assertTrue( $query->is_page() );
-		$this->assertFalse( $query->is_404() );
+		$this->assertTrue( $query->is_page(), 'Paginated content without pagination should be treated as page.' );
+		$this->assertFalse( $query->is_404(), 'Paginated content without pagination should not be 404.' );
 
 		// Paginated content queried with pagination within bounds.
 		$query->parse_query(
@@ -111,8 +109,8 @@ class Synthetic_WP_QueryTest extends TestCase {
 			)
 		);
 		$query->get_posts();
-		$this->assertTrue( $query->is_page() );
-		$this->assertFalse( $query->is_404() );
+		$this->assertTrue( $query->is_page(), 'Paginated content with valid pagination should be treated as page.' );
+		$this->assertFalse( $query->is_404(), 'Paginated content with valid pagination should not be 404.' );
 
 		// Paginated content queried with pagination out of bounds.
 		$query->parse_query(
@@ -122,8 +120,8 @@ class Synthetic_WP_QueryTest extends TestCase {
 			)
 		);
 		$query->get_posts();
-		$this->assertFalse( $query->is_page() );
-		$this->assertTrue( $query->is_404() );
+		$this->assertFalse( $query->is_page(), 'Paginated content with invalid pagination should not be treated as page.' );
+		$this->assertTrue( $query->is_404(), 'Paginated content with invalid pagination should be 404.' );
 
 		// Paginated content queried with pagination when the content is not paginated at all.
 		$query->parse_query(
@@ -133,8 +131,8 @@ class Synthetic_WP_QueryTest extends TestCase {
 			)
 		);
 		$query->get_posts();
-		$this->assertFalse( $query->is_page() );
-		$this->assertTrue( $query->is_404() );
+		$this->assertFalse( $query->is_page(), 'Non-paginated content with pagination should not be treated as page.' );
+		$this->assertTrue( $query->is_404(), 'Non-paginated content with pagination should be 404.' );
 	}
 
 	public function test_get_posts_404_home() {
@@ -156,8 +154,8 @@ class Synthetic_WP_QueryTest extends TestCase {
 		// Blog page without pagination.
 		$query->parse_query( array( 'pagename' => 'blog' ) );
 		$query->get_posts();
-		$this->assertTrue( $query->is_home() );
-		$this->assertFalse( $query->is_404() );
+		$this->assertTrue( $query->is_home(), 'Blog page without pagination should be treated as home.' );
+		$this->assertFalse( $query->is_404(), 'Blog page without pagination should not be 404.' );
 
 		// Blog page with pagination out of bounds.
 		$query->parse_query(
@@ -167,8 +165,8 @@ class Synthetic_WP_QueryTest extends TestCase {
 			)
 		);
 		$query->get_posts();
-		$this->assertFalse( $query->is_home() );
-		$this->assertTrue( $query->is_404() );
+		$this->assertFalse( $query->is_home(), 'Blog page with invalid pagination should not be treated as home.' );
+		$this->assertTrue( $query->is_404(), 'Blog page with invalid pagination should be 404.' );
 	}
 
 	public function test_get_posts_404_taxonomy_archive() {
@@ -195,20 +193,20 @@ class Synthetic_WP_QueryTest extends TestCase {
 		// Category with content, without pagination.
 		$query->parse_query( array( 'category_name' => 'uncategorized' ) );
 		$query->get_posts();
-		$this->assertTrue( $query->is_category() );
-		$this->assertFalse( $query->is_404() );
+		$this->assertTrue( $query->is_category(), 'Category with content should be treated as category.' );
+		$this->assertFalse( $query->is_404(), 'Category with content should not be 404.' );
 
 		// Category without content, without pagination.
 		$query->parse_query( array( 'category_name' => 'empty-category' ) );
 		$query->get_posts();
-		$this->assertTrue( $query->is_category() );
-		$this->assertFalse( $query->is_404() );
+		$this->assertTrue( $query->is_category(), 'Empty category should be treated as category.' );
+		$this->assertFalse( $query->is_404(), 'Empty category should not be 404.' );
 
 		// Non-existing category, without pagination.
 		$query->parse_query( array( 'category_name' => 'invalid-category-slug' ) );
 		$query->get_posts();
-		$this->assertFalse( $query->is_category() );
-		$this->assertTrue( $query->is_404() );
+		$this->assertFalse( $query->is_category(), 'Non-existing category should not be treated as category.' );
+		$this->assertTrue( $query->is_404(), 'Non-existing category should be 404.' );
 
 		// Category with content, with pagination out of bounds.
 		$query->parse_query(
@@ -218,8 +216,8 @@ class Synthetic_WP_QueryTest extends TestCase {
 			)
 		);
 		$query->get_posts();
-		$this->assertFalse( $query->is_category() );
-		$this->assertTrue( $query->is_404() );
+		$this->assertFalse( $query->is_category(), 'Category with invalid pagination should not be treated as category.' );
+		$this->assertTrue( $query->is_404(), 'Category with invalid pagination should be 404.' );
 	}
 
 	public function test_get_posts_404_author_archive() {
@@ -249,20 +247,20 @@ class Synthetic_WP_QueryTest extends TestCase {
 		// User with content, without pagination.
 		$query->parse_query( array( 'author' => $posts_user_id ) );
 		$query->get_posts();
-		$this->assertTrue( $query->is_author() );
-		$this->assertFalse( $query->is_404() );
+		$this->assertTrue( $query->is_author(), 'User with content should be treated as author.' );
+		$this->assertFalse( $query->is_404(), 'User with content should not be 404.' );
 
 		// User without content, without pagination.
 		$query->parse_query( array( 'author' => $noposts_user_id ) );
 		$query->get_posts();
-		$this->assertTrue( $query->is_author() );
-		$this->assertFalse( $query->is_404() );
+		$this->assertTrue( $query->is_author(), 'User without content should be treated as author.' );
+		$this->assertFalse( $query->is_404(), 'User without content should not be 404.' );
 
 		// Non-existing user, without pagination.
 		$query->parse_query( array( 'author' => 6789 ) );
 		$query->get_posts();
-		$this->assertFalse( $query->is_author() );
-		$this->assertTrue( $query->is_404() );
+		$this->assertFalse( $query->is_author(), 'Non-existing user should not be treated as author.' );
+		$this->assertTrue( $query->is_404(), 'Non-existing user should be 404.' );
 
 		// User with content, with pagination out of bounds.
 		$query->parse_query(
@@ -272,7 +270,7 @@ class Synthetic_WP_QueryTest extends TestCase {
 			)
 		);
 		$query->get_posts();
-		$this->assertFalse( $query->is_author() );
-		$this->assertTrue( $query->is_404() );
+		$this->assertFalse( $query->is_author(), 'User with invalid pagination should not be treated as author.' );
+		$this->assertTrue( $query->is_404(), 'User with invalid pagination should be 404.' );
 	}
 }

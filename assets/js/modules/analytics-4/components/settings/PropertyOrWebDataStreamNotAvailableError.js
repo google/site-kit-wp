@@ -50,7 +50,7 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 	);
 
 	const properties = useSelect( ( select ) =>
-		hasModuleAccess !== false && ! isDisabled
+		hasModuleAccess && ! isDisabled
 			? select( MODULES_ANALYTICS_4 ).getPropertySummaries( accountID )
 			: []
 	);
@@ -60,7 +60,7 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 	);
 
 	const webDataStreams = useSelect( ( select ) =>
-		isValidPropertyID( propertyID ) && hasModuleAccess !== false
+		isValidPropertyID( propertyID ) && hasModuleAccess
 			? select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID )
 			: []
 	);

@@ -121,10 +121,10 @@ import {
 import AudienceSegmentationSetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 } from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTABanner';
-import WebDataStreamNotAvailableNotification, {
-	WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION,
-} from '../../components/notifications/WebDataStreamNotAvailableNotification';
-import GoogleTagIDMismatchNotification from './components/notifications/GoogleTagIDMismatchNotification';
+import {
+	WebDataStreamNotAvailableNotification,
+	GoogleTagIDMismatchNotification,
+} from './components/notifications';
 import { isValidPropertyID, isValidWebDataStreamID } from './utils/validation';
 import {
 	LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
@@ -779,7 +779,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		isDismissible: true,
 		dismissRetries: 1,
 	},
-	[ WEB_DATA_STREAM_NOT_AVAILABLE_NOTIFICATION ]: {
+	'web-data-stream-not-available-notification': {
 		Component: WebDataStreamNotAvailableNotification,
 		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
@@ -799,7 +799,9 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				// The getOwnerID() selector relies on the resolution
 				// of the getSettings() resolver.
 				resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
-				// The isWebDataStreamAvailable property is set within the
+				// Preload module data.
+				resolveSelect( MODULES_ANALYTICS_4 ).getModuleData(),
+				// The isWebDataStreamUnavailable property is set within the
 				// syncGoogleTagSettings() action.
 				dispatch( MODULES_ANALYTICS_4 ).syncGoogleTagSettings(),
 			] );
@@ -814,14 +816,14 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			const isGA4ModuleOwner =
 				ga4ModuleConnected && ga4OwnerID === loggedInUserID;
 
-			const isWebDataStreamAvailable =
-				select( MODULES_ANALYTICS_4 ).isWebDataStreamAvailable();
+			const isWebDataStreamUnavailable =
+				select( MODULES_ANALYTICS_4 ).isWebDataStreamUnavailable();
 
 			return (
 				ga4ModuleConnected &&
 				hasGTMScope &&
 				isGA4ModuleOwner &&
-				isWebDataStreamAvailable === false
+				isWebDataStreamUnavailable === true
 			);
 		},
 	},

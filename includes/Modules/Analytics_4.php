@@ -715,6 +715,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'service'   => 'analyticsdata',
 				'shareable' => true,
 			),
+			'GET:non-shareable-report'                  => array( 'service' => 'analyticsdata' ),
 			'GET:pivot-report'                          => array(
 				'service'   => 'analyticsdata',
 				'shareable' => true,
@@ -741,7 +742,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			'POST:set-google-tag-id-mismatch'           => array(
 				'service' => '',
 			),
-			'POST:set-is-web-data-stream-available'     => array(
+			'POST:set-is-web-data-stream-unavailable'   => array(
 				'service' => '',
 			),
 			'POST:create-audience'                      => array(
@@ -1284,6 +1285,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 				return $this->get_service( 'analyticsadmin' )->properties->get( self::normalize_property_id( $data['propertyID'] ) );
 			case 'GET:report':
+			case 'GET:non-shareable-report':
 				if ( empty( $data['metrics'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
@@ -1780,20 +1782,24 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					$this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
 					return $data['hasMismatchedTag'];
 				};
-			case 'POST:set-is-web-data-stream-available':
-				if ( ! isset( $data['isWebDataStreamAvailable'] ) ) {
-					throw new Missing_Required_Param_Exception( 'isWebDataStreamAvailable' );
+			case 'POST:set-is-web-data-stream-unavailable':
+				if ( ! isset( $data['isWebDataStreamUnavailable'] ) ) {
+					throw new Missing_Required_Param_Exception( 'isWebDataStreamUnavailable' );
 				}
 
-				if ( true === $data['isWebDataStreamAvailable'] ) {
-					return function () use ( $data ) {
-						$this->transients->set( 'googlesitekit_web_data_stream_availability', $data['isWebDataStreamAvailable'] );
-						return $data['isWebDataStreamAvailable'];
+				if ( true === $data['isWebDataStreamUnavailable'] ) {
+					return function () {
+						$settings      = $this->get_settings()->get();
+						$transient_key = 'googlesitekit_web_data_stream_unavailable_' . $settings['webDataStreamID'];
+						$this->transients->set( $transient_key, true );
+						return true;
 					};
 				}
 
 				return function () {
-					$this->transients->delete( 'googlesitekit_web_data_stream_availability' );
+					$settings      = $this->get_settings()->get();
+					$transient_key = 'googlesitekit_web_data_stream_unavailable_' . $settings['webDataStreamID'];
+					$this->transients->delete( $transient_key );
 					return false;
 				};
 		}
@@ -1859,8 +1865,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			case 'GET:key-events':
 				return (array) $response->getKeyEvents();
 			case 'GET:report':
-				$report = new Analytics_4_Report_Response( $this->context );
-				return $report->parse_response( $data, $response );
+			case 'GET:non-shareable-report':
 			case 'GET:pivot-report':
 				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );
@@ -2325,20 +2330,26 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return boolean|WP_Error
 	 */
 	public function check_service_entity_access() {
-		$analyticsadmin = $this->get_service( 'analyticsadmin' );
-		$settings       = $this->settings->get();
+		// Create a basic report request with minimal parameters to test access.
+		$data = array(
+			'dimensions' => array( 'date' ),
+			'metrics'    => array( 'sessions' ),
+			'startDate'  => 'yesterday',
+			'endDate'    => 'today',
+			'limit'      => 0,
+		);
 
-		try {
-			$analyticsadmin
-			->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-			->listPropertiesDataStreams(
-				self::normalize_property_id( $settings['propertyID'] )
-			);
-		} catch ( Exception $e ) {
-			if ( $e->getCode() === 403 ) {
+		// Use the 'non-shareable-report' datapoint to prevent user access assumption
+		// when using dashboard sharing.
+		$request = $this->get_data( 'non-shareable-report', $data );
+
+		if ( is_wp_error( $request ) ) {
+			// A 403 error implies that the user does not have access to the service entity.
+			if ( $request->get_error_code() === 403 ) {
 				return false;
 			}
-			return $this->exception_to_error( $e );
+
+			return $request;
 		}
 
 		return true;
@@ -2757,8 +2768,10 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$inline_data['newBadgeEvents'] = is_array( $new_events_badge ) ? $new_events_badge['events'] : array();
 
 		// Web data stream availability data.
-		$is_web_data_stream_available            = $this->transients->get( 'googlesitekit_web_data_stream_availability' );
-		$inline_data['isWebDataStreamAvailable'] = $is_web_data_stream_available;
+		$settings                                  = $this->get_settings()->get();
+		$transient_key                             = 'googlesitekit_web_data_stream_unavailable_' . $settings['webDataStreamID'];
+		$is_web_data_stream_unavailable            = $this->transients->get( $transient_key );
+		$inline_data['isWebDataStreamUnavailable'] = (bool) $is_web_data_stream_unavailable;
 
 		return array(
 			self::MODULE_SLUG => $inline_data,

@@ -121,7 +121,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 
 		// Register the Enhanced Conversions class if the feature flag is enabled.
 		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
-			$enhanced_conversions = new Enhanced_Conversions( $this->context );
+			$enhanced_conversions = new Enhanced_Conversions();
 			$enhanced_conversions->register();
 		}
 	}
@@ -213,7 +213,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 					'googlesitekit-ads-pax-integrator',
 					array(
 						// When updating, mirror the fixed version for google-pax-sdk in package.json.
-						'src'          => 'https://www.gstatic.com/pax/1.1.6/pax_integrator.js',
+						'src'          => 'https://www.gstatic.com/pax/1.1.8/pax_integrator.js',
 						'execution'    => 'async',
 						'dependencies' => array(
 							'googlesitekit-ads-pax-config',

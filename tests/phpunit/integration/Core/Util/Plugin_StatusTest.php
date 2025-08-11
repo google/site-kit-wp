@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Util;
 
@@ -31,7 +29,7 @@ class Plugin_StatusTest extends TestCase {
 	public function test_is_plugin_installed( $input, $expected ) {
 		$this->mock_installed_plugins();
 		$actual = Plugin_Status::is_plugin_installed( $input );
-		$this->assertEquals( $expected, $actual );
+		$this->assertEquals( $expected, $actual, 'Plugin installation status should match expected result.' );
 	}
 
 	public function data_is_plugin_installed() {

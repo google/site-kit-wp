@@ -48,6 +48,7 @@ export default function AnalyticsSettingsNotice( { hasModuleAccess } ) {
 		return (
 			<Notice
 				type={ Notice.TYPES.WARNING }
+				className="googlesitekit-analytics-settings-notice"
 				description={ createInterpolateElement(
 					sprintf(
 						/* translators: %s: module owner's name */
