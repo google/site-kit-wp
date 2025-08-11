@@ -44,8 +44,10 @@ export function sanitizeProvisioningParams( params ) {
 	// Work on a copy to avoid mutating the original object.
 	const sanitizedParams = { ...params };
 
-	// Replace all non-alphanumeric characters with spaces in sitename.
-	let sanitizedSitename = sitename.replace( /[^a-zA-Z0-9\s]/g, ' ' );
+	// Strip leading numbers from sitename.
+	let sanitizedSitename = sitename.replace( /^\d+/, '' );
+	// Replace all non-alphanumeric characters (except hyphens) with spaces in sitename.
+	sanitizedSitename = sanitizedSitename.replace( /[^a-zA-Z0-9\s-]/g, ' ' );
 	// Normalize all whitespace characters (tabs, newlines, etc.) to spaces.
 	sanitizedSitename = sanitizedSitename.replace( /\s+/g, ' ' );
 	// Trim whitespaces from beginning and end.

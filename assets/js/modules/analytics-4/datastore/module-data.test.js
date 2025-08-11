@@ -35,7 +35,7 @@ describe( 'modules/ads module data', () => {
 			lostEvents: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
 			newBadgeEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 			hasMismatchedTag: false,
-			isWebDataStreamAvailable: true,
+			isWebDataStreamUnavailable: false,
 		},
 	};
 
