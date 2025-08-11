@@ -33,6 +33,7 @@ import {
 	CUSTOM_DIMENSION_DEFINITIONS,
 } from '../datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
+import useFormValue from '../../../hooks/useFormValue';
 
 export default function useCreateCustomDimensionForAudienceEffect() {
 	const isGA4Connected = useSelect( ( select ) =>
@@ -47,11 +48,9 @@ export default function useCreateCustomDimensionForAudienceEffect() {
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
-			'autoSubmit'
-		)
+	const autoSubmit = useFormValue(
+		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+		'autoSubmit'
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );

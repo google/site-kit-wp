@@ -55,6 +55,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import Typography from '../Typography';
+import useFormValue from '../../hooks/useFormValue';
 
 function ConfirmSitePurposeChangeModal( {
 	dialogActive = false,
@@ -76,11 +77,9 @@ function ConfirmSitePurposeChangeModal( {
 		)
 	);
 
-	const savedPurposeSnapshot = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_USER_INPUT_QUESTION_SNAPSHOT,
-			USER_INPUT_QUESTIONS_PURPOSE
-		)
+	const savedPurposeSnapshot = useFormValue(
+		FORM_USER_INPUT_QUESTION_SNAPSHOT,
+		USER_INPUT_QUESTIONS_PURPOSE
 	);
 
 	const savedPurpose = useSelect( ( select ) =>

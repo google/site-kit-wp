@@ -46,6 +46,7 @@ import { numFmt } from '../../../../../../util';
 import NewBadge from '../../../../../../components/NewBadge';
 import { SelectionPanelItem } from '../../../../../../components/SelectionPanel';
 import BadgeWithTooltip from '../../../../../../components/BadgeWithTooltip';
+import useFormValue from '../../../../../../hooks/useFormValue';
 
 export default function AudienceItem( {
 	slug,
@@ -57,11 +58,9 @@ export default function AudienceItem( {
 } ) {
 	const newBadgeSlug = `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`;
 
-	const selectedItems = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_SELECTION_FORM,
-			AUDIENCE_SELECTED
-		)
+	const selectedItems = useFormValue(
+		AUDIENCE_SELECTION_FORM,
+		AUDIENCE_SELECTED
 	);
 	const hasNewBadgeBeenSeen = useSelect( ( select ) =>
 		select( CORE_USER ).hasExpirableItem( newBadgeSlug )

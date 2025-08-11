@@ -48,9 +48,9 @@ import {
 import Link from '../Link';
 import LoadingWrapper from '../LoadingWrapper';
 import ChevronDownIcon from '../../../svg/icons/chevron-down.svg';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import UserInputPreviewAnswers from './UserInputPreviewAnswers';
 import UserInputEditModeContent from './UserInputEditModeContent';
+import useFormValue from '../../hooks/useFormValue';
 
 export default function UserInputPreviewGroup( {
 	slug,
@@ -76,11 +76,9 @@ export default function UserInputPreviewGroup( {
 			userInputSettings
 		);
 	} );
-	const savedPurposeAnswer = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_USER_INPUT_QUESTION_SNAPSHOT,
-			USER_INPUT_QUESTIONS_PURPOSE
-		)
+	const savedPurposeAnswer = useFormValue(
+		FORM_USER_INPUT_QUESTION_SNAPSHOT,
+		USER_INPUT_QUESTIONS_PURPOSE
 	);
 	const previousPurposeAnswer = usePrevious( savedPurposeAnswer );
 

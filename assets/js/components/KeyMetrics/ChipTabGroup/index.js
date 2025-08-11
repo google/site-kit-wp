@@ -71,6 +71,7 @@ import { useDebounce } from '../../../hooks/useDebounce';
 import CheckMark from '../../../../svg/icons/check-2.svg';
 import StarFill from '../../../../svg/icons/star-fill.svg';
 import Null from '../../../components/Null';
+import useFormValue from '../../../hooks/useFormValue';
 
 const icons = {
 	[ KEY_METRICS_GROUP_CURRENT.SLUG ]: CheckMark,
@@ -89,26 +90,20 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 
-	const selectedMetrics = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			KEY_METRICS_SELECTION_FORM,
-			KEY_METRICS_SELECTED
-		)
+	const selectedMetrics = useFormValue(
+		KEY_METRICS_SELECTION_FORM,
+		KEY_METRICS_SELECTED
 	);
-	const effectiveSelection = useSelect(
-		( select ) =>
-			select( CORE_FORMS ).getValue(
-				KEY_METRICS_SELECTION_FORM,
-				EFFECTIVE_SELECTION
-			) || []
+	const effectiveSelection = useFormValue(
+		KEY_METRICS_SELECTION_FORM,
+		EFFECTIVE_SELECTION,
+		[]
 	);
 
-	const unstagedSelection = useSelect(
-		( select ) =>
-			select( CORE_FORMS ).getValue(
-				KEY_METRICS_SELECTION_FORM,
-				UNSTAGED_SELECTION
-			) || []
+	const unstagedSelection = useFormValue(
+		KEY_METRICS_SELECTION_FORM,
+		UNSTAGED_SELECTION,
+		[]
 	);
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()

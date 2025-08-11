@@ -38,6 +38,7 @@ import { AudienceErrorModal } from '../../dashboard';
 import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../../util';
+import useFormValue from '../../../../../../hooks/useFormValue';
 
 export default function SetupCTA() {
 	const viewContext = useViewContext();
@@ -66,11 +67,9 @@ export default function SetupCTA() {
 		select( CORE_SITE ).getSetupErrorCode()
 	);
 
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_SEGMENTATION_SETUP_FORM,
-			'autoSubmit'
-		)
+	const autoSubmit = useFormValue(
+		AUDIENCE_SEGMENTATION_SETUP_FORM,
+		'autoSubmit'
 	);
 
 	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
