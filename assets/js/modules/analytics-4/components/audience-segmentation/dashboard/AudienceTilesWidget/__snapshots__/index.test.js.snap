@@ -2399,7 +2399,9 @@ exports[`AudienceTilesWidget should show the "no audiences" banner when there is
           <div
             class="googlesitekit-lean-cta-banner__body-content"
           >
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               You don’t have any visitor groups selected. 
               <button
                 class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
@@ -2412,7 +2414,9 @@ exports[`AudienceTilesWidget should show the "no audiences" banner when there is
               </button>
               .
             </p>
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               You can deactivate this widget in 
               <button
                 class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
