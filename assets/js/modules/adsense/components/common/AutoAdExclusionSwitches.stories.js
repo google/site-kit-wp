@@ -82,7 +82,7 @@ export default {
 					<div className="googlesitekit-setup">
 						<section className="googlesitekit-setup__wrapper">
 							<div className="googlesitekit-setup-module">
-								<Story { ...args } />
+								<Story />
 							</div>
 						</section>
 					</div>
