@@ -52,6 +52,10 @@ function shouldIgnore( node, name, acronymMatch, acronym, importedNames ) {
 		if ( name === name.toUpperCase() ) {
 			return true;
 		}
+		// cover propTypes declarations
+		if ( node.parent?.type === 'MemberExpression' ) {
+			return true;
+		}
 	}
 
 	// If the acronym was found entirely lowercased, skip this check.
