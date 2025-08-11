@@ -32,7 +32,7 @@ import { MODULE_SLUG_ADS } from '../../constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-function Template( args ) {
+function Template() {
 	return (
 		<div className="googlesitekit-layout">
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--ads">
@@ -41,7 +41,7 @@ function Template( args ) {
 						<Grid>
 							<Row>
 								<Cell size={ 12 }>
-									<SettingsForm { ...args } />
+									<SettingsForm />
 								</Cell>
 							</Row>
 						</Grid>
@@ -144,7 +144,7 @@ export default {
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<Story { ...args } />
+					<Story />
 				</WithRegistrySetup>
 			);
 		},

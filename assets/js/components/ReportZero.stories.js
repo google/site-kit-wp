@@ -28,33 +28,28 @@ export function ReportZeroStory() {
 	return <ReportZero moduleSlug="test-module" />;
 }
 ReportZeroStory.storyName = 'Report Zero';
-ReportZeroStory.decorators = [
-	( Story, { parameters } ) => {
-		const setupRegistry = ( registry ) => {
-			const testModuleDefinition = createModuleStore( 'test-module', {
-				storeName: 'modules/test-module',
-			} );
-			registry.registerStore(
-				testModuleDefinition.STORE_NAME,
-				testModuleDefinition
-			);
-			provideModules( registry, [
-				{ slug: 'test-module', name: 'Test Module' },
-			] );
-
-			if ( parameters?.setupRegistry ) {
-				parameters.setupRegistry( registry );
-			}
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
+ReportZeroStory.args = {
+	setupRegistry: ( registry ) => {
+		const testModuleDefinition = createModuleStore( 'test-module', {
+			storeName: 'modules/test-module',
+		} );
+		registry.registerStore(
+			testModuleDefinition.STORE_NAME,
+			testModuleDefinition
 		);
+		provideModules( registry, [
+			{ slug: 'test-module', name: 'Test Module' },
+		] );
 	},
-];
+};
 
 export default {
 	title: 'Components/ReportZero',
+	decorators: [
+		( Story, { args } ) => (
+			<WithRegistrySetup func={ args.setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		),
+	],
 };

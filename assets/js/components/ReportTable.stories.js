@@ -22,26 +22,24 @@
 import ReportTable from './ReportTable';
 import Layout from './layout/Layout';
 import Link from './Link';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import {
-	createTestRegistry,
-	provideModules,
 	provideModuleRegistrations,
+	provideModules,
 } from '../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import NewBadge from './NewBadge';
+import { useRegistry } from '../googlesitekit-data';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 
 function Template( args ) {
-	return <ReportTable { ...args } />;
+	const registry = useRegistry();
+	const modules = registry.select( CORE_MODULES ).getModules();
+
+	return <ReportTable { ...args } rows={ Object.values( modules ) } />;
 }
 
 function createBasicArgs() {
-	const registry = createTestRegistry();
-	provideModules( registry );
-	provideModuleRegistrations( registry );
-	const modules = registry.select( CORE_MODULES ).getModules();
 	return {
-		rows: Object.values( modules ),
 		columns: [
 			{
 				title: 'Name',
@@ -69,6 +67,9 @@ function createBasicArgs() {
 				},
 			},
 		],
+		setupRegistry: ( registry ) => {
+			provideModuleRegistrations( registry );
+		},
 	};
 }
 
@@ -129,6 +130,9 @@ ReportTableWithNewBadge.args = {
 			field: 'title3',
 		},
 	],
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
+	},
 };
 
 export default {
@@ -137,6 +141,8 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
+				provideModules( registry );
+
 				if ( args?.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
@@ -145,7 +151,7 @@ export default {
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
 					<Layout>
-						<Story { ...args } />
+						<Story />
 					</Layout>
 				</WithRegistrySetup>
 			);

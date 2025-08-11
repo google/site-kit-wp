@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { withQuery } from '@storybook/addon-queryparams';
-
-/**
  * Internal dependencies
  */
 import SetupSuccessSubtleNotification from './SetupSuccessSubtleNotification';
@@ -49,10 +44,4 @@ Ads.scenario = {};
 export default {
 	title: 'Modules/Ads/Notifications/SetupSuccessSubtleNotification',
 	component: SetupSuccessSubtleNotification,
-	decorators: [
-		withQuery,
-		( Story, { args } ) => {
-			return <Story { ...args } />;
-		},
-	],
 };
