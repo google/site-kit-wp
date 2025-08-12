@@ -69,7 +69,9 @@ export default function CurrentSurvey() {
 		? `survey-${ surveySession.session_id }`
 		: null;
 	const shouldHide = useFormValue( formName, 'hideSurvey' );
-	const answers = useFormValue( formName, 'answers', [] );
+	const answers = useSelect(
+		( select ) => select( CORE_FORMS ).getValue( formName, 'answers' ) || []
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { sendSurveyEvent } = useDispatch( CORE_USER );

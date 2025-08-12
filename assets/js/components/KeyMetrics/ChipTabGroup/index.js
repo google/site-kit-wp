@@ -94,16 +94,20 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		KEY_METRICS_SELECTION_FORM,
 		KEY_METRICS_SELECTED
 	);
-	const effectiveSelection = useFormValue(
-		KEY_METRICS_SELECTION_FORM,
-		EFFECTIVE_SELECTION,
-		[]
+	const effectiveSelection = useSelect(
+		( select ) =>
+			select( CORE_FORMS ).getValue(
+				KEY_METRICS_SELECTION_FORM,
+				EFFECTIVE_SELECTION
+			) || []
 	);
 
-	const unstagedSelection = useFormValue(
-		KEY_METRICS_SELECTION_FORM,
-		UNSTAGED_SELECTION,
-		[]
+	const unstagedSelection = useSelect(
+		( select ) =>
+			select( CORE_FORMS ).getValue(
+				KEY_METRICS_SELECTION_FORM,
+				UNSTAGED_SELECTION
+			) || []
 	);
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()

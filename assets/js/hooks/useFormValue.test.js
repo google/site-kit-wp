@@ -95,16 +95,4 @@ describe( 'useFormValue', () => {
 
 		expect( result.current ).toBeUndefined();
 	} );
-
-	it( 'should return default value if provided and the intended value is undefined', () => {
-		const formName = 'testForm';
-		const key = 'testKey';
-		const defaultValue = 'defaultValue';
-		const { result } = renderHook(
-			() => useFormValue( formName, key, defaultValue ),
-			{ registry }
-		);
-
-		expect( result.current ).toBe( defaultValue );
-	} );
 } );

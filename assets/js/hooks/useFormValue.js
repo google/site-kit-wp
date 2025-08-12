@@ -26,21 +26,22 @@ import { useSelect } from '@wordpress/data';
  */
 import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
 
-const useFormValue = ( formName, key, defaulValue ) => {
+/**
+ * Returns the value of a form field.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} formName The name of the form.
+ * @param {string} key      The key of the form field.
+ * @return {string|number|boolean|Array|Object|undefined} The value of the form field, or the default value if provided.
+ */
+export default function useFormValue( formName, key ) {
 	return useSelect(
 		( select ) => {
 			const { getValue } = select( CORE_FORMS );
 
-			const value = getValue( formName, key );
-
-			if ( value === undefined && defaulValue !== undefined ) {
-				return defaulValue;
-			}
-
-			return value;
+			return getValue( formName, key );
 		},
 		[ formName, key ]
 	);
-};
-
-export default useFormValue;
+}

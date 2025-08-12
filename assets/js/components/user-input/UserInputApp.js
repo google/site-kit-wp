@@ -38,14 +38,16 @@ import {
 	FORM_USER_INPUT_QUESTION_NUMBER,
 	getUserInputQuestions,
 } from './util/constants';
-import useFormValue from '../../hooks/useFormValue';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 
 export default function UserInputApp() {
-	const questionNumber = useFormValue(
-		FORM_USER_INPUT_QUESTION_NUMBER,
-		'questionNumber',
-		1
-	);
+	const questionNumber =
+		useSelect( ( select ) =>
+			select( CORE_FORMS ).getValue(
+				FORM_USER_INPUT_QUESTION_NUMBER,
+				'questionNumber'
+			)
+		) || 1;
 
 	const questions = getUserInputQuestions();
 	const questionTitle = questions[ questionNumber - 1 ]?.title || '';

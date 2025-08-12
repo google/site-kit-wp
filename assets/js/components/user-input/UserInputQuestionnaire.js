@@ -63,11 +63,12 @@ export default function UserInputQuestionnaire() {
 	}
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const questionNumber = useFormValue(
+	const questionNumberExists = useFormValue(
 		FORM_USER_INPUT_QUESTION_NUMBER,
-		'questionNumber',
-		1
+		'questionNumber'
 	);
+	const questionNumber =
+		questionNumberExists !== undefined ? questionNumberExists : 1;
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
