@@ -19,7 +19,7 @@
 .mdc-menu {
 	.mdc-list-item {
 		&:hover {
-			background-color: $c-interactive-tertiary-hover !important;
+			background-color: $c-interactive-tertiary-hover;
 			opacity: 1;
 			transition: none;
 		}
