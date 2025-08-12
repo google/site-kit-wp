@@ -51,6 +51,7 @@ import ChevronDown from '../../../../svg/icons/chevron-down-v2.svg';
 import IconWrapper from '../../IconWrapper';
 import { useDispatch } from '../../../googlesitekit-data';
 import Typography from '../../Typography';
+import P from '../../Typography/P';
 
 export default function Header( { slug } ) {
 	const viewContext = useViewContext();
@@ -131,11 +132,7 @@ export default function Header( { slug } ) {
 	let moduleStatus = null;
 
 	if ( connected ) {
-		moduleStatus = (
-			<Typography as="p" type="body" size="medium">
-				{ __( 'Connected', 'google-site-kit' ) }
-			</Typography>
-		);
+		moduleStatus = <P>{ __( 'Connected', 'google-site-kit' ) }</P>;
 	} else {
 		moduleStatus = (
 			<Button

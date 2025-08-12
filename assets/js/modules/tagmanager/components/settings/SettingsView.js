@@ -34,6 +34,7 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { escapeURI } from '../../../../util/escape-uri';
 import Typography from '../../../../components/Typography';
+import P from '../../../../components/Typography/P';
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>
@@ -254,12 +255,12 @@ export default function SettingsView() {
 					</p>
 
 					{ hasExistingTag && (
-						<Typography as="p" size="medium" type="body">
+						<P>
 							{ __(
 								'Placing two tags at the same time is not recommended.',
 								'google-site-kit'
 							) }
-						</Typography>
+						</P>
 					) }
 				</div>
 			</div>

@@ -36,7 +36,7 @@ import { getScoreCategory } from '../../util';
 import { getReportErrorMessage } from '../../../../util/errors';
 import ReportErrorActions from '../../../../components/ReportErrorActions';
 import ErrorNotice from '../../../../components/ErrorNotice';
-import Typography from '../../../../components/Typography';
+import P from '../../../../components/Typography/P';
 
 export default function LabReportMetrics( { data, error } ) {
 	const largestContentfulPaint =
@@ -69,7 +69,7 @@ export default function LabReportMetrics( { data, error } ) {
 	return (
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
-				<Typography as="p" size="medium" type="body">
+				<P>
 					{ createInterpolateElement(
 						__(
 							'Lab data is a snapshot of how your page performs right now, measured in tests we run in a controlled environment. <LearnMoreLink />',
@@ -79,7 +79,7 @@ export default function LabReportMetrics( { data, error } ) {
 							LearnMoreLink: <MetricsLearnMoreLink />,
 						}
 					) }
-				</Typography>
+				</P>
 			</div>
 			<table className="googlesitekit-table googlesitekit-table--with-list">
 				<thead>

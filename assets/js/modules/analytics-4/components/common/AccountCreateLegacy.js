@@ -30,7 +30,7 @@ import { Button, ProgressBar } from 'googlesitekit-components';
 import { trackEvent } from '../../../../util';
 import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import Typography from '../../../../components/Typography';
+import P from '../../../../components/Typography/P';
 import CreatePropertyInfoNotice from './CreatePropertyInfoNotice';
 import useViewContext from '../../../../hooks/useViewContext';
 
@@ -87,28 +87,28 @@ export default function AccountCreateLegacy() {
 			/>
 
 			{ ! isCreateAccount && accounts && accounts.length === 0 && (
-				<Typography as="p" size="medium" type="body">
+				<P>
 					{ __(
 						'Looks like you don’t have an Analytics account yet. Once you create it, click on "Re-fetch my account" and Site Kit will locate it.',
 						'google-site-kit'
 					) }
-				</Typography>
+				</P>
 			) }
 
 			{ isCreateAccount && (
 				<Fragment>
-					<Typography as="p" size="medium" type="body">
+					<P>
 						{ __(
 							'To create a new account, click the button below which will open the Google Analytics account creation screen in a new window.',
 							'google-site-kit'
 						) }
-					</Typography>
-					<Typography as="p" size="medium" type="body">
+					</P>
+					<P>
 						{ __(
 							'Once completed, click the link below to re-fetch your accounts to continue.',
 							'google-site-kit'
 						) }
-					</Typography>
+					</P>
 				</Fragment>
 			) }
 

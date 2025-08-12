@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import NoAudienceBannerGraphic from '../../../../../../../svg/graphics/no-audience-banner-graphic.svg';
 import Link from '../../../../../../components/Link';
-import Typography from '../../../../../../components/Typography';
+import P from '../../../../../../components/Typography/P';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
 import LeanCTABanner from '../../../../../../components/LeanCTABanner';
 import { CORE_LOCATION } from '../../../../../../googlesitekit/datastore/location/constants';
@@ -80,7 +80,7 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 			Icon={ Icon }
 			SVGGraphic={ NoAudienceBannerGraphic }
 		>
-			<Typography as="p" size="medium" type="body">
+			<P>
 				{ didSetAudiences &&
 					createInterpolateElement(
 						__(
@@ -111,9 +111,9 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 							),
 						}
 					) }
-			</Typography>
+			</P>
 			{ ! isViewOnly && (
-				<Typography as="p" size="medium" type="body">
+				<P>
 					{ createInterpolateElement(
 						__(
 							'You can deactivate this widget in <a>Settings</a>.',
@@ -136,7 +136,7 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 							),
 						}
 					) }
-				</Typography>
+				</P>
 			) }
 		</LeanCTABanner>
 	);

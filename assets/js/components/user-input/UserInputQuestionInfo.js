@@ -37,7 +37,7 @@ import { Cell } from '../../material-components';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
 import { getUserInputQuestions } from './util/constants';
-import Typography from '../Typography';
+import P from '../Typography/P';
 
 export default function UserInputQuestionInfo( { slug, questionNumber } ) {
 	const hasMultipleUser = useSelect( ( select ) =>
@@ -79,7 +79,7 @@ export default function UserInputQuestionInfo( { slug, questionNumber } ) {
 				<UserInputQuestionNotice className="googlesitekit-desktop-display-none " />
 
 				{ scope === 'site' && hasMultipleUser && (
-					<Typography as="p" size="medium" type="body">
+					<P>
 						{ author
 							? __(
 									'This answer can be edited by all Site Kit admins',
@@ -89,7 +89,7 @@ export default function UserInputQuestionInfo( { slug, questionNumber } ) {
 									'Your answer to this question will apply to all Site Kit users. Any other admins with access to Site Kit can see and edit this response.',
 									'google-site-kit'
 							  ) }
-					</Typography>
+					</P>
 				) }
 
 				<UserInputQuestionAuthor slug={ slug } />

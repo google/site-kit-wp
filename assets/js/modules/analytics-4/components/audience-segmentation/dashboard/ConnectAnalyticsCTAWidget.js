@@ -34,7 +34,7 @@ import { useSelect } from 'googlesitekit-data';
 import AudienceConnectAnalyticsCTAGraphic from '../../../../../../svg/graphics/audience-connect-analytics-cta-graphic.svg';
 import AudienceConnectAnalyticsCTAGraphicTablet from '../../../../../../svg/graphics/audience-connect-analytics-cta-graphic-tablet.svg';
 import Link from '../../../../../components/Link';
-import Typography from '../../../../../components/Typography';
+import P from '../../../../../components/Typography/P';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import useActivateModuleCallback from '../../../../../hooks/useActivateModuleCallback';
@@ -58,7 +58,7 @@ export default function ConnectAnalyticsCTAWidget( { Widget } ) {
 	);
 
 	const content = isTabletBreakpoint ? (
-		<Typography as="p" size="medium" type="body">
+		<P>
 			{ createInterpolateElement(
 				__(
 					'Google Analytics is disconnected, your audience metrics can’t be displayed. <a>Connect Google Analytics</a>',
@@ -68,15 +68,15 @@ export default function ConnectAnalyticsCTAWidget( { Widget } ) {
 					a: <Link onClick={ handleConnectModule } secondary />,
 				}
 			) }
-		</Typography>
+		</P>
 	) : (
 		<Fragment>
-			<Typography as="p" size="medium" type="body">
+			<P>
 				{ __(
 					'Google Analytics is disconnected, your audience metrics can’t be displayed',
 					'google-site-kit'
 				) }
-			</Typography>
+			</P>
 			<Link onClick={ handleConnectModule } secondary>
 				{ __( 'Connect Google Analytics', 'google-site-kit' ) }
 			</Link>

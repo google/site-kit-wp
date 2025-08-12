@@ -55,6 +55,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import Typography from '../Typography';
+import P from '../Typography/P';
 
 function ConfirmSitePurposeChangeModal( {
 	dialogActive = false,
@@ -237,7 +238,7 @@ function ConfirmSitePurposeChangeModal( {
 			<DialogTitle>
 				{ __( 'Tailored metrics suggestions', 'google-site-kit' ) }
 			</DialogTitle>
-			<Typography as="p" size="medium" type="body">
+			<P>
 				{ __(
 					'You have changed your website purpose. We can suggest new tailored metrics for you based on your answers or you can keep your current metrics selection on your dashboard.',
 					'google-site-kit'
@@ -247,7 +248,7 @@ function ConfirmSitePurposeChangeModal( {
 					'You can always edit your metrics selection from the dashboard.',
 					'google-site-kit'
 				) }
-			</Typography>
+			</P>
 			<DialogContent>
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">

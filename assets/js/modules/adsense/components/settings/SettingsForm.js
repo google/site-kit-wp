@@ -36,7 +36,7 @@ import {
 } from '../common';
 import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
 import Link from '../../../../components/Link';
-import Typography from '../../../../components/Typography';
+import P from '../../../../components/Typography/P';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
@@ -119,7 +119,7 @@ export default function SettingsForm() {
 			{ webStoriesActive && (
 				<Fragment>
 					<WebStoriesAdUnitSelect />
-					<Typography as="p" size="medium" type="body">
+					<P>
 						{ createInterpolateElement(
 							__(
 								'This ad unit will be used for your Web Stories. <LearnMoreLink />',
@@ -143,7 +143,7 @@ export default function SettingsForm() {
 								),
 							}
 						) }
-					</Typography>
+					</P>
 				</Fragment>
 			) }
 

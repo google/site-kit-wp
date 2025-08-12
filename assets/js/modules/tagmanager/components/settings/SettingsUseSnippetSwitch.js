@@ -26,7 +26,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import Typography from '../../../../components/Typography';
+import P from '../../../../components/Typography/P';
 import UseSnippetSwitch from '../common/UseSnippetSwitch';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 
@@ -49,7 +49,7 @@ export default function SettingsUseSnippetSwitch() {
 		description =
 			primaryContainerID === existingTag ? (
 				<Fragment>
-					<Typography as="p" size="medium" type="body">
+					<P>
 						{ sprintf(
 							/* translators: %s: existing tag ID */
 							__(
@@ -58,17 +58,17 @@ export default function SettingsUseSnippetSwitch() {
 							),
 							existingTag
 						) }
-					</Typography>
-					<Typography as="p" size="medium" type="body">
+					</P>
+					<P>
 						{ __(
 							'Consider removing the existing tag to avoid loading both tags on your site',
 							'google-site-kit'
 						) }
-					</Typography>
+					</P>
 				</Fragment>
 			) : (
 				<Fragment>
-					<Typography as="p" size="medium" type="body">
+					<P>
 						{ sprintf(
 							/* translators: %s: existing tag ID */
 							__(
@@ -77,30 +77,30 @@ export default function SettingsUseSnippetSwitch() {
 							),
 							existingTag
 						) }
-					</Typography>
-					<Typography as="p" size="medium" type="body">
+					</P>
+					<P>
 						{ __(
 							'If you prefer to collect data using that existing tag, please select the corresponding account and property above',
 							'google-site-kit'
 						) }
-					</Typography>
+					</P>
 				</Fragment>
 			);
 	} else {
 		description = useSnippet ? (
-			<Typography as="p" size="medium" type="body">
+			<P>
 				{ __(
 					'Site Kit will add the code automatically',
 					'google-site-kit'
 				) }
-			</Typography>
+			</P>
 		) : (
-			<Typography as="p" size="medium" type="body">
+			<P>
 				{ __(
 					'Site Kit will not add the code to your site',
 					'google-site-kit'
 				) }
-			</Typography>
+			</P>
 		);
 	}
 

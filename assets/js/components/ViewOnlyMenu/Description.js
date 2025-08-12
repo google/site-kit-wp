@@ -27,7 +27,7 @@ import { __, _x } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import Typography from '../Typography';
+import P from '../Typography/P';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
@@ -117,9 +117,7 @@ export default function Description() {
 
 	return (
 		<li className="googlesitekit-view-only-menu__list-item googlesitekit-view-only-menu__description">
-			<Typography as="p" type="body" size="medium">
-				{ description }
-			</Typography>
+			<P>{ description }</P>
 			{ canAuthenticate && (
 				<Button onClick={ onButtonClick }>
 					{ _x(

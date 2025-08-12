@@ -33,7 +33,7 @@ import { Button, SpinnerButton } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import ErrorNotice from '../../../../../../components/ErrorNotice';
 import Link from '../../../../../../components/Link';
-import Typography from '../../../../../../components/Typography';
+import P from '../../../../../../components/Typography/P';
 import { CORE_LOCATION } from '../../../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
@@ -163,18 +163,18 @@ export default function CreateMessageStep() {
 
 	return (
 		<Fragment>
-			<Typography as="p" size="medium" type="body">
+			<P>
 				{ __(
 					'Create and publish an ad blocking recovery message in AdSense',
 					'google-site-kit'
 				) }
-			</Typography>
-			<Typography as="p" size="medium" type="body">
+			</P>
+			<P>
 				{ __(
 					'Site visitors will be given the option to allow ads on your site. You can also present them with other options to fund your site (optional)',
 					'google-site-kit'
 				) }
-			</Typography>
+			</P>
 			{ saveSettingsError && <ErrorNotice error={ saveSettingsError } /> }
 			<div className="googlesitekit-ad-blocking-recovery__create-message-footer">
 				<div className="googlesitekit-ad-blocking-recovery__create-message-footer-actions">

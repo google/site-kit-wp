@@ -29,7 +29,7 @@ import { useSelect } from 'googlesitekit-data';
 import { MODULES_PAGESPEED_INSIGHTS } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
-import Typography from '../../../../components/Typography';
+import P from '../../../../components/Typography/P';
 
 export default function ReportDetailsLink() {
 	const referenceURL = useSelect( ( select ) =>
@@ -43,7 +43,7 @@ export default function ReportDetailsLink() {
 	);
 
 	return (
-		<Typography as="p" size="medium" type="body">
+		<P>
 			{ createInterpolateElement(
 				sprintf(
 					/* translators: %s: link with translated service name */
@@ -58,6 +58,6 @@ export default function ReportDetailsLink() {
 					a: <Link href={ pagespeedInsightsURL } external />,
 				}
 			) }
-		</Typography>
+		</P>
 	);
 }

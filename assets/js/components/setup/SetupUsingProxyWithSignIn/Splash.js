@@ -46,6 +46,7 @@ import {
 import { Cell, Grid, Row } from '../../../material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import Typography from '../../Typography';
+import P from '../../Typography/P';
 
 export default function Splash( { children } ) {
 	const analyticsModuleAvailable = useSelect( ( select ) =>
@@ -183,7 +184,7 @@ export default function Splash( { children } ) {
 						{ DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ===
 							disconnectedReason &&
 							connectedProxyURL !== homeURL && (
-								<Typography as="p" size="medium" type="body">
+								<P>
 									{ sprintf(
 										/* translators: %s: Previous Connected Proxy URL */
 										__(
@@ -201,7 +202,7 @@ export default function Splash( { children } ) {
 										),
 										homeURL
 									) }
-								</Typography>
+								</P>
 							) }
 
 						{ analyticsModuleAvailable &&

@@ -36,6 +36,7 @@ import { ErrorNotices } from '../../common';
 import SetupUseSnippetSwitch from '../SetupUseSnippetSwitch';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import Typography from '../../../../../components/Typography';
+import P from '../../../../../components/Typography/P';
 export default function SetupAccountSiteUI( {
 	heading,
 	description,
@@ -61,9 +62,7 @@ export default function SetupAccountSiteUI( {
 
 			<ErrorNotices />
 
-			<Typography as="p" type="body" size="medium">
-				{ description }
-			</Typography>
+			<P>{ description }</P>
 
 			<SetupUseSnippetSwitch />
 

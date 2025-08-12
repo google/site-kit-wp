@@ -45,6 +45,7 @@ import { Grid, Row, Cell } from '../../material-components';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import Typography from '../Typography';
+import P from '../Typography/P';
 
 export default function SetupUsingProxyViewOnly() {
 	const viewContext = useViewContext();
@@ -140,16 +141,12 @@ export default function SetupUsingProxyViewOnly() {
 														}
 													) }
 												</p>
-												<Typography
-													as="p"
-													size="medium"
-													type="body"
-												>
+												<P>
 													{ __(
 														'Get insights about how people find and use your site as well as how to improve and monetize your content, directly in your WordPress dashboard',
 														'google-site-kit'
 													) }
-												</Typography>
+												</P>
 
 												<OptIn />
 

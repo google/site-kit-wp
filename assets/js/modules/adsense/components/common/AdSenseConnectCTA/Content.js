@@ -35,6 +35,7 @@ import { Row, Cell } from '../../../../../material-components';
 import ContentSVG from './ContentSVG';
 import AdSenseIcon from '../../../../../../svg/graphics/adsense.svg';
 import Typography from '../../../../../components/Typography';
+import P from '../../../../../components/Typography/P';
 
 const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 	const stageContent = [
@@ -124,13 +125,7 @@ const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 										>
 											{ title }
 										</Typography>
-										<Typography
-											as="p"
-											type="body"
-											size="medium"
-										>
-											{ description }
-										</Typography>
+										<P>{ description }</P>
 									</div>
 								</li>
 							)

@@ -37,6 +37,7 @@ import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
 import { setItem } from '../../googlesitekit/api/cache';
 import { trackEvent } from '../../util';
 import Typography from '../Typography';
+import P from '../Typography/P';
 
 class WizardStepAuthentication extends Component {
 	constructor( props ) {
@@ -93,12 +94,12 @@ class WizardStepAuthentication extends Component {
 									'google-site-kit'
 								) }
 							</Typography>
-							<Typography as="p" size="medium" type="body">
+							<P>
 								{ __(
 									'Please sign into your Google account to begin.',
 									'google-site-kit'
 								) }
-							</Typography>
+							</P>
 							{ needReauthenticate && (
 								<p className="googlesitekit-error-text">
 									{ __(
@@ -107,7 +108,7 @@ class WizardStepAuthentication extends Component {
 									) }
 								</p>
 							) }
-							<Typography as="p" size="medium" type="body">
+							<P>
 								<Button onClick={ this.onButtonClick }>
 									{ _x(
 										'Sign in with Google',
@@ -124,7 +125,7 @@ class WizardStepAuthentication extends Component {
 										{ __( 'Back', 'google-site-kit' ) }
 									</Button>
 								) }
-							</Typography>
+							</P>
 							<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
 								<OptIn />
 							</div>

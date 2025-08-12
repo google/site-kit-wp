@@ -33,7 +33,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Switch } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import Link from '../../../../components/Link';
-import Typography from '../../../../components/Typography';
+import P from '../../../../components/Typography/P';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import useViewContext from '../../../../hooks/useViewContext';
@@ -167,7 +167,7 @@ export default function AdBlockingRecoveryToggle() {
 						onClick={ handleAdBlockingRecoveryToggleClick }
 						hideLabel={ false }
 					/>
-					<Typography as="p" size="medium" type="body">
+					<P>
 						{ createInterpolateElement(
 							__(
 								'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense. <a>Configure your message</a>',
@@ -182,7 +182,7 @@ export default function AdBlockingRecoveryToggle() {
 								),
 							}
 						) }
-					</Typography>
+					</P>
 				</div>
 				{ ( adBlockingRecoveryToggle || adBlockingRecoverySnippet ) && (
 					<div className="googlesitekit-settings-module__meta-item">
@@ -195,7 +195,7 @@ export default function AdBlockingRecoveryToggle() {
 							onClick={ handleErrorProtectionToggleClick }
 							hideLabel={ false }
 						/>
-						<Typography as="p" size="medium" type="body">
+						<P>
 							{ createInterpolateElement(
 								__(
 									'If a site visitor’s ad blocker browser extension blocks the message you create in AdSense, a default, non-customizable ad blocking recovery message will display instead. <a>Learn more</a>',
@@ -205,7 +205,7 @@ export default function AdBlockingRecoveryToggle() {
 									a: <Link href={ learnMoreURL } external />,
 								}
 							) }
-						</Typography>
+						</P>
 					</div>
 				) }
 			</div>

@@ -71,7 +71,7 @@ import { useDebounce } from '../../../hooks/useDebounce';
 import CheckMark from '../../../../svg/icons/check-2.svg';
 import StarFill from '../../../../svg/icons/star-fill.svg';
 import Null from '../../../components/Null';
-import Typography from '../../Typography';
+import P from '../../Typography/P';
 
 const icons = {
 	[ KEY_METRICS_GROUP_CURRENT.SLUG ]: CheckMark,
@@ -541,12 +541,12 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 				{ ! Object.keys( activeMetricItems ).length && (
 					<div className="googlesitekit-chip-tab-group__graphic">
 						<NoSelectedItemsSVG height={ 250 } />
-						<Typography as="p" size="medium" type="body">
+						<P>
 							{ __(
 								'No metrics were selected yet',
 								'google-site-kit'
 							) }
-						</Typography>
+						</P>
 					</div>
 				) }
 			</div>

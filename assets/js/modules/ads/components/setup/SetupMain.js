@@ -37,6 +37,7 @@ import SupportLink from '../../../../components/SupportLink';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import Typography from '../../../../components/Typography';
+import P from '../../../../components/Typography/P';
 
 export default function SetupMain( { finishSetup } ) {
 	const isAdBlockerActive = useSelect( ( select ) =>
@@ -64,7 +65,7 @@ export default function SetupMain( { finishSetup } ) {
 
 				{ ! isAdBlockerActive && (
 					<Fragment>
-						<Typography as="p" size="medium" type="body">
+						<P>
 							{ createInterpolateElement(
 								__(
 									'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns. <a>Learn more</a>',
@@ -84,7 +85,7 @@ export default function SetupMain( { finishSetup } ) {
 								'You can always change this later in Site Kit Settings.',
 								'google-site-kit'
 							) }
-						</Typography>
+						</P>
 
 						<SetupForm finishSetup={ finishSetup } />
 					</Fragment>

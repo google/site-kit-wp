@@ -30,29 +30,29 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Typography from '../../Typography';
+import P from '../../Typography/P';
 
 export default function Errors( { recoveryErrors } ) {
 	return (
 		<div className="googlesitekit-module-recovery-errors">
 			{ Object.keys( recoveryErrors ).length === 1 && (
-				<Typography as="p" size="medium" type="body">
+				<P>
 					{ sprintf(
 						/* translators: %s: Error message */
 						__( 'Error: %s', 'google-site-kit' ),
 						Object.values( recoveryErrors )[ 0 ].message
 					) }
-				</Typography>
+				</P>
 			) }
 
 			{ Object.keys( recoveryErrors ).length > 1 && (
 				<Fragment>
-					<Typography as="p" size="medium" type="body">
+					<P>
 						{ __(
 							'The following modules failed to be recovered:',
 							'google-site-kit'
 						) }
-					</Typography>
+					</P>
 					<ul>
 						{ Object.keys( recoveryErrors ).map( ( module ) => (
 							<li key={ module }>

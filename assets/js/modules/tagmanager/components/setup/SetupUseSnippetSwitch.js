@@ -26,7 +26,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import Typography from '../../../../components/Typography';
+import P from '../../../../components/Typography/P';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import UseSnippetSwitch from '../common/UseSnippetSwitch';
 
@@ -42,7 +42,7 @@ export default function SetupUseSnippetSwitch() {
 	const description =
 		primaryContainerID === existingTag ? (
 			<Fragment>
-				<Typography as="p" size="medium" type="body">
+				<P>
 					{ sprintf(
 						/* translators: %s: existing tag ID */
 						__(
@@ -51,17 +51,17 @@ export default function SetupUseSnippetSwitch() {
 						),
 						existingTag
 					) }
-				</Typography>
-				<Typography as="p" size="medium" type="body">
+				</P>
+				<P>
 					{ __(
 						'Make sure you remove it if you want to place the same tag via Site Kit, otherwise they will be duplicated',
 						'google-site-kit'
 					) }
-				</Typography>
+				</P>
 			</Fragment>
 		) : (
 			<Fragment>
-				<Typography as="p" size="medium" type="body">
+				<P>
 					{ sprintf(
 						/* translators: %s: existing tag ID */
 						__(
@@ -70,13 +70,13 @@ export default function SetupUseSnippetSwitch() {
 						),
 						existingTag
 					) }
-				</Typography>
-				<Typography as="p" size="medium" type="body">
+				</P>
+				<P>
 					{ __(
 						'If you prefer to collect data using that existing tag, please select the corresponding account and property above',
 						'google-site-kit'
 					) }
-				</Typography>
+				</P>
 			</Fragment>
 		);
 

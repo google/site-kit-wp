@@ -38,7 +38,7 @@ import { MAX_SELECTED_METRICS_COUNT } from '../constants';
 import Link from '../../Link';
 import { SelectionPanelHeader } from '../../SelectionPanel';
 import useViewOnly from '../../../hooks/useViewOnly';
-import Typography from '../../Typography';
+import P from '../../Typography/P';
 
 export default function Header( { closePanel } ) {
 	const isViewOnly = useViewOnly();
@@ -67,7 +67,7 @@ export default function Header( { closePanel } ) {
 			onCloseClick={ closePanel }
 		>
 			{ ! isViewOnly && (
-				<Typography as="p" size="medium" type="body">
+				<P>
 					{ createInterpolateElement(
 						__(
 							'Edit your personalized goals or deactivate this widget in <link><strong>Settings</strong></link>',
@@ -84,7 +84,7 @@ export default function Header( { closePanel } ) {
 							strong: <strong />,
 						}
 					) }
-				</Typography>
+				</P>
 			) }
 		</SelectionPanelHeader>
 	);

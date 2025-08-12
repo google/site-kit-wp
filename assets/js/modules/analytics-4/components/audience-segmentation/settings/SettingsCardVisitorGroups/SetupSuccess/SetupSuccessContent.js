@@ -34,7 +34,7 @@ import { trackEvent } from '../../../../../../../util';
 import useViewContext from '../../../../../../../hooks/useViewContext';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import Typography from '../../../../../../../components/Typography';
+import P from '../../../../../../../components/Typography/P';
 import CheckFill from '../../../../../../../../svg/icons/check-fill.svg';
 
 export const SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION =
@@ -86,12 +86,12 @@ const SetupSuccessContent = forwardRef( ( props, ref ) => {
 				<CheckFill width={ 24 } height={ 24 } />
 			</div>
 			<div className="googlesitekit-subtle-notification__content">
-				<Typography as="p" size="medium" type="body">
+				<P>
 					{ __(
 						'We’ve added the visitor groups section to your dashboard!',
 						'google-site-kit'
 					) }
-				</Typography>
+				</P>
 			</div>
 			<div className="googlesitekit-subtle-notification__action">
 				<Button onClick={ handleDismiss } tertiary>

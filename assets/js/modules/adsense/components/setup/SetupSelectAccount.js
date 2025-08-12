@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { AccountSelect, ErrorNotices } from '../common';
 import Typography from '../../../../components/Typography';
+import P from '../../../../components/Typography/P';
 
 export default function SetupSelectAccount() {
 	return (
@@ -42,12 +43,12 @@ export default function SetupSelectAccount() {
 
 			<ErrorNotices />
 
-			<Typography as="p" size="medium" type="body">
+			<P>
 				{ __(
 					'Looks like you have multiple AdSense accounts associated with your Google account. Select the account to use with Site Kit below.',
 					'google-site-kit'
 				) }
-			</Typography>
+			</P>
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />

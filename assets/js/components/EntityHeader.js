@@ -32,11 +32,11 @@ import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import Typography from './Typography';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import BackspaceIcon from '../../svg/icons/keyboard-backspace.svg';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import Link from './Link';
+import P from './Typography/P';
 import { shortenURL } from '../util/urls';
 import { trackEvent } from '../util';
 import useDashboardType, {
@@ -129,9 +129,7 @@ function EntityHeader() {
 				ref={ headerDetailsRef }
 				className="googlesitekit-entity-header__details"
 			>
-				<Typography as="p" type="body" size="medium">
-					{ currentEntityTitle }
-				</Typography>
+				<P>{ currentEntityTitle }</P>
 				<Link
 					href={ entityURL }
 					aria-label={ entityURL }
