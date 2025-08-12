@@ -21,8 +21,6 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import {
-	WithTestRegistry,
-	createTestRegistry,
 	provideModules,
 	provideModuleRegistrations,
 	provideUserInfo,
@@ -140,13 +138,17 @@ InsufficientPermissions.scenario = {};
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationErrorWidget',
 	decorators: [
-		( Story ) => {
-			const registry = createTestRegistry();
+		( Story, { args } ) => {
+			function setupRegistry( registry ) {
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			}
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

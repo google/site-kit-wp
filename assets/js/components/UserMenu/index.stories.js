@@ -19,11 +19,8 @@
 /**
  * Internal dependencies
  */
-import {
-	provideSiteInfo,
-	provideUserInfo,
-	WithTestRegistry,
-} from '../../../../tests/js/utils';
+import { provideSiteInfo, provideUserInfo } from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import UserMenu from '.';
 
 function Template( args ) {
@@ -43,9 +40,9 @@ export default {
 			}
 
 			return (
-				<WithTestRegistry callback={ setupRegistry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

@@ -23,8 +23,8 @@ import { withQuery } from '@storybook/addon-queryparams';
 import {
 	provideModuleRegistrations,
 	provideModules,
-	WithTestRegistry,
 } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
 import {
 	MODULES_READER_REVENUE_MANAGER,
@@ -215,12 +215,9 @@ export default {
 			}
 
 			return (
-				<WithTestRegistry
-					callback={ setupRegistry }
-					features={ args?.features || [] }
-				>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

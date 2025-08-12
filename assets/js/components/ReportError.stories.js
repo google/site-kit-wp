@@ -21,12 +21,7 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import ReportError from './ReportError';
-import {
-	createTestRegistry,
-	WithTestRegistry,
-	provideModules,
-	provideModuleRegistrations,
-} from '../../../tests/js/utils';
+import { provideModules } from '../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../util/errors';
@@ -45,22 +40,8 @@ function ReportErrorWrapper( { ...args } ) {
 	return <ReportError error={ error } { ...args } />;
 }
 
-function Template( { setupRegistry = async () => {}, viewContext, ...args } ) {
-	async function setupRegistryCallback( registry ) {
-		provideModules( registry );
-		provideModuleRegistrations( registry );
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-		await setupRegistry( registry );
-	}
-	return (
-		<WithRegistrySetup func={ setupRegistryCallback }>
-			<ViewContextProvider
-				value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
-			>
-				<ReportErrorWrapper moduleSlug="analytics-4" { ...args } />
-			</ViewContextProvider>
-		</WithRegistrySetup>
-	);
+function Template( args ) {
+	return <ReportErrorWrapper moduleSlug="analytics-4" { ...args } />;
 }
 
 function PlainTemplate( { ...args } ) {
@@ -342,16 +323,27 @@ export default {
 	title: 'Components/ReportError',
 	component: ReportError,
 	decorators: [
-		( Story ) => {
-			const registry = createTestRegistry();
-			provideModules( registry, [
-				{ slug: 'test-module', name: 'Test Module' },
-			] );
+		( Story, { args } ) => {
+			const { viewContext, ...rest } = args;
+
+			function setupRegistry( registry ) {
+				provideModules( registry, [
+					{ slug: 'test-module', name: 'Test Module' },
+				] );
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			}
 
 			return (
-				<WithTestRegistry registry={ registry }>
-					<Story />
-				</WithTestRegistry>
+				<WithRegistrySetup func={ setupRegistry }>
+					<ViewContextProvider
+						value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+					>
+						<Story { ...rest } />
+					</ViewContextProvider>
+				</WithRegistrySetup>
 			);
 		},
 	],
