@@ -412,16 +412,14 @@ export const createSettingsStore = (
 			};
 		};
 
-		settingReducers[ `SET_${ constantSlug }` ] = createReducer(
-			( state, { payload } ) => {
-				const { value } = payload;
+		settingReducers[ `SET_${ constantSlug }` ] = ( state, { payload } ) => {
+			const { value } = payload;
 
-				state.settings = {
-					...( state.settings || {} ),
-					[ slug ]: value,
-				};
-			}
-		);
+			state.settings = {
+				...( state.settings || {} ),
+				[ slug ]: value,
+			};
+		};
 
 		/**
 		 * Gets the current value for the setting indicated by the selector name.
