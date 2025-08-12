@@ -51,10 +51,10 @@ import {
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 
-const createTestRegistryWithArea = (
+function createTestRegistryWithArea(
 	areaName,
 	style = WIDGET_AREA_STYLES.BOXES
-) => {
+) {
 	const registry = createTestRegistry();
 
 	registry.dispatch( CORE_WIDGETS ).registerWidgetArea( areaName, {
@@ -65,7 +65,7 @@ const createTestRegistryWithArea = (
 	registry.dispatch( CORE_WIDGETS ).assignWidgetArea( areaName, 'dashboard' );
 
 	return registry;
-};
+}
 
 function WidgetComponent() {
 	const isConnected = useSelect( ( select ) =>
@@ -83,7 +83,7 @@ function WidgetComponentErrored() {
 	throw new Error( 'Site Kit error message.' );
 }
 
-const createWidgets = ( registry, areaName, widgets ) => {
+function createWidgets( registry, areaName, widgets ) {
 	widgets.forEach( ( { Component, modules, slug, width } ) => {
 		registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
 			Component,
@@ -92,7 +92,7 @@ const createWidgets = ( registry, areaName, widgets ) => {
 		} );
 		registry.dispatch( CORE_WIDGETS ).assignWidget( slug, areaName );
 	} );
-};
+}
 
 describe( 'WidgetAreaRenderer', () => {
 	const areaName = 'gridcell-test';

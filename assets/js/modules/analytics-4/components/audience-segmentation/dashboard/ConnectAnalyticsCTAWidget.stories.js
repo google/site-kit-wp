@@ -40,9 +40,9 @@ export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/ConnectAnalyticsCTAWidget',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModuleRegistrations( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

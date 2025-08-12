@@ -60,7 +60,7 @@ export default {
 	title: 'Modules/Ads/Components/Dashboard/AdsModuleSetupCTABanner',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ADS,
@@ -73,7 +73,7 @@ export default {
 					.finishResolution( 'getDismissedPrompts', [] );
 
 				args?.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

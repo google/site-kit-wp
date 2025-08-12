@@ -36,9 +36,9 @@ export default {
 	component: OfflineNotification,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry.dispatch( CORE_UI ).setIsOnline( false );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

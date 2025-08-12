@@ -82,7 +82,7 @@ export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationSetupCTATile',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				global._googlesitekitUserData.isUserInputCompleted = false;
 
 				provideModules( registry, [
@@ -137,7 +137,7 @@ export default {
 				registry
 					.dispatch( CORE_USER )
 					.finishResolution( 'getDismissedPrompts', [] );
-			};
+			}
 
 			return (
 				<div

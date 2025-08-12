@@ -1445,8 +1445,9 @@ const baseSelectors = {
 
 		const modules = Object.keys( recoverableModules );
 
-		const getRecoveryError = ( module ) =>
-			recoveredModules?.error?.[ module ];
+		function getRecoveryError( module ) {
+			return recoveredModules?.error?.[ module ];
+		}
 
 		return modules
 			.filter( ( module ) => !! getRecoveryError( module ) )

@@ -38,7 +38,7 @@ import { getLocale, stringToDate } from '../../util';
  * @param {Array|undefined} selectedStats The columns that should be displayed for the data set.
  * @return {Object} The chart data, filtered by selected stats if present.
  */
-export const getFilteredChartData = ( data, selectedStats ) => {
+export function getFilteredChartData( data, selectedStats ) {
 	if ( ! selectedStats?.length ) {
 		return data;
 	}
@@ -61,7 +61,7 @@ export const getFilteredChartData = ( data, selectedStats ) => {
 			);
 		} );
 	} );
-};
+}
 
 /**
  * Returns the optimal height and width for a preview element.
@@ -74,12 +74,12 @@ export const getFilteredChartData = ( data, selectedStats ) => {
  * @param {string|undefined} width         Chart width.
  * @return {Object} The optimal height and width to use in a preview element.
  */
-export const getLoadingDimensions = (
+export function getLoadingDimensions(
 	loadingHeight,
 	height,
 	loadingWidth,
 	width
-) => {
+) {
 	const dimensions = {
 		height: loadingHeight || height,
 		width: loadingWidth || width,
@@ -95,7 +95,7 @@ export const getLoadingDimensions = (
 	}
 
 	return dimensions;
-};
+}
 
 /**
  * Returns a combined chart events object.
@@ -107,7 +107,7 @@ export const getLoadingDimensions = (
  * @param {Function|undefined}       onSelect    Chart event.
  * @return {Object} The object containig all events.
  */
-export const getCombinedChartEvents = ( chartEvents, onReady, onSelect ) => {
+export function getCombinedChartEvents( chartEvents, onReady, onSelect ) {
 	const combinedChartEvents = [ ...( chartEvents || [] ) ];
 
 	if ( onReady ) {
@@ -125,7 +125,7 @@ export const getCombinedChartEvents = ( chartEvents, onReady, onSelect ) => {
 	}
 
 	return combinedChartEvents;
-};
+}
 
 /**
  * Returns a chart configuration object.
@@ -141,14 +141,14 @@ export const getCombinedChartEvents = ( chartEvents, onReady, onSelect ) => {
  * @param {string}  breakpoint    Current breakpoint.
  * @return {Object} Chart options configuration.
  */
-export const getChartOptions = (
+export function getChartOptions(
 	options,
 	gatheringData,
 	chartType,
 	startDate,
 	endDate,
 	breakpoint
-) => {
+) {
 	const chartOptions = cloneDeep( options );
 	if ( gatheringData && chartType === 'LineChart' ) {
 		if ( ! options?.vAxis?.viewWindow?.min ) {
@@ -215,7 +215,7 @@ export const getChartOptions = (
 	} );
 
 	return chartOptions;
-};
+}
 
 /**
  * Returns the Google Charts currency pattern for a given currency code and locale.
@@ -226,7 +226,7 @@ export const getChartOptions = (
  * @param {string} locale       Locale to use for formatting.
  * @return {string} The currency pattern.
  */
-export const getCurrencyPattern = ( currencyCode, locale = getLocale() ) => {
+export function getCurrencyPattern( currencyCode, locale = getLocale() ) {
 	const formatter = Intl.NumberFormat( locale, {
 		style: 'currency',
 		currency: currencyCode,
@@ -268,4 +268,4 @@ export const getCurrencyPattern = ( currencyCode, locale = getLocale() ) => {
 				return pattern;
 		}
 	}, '' );
-};
+}

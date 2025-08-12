@@ -66,7 +66,7 @@ export default {
 	title: 'Modules/Analytics4/Components/AccountCreate',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ANALYTICS_4,
@@ -89,7 +89,7 @@ export default {
 					accountID: ACCOUNT_CREATE,
 					useSnippet: true,
 				} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

@@ -106,11 +106,11 @@ export const containerBuilder = build( 'Tag Manager Container', {
  * @param {Object} [overrides] Optional. Object of container field overrides.
  * @return {Object[]} Array of generated container objects.
  */
-export const buildContainers = ( count, overrides ) => {
+export function buildContainers( count, overrides ) {
 	return Array.from( { length: count } ).map( () =>
 		containerBuilder( { overrides } )
 	);
-};
+}
 
 /**
  * Generates an account with one or more containers.
@@ -142,87 +142,91 @@ export function buildAccountWithContainers( {
 }
 
 /* eslint-disable sitekit/acronym-case */
-export const defaultTagWeb = ( { accountId, containerId } = {} ) => ( {
-	accountId,
-	blockingRuleId: null,
-	blockingTriggerId: null,
-	containerId,
-	fingerprint: Date.now().toString(),
-	firingRuleId: null,
-	firingTriggerId: [ '2147479553' ],
-	liveOnly: null,
-	monitoringMetadataTagNameKey: null,
-	name: 'Default web tag',
-	notes: null,
-	parentFolderId: null,
-	path: null,
-	paused: null,
-	scheduleEndMs: null,
-	scheduleStartMs: null,
-	tagFiringOption: 'oncePerEvent',
-	tagId: '2',
-	tagManagerUrl: null,
-	type: 'html',
-	workspaceId: null,
-	parameter: [
-		{
-			key: 'html',
-			type: 'template',
-			value: "console.log( 'Hello world!' );",
+export function defaultTagWeb( { accountId, containerId } = {} ) {
+	return {
+		accountId,
+		blockingRuleId: null,
+		blockingTriggerId: null,
+		containerId,
+		fingerprint: Date.now().toString(),
+		firingRuleId: null,
+		firingTriggerId: [ '2147479553' ],
+		liveOnly: null,
+		monitoringMetadataTagNameKey: null,
+		name: 'Default web tag',
+		notes: null,
+		parentFolderId: null,
+		path: null,
+		paused: null,
+		scheduleEndMs: null,
+		scheduleStartMs: null,
+		tagFiringOption: 'oncePerEvent',
+		tagId: '2',
+		tagManagerUrl: null,
+		type: 'html',
+		workspaceId: null,
+		parameter: [
+			{
+				key: 'html',
+				type: 'template',
+				value: "console.log( 'Hello world!' );",
+			},
+			{
+				key: 'supportDocumentWrite',
+				type: 'boolean',
+				value: 'false',
+			},
+		],
+		monitoringMetadata: {
+			key: null,
+			type: 'map',
+			value: null,
 		},
-		{
-			key: 'supportDocumentWrite',
-			type: 'boolean',
-			value: 'false',
-		},
-	],
-	monitoringMetadata: {
-		key: null,
-		type: 'map',
-		value: null,
-	},
-} );
+	};
+}
 
-const defaultTagAMP = ( { accountId, containerId } = {} ) => ( {
-	accountId,
-	blockingRuleId: null,
-	blockingTriggerId: null,
-	containerId,
-	fingerprint: Date.now().toString(),
-	firingRuleId: null,
-	firingTriggerId: [ '2147479553' ],
-	liveOnly: null,
-	monitoringMetadataTagNameKey: null,
-	name: 'Default AMP tag',
-	notes: null,
-	parentFolderId: null,
-	path: null,
-	paused: null,
-	scheduleEndMs: null,
-	scheduleStartMs: null,
-	tagFiringOption: 'oncePerEvent',
-	tagId: '2',
-	tagManagerUrl: null,
-	type: 'img',
-	workspaceId: null,
-	parameter: [
-		{
-			key: 'useCacheBuster',
-			type: 'boolean',
-			value: 'true',
-		},
-		{
-			key: 'url',
-			type: 'template',
-			value: '//example.com/favicon.ico',
-		},
-		{
-			key: 'cacheBusterQueryParam',
-			type: 'template',
-			value: 'gtmcb',
-		},
-	],
-} );
+function defaultTagAMP( { accountId, containerId } = {} ) {
+	return {
+		accountId,
+		blockingRuleId: null,
+		blockingTriggerId: null,
+		containerId,
+		fingerprint: Date.now().toString(),
+		firingRuleId: null,
+		firingTriggerId: [ '2147479553' ],
+		liveOnly: null,
+		monitoringMetadataTagNameKey: null,
+		name: 'Default AMP tag',
+		notes: null,
+		parentFolderId: null,
+		path: null,
+		paused: null,
+		scheduleEndMs: null,
+		scheduleStartMs: null,
+		tagFiringOption: 'oncePerEvent',
+		tagId: '2',
+		tagManagerUrl: null,
+		type: 'img',
+		workspaceId: null,
+		parameter: [
+			{
+				key: 'useCacheBuster',
+				type: 'boolean',
+				value: 'true',
+			},
+			{
+				key: 'url',
+				type: 'template',
+				value: '//example.com/favicon.ico',
+			},
+			{
+				key: 'cacheBusterQueryParam',
+				type: 'template',
+				value: 'gtmcb',
+			},
+		],
+	};
+}
 
 export const liveContainerVersionBuilder = build(
 	'Tag Manager Live Container Version',
@@ -275,7 +279,7 @@ export const liveContainerVersionBuilder = build(
 	}
 );
 
-const googleTag = ( googleTagID, { accountId, containerId } = {} ) => {
+function googleTag( googleTagID, { accountId, containerId } = {} ) {
 	return {
 		accountId,
 		blockingRuleId: null,
@@ -314,8 +318,8 @@ const googleTag = ( googleTagID, { accountId, containerId } = {} ) => {
 			consentStatus: 'notSet',
 		},
 	};
-};
-const analyticsTagWeb = ( propertyID, { accountId, containerId } = {} ) => {
+}
+function analyticsTagWeb( propertyID, { accountId, containerId } = {} ) {
 	return {
 		accountId,
 		blockingRuleId: null,
@@ -361,8 +365,8 @@ const analyticsTagWeb = ( propertyID, { accountId, containerId } = {} ) => {
 			value: null,
 		},
 	};
-};
-const analyticsTagAMP = ( propertyID, { accountId, containerId } = {} ) => {
+}
+function analyticsTagAMP( propertyID, { accountId, containerId } = {} ) {
 	return {
 		accountId,
 		blockingRuleId: null,
@@ -398,13 +402,13 @@ const analyticsTagAMP = ( propertyID, { accountId, containerId } = {} ) => {
 			},
 		],
 	};
-};
+}
 /* eslint-enable sitekit/acronym-case */
 
-export const buildLiveContainerVersion = ( {
+export function buildLiveContainerVersion( {
 	accountID = '100',
 	googleTagID,
-} = {} ) => {
+} = {} ) {
 	return liveContainerVersionBuilder( {
 		overrides: {
 			accountId: accountID, // eslint-disable-line sitekit/acronym-case
@@ -419,12 +423,12 @@ export const buildLiveContainerVersion = ( {
 			return object;
 		},
 	} );
-};
+}
 
-export const buildLiveContainerVersionWeb = ( {
+export function buildLiveContainerVersionWeb( {
 	accountID = '100',
 	propertyID,
-} = {} ) => {
+} = {} ) {
 	return liveContainerVersionBuilder( {
 		overrides: {
 			accountId: accountID, // eslint-disable-line sitekit/acronym-case
@@ -439,12 +443,12 @@ export const buildLiveContainerVersionWeb = ( {
 			return object;
 		},
 	} );
-};
+}
 
-export const buildLiveContainerVersionAMP = ( {
+export function buildLiveContainerVersionAMP( {
 	accountID = '100',
 	propertyID,
-} = {} ) => {
+} = {} ) {
 	return liveContainerVersionBuilder( {
 		overrides: {
 			accountId: accountID, // eslint-disable-line sitekit/acronym-case
@@ -459,4 +463,4 @@ export const buildLiveContainerVersionAMP = ( {
 			return object;
 		},
 	} );
-};
+}

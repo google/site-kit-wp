@@ -30,7 +30,7 @@ const agent = new https.Agent( {
 } );
 
 module.exports = async function ( page, scenario ) {
-	const intercept = async ( request, targetURL ) => {
+	async function intercept( request, targetURL ) {
 		const requestURL = request.url();
 
 		// FIND TARGET URL REQUEST
@@ -63,7 +63,7 @@ module.exports = async function ( page, scenario ) {
 		} else {
 			request.continue();
 		}
-	};
+	}
 
 	await page.setRequestInterception( true );
 	page.on( 'request', ( req ) => {

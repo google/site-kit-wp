@@ -47,11 +47,11 @@ export default {
 	title: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/SetupBanner',
 	decorators: [
 		( Story, { args: { grantedScopes } } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry, {
 					grantedScopes,
 				} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

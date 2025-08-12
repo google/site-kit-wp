@@ -240,13 +240,13 @@ export default {
 		( Story, { args } ) => {
 			const { viewContext, ...rest } = args;
 
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry );
 
 				if ( args?.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

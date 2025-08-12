@@ -70,15 +70,18 @@ export function getSiteStatsDataForGoogleChart(
 		],
 	];
 
-	const nextDate = ( date ) => {
+	function nextDate( date ) {
 		// Valid use of `new Date()` with an argument.
 		// eslint-disable-next-line sitekit/no-direct-date
 		const next = new Date( date );
 		next.setDate( date.getDate() + 1 );
 		return next;
-	};
-	const findRowByDate = ( searchDate ) => ( row ) =>
-		searchDate.getTime() === stringToDate( row.cells[ 0 ].value ).getTime();
+	}
+	function findRowByDate( searchDate ) {
+		return ( row ) =>
+			searchDate.getTime() ===
+			stringToDate( row.cells[ 0 ].value ).getTime();
+	}
 
 	let currentDate = adsenseDateToInstance( current.startDate );
 	let previousDate = adsenseDateToInstance( previous.startDate );

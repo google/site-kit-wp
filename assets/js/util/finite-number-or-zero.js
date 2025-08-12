@@ -29,6 +29,6 @@ import { isFinite } from 'lodash';
  * @param {any} value The value to check.
  * @return {number} The finite number `value`, or 0 if `value` is not a finite number.
  */
-export const finiteNumberOrZero = ( value ) => {
+export function finiteNumberOrZero( value ) {
 	return isFinite( value ) ? value : 0;
-};
+}

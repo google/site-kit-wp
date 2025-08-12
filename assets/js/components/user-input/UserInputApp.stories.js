@@ -108,7 +108,7 @@ export default {
 	decorators: [
 		withQuery,
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( CORE_USER )
 					.receiveIsUserInputCompleted( false );
@@ -116,7 +116,7 @@ export default {
 				if ( args?.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

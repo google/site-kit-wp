@@ -35,9 +35,9 @@ export function AccountChooser() {
 	);
 	const registry = useRegistry();
 	const email = useSelect( ( select ) => select( CORE_USER ).getEmail() );
-	const onEmailChange = ( { target } ) => {
+	function onEmailChange( { target } ) {
 		provideUserInfo( registry, { email: target.value } );
-	};
+	}
 
 	const accountChooserURL = useSelect( ( select ) =>
 		select( CORE_USER ).getAccountChooserURL( destURL )

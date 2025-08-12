@@ -90,11 +90,11 @@ describe( 'core/user date-range', () => {
 			// referenceDate is passed to allow for static date testing
 			const options = { referenceDate: '2020-09-24' };
 
-			const createDateRangeTest = (
+			function createDateRangeTest(
 				dateRange,
 				expected,
 				additionalOptions = {}
-			) => {
+			) {
 				registry.dispatch( CORE_USER ).setDateRange( dateRange );
 
 				expect(
@@ -108,7 +108,7 @@ describe( 'core/user date-range', () => {
 					// eslint-disable-next-line no-console
 					expect( console.warn ).toHaveBeenCalled();
 				}
-			};
+			}
 
 			describe( 'with date range and w/o offset', () => {
 				beforeAll( () => {
@@ -278,15 +278,12 @@ describe( 'core/user date-range', () => {
 		} );
 
 		describe( 'getDateRangeNumberOfDays', () => {
-			const createNumberOfDaysTest = (
-				dateRange,
-				expectedNumberOfDays
-			) => {
+			function createNumberOfDaysTest( dateRange, expectedNumberOfDays ) {
 				registry.dispatch( CORE_USER ).setDateRange( dateRange );
 				expect(
 					registry.select( CORE_USER ).getDateRangeNumberOfDays()
 				).toEqual( expectedNumberOfDays );
-			};
+			}
 
 			describe( 'with date range', () => {
 				// [ dateRange, expectedNumberOfDays ]

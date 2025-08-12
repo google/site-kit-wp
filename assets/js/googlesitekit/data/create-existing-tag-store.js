@@ -50,11 +50,11 @@ const RECEIVE_GET_EXISTING_TAG = 'RECEIVE_GET_EXISTING_TAG';
  * @return {Object} The existing tag store object, with additional `STORE_NAME` and
  * initialState` properties.
  */
-export const createExistingTagStore = ( {
+export function createExistingTagStore( {
 	storeName: STORE_NAME,
 	isValidTag,
 	tagMatchers,
-} = {} ) => {
+} = {} ) {
 	invariant(
 		'string' === typeof STORE_NAME && STORE_NAME,
 		'storeName is required.'
@@ -186,4 +186,4 @@ export const createExistingTagStore = ( {
 		...store,
 		STORE_NAME,
 	};
-};
+}

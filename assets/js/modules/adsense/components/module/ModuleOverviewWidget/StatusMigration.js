@@ -83,12 +83,12 @@ export default function StatusMigration() {
 		}
 	}, [ isReady, saveSettings, setAccountStatus, setSiteStatus ] );
 
-	const handleRedoSetup = async () => {
+	async function handleRedoSetup() {
 		await setAccountSetupComplete( false );
 		await setSiteSetupComplete( false );
 		await saveSettings();
 		navigateTo( adminReauthURL );
-	};
+	}
 
 	if ( isReady === true ) {
 		return null;

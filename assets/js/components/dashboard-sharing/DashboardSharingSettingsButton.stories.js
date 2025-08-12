@@ -79,7 +79,7 @@ export default {
 	title: 'Components/DashboardSharingSettingsButton',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( CORE_MODULES )
 					.receiveGetSharingSettings( sharingSettings );
@@ -108,7 +108,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

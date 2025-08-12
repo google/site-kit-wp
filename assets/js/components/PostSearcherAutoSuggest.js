@@ -43,7 +43,7 @@ import { useSelect } from 'googlesitekit-data';
 import { useDebouncedState } from '../hooks/useDebouncedState';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 
-const noop = () => {};
+function noop() {}
 
 export default function PostSearcherAutoSuggest( {
 	id,

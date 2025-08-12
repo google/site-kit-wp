@@ -55,12 +55,13 @@ describe( 'Banner', () => {
 		} );
 
 		it( 'renders component-based description correctly', () => {
-			const TestComponent = () =>
-				createElement(
+			function TestComponent() {
+				return createElement(
 					'div',
 					{ className: 'test-component' },
 					'Component description'
 				);
+			}
 
 			const { getByText, container } = render(
 				<Banner
@@ -77,12 +78,13 @@ describe( 'Banner', () => {
 		} );
 
 		it( 'renders both string and component descriptions when both are provided', () => {
-			const TestComponent = () =>
-				createElement(
+			function TestComponent() {
+				return createElement(
 					'div',
 					{ className: 'additional-component' },
 					'Additional info'
 				);
+			}
 
 			const { getByText, container } = render(
 				<Banner

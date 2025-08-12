@@ -35,8 +35,9 @@ describe( 'getAccountDefaults', () => {
 	// The fallback timezone is used here to avoid location-sensitive results,
 	// but also because the default fallback will raise errors otherwise due to tests
 	// running in a Node environment instead of a browser environment.
-	const getAccountDefaults = ( args ) =>
-		accountUtils.getAccountDefaults( args, fallbackTimezone );
+	function getAccountDefaults( args ) {
+		return accountUtils.getAccountDefaults( args, fallbackTimezone );
+	}
 
 	it( 'should throw an error if siteURL is invalid', () => {
 		expect( () =>

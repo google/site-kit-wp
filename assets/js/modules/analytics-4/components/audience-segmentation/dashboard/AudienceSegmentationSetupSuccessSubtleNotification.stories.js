@@ -39,12 +39,12 @@ export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationSetupSuccessSubtleNotification',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 					isAudienceSegmentationWidgetHidden: false,
 					configuredAudiences: null,
 				} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
