@@ -87,6 +87,7 @@
 				&::before {
 					background-color: $c-interactive-tertiary-hover;
 					opacity: 1;
+					transition: none;
 				}
 			}
 
