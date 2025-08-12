@@ -52,7 +52,6 @@ export default function GA4AdSenseLinkedNotification( { id, Notification } ) {
 	);
 }
 
-// eslint-disable-next-line sitekit/acronym-case
 GA4AdSenseLinkedNotification.propTypes = {
 	id: PropTypes.string.isRequired,
 	Notification: PropTypes.elementType.isRequired,
