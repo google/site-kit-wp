@@ -48,10 +48,5 @@ Default.parameters = {
 export default {
 	title: 'Modules/SignInWithGoogle/Dashboard/SetupSuccessSubtleNotification',
 	component: SetupSuccessSubtleNotification,
-	decorators: [
-		withQuery,
-		( Story, { args } ) => {
-			return <Story { ...args } />;
-		},
-	],
+	decorators: [ withQuery ],
 };

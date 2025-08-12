@@ -47,10 +47,5 @@ Ads.parameters = {
 export default {
 	title: 'Modules/Ads/Notifications/PAXSetupSuccessSubtleNotification',
 	component: PAXSetupSuccessSubtleNotification,
-	decorators: [
-		withQuery,
-		( Story, { args } ) => {
-			return <Story { ...args } />;
-		},
-	],
+	decorators: [ withQuery ],
 };
