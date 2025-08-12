@@ -36,6 +36,7 @@ import './assets/sass/stories/type-scale.scss';
 // Ensure all globals are set up before any other imports are run.
 import './polyfill-globals';
 import { setUsingCache } from 'googlesitekit-api';
+import { RegistryProvider } from 'googlesitekit-data';
 import { resetGlobals } from './utils/resetGlobals';
 import { bootstrapFetchMocks } from './fetch-mocks';
 import { enabledFeatures } from '../assets/js/features';
@@ -46,7 +47,6 @@ import {
 	setEnabledFeatures,
 } from '../tests/js/test-utils';
 import InViewProvider from '../assets/js/components/InViewProvider';
-import { RegistryProvider } from '../assets/js/googlesitekit-data';
 import FeaturesProvider from '../assets/js/components/FeaturesProvider';
 
 setUsingCache( false );
