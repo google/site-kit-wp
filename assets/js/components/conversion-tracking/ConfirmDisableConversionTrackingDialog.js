@@ -39,7 +39,7 @@ export default function ConfirmDisableConversionTrackingDialog( {
 	const viewContext = useViewContext();
 
 	const subtitle = __(
-		'By disabling enhanced conversion tracking, you will no longer have access to:',
+		'By disabling plugin conversion tracking, you will no longer have access to:',
 		'google-site-kit'
 	);
 
@@ -59,7 +59,7 @@ export default function ConfirmDisableConversionTrackingDialog( {
 		<RefocusableModalDialog
 			className="googlesitekit-settings-module__confirm-disconnect-modal"
 			title={ __(
-				'Disable enhanced conversion tracking',
+				'Disable plugin conversion tracking',
 				'google-site-kit'
 			) }
 			subtitle={ subtitle }
