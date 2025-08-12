@@ -121,6 +121,16 @@
 			.mdc-button__label {
 				font-weight: $fw-normal;
 			}
+
+			.mdc-list-item {
+				&:hover {
+					&::before {
+						background-color: $c-interactive-tertiary-hover !important;
+						opacity: 1;
+						transition: none;
+					}
+				}
+			}
 		}
 
 		.googlesitekit-date-range-selector {
@@ -169,19 +179,6 @@
 
 			.mdc-menu-surface {
 				right: 0;
-			}
-
-			.mdc-list-item {
-				&:hover {
-					background-color: $c-interactive-tertiary-hover;
-					color: $c-neutral-n-900;
-
-					&::before {
-						background-color: $c-interactive-tertiary-hover;
-						opacity: 1;
-						transition: none;
-					}
-				}
 			}
 		}
 
