@@ -17,9 +17,7 @@
  */
 
 .googlesitekit-plugin {
-
 	.googlesitekit-settings-module--sign-in-with-google {
-
 		.googlesitekit-settings-module__footer {
 			margin-top: 30px;
 		}
@@ -29,7 +27,6 @@
 		}
 
 		.googlesitekit-sign-in-with-google-settings-fields {
-
 			.googlesitekit-text-field-client-id,
 			.mdc-select,
 			.mdc-select__selected-text {
@@ -62,7 +59,7 @@
 			.googlesitekit-settings-module__one-tap,
 			.googlesitekit-settings-module__one-tap-on-all-pages {
 				@media (min-width: $bp-xlarge) {
-					margin-top: 10px;
+					margin-top: $grid-gap-desktop;
 				}
 
 				border-bottom: none;
@@ -79,7 +76,6 @@
 			}
 
 			.googlesitekit-sign-in-with-google-settings-fields__button-preview {
-
 				@media (min-width: $bp-xlarge) {
 					margin-left: 30px;
 				}
