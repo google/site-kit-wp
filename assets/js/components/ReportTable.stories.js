@@ -28,14 +28,16 @@ import {
 } from '../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import NewBadge from './NewBadge';
-import { useRegistry } from '../googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 
 function Template( args ) {
-	const registry = useRegistry();
-	const modules = registry.select( CORE_MODULES ).getModules();
+	const modules = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModules()
+	);
+	const defaultRows = Object.values( modules );
 
-	return <ReportTable { ...args } rows={ Object.values( modules ) } />;
+	return <ReportTable rows={ defaultRows } { ...args } />;
 }
 
 function createBasicArgs() {
@@ -67,9 +69,6 @@ function createBasicArgs() {
 				},
 			},
 		],
-		setupRegistry: ( registry ) => {
-			provideModuleRegistrations( registry );
-		},
 	};
 }
 
@@ -130,9 +129,6 @@ ReportTableWithNewBadge.args = {
 			field: 'title3',
 		},
 	],
-	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
-	},
 };
 
 export default {
@@ -142,6 +138,7 @@ export default {
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideModules( registry );
+				provideModuleRegistrations( registry );
 
 				if ( args?.setupRegistry ) {
 					args.setupRegistry( registry );
