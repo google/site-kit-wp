@@ -85,12 +85,12 @@ export const CanAuthenticate = Template.bind( {} );
 CanAuthenticate.storyName = 'Can Authenticate';
 CanAuthenticate.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			provideUserCapabilities( registry, {
 				[ PERMISSION_AUTHENTICATE ]: true,
 				...commonModuleCapabilities,
 			} );
-		};
+		}
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
@@ -103,12 +103,12 @@ export const CannotAuthenticate = Template.bind( {} );
 CannotAuthenticate.storyName = 'Cannot Authenticate';
 CannotAuthenticate.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			provideUserCapabilities( registry, {
 				[ PERMISSION_AUTHENTICATE ]: false,
 				...commonModuleCapabilities,
 			} );
-		};
+		}
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
 				<Story />

@@ -66,7 +66,7 @@ export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceCreationErrorNotice',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry );
 				provideModules( registry );
 				provideModuleRegistrations( registry );
@@ -78,7 +78,7 @@ export default {
 					measurementID: '56789',
 					webDataStreamID: '78901',
 				} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

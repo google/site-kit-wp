@@ -60,11 +60,11 @@ Default.storyName = 'Default';
 Default.scenario = {};
 Default.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
 				conversionID: 'AW-123456789',
 			} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -78,7 +78,7 @@ export default {
 	title: 'Modules/Ads/Settings/SettingsEdit',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ADS,
@@ -86,7 +86,7 @@ export default {
 						connected: true,
 					},
 				] );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
@@ -105,7 +105,7 @@ PaxConnected.parameters = {
 };
 PaxConnected.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			// Unset the value set in the prrevious scenario.
 			registry.dispatch( MODULES_ADS ).setConversionID( null );
 
@@ -113,7 +113,7 @@ PaxConnected.decorators = [
 				paxConversionID: 'AW-54321',
 				extCustomerID: 'C-872756827HGFSD',
 			} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -128,7 +128,7 @@ IceEnabled.storyName = 'With ICE Enabled';
 IceEnabled.scenario = {};
 IceEnabled.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			// Unset the value set in the previous scenario.
 			registry.dispatch( MODULES_ADS ).setConversionID( null );
 
@@ -137,7 +137,7 @@ IceEnabled.decorators = [
 				paxConversionID: '',
 				extCustomerID: '',
 			} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -155,13 +155,13 @@ IcePaxEnabled.parameters = {
 };
 IcePaxEnabled.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
 				conversionID: '',
 				paxConversionID: 'AW-54321',
 				extCustomerID: 'C-23482345986',
 			} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -175,7 +175,7 @@ export const GTGEnabled = Template.bind( null );
 GTGEnabled.storyName = 'With Google tag gateway enabled';
 GTGEnabled.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			const gtgServerRequirementsEndpoint = new RegExp(
 				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
@@ -193,7 +193,7 @@ GTGEnabled.decorators = [
 			registry
 				.dispatch( CORE_SITE )
 				.receiveGetGoogleTagGatewaySettings( gtgSettings );
-		};
+		}
 
 		return (
 			<WithTestRegistry
@@ -211,7 +211,7 @@ GTGDisabledWithWarning.storyName =
 	'With Google tag gateway disabled with warning';
 GTGDisabledWithWarning.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			const gtgServerRequirementsEndpoint = new RegExp(
 				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
@@ -229,7 +229,7 @@ GTGDisabledWithWarning.decorators = [
 			registry
 				.dispatch( CORE_SITE )
 				.receiveGetGoogleTagGatewaySettings( gtgSettings );
-		};
+		}
 
 		return (
 			<WithTestRegistry

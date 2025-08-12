@@ -42,7 +42,7 @@ import { AMP_MODE_SECONDARY } from '../googlesitekit/datastore/site/constants';
  * @param {Array}  tagMatchers An array of the matchers to use.
  * @return {(string|boolean)} The tag id if found, otherwise false.
  */
-export const extractExistingTag = ( html, tagMatchers ) => {
+export function extractExistingTag( html, tagMatchers ) {
 	const matchingPattern = tagMatchers.find( ( pattern ) =>
 		pattern.test( html )
 	);
@@ -52,7 +52,7 @@ export const extractExistingTag = ( html, tagMatchers ) => {
 	}
 
 	return false;
-};
+}
 
 /**
  * Gets the existing tag URLs.

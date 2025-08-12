@@ -43,7 +43,7 @@ import {
 	registryCheckSetupTag,
 } from './checks';
 
-const createCompatibilityChecks = ( registry ) => {
+function createCompatibilityChecks( registry ) {
 	if ( registry.select( CORE_SITE ).isConnected() ) {
 		return [];
 	}
@@ -54,7 +54,7 @@ const createCompatibilityChecks = ( registry ) => {
 		registryCheckSetupTag( registry ),
 		checkAMPConnectivity,
 	];
-};
+}
 
 export default function CompatibilityChecks( { children, ...props } ) {
 	const registry = useRegistry();

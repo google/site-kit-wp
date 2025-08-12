@@ -126,7 +126,7 @@ export default {
 	title: 'Modules/Ads/Settings/SettingsForm',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ADS,
@@ -135,7 +135,7 @@ export default {
 					},
 				] );
 				args.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithTestRegistry

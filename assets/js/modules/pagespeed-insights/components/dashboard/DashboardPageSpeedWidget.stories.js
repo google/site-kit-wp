@@ -284,7 +284,7 @@ export default {
 	title: 'Modules/PageSpeed Insights/Widgets/DashboardPageSpeedWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry, {
 					referenceSiteURL: url,
 				} );
@@ -298,7 +298,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

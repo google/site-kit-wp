@@ -42,7 +42,7 @@ function TableOverflowContainer( { children } ) {
 		return () => global.removeEventListener( 'resize', resize );
 	}, [] );
 
-	const setIsScrolling = () => {
+	function setIsScrolling() {
 		if ( ! scrollRef.current ) {
 			return;
 		}
@@ -52,7 +52,7 @@ function TableOverflowContainer( { children } ) {
 		const scrolling = scrollLeft < maxScroll - 16 && 0 < maxScroll - 16; // 16 = $grid-gap-phone
 
 		setScrolling( scrolling );
-	};
+	}
 
 	return (
 		<div

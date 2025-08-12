@@ -41,11 +41,11 @@ function AudienceTileErrorWrapper( { ...args } ) {
 }
 
 function Template( { setupRegistry = async () => {}, ...args } ) {
-	const setupRegistryCallback = async ( registry ) => {
+	async function setupRegistryCallback( registry ) {
 		provideModules( registry );
 		provideModuleRegistrations( registry );
 		await setupRegistry( registry );
-	};
+	}
 	return (
 		<WithRegistrySetup func={ setupRegistryCallback }>
 			<AudienceTileErrorWrapper { ...args } />

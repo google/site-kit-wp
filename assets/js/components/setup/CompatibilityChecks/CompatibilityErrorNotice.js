@@ -40,7 +40,7 @@ import {
 } from './constants';
 import GetHelpLink from './GetHelpLink';
 
-const helperCTA = ( developerPlugin, stagingDocumentationURL ) => {
+function helperCTA( developerPlugin, stagingDocumentationURL ) {
 	const { installed, active, installURL, activateURL, configureURL } =
 		developerPlugin;
 
@@ -80,7 +80,7 @@ const helperCTA = ( developerPlugin, stagingDocumentationURL ) => {
 		href: stagingDocumentationURL,
 		external: true,
 	};
-};
+}
 
 export default function CompatibilityErrorNotice( { error } ) {
 	const developerPlugin =

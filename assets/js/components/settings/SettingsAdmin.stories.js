@@ -34,7 +34,7 @@ import { CORE_USER } from './../../googlesitekit/datastore/user/constants';
 function Template() {
 	global._googlesitekitLegacyData = settingsData;
 
-	const setupRegistry = ( registry ) => {
+	function setupRegistry( registry ) {
 		provideSiteInfo( registry );
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ADS, active: true, connected: true },
@@ -57,7 +57,7 @@ function Template() {
 					'http://example.com/wp-admin/update.php?action=install-plugin&plugin=some-plugin',
 			},
 		} );
-	};
+	}
 
 	return (
 		<WithTestRegistry callback={ setupRegistry }>

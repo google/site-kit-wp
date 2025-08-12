@@ -158,7 +158,7 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 		}
 	}, [ inView, shouldShowWidget, viewContext ] );
 
-	const handleCTAClick = async () => {
+	async function handleCTAClick() {
 		await trackEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'confirm_notification'
@@ -168,9 +168,9 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 		return new Promise( () => {
 			// We are intentionally letting this promise unresolved.
 		} );
-	};
+	}
 
-	const handleDismissClick = async () => {
+	async function handleDismissClick() {
 		trackEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'dismiss_notification'
@@ -188,14 +188,14 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 			// For the third dismissal, dismiss permanently.
 			await dismissPrompt( AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY );
 		}
-	};
+	}
 
-	const handleLearnMoreClick = () => {
+	function handleLearnMoreClick() {
 		trackEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'click_learn_more_link'
 		);
-	};
+	}
 
 	if ( ! shouldShowWidget ) {
 		return <WidgetNull />;

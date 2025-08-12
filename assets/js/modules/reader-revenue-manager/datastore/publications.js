@@ -285,7 +285,7 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = ( state, { type } ) => {
+function baseReducer( state, { type } ) {
 	switch ( type ) {
 		case 'RESET_PUBLICATIONS':
 			return {
@@ -295,7 +295,7 @@ const baseReducer = ( state, { type } ) => {
 		default:
 			return state;
 	}
-};
+}
 
 const baseResolvers = {
 	*getPublications() {

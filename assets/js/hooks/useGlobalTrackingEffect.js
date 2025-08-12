@@ -35,7 +35,7 @@ import { trackEvent } from '../util';
  *
  * @since 1.132.0
  */
-export const useGlobalTrackingEffect = () => {
+export function useGlobalTrackingEffect() {
 	const viewContext = useViewContext();
 
 	const isUsingProxy = useSelect( ( select ) =>
@@ -47,7 +47,7 @@ export const useGlobalTrackingEffect = () => {
 	);
 
 	useEffect( () => {
-		const trackEvents = async () => {
+		async function trackEvents() {
 			const startUserSetup = await getItem( 'start_user_setup' );
 			const startSiteSetup = await getItem( 'start_site_setup' );
 
@@ -68,10 +68,10 @@ export const useGlobalTrackingEffect = () => {
 					isUsingProxy ? 'proxy' : 'custom-oauth'
 				);
 			}
-		};
+		}
 
 		if ( ! setupErrorMessage && isUsingProxy !== undefined ) {
 			trackEvents();
 		}
 	}, [ viewContext, isUsingProxy, setupErrorMessage ] );
-};
+}

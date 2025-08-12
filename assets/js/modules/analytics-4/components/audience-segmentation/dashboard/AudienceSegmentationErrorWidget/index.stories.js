@@ -47,7 +47,7 @@ function AudienceErrorWidgetWrapper( { ...args } ) {
 }
 
 function Template( { setupRegistry = async () => {}, ...args } ) {
-	const setupRegistryCallback = async ( registry ) => {
+	async function setupRegistryCallback( registry ) {
 		provideModules( registry, [
 			{
 				active: true,
@@ -58,7 +58,7 @@ function Template( { setupRegistry = async () => {}, ...args } ) {
 		provideModuleRegistrations( registry );
 		provideUserInfo( registry );
 		await setupRegistry( registry );
-	};
+	}
 	return (
 		<WithRegistrySetup func={ setupRegistryCallback }>
 			<AudienceErrorWidgetWrapper { ...args } />

@@ -46,8 +46,12 @@ import { isValidStringsOrObjects } from '../../../util/report-validation';
  * @return {boolean} TRUE if metrics are valid, otherwise FALSE.
  */
 export function isValidMetrics( metrics ) {
-	const isValidName = ( metricName ) =>
-		typeof metricName === 'string' && /^[a-zA-Z0-9_]+$/.test( metricName );
+	function isValidName( metricName ) {
+		return (
+			typeof metricName === 'string' &&
+			/^[a-zA-Z0-9_]+$/.test( metricName )
+		);
+	}
 
 	if ( typeof metrics === 'string' ) {
 		const metricNames = metrics.split( ',' );

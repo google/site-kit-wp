@@ -99,7 +99,7 @@ export function registerModule( modules ) {
 	} );
 }
 
-export const registerNotifications = ( notifications ) => {
+export function registerNotifications( notifications ) {
 	notifications.registerNotification( 'sign-in-with-google-setup-cta', {
 		Component: SignInWithGoogleSetupCTABanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
@@ -149,4 +149,4 @@ export const registerNotifications = ( notifications ) => {
 			return false;
 		},
 	} );
-};
+}

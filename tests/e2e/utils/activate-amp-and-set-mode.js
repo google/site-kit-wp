@@ -51,10 +51,7 @@ export const allowedAMPModes = {
  * @param {Function} sharedRequestInterception.addRequestCases Adds new request cases to the request handler function.
  * @return {Promise<void>} Promise that resolves when AMP is activated and set to the correct mode.
  */
-export const activateAMPWithMode = async (
-	mode,
-	sharedRequestInterception
-) => {
+export async function activateAMPWithMode( mode, sharedRequestInterception ) {
 	// On newer versions of AMP, setting up AMP invokes a number of validation requests which add a large
 	// amount of time to the process and are ultimately unnecessary.
 	// To avoid this, we configure request interception for these to bypass them as needed.
@@ -82,7 +79,7 @@ export const activateAMPWithMode = async (
 	}
 	await activatePlugin( 'amp' );
 	await setAMPMode( mode );
-};
+}
 
 /**
  * Sets AMP Mode.
@@ -91,7 +88,7 @@ export const activateAMPWithMode = async (
  *
  * @param {string} mode The mode to set AMP to. Possible value of standard, transitional or reader.
  */
-export const setAMPMode = async ( mode ) => {
+export async function setAMPMode( mode ) {
 	// Test to be sure that the passed mode is known.
 	expect( allowedAMPModes ).toHaveProperty( mode );
 	const ampMode = allowedAMPModes[ mode ];
@@ -138,4 +135,4 @@ export const setAMPMode = async ( mode ) => {
 	await expect( page ).toClick( '#submit' );
 	await waitForFetchRequests();
 	await page.waitForNavigation();
-};
+}

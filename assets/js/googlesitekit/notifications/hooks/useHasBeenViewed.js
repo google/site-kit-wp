@@ -22,7 +22,9 @@
 import { useSelect } from 'googlesitekit-data';
 import { CORE_UI } from '../../datastore/ui/constants';
 
-const getKey = ( id ) => `notification/${ id }/viewed`;
+function getKey( id ) {
+	return `notification/${ id }/viewed`;
+}
 
 export function useHasBeenViewed( id ) {
 	return useSelect(

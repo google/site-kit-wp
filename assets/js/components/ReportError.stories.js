@@ -46,12 +46,12 @@ function ReportErrorWrapper( { ...args } ) {
 }
 
 function Template( { setupRegistry = async () => {}, viewContext, ...args } ) {
-	const setupRegistryCallback = async ( registry ) => {
+	async function setupRegistryCallback( registry ) {
 		provideModules( registry );
 		provideModuleRegistrations( registry );
 		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		await setupRegistry( registry );
-	};
+	}
 	return (
 		<WithRegistrySetup func={ setupRegistryCallback }>
 			<ViewContextProvider

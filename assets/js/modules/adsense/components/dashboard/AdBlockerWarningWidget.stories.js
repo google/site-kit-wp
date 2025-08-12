@@ -41,7 +41,7 @@ export default {
 	title: 'Modules/AdSense/Widgets/AdBlockerWarning',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
@@ -51,7 +51,7 @@ export default {
 				] );
 
 				registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

@@ -180,14 +180,14 @@ function TopTrafficSourceDrivingLeadsWidget( { Widget } ) {
 		);
 	} );
 
-	const makeFilter = ( dateRange, dimensionIndex ) => {
+	function makeFilter( dateRange, dimensionIndex ) {
 		return ( row ) => {
 			return (
 				get( row, `dimensionValues.${ dimensionIndex }.value` ) ===
 				dateRange
 			);
 		};
-	};
+	}
 
 	// Prevents running a filter on `report.rows` which could be undefined.
 	const { rows: totalLeadsReportRows = [] } = totalLeadsReport || {};

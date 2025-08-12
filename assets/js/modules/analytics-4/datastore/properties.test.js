@@ -178,10 +178,11 @@ describe( 'modules/analytics-4 properties', () => {
 
 		describe( 'selectProperty', () => {
 			it( 'should throw if property ID is invalid', () => {
-				const callback = () =>
-					registry
+				function callback() {
+					return registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.selectProperty( '' );
+				}
 				expect( callback ).toThrow(
 					'A valid propertyID selection is required.'
 				);

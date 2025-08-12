@@ -191,7 +191,7 @@ export default {
 	decorators: [
 		withQuery,
 		( Story, { args, parameters } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -212,7 +212,7 @@ export default {
 					} );
 
 				args?.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithTestRegistry

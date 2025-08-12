@@ -55,7 +55,7 @@ export default {
 	title: 'Modules/Analytics4/Setup/SetupForm',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ANALYTICS_4,
@@ -97,7 +97,7 @@ export default {
 					.receiveGetConversionTrackingSettings( {
 						enabled: false,
 					} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

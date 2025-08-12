@@ -362,10 +362,10 @@ function MockWPDashboard() {
 function TourControls() {
 	const { receiveGetDismissedTours } = useDispatch( CORE_USER );
 	const { setValue } = useDispatch( CORE_UI );
-	const reset = () => {
+	function reset() {
 		receiveGetDismissedTours( [] );
 		setValue( 'feature-step', 0 );
-	};
+	}
 
 	return (
 		<div style={ { textAlign: 'right' } }>
@@ -415,9 +415,9 @@ function Template() {
 		body: JSON.stringify( [ 'feature' ] ),
 		status: 200,
 	} );
-	const setupRegistry = ( registry ) => {
+	function setupRegistry( registry ) {
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
-	};
+	}
 
 	return (
 		<WithTestRegistry callback={ setupRegistry }>

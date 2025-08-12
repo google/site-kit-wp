@@ -413,7 +413,7 @@ export default {
 	component: SettingsEdit,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetSettings( {} );
@@ -438,7 +438,7 @@ export default {
 				provideModuleRegistrations( registry );
 
 				args?.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
