@@ -20,13 +20,11 @@
  * Internal dependencies
  */
 import {
-	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
-	WithTestRegistry,
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from '../../../../../components/Root/ViewContextContext';
@@ -499,50 +497,55 @@ export default {
 				</div>
 			</div>
 		),
-		( Story ) => {
-			const registry = createTestRegistry();
-			provideSiteInfo( registry );
-			registry.dispatch( CORE_USER ).setReferenceDate( '2021-10-13' );
-			registry.dispatch( CORE_USER ).receiveGetAuthentication( {
-				needsReauthentication: false,
-			} );
-
-			provideModules( registry, [
-				{
-					active: true,
-					connected: true,
-					slug: MODULE_SLUG_SEARCH_CONSOLE,
-				},
-				{
-					active: true,
-					connected: true,
-					slug: MODULE_SLUG_ANALYTICS_4,
-				},
-			] );
-			provideUserAuthentication( registry );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetAccountSummaries( {
-					accountSummaries: accounts,
-					nextPageToken: null,
+		( Story, { args } ) => {
+			const setupRegistry = ( registry ) => {
+				provideSiteInfo( registry );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2021-10-13' );
+				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+					needsReauthentication: false,
 				} );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetProperty( properties[ 0 ], {
-					propertyID,
-				} );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setPropertyID( propertyID );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetKeyEvents( fixtures.keyEvents, {} );
+
+				provideModules( registry, [
+					{
+						active: true,
+						connected: true,
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+					},
+					{
+						active: true,
+						connected: true,
+						slug: MODULE_SLUG_ANALYTICS_4,
+					},
+				] );
+				provideUserAuthentication( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( {
+						accountSummaries: accounts,
+						nextPageToken: null,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperty( properties[ 0 ], {
+						propertyID,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setPropertyID( propertyID );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetKeyEvents( fixtures.keyEvents, {} );
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			};
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

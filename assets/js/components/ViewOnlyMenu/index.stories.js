@@ -25,8 +25,6 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import {
-	createTestRegistry,
-	WithTestRegistry,
 	provideModules,
 	provideModuleRegistrations,
 	provideSiteConnection,
@@ -98,6 +96,14 @@ CanAuthenticate.decorators = [
 		);
 	},
 ];
+CanAuthenticate.args = {
+	setupRegistry: ( registry ) => {
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: true,
+			...commonModuleCapabilities,
+		} );
+	},
+};
 
 export const CannotAuthenticate = Template.bind( {} );
 CannotAuthenticate.storyName = 'Cannot Authenticate';
@@ -116,49 +122,63 @@ CannotAuthenticate.decorators = [
 		);
 	},
 ];
+CannotAuthenticate.args = {
+	setupRegistry: ( registry ) => {
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: false,
+			...commonModuleCapabilities,
+		} );
+	},
+};
 
 export default {
 	title: 'Components/ViewOnlyMenu',
 	component: ViewOnlyMenu,
 	decorators: [
-		( Story ) => {
-			const registry = createTestRegistry();
-			provideSiteConnection( registry );
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_SEARCH_CONSOLE,
-					owner: {
-						id: '1',
-						login: 'Admin 1',
+		( Story, { args } ) => {
+			const setupRegistry = ( registry ) => {
+				provideSiteConnection( registry );
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+						owner: {
+							id: '1',
+							login: 'Admin 1',
+						},
 					},
-				},
-				{
-					slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
-					owner: {
-						id: '2',
-						login: 'Admin 2',
+					{
+						slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
+						owner: {
+							id: '2',
+							login: 'Admin 2',
+						},
 					},
-				},
-			] );
-			provideModuleRegistrations( registry );
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetTracking( { enabled: false } );
+				] );
+				provideModuleRegistrations( registry );
 
-			// Mock the tracking endpoint to allow checking/unchecking the tracking checkbox.
-			fetchMock.post(
-				RegExp( 'google-site-kit/v1/core/user/data/tracking' ),
-				( url, { body } ) => {
-					const { data } = JSON.parse( body );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetTracking( { enabled: false } );
 
-					return { body: data };
+				// Mock the tracking endpoint to allow checking/unchecking the tracking checkbox.
+				fetchMock.post(
+					RegExp( 'google-site-kit/v1/core/user/data/tracking' ),
+					( url, { body } ) => {
+						const { data } = JSON.parse( body );
+
+						return { body: data };
+					}
+				);
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
 				}
-			);
+			};
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

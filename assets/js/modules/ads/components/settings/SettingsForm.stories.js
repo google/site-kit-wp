@@ -29,12 +29,10 @@ import { Cell, Grid, Row } from '../../../../material-components';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from '../../datastore/constants';
 import { MODULE_SLUG_ADS } from '../../constants';
-import {
-	provideModules,
-	WithTestRegistry,
-} from '../../../../../../tests/js/utils';
+import { provideModules } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-function Template( args ) {
+function Template() {
 	return (
 		<div className="googlesitekit-layout">
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--ads">
@@ -43,7 +41,7 @@ function Template( args ) {
 						<Grid>
 							<Row>
 								<Cell size={ 12 }>
-									<SettingsForm { ...args } />
+									<SettingsForm />
 								</Cell>
 							</Row>
 						</Grid>
@@ -72,8 +70,10 @@ Empty.scenario = {};
 export const GoogleTagGatewayEnabled = Template.bind( null );
 GoogleTagGatewayEnabled.storyName = 'GoogleTagGatewayEnabled';
 GoogleTagGatewayEnabled.scenario = {};
-GoogleTagGatewayEnabled.args = {
+GoogleTagGatewayEnabled.parameters = {
 	features: [ 'googleTagGateway' ],
+};
+GoogleTagGatewayEnabled.args = {
 	setupRegistry: ( registry ) => {
 		const gtgServerRequirementsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
@@ -99,8 +99,10 @@ export const GoogleTagGatewayDisabledWithWarning = Template.bind( null );
 GoogleTagGatewayDisabledWithWarning.storyName =
 	'GoogleTagGatewayDisabledWithWarning';
 GoogleTagGatewayDisabledWithWarning.scenario = {};
-GoogleTagGatewayDisabledWithWarning.args = {
+GoogleTagGatewayDisabledWithWarning.parameters = {
 	features: [ 'googleTagGateway' ],
+};
+GoogleTagGatewayDisabledWithWarning.args = {
 	setupRegistry: ( registry ) => {
 		const gtgServerRequirementsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
@@ -134,16 +136,16 @@ export default {
 						connected: true,
 					},
 				] );
-				args.setupRegistry?.( registry );
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
 			};
 
 			return (
-				<WithTestRegistry
-					callback={ setupRegistry }
-					features={ args?.features || [] }
-				>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],
