@@ -91,7 +91,7 @@
 				return;
 			}
 
-			$productCard.on( 'click', function ( event ) {
+			$productCard.on( 'click', ( event ) => {
 				const $target = jQuery( event.target );
 				const $button = $target.closest(
 					'.wc-block-components-product-button [data-product_id]'

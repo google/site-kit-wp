@@ -62,7 +62,7 @@ export const getWidgetComponentProps = memize( ( widgetSlug ) => {
 
 function withWidgetSlug( widgetSlug ) {
 	return ( WrappedComponent ) => {
-		const WithWidgetSlug = forwardRef( function ( props, ref ) {
+		const WithWidgetSlug = forwardRef( ( props, ref ) => {
 			return (
 				<WrappedComponent
 					{ ...props }
@@ -89,7 +89,7 @@ function withWidgetSlug( widgetSlug ) {
  * @param {string} widgetSlug The slug of the widget.
  * @return {Function} Enhancing function that adds the getWidgetComponentProps to the passed component.
  */
-export const withWidgetComponentProps = ( widgetSlug ) => {
+export function withWidgetComponentProps( widgetSlug ) {
 	const widgetComponentProps = getWidgetComponentProps( widgetSlug );
 	return ( WrappedComponent ) => {
 		function DecoratedComponent( props ) {
@@ -105,7 +105,7 @@ export const withWidgetComponentProps = ( widgetSlug ) => {
 		}
 		return DecoratedComponent;
 	};
-};
+}
 
 /**
  * Gets the props and passes them to the WP Dashboard widget's component through a HOC.
@@ -116,7 +116,7 @@ export const withWidgetComponentProps = ( widgetSlug ) => {
  * @return {Function} Enhancing function that adds the WP Dashboard specific
  *                    props to the passed component.
  */
-export const withWPDashboardWidgetComponentProps = ( widgetSlug ) => {
+export function withWPDashboardWidgetComponentProps( widgetSlug ) {
 	return ( WrappedComponent ) => {
 		function DecoratedComponent( props ) {
 			return (
@@ -136,4 +136,4 @@ export const withWPDashboardWidgetComponentProps = ( widgetSlug ) => {
 		}
 		return DecoratedComponent;
 	};
-};
+}

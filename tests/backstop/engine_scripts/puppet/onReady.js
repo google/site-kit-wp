@@ -27,8 +27,9 @@ const FONT_WAIT_TIMEOUT_MS = 5000;
  * @param {number} ms The delay in milliseconds.
  * @return {Promise<void>} A promise that resolves after the delay.
  */
-const waitForTimeout = ( ms ) =>
-	new Promise( ( resolve ) => setTimeout( resolve, ms ) );
+function waitForTimeout( ms ) {
+	return new Promise( ( resolve ) => setTimeout( resolve, ms ) );
+}
 
 /**
  * Executes custom waiting logic before taking screenshots.

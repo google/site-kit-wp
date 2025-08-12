@@ -74,12 +74,12 @@ function ResetButton( { children } ) {
 	}, [ isDoingReset, isNavigatingToPostResetURL, debouncedSetInProgress ] );
 
 	useEffect( () => {
-		const handleCloseModal = ( event ) => {
+		function handleCloseModal( event ) {
 			if ( ESCAPE === event.keyCode ) {
 				// Only close the modal if the "Escape" key is pressed.
 				setDialogActive( false );
 			}
-		};
+		}
 
 		if ( dialogActive ) {
 			// When the dialogActive changes and it is set to true(has opened), add the event listener.

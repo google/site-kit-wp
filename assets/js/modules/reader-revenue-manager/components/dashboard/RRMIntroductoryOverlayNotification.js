@@ -79,13 +79,13 @@ export default function RRMIntroductoryOverlayNotification( {
 		label: `${ publicationOnboardingState }:${ paymentOption || '' }`,
 	};
 
-	const handleLearnMoreClick = () => {
+	function handleLearnMoreClick() {
 		trackEvent(
 			gaTrackingEventArgs.category,
 			'click_learn_more_link',
 			gaTrackingEventArgs.label
 		);
-	};
+	}
 
 	const title =
 		paymentOption === 'noPayment'

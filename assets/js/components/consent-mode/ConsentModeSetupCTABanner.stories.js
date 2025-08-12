@@ -53,7 +53,7 @@ export default {
 	title: 'Consent Mode/ConsentModeSetupCTABanner',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ANALYTICS_4,
@@ -119,7 +119,7 @@ export default {
 						status: 200,
 					}
 				);
-			};
+			}
 
 			return (
 				<div

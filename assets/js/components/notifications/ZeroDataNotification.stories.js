@@ -40,14 +40,14 @@ export default {
 	title: 'Components/Notifications/Banners/ZeroDataNotification',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( MODULES_SEARCH_CONSOLE )
 					.receiveIsGatheringData( false );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsGatheringData( false );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

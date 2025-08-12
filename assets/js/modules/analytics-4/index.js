@@ -135,7 +135,7 @@ import { AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION } from './compo
 
 export { registerStore } from './datastore';
 
-export const registerModule = ( modules ) => {
+export function registerModule( modules ) {
 	modules.registerModule( MODULE_SLUG_ANALYTICS_4, {
 		storeName: MODULES_ANALYTICS_4,
 		SettingsEditComponent: SettingsEdit,
@@ -154,9 +154,9 @@ export const registerModule = ( modules ) => {
 			),
 		],
 	} );
-};
+}
 
-export const registerWidgets = ( widgets ) => {
+export function registerWidgets( widgets ) {
 	// Register Analytics 4 Widgets.
 	widgets.registerWidget(
 		'analyticsAllTrafficGA4',
@@ -721,7 +721,7 @@ export const registerWidgets = ( widgets ) => {
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
-};
+}
 
 export const ANALYTICS_4_NOTIFICATIONS = {
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
@@ -1010,11 +1010,11 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 };
 
-export const registerNotifications = ( notifications ) => {
+export function registerNotifications( notifications ) {
 	for ( const notificationID in ANALYTICS_4_NOTIFICATIONS ) {
 		notifications.registerNotification(
 			notificationID,
 			ANALYTICS_4_NOTIFICATIONS[ notificationID ]
 		);
 	}
-};
+}

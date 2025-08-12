@@ -50,7 +50,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification( {
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const scrollToWidgetAndDismissNotification = ( event ) => {
+	function scrollToWidgetAndDismissNotification( event ) {
 		event.preventDefault();
 
 		const widgetAreaClass =
@@ -64,7 +64,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification( {
 		}, 0 );
 
 		dismissNotification( id );
-	};
+	}
 
 	const gaTrackingEventArgs = {
 		category: `${ viewContext }_audiences-secondary-user-intro`,

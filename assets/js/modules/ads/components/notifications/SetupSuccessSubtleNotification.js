@@ -37,10 +37,10 @@ export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 	const [ , setNotification ] = useQueryArg( 'notification' );
 	const [ , setSlug ] = useQueryArg( 'slug' );
 
-	const onDismiss = () => {
+	function onDismiss() {
 		setNotification( undefined );
 		setSlug( undefined );
-	};
+	}
 
 	return (
 		<Notification>

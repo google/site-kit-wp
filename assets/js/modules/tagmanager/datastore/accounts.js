@@ -175,7 +175,7 @@ export const baseActions = {
 	),
 };
 
-export const baseReducer = ( state, { type } ) => {
+export function baseReducer( state, { type } ) {
 	switch ( type ) {
 		case RESET_ACCOUNTS: {
 			return {
@@ -196,7 +196,7 @@ export const baseReducer = ( state, { type } ) => {
 			return state;
 		}
 	}
-};
+}
 
 export const baseResolvers = {
 	*getAccounts() {

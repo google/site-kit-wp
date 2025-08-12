@@ -41,7 +41,7 @@ export default {
 	component: StatusMigration,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
@@ -61,7 +61,7 @@ export default {
 				registry
 					.dispatch( MODULES_ADSENSE )
 					.receiveGetClients( fixtures.clients, { accountID } );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

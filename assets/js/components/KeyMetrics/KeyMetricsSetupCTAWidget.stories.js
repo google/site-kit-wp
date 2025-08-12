@@ -56,7 +56,7 @@ export default {
 	title: 'Key Metrics',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				global._googlesitekitUserData.isUserInputCompleted = false;
 				provideModules( registry, [
 					{
@@ -72,7 +72,7 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsDataAvailableOnLoad( true );
-			};
+			}
 
 			return (
 				<div

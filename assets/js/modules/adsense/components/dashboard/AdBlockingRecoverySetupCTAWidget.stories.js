@@ -72,7 +72,7 @@ export default {
 	title: 'Modules/AdSense/Widgets/AdBlockingRecoverySetupCTAWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
@@ -82,7 +82,7 @@ export default {
 				] );
 
 				args?.setupRegistry( registry );
-			};
+			}
 
 			const breakpoint = useBreakpoint();
 

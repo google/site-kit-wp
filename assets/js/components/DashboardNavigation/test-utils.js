@@ -33,7 +33,7 @@ import {
  *
  * @param {Object} registry The registry object.
  */
-export const setupDefaultChips = ( registry ) => {
+export function setupDefaultChips( registry ) {
 	// Traffic
 	registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'TrafficArea', {
 		title: 'Traffic',
@@ -87,4 +87,4 @@ export const setupDefaultChips = ( registry ) => {
 	registry
 		.dispatch( CORE_WIDGETS )
 		.assignWidget( 'SpeedWidget', 'SpeedArea' );
-};
+}

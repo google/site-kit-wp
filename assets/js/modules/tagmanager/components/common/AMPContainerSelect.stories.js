@@ -50,7 +50,7 @@ export default {
 	component: AMPContainerSelect,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				// eslint-disable-next-line sitekit/acronym-case
 				const accountID = fixtures.getContainers.all[ 0 ].accountId;
 				registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {
@@ -73,7 +73,7 @@ export default {
 				registry
 					.dispatch( CORE_SITE )
 					.receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

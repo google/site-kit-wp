@@ -47,7 +47,7 @@ export default {
 	component: AdBlockingRecoverySetupSuccessNotification,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry );
 				provideModules( registry, [
 					{
@@ -62,7 +62,7 @@ export default {
 					adBlockingRecoverySetupStatus:
 						ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
 				} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

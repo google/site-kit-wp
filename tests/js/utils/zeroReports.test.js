@@ -24,8 +24,9 @@ import mockedReportResponse from './../../../assets/js/modules/analytics-4/utils
 
 describe( 'zeroReports', () => {
 	describe( 'replaceValuesOrRemoveRowForDateRangeInAnalyticsReport', () => {
-		const matchesDateRange = ( data, dateRange ) =>
-			data.some( ( value ) => value.value === dateRange );
+		function matchesDateRange( data, dateRange ) {
+			return data.some( ( value ) => value.value === dateRange );
+		}
 
 		it( 'should zero values for date_range_0 when emptyRowBehavior is "zero"', () => {
 			// Create a deep copy of the mocked report

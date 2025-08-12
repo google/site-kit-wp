@@ -21,11 +21,11 @@
  */
 import setUpAdvancedTracking from './set-up-advanced-tracking';
 
-const createDOMEvent = ( on ) => {
+function createDOMEvent( on ) {
 	const event = document.createEvent( 'HTMLEvents' );
 	event.initEvent( on, false, true );
 	return event;
-};
+}
 
 describe( 'setUpAdvancedTracking', () => {
 	const button1DOMString = '<button class="button1">Button 1</button>';

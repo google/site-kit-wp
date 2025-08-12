@@ -35,7 +35,7 @@ import { CONTEXT_MAIN_DASHBOARD_KEY_METRICS } from '../../googlesitekit/widgets/
  * @param {Object} registry The registry to set up.
  * @param {Object} widgets  Object containing options mapped to widget slugs.
  */
-export const provideKeyMetricsWidgetRegistrations = ( registry, widgets ) => {
+export function provideKeyMetricsWidgetRegistrations( registry, widgets ) {
 	registry
 		.dispatch( CORE_WIDGETS )
 		.registerWidgetArea( AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY, {
@@ -61,4 +61,4 @@ export const provideKeyMetricsWidgetRegistrations = ( registry, widgets ) => {
 			.dispatch( CORE_WIDGETS )
 			.assignWidget( slug, AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY );
 	} );
-};
+}

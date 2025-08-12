@@ -34,10 +34,10 @@ export default {
 	component: UserMenu,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry );
 				provideUserInfo( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
