@@ -112,8 +112,7 @@
         "usePrettierrc": true
       }
     ],
-    "react/jsx-no-useless-fragment": "error",
-    "sitekit/function-declaration-consistency": "error"
+    "react/jsx-no-useless-fragment": "error"
   },
   "settings": {
     "import/core-modules": [
