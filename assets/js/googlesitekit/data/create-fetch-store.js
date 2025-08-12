@@ -31,6 +31,7 @@ import {
 	camelCaseToConstantCase,
 } from './transform-case';
 import { stringifyObject } from '../../util';
+import { createReducer } from 'googlesitekit-data';
 
 const defaultReducerCallback = ( state ) => state;
 
@@ -219,17 +220,13 @@ export const createFetchStore = ( {
 		},
 	};
 
-	const reducer = ( state, { type, payload } ) => {
+	const reducer = createReducer( ( state, { type, payload } ) => {
 		switch ( type ) {
 			case START_FETCH: {
 				const { params } = payload;
-				return {
-					...state,
-					[ isFetching ]: {
-						...state[ isFetching ],
-						[ stringifyObject( params ) ]: true,
-					},
-				};
+				state[ isFetching ] = state[ isFetching ] || {};
+				state[ isFetching ][ stringifyObject( params ) ] = true;
+				break;
 			}
 
 			case RECEIVE: {
@@ -239,31 +236,19 @@ export const createFetchStore = ( {
 
 			case FINISH_FETCH: {
 				const { params } = payload;
-				return {
-					...state,
-					[ isFetching ]: {
-						...state[ isFetching ],
-						[ stringifyObject( params ) ]: false,
-					},
-				};
+				state[ isFetching ] = state[ isFetching ] || {};
+				state[ isFetching ][ stringifyObject( params ) ] = false;
+				break;
 			}
 
 			case CATCH_FETCH: {
 				const { params } = payload;
-				return {
-					...state,
-					[ isFetching ]: {
-						...state[ isFetching ],
-						[ stringifyObject( params ) ]: false,
-					},
-				};
-			}
-
-			default: {
-				return state;
+				state[ isFetching ] = state[ isFetching ] || {};
+				state[ isFetching ][ stringifyObject( params ) ] = false;
+				break;
 			}
 		}
-	};
+	} );
 
 	const selectors = {
 		[ isFetching ]: ( state, ...args ) => {
