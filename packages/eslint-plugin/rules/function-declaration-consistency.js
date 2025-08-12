@@ -242,15 +242,11 @@ module.exports = {
 					return;
 				}
 
-				// Do not auto-fix if using generator, or if `this`/`arguments` is used inside.
+				// Do not report or fix if using generator, or if `this`/`arguments` is used inside
+				// to avoid changing semantics.
 				const unsafe = node.generator || hasThisOrArguments( node );
 
 				if ( unsafe ) {
-					context.report( {
-						node,
-						message:
-							'Use arrow function for callbacks passed as arguments.',
-					} );
 					return;
 				}
 
