@@ -47,6 +47,11 @@ import FeatureTours from '../FeatureTours';
 import { Provider as ViewContextProvider } from './ViewContextContext';
 import InViewProvider from '../InViewProvider';
 import { isSiteKitScreen } from '../../util/is-site-kit-screen';
+import {
+	KeyboardShortcutProvider,
+	KeyboardShortcutHelp,
+	CommandPalette,
+} from '../KeyboardShortcuts';
 
 export default function Root( { children, registry, viewContext = null } ) {
 	const theme =
@@ -65,17 +70,25 @@ export default function Root( { children, registry, viewContext = null } ) {
 				<RegistryProvider value={ registry }>
 					<FeaturesProvider value={ enabledFeatures }>
 						<ViewContextProvider value={ viewContext }>
-							<ThemeProvider theme={ theme() }>
-								<ErrorHandler>
-									<RestoreSnapshots>
-										{ children }
-										{ viewContext && <FeatureTours /> }
-									</RestoreSnapshots>
-									{ isSiteKitScreen( viewContext ) && (
-										<PermissionsModal />
-									) }
-								</ErrorHandler>
-							</ThemeProvider>
+							<KeyboardShortcutProvider>
+								<ThemeProvider theme={ theme() }>
+									<ErrorHandler>
+										<RestoreSnapshots>
+											{ children }
+											{ viewContext && <FeatureTours /> }
+										</RestoreSnapshots>
+										{ isSiteKitScreen( viewContext ) && (
+											<PermissionsModal />
+										) }
+										{ isSiteKitScreen( viewContext ) && (
+											<KeyboardShortcutHelp />
+										) }
+										{ isSiteKitScreen( viewContext ) && (
+											<CommandPalette />
+										) }
+									</ErrorHandler>
+								</ThemeProvider>
+							</KeyboardShortcutProvider>
 						</ViewContextProvider>
 					</FeaturesProvider>
 				</RegistryProvider>
