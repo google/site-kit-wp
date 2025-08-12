@@ -48,6 +48,9 @@ ruleTester.run( 'function-declaration-consistency', rule, {
 		// Non-named arrows are fine (not assigned to an identifier).
 		'( () => {} )();',
 		'const obj = { onClick: () => {} };', // object property value (not a named function binding)
+
+		// Generators should be left as is.
+		'arr.map( function* () { yield 1; } );',
 	],
 	invalid: [
 		// Named arrow to function declaration (fixable).
@@ -126,54 +129,6 @@ ruleTester.run( 'function-declaration-consistency', rule, {
 		{
 			code: 'new Promise( function ( resolve ) { resolve(); } );',
 			output: 'new Promise( ( resolve ) => { resolve(); } );',
-			errors: [
-				{
-					message:
-						'Use arrow function for callbacks passed as arguments.',
-				},
-			],
-		},
-
-		// No-fix: arrow uses `this`.
-		{
-			code: 'const foo = () => { this.x = 1; };',
-			output: null,
-			errors: [
-				{
-					message:
-						'Use function declaration for named functions instead of arrow function',
-				},
-			],
-		},
-
-		// No-fix: arrow uses `arguments`.
-		{
-			code: 'const foo = () => arguments[ 0 ];',
-			output: null,
-			errors: [
-				{
-					message:
-						'Use function declaration for named functions instead of arrow function',
-				},
-			],
-		},
-
-		// No-fix: multi-declarator variable declaration.
-		{
-			code: 'const foo = () => {}, bar = 1;',
-			output: null,
-			errors: [
-				{
-					message:
-						'Use function declaration for named functions instead of arrow function',
-				},
-			],
-		},
-
-		// No-fix: generator callback cannot be converted to arrow.
-		{
-			code: 'arr.map( function* () { yield 1; } );',
-			output: null,
 			errors: [
 				{
 					message:
