@@ -74,6 +74,12 @@ function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 	);
 
 	const handleDismissModule = useCallback( async () => {
+		// Scroll to the top for a better UX, as other widgets get in the way and make it seem like the dismissal is still loading
+		global.scrollTo( {
+			top: 0,
+			left: 0,
+			behavior: 'smooth',
+		} );
 		showTooltip();
 		await dismissItem( ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY );
 	}, [ dismissItem, showTooltip ] );
