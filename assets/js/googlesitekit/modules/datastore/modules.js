@@ -42,6 +42,7 @@ import {
 	createRegistryControl,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import {
 	CORE_MODULES,
@@ -139,15 +140,12 @@ const fetchGetModulesStore = createFetchStore( {
 			useCache: false,
 		} );
 	},
-	reducerCallback: ( state, modules ) => {
-		return {
-			...state,
-			isAwaitingModulesRefresh: false,
-			serverDefinitions: modules.reduce( ( acc, module ) => {
-				return { ...acc, [ module.slug ]: module };
-			}, {} ),
-		};
-	},
+	reducerCallback: createReducer( ( state, modules ) => {
+		state.isAwaitingModulesRefresh = false;
+		state.serverDefinitions = modules.reduce( ( acc, module ) => {
+			return { ...acc, [ module.slug ]: module };
+		}, {} );
+	} ),
 } );
 
 const fetchSetModuleActivationStore = createFetchStore( {
@@ -158,14 +156,11 @@ const fetchSetModuleActivationStore = createFetchStore( {
 			active,
 		} );
 	},
-	reducerCallback: ( state ) => {
+	reducerCallback: createReducer( ( state ) => {
 		// Updated module activation state is handled by re-fetching module
 		// data instead, so this reducer just sets the below flag.
-		return {
-			...state,
-			isAwaitingModulesRefresh: true,
-		};
-	},
+		state.isAwaitingModulesRefresh = true;
+	} ),
 	argsToParams: ( slug, active ) => {
 		return {
 			slug,
@@ -183,15 +178,9 @@ const fetchCheckModuleAccessStore = createFetchStore( {
 	controlCallback: ( { slug } ) => {
 		return set( 'core', 'modules', 'check-access', { slug } );
 	},
-	reducerCallback: ( state, { access }, { slug } ) => {
-		return {
-			...state,
-			moduleAccess: {
-				...state.moduleAccess,
-				[ slug ]: access,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, { access }, { slug } ) => {
+		state.moduleAccess[ slug ] = access;
+	} ),
 	argsToParams: ( slug ) => {
 		return { slug };
 	},
@@ -205,12 +194,9 @@ const fetchRecoverModulesStore = createFetchStore( {
 	controlCallback: ( { slugs } ) => {
 		return set( 'core', 'modules', 'recover-modules', { slugs } );
 	},
-	reducerCallback: ( state, recoveredModules ) => {
-		return {
-			...state,
-			recoveredModules,
-		};
-	},
+	reducerCallback: createReducer( ( state, recoveredModules ) => {
+		state.recoveredModules = recoveredModules;
+	} ),
 	argsToParams: ( slugs ) => {
 		return { slugs };
 	},
@@ -606,7 +592,7 @@ export const baseControls = {
 	),
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case REGISTER_MODULE: {
 			const { slug, settings } = payload;
@@ -615,69 +601,50 @@ const baseReducer = ( state, { type, payload } ) => {
 				global.console.warn(
 					`Could not register module with slug "${ slug }". Module "${ slug }" is already registered.`
 				);
-				return state;
+				return;
 			}
 
-			return {
-				...state,
-				clientDefinitions: {
-					...state.clientDefinitions,
-					[ slug ]: settings,
-				},
-			};
+			state.clientDefinitions[ slug ] = settings;
+			break;
 		}
 
 		case RECEIVE_CHECK_REQUIREMENTS_ERROR: {
 			const { slug, error } = payload;
 
-			return {
-				...state,
-				checkRequirementsResults: {
-					...state.checkRequirementsResults,
-					[ slug ]: error,
-				},
-			};
+			state.checkRequirementsResults[ slug ] = error;
+			break;
 		}
 
 		case RECEIVE_CHECK_REQUIREMENTS_SUCCESS: {
 			const { slug } = payload;
-			return {
-				...state,
-				checkRequirementsResults: {
-					...state.checkRequirementsResults,
-					[ slug ]: true,
-				},
-			};
+
+			state.checkRequirementsResults[ slug ] = true;
+			break;
 		}
 
 		case RECEIVE_RECOVERABLE_MODULES: {
 			const { recoverableModules } = payload;
-			return {
-				...state,
-				recoverableModules,
-			};
+
+			state.recoverableModules = recoverableModules;
+			break;
 		}
 
 		case RECEIVE_SHARED_OWNERSHIP_MODULES: {
 			const { sharedOwnershipModules } = payload;
-			return {
-				...state,
-				sharedOwnershipModules,
-			};
+
+			state.sharedOwnershipModules = sharedOwnershipModules;
+			break;
 		}
 
 		case CLEAR_RECOVERED_MODULES: {
-			return {
-				...state,
-				recoveredModules: undefined,
-			};
+			state.recoveredModules = undefined;
+			break;
 		}
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 function* waitForModules() {
 	const { resolveSelect } = yield commonActions.getRegistry();
