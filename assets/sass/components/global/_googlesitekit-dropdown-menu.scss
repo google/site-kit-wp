@@ -16,6 +16,16 @@
  * limitations under the License.
  */
 
+.mdc-menu {
+	.mdc-list-item {
+		&:hover {
+			background-color: $c-interactive-tertiary-hover !important;
+			opacity: 1;
+			transition: none;
+		}
+	}
+}
+
 .googlesitekit-dropdown-menu {
 
 	.googlesitekit-header__dropdown {
@@ -27,20 +37,6 @@
 
 	.mdc-list-item .googlesitekit-cta-link:hover {
 		text-decoration: none;
-	}
-
-	.mdc-list-item {
-		&::before {
-			background-color: transparent;
-		}
-		&:hover {
-			background-color: $c-interactive-tertiary-hover;
-
-			&::before {
-				background-color: $c-interactive-tertiary-hover;
-				opacity: 1;
-			}
-		}
 	}
 
 	&.googlesitekit-dropdown-menu__icon-menu {
