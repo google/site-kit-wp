@@ -29,10 +29,7 @@ import { Cell, Grid, Row } from '../../../../material-components';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from '../../datastore/constants';
 import { MODULE_SLUG_ADS } from '../../constants';
-import {
-	provideModules,
-	WithTestRegistry,
-} from '../../../../../../tests/js/utils';
+import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
 function Template( args ) {
@@ -173,6 +170,9 @@ IcePaxEnabled.decorators = [
 
 export const GTGEnabled = Template.bind( null );
 GTGEnabled.storyName = 'With Google tag gateway enabled';
+GTGEnabled.parameters = {
+	features: [ 'googleTagGateway' ],
+};
 GTGEnabled.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -196,12 +196,9 @@ GTGEnabled.decorators = [
 		};
 
 		return (
-			<WithTestRegistry
-				callback={ setupRegistry }
-				features={ [ 'googleTagGateway' ] }
-			>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
-			</WithTestRegistry>
+			</WithRegistrySetup>
 		);
 	},
 ];
@@ -232,12 +229,9 @@ GTGDisabledWithWarning.decorators = [
 		};
 
 		return (
-			<WithTestRegistry
-				callback={ setupRegistry }
-				features={ [ 'googleTagGateway' ] }
-			>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
-			</WithTestRegistry>
+			</WithRegistrySetup>
 		);
 	},
 ];

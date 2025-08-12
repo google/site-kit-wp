@@ -20,6 +20,8 @@
  * External dependencies
  */
 import { useFirstMountState, useUnmount } from 'react-use';
+import { createMemoryHistory } from 'history';
+import { Router } from 'react-router';
 
 /**
  * Internal dependencies
@@ -34,16 +36,27 @@ import './assets/sass/stories/type-scale.scss';
 // Ensure all globals are set up before any other imports are run.
 import './polyfill-globals';
 import { setUsingCache } from 'googlesitekit-api';
+import { RegistryProvider } from 'googlesitekit-data';
 import { resetGlobals } from './utils/resetGlobals';
 import { bootstrapFetchMocks } from './fetch-mocks';
-import { WithTestRegistry } from '../tests/js/utils';
 import { enabledFeatures } from '../assets/js/features';
 import { Cell, Grid, Row } from '../assets/js/material-components';
-import { setEnabledFeatures } from '../tests/js/test-utils';
+import {
+	createTestRegistry,
+	provideUserInfo,
+	setEnabledFeatures,
+} from '../tests/js/test-utils';
+import InViewProvider from '../assets/js/components/InViewProvider';
+import FeaturesProvider from '../assets/js/components/FeaturesProvider';
 
 setUsingCache( false );
 
 bootstrapFetchMocks();
+
+const inViewState = {
+	key: 'renderStory',
+	value: true,
+};
 
 // Decorators run from last added to first. (Eg. In reverse order as listed.)
 export const decorators = [
@@ -84,17 +97,30 @@ export const decorators = [
 			setEnabledFeatures( features );
 		}
 
+		const registry = createTestRegistry();
+		const history = createMemoryHistory();
+		const featuresToEnable = new Set( features );
+
+		// Populate most basic data which should not affect any tests.
+		provideUserInfo( registry );
+
+		if ( route ) {
+			history.push( route );
+		}
+
+		// Expose registry as global for tinkering.
+		global.registry = registry;
+
 		return (
-			<WithTestRegistry
-				features={ features }
-				route={ route }
-				callback={ ( registry ) => {
-					// Expose registry as global for tinkering.
-					global.registry = registry;
-				} }
-			>
-				<Story />
-			</WithTestRegistry>
+			<InViewProvider value={ inViewState }>
+				<RegistryProvider value={ registry }>
+					<FeaturesProvider value={ featuresToEnable }>
+						<Router history={ history }>
+							<Story />
+						</Router>
+					</FeaturesProvider>
+				</RegistryProvider>
+			</InViewProvider>
 		);
 	},
 	( Story ) => {

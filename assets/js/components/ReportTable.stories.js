@@ -22,26 +22,26 @@
 import ReportTable from './ReportTable';
 import Layout from './layout/Layout';
 import Link from './Link';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import {
-	createTestRegistry,
-	provideModules,
 	provideModuleRegistrations,
-	WithTestRegistry,
+	provideModules,
 } from '../../../tests/js/utils';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import NewBadge from './NewBadge';
+import { useSelect } from 'googlesitekit-data';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 
 function Template( args ) {
-	return <ReportTable { ...args } />;
+	const modules = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModules()
+	);
+	const defaultRows = Object.values( modules );
+
+	return <ReportTable rows={ defaultRows } { ...args } />;
 }
 
 function createBasicArgs() {
-	const registry = createTestRegistry();
-	provideModules( registry );
-	provideModuleRegistrations( registry );
-	const modules = registry.select( CORE_MODULES ).getModules();
 	return {
-		rows: Object.values( modules ),
 		columns: [
 			{
 				title: 'Name',
@@ -135,13 +135,22 @@ export default {
 	title: 'Components/ReportTable',
 	component: ReportTable,
 	decorators: [
-		( Story, { parameters } ) => {
+		( Story, { args } ) => {
+			const setupRegistry = ( registry ) => {
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			};
+
 			return (
-				<WithTestRegistry features={ parameters.features || [] }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Layout>
 						<Story />
 					</Layout>
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],
