@@ -263,7 +263,7 @@ export const createSettingsStore = (
 			default: {
 				// Check if this action is for a reducer for an individual setting.
 				if ( 'undefined' !== typeof settingReducers[ type ] ) {
-					return settingReducers[ type ]( state, { type, payload } );
+					settingReducers[ type ]( state, { type, payload } );
 				}
 				break;
 			}
