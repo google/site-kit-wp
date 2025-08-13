@@ -115,6 +115,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 					return [ 'authentication_success', setValueMock ];
 				case 'slug':
 					return [ MODULE_SLUG_READER_REVENUE_MANAGER, setValueMock ];
+				default:
+					return [ null, setValueMock ];
 			}
 		} );
 
