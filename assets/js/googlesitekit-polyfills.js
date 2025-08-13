@@ -26,6 +26,13 @@ async function loadPolyfills() {
 	// errors blocks within Gutenberg built with node < v18.
 	if ( ! Array.prototype.findLastIndex ) {
 		Array.prototype.findLastIndex = function ( predicate, thisArg ) {
+			// eslint-disable-next-line no-console
+			console.error(
+				'Array.prototype.findLastIndex polyfill applied to:',
+				this,
+				new Error().stack
+			);
+
 			if ( this === null || this === undefined ) {
 				throw new TypeError(
 					'Array.prototype.findLastIndex called on null or undefined'
