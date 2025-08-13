@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager;
 
 use Google\Site_Kit\Context;
@@ -185,7 +183,7 @@ class Synchronize_PublicationTest extends TestCase {
 	public function test_synchronize_onboarding_state_with_non_existent_publication() {
 		$this->fake_sync_publication();
 
-		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
+		$this->assertTrue( $this->reader_revenue_manager->is_connected(), 'Reader Revenue Manager should be connected.' );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->synchronize_publication->register();
@@ -218,7 +216,7 @@ class Synchronize_PublicationTest extends TestCase {
 	public function test_synchronize_product_ids() {
 		$this->fake_sync_publication();
 
-		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
+		$this->assertTrue( $this->reader_revenue_manager->is_connected(), 'Reader Revenue Manager should be connected.' );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->synchronize_publication->register();
@@ -234,7 +232,7 @@ class Synchronize_PublicationTest extends TestCase {
 	public function test_synchronize_product_ids_with_non_existent_publication() {
 		$this->fake_sync_publication();
 
-		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
+		$this->assertTrue( $this->reader_revenue_manager->is_connected(), 'Reader Revenue Manager should be connected.' );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->synchronize_publication->register();
@@ -256,7 +254,7 @@ class Synchronize_PublicationTest extends TestCase {
 	public function test_synchronize_payment_option() {
 		$this->fake_sync_publication();
 
-		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
+		$this->assertTrue( $this->reader_revenue_manager->is_connected(), 'Reader Revenue Manager should be connected.' );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->synchronize_publication->register();
@@ -272,7 +270,7 @@ class Synchronize_PublicationTest extends TestCase {
 	public function test_synchronize_payment_option_with_non_existent_publication() {
 		$this->fake_sync_publication();
 
-		$this->assertTrue( $this->reader_revenue_manager->is_connected() );
+		$this->assertTrue( $this->reader_revenue_manager->is_connected(), 'Reader Revenue Manager should be connected.' );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->synchronize_publication->register();
