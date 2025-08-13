@@ -2249,7 +2249,7 @@ class Analytics_4Test extends TestCase {
 
 		$data = $this->analytics->get_data( 'report', array() );
 
-		$this->assertWPErrorWithMessage( 'Site Kit can’t access the relevant data from Analytics because you haven\'t granted all permissions requested during setup.', $data, 'Should return error when Analytics permissions are insufficient.' );
+		$this->assertWPErrorWithMessage( 'Site Kit can’t access the relevant data from Analytics because you haven’t granted all permissions requested during setup.', $data, 'Should return error when Analytics permissions are insufficient.' );
 		$this->assertEquals( 'missing_required_scopes', $data->get_error_code(), 'Error code should be missing_required_scopes when Analytics permissions are insufficient.' );
 	}
 
