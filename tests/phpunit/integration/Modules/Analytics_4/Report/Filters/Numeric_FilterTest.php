@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Report\Filters;
 
 use Google\Site_Kit\Modules\Analytics_4\Report\Filters\Numeric_Filter;
@@ -44,7 +42,8 @@ class Numeric_FilterTest extends TestCase {
 					),
 				),
 			),
-			json_decode( wp_json_encode( $expression ), true )
+			json_decode( wp_json_encode( $expression ), true ),
+			'Numeric filter should be parsed into expected GA4 expression.'
 		);
 	}
 }

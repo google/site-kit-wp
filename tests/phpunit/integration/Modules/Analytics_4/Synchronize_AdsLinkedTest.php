@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Analytics_4;
 
 use Google\Site_Kit\Context;
@@ -150,7 +148,7 @@ class Synchronize_AdsLinkedTest extends TestCase {
 
 		$this->synchronize_ads_linked->register();
 
-		$this->assertTrue( has_action( Synchronize_AdsLinked::CRON_SYNCHRONIZE_ADS_LINKED ) );
+		$this->assertTrue( has_action( Synchronize_AdsLinked::CRON_SYNCHRONIZE_ADS_LINKED ), 'Cron action for synchronizing Ads links should be registered.' );
 	}
 
 	public function test_maybe_schedule_synchronize_ads_linked() {
@@ -160,7 +158,8 @@ class Synchronize_AdsLinkedTest extends TestCase {
 		$this->synchronize_ads_linked->maybe_schedule_synchronize_ads_linked();
 
 		$this->assertTrue(
-			(bool) wp_next_scheduled( Synchronize_AdsLinked::CRON_SYNCHRONIZE_ADS_LINKED )
+			(bool) wp_next_scheduled( Synchronize_AdsLinked::CRON_SYNCHRONIZE_ADS_LINKED ),
+			'Cron event should be scheduled for Ads links synchronization.'
 		);
 	}
 
@@ -168,25 +167,26 @@ class Synchronize_AdsLinkedTest extends TestCase {
 		$this->fake_ads_linked_response();
 
 		// Confirm that module is connected, as it will be needed in the cron callback.
-		$this->assertTrue( $this->analytics_4->is_connected() );
+		$this->assertTrue( $this->analytics_4->is_connected(), 'Analytics 4 module should be connected before running cron.' );
 
 		$settings = $this->analytics_4->get_settings()->get();
 		$this->synchronize_ads_linked->register();
 
-		$this->assertFalse( $settings['adsLinked'] );
+		$this->assertFalse( $settings['adsLinked'], 'adsLinked should be false prior to synchronization.' );
 
 		// Invoke cron callback function.
 		do_action( Synchronize_AdsLinked::CRON_SYNCHRONIZE_ADS_LINKED );
 		$test_synced_at = time();
 
 		$settings = $this->analytics_4->get_settings()->get();
-		$this->assertTrue( $settings['adsLinked'] );
+		$this->assertTrue( $settings['adsLinked'], 'adsLinked should be true after synchronization when links exist.' );
 
 		// Assert that the timestamp is always updated.
 		$this->assertEqualsWithDelta(
 			$test_synced_at,
 			$settings['adsLinkedLastSyncedAt'],
-			1 // 1 second threshold to allow for micro changes at runtime.
+			1, // 1 second threshold to allow for micro changes at runtime.
+			'Last synced timestamp should be updated to current time.'
 		);
 	}
 }
