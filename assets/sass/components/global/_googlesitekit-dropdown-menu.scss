@@ -16,16 +16,6 @@
  * limitations under the License.
  */
 
-.mdc-menu {
-	.mdc-list-item {
-		&:hover {
-			background-color: $c-interactive-tertiary-hover;
-			opacity: 1;
-			transition: none;
-		}
-	}
-}
-
 .googlesitekit-dropdown-menu {
 
 	.googlesitekit-header__dropdown {

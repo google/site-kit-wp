@@ -159,7 +159,7 @@
 				}
 
 				&:hover {
-					background-color: $c-interactive-tertiary-hover;
+					background-color: unset;
 					color: $c-neutral-n-900;
 
 					&::before {

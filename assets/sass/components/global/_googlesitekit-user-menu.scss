@@ -65,12 +65,13 @@
 			padding: 0 7.16% 0 14.33%;
 
 			&:hover {
-				background-color: $c-interactive-tertiary-hover;
+				background-color: unset;
 				color: rgba(0, 0, 0, 0.87);
 
 				&::before {
 					background-color: $c-interactive-tertiary-hover;
 					opacity: 1;
+					transition: none;
 				}
 			}
 		}
