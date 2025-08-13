@@ -233,7 +233,8 @@ export function createFetchStore( {
 
 			case RECEIVE: {
 				const { response, params } = payload;
-				return reducerCallback( state, response, params );
+				reducerCallback( state, response, params );
+				break;
 			}
 
 			case FINISH_FETCH: {
@@ -249,6 +250,8 @@ export function createFetchStore( {
 				state[ isFetching ][ stringifyObject( params ) ] = false;
 				break;
 			}
+			default:
+				break;
 		}
 	} );
 
