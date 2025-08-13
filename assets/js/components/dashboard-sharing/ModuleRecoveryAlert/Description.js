@@ -41,10 +41,10 @@ export default function Description( {
 		);
 	} );
 
-	let desc = '';
+	let descriptionContent;
 
 	if ( ! hasMultipleRecoverableModules && hasUserRecoverableModules ) {
-		desc = sprintf(
+		descriptionContent = sprintf(
 			/* translators: %s: module name. */
 			__(
 				'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
@@ -53,7 +53,7 @@ export default function Description( {
 			recoverableModules[ userRecoverableModuleSlugs[ 0 ] ]?.name
 		);
 	} else if ( hasMultipleRecoverableModules && hasUserRecoverableModules ) {
-		desc = __(
+		descriptionContent = __(
 			'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
 			'google-site-kit'
 		);
@@ -62,7 +62,7 @@ export default function Description( {
 		! hasUserRecoverableModules &&
 		recoverableModules
 	) {
-		desc = sprintf(
+		descriptionContent = sprintf(
 			/* translators: %s: module name. */
 			__(
 				'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
@@ -71,16 +71,16 @@ export default function Description( {
 			Object.values( recoverableModules )[ 0 ]?.name
 		);
 	} else if ( hasMultipleRecoverableModules && ! hasUserRecoverableModules ) {
-		desc = __(
+		descriptionContent = __(
 			'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
 			'google-site-kit'
 		);
 	}
 
-	if ( desc ) {
+	if ( descriptionContent ) {
 		return (
 			<P>
-				{ desc }{ ' ' }
+				{ descriptionContent }{ ' ' }
 				<LearnMoreLink
 					label={ __( 'Learn more', 'google-site-kit' ) }
 					href={ documentationURL }
