@@ -146,16 +146,16 @@ describe( 'AudienceSelectionPanel', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 					return acc;
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 
 		provideAnalytics4MockReport( registry, reportOptions );
 
@@ -246,9 +246,8 @@ describe( 'AudienceSelectionPanel', () => {
 
 		it( 'should not list "Purchasers" if it has no data', () => {
 			// Simulate no data available state for "Purchasers".
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveResourceDataAvailabilityDates( {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+				resourceAvailabilityDates: {
 					audience: availableAudiences.reduce(
 						( acc, { audienceSlug, name } ) => {
 							if ( 'purchasers' === audienceSlug ) {
@@ -263,7 +262,8 @@ describe( 'AudienceSelectionPanel', () => {
 					),
 					customDimension: {},
 					property: {},
-				} );
+				},
+			} );
 
 			// Add report data.
 			provideAnalytics4MockReport( registry, {

@@ -404,9 +404,8 @@ export default {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsGatheringData( false );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: availableAudiences.reduce(
 							( acc, { audienceSlug, name } ) => {
 								if ( 'purchasers' === audienceSlug ) {
@@ -421,7 +420,8 @@ export default {
 						),
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				// Prevent displaying "New" badges by default.
 				registry.dispatch( CORE_USER ).receiveGetExpirableItems(
