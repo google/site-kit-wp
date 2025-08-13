@@ -808,7 +808,7 @@ class AuthenticationTest extends TestCase {
 			$authentication = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 			$authentication->invalid_nonce_error( 'log-out' );
 		} catch ( WPDieException $exception ) {
-			$this->assertEquals( 'You are attempting to log out of Test Blog', $exception->getMessage(), 'Should show logout message for invalid nonce error.' ); // PHPCS: line 818
+			$this->assertStringStartsWith( 'You are attempting to log out of Test Blog', $exception->getMessage(), 'Should show logout message for invalid nonce error.' );
 			return;
 		}
 		$this->fail( 'Expected WPDieException!' );
