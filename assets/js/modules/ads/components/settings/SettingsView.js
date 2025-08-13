@@ -160,7 +160,7 @@ export default function SettingsView() {
 						: [
 								{
 									label: __(
-										'Plugin conversion tracking',
+										'Conversion Tracking',
 										'google-site-kit'
 									),
 									status: isConversionTrackingEnabled,

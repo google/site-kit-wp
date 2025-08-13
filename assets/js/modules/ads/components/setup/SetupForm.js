@@ -93,7 +93,7 @@ export default function SetupForm( {
 			<SetupEnhancedConversionTrackingNotice
 				className="googlesitekit-margin-top-1"
 				message={ __(
-					'o track the performance of your campaigns, Site Kit will enable plugin conversion tracking. You can always disable it in settings.',
+					'To track the performance of your campaigns, Site Kit will enable plugin conversion tracking. You can always disable it in settings.',
 					'google-site-kit'
 				) }
 			/>
