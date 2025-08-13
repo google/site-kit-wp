@@ -153,6 +153,7 @@ export default function SetupMain() {
 				navigateTo( dashboardURL );
 			}
 		}
+		return null;
 	}, [
 		activeStep,
 		adSenseSettingsURL,
