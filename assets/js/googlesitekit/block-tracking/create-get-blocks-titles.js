@@ -34,7 +34,7 @@ import { subscribe, select } from 'googlesitekit-data';
  * @param {Array.<string>} blocks Array of block IDs to retrieve titles for.
  * @return {Function} A function that takes a block ID and returns its title.
  */
-export const createGetBlockTitle = ( blocks ) => {
+export function createGetBlockTitle( blocks ) {
 	const blocksTitles = new Map();
 
 	const unsubscribeInserterItems = subscribe( () => {
@@ -51,4 +51,4 @@ export const createGetBlockTitle = ( blocks ) => {
 	return function ( blockID ) {
 		return blocksTitles.get( blockID );
 	};
-};
+}

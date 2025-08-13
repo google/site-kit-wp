@@ -34,7 +34,7 @@ import { createGetBlockTitle } from './create-get-blocks-titles';
  *
  * @param {Array.<string>} blocksToTrack Array of block names to track (e.g., 'google-site-kit/rrm-subscribe-with-google').
  */
-export const watchBlocks = ( blocksToTrack ) => {
+export function watchBlocks( blocksToTrack ) {
 	const getBlockTitle = createGetBlockTitle( blocksToTrack );
 
 	const addedBlocks = new Set(
@@ -64,4 +64,4 @@ export const watchBlocks = ( blocksToTrack ) => {
 			addedBlocks.add( blockID );
 		} );
 	} );
-};
+}
