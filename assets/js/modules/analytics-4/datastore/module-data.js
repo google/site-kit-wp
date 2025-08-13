@@ -45,7 +45,7 @@ export const initialState = {
 		lostEvents: undefined,
 		newBadgeEvents: undefined,
 		hasMismatchedTag: undefined,
-		isWebDataStreamAvailable: undefined,
+		isWebDataStreamUnavailable: undefined,
 		resourceAvailabilityDates: undefined,
 	},
 };
@@ -110,7 +110,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				newEvents,
 				lostEvents,
 				newBadgeEvents,
-				isWebDataStreamAvailable,
+				isWebDataStreamUnavailable,
 			} = payload;
 
 			// Replace empty array value with empty object in resourceAvailabilityDates object.
@@ -127,7 +127,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				newEvents,
 				lostEvents,
 				newBadgeEvents,
-				isWebDataStreamAvailable,
+				isWebDataStreamUnavailable,
 			};
 
 			state.moduleData = moduleData;
@@ -257,14 +257,14 @@ export const selectors = {
 	getNewBadgeEvents: getModuleDataProperty( 'newBadgeEvents' ),
 
 	/**
-	 * Checks if the Web Data Stream is available.
+	 * Checks if the Web Data Stream is unavailable.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
-	 * @return {boolean|undefined} TRUE if the Web Data Stream is available, FALSE if not, undefined if not loaded.
+	 * @return {boolean|undefined} TRUE if the Web Data Stream is unavailable, FALSE if available or not checked, undefined if not loaded.
 	 */
-	isWebDataStreamAvailable: getModuleDataProperty(
-		'isWebDataStreamAvailable'
+	isWebDataStreamUnavailable: getModuleDataProperty(
+		'isWebDataStreamUnavailable'
 	),
 };
 

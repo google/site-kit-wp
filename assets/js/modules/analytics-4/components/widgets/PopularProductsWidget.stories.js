@@ -334,7 +334,7 @@ export default {
 	title: 'Key Metrics/PopularProductsWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry );
 				provideSiteInfo( registry );
 				provideKeyMetrics( registry );
@@ -377,7 +377,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

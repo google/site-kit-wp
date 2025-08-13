@@ -30,7 +30,7 @@ import { useDebounce } from '../hooks/useDebounce';
 export default function DataBlockGroup( { className, children } ) {
 	const ref = useRef();
 
-	const adjustFontSize = () => {
+	function adjustFontSize() {
 		const blocks = ref?.current?.querySelectorAll(
 			'.googlesitekit-data-block'
 		);
@@ -87,9 +87,9 @@ export default function DataBlockGroup( { className, children } ) {
 			const clampedNewSize = Math.max( newSize, 14 ); // Don't allow the font size to go below 14px.
 			setFontSizes( blocks, `${ clampedNewSize }px` );
 		}
-	};
+	}
 
-	const setFontSizes = ( blocks, adjustedSize ) => {
+	function setFontSizes( blocks, adjustedSize ) {
 		blocks.forEach( ( block ) => {
 			const dataPoint = block?.querySelector(
 				'.googlesitekit-data-block__datapoint'
@@ -100,7 +100,7 @@ export default function DataBlockGroup( { className, children } ) {
 
 			dataPoint.style.fontSize = adjustedSize;
 		} );
-	};
+	}
 
 	// Debounce the adjustFontSize function to prevent excessive calls on resize.
 	const debouncedAdjustFontSize = useDebounce( adjustFontSize, 50 );

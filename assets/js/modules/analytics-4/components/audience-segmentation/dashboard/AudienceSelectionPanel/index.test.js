@@ -1719,7 +1719,7 @@ describe( 'AudienceSelectionPanel', () => {
 	} );
 
 	describe( 'ErrorNotice', () => {
-		const commonSetup = ( error, additionalSetup = () => {} ) => {
+		function commonSetup( error, additionalSetup = () => {} ) {
 			provideModules( registry );
 			provideModuleRegistrations( registry );
 
@@ -1738,15 +1738,15 @@ describe( 'AudienceSelectionPanel', () => {
 				.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
 
 			additionalSetup();
-		};
+		}
 
-		const assertTextsInDocument = ( getByText, expectedTexts ) => {
+		function assertTextsInDocument( getByText, expectedTexts ) {
 			expectedTexts.forEach( ( text ) => {
 				expect(
 					getByText( new RegExp( text, 'i' ) )
 				).toBeInTheDocument();
 			} );
-		};
+		}
 
 		it( 'should not display an error notice when there are no errors', async () => {
 			const { container, waitForRegistry } = render(

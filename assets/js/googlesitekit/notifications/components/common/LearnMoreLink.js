@@ -36,13 +36,13 @@ export default function LearnMoreLink( {
 } ) {
 	const trackEvents = useNotificationEvents( id );
 
-	const handleLearnMore = ( event ) => {
+	function handleLearnMore( event ) {
 		event.persist();
 		trackEvents.clickLearnMore(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
-	};
+	}
 
 	return (
 		<Link

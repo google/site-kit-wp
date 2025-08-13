@@ -57,9 +57,9 @@ let storageOrder = [ ...defaultOrder ];
  *
  * @param {*} backend Backend to set for the cache.
  */
-export const setSelectedStorageBackend = ( backend ) => {
+export function setSelectedStorageBackend( backend ) {
 	storageBackend = backend;
-};
+}
 
 /**
  * Overrides the priority of storage mechanisms.
@@ -73,10 +73,10 @@ export const setSelectedStorageBackend = ( backend ) => {
  *
  * @param {Array} order Ordered array of storage backends to use.
  */
-export const setStorageOrder = ( order ) => {
+export function setStorageOrder( order ) {
 	storageOrder = [ ...order ];
 	setSelectedStorageBackend( undefined );
-};
+}
 
 /**
  * Resets the storage mechanism order.
@@ -88,10 +88,10 @@ export const setStorageOrder = ( order ) => {
  * @since 1.5.0
  * @private
  */
-export const resetDefaultStorageOrder = () => {
+export function resetDefaultStorageOrder() {
 	storageOrder = [ ...defaultOrder ];
 	setSelectedStorageBackend( undefined );
-};
+}
 
 /**
  * Detects whether browser storage is both supported and available.
@@ -103,7 +103,7 @@ export const resetDefaultStorageOrder = () => {
  * @return {boolean} True if the given storage is available, false otherwise.
  */
 // eslint-disable-next-line require-await
-export const isStorageAvailable = async ( type ) => {
+export async function isStorageAvailable( type ) {
 	const storage = global[ type ];
 
 	if ( ! storage ) {
@@ -132,7 +132,7 @@ export const isStorageAvailable = async ( type ) => {
 			0 !== storage.length
 		);
 	}
-};
+}
 
 /**
  * Gets the storage object to use.
@@ -175,7 +175,7 @@ export async function getStorage() {
  * @param {string} key Name of cache key.
  * @return {Promise} A promise returned, containing an object with the cached value (if found) and whether or not there was a cache hit.
  */
-export const getItem = async ( key ) => {
+export async function getItem( key ) {
 	const storage = await getStorage();
 
 	if ( storage ) {
@@ -210,7 +210,7 @@ export const getItem = async ( key ) => {
 		cacheHit: false,
 		value: undefined,
 	};
-};
+}
 
 /**
  * Sets cached data using a key.
@@ -228,7 +228,7 @@ export const getItem = async ( key ) => {
  * @param {boolean} [args.isError]   Optional. Whether the cached item is an error.
  * @return {Promise} A promise: resolves to `true` if the value was saved; `false` if not (usually because no storage method was available).
  */
-export const setItem = async (
+export async function setItem(
 	key,
 	value,
 	{
@@ -239,7 +239,7 @@ export const setItem = async (
 		timestamp = Math.round( Date.now() / 1000 ), // eslint-disable-line sitekit/no-direct-date
 		isError = false,
 	} = {}
-) => {
+) {
 	const storage = await getStorage();
 
 	if ( storage ) {
@@ -265,7 +265,7 @@ export const setItem = async (
 	}
 
 	return false;
-};
+}
 
 /**
  * Removes cached data by key.
@@ -277,7 +277,7 @@ export const setItem = async (
  * @param {string} key Name of cache key.
  * @return {Promise} A promise: resolves to `true` if the value was deleted; `false` if not (usually because no storage method was available).
  */
-export const deleteItem = async ( key ) => {
+export async function deleteItem( key ) {
 	const storage = await getStorage();
 
 	if ( storage ) {
@@ -299,7 +299,7 @@ export const deleteItem = async ( key ) => {
 	}
 
 	return false;
-};
+}
 
 /**
  * Gets all cache keys created by Site Kit.
@@ -308,7 +308,7 @@ export const deleteItem = async ( key ) => {
  *
  * @return {Promise} A promise: resolves to an array of all keys.
  */
-export const getKeys = async () => {
+export async function getKeys() {
 	const storage = await getStorage();
 
 	if ( storage ) {
@@ -332,7 +332,7 @@ export const getKeys = async () => {
 	}
 
 	return [];
-};
+}
 
 /**
  * Removes the entire cache created by Site Kit.
@@ -341,7 +341,7 @@ export const getKeys = async () => {
  *
  * @return {Promise} A promise: resolves to `true` if the cache was cleared; `false` if there was an error.
  */
-export const clearCache = async () => {
+export async function clearCache() {
 	const storage = await getStorage();
 
 	if ( storage ) {
@@ -355,4 +355,4 @@ export const clearCache = async () => {
 	}
 
 	return false;
-};
+}

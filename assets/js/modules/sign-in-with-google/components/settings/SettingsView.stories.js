@@ -60,7 +60,7 @@ export default {
 	title: 'Modules/SignInWithGoogle/Settings/SettingsView',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				const { anyoneCanRegister = false } = args;
 				provideSiteInfo( registry, { anyoneCanRegister } );
 
@@ -79,7 +79,7 @@ export default {
 				if ( args.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

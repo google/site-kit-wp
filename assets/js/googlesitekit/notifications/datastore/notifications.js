@@ -54,8 +54,9 @@ const NOTIFICATION_SEEN_STORAGE_KEY = 'googlesitekit_notification_seen';
 
 const storage = getStorage();
 
-const isValidNotificationID = ( notificationID ) =>
-	'string' === typeof notificationID;
+function isValidNotificationID( notificationID ) {
+	return 'string' === typeof notificationID;
+}
 
 export const initialState = {
 	notifications: {},

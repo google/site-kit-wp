@@ -52,7 +52,7 @@ export default {
 	title: 'Components/Notifications/Errors/UnsatisfiedScopesAlert',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry );
 				provideUserAuthentication( registry, {
 					unsatisfiedScopes: [
@@ -65,7 +65,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

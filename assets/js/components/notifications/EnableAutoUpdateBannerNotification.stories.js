@@ -54,7 +54,7 @@ export default {
 		( Story, { args } ) => {
 			global.ajaxurl = '/admin-ajax.php';
 
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 					changePluginAutoUpdatesCapacity: true,
 					siteKitAutoUpdatesEnabled: false,
@@ -70,7 +70,7 @@ export default {
 				if ( args.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			/**
 			 * Mock the admin-ajax.php endpoint.

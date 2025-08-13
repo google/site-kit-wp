@@ -67,13 +67,13 @@ export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.decorators = [
 	( Story ) => {
-		const setupRegistry = () => {
+		function setupRegistry() {
 			freezeFetch(
 				new RegExp(
 					'^/google-site-kit/v1/modules/tagmanager/data/accounts'
 				)
 			);
-		};
+		}
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
@@ -86,7 +86,7 @@ export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry
 				.dispatch( MODULES_TAGMANAGER )
 				.receiveGetAccounts( fixtures.accounts );
@@ -96,7 +96,7 @@ Default.decorators = [
 					// eslint-disable-next-line sitekit/acronym-case
 					accountID: fixtures.accounts[ 0 ].accountId,
 				} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -110,7 +110,7 @@ export const WithPrimaryAMP = Template.bind( null );
 WithPrimaryAMP.storyName = 'With Primary AMP';
 WithPrimaryAMP.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			provideSiteInfo( registry, { ampMode: AMP_MODE_PRIMARY } );
 			registry
 				.dispatch( MODULES_TAGMANAGER )
@@ -121,7 +121,7 @@ WithPrimaryAMP.decorators = [
 					// eslint-disable-next-line sitekit/acronym-case
 					accountID: fixtures.accounts[ 0 ].accountId,
 				} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -135,7 +135,7 @@ export const WithSecondaryAMP = Template.bind( null );
 WithSecondaryAMP.storyName = 'With Secondary AMP';
 WithSecondaryAMP.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			provideSiteInfo( registry, { ampMode: AMP_MODE_SECONDARY } );
 			registry
 				.dispatch( MODULES_TAGMANAGER )
@@ -146,7 +146,7 @@ WithSecondaryAMP.decorators = [
 					// eslint-disable-next-line sitekit/acronym-case
 					accountID: fixtures.accounts[ 0 ].accountId,
 				} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -160,9 +160,9 @@ export const NoAccounts = Template.bind( null );
 NoAccounts.storyName = 'Create account (no accounts)';
 NoAccounts.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [] );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -176,7 +176,7 @@ export const CreateNonUniqueContainer = Template.bind( null );
 CreateNonUniqueContainer.storyName = 'Create non-unique container';
 CreateNonUniqueContainer.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			const webContainerVersion =
 				fixtures.liveContainerVersions.web.googleTag;
 			const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
@@ -199,7 +199,7 @@ CreateNonUniqueContainer.decorators = [
 			registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
 				containerName: fixtures.getContainers.web[ 0 ].name,
 			} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -213,7 +213,7 @@ export const ExistingTagOnSite = Template.bind( null );
 ExistingTagOnSite.storyName = 'Existing tag on site';
 ExistingTagOnSite.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			// eslint-disable-next-line sitekit/acronym-case
 			const accountID = fixtures.accounts[ 0 ].accountId;
 			registry
@@ -229,7 +229,7 @@ ExistingTagOnSite.decorators = [
 				} );
 
 			registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -243,7 +243,7 @@ export const ExistingGoogleTagInContainer = Template.bind( null );
 ExistingGoogleTagInContainer.storyName = 'Existing Google tag in GTM Container';
 ExistingGoogleTagInContainer.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			const webContainerVersion =
 				fixtures.liveContainerVersions.web.googleTag;
 			const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
@@ -265,7 +265,7 @@ ExistingGoogleTagInContainer.decorators = [
 
 			registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
 			selectFirstWebContainer( registry, accountID );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -279,7 +279,7 @@ export default {
 	title: 'Modules/TagManager/Setup/SetupForm',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry, { ampMode: false } );
 				provideUserAuthentication( registry );
 				provideModuleRegistrations( registry );
@@ -288,7 +288,7 @@ export default {
 				registry
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetExistingTag( null );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

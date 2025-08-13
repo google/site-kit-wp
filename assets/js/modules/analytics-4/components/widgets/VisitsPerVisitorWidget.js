@@ -80,8 +80,9 @@ function VisitsPerVisitorWidget( { Widget } ) {
 
 	const { rows = [] } = report || {};
 
-	const makeFind = ( dateRange ) => ( row ) =>
-		get( row, 'dimensionValues.0.value' ) === dateRange;
+	function makeFind( dateRange ) {
+		return ( row ) => get( row, 'dimensionValues.0.value' ) === dateRange;
+	}
 
 	const currentVisitsPerVisitor =
 		rows.find( makeFind( 'date_range_0' ) )?.metricValues?.[ 0 ]?.value ||

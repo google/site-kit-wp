@@ -50,7 +50,9 @@ const coreUserTrackingResponse = { status: 200, body: { enabled: false } };
 describe( 'SettingsApp', () => {
 	// Create hash history to interact with HashRouter using `history.push`
 	const history = createHashHistory();
-	const getTabID = ( path ) => SettingsApp.basePathToTabIndex[ path ];
+	function getTabID( path ) {
+		return SettingsApp.basePathToTabIndex[ path ];
+	}
 	let registry;
 
 	beforeEach( () => {

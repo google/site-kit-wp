@@ -31,7 +31,7 @@ import {
 } from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 
-describe( 'modules/ads module data', () => {
+describe( 'modules/analytics-4 module data', () => {
 	const baseModulesGlobalName = '_googlesitekitModulesData';
 	const baseData = {
 		[ MODULE_SLUG_ANALYTICS_4 ]: {
@@ -39,7 +39,6 @@ describe( 'modules/ads module data', () => {
 			lostEvents: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
 			newBadgeEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 			hasMismatchedTag: false,
-			isWebDataStreamAvailable: true,
 			resourceAvailabilityDates: {
 				audience: {
 					'properties/12345/audiences/1': 20201220,
@@ -49,6 +48,7 @@ describe( 'modules/ads module data', () => {
 			customDimensionsDataAvailable: {
 				googlesitekit_post_type: true,
 			},
+			isWebDataStreamUnavailable: false,
 		},
 	};
 

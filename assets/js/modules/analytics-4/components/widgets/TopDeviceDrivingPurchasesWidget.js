@@ -141,8 +141,11 @@ function TopDeviceDrivingPurchases( { Widget } ) {
 			: undefined
 	);
 
-	const makeFilter = ( dateRange, dimensionIndex ) => ( row ) =>
-		get( row, `dimensionValues.${ dimensionIndex }.value` ) === dateRange;
+	function makeFilter( dateRange, dimensionIndex ) {
+		return ( row ) =>
+			get( row, `dimensionValues.${ dimensionIndex }.value` ) ===
+			dateRange;
+	}
 
 	// Prevents running a filter on `report.rows` which could be undefined.
 	const { rows: totalPurchasesReportRows = [] } = totalPurchasesReport || {};

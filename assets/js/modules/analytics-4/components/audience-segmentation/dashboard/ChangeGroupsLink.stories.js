@@ -36,13 +36,13 @@ export default {
 	component: ChangeGroupsLink,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAvailableAudiences( [
 						'properties/12345/audiences/1',
 					] );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

@@ -62,7 +62,7 @@ export default function SetupCTA( {
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const handleDismissWithTrackEvent = async ( event ) => {
+	async function handleDismissWithTrackEvent( event ) {
 		await dismissButton?.onClick?.( event );
 		trackEvents.dismiss(
 			gaTrackingEventArgs?.label,
@@ -71,9 +71,9 @@ export default function SetupCTA( {
 		dismissNotification( notificationID, {
 			...dismissButton?.dismissOptions,
 		} );
-	};
+	}
 
-	const handleCTAClickWithTrackEvent = async ( event ) => {
+	async function handleCTAClickWithTrackEvent( event ) {
 		trackEvents.confirm(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
@@ -85,15 +85,15 @@ export default function SetupCTA( {
 				...ctaButton?.dismissOptions,
 			} );
 		}
-	};
+	}
 
-	const handleLearnMoreClickWithTrackEvent = async ( event ) => {
+	async function handleLearnMoreClickWithTrackEvent( event ) {
 		trackEvents.clickLearnMore(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
 		await learnMoreLink?.onClick?.( event );
-	};
+	}
 
 	return (
 		<Fragment>

@@ -26,11 +26,10 @@ import {
 import { MODULE_SLUG_ADSENSE } from '../../constants';
 import AdBlockingRecoverySetupSuccessNotification from './AdBlockingRecoverySetupSuccessNotification';
 import {
-	WithTestRegistry,
-	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -48,26 +47,27 @@ export default {
 	component: AdBlockingRecoverySetupSuccessNotification,
 	decorators: [
 		( Story ) => {
-			const registry = createTestRegistry();
-			provideSiteInfo( registry );
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ADSENSE,
-					active: true,
-					connected: true,
-				},
-			] );
+			function setupRegistry( registry ) {
+				provideSiteInfo( registry );
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ADSENSE,
+						active: true,
+						connected: true,
+					},
+				] );
 
-			registry.dispatch( MODULES_ADSENSE ).setSettings( {
-				accountID: 'pub-123456',
-				adBlockingRecoverySetupStatus:
-					ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
-			} );
+				registry.dispatch( MODULES_ADSENSE ).setSettings( {
+					accountID: 'pub-123456',
+					adBlockingRecoverySetupStatus:
+						ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
+				} );
+			}
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

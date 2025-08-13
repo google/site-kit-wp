@@ -87,7 +87,7 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 		}
 	}, [ triggerSurvey, usingProxy ] );
 
-	const handleCTAClick = async () => {
+	async function handleCTAClick() {
 		setSaveError( null );
 		setConsentModeEnabled( true );
 		setIsSaving( true );
@@ -109,7 +109,7 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 		} else {
 			navigateTo( adminSettingsURL );
 		}
-	};
+	}
 
 	return (
 		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>

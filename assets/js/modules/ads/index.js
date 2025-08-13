@@ -55,7 +55,7 @@ import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
 
 export { registerStore } from './datastore';
 
-export const registerModule = ( modules ) => {
+export function registerModule( modules ) {
 	modules.registerModule( MODULE_SLUG_ADS, {
 		storeName: MODULES_ADS,
 		SettingsEditComponent: SettingsEdit,
@@ -93,9 +93,9 @@ export const registerModule = ( modules ) => {
 			};
 		},
 	} );
-};
+}
 
-export const registerWidgets = () => {};
+export function registerWidgets() {}
 
 export const ADS_NOTIFICATIONS = {
 	'setup-success-notification-ads': {
@@ -209,11 +209,11 @@ export const ADS_NOTIFICATIONS = {
 	},
 };
 
-export const registerNotifications = ( notifications ) => {
+export function registerNotifications( notifications ) {
 	for ( const notificationID in ADS_NOTIFICATIONS ) {
 		notifications.registerNotification(
 			notificationID,
 			ADS_NOTIFICATIONS[ notificationID ]
 		);
 	}
-};
+}

@@ -775,7 +775,7 @@ export default {
 					'audience-segmentation_use-audience-tiles-reports_hook_newVsReturningReportOptions',
 			};
 
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry, {
 					grantedScopes,
 					authenticated: isAuthenticated,
@@ -889,7 +889,7 @@ export default {
 					reportOptions,
 					newVsReturningReportOptions,
 				} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

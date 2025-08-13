@@ -39,14 +39,14 @@ const WidgetWithComponentProps =
 	withWidgetComponentProps( 'audienceTile' )( AudienceTile );
 
 function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
-	const setupRegistryCallback = ( registry ) => {
+	function setupRegistryCallback( registry ) {
 		provideUserAuthentication( registry );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			availableCustomDimensions: [ 'googlesitekit_post_type' ],
 		} );
 		setupRegistry( registry );
-	};
+	}
 
 	return (
 		<WithRegistrySetup func={ setupRegistryCallback }>

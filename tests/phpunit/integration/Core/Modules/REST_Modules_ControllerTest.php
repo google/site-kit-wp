@@ -34,7 +34,7 @@ class REST_Modules_ControllerTest extends TestCase {
 	/**
 	 * Authentication object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 * @var Authentication
 	 */
 	private $authentication;
