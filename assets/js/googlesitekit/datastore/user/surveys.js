@@ -246,6 +246,8 @@ const baseActions = {
 					);
 				return { response, error };
 			}
+
+			return null;
 		}
 	),
 };
