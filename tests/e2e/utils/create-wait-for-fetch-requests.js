@@ -37,7 +37,17 @@ export function createWaitForFetchRequests() {
 			// captured in no longer exists (e.g. previous page) which
 			// is necessary in some cases, and can be ignored since
 			// there is nothing to wait for any more.
-			responsePromises.push( promise.catch( () => {} ) );
+			responsePromises.push(
+				promise.catch( ( error ) => {
+					// eslint-disable-next-line no-console
+					console.error(
+						'Wait for Fetch Request failed with error:',
+						error,
+						'URL:',
+						req.url()
+					);
+				} )
+			);
 		}
 	}
 
