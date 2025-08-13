@@ -48,12 +48,12 @@ function Template( { setupRegistry = () => {} } ) {
 	);
 }
 
-const provideModulesWithRecoverable = ( registry, recoverableModules ) => {
+function provideModulesWithRecoverable( registry, recoverableModules ) {
 	provideModules(
 		registry,
 		recoverableModules.map( ( slug ) => ( { slug, recoverable: true } ) )
 	);
-};
+}
 
 export const LoadingRecoverableModules = Template.bind( {} );
 LoadingRecoverableModules.storyName = 'Loading Recoverable Modules';

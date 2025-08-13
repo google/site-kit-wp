@@ -160,7 +160,7 @@ const UserRoleSelect = forwardRef(
 			[ moduleSlug, setSharedRoles, sharedRoles, shareableRoles ]
 		);
 
-		const getSharedRolesDisplayNames = () => {
+		function getSharedRolesDisplayNames() {
 			const roleDisplayNames = shareableRoles?.reduce( ( acc, role ) => {
 				if ( sharedRoles.includes( role.id ) ) {
 					acc.push( role.displayName );
@@ -169,7 +169,7 @@ const UserRoleSelect = forwardRef(
 			}, [] );
 
 			return roleDisplayNames.join( ', ' );
-		};
+		}
 
 		if ( ! shareableRoles ) {
 			return null;

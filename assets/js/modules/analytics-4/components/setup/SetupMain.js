@@ -65,7 +65,7 @@ export default function SetupMain( { finishSetup } ) {
 			return;
 		}
 
-		const fetchMatchedAccount = async () => {
+		async function fetchMatchedAccount() {
 			setIsMatchedAccount( true );
 			const matchedAccount = await findMatchedAccount();
 			setIsMatchedAccount( false );
@@ -73,7 +73,7 @@ export default function SetupMain( { finishSetup } ) {
 				setAccountID( matchedAccount._id );
 				matchAndSelectProperty( matchedAccount._id );
 			}
-		};
+		}
 
 		if ( ! accountID ) {
 			fetchMatchedAccount();

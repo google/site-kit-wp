@@ -30,12 +30,12 @@ export const enabledFeatures = new Set(
  * @param {Set}    [_enabledFeatures] Optional. The set of enabled features. Uses `enabledFeatures` set by the server in a global JS variable, by default.
  * @return {boolean} `true` if a feature is enabled; `false` otherwise.
  */
-export const isFeatureEnabled = (
+export function isFeatureEnabled(
 	feature,
 	_enabledFeatures = enabledFeatures
-) => {
+) {
 	if ( ! ( _enabledFeatures instanceof Set ) ) {
 		return false;
 	}
 	return _enabledFeatures.has( feature );
-};
+}

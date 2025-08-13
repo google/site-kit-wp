@@ -110,13 +110,13 @@ export default function UserInputQuestionnaire() {
 		USER_INPUT_ANSWERS_PURPOSE: USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS,
 	} = getUserInputAnswersDescription();
 
-	const scrollToQuestion = () => {
+	function scrollToQuestion() {
 		global.scrollTo( {
 			top: 0,
 			left: 0,
 			behavior: 'smooth',
 		} );
-	};
+	}
 
 	const nextCallback = useCallback( () => {
 		trackEvent(

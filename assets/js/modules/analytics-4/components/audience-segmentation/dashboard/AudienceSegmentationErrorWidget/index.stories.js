@@ -21,8 +21,6 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import {
-	WithTestRegistry,
-	createTestRegistry,
 	provideModules,
 	provideModuleRegistrations,
 	provideUserInfo,
@@ -47,7 +45,7 @@ function AudienceErrorWidgetWrapper( { ...args } ) {
 }
 
 function Template( { setupRegistry = async () => {}, ...args } ) {
-	const setupRegistryCallback = async ( registry ) => {
+	async function setupRegistryCallback( registry ) {
 		provideModules( registry, [
 			{
 				active: true,
@@ -58,7 +56,7 @@ function Template( { setupRegistry = async () => {}, ...args } ) {
 		provideModuleRegistrations( registry );
 		provideUserInfo( registry );
 		await setupRegistry( registry );
-	};
+	}
 	return (
 		<WithRegistrySetup func={ setupRegistryCallback }>
 			<AudienceErrorWidgetWrapper { ...args } />
@@ -140,13 +138,17 @@ InsufficientPermissions.scenario = {};
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationErrorWidget',
 	decorators: [
-		( Story ) => {
-			const registry = createTestRegistry();
+		( Story, { args } ) => {
+			function setupRegistry( registry ) {
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			}
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

@@ -76,7 +76,7 @@ export default function GoogleTagGatewaySetupBanner( { id, Notification } ) {
 		)
 	);
 
-	const onCTAClick = async () => {
+	async function onCTAClick() {
 		setInProgress( true );
 		setGoogleTagGatewayEnabled( true );
 		const { error } = await saveGoogleTagGatewaySettings();
@@ -96,7 +96,7 @@ export default function GoogleTagGatewaySetupBanner( { id, Notification } ) {
 		} );
 
 		setInProgress( false );
-	};
+	}
 
 	const ctaError = useSelect( ( select ) => {
 		const googleTagGatewaySettings =

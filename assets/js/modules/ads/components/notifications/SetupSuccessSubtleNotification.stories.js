@@ -17,23 +17,17 @@
  */
 
 /**
- * External dependencies
- */
-import { withQuery } from '@storybook/addon-queryparams';
-
-/**
  * Internal dependencies
  */
 import SetupSuccessSubtleNotification from './SetupSuccessSubtleNotification';
 import { MODULE_SLUG_ADS } from '../../constants';
-import { WithTestRegistry } from '../../../../../../tests/js/utils';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-ads'
 )( SetupSuccessSubtleNotification );
 
-function Template( { ...args } ) {
+function Template( args ) {
 	return <NotificationWithComponentProps { ...args } />;
 }
 
@@ -50,14 +44,4 @@ Ads.scenario = {};
 export default {
 	title: 'Modules/Ads/Notifications/SetupSuccessSubtleNotification',
 	component: SetupSuccessSubtleNotification,
-	decorators: [
-		withQuery,
-		( Story, { parameters } ) => {
-			return (
-				<WithTestRegistry features={ parameters.features || [] }>
-					<Story />
-				</WithTestRegistry>
-			);
-		},
-	],
 };

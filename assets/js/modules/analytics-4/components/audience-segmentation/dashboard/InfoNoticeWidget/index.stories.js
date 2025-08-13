@@ -135,7 +135,7 @@ export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/InfoNoticeWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = async ( registry ) => {
+			async function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
@@ -155,7 +155,7 @@ export default {
 					isAudienceSegmentationWidgetHidden: false,
 				} );
 				await args?.setupRegistry( registry );
-			};
+			}
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
 					<Story />

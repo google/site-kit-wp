@@ -229,7 +229,7 @@ export default {
 	decorators: [
 		withQuery,
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetTracking( { enabled: false } );
@@ -238,7 +238,7 @@ export default {
 				if ( typeof args?.setupRegistry === 'function' ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

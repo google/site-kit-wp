@@ -160,7 +160,7 @@ const baseActions = {
 				'All slugs must be strings.'
 			);
 		},
-		function ( ...slugs ) {
+		( ...slugs ) => {
 			return fetchRemoveDismissedItemsStore.actions.fetchRemoveDismissedItems(
 				slugs
 			);

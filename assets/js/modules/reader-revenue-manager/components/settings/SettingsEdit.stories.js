@@ -22,8 +22,8 @@
 import {
 	provideModuleRegistrations,
 	provideSiteInfo,
-	WithTestRegistry,
 } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { Grid, Row, Cell } from '../../../../material-components';
 import SettingsEdit from './SettingsEdit';
 import { publications } from '../../datastore/__fixtures__';
@@ -209,7 +209,7 @@ export default {
 	title: 'Modules/ReaderRevenueManager/Settings/SettingsEdit',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry, {
 					postTypes: [
 						{ slug: 'post', label: 'Posts' },
@@ -253,12 +253,12 @@ export default {
 				if ( args?.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
-				<WithTestRegistry callback={ setupRegistry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

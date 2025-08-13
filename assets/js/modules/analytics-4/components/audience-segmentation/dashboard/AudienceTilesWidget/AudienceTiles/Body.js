@@ -48,13 +48,13 @@ import AudienceTile from '../AudienceTile';
 import AudienceTooltipMessage from '../AudienceTooltipMessage';
 import MaybePlaceholderTile from '../MaybePlaceholderTile';
 
-const hasZeroDataForAudience = ( report, dimensionName ) => {
+function hasZeroDataForAudience( report, dimensionName ) {
 	const audienceData = report?.rows?.find(
 		( row ) => row.dimensionValues?.[ 0 ]?.value === dimensionName
 	);
 	const totalUsers = audienceData?.metricValues?.[ 0 ]?.value || 0;
 	return totalUsers === 0;
-};
+}
 
 export default function Body( {
 	activeTileIndex,
@@ -120,7 +120,7 @@ export default function Body( {
 		otherAudiences,
 	} );
 
-	const getAudienceTileMetrics = ( audienceResourceName ) => {
+	function getAudienceTileMetrics( audienceResourceName ) {
 		const isSiteKitAudience = siteKitAudiences.some(
 			( audience ) => audience.name === audienceResourceName
 		);
@@ -130,7 +130,7 @@ export default function Body( {
 			( audience ) => audience.name === audienceResourceName
 		)?.audienceSlug;
 
-		const findMetricsForDateRange = ( dateRange ) => {
+		function findMetricsForDateRange( dateRange ) {
 			let row;
 
 			if ( isSiteKitAudience && isSiteKitAudiencePartialData ) {
@@ -158,15 +158,15 @@ export default function Body( {
 				Number( row?.metricValues?.[ 2 ]?.value || 0 ), // screenPageViewsPerSession
 				Number( row?.metricValues?.[ 3 ]?.value || 0 ), // screenPageViews
 			];
-		};
+		}
 
 		const currentMetrics = findMetricsForDateRange( 'date_range_0' );
 		const previousMetrics = findMetricsForDateRange( 'date_range_1' );
 
 		return { current: currentMetrics, previous: previousMetrics };
-	};
+	}
 
-	const getAudienceTileData = ( audienceResourceName, audienceIndex ) => {
+	function getAudienceTileData( audienceResourceName, audienceIndex ) {
 		const audienceName =
 			audiences?.filter(
 				( { name } ) => name === audienceResourceName
@@ -248,7 +248,7 @@ export default function Body( {
 			isZeroData,
 			isPartialData,
 		};
-	};
+	}
 
 	const hasInvalidCustomDimensionError =
 		Object.values( topContentReportErrors ).some(

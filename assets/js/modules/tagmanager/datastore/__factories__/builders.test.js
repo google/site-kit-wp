@@ -27,11 +27,11 @@ describe( 'Google Tag Manager Builder fake data test', () => {
 		// Set a hardcoded fingerprint value on each container to
 		// prevent the factory from failing due to `Date.now()` changing
 		// between test runs.
-		const setStaticFingerprintOnFactories = ( containers ) => {
+		function setStaticFingerprintOnFactories( containers ) {
 			return containers.map( ( container ) => {
 				return { ...container, fingerprint: '1676495375419' };
 			} );
-		};
+		}
 
 		const account = factories.accountBuilder();
 		const webContainers = factories.buildContainers(

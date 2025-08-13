@@ -166,10 +166,10 @@ export default {
 	component: Widget,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserCapabilities( registry );
 				provideModules( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

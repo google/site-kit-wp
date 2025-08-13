@@ -66,7 +66,7 @@ import RRMIntroductoryOverlayNotification, {
 
 export { registerStore } from './datastore';
 
-export const registerModule = ( modules ) => {
+export function registerModule( modules ) {
 	modules.registerModule( MODULE_SLUG_READER_REVENUE_MANAGER, {
 		storeName: MODULES_READER_REVENUE_MANAGER,
 		SettingsEditComponent: SettingsEdit,
@@ -99,7 +99,7 @@ export const registerModule = ( modules ) => {
 			};
 		},
 	} );
-};
+}
 
 async function checkRequirementsForProductIDNotification(
 	{ select, resolveSelect },
@@ -341,11 +341,11 @@ export const NOTIFICATIONS = {
 	},
 };
 
-export const registerNotifications = ( notificationsAPI ) => {
+export function registerNotifications( notificationsAPI ) {
 	for ( const notificationID in NOTIFICATIONS ) {
 		notificationsAPI.registerNotification(
 			notificationID,
 			NOTIFICATIONS[ notificationID ]
 		);
 	}
-};
+}

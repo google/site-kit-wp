@@ -81,9 +81,11 @@ function NewVisitorsWidget( { Widget } ) {
 
 	const { rows = [], totals = [] } = report || {};
 
-	const makeFind = ( dateRange ) => ( row ) =>
-		get( row, 'dimensionValues.0.value' ) === 'new' &&
-		get( row, 'dimensionValues.1.value' ) === dateRange;
+	function makeFind( dateRange ) {
+		return ( row ) =>
+			get( row, 'dimensionValues.0.value' ) === 'new' &&
+			get( row, 'dimensionValues.1.value' ) === dateRange;
+	}
 
 	const newVisitors =
 		rows.find( makeFind( 'date_range_0' ) )?.metricValues?.[ 0 ]?.value ||

@@ -74,14 +74,16 @@ function createWidgetArea( registry, areaName, widgets ) {
 
 	widgets.forEach( ( { Component, slug, width }, i ) => {
 		const widgetSlug = slug || `${ areaName }-widget${ i + 1 }`;
-		const componentFallback = () => (
-			<div>
-				{ ( Array.isArray( width )
-					? width.join( ' / ' )
-					: width
-				).toUpperCase() }
-			</div>
-		);
+		function componentFallback() {
+			return (
+				<div>
+					{ ( Array.isArray( width )
+						? width.join( ' / ' )
+						: width
+					).toUpperCase() }
+				</div>
+			);
+		}
 
 		registry.dispatch( CORE_WIDGETS ).registerWidget( widgetSlug, {
 			Component: Component || componentFallback,
@@ -239,12 +241,12 @@ export default {
 	component: WidgetAreaRenderer,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserCapabilities( registry );
 				provideModules( registry );
 
 				args?.registerWidgetAreas?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
