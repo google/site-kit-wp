@@ -93,6 +93,8 @@ export default function JoyrideTooltip( props ) {
 				resizeObserver.disconnect();
 			};
 		}
+		// Return noop cleanup function to satisfy consistent-return rule.
+		return () => {};
 	}, [ target, targetExists ] );
 
 	// Reset the component between mobile and desktop layouts they use different
@@ -109,6 +111,8 @@ export default function JoyrideTooltip( props ) {
 
 			return () => clearTimeout( timeoutID );
 		}
+		// Return noop cleanup function to satisfy consistent-return rule.
+		return () => {};
 	}, [ isMobileTablet ] );
 
 	// Joyride expects the step's target to be in the DOM immediately
