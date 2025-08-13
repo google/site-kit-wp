@@ -103,6 +103,7 @@ export default function GoogleTagIDMismatchNotification( {
 		if ( Array.isArray( tagIDs ) ) {
 			return getBestTagID( tagIDs, currentAnalyticsConfig.measurementID );
 		}
+		return null;
 	} );
 
 	const isDoingSubmitChanges = useSelect( ( select ) =>
