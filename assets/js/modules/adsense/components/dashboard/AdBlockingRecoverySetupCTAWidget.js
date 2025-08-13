@@ -222,7 +222,7 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 							{ __(
 								'Display a message to give site visitors with an ad blocker the option to allow ads on your site.',
 								'google-site-kit'
-							) }
+							) }{ ' ' }
 							<Link
 								onClick={ handleLearnMoreClick }
 								href={ learnMoreURL }
