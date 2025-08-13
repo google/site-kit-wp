@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Admin;
 
@@ -32,7 +30,7 @@ class Authorize_ApplicationTest extends TestCase {
 		$this->set_global_get_params( 'https://example.google.com/settings/authorization/wordpress' );
 
 		// Verify that the expected assets aren't enqueued yet.
-		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ), 'Authorize Application CSS should not be enqueued before registration.' );
 
 		$authorize_application = new Authorize_Application( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$authorize_application->register();
@@ -40,14 +38,14 @@ class Authorize_ApplicationTest extends TestCase {
 		do_action( 'admin_enqueue_scripts' );
 
 		// Check that the expected assets are enqueued.
-		$this->assertTrue( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ), 'Authorize Application CSS should be enqueued after registration.' );
 
 		ob_start();
 		do_action( 'admin_footer' );
 		$output = ob_get_clean();
 
 		// Check that the custom footer content is rendered.
-		$this->assertStringContainsString( '<div class="googlesitekit-authorize-application__footer"><p>Powered by Site Kit</p></div>', $output );
+		$this->assertStringContainsString( '<div class="googlesitekit-authorize-application__footer"><p>Powered by Site Kit</p></div>', $output, 'Authorize Application footer markup should be rendered.' );
 	}
 
 	public function test_register_with_incorrect_success_url() {
@@ -61,7 +59,7 @@ class Authorize_ApplicationTest extends TestCase {
 		$this->set_global_get_params( 'https://example.com/settings/authorization/wordpress' );
 
 		// Verify that the expected assets aren't enqueued yet.
-		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ), 'Authorize Application CSS should not be enqueued before registration.' );
 
 		$authorize_application = new Authorize_Application( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$authorize_application->register();
@@ -69,14 +67,14 @@ class Authorize_ApplicationTest extends TestCase {
 		do_action( 'admin_enqueue_scripts' );
 
 		// Check that the assets aren't enqueued due to incorrect success URL.
-		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ), 'Authorize Application CSS should not be enqueued for incorrect success URL.' );
 
 		ob_start();
 		do_action( 'admin_footer' );
 		$output = ob_get_clean();
 
 		// Check that the custom footer content isn't rendered.
-		$this->assertStringNotContainsString( '<div class="googlesitekit-authorize-application__footer"><p>Powered by Site Kit</p></div>', $output );
+		$this->assertStringNotContainsString( '<div class="googlesitekit-authorize-application__footer"><p>Powered by Site Kit</p></div>', $output, 'Authorize Application footer markup should not render for incorrect success URL.' );
 	}
 
 	public function test_register_with_incorrect_screen() {
@@ -90,7 +88,7 @@ class Authorize_ApplicationTest extends TestCase {
 		$this->set_global_get_params( 'https://example.google.com/settings/authorization/wordpress' );
 
 		// Verify that the expected assets aren't enqueued yet.
-		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ), 'Authorize Application CSS should not be enqueued before registration.' );
 
 		$authorize_application = new Authorize_Application( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$authorize_application->register();
@@ -98,14 +96,14 @@ class Authorize_ApplicationTest extends TestCase {
 		do_action( 'admin_enqueue_scripts' );
 
 		// Check that expected assets aren't enqueued due to incorrect screen.
-		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'googlesitekit-authorize-application-css', 'enqueued' ), 'Authorize Application CSS should not be enqueued on incorrect screen.' );
 
 		ob_start();
 		do_action( 'admin_footer' );
 		$output = ob_get_clean();
 
 		// Check that the custom footer content isn't rendered.
-		$this->assertStringNotContainsString( '<div class="googlesitekit-authorize-application__footer"><p>Powered by Site Kit</p></div>', $output );
+		$this->assertStringNotContainsString( '<div class="googlesitekit-authorize-application__footer"><p>Powered by Site Kit</p></div>', $output, 'Authorize Application footer markup should not render on incorrect screen.' );
 	}
 
 	public function set_global_get_params( $success_url ) {
