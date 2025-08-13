@@ -99,7 +99,7 @@ export default {
 	title: ' Modules/AdSense/Components/Setup/AdBlockingRecoveryApp',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry );
 
 				registry
@@ -107,7 +107,7 @@ export default {
 					.receiveIsAdBlockerActive( false );
 
 				args.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

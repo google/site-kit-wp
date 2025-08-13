@@ -45,7 +45,7 @@ export default {
 	component: ProductIDContributionsNotification,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = async ( registry ) => {
+			async function setupRegistry( registry ) {
 				await registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( {
@@ -55,7 +55,7 @@ export default {
 						publicationOnboardingState:
 							PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 					} );
-			};
+			}
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
 					<Story />

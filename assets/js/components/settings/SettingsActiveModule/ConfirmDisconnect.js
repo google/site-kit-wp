@@ -70,11 +70,11 @@ export default function ConfirmDisconnect( { slug } ) {
 	}, [ dialogActiveKey, setValue ] );
 
 	useEffect( () => {
-		const onKeyPress = ( event ) => {
+		function onKeyPress( event ) {
 			if ( ESCAPE === event.keyCode && dialogActive ) {
 				onClose();
 			}
-		};
+		}
 
 		global.addEventListener( 'keydown', onKeyPress );
 		return () => {

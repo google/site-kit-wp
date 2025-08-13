@@ -39,14 +39,14 @@ const WidgetWithComponentProps =
 	withWidgetComponentProps( 'audienceTile' )( AudienceTile );
 
 function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
-	const setupRegistryCallback = ( registry ) => {
+	function setupRegistryCallback( registry ) {
 		provideUserAuthentication( registry );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			availableCustomDimensions: [ 'googlesitekit_post_type' ],
 		} );
 		setupRegistry( registry );
-	};
+	}
 
 	return (
 		<WithRegistrySetup func={ setupRegistryCallback }>
@@ -246,9 +246,8 @@ AudiencePartialData.args = {
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 		);
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: {
 					[ audienceResourceName ]: dataAvailabilityDate,
 				},
@@ -256,7 +255,8 @@ AudiencePartialData.args = {
 				property: {
 					12345: 20201218,
 				},
-			} );
+			},
+		} );
 	},
 };
 AudiencePartialData.scenario = {};
@@ -284,9 +284,8 @@ TopContentPartialData.args = {
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 		);
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: {},
 				customDimension: {
 					googlesitekit_post_type: dataAvailabilityDate,
@@ -294,7 +293,8 @@ TopContentPartialData.args = {
 				property: {
 					12345: 20201218,
 				},
-			} );
+			},
+		} );
 	},
 };
 TopContentPartialData.scenario = {};

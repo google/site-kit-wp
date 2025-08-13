@@ -63,7 +63,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 export { registerStore } from './datastore';
 
-export const registerModule = ( modules ) => {
+export function registerModule( modules ) {
 	modules.registerModule( MODULE_SLUG_ADSENSE, {
 		storeName: MODULES_ADSENSE,
 		SettingsEditComponent: SettingsEdit,
@@ -106,9 +106,9 @@ export const registerModule = ( modules ) => {
 			};
 		},
 	} );
-};
+}
 
-export const registerWidgets = ( widgets ) => {
+export function registerWidgets( widgets ) {
 	widgets.registerWidget(
 		'adBlockingRecovery',
 		{
@@ -204,7 +204,7 @@ export const registerWidgets = ( widgets ) => {
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
-};
+}
 
 export const ADSENSE_NOTIFICATIONS = {
 	'adsense-abr-success-notification': {
@@ -240,11 +240,11 @@ export const ADSENSE_NOTIFICATIONS = {
 	},
 };
 
-export const registerNotifications = ( notifications ) => {
+export function registerNotifications( notifications ) {
 	for ( const notificationID in ADSENSE_NOTIFICATIONS ) {
 		notifications.registerNotification(
 			notificationID,
 			ADSENSE_NOTIFICATIONS[ notificationID ]
 		);
 	}
-};
+}

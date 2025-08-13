@@ -25,11 +25,10 @@ import {
 	buildLiveContainerVersionAMP,
 } from './builders';
 
-export const parseLiveContainerVersionIDs = (
-	// eslint-disable-next-line sitekit/acronym-case
-	{ accountId, containerId, container },
+export function parseLiveContainerVersionIDs(
+	{ accountId, containerId, container }, // eslint-disable-line sitekit/acronym-case
 	callback
-) => {
+) {
 	const ids = {
 		accountID: accountId, // eslint-disable-line sitekit/acronym-case
 		containerID: container.publicId, // eslint-disable-line sitekit/acronym-case
@@ -41,9 +40,9 @@ export const parseLiveContainerVersionIDs = (
 		callback( ids );
 	}
 	return ids;
-};
+}
 
-export const createBuildAndReceivers = ( registry ) => {
+export function createBuildAndReceivers( registry ) {
 	return {
 		buildAndReceiveWebAndAMP: ( {
 			webPropertyID,
@@ -100,4 +99,4 @@ export const createBuildAndReceivers = ( registry ) => {
 			};
 		},
 	};
-};
+}

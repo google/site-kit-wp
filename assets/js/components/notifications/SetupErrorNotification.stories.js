@@ -44,7 +44,7 @@ export default {
 	title: 'Components/Notifications/Errors/SetupErrorNotification',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry, {
 					authenticated: false,
 				} );
@@ -55,7 +55,7 @@ export default {
 					setupErrorMessage:
 						'Setup was interrupted because you did not grant the necessary permissions',
 				} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

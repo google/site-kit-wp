@@ -40,7 +40,7 @@ export default {
 	title: 'Components/Notifications/Banners',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry );
 
 				const authError = {
@@ -54,7 +54,7 @@ export default {
 				};
 
 				registry.dispatch( CORE_USER ).setAuthError( authError );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

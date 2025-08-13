@@ -60,7 +60,7 @@ function AudienceSegmentationErrorWidget( {
 		isInsufficientPermissionsError
 	);
 
-	const handleRetry = () => {
+	function handleRetry() {
 		trackEvent(
 			`${ viewContext }_audiences-all-tiles`,
 			'data_loading_error_retry'
@@ -68,7 +68,7 @@ function AudienceSegmentationErrorWidget( {
 			setValue( AUDIENCE_INFO_NOTICE_HIDE_UI, false );
 			onRetry?.();
 		} );
-	};
+	}
 
 	useEffect( () => {
 		// Set UI key to hide the info notice.

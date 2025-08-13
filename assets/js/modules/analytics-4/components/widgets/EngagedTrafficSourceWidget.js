@@ -85,8 +85,11 @@ function EngagedTrafficSourceWidget( props ) {
 	);
 
 	const { rows = [], totals = [] } = report || {};
-	const makeFilter = ( dateRange, dimensionIndex ) => ( row ) =>
-		get( row, `dimensionValues.${ dimensionIndex }.value` ) === dateRange;
+	function makeFilter( dateRange, dimensionIndex ) {
+		return ( row ) =>
+			get( row, `dimensionValues.${ dimensionIndex }.value` ) ===
+			dateRange;
+	}
 
 	const topTrafficSource =
 		rows.filter( makeFilter( 'date_range_0', 1 ) )[ 0 ]

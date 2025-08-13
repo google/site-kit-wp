@@ -58,7 +58,7 @@ function EntityHeader() {
 	const [ url, setURL ] = useState( entityURL );
 
 	useEffect( () => {
-		const shortenEntityURL = () => {
+		function shortenEntityURL() {
 			if ( ! headerDetailsRef.current ) {
 				return;
 			}
@@ -76,7 +76,7 @@ function EntityHeader() {
 			const maxChars = ( availableWidth * 2 ) / fontSize;
 
 			setURL( shortenURL( entityURL, maxChars ) );
-		};
+		}
 
 		// Use throttled version only on window resize.
 		const throttledShortenURL = throttle( shortenEntityURL, 100 );

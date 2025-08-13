@@ -39,11 +39,11 @@ function AudienceTileErrorWrapper( { ...args } ) {
 }
 
 function Template( { setupRegistry = async () => {}, ...args } ) {
-	const setupRegistryCallback = async ( registry ) => {
+	async function setupRegistryCallback( registry ) {
 		provideModules( registry );
 		provideModuleRegistrations( registry );
 		await setupRegistry( registry );
-	};
+	}
 	return (
 		<WithRegistrySetup func={ setupRegistryCallback }>
 			<AudienceTileErrorWrapper { ...args } />
@@ -127,11 +127,11 @@ export default {
 	component: AudienceTileError,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				if ( args?.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

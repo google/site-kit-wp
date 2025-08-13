@@ -42,7 +42,7 @@ export default {
 	component: AccountLinkedViaGoogleForWooCommerceSubtleNotification,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry );
 				registry.dispatch( MODULES_ADS ).receiveModuleData( {
 					plugins: {
@@ -55,7 +55,7 @@ export default {
 						},
 					},
 				} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

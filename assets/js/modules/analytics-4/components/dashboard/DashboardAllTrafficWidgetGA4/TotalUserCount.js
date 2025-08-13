@@ -61,12 +61,12 @@ export default function TotalUserCount( props ) {
 	);
 
 	const { setValues } = useDispatch( CORE_UI );
-	const showAllUsers = () => {
+	function showAllUsers() {
 		setValues( {
 			[ UI_DIMENSION_VALUE ]: '',
 			[ UI_DIMENSION_COLOR ]: '',
 		} );
-	};
+	}
 
 	if ( ! loaded ) {
 		return (

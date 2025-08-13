@@ -79,14 +79,14 @@ function AuthenticatedPermissionsModal() {
 		// If error has flag to skip the modal, redirect to the authorization
 		// page immediately without prompting the user, essentially short-
 		// circuiting to the confirm step.
-		const confirmIfSkipModal = async () => {
+		async function confirmIfSkipModal() {
 			if (
 				permissionsError?.data?.skipModal &&
 				permissionsError?.data?.scopes?.length
 			) {
 				await onConfirm();
 			}
-		};
+		}
 		confirmIfSkipModal();
 	}, [ onConfirm, permissionsError ] );
 

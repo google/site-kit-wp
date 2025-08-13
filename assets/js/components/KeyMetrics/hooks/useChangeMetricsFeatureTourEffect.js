@@ -37,9 +37,9 @@ import sharedKeyMetrics from '../../../feature-tours/shared-key-metrics';
  * @param {Object}  options                        Options object.
  * @param {boolean} options.renderChangeMetricLink If metric link meets the conditions to render.
  */
-export const useChangeMetricsFeatureTourEffect = ( {
+export function useChangeMetricsFeatureTourEffect( {
 	renderChangeMetricLink,
-} ) => {
+} ) {
 	const keyMetricsSetupCompletedBy = useSelect( ( select ) =>
 		select( CORE_SITE ).getKeyMetricsSetupCompletedBy()
 	);
@@ -59,4 +59,4 @@ export const useChangeMetricsFeatureTourEffect = ( {
 			triggerOnDemandTour( sharedKeyMetrics );
 		}
 	}, [ renderChangeMetricLink, isUserEligibleForTour, triggerOnDemandTour ] );
-};
+}

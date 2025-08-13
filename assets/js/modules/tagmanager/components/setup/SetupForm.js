@@ -104,12 +104,12 @@ export default function SetupForm( { finishSetup } ) {
 	const { submitChanges } = useDispatch( MODULES_TAGMANAGER );
 	const submitForm = useCallback(
 		async ( { submitMode } = {} ) => {
-			const throwOnError = async ( func ) => {
+			async function throwOnError( func ) {
 				const { error } = ( await func() ) || {};
 				if ( error ) {
 					throw error;
 				}
-			};
+			}
 			// We'll use form state to persist the chosen submit choice
 			// in order to preserve support for auto-submit.
 			setValues( FORM_SETUP, { submitMode, submitInProgress: true } );

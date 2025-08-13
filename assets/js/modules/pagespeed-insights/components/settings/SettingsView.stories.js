@@ -53,7 +53,7 @@ export default {
 	title: 'Modules/PageSpeed Insights/Settings/SettingsView',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
@@ -62,7 +62,7 @@ export default {
 					},
 				] );
 				provideModuleRegistrations( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

@@ -261,6 +261,7 @@ export default function WooCommerceRedirectModal( {
 							<CircularProgress size={ 14 } />
 						) : undefined
 					}
+					disabled={ !! isSaving }
 					tertiary
 				>
 					{ isGoogleForWooCommerceAdsConnected
@@ -296,6 +297,7 @@ export default function WooCommerceRedirectModal( {
 					target={
 						isGoogleForWooCommerceAdsConnected ? '_self' : '_blank'
 					}
+					disabled={ !! isSaving }
 					tertiary
 				>
 					{ isGoogleForWooCommerceAdsConnected

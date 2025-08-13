@@ -106,10 +106,10 @@ export default {
 	title: 'Components/Notifications/Subtle/GA4AdSenseLinkedNotification',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

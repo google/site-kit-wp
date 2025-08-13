@@ -48,7 +48,7 @@ export default {
 	title: 'Modules/ReaderRevenueManager/Components/Dashboard/ReaderRevenueManagerSetupCTABanner',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -76,7 +76,7 @@ export default {
 						status: 200,
 					}
 				);
-			};
+			}
 
 			return (
 				<div

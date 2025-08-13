@@ -110,7 +110,7 @@ export default {
 	component: SettingsView,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry, {
 					postTypes: [
 						{ slug: 'post', label: 'Posts' },
@@ -146,7 +146,7 @@ export default {
 				if ( args?.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

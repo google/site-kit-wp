@@ -53,9 +53,9 @@ export default {
 	decorators: [
 		withQuery,
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

@@ -32,9 +32,9 @@ Default.storyName = 'ResetButton';
 
 Default.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			provideSiteInfo( registry );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>

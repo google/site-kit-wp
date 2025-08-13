@@ -19,8 +19,9 @@
 import { markdownToHTML } from './markdown';
 
 describe( 'markdownToHTML', () => {
-	const testMarkdown = ( _, markdown, html ) =>
-		expect( markdownToHTML( markdown ) ).toBe( html );
+	function testMarkdown( _, markdown, html ) {
+		return expect( markdownToHTML( markdown ) ).toBe( html );
+	}
 
 	describe( 'paragraphs', () => {
 		it.each( [

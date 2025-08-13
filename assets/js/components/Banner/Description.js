@@ -38,7 +38,7 @@ export default function Description( {
 	additionalDescription,
 	children,
 } ) {
-	const renderDescription = () => {
+	function renderDescription() {
 		if ( isValidElement( description ) ) {
 			return description;
 		}
@@ -55,7 +55,7 @@ export default function Description( {
 		}
 
 		return description;
-	};
+	}
 
 	return (
 		<div

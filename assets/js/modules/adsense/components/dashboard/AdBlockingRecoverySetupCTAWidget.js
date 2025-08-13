@@ -132,6 +132,12 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 	const { dismissPrompt } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
+	const isNavigatingToRecoveryPageURL = useSelect(
+		( select ) =>
+			recoveryPageURL &&
+			select( CORE_LOCATION ).isNavigatingTo( recoveryPageURL )
+	);
+
 	const referenceDateInMilliseconds = stringToDate( referenceDate ).getTime();
 	const setupCompletedTimestampInMilliseconds =
 		setupCompletedTimestamp * 1000;
@@ -159,7 +165,7 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 		}
 	}, [ inView, shouldShowWidget, viewContext ] );
 
-	const handleCTAClick = async () => {
+	async function handleCTAClick() {
 		await trackEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'confirm_notification'
@@ -169,9 +175,9 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 		return new Promise( () => {
 			// We are intentionally letting this promise unresolved.
 		} );
-	};
+	}
 
-	const handleDismissClick = async () => {
+	async function handleDismissClick() {
 		trackEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'dismiss_notification'
@@ -189,14 +195,14 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 			// For the third dismissal, dismiss permanently.
 			await dismissPrompt( AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY );
 		}
-	};
+	}
 
-	const handleLearnMoreClick = () => {
+	function handleLearnMoreClick() {
 		trackEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'click_learn_more_link'
 		);
-	};
+	}
 
 	if ( ! shouldShowWidget ) {
 		return <WidgetNull />;
@@ -249,6 +255,7 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 				ctaButton={ {
 					label: __( 'Set up now', 'google-site-kit' ),
 					onClick: handleCTAClick,
+					disabled: isNavigatingToRecoveryPageURL,
 				} }
 				svg={ {
 					desktop: BannerSVGDesktop,

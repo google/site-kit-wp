@@ -79,16 +79,15 @@ export default {
 	component: AudienceCreationNotice,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry, {
 					grantedScopes: [ EDIT_SCOPE ],
 				} );
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: availableAudiences.reduce(
 							( acc, { name } ) => {
 								acc[ name ] = 20201220;
@@ -98,7 +97,8 @@ export default {
 						),
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					accountID: '12345',
@@ -114,7 +114,7 @@ export default {
 					} );
 
 				args?.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

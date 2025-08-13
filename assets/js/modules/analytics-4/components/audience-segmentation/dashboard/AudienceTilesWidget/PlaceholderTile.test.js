@@ -43,16 +43,16 @@ describe( 'PlaceholderTile', () => {
 			configuredAudiences: [],
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 					return acc;
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 	} );
 
 	describe( 'when there are configurable non default audiences available', () => {

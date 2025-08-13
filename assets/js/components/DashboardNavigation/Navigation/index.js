@@ -143,11 +143,11 @@ export default function Navigation() {
 	 */
 	const handleSelectedChip = useCallback(
 		( event ) => {
-			const changeSelectedChip = ( chipID ) => {
+			function changeSelectedChip( chipID ) {
 				setValue( ACTIVE_CONTEXT_ID, undefined );
 				setSelectedID( chipID );
 				setIsJumpingTo( undefined );
-			};
+			}
 
 			const closestID = findClosestSection( elementRef );
 
@@ -214,10 +214,10 @@ export default function Navigation() {
 
 	// Handle scroll events to update sticky state and selected chip.
 	useEffect( () => {
-		const onScroll = ( event ) => {
+		function onScroll( event ) {
 			handleSticky();
 			handleSelectedChip( event );
-		};
+		}
 
 		const throttledOnScroll = throttle( onScroll, 150 );
 		global.addEventListener( 'scroll', throttledOnScroll );

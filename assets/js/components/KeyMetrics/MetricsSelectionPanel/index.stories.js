@@ -65,7 +65,7 @@ export default {
 	component: MetricsSelectionPanel,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry );
 				provideSiteInfo( registry, {
 					postTypes: [ { slug: 'post', label: 'Post' } ],
@@ -105,7 +105,7 @@ export default {
 				registry
 					.dispatch( CORE_UI )
 					.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
