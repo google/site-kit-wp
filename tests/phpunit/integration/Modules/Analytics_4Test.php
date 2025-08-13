@@ -2829,7 +2829,7 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Verify that the EDIT_SCOPE is required.
-		$this->assertWPErrorWithMessage( 'You\'ll need to grant Site Kit permission to create a new Analytics custom dimension on your behalf.', $data );
+		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to create a new Analytics custom dimension on your behalf.', $data );
 		$this->assertEquals( 'missing_required_scopes', $data->get_error_code(), 'Error code should be missing_required_scopes when Analytics edit scope is not granted for custom dimension creation.' );
 		$this->assertEquals(
 			array(
@@ -4140,7 +4140,7 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Verify that the EDIT_SCOPE is required.
-		$this->assertWPErrorWithMessage( 'You\'ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', $data );
+		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', $data );
 		$this->assertEquals( 'missing_required_scopes', $data->get_error_code(), 'Error code should be missing_required_scopes when Analytics edit scope is not granted for audience creation.' );
 		$this->assertEquals(
 			array(
