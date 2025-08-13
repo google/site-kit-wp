@@ -80,7 +80,7 @@ describe( 'AccountCreate', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getAccountSummaries', [] );
 
-		// Enable Enhanced Conversion Tracking by default to avoid adding
+		// Enable Plugin Conversion Tracking by default to avoid adding
 		// the notice in existing cases.
 		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {
 			enabled: true,
