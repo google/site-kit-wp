@@ -43,6 +43,7 @@ export const initialState = {
 		lostEvents: undefined,
 		newBadgeEvents: undefined,
 		hasMismatchedTag: undefined,
+		isWebDataStreamUnavailable: undefined,
 	},
 };
 
@@ -69,14 +70,20 @@ export const actions = {
 export const reducer = createReducer( ( state, { payload, type } ) => {
 	switch ( type ) {
 		case RECEIVE_MODULE_DATA: {
-			const { tagIDMismatch, newEvents, lostEvents, newBadgeEvents } =
-				payload;
+			const {
+				tagIDMismatch,
+				newEvents,
+				lostEvents,
+				newBadgeEvents,
+				isWebDataStreamUnavailable,
+			} = payload;
 
 			const moduleData = {
 				hasMismatchedTag: !! tagIDMismatch,
 				newEvents,
 				lostEvents,
 				newBadgeEvents,
+				isWebDataStreamUnavailable,
 			};
 
 			state.moduleData = moduleData;
@@ -159,6 +166,17 @@ export const selectors = {
 	 * @return {Array|undefined} New badge events array.
 	 */
 	getNewBadgeEvents: getModuleDataProperty( 'newBadgeEvents' ),
+
+	/**
+	 * Checks if the Web Data Stream is unavailable.
+	 *
+	 * @since 1.159.0
+	 *
+	 * @return {boolean|undefined} TRUE if the Web Data Stream is unavailable, FALSE if available or not checked, undefined if not loaded.
+	 */
+	isWebDataStreamUnavailable: getModuleDataProperty(
+		'isWebDataStreamUnavailable'
+	),
 };
 
 export default {

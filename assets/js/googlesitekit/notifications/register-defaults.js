@@ -348,7 +348,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'setup-success-notification-site-kit': {
 		Component: SiteKitSetupSuccessNotification,
-		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: () => {
 			const notification = getQueryArg( location.href, 'notification' );
@@ -554,7 +554,7 @@ export const DEFAULT_NOTIFICATIONS = {
 					: Promise.resolve( [] ),
 			] );
 
-			const getModuleState = async ( moduleSlug, datastoreSlug ) => {
+			async function getModuleState( moduleSlug, datastoreSlug ) {
 				// Check if the module connected and return early if not.
 				const isConnected =
 					select( CORE_MODULES ).isModuleConnected( moduleSlug );
@@ -597,7 +597,7 @@ export const DEFAULT_NOTIFICATIONS = {
 				}
 
 				return 'connected';
-			};
+			}
 
 			// Get Analytics-4 and Search Console states.
 			const analyticsState = await getModuleState(

@@ -76,7 +76,7 @@ function reduceSearchConsoleData( rows ) {
 	};
 }
 
-export const extractSearchConsoleDashboardData = ( rows, dateRangeLength ) => {
+export function extractSearchConsoleDashboardData( rows, dateRangeLength ) {
 	const { compareRange, currentRange } = partitionReport( rows, {
 		dateRangeLength,
 	} );
@@ -106,4 +106,4 @@ export const extractSearchConsoleDashboardData = ( rows, dateRangeLength ) => {
 			latestData.averagePosition
 		),
 	};
-};
+}

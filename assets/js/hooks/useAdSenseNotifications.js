@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -65,13 +66,53 @@ export default function useAdSenseNotifications() {
 				return;
 			}
 
+			/**
+			 * Adjust the notification props to match the expected
+			 * `NotificationFromServer` component props, which vary
+			 * slightly from the attributes returned from the REST API.
+			 */
+			const notificationProps = { ...notification };
+
+			// Some notifications do not include a `title` property, so supply
+			// a default.
+			if ( ! notificationProps.title ) {
+				notificationProps.title = __(
+					'Notice about your AdSense account',
+					'google-site-kit'
+				);
+			}
+
+			if (
+				! notificationProps.content?.length &&
+				!! notificationProps.description?.length
+			) {
+				notificationProps.content = notificationProps.description;
+				delete notificationProps.description;
+			}
+
+			// This always shows the `dismissButton` in the `<NotificationFromServer>`
+			// layout component. AdSense alerts are always dismissible, but these
+			// will persist only for an hour in `<NotificationFromServer>`, allowing
+			// the alerts to resurface if the issue still persists.
+			if (
+				notificationProps.dismissible === undefined &&
+				notificationProps.isDismissible !== undefined
+			) {
+				notificationProps.dismissible = notificationProps.isDismissible;
+				delete notificationProps.isDismissible;
+			}
+
 			registerNotification( notification.id, {
-				Component() {
-					return <NotificationFromServer { ...notification } />;
+				Component( { Notification } ) {
+					return (
+						<Notification>
+							<NotificationFromServer { ...notificationProps } />
+						</Notification>
+					);
 				},
 				priority: notification.priority,
-				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-				isDismissible: notification.isDismissible,
+				areaSlug: NOTIFICATION_AREAS.HEADER,
+				isDismissible: true, // AdSense alerts are always dismissible, but these will persist only for an hour in `<NotificationFromServer>`.
 			} );
 
 			setRegisteredNotifications( ( previousRegisteredNotifications ) => {

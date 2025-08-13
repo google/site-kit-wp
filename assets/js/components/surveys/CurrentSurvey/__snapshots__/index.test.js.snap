@@ -20,7 +20,9 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
         <div
           class="googlesitekit-survey__header-details"
         >
-          <h3>
+          <h3
+            class="googlesitekit-typography googlesitekit-typography--headline googlesitekit-typography--small"
+          >
             Based on your experience so far, how satisfied are you with Site Kit?
           </h3>
           <button
@@ -153,7 +155,9 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
         <div
           class="googlesitekit-survey__header-details"
         >
-          <h3>
+          <h3
+            class="googlesitekit-typography googlesitekit-typography--headline googlesitekit-typography--small"
+          >
             Based on your experience so far, how satisfied are you with Site Kit?
           </h3>
           <button
@@ -286,7 +290,9 @@ exports[`CurrentSurvey should render the completed survey component if all quest
         <div
           class="googlesitekit-survey__header-details"
         >
-          <h3>
+          <h3
+            class="googlesitekit-typography googlesitekit-typography--headline googlesitekit-typography--small"
+          >
             Thanks for sharing your thoughts!
           </h3>
           <button
@@ -358,7 +364,9 @@ exports[`CurrentSurvey should trigger the first completion when no matching trig
         <div
           class="googlesitekit-survey__header-details"
         >
-          <h3>
+          <h3
+            class="googlesitekit-typography googlesitekit-typography--headline googlesitekit-typography--small"
+          >
             Thanks for sharing your thoughts!
           </h3>
           <button

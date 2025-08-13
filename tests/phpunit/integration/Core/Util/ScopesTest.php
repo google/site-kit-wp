@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Core\Util\Scopes;
@@ -25,9 +23,9 @@ class ScopesTest extends TestCase {
 	 */
 	public function test_is_satisfied_by( $scope, $scopes, $expected_result ) {
 		if ( $expected_result ) {
-			$this->assertTrue( Scopes::is_satisfied_by( $scope, $scopes ) );
+			$this->assertTrue( Scopes::is_satisfied_by( $scope, $scopes ), 'Scope should be satisfied by the provided scopes.' );
 		} else {
-			$this->assertFalse( Scopes::is_satisfied_by( $scope, $scopes ) );
+			$this->assertFalse( Scopes::is_satisfied_by( $scope, $scopes ), 'Scope should not be satisfied by the provided scopes.' );
 		}
 	}
 
@@ -117,9 +115,9 @@ class ScopesTest extends TestCase {
 	 */
 	public function test_are_satisfied_by( array $scopes, array $granted_scopes, $expected_result ) {
 		if ( $expected_result ) {
-			$this->assertTrue( Scopes::are_satisfied_by( $scopes, $granted_scopes ) );
+			$this->assertTrue( Scopes::are_satisfied_by( $scopes, $granted_scopes ), 'All scopes should be satisfied by the granted scopes.' );
 		} else {
-			$this->assertFalse( Scopes::are_satisfied_by( $scopes, $granted_scopes ) );
+			$this->assertFalse( Scopes::are_satisfied_by( $scopes, $granted_scopes ), 'Not all scopes should be satisfied by the granted scopes.' );
 		}
 	}
 

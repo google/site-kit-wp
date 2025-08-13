@@ -51,7 +51,6 @@ export default function SetupCTA( {
 	ctaButton,
 	svg,
 	footer,
-	dismissOptions,
 	gaTrackingEventArgs,
 	waitingProgress,
 	...props
@@ -63,32 +62,38 @@ export default function SetupCTA( {
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const handleDismissWithTrackEvent = async ( event ) => {
+	async function handleDismissWithTrackEvent( event ) {
 		await dismissButton?.onClick?.( event );
 		trackEvents.dismiss(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
 		dismissNotification( notificationID, {
-			...dismissOptions,
+			...dismissButton?.dismissOptions,
 		} );
-	};
+	}
 
-	const handleCTAClickWithTrackEvent = async ( event ) => {
+	async function handleCTAClickWithTrackEvent( event ) {
 		trackEvents.confirm(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
 		await ctaButton?.onClick?.( event );
-	};
 
-	const handleLearnMoreClickWithTrackEvent = async ( event ) => {
+		if ( ctaButton?.dismissOnClick ) {
+			dismissNotification( notificationID, {
+				...ctaButton?.dismissOptions,
+			} );
+		}
+	}
+
+	async function handleLearnMoreClickWithTrackEvent( event ) {
 		trackEvents.clickLearnMore(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
 		await learnMoreLink?.onClick?.( event );
-	};
+	}
 
 	return (
 		<Fragment>
@@ -159,7 +164,6 @@ SetupCTA.propTypes = {
 		verticalPosition: PropTypes.oneOf( [ 'top', 'center', 'bottom' ] ),
 	} ),
 	footer: PropTypes.node,
-	dismissOptions: PropTypes.object,
 	gaTrackingEventArgs: PropTypes.shape( {
 		category: PropTypes.string,
 		label: PropTypes.string,

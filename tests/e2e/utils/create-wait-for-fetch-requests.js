@@ -27,7 +27,7 @@
 export function createWaitForFetchRequests() {
 	const responsePromises = [];
 
-	const listener = ( req ) => {
+	function listener( req ) {
 		if ( req.resourceType() === 'fetch' ) {
 			const promise = page.waitForResponse(
 				// eslint-disable-next-line sitekit/acronym-case
@@ -39,7 +39,7 @@ export function createWaitForFetchRequests() {
 			// there is nothing to wait for any more.
 			responsePromises.push( promise.catch( () => {} ) );
 		}
-	};
+	}
 
 	page.on( 'request', listener );
 

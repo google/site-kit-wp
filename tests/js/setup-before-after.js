@@ -70,7 +70,9 @@ afterEach( async () => {
 		jest.useRealTimers();
 	}
 
-	const nextTick = () => new Promise( ( resolve ) => setTimeout( resolve ) );
+	function nextTick() {
+		return new Promise( ( resolve ) => setTimeout( resolve ) );
+	}
 	await nextTick();
 } );
 

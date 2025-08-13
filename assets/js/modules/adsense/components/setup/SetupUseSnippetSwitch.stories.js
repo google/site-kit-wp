@@ -22,11 +22,7 @@
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '../../constants';
-import {
-	createTestRegistry,
-	WithTestRegistry,
-	provideModules,
-} from '../../../../../../tests/js/utils';
+import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_ADDED } from '../../util';
 
@@ -38,12 +34,8 @@ const validSettings = {
 	siteStatus: SITE_STATUS_ADDED,
 };
 
-function Template( { setupRegistry } ) {
-	return (
-		<WithRegistrySetup func={ setupRegistry }>
-			<SetupUseSnippetSwitch />
-		</WithRegistrySetup>
-	);
+function Template() {
+	return <SetupUseSnippetSwitch />;
 }
 
 export const SameExistingTagAndClientID = Template.bind( {} );
@@ -89,20 +81,25 @@ export default {
 	title: 'Modules/AdSense/Components/Setup/SetupUseSnippetSwitch',
 	component: SetupUseSnippetSwitch,
 	decorators: [
-		( Story ) => {
-			const registry = createTestRegistry();
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ADSENSE,
-					active: true,
-					connected: true,
-				},
-			] );
+		( Story, { args } ) => {
+			function setupRegistry( registry ) {
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ADSENSE,
+						active: true,
+						connected: true,
+					},
+				] );
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			}
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

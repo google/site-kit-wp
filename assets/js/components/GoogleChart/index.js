@@ -212,7 +212,7 @@ export default function GoogleChart( props ) {
 	}, [ onMouseOver, onMouseOut ] );
 
 	// Checks to see if the date is within the date range.
-	const isDateWithinRange = ( date ) => {
+	function isDateWithinRange( date ) {
 		// If any of the dates are not set, return false.
 		if ( ! date || ! startDate || ! endDate ) {
 			return false;
@@ -230,7 +230,7 @@ export default function GoogleChart( props ) {
 		}
 
 		return true;
-	};
+	}
 
 	// Only use markers if the date is within the current date range.
 	const dateMarkersInRange = dateMarkers.filter( ( dateMarker ) => {
@@ -242,7 +242,7 @@ export default function GoogleChart( props ) {
 	/**
 	 * Adds any "key date" vertical lines/tooltips to the charts.
 	 */
-	const addKeyDateLinesToChart = () => {
+	function addKeyDateLinesToChart() {
 		if ( ! chartWrapperRef.current ) {
 			return;
 		}
@@ -337,7 +337,7 @@ export default function GoogleChart( props ) {
 			// and without things feeling cramped or being cut off.
 			legendElement.style.transform = 'translateY(-10px)';
 		}
-	};
+	}
 
 	if ( googleChartsCollisionError ) {
 		return null;

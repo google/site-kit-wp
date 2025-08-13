@@ -51,6 +51,7 @@ import Link from '../../../../../components/Link';
 import GatheringDataNotice, {
 	NOTICE_STYLE,
 } from '../../../../../components/GatheringDataNotice';
+import Typography from '../../../../../components/Typography';
 
 export default function TotalUserCount( props ) {
 	const { loaded, error, report, dimensionValue, gatheringData } = props;
@@ -60,12 +61,12 @@ export default function TotalUserCount( props ) {
 	);
 
 	const { setValues } = useDispatch( CORE_UI );
-	const showAllUsers = () => {
+	function showAllUsers() {
 		setValues( {
 			[ UI_DIMENSION_VALUE ]: '',
 			[ UI_DIMENSION_COLOR ]: '',
 		} );
-	};
+	}
 
 	if ( ! loaded ) {
 		return (
@@ -105,7 +106,10 @@ export default function TotalUserCount( props ) {
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__totalcount googlesitekit-data-block">
-			<h3 className="googlesitekit-subheading-1 googlesitekit-data-block__title">
+			<Typography
+				as="h3"
+				className="googlesitekit-subheading-1 googlesitekit-data-block__title"
+			>
 				{ ! dimensionValue && (
 					<span>{ __( 'All Visitors', 'google-site-kit' ) } </span>
 				) }
@@ -129,7 +133,7 @@ export default function TotalUserCount( props ) {
 						<span>{ dimensionValue }</span>
 					</Fragment>
 				) }
-			</h3>
+			</Typography>
 
 			{ gatheringData && (
 				<GatheringDataNotice style={ NOTICE_STYLE.LARGE } />

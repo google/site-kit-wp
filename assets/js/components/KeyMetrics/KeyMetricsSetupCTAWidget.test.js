@@ -258,10 +258,6 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		);
 		const button = getByRole( 'button', { name: /get tailored metrics/i } );
 		expect( button ).toBeInTheDocument();
-		expect( button ).toHaveAttribute(
-			'href',
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-user-input'
-		);
 
 		// Should also trigger a survey view.
 		await waitFor( () =>

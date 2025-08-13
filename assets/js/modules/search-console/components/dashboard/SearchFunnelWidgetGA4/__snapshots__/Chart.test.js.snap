@@ -38,7 +38,7 @@ exports[`SearchFunnelWidgetGA4 Chart Activate Analytics CTA with button "Complet
               class="googlesitekit-analytics-cta__preview-graph"
             >
               <h3
-                class="googlesitekit-analytics-cta__preview-graph--title"
+                class="googlesitekit-typography googlesitekit-analytics-cta__preview-graph--title googlesitekit-typography--body googlesitekit-typography--small"
               >
                 Unique visitors from Search
               </h3>
@@ -58,7 +58,7 @@ exports[`SearchFunnelWidgetGA4 Chart Activate Analytics CTA with button "Complet
               class="googlesitekit-analytics-cta__preview-graph"
             >
               <h3
-                class="googlesitekit-analytics-cta__preview-graph--title"
+                class="googlesitekit-typography googlesitekit-analytics-cta__preview-graph--title googlesitekit-typography--body googlesitekit-typography--small"
               >
                 Key Events completed
               </h3>
@@ -139,7 +139,7 @@ exports[`SearchFunnelWidgetGA4 Chart Activate Analytics CTA with button "Set up 
               class="googlesitekit-analytics-cta__preview-graph"
             >
               <h3
-                class="googlesitekit-analytics-cta__preview-graph--title"
+                class="googlesitekit-typography googlesitekit-analytics-cta__preview-graph--title googlesitekit-typography--body googlesitekit-typography--small"
               >
                 Unique visitors from Search
               </h3>
@@ -159,7 +159,7 @@ exports[`SearchFunnelWidgetGA4 Chart Activate Analytics CTA with button "Set up 
               class="googlesitekit-analytics-cta__preview-graph"
             >
               <h3
-                class="googlesitekit-analytics-cta__preview-graph--title"
+                class="googlesitekit-typography googlesitekit-analytics-cta__preview-graph--title googlesitekit-typography--body googlesitekit-typography--small"
               >
                 Key Events completed
               </h3>

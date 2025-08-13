@@ -29,5 +29,6 @@ import { SITE_KIT_VIEW_CONTEXTS } from '../googlesitekit/constants';
  * @param {string} viewContext The view-context.
  * @return {boolean} TRUE if the passed view-context is a site kit view; otherwise FALSE.
  */
-export const isSiteKitScreen = ( viewContext ) =>
-	SITE_KIT_VIEW_CONTEXTS.includes( viewContext );
+export function isSiteKitScreen( viewContext ) {
+	return SITE_KIT_VIEW_CONTEXTS.includes( viewContext );
+}

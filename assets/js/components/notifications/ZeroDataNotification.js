@@ -41,11 +41,11 @@ export default function ZeroDataNotification( { id, Notification } ) {
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const ctaClick = () => {
+	function ctaClick() {
 		dismissNotification( id, {
 			expiresInSeconds: DAY_IN_SECONDS,
 		} );
-	};
+	}
 
 	return (
 		<Notification>

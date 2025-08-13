@@ -54,6 +54,7 @@ import {
 import useViewContext from '../../../../hooks/useViewContext';
 import { useRefocus } from '../../../../hooks/useRefocus';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
+import Typography from '../../../../components/Typography';
 
 export default function SetupMain( { finishSetup } ) {
 	const viewContext = useViewContext();
@@ -275,9 +276,14 @@ export default function SetupMain( { finishSetup } ) {
 					<AdSenseIcon width="40" height="40" />
 				</div>
 
-				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+				<Typography
+					as="h3"
+					className="googlesitekit-setup-module__title"
+					size="small"
+					type="headline"
+				>
 					{ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
-				</h2>
+				</Typography>
 			</div>
 
 			<div className="googlesitekit-setup-module__step">

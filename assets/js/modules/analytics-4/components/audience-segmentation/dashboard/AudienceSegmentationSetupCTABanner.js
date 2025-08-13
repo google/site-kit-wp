@@ -38,7 +38,6 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 import { NOTIFICATION_AREAS } from '../../../../../googlesitekit/notifications/constants';
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../datastore/constants';
-import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/SettingsCardVisitorGroups/SetupSuccess';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip';
 import { WEEK_IN_SECONDS } from '../../../../../util';
@@ -93,21 +92,16 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 
 	const [ showErrorModal, setShowErrorModal ] = useState( false );
 
-	const { dismissItem } = useDispatch( CORE_USER );
-
 	const onSuccess = useCallback( () => {
 		registerNotification(
 			AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
 			{
 				Component: AudienceSegmentationSetupSuccessSubtleNotification,
 				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-				isDismissible: true,
 			}
 		);
 		dismissNotification( id );
-		// Dismiss success notification in settings.
-		dismissItem( SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION );
-	}, [ registerNotification, dismissNotification, id, dismissItem ] );
+	}, [ registerNotification, dismissNotification, id ] );
 
 	const onError = useCallback( () => {
 		setShowErrorModal( true );
@@ -170,11 +164,11 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 							: __( 'Maybe later', 'google-site-kit' ),
 						onClick: showTooltip,
 						disabled: isSaving,
-					} }
-					dismissOptions={ {
-						expiresInSeconds: isDismissalFinal
-							? 0
-							: 2 * WEEK_IN_SECONDS,
+						dismissOptions: {
+							expiresInSeconds: isDismissalFinal
+								? 0
+								: 2 * WEEK_IN_SECONDS,
+						},
 					} }
 					svg={ {
 						desktop: BannerSVGDesktop,

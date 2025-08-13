@@ -119,11 +119,8 @@ describe( 'the set up flow for the second administrator', () => {
 		await expect( page ).toMatchElement(
 			'#js-googlesitekit-main-dashboard'
 		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
-			{
-				text: /Congrats on completing the setup for Site Kit!/i,
-			}
-		);
+		await expect( page ).toMatchElement( '.googlesitekit-banner__title', {
+			text: /Congrats on completing the setup for Site Kit!/i,
+		} );
 	} );
 } );

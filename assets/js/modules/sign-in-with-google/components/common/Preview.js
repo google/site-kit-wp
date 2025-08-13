@@ -45,7 +45,7 @@ export default function Preview() {
 
 	useEffect( () => {
 		const script = document.createElement( 'script' );
-		const onLoad = () => {
+		function onLoad() {
 			setScriptLoaded( true );
 
 			// Using a fake client ID here since the user won't be able
@@ -53,7 +53,7 @@ export default function Preview() {
 			global.google.accounts.id.initialize( {
 				client_id: 'notrealclientid',
 			} );
-		};
+		}
 
 		script.src = `https://accounts.google.com/gsi/client?hl=${ getLocale() }`;
 		script.addEventListener( 'load', onLoad );

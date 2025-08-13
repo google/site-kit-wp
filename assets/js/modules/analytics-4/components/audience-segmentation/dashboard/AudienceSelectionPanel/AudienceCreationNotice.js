@@ -53,6 +53,7 @@ import SpinnerButton, {
 } from '../../../../../../googlesitekit/components-gm2/SpinnerButton';
 import AudienceCreationErrorNotice from './AudienceCreationErrorNotice';
 import Notice from '../../../../../../components/Notice';
+import Typography from '../../../../../../components/Typography';
 
 export default function AudienceCreationNotice() {
 	const viewContext = useViewContext();
@@ -95,9 +96,9 @@ export default function AudienceCreationNotice() {
 		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 	);
 
-	const onCloseClick = () => {
+	function onCloseClick() {
 		dismissItem( AUDIENCE_CREATION_NOTICE_SLUG );
-	};
+	}
 
 	const redirectURL = addQueryArgs( global.location.href, {
 		notification: 'audience_segmentation',
@@ -183,14 +184,14 @@ export default function AudienceCreationNotice() {
 		]
 	);
 
-	const handleDismissEditScopeNotice = () => {
+	function handleDismissEditScopeNotice() {
 		trackEvent(
 			`${ viewContext }_audiences-sidebar-create-audiences`,
 			'dismiss_oauth_notice'
 		).finally( () => {
 			dismissItem( AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG );
 		} );
-	};
+	}
 
 	const setupErrorCode = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorCode()
@@ -290,13 +291,13 @@ export default function AudienceCreationNotice() {
 							className="googlesitekit-audience-selection-panel__audience-creation-notice-audience"
 						>
 							<div className="googlesitekit-audience-selection-panel__audience-creation-notice-audience-details">
-								<h3>
+								<Typography as="h3" type="title" size="small">
 									{
 										SITE_KIT_AUDIENCE_DEFINITIONS[
 											audienceSlug
 										].displayName
 									}
-								</h3>
+								</Typography>
 								<p className="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description">
 									{
 										SITE_KIT_AUDIENCE_DEFINITIONS[

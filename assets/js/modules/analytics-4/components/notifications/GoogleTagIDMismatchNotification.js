@@ -181,7 +181,7 @@ export default function GoogleTagIDMismatchNotification( {
 
 	if ( newAnalyticsProperty ) {
 		return (
-			<Notification className="googlesitekit-publisher-win">
+			<Notification>
 				<BannerNotification
 					notificationID={ id }
 					type={ TYPES.WARNING }
@@ -204,6 +204,10 @@ export default function GoogleTagIDMismatchNotification( {
 						label: __( 'Use new property', 'google-site-kit' ),
 						onClick: updateToNewAnalyticsConfig,
 						inProgress: isDoingSubmitChanges,
+						dismissOnClick: true,
+						dismissOptions: {
+							expiresInSeconds: 1, // Expire the dismissal almost instantly so that the notification can be shown again if there is another mismatch in the future.
+						},
 					} }
 					dismissButton={ {
 						label: __(
@@ -211,11 +215,10 @@ export default function GoogleTagIDMismatchNotification( {
 							'google-site-kit'
 						),
 						onClick: updateGoogleTagConfig,
+						dismissOptions: {
+							expiresInSeconds: 1, // Expire the dismissal almost instantly so that the notification can be shown again if there is another mismatch in the future.
+						},
 					} }
-					dismissOptions={ {
-						expiresInSeconds: 1,
-					} }
-					dismissOnCTAClick
 				/>
 			</Notification>
 		);
@@ -223,7 +226,7 @@ export default function GoogleTagIDMismatchNotification( {
 
 	if ( newGoogleTagID ) {
 		return (
-			<Notification className="googlesitekit-publisher-win">
+			<Notification>
 				<BannerNotification
 					notificationID={ id }
 					type={ TYPES.WARNING }
@@ -249,11 +252,11 @@ export default function GoogleTagIDMismatchNotification( {
 							newGoogleTagID
 						),
 						onClick: updateGoogleTagConfig,
+						dismissOnClick: true,
+						dismissOptions: {
+							expiresInSeconds: 1, // Expire the dismissal almost instantly so that the notification can be shown again if there is another mismatch in the future.
+						},
 					} }
-					dismissOptions={ {
-						expiresInSeconds: 1,
-					} }
-					dismissOnCTAClick
 				/>
 			</Notification>
 		);

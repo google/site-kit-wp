@@ -28,7 +28,7 @@ exports[`Overview should not render the Activate Analytics CTA when the Analytic
                 class="googlesitekit-data-block__title-datapoint-wrapper"
               >
                 <h3
-                  class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
+                  class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
                 >
                   <span
                     class="googlesitekit-data-block__title-inner"
@@ -75,7 +75,7 @@ exports[`Overview should not render the Activate Analytics CTA when the Analytic
                 class="googlesitekit-data-block__title-datapoint-wrapper"
               >
                 <h3
-                  class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
+                  class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
                 >
                   <span
                     class="googlesitekit-data-block__title-inner"
@@ -143,7 +143,7 @@ exports[`Overview should render the Search Funnel Overview, including the Activa
                 class="googlesitekit-data-block__title-datapoint-wrapper"
               >
                 <h3
-                  class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
+                  class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
                 >
                   <span
                     class="googlesitekit-data-block__title-inner"
@@ -190,7 +190,7 @@ exports[`Overview should render the Search Funnel Overview, including the Activa
                 class="googlesitekit-data-block__title-datapoint-wrapper"
               >
                 <h3
-                  class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
+                  class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
                 >
                   <span
                     class="googlesitekit-data-block__title-inner"
@@ -238,7 +238,7 @@ exports[`Overview should render the Search Funnel Overview, including the Activa
               class="googlesitekit-analytics-cta__preview-graph"
             >
               <h3
-                class="googlesitekit-analytics-cta__preview-graph--title"
+                class="googlesitekit-typography googlesitekit-analytics-cta__preview-graph--title googlesitekit-typography--body googlesitekit-typography--small"
               >
                 Unique visitors from Search
               </h3>
@@ -258,7 +258,7 @@ exports[`Overview should render the Search Funnel Overview, including the Activa
               class="googlesitekit-analytics-cta__preview-graph"
             >
               <h3
-                class="googlesitekit-analytics-cta__preview-graph--title"
+                class="googlesitekit-typography googlesitekit-analytics-cta__preview-graph--title googlesitekit-typography--body googlesitekit-typography--small"
               >
                 Key Events completed
               </h3>

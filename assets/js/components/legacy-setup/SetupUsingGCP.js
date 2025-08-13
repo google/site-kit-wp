@@ -46,6 +46,7 @@ import { clearCache } from '../../googlesitekit/api/cache';
 import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
 import HelpMenu from '../help/HelpMenu';
+import Typography from '../Typography';
 
 class SetupUsingGCP extends Component {
 	constructor( props ) {
@@ -207,7 +208,7 @@ class SetupUsingGCP extends Component {
 
 		if ( this.isSetupFinished() ) {
 			delay(
-				function () {
+				() => {
 					global.location.replace( redirectURL );
 				},
 				500,
@@ -322,12 +323,17 @@ class SetupUsingGCP extends Component {
 												<Grid>
 													<Row>
 														<Cell size={ 12 }>
-															<h1 className="googlesitekit-setup__title">
+															<Typography
+																as="h1"
+																className="googlesitekit-setup__title"
+																size="large"
+																type="headline"
+															>
 																{ __(
 																	'Authenticate Site Kit',
 																	'google-site-kit'
 																) }
-															</h1>
+															</Typography>
 															<p className="googlesitekit-setup__description">
 																{ __(
 																	'Please sign into your Google account to begin.',

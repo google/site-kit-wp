@@ -56,7 +56,7 @@ export default {
 	component: SettingsView,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( MODULES_SEARCH_CONSOLE )
 					.receiveGetSettings( {} );
@@ -76,7 +76,7 @@ export default {
 					.receiveGetSettings( {
 						propertyID: 'http://example.com/',
 					} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

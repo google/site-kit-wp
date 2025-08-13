@@ -361,7 +361,7 @@ export default {
 					'audience-segmentation_get-audiences-user-count-report-options_store:selector',
 			};
 
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry, {
 					grantedScopes: [ EDIT_SCOPE ],
 				} );
@@ -439,7 +439,7 @@ export default {
 					.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
 
 				args?.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

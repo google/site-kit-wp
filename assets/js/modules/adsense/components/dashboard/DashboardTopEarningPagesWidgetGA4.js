@@ -150,12 +150,12 @@ function DashboardTopEarningPagesWidgetGA4( {
 	// was created, and the observer would never detect the component as in view.
 	// Full discussion: https://github.com/google/site-kit-wp/issues/8212#issuecomment-1954275748
 	const [ trackingRefReady, setTrackingRefReady ] = useState( false );
-	const updateTrackingRef = ( element ) => {
+	function updateTrackingRef( element ) {
 		trackingRef.current = element;
 		if ( element && ! trackingRefReady ) {
 			setTrackingRefReady( true );
 		}
-	};
+	}
 
 	const viewContext = useViewContext();
 
@@ -185,12 +185,12 @@ function DashboardTopEarningPagesWidgetGA4( {
 		}
 	}, [ inView, viewContext, isAdSenseLinked, hasBeenInView ] );
 
-	const onClickAdSenseLinkedCTA = () => {
+	function onClickAdSenseLinkedCTA() {
 		trackEvent(
 			`${ viewContext }_top-earning-pages-widget`,
 			'click_learn_more_link'
 		);
-	};
+	}
 
 	if ( isDismissed ) {
 		return <WidgetNull />;
@@ -243,8 +243,11 @@ function DashboardTopEarningPagesWidgetGA4( {
 		);
 	}
 
+	const columnClassName =
+		'googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--medium';
 	const tableColumns = [
 		{
+			columnHeaderClassName: columnClassName,
 			title: __( 'Top Earning Pages', 'google-site-kit' ),
 			tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
 			primary: true,
@@ -286,6 +289,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 			},
 		},
 		{
+			columnHeaderClassName: columnClassName,
 			title: __( 'Earnings', 'google-site-kit' ),
 			tooltip: __( 'Earnings', 'google-site-kit' ),
 			field: 'metricValues.0.value',

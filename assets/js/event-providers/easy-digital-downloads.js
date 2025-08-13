@@ -22,7 +22,7 @@
 
 	const body = jQuery( 'body' );
 
-	body.on( 'edd_cart_item_added', function ( event, details ) {
+	body.on( 'edd_cart_item_added', ( event, details ) => {
 		const { name, value } = parseCartItemHTML( details.cart_item );
 		const currency = global._googlesitekit.easyDigitalDownloadsCurrency;
 
@@ -47,7 +47,7 @@
  * @param {string} cartItemHTML The HTML string for the cart item.
  * @return {Object} `title` and `value` keys.
  */
-export const parseCartItemHTML = ( cartItemHTML ) => {
+export function parseCartItemHTML( cartItemHTML ) {
 	const parser = new DOMParser();
 	const doc = parser.parseFromString( cartItemHTML, 'text/html' );
 
@@ -97,4 +97,4 @@ export const parseCartItemHTML = ( cartItemHTML ) => {
 		name,
 		value,
 	};
-};
+}

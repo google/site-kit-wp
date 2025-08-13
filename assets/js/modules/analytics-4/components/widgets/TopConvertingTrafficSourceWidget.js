@@ -86,7 +86,7 @@ function TopConvertingTrafficSourceWidget( { Widget } ) {
 			)
 	);
 
-	const getRowForDateRange = ( dateRange ) => {
+	function getRowForDateRange( dateRange ) {
 		if ( ! report?.rows ) {
 			return null;
 		}
@@ -99,7 +99,7 @@ function TopConvertingTrafficSourceWidget( { Widget } ) {
 
 		// As the report is limited to 1 row per date range, return the first row.
 		return rows[ 0 ];
-	};
+	}
 
 	const currentRow = getRowForDateRange( 'date_range_0' );
 	const previousRow = getRowForDateRange( 'date_range_1' );

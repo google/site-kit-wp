@@ -185,10 +185,10 @@ const pageTitlesReportOptions = {
 	reportID: 'analytics-4_get-page-titles_store:selector_options',
 };
 
-export const provideAnalytics4ReportTitles = (
+export function provideAnalytics4ReportTitles(
 	registry,
 	options = pageTitlesReportOptions
-) => {
+) {
 	const pageTitlesReport = getAnalytics4MockResponse(
 		options,
 		// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
@@ -202,12 +202,12 @@ export const provideAnalytics4ReportTitles = (
 		.receiveGetReport( pageTitlesReport, {
 			options: pageTitlesReportOptions,
 		} );
-};
+}
 
-export const setupAnalytics4MockReports = (
+export function setupAnalytics4MockReports(
 	registry,
 	mockOptions = wpDashboardAnalytics4OptionSets
-) => {
+) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
 	mockOptions.forEach( ( options ) => {
@@ -217,20 +217,20 @@ export const setupAnalytics4MockReports = (
 				options,
 			} );
 	} );
-};
+}
 
-export const setupAnalytics4MockReportsWithNoDataInComparisonDateRange = (
+export function setupAnalytics4MockReportsWithNoDataInComparisonDateRange(
 	registry,
 	mockOptions = wpDashboardAnalytics4OptionSets
-) => {
+) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
 	mockOptions.forEach( ( options ) =>
 		provideAnalyticsReportWithoutDateRangeData( registry, options )
 	);
-};
+}
 
-export const setupSearchConsoleMockReports = ( registry, data ) => {
+export function setupSearchConsoleMockReports( registry, data ) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
 	wpDashboardSearchConsoleOptions.forEach( ( options ) => {
@@ -244,9 +244,9 @@ export const setupSearchConsoleMockReports = ( registry, data ) => {
 			provideSearchConsoleMockReport( registry, options );
 		}
 	} );
-};
+}
 
-export const setupSearchConsoleGatheringData = ( registry ) => {
+export function setupSearchConsoleGatheringData( registry ) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
 	wpDashboardSearchConsoleOptions.forEach( ( options ) => {
@@ -254,12 +254,12 @@ export const setupSearchConsoleGatheringData = ( registry ) => {
 			options,
 		} );
 	} );
-};
+}
 
-export const setupAnalytics4GatheringData = (
+export function setupAnalytics4GatheringData(
 	registry,
 	mockOptionSets = wpDashboardAnalytics4OptionSets
-) => {
+) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
@@ -272,7 +272,7 @@ export const setupAnalytics4GatheringData = (
 			options,
 		} );
 	} );
-};
+}
 
 export function setupAnalytics4ZeroData(
 	registry,
@@ -347,7 +347,7 @@ export function setupAnalytics4Property( registry, createdDayBefore = 10 ) {
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 }
 
-export const setupSearchConsoleZeroData = ( registry ) => {
+export function setupSearchConsoleZeroData( registry ) {
 	wpDashboardSearchConsoleOptions.forEach( ( options ) => {
 		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
 			[
@@ -364,9 +364,9 @@ export const setupSearchConsoleZeroData = ( registry ) => {
 			}
 		);
 	} );
-};
+}
 
-export const setupBaseRegistry = ( registry, args ) => {
+export function setupBaseRegistry( registry, args ) {
 	// Set up the search console and analytics modules stores but provide no data.
 	provideModules( registry, [
 		{
@@ -388,17 +388,17 @@ export const setupBaseRegistry = ( registry, args ) => {
 	if ( typeof args?.setupRegistry === 'function' ) {
 		args.setupRegistry( registry );
 	}
-};
+}
 
-export const setupSearchConsoleAnalytics4GatheringData = ( registry ) => {
+export function setupSearchConsoleAnalytics4GatheringData( registry ) {
 	setupSearchConsoleGatheringData( registry );
 	setupAnalytics4GatheringData( registry );
-};
+}
 
-export const setupSearchConsoleAnalytics4ZeroData = ( registry ) => {
+export function setupSearchConsoleAnalytics4ZeroData( registry ) {
 	setupSearchConsoleZeroData( registry );
 	setupAnalytics4ZeroData( registry );
-};
+}
 
 export const widgetDecorators = [
 	( Story ) => (
@@ -417,9 +417,9 @@ export const widgetDecorators = [
 		</div>
 	),
 	( Story, { args } ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			setupBaseRegistry( registry, args );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>

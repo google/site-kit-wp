@@ -71,6 +71,9 @@ describe( 'modules/analytics-4 properties', () => {
 	const setGoogleTagIDMismatchEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/set-google-tag-id-mismatch'
 	);
+	const setWebDataStreamUnavailabilityEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/set-is-web-data-stream-unavailable'
+	);
 
 	const gtmAccountID = '6065484567';
 	const gtmContainerID = '98369876';
@@ -175,10 +178,11 @@ describe( 'modules/analytics-4 properties', () => {
 
 		describe( 'selectProperty', () => {
 			it( 'should throw if property ID is invalid', () => {
-				const callback = () =>
-					registry
+				function callback() {
+					return registry
 						.dispatch( MODULES_ANALYTICS_4 )
 						.selectProperty( '' );
+				}
 				expect( callback ).toThrow(
 					'A valid propertyID selection is required.'
 				);
@@ -741,24 +745,33 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 		} );
 
-		describe( 'setIsWebDataStreamAvailable', () => {
-			it( 'sets the value of isWebDataStreamAvailable', async () => {
-				const isWebDataStreamAvailable = registry
-					.select( MODULES_ANALYTICS_4 )
-					.isWebDataStreamAvailable();
+		describe( 'setIsWebDataStreamUnavailable', () => {
+			it( 'sets the value of isWebDataStreamUnavailable', async () => {
+				const isWebDataStreamUnavailable = true;
 
-				// It is true by default.
-				expect( isWebDataStreamAvailable ).toBe( true );
+				fetchMock.post( setWebDataStreamUnavailabilityEndpoint, {
+					body: isWebDataStreamUnavailable,
+					status: 200,
+				} );
+
+				const defaultIsWebDataStreamUnavailable = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isWebDataStreamUnavailable();
+
+				// It is undefined by default.
+				expect( defaultIsWebDataStreamUnavailable ).toBeUndefined();
 
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setIsWebDataStreamAvailable( false );
+					.setIsWebDataStreamUnavailable(
+						isWebDataStreamUnavailable
+					);
 
-				const updatedIsWebDataStreamAvailable = registry
+				const updatedIsWebDataStreamUnavailable = registry
 					.select( MODULES_ANALYTICS_4 )
-					.isWebDataStreamAvailable();
+					.isWebDataStreamUnavailable();
 
-				expect( updatedIsWebDataStreamAvailable ).toBe( false );
+				expect( updatedIsWebDataStreamUnavailable ).toBe( true );
 			} );
 		} );
 
@@ -944,6 +957,11 @@ describe( 'modules/analytics-4 properties', () => {
 						}
 					);
 
+				fetchMock.post( setWebDataStreamUnavailabilityEndpoint, {
+					body: true,
+					status: 200,
+				} );
+
 				fetchMock.postOnce( ga4SettingsEndpoint, {
 					body: {
 						...ga4Settings,
@@ -965,7 +983,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
 				expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, {
 					body: {
 						data: {
@@ -1071,10 +1089,11 @@ describe( 'modules/analytics-4 properties', () => {
 				).toEqual( googleTagID );
 			} );
 
-			it( 'should set `isWebDataStreamAvailable` to `false` when there is no Google Tag Container available', async () => {
+			it( 'should set `isWebDataStreamUnavailable` to `true` when there is no Google Tag Container available', async () => {
 				global._googlesitekitModulesData = {
 					[ MODULE_SLUG_ANALYTICS_4 ]: {
 						tagIDMismatch: false,
+						isWebDataStreamAvailable: false,
 					},
 				};
 
@@ -1115,6 +1134,11 @@ describe( 'modules/analytics-4 properties', () => {
 					status: 200,
 				} );
 
+				fetchMock.post( setWebDataStreamUnavailabilityEndpoint, {
+					body: true,
+					status: 200,
+				} );
+
 				const ga4Settings = {
 					measurementID,
 					googleTagAccountID,
@@ -1138,7 +1162,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 3 );
+				expect( fetchMock ).toHaveFetchedTimes( 4 );
 				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
 					query: {
 						destinationID: measurementID,
@@ -1159,8 +1183,8 @@ describe( 'modules/analytics-4 properties', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isWebDataStreamAvailable()
-				).toBe( false );
+						.isWebDataStreamUnavailable()
+				).toBe( true );
 
 				// Initially undefined.
 				expect(
@@ -1211,6 +1235,11 @@ describe( 'modules/analytics-4 properties', () => {
 					googleTagLastSyncedAtMs: 1670123456789,
 				} );
 
+				fetchMock.post( setWebDataStreamUnavailabilityEndpoint, {
+					body: true,
+					status: 200,
+				} );
+
 				fetchMock.getOnce( containerLookupEndpoint, {
 					body: containerMock,
 					status: 200,
@@ -1249,7 +1278,7 @@ describe( 'modules/analytics-4 properties', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getGoogleTagLastSyncedAtMs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 4 );
+				expect( fetchMock ).toHaveFetchedTimes( 5 );
 				expect( fetchMock ).toHaveFetched( containerLookupEndpoint, {
 					query: {
 						destinationID: measurementID,
@@ -1267,14 +1296,6 @@ describe( 'modules/analytics-4 properties', () => {
 					method: 'POST',
 				} );
 
-				// The web data stream is available.
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isWebDataStreamAvailable()
-				).toBe( true );
-
-				// but the Google Tag ID is mismatched.
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
@@ -1310,6 +1331,11 @@ describe( 'modules/analytics-4 properties', () => {
 					googleTagAccountID,
 					googleTagContainerID,
 					googleTagLastSyncedAtMs: 1670123456789,
+				} );
+
+				fetchMock.post( setWebDataStreamUnavailabilityEndpoint, {
+					body: true,
+					status: 200,
 				} );
 
 				fetchMock.getOnce( containerLookupEndpoint, {
@@ -1905,27 +1931,6 @@ describe( 'modules/analytics-4 properties', () => {
 					.hasMismatchedGoogleTagID();
 
 				expect( hasMismatchedGoogleTagID ).toBe( true );
-			} );
-		} );
-
-		describe( 'isWebDataStreamAvailable', () => {
-			it( 'returns a specific key in state', () => {
-				const isWebDataStreamAvailable = registry
-					.select( MODULES_ANALYTICS_4 )
-					.isWebDataStreamAvailable();
-
-				// It is true by default.
-				expect( isWebDataStreamAvailable ).toBe( true );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setIsWebDataStreamAvailable( false );
-
-				const updatedIsWebDataStreamAvailable = registry
-					.select( MODULES_ANALYTICS_4 )
-					.isWebDataStreamAvailable();
-
-				expect( updatedIsWebDataStreamAvailable ).toBe( false );
 			} );
 		} );
 

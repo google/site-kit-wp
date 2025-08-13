@@ -21,14 +21,11 @@
  */
 import fetchMock from 'fetch-mock';
 import { debounce, keyBy, mapValues } from 'lodash';
-import { createMemoryHistory } from 'history';
-import { Router } from 'react-router';
 
 /**
  * WordPress dependencies
  */
-import { createRegistry, RegistryProvider } from '@wordpress/data';
-import { useState } from '@wordpress/element';
+import { createRegistry } from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -62,10 +59,8 @@ import {
 	KM_ANALYTICS_NEW_VISITORS,
 } from '../../assets/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
-import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
 import { singleQuestionSurvey } from '../../assets/js/components/surveys/__fixtures__';
-import InViewProvider from '../../assets/js/components/InViewProvider';
 
 const allCoreStores = [
 	coreForms,
@@ -96,65 +91,13 @@ const allCoreModules = [
  *
  * @return {wp.data.registry} Registry with all available stores registered.
  */
-export const createTestRegistry = () => {
+export function createTestRegistry() {
 	const registry = createRegistry();
 
 	// Register all available stores on the registry.
 	registerAllStoresOn( registry );
 
 	return registry;
-};
-
-/**
- * Wraps children components with a fresh test registry,
- * which can be configured by its callback prop.
- *
- * @since 1.7.1
- * @private
- *
- * @param {Object}    [props]          Component props.
- * @param {Function}  [props.callback] Function which receives the registry instance.
- * @param {WPElement} [props.children] Children components.
- * @param {History}   [props.history]  History object for React Router. Defaults to MemoryHistory.
- * @param {string}    [props.route]    Route to pass to history as starting route.
- * @param {string[]}  [props.features] Feature flags to enable for this test registry provider.
- * @param {Object}    [props.registry] Registry object; uses `createTestRegistry()` by default.
- * @return {WPElement} Wrapped components.
- */
-export function WithTestRegistry( {
-	children,
-	callback,
-	features = [],
-	registry = createTestRegistry(),
-	history = createMemoryHistory(),
-	route = undefined,
-} = {} ) {
-	const enabledFeatures = new Set( features );
-	// Populate most basic data which should not affect any tests.
-	provideUserInfo( registry );
-
-	if ( route ) {
-		history.push( route );
-	}
-
-	if ( callback ) {
-		callback( registry );
-	}
-
-	const [ inViewState ] = useState( {
-		key: 'renderStory',
-		value: true,
-	} );
-
-	return (
-		<InViewProvider value={ inViewState }>
-			<RegistryProvider value={ registry }>
-				<FeaturesProvider value={ enabledFeatures }>
-					<Router history={ history }>{ children }</Router>
-				</FeaturesProvider>
-			</RegistryProvider>
-		</InViewProvider>
-	);
 }
 
 /**
@@ -168,7 +111,7 @@ export function WithTestRegistry( {
  * @param {Object} registry    Registry object to dispatch to.
  * @param {Object} [extraData] Custom data to set, will be merged with defaults. Default empty object.
  */
-export const provideSiteConnection = ( registry, extraData = {} ) => {
+export function provideSiteConnection( registry, extraData = {} ) {
 	const defaultConnected =
 		extraData.connected !== undefined ? extraData.connected : true;
 	const defaults = {
@@ -184,7 +127,7 @@ export const provideSiteConnection = ( registry, extraData = {} ) => {
 		...defaults,
 		...extraData,
 	} );
-};
+}
 
 /**
  * Provides user authentication data to the given registry.
@@ -197,7 +140,7 @@ export const provideSiteConnection = ( registry, extraData = {} ) => {
  * @param {Object} registry    Registry object to dispatch to.
  * @param {Object} [extraData] Custom data to set, will be merged with defaults. Default empty object.
  */
-export const provideUserAuthentication = ( registry, extraData = {} ) => {
+export function provideUserAuthentication( registry, extraData = {} ) {
 	const defaults = {
 		authenticated: true,
 		requiredScopes: [],
@@ -214,7 +157,7 @@ export const provideUserAuthentication = ( registry, extraData = {} ) => {
 	registry
 		.dispatch( CORE_USER )
 		.receiveUserIsVerified( mergedData.authenticated );
-};
+}
 
 /**
  * Provides site information data to the given registry.
@@ -225,7 +168,7 @@ export const provideUserAuthentication = ( registry, extraData = {} ) => {
  * @param {Object} registry    Registry object to dispatch to.
  * @param {Object} [extraData] Custom data to set, will be merged with defaults. Default empty object.
  */
-export const provideSiteInfo = ( registry, extraData = {} ) => {
+export function provideSiteInfo( registry, extraData = {} ) {
 	const defaults = {
 		adminURL: 'http://example.com/wp-admin',
 		ampMode: false,
@@ -268,7 +211,7 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 		...defaults,
 		...extraData,
 	} );
-};
+}
 
 /**
  * Provides user information data to the given registry.
@@ -279,7 +222,7 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
  * @param {Object} registry    Registry object to dispatch to.
  * @param {Object} [extraData] Custom data to set, will be merged with defaults. Default empty object.
  */
-export const provideUserInfo = ( registry, extraData = {} ) => {
+export function provideUserInfo( registry, extraData = {} ) {
 	const defaults = {
 		id: 1,
 		name: 'Wapuu WordPress',
@@ -293,7 +236,7 @@ export const provideUserInfo = ( registry, extraData = {} ) => {
 		...defaults,
 		...extraData,
 	} );
-};
+}
 
 /**
  * Provides user capabilities data to the given registry.
@@ -304,7 +247,7 @@ export const provideUserInfo = ( registry, extraData = {} ) => {
  * @param {Object} registry    Registry object to dispatch to.
  * @param {Object} [extraData] Custom capability mappings to set, will be merged with defaults. Default empty object.
  */
-export const provideUserCapabilities = ( registry, extraData = {} ) => {
+export function provideUserCapabilities( registry, extraData = {} ) {
 	const defaults = {
 		[ PERMISSION_AUTHENTICATE ]: true,
 		[ PERMISSION_SETUP ]: true,
@@ -318,7 +261,7 @@ export const provideUserCapabilities = ( registry, extraData = {} ) => {
 		...defaults,
 		...extraData,
 	} );
-};
+}
 
 /**
  * Provides modules data to the given registry.
@@ -329,7 +272,7 @@ export const provideUserCapabilities = ( registry, extraData = {} ) => {
  * @param {Object}   registry    Registry object to dispatch to.
  * @param {Object[]} [extraData] List of module objects to be merged with defaults. Default empty array.
  */
-export const provideModules = ( registry, extraData = [] ) => {
+export function provideModules( registry, extraData = [] ) {
 	const extraModules = extraData.reduce( ( acc, module ) => {
 		return { ...acc, [ module.slug ]: module };
 	}, {} );
@@ -347,7 +290,7 @@ export const provideModules = ( registry, extraData = [] ) => {
 		);
 
 	registry.dispatch( CORE_MODULES ).receiveGetModules( modules );
-};
+}
 
 /**
  * Provides module registration data to the given registry.
@@ -358,7 +301,7 @@ export const provideModules = ( registry, extraData = [] ) => {
  * @param {Object}   registry    Registry object to dispatch to.
  * @param {Object[]} [extraData] List of module registration data objects to be merged with defaults. Default empty array.
  */
-export const provideModuleRegistrations = ( registry, extraData = [] ) => {
+export function provideModuleRegistrations( registry, extraData = [] ) {
 	const extraDataBySlug = extraData.reduce( ( acc, { slug, ...data } ) => {
 		return { ...acc, [ slug ]: { slug, ...data } };
 	}, {} );
@@ -366,13 +309,13 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 		coreModules.createModules( registry );
 	// Decorate `Modules.registerModule` with a function to apply extra data.
 	const registeredModules = {};
-	const testRegisterModule = ( slug, settings ) => {
+	function testRegisterModule( slug, settings ) {
 		registeredModules[ slug ] = true;
 		return realRegisterModule( slug, {
 			...settings,
 			...extraDataBySlug[ slug ],
 		} );
-	};
+	}
 	Modules.registerModule = testRegisterModule;
 
 	allCoreModules.forEach( ( { registerModule } ) =>
@@ -384,7 +327,7 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 		.forEach( ( [ slug, settings ] ) =>
 			realRegisterModule( slug, settings )
 		);
-};
+}
 
 /**
  * Provides the current survey data to the given registry.
@@ -422,7 +365,7 @@ export function provideTracking( registry, enabled = true ) {
  * @param {Object} registry    The registry to set up.
  * @param {Object} [extraData] Extra data to merge with the default settings.
  */
-export const provideKeyMetrics = ( registry, extraData = {} ) => {
+export function provideKeyMetrics( registry, extraData = {} ) {
 	const defaults = {
 		widgetSlugs: [
 			KM_ANALYTICS_NEW_VISITORS,
@@ -434,7 +377,7 @@ export const provideKeyMetrics = ( registry, extraData = {} ) => {
 		...defaults,
 		...extraData,
 	} );
-};
+}
 
 /**
  * Provides key metrics user input settings data to the given registry.
@@ -444,10 +387,7 @@ export const provideKeyMetrics = ( registry, extraData = {} ) => {
  * @param {Object} registry    The registry to set up.
  * @param {Object} [extraData] Extra data to merge with the default settings.
  */
-export const provideKeyMetricsUserInputSettings = (
-	registry,
-	extraData = {}
-) => {
+export function provideKeyMetricsUserInputSettings( registry, extraData = {} ) {
 	const defaults = {
 		purpose: {
 			values: [ 'publish_news' ],
@@ -462,7 +402,7 @@ export const provideKeyMetricsUserInputSettings = (
 		...defaults,
 		...extraData,
 	} );
-};
+}
 
 /**
  * Provides notifications data to the given registry.
@@ -472,20 +412,20 @@ export const provideKeyMetricsUserInputSettings = (
  * @param {Object}   registry    The registry to set up.
  * @param {Object[]} [extraData] List of notification objects to be merged with defaults. Default empty array.
  */
-export const provideNotifications = ( registry, extraData ) => {
+export function provideNotifications( registry, extraData ) {
 	const { registerNotification: realRegisterNotification, ...Notifications } =
 		coreNotifications.createNotifications( registry );
 
 	const extraDataByID = keyBy( extraData, 'id' );
 	// Decorate `Notifications.registerNotification` with a function to apply extra data.
 	const registeredNotifications = new Set();
-	const testRegisterNotification = ( id, settings ) => {
+	function testRegisterNotification( id, settings ) {
 		registeredNotifications.add( id );
 		return realRegisterNotification( id, {
 			...settings,
 			...extraDataByID[ id ],
 		} );
-	};
+	}
 	Notifications.registerNotification = testRegisterNotification;
 	// Register defaults with any potential overrides via extraData.
 	coreNotifications.registerNotifications( Notifications );
@@ -496,7 +436,98 @@ export const provideNotifications = ( registry, extraData ) => {
 		.forEach( ( [ id, settings ] ) =>
 			realRegisterNotification( id, settings )
 		);
-};
+}
+
+/**
+ * Provides widget registration data to the given registry.
+ *
+ * @since 1.159.0
+ * @private
+ *
+ * @param {Object}   registry           Registry object to dispatch to.
+ * @param {Object[]} [extraWidgetAreas] List of widget area registration data objects to be merged with defaults. Default empty array.
+ * @param {Object[]} [extraWidgets]     List of widget registration data objects to be merged with defaults. Default empty array.
+ */
+export function provideWidgetRegistrations(
+	registry,
+	extraWidgetAreas = [],
+	extraWidgets = []
+) {
+	const extraWidgetAreasBySlug = extraWidgetAreas.reduce(
+		( acc, { slug, ...data } ) => {
+			return { ...acc, [ slug ]: { slug, ...data } };
+		},
+		{}
+	);
+
+	const extraWidgetsBySlug = extraWidgets.reduce(
+		( acc, { slug, ...data } ) => {
+			return { ...acc, [ slug ]: { slug, ...data } };
+		},
+		{}
+	);
+
+	const {
+		registerWidgetArea: realRegisterWidgetArea,
+		registerWidget: realRegisterWidget,
+		...Widgets
+	} = coreWidgets.createWidgets( registry );
+
+	// Track registered widget areas and widgets.
+	const registeredWidgetAreas = new Set();
+	const registeredWidgets = new Set();
+
+	// Decorate widget area registration with a function to apply extra data.
+	function testRegisterWidgetArea( slug, settings, contextSlugs ) {
+		registeredWidgetAreas.add( slug );
+		return realRegisterWidgetArea(
+			slug,
+			{
+				...settings,
+				...extraWidgetAreasBySlug[ slug ],
+			},
+			contextSlugs
+		);
+	}
+
+	// Decorate widget registration with a function to apply extra data.
+	function testRegisterWidget( slug, settings, widgetAreaSlugs ) {
+		registeredWidgets.add( slug );
+		return realRegisterWidget(
+			slug,
+			{
+				...settings,
+				...extraWidgetsBySlug[ slug ],
+			},
+			widgetAreaSlugs
+		);
+	}
+
+	Widgets.registerWidgetArea = testRegisterWidgetArea;
+	Widgets.registerWidget = testRegisterWidget;
+
+	// Register default widget areas and widgets from core.
+	coreWidgets.registerWidgets( Widgets );
+
+	// Register widgets from all core modules.
+	allCoreModules.forEach( ( { registerWidgets } ) =>
+		registerWidgets?.( Widgets )
+	);
+
+	// Register any additional widget areas provided that weren't registered by core.
+	Object.entries( extraWidgetAreasBySlug )
+		.filter( ( [ slug ] ) => ! registeredWidgetAreas.has( slug ) )
+		.forEach( ( [ slug, { contextSlugs, ...settings } ] ) =>
+			realRegisterWidgetArea( slug, settings, contextSlugs )
+		);
+
+	// Register any additional widgets provided that weren't registered by core.
+	Object.entries( extraWidgetsBySlug )
+		.filter( ( [ slug ] ) => ! registeredWidgets.has( slug ) )
+		.forEach( ( [ slug, { widgetAreaSlugs, ...settings } ] ) =>
+			realRegisterWidget( slug, settings, widgetAreaSlugs )
+		);
+}
 
 /**
  * Mutes a fetch request to the given URL once.
@@ -513,9 +544,9 @@ export const provideNotifications = ( registry, extraData ) => {
  *                                                        (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
  * @param {*}                                   [response] Optional. Response to return.
  */
-export const muteFetch = ( matcher, response = {} ) => {
+export function muteFetch( matcher, response = {} ) {
 	fetchMock.once( matcher, { body: response, status: 200 } );
-};
+}
 
 /**
  * Mocks a fetch request in a way so that a response is never returned.
@@ -531,9 +562,9 @@ export const muteFetch = ( matcher, response = {} ) => {
  * @param {Object}                              [options]        Optional. Additional options for the mock.
  * @param {number}                              [options.repeat] Optional. Number of times to mock the request. Defaults to 1.
  */
-export const freezeFetch = ( matcher, { repeat = 1 } = {} ) => {
+export function freezeFetch( matcher, { repeat = 1 } = {} ) {
 	fetchMock.mock( matcher, new Promise( () => {} ), { repeat } );
-};
+}
 
 /**
  * Registers all Site Kit stores on a registry.
@@ -547,11 +578,11 @@ export const freezeFetch = ( matcher, { repeat = 1 } = {} ) => {
  *
  * @param {wp.data.registry} registry Registry to register each store on.
  */
-export const registerAllStoresOn = ( registry ) => {
+export function registerAllStoresOn( registry ) {
 	[ ...allCoreStores, ...allCoreModules ].forEach( ( { registerStore } ) =>
 		registerStore?.( registry )
 	);
-};
+}
 
 /**
  * Returns an object that returns hasFinishedResolution selectors for each key
@@ -567,7 +598,7 @@ export const registerAllStoresOn = ( registry ) => {
  * @param {string} storeName Store name the selector belongs to.
  * @return {Object} Object with keys as functions for each resolver in the given store.
  */
-export const untilResolved = ( registry, storeName ) => {
+export function untilResolved( registry, storeName ) {
 	return mapValues(
 		registry.stores[ storeName ].resolvers || {},
 		( resolverFn, resolverName ) =>
@@ -579,7 +610,7 @@ export const untilResolved = ( registry, storeName ) => {
 				);
 			}
 	);
-};
+}
 
 /**
  * Subscribes to the given registry until all predicates are satisfied.
@@ -591,7 +622,7 @@ export const untilResolved = ( registry, storeName ) => {
  * @param {...Function} predicates Predicate functions.
  * @return {Promise} Promise that resolves once all predicates are satisfied.
  */
-export const subscribeUntil = ( registry, ...predicates ) => {
+export function subscribeUntil( registry, ...predicates ) {
 	return new Promise( ( resolve ) => {
 		const unsubscribe = registry.subscribe( () => {
 			if ( predicates.every( ( predicate ) => predicate() ) ) {
@@ -600,7 +631,7 @@ export const subscribeUntil = ( registry, ...predicates ) => {
 			}
 		} );
 	} );
-};
+}
 
 /**
  * Waits for 5ms to ensure all pending timeouts set with the default 1ms will have executed.
@@ -621,11 +652,11 @@ export const subscribeUntil = ( registry, ...predicates ) => {
  *
  * @return {Promise} Promise that resolves after a 2ms timeout.
  */
-export const waitForDefaultTimeouts = () => {
+export function waitForDefaultTimeouts() {
 	return new Promise( ( resolve ) => {
 		setTimeout( resolve, 5 );
 	} );
-};
+}
 
 /**
  * Creates a delay in the execution of subsequent code for a specified duration in milliseconds.
@@ -638,11 +669,11 @@ export const waitForDefaultTimeouts = () => {
  * @param {number} timeout The duration to wait before resolving the promise, in milliseconds.
  * @return {Promise} A promise that resolves after the specified `timeout` duration.
  */
-export const waitForTimeouts = ( timeout ) => {
+export function waitForTimeouts( timeout ) {
 	return new Promise( ( resolve ) => {
 		setTimeout( resolve, timeout );
 	} );
-};
+}
 
 /**
  * Checks if fake timers are currently active.
@@ -651,7 +682,7 @@ export const waitForTimeouts = ( timeout ) => {
  *
  * @return {boolean} Whether fake timers are active.
  */
-export const isUsingFakeTimers = () => {
+export function isUsingFakeTimers() {
 	// Check if `setTimeout()` is mocked (works in all Jest versions).
 	let fakeTimersActive = jest.isMockFunction( setTimeout );
 
@@ -676,7 +707,7 @@ export const isUsingFakeTimers = () => {
 		}
 	}
 	return fakeTimersActive;
-};
+}
 
 /**
  * Creates a function that allows extra time for registry updates to have completed.
@@ -687,7 +718,7 @@ export const isUsingFakeTimers = () => {
  * @param {Object} registry WP data registry instance.
  * @return {Function} Function to await all registry updates since creation.
  */
-export const createWaitForRegistry = ( registry ) => {
+export function createWaitForRegistry( registry ) {
 	if ( isUsingFakeTimers() ) {
 		// Fail if attempted to use.
 		return () => {
@@ -736,7 +767,7 @@ export const createWaitForRegistry = ( registry ) => {
 
 		await Promise.all( promises ).finally( unsubscribe );
 	};
-};
+}
 
 /**
  * Returns a rejection.
@@ -761,10 +792,10 @@ export const createWaitForRegistry = ( registry ) => {
  *
  * @return {Promise} A rejected promise.
  */
-export const unexpectedSuccess = () => {
+export function unexpectedSuccess() {
 	return Promise.reject(
 		new Error(
 			'Some code (likely a Promise) succeeded unexpectedly; check your test.'
 		)
 	);
-};
+}

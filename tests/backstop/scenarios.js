@@ -120,7 +120,7 @@ storyFiles.forEach( ( storyFile ) => {
 } );
 
 // Adding Support for array-based selectors from BackstopJS 6.3.25
-const processSelectors = ( scenarioObj ) => {
+function processSelectors( scenarioObj ) {
 	const processedScenario = { ...scenarioObj };
 
 	if (
@@ -148,7 +148,7 @@ const processSelectors = ( scenarioObj ) => {
 	}
 
 	return processedScenario;
-};
+}
 
 module.exports = csfScenarios.map( ( scenario ) => {
 	const backstopReadySelector = 'body.backstopjs-ready';

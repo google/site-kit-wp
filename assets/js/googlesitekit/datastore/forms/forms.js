@@ -22,6 +22,11 @@
 import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
 
+/**
+ * Internal dependencies
+ */
+import { createReducer } from 'googlesitekit-data';
+
 const SET_FORM_VALUES = 'SET_FORM_VALUES';
 
 export const initialState = {};
@@ -53,22 +58,21 @@ export const actions = {
 
 export const controls = {};
 
-export const reducer = ( state, { type, payload } ) => {
+export const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_FORM_VALUES: {
+		case SET_FORM_VALUES:
 			const { formName, formData } = payload;
 
-			return {
-				...state,
-				[ formName ]: { ...( state[ formName ] || {} ), ...formData },
+			state[ formName ] = {
+				...state[ formName ],
+				...formData,
 			};
-		}
+			break;
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 export const resolvers = {};
 

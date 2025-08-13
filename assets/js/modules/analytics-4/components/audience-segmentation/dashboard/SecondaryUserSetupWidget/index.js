@@ -44,13 +44,13 @@ export default function SecondaryUserSetupWidget( { Widget } ) {
 	const { enableSecondaryUserAudienceGroup } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
-	const handleRetry = async () => {
+	async function handleRetry() {
 		setSetupError( null );
 		const { error } = await enableSecondaryUserAudienceGroup();
 		if ( error ) {
 			setSetupError( error );
 		}
-	};
+	}
 
 	useMount( () => {
 		if ( isSettingUpAudiences ) {

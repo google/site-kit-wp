@@ -110,12 +110,16 @@ function CoreSiteBannerNotifications() {
 			}
 
 			registerNotification( notification.id, {
-				Component() {
-					return <CoreSiteBannerNotification { ...notification } />;
+				Component( { Notification } ) {
+					return (
+						<Notification>
+							<CoreSiteBannerNotification { ...notification } />
+						</Notification>
+					);
 				},
 				priority: notification.priority,
-				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-				isDismissible: notification.isDismissible,
+				areaSlug: NOTIFICATION_AREAS.HEADER,
+				isDismissible: notification.dismissible,
 			} );
 
 			setRegisteredNotifications( ( previousRegisteredNotifications ) => {

@@ -27,10 +27,12 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
+import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../../datastore/constants';
+import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
 import Link from '../../../../../../components/Link';
 import { AudienceErrorModal } from '../../dashboard';
 import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
@@ -46,9 +48,17 @@ export default function SetupCTA() {
 		setShowErrorModal( true );
 	}, [ setShowErrorModal ] );
 
+	const { setValue } = useDispatch( CORE_UI );
+
 	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
 		useEnableAudienceGroup( {
 			redirectURL: global.location.href,
+			onSuccess: () => {
+				setValue(
+					SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION,
+					true
+				);
+			},
 			onError,
 		} );
 
@@ -76,14 +86,14 @@ export default function SetupCTA() {
 		).finally( onEnableGroups );
 	}
 
-	const onCancel = () => {
+	function onCancel() {
 		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
 			autoSubmit: false,
 		} );
 		clearPermissionScopeError();
 		setSetupErrorCode( null );
 		setShowErrorModal( false );
-	};
+	}
 
 	return (
 		<div className="googlesitekit-settings-visitor-groups__setup">

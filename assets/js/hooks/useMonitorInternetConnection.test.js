@@ -33,12 +33,12 @@ describe( 'useMonitorInternetConnection', () => {
 	let store;
 	let originalNavigatorOnline;
 
-	const setNavigatorOnlineStatus = ( status ) => {
+	function setNavigatorOnlineStatus( status = true ) {
 		Object.defineProperty( navigator, 'onLine', {
 			value: status,
 			writable: true,
 		} );
-	};
+	}
 
 	const connectionCheckEndpoint = '/google-site-kit/v1/?_locale=user';
 

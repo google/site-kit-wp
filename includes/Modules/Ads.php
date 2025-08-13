@@ -36,6 +36,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Core\Util\Plugin_Status;
+use Google\Site_Kit\Modules\Ads\Enhanced_Conversions;
 use Google\Site_Kit\Modules\Ads\PAX_Config;
 use Google\Site_Kit\Modules\Ads\Settings;
 use Google\Site_Kit\Modules\Ads\Has_Tag_Guard;
@@ -117,6 +118,12 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 			},
 			10
 		);
+
+		// Register the Enhanced Conversions class if the feature flag is enabled.
+		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
+			$enhanced_conversions = new Enhanced_Conversions();
+			$enhanced_conversions->register();
+		}
 	}
 
 	/**
@@ -206,7 +213,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 					'googlesitekit-ads-pax-integrator',
 					array(
 						// When updating, mirror the fixed version for google-pax-sdk in package.json.
-						'src'          => 'https://www.gstatic.com/pax/1.1.6/pax_integrator.js',
+						'src'          => 'https://www.gstatic.com/pax/1.1.8/pax_integrator.js',
 						'execution'    => 'async',
 						'dependencies' => array(
 							'googlesitekit-ads-pax-config',
@@ -448,7 +455,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	/**
 	 * Gets required inline data for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.158.0
 	 *
 	 * @return array An array of the module's inline data.
 	 */

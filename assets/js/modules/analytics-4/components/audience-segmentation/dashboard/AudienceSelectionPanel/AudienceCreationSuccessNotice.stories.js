@@ -37,11 +37,11 @@ export default {
 	component: AudienceCreationSuccessNotice,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( CORE_UI )
 					.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

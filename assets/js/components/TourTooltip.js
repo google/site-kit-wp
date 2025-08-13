@@ -34,6 +34,7 @@ import { __ } from '@wordpress/i18n';
 import { Button } from 'googlesitekit-components';
 import { createIncrementalArrayBySize } from '../util/create-incremental-array-by-size';
 import CloseIcon from '../../svg/icons/close.svg';
+import Typography from './Typography';
 
 export default function TourTooltip( {
 	backProps,
@@ -45,10 +46,11 @@ export default function TourTooltip( {
 	tooltipProps,
 } ) {
 	const indicatorArray = size > 1 ? createIncrementalArrayBySize( size ) : [];
-	const getIndicatorClassName = ( indicatorIndex ) =>
-		classnames( 'googlesitekit-tooltip-indicator', {
+	function getIndicatorClassName( indicatorIndex ) {
+		return classnames( 'googlesitekit-tooltip-indicator', {
 			active: indicatorIndex === index,
 		} );
+	}
 
 	return (
 		<div
@@ -60,9 +62,14 @@ export default function TourTooltip( {
 		>
 			<Card className="googlesitekit-tooltip-card">
 				<div className="googlesitekit-tooltip-body">
-					<h2 className="googlesitekit-tooltip-title">
+					<Typography
+						as="h2"
+						className="googlesitekit-tooltip-title"
+						size="medium"
+						type="title"
+					>
 						{ step.title }
-					</h2>
+					</Typography>
 					<div className="googlesitekit-tooltip-content">
 						{ step.content }
 					</div>

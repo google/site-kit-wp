@@ -49,7 +49,7 @@ Ready.scenario = {};
 export const ReadyNotConnected = Template.bind( {} );
 ReadyNotConnected.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			provideModules( registry, [
 				{
 					active: true,
@@ -57,7 +57,7 @@ ReadyNotConnected.decorators = [
 					slug: MODULE_SLUG_ADSENSE,
 				},
 			] );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -72,7 +72,7 @@ export default {
 	title: 'Modules/AdSense/Widgets/AdSenseConnectCTA',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: false,
@@ -80,7 +80,7 @@ export default {
 						slug: MODULE_SLUG_ADSENSE,
 					},
 				] );
-			};
+			}
 
 			const breakpoint = useBreakpoint();
 

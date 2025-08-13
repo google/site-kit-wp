@@ -60,6 +60,7 @@ import ShareIcon from '../../../../svg/icons/share.svg';
 import Link from '../../Link';
 import DashboardSharingSettings from '../DashboardSharingSettings';
 import Footer from './Footer';
+import Typography from '../../Typography';
 
 export default function DashboardSharingDialog() {
 	const [ shouldFocusResetButton, setShouldFocusResetButton ] =
@@ -156,11 +157,11 @@ export default function DashboardSharingDialog() {
 			current: { ownerDocument },
 		} = ref;
 
-		const handleScrimClick = ( event ) => {
+		function handleScrimClick( event ) {
 			if ( event.target.classList.contains( 'mdc-dialog__scrim' ) ) {
 				closeResetDialog();
 			}
-		};
+		}
 
 		ownerDocument.addEventListener( 'click', handleScrimClick );
 
@@ -221,19 +222,30 @@ export default function DashboardSharingDialog() {
 						) }
 
 						<div className="googlesitekit-dialog__header-titles">
-							<h2 className="googlesitekit-dialog__title">
-								{ settingsDialogOpen &&
-									__(
-										'Dashboard sharing & permissions',
-										'google-site-kit'
-									) }
+							<Typography
+								as="h2"
+								className="googlesitekit-dialog__title"
+								size="medium"
+								type="headline"
+							>
+								{ settingsDialogOpen && (
+									<span>
+										{ __(
+											'Dashboard sharing & permissions',
+											'google-site-kit'
+										) }
+									</span>
+								) }
 
-								{ resetDialogOpen &&
-									__(
-										'Reset dashboard sharing permissions',
-										'google-site-kit'
-									) }
-							</h2>
+								{ resetDialogOpen && (
+									<span>
+										{ __(
+											'Reset dashboard sharing permissions',
+											'google-site-kit'
+										) }
+									</span>
+								) }
+							</Typography>
 
 							<p
 								className={ classnames(
@@ -244,31 +256,39 @@ export default function DashboardSharingDialog() {
 									}
 								) }
 							>
-								{ settingsDialogOpen &&
-									createInterpolateElement(
-										__(
-											'Share a view-only version of your Site Kit dashboard with other WordPress roles. <a>Learn more</a>',
-											'google-site-kit'
-										),
-										{
-											a: (
-												<Link
-													aria-label={ __(
-														'Learn more about dashboard sharing',
-														'google-site-kit'
-													) }
-													href={ documentationURL }
-													external
-												/>
+								{ settingsDialogOpen && (
+									<span>
+										{ createInterpolateElement(
+											__(
+												'Share a view-only version of your Site Kit dashboard with other WordPress roles. <a>Learn more</a>',
+												'google-site-kit'
 											),
-										}
-									) }
+											{
+												a: (
+													<Link
+														aria-label={ __(
+															'Learn more about dashboard sharing',
+															'google-site-kit'
+														) }
+														href={
+															documentationURL
+														}
+														external
+													/>
+												),
+											}
+										) }
+									</span>
+								) }
 
-								{ resetDialogOpen &&
-									__(
-										'Warning: Resetting these permissions will remove view-only access for all users. Are you sure you want to reset all dashboard Sharing permissions?',
-										'google-site-kit'
-									) }
+								{ resetDialogOpen && (
+									<span>
+										{ __(
+											'Warning: Resetting these permissions will remove view-only access for all users. Are you sure you want to reset all dashboard sharing permissions?',
+											'google-site-kit'
+										) }
+									</span>
+								) }
 							</p>
 						</div>
 					</div>

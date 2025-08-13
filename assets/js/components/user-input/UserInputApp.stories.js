@@ -27,7 +27,7 @@ import fetchMock from 'fetch-mock';
  */
 import UserInputApp from './UserInputApp';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { WithTestRegistry } from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 
@@ -108,21 +108,20 @@ export default {
 	decorators: [
 		withQuery,
 		( Story, { args } ) => {
-			return (
-				<WithTestRegistry
-					callback={ ( registry ) => {
-						// Don't mark the user input as completed in this story.
-						registry
-							.dispatch( CORE_USER )
-							.receiveIsUserInputCompleted( false );
+			function setupRegistry( registry ) {
+				registry
+					.dispatch( CORE_USER )
+					.receiveIsUserInputCompleted( false );
 
-						if ( typeof args?.setupRegistry === 'function' ) {
-							args.setupRegistry( registry );
-						}
-					} }
-				>
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			}
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

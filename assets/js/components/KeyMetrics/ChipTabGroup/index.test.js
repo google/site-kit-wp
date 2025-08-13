@@ -39,7 +39,7 @@ import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
 import ChipTabGroup from './';
 
 function ChipTabGroupWrapped( { savedItemSlugs } ) {
-	const metricsListReducer = ( acc, metricSlug ) => {
+	function metricsListReducer( acc, metricSlug ) {
 		const {
 			title,
 			description,
@@ -54,7 +54,7 @@ function ChipTabGroupWrapped( { savedItemSlugs } ) {
 				group,
 			},
 		};
-	};
+	}
 	const allMetricItems = Object.keys( KEY_METRICS_WIDGETS ).reduce(
 		metricsListReducer,
 		{}

@@ -36,17 +36,19 @@ import {
 } from '../../../../../tests/js/utils';
 import { AMP_PROJECT_TEST_URL } from './constants';
 
-const compatibilityChildren = ( {
+function compatibilityChildren( {
 	complete,
 	inProgressFeedback,
 	ctaFeedback,
-} ) => (
-	<Fragment>
-		{ ctaFeedback }
-		{ complete }
-		{ inProgressFeedback }
-	</Fragment>
-);
+} ) {
+	return (
+		<Fragment>
+			{ ctaFeedback }
+			{ complete }
+			{ inProgressFeedback }
+		</Fragment>
+	);
+}
 
 describe( 'CompatibilityChecks', () => {
 	let registry;

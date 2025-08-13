@@ -27,6 +27,7 @@ import classnames from 'classnames';
  */
 import { Button } from 'googlesitekit-components';
 import Link from '../Link';
+import Typography from '../Typography';
 
 function CTA( {
 	title,
@@ -51,16 +52,28 @@ function CTA( {
 			{ ( headerText || headerContent ) && (
 				<div className="googlesitekit-cta__header">
 					{ headerText && (
-						<h2 className="googlesitekit-cta__header_text">
+						<Typography
+							as="h2"
+							size="small"
+							type="label"
+							className="googlesitekit-cta__header_text"
+						>
 							{ headerText }
-						</h2>
+						</Typography>
 					) }
 					{ headerContent }
 				</div>
 			) }
 			<div className="googlesitekit-cta__body">
 				{ title && (
-					<h3 className="googlesitekit-cta__title">{ title }</h3>
+					<Typography
+						as="h3"
+						size="small"
+						type="title"
+						className="googlesitekit-cta__title"
+					>
+						{ title }
+					</Typography>
 				) }
 				{ description && typeof description === 'string' && (
 					<p className="googlesitekit-cta__description">

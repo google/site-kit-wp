@@ -42,6 +42,7 @@ import BannerNotification, {
 } from '../../../googlesitekit/notifications/components/layout/BannerNotification';
 import AdditionalDescription from './AdditionalDescription';
 import PreviewBlock from '../../PreviewBlock';
+import { computeAriaLabel } from './utils';
 
 export default function ModuleRecoveryAlert( { id, Notification } ) {
 	const [ selectedModuleSlugs, setSelectedModuleSlugs ] = useState( null );
@@ -126,6 +127,18 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 
 	const hideCTAButton = ! hasUserRecoverableModules;
 
+	if ( inProgress && ! hasUserRecoverableModules ) {
+		return null;
+	}
+
+	const ariaLabel = computeAriaLabel( {
+		recoverableModules,
+		userRecoverableModuleSlugs,
+		selectedModuleSlugs,
+		hasUserRecoverableModules,
+		hasMultipleRecoverableModules,
+	} );
+
 	return (
 		<Notification>
 			<BannerNotification
@@ -190,8 +203,9 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 						: {
 								label: __( 'Recover', 'google-site-kit' ),
 								onClick: handleRecoverModules,
-								inProgress,
 								disabled: disableCTA,
+								ariaLabel,
+								inProgress,
 						  }
 				}
 				dismissButton={
@@ -206,14 +220,12 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 								className: classnames( {
 									'googlesitekit-banner__cta': hideCTAButton,
 								} ),
+								dismissOptions: hideCTAButton
+									? {
+											dismissExpires: DAY_IN_SECONDS,
+									  }
+									: undefined,
 						  }
-				}
-				dismissOptions={
-					hideCTAButton
-						? {
-								dismissExpires: DAY_IN_SECONDS,
-						  }
-						: undefined
 				}
 			/>
 		</Notification>

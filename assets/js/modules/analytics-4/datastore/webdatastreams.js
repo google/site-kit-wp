@@ -55,17 +55,13 @@ const fetchGetWebDataStreamsStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, webDataStreams, { propertyID } ) {
-		return {
-			...state,
-			webdatastreams: {
-				...state.webdatastreams,
-				[ propertyID ]: Array.isArray( webDataStreams )
-					? webDataStreams
-					: [],
-			},
-		};
-	},
+	reducerCallback: createReducer(
+		( state, webDataStreams, { propertyID } ) => {
+			state.webdatastreams[ propertyID ] = Array.isArray( webDataStreams )
+				? webDataStreams
+				: [];
+		}
+	),
 	argsToParams( propertyID ) {
 		return { propertyID };
 	},
@@ -90,15 +86,12 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, webDataStreams ) {
-		return {
-			...state,
-			webdatastreams: {
-				...state.webdatastreams,
-				...( webDataStreams || {} ),
-			},
+	reducerCallback: createReducer( ( state, webDataStreams ) => {
+		state.webdatastreams = {
+			...state.webdatastreams,
+			...( webDataStreams || {} ),
 		};
-	},
+	} ),
 	argsToParams( propertyIDs ) {
 		return { propertyIDs };
 	},
@@ -201,13 +194,6 @@ const baseActions = {
 };
 
 const baseControls = {};
-
-const baseReducer = createReducer( ( state, action ) => {
-	switch ( action.type ) {
-		default:
-			break;
-	}
-} );
 
 function* resolveGetWebDataStreams( propertyID ) {
 	const { resolveSelect } = yield commonActions.getRegistry();
@@ -571,7 +557,7 @@ const baseSelectors = {
 				const propertyID =
 					select( MODULES_ANALYTICS_4 ).getPropertyID();
 				const loadedWebDataStreams =
-					isValidPropertyID( propertyID ) && hasModuleAccess !== false
+					isValidPropertyID( propertyID ) && hasModuleAccess
 						? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 								'getWebDataStreams',
 								[ propertyID ]
@@ -642,7 +628,6 @@ const store = combineStores(
 		initialState: baseInitialState,
 		actions: baseActions,
 		controls: baseControls,
-		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}

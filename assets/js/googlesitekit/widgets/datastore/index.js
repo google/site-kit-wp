@@ -34,8 +34,8 @@ const store = combineStores(
 	createErrorStore( CORE_WIDGETS )
 );
 
-export const registerStore = ( registry ) => {
+export function registerStore( registry ) {
 	registry.registerStore( CORE_WIDGETS, store );
-};
+}
 
 export default store;
