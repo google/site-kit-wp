@@ -1264,6 +1264,7 @@ class Analytics_4Test extends TestCase {
 				'key-events',
 				'create-property',
 				'create-webdatastream',
+				'non-shareable-report',
 				'pivot-report',
 				'properties',
 				'property',
@@ -1301,6 +1302,7 @@ class Analytics_4Test extends TestCase {
 				'key-events',
 				'create-property',
 				'create-webdatastream',
+				'non-shareable-report',
 				'pivot-report',
 				'properties',
 				'property',
@@ -5072,11 +5074,15 @@ class Analytics_4Test extends TestCase {
 		return $this->analytics;
 	}
 
-	protected function set_up_check_service_entity_access( Module $module ) {
+	protected function set_up_check_service_entity_access( Module_With_Settings $module ) {
 		$module->get_settings()->merge(
 			array(
 				'propertyID' => '123456789',
 			)
+		);
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
 		);
 	}
 

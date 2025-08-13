@@ -89,7 +89,7 @@ describe( 'PropertySelect', () => {
 	} );
 
 	it( 'should render an option for each analytics property of the currently selected account.', () => {
-		const { getAllByRole } = render( <PropertySelect />, {
+		const { getAllByRole } = render( <PropertySelect hasModuleAccess />, {
 			registry,
 		} );
 
@@ -160,9 +160,12 @@ describe( 'PropertySelect', () => {
 	} );
 
 	it( 'should update propertyID in the store when a new item is selected', () => {
-		const { getAllByRole, container } = render( <PropertySelect />, {
-			registry,
-		} );
+		const { getAllByRole, container } = render(
+			<PropertySelect hasModuleAccess />,
+			{
+				registry,
+			}
+		);
 		const allProperties = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getProperties( accountID );

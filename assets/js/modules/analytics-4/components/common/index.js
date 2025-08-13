@@ -24,6 +24,6 @@ export { default as WebDataStreamSelect } from './WebDataStreamSelect';
 export { default as PropertySelect } from './PropertySelect';
 export { default as TrackingExclusionSwitches } from './TrackingExclusionSwitches';
 export { default as UseSnippetSwitch } from './UseSnippetSwitch';
-export { default as Notice } from './Notice';
+export { default as CreatePropertyInfoNotice } from './CreatePropertyInfoNotice';
 export { default as WebDataStreamNameInput } from './WebDataStreamNameInput';
 export { default as ZeroDataMessage } from './ZeroDataMessage';

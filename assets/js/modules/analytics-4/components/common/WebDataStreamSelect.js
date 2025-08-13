@@ -55,7 +55,7 @@ export default function WebDataStreamSelect( props ) {
 	);
 
 	const webDataStreams = useSelect( ( select ) =>
-		isValidPropertyID( propertyID ) && hasModuleAccess !== false
+		isValidPropertyID( propertyID ) && hasModuleAccess
 			? select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID )
 			: []
 	);
@@ -111,7 +111,13 @@ export default function WebDataStreamSelect( props ) {
 	if ( ! isValidAccountID( accountID ) ) {
 		return null;
 	} else if ( isLoading ) {
-		return <ProgressBar smallHeight={ 80 } desktopHeight={ 88 } small />;
+		return (
+			<ProgressBar
+				mobileVerticalSpacing={ 76 }
+				desktopVerticalSpacing={ 84 }
+				small
+			/>
+		);
 	}
 
 	const isValidSelection =

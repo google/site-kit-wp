@@ -45,6 +45,7 @@ import { NEW_MODULES, BETA_MODULES, EXPERIMENTAL_MODULES } from './constants';
 import { setItem } from '../../googlesitekit/api/cache';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import Typography from '../Typography';
 
 export default function SetupModule( { slug, name, description } ) {
 	const viewContext = useViewContext();
@@ -103,14 +104,17 @@ export default function SetupModule( { slug, name, description } ) {
 				<ModuleIcon slug={ slug } />
 			</div>
 			<div className="googlesitekit-settings-connect-module__heading">
-				<h3
+				<Typography
+					as="h3"
+					type="title"
+					size="small"
 					className="
 					googlesitekit-subheading-1
 					googlesitekit-settings-connect-module__title
 				"
 				>
 					{ name }
-				</h3>
+				</Typography>
 				<div className="googlesitekit-settings-connect-module__badges">
 					{ EXPERIMENTAL_MODULES.includes( slug ) && (
 						<Badge

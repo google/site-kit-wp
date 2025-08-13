@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Component } from '@wordpress/element';
+import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import GenericErrorHandlerActions from '../GenericErrorHandlerActions';
 import ViewContextContext from '../Root/ViewContextContext';
-import Notification from '../notifications/BannerNotification';
+import BannerNotification from '../../googlesitekit/notifications/components/layout/BannerNotification';
 import { trackEvent } from '../../util';
 
 class ErrorHandler extends Component {
@@ -69,28 +69,27 @@ class ErrorHandler extends Component {
 		}
 
 		return (
-			<Notification
-				id="googlesitekit-error"
+			<BannerNotification
+				notificationID="googlesitekit-error"
 				className="googlesitekit-error-handler"
+				type="error"
 				title={ __(
 					'Site Kit encountered an error',
 					'google-site-kit'
 				) }
 				description={
-					<GenericErrorHandlerActions
-						message={ error.message }
-						componentStack={ info.componentStack }
-					/>
+					<Fragment>
+						<GenericErrorHandlerActions
+							message={ error.message }
+							componentStack={ info.componentStack }
+						/>
+						<pre className="googlesitekit-overflow-auto">
+							{ error.message }
+							{ info.componentStack }
+						</pre>
+					</Fragment>
 				}
-				isDismissible={ false }
-				format="small"
-				type="win-error"
-			>
-				<pre className="googlesitekit-overflow-auto">
-					{ error.message }
-					{ info.componentStack }
-				</pre>
-			</Notification>
+			></BannerNotification>
 		);
 	}
 }

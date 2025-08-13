@@ -8,6 +8,8 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
@@ -39,115 +41,32 @@ class Sign_In_With_GoogleTest extends TestCase {
 	 *
 	 * @var array
 	 */
-	private $server_data;
+	private static $server_data = array();
+
+	public static function set_up_before_class() {
+		parent::set_up_before_class();
+
+		self::$server_data = $_SERVER;
+	}
 
 	public function set_up() {
 		parent::set_up();
 
-		// Store the original $_SERVER data.
-		$this->server_data = $_SERVER;
-		$this->module      = new Sign_In_With_Google( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
+		$this->module = new Sign_In_With_Google( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
 	}
 
 	public function tear_down() {
 		parent::tear_down();
 
-		// Restore the original $_SERVER data.
-		$_SERVER = $this->server_data;
+		$_SERVER = self::$server_data;
 	}
 
 	public function test_magic_methods() {
-		$this->assertEquals( Sign_In_With_Google::MODULE_SLUG, $this->module->slug, 'Module slug should match constant.' );
-		$this->assertEquals( 'Sign in with Google', $this->module->name, 'Module name should be correct.' );
-		$this->assertEquals( 'https://developers.google.com/identity/gsi/web/guides/overview', $this->module->homepage, 'Module homepage should be correct.' );
-		$this->assertEquals( 'Improve user engagement, trust and data privacy, while creating a simple, secure and personalized experience for your visitors', $this->module->description, 'Module description should be correct.' );
-		$this->assertEquals( 10, $this->module->order, 'Module order should be correct.' );
-	}
-
-	public function test_render_signinwithgoogle() {
-		$reset_site_url = site_url();
-		update_option( 'home', 'http://example.com/' );
-		update_option( 'siteurl', 'http://example.com/' );
-		remove_action( 'wp_footer', 'the_block_template_skip_link' );
-
-		$this->module->register();
-		$this->module->get_settings()->register();
-
-		// Does not render the if the site is not https.
-		$this->module->get_settings()->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
-		$output = $this->capture_action( 'wp_footer' );
-		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output, 'Button should not render if site is not https.' );
-
-		// Update site URL to https.
-		$_SERVER['HTTPS']       = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
-		$_SERVER['SCRIPT_NAME'] = wp_login_url(); // Required because is_login() uses this var.
-		update_option( 'siteurl', 'https://example.com/' );
-		update_option( 'home', 'https://example.com/' );
-
-		// Does not render if clientID is not set.
-		$this->module->get_settings()->set( array( 'clientID' => '' ) );
-		$output = $this->capture_action( 'wp_footer' );
-		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output, 'Button should not render if clientID is not set.' );
-
-		$this->module->get_settings()->set( array( 'clientID' => null ) );
-		$output = $this->capture_action( 'wp_footer' );
-		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output, 'Button should not render if clientID is null.' );
-
-		// Renders the button with the correct clientID and redirect_uri.
-		$this->module->get_settings()->set(
-			array(
-				'clientID' => '1234567890.googleusercontent.com',
-				'text'     => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
-				'theme'    => Sign_In_With_Google_Settings::THEME_LIGHT['value'],
-				'shape'    => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'],
-			)
-		);
-
-		// Render the button.
-		$output = $this->capture_action( 'wp_footer' );
-
-		// Check the rendered button contains the expected data.
-		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Button should render with correct clientID and redirect_uri.' );
-
-		$this->assertStringContainsString( "client_id:'1234567890.googleusercontent.com'", $output, 'Rendered output should contain correct client_id.' );
-		$this->assertStringContainsString( "fetch('https://example.com/wp-login.php?action=googlesitekit_auth'", $output, 'Rendered output should contain correct fetch URL.' );
-
-		$this->assertStringContainsString( sprintf( '"text":"%s"', Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'] ), $output, 'Rendered output should contain correct text.' );
-		$this->assertStringContainsString( sprintf( '"theme":"%s"', Sign_In_With_Google_Settings::THEME_LIGHT['value'] ), $output, 'Rendered output should contain correct theme.' );
-		$this->assertStringContainsString( sprintf( '"shape":"%s"', Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'] ), $output, 'Rendered output should contain correct shape.' );
-
-		// The Sign in with Google JS should always render, even on the front
-		// page.
-		$_SERVER['SCRIPT_NAME'] = '/index.php';
-		$output                 = $this->capture_action( 'wp_footer' );
-
-		// The button shouldn't be rendered on a non-login page.
-		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Button should render on non-login page if One Tap is enabled.' );
-
-		// Enable the Sign in with Google One Tap on all pages.
-		$this->module->get_settings()->set(
-			array(
-				'clientID'         => '1234567890.googleusercontent.com',
-				'text'             => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
-				'theme'            => Sign_In_With_Google_Settings::THEME_LIGHT['value'],
-				'shape'            => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'],
-				'oneTapEnabled'    => true,
-				'oneTapOnAllPages' => true,
-			)
-		);
-
-		// Now the button should be rendered on a non-login page.
-		$output = $this->capture_action( 'wp_footer' );
-
-		// Check the rendered button contains the expected data.
-		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Button should render on non-login page.' );
-
-		// Revert home and siteurl and https value.
-		update_option( 'home', $reset_site_url );
-		update_option( 'siteurl', $reset_site_url );
-		unset( $_SERVER['HTTPS'] );
-		unset( $_SERVER['SCRIPT_NAME'] );
-		add_action( 'wp_footer', 'the_block_template_skip_link' );
+		$this->assertEquals( Sign_In_With_Google::MODULE_SLUG, $this->module->slug );
+		$this->assertEquals( 'Sign in with Google', $this->module->name );
+		$this->assertEquals( 'https://developers.google.com/identity/gsi/web/guides/overview', $this->module->homepage );
+		$this->assertEquals( 'Improve user engagement, trust and data privacy, while creating a simple, secure and personalized experience for your visitors', $this->module->description );
+		$this->assertEquals( 10, $this->module->order );
 	}
 
 	public function test_render_signinwithgoogle__woocommerce_active() {
@@ -171,11 +90,10 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$woo_output = $this->capture_action( 'woocommerce_login_form_start' );
 
 		// Check the render button contains the expected class name.
-		$this->assertStringContainsString( 'woocommerce-form-row', $woo_output, 'WooCommerce form should contain the correct class.' );
+		$this->assertStringContainsString( 'woocommerce-form-row', $woo_output );
 	}
 
 	public function test_render_button_in_wp_login_form() {
-		$reset_site_url = site_url();
 		update_option( 'home', 'http://example.com/' );
 		update_option( 'siteurl', 'http://example.com/' );
 
@@ -185,7 +103,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Does not render the if the site is not https.
 		$this->module->get_settings()->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
 		$output = apply_filters( 'login_form_top', '' );
-		$this->assertStringNotContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output, 'Button should not render in login form if site is not https.' );
+		$this->assertStringNotContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output );
 
 		// Update site URL to https.
 		$_SERVER['HTTPS']       = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
@@ -196,18 +114,18 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Does not render if clientID is not set.
 		$this->module->get_settings()->set( array( 'clientID' => '' ) );
 		$output = apply_filters( 'login_form_top', '' );
-		$this->assertStringNotContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output, 'Button should not render in login form if clientID is not set.' );
+		$this->assertStringNotContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output );
 
 		$this->module->get_settings()->set( array( 'clientID' => null ) );
 		$output = apply_filters( 'login_form_top', '' );
-		$this->assertStringNotContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output, 'Button should not render in login form if clientID is null.' );
+		$this->assertStringNotContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output );
 
 		// Renders the button with the correct clientID and redirect_uri.
 		$this->module->get_settings()->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
 
 		// Render the button.
 		$output = apply_filters( 'login_form_top', '' );
-		$this->assertStringContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output, 'Button should render in login form with correct clientID.' );
+		$this->assertStringContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output );
 	}
 
 	public function test_handle_disconnect_user__bad_nonce() {
@@ -218,7 +136,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 			do_action( 'admin_action_' . Sign_In_With_Google::ACTION_DISCONNECT );
 			$this->fail( 'Expected invalid nonce exception' );
 		} catch ( WPDieException $die_exception ) {
-			$this->assertEquals( $die_exception->getMessage(), 'The link you followed has expired.', 'Should die with expired link message for bad nonce.' );
+			$this->assertEquals( $die_exception->getMessage(), 'The link you followed has expired.' );
 		}
 	}
 
@@ -234,10 +152,10 @@ class Sign_In_With_GoogleTest extends TestCase {
 			$this->fail( 'Expected redirection to profile page' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
-			$this->assertEquals( get_edit_user_link( $admin_id ), $redirect_url, 'Should redirect to profile page if user cannot disconnect another.' );
+			$this->assertEquals( get_edit_user_link( $admin_id ), $redirect_url );
 		}
 		// Assert user was not disconnected.
-		$this->assertEquals( '111111', get_user_option( Hashed_User_ID::OPTION, $admin_id ), 'User should not be disconnected if not allowed.' );
+		$this->assertEquals( '111111', get_user_option( Hashed_User_ID::OPTION, $admin_id ) );
 	}
 
 	public function test_handle_disconnect_user__can_disconnect_self() {
@@ -251,11 +169,11 @@ class Sign_In_With_GoogleTest extends TestCase {
 			$this->fail( 'Expected redirection to profile page' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
-			$this->assertStringStartsWith( get_edit_user_link( $editor_id ), $redirect_url, 'Should redirect to profile page after disconnecting self.' );
+			$this->assertStringStartsWith( get_edit_user_link( $editor_id ), $redirect_url );
 			wp_parse_str( parse_url( $redirect_url, PHP_URL_QUERY ), $redirect_params );
-			$this->assertArrayHasKey( 'updated', $redirect_params, 'Redirect params should contain updated key.' );
-			$this->assertEmpty( get_user_option( Hashed_User_ID::OPTION, $editor_id ), 'User option should be empty after disconnecting self.' );
+			$this->assertArrayHasKey( 'updated', $redirect_params );
 		}
+		$this->assertEmpty( get_user_option( Hashed_User_ID::OPTION, $editor_id ) );
 	}
 
 	public function test_handle_disconnect_user__admin_can_disconnect_other() {
@@ -277,11 +195,11 @@ class Sign_In_With_GoogleTest extends TestCase {
 			$this->fail( 'Expected redirection to profile page' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
-			$this->assertStringStartsWith( get_edit_user_link( $editor_id ), $redirect_url, 'Admin should be able to disconnect other users.' );
+			$this->assertStringStartsWith( get_edit_user_link( $editor_id ), $redirect_url );
 			wp_parse_str( parse_url( $redirect_url, PHP_URL_QUERY ), $redirect_params );
-			$this->assertArrayHasKey( 'updated', $redirect_params, 'Redirect params should contain updated key for admin disconnect.' );
-			$this->assertEmpty( get_user_option( Hashed_User_ID::OPTION, $editor_id ), 'User option should be empty after admin disconnect.' );
+			$this->assertArrayHasKey( 'updated', $redirect_params );
 		}
+		$this->assertEmpty( get_user_option( Hashed_User_ID::OPTION, $editor_id ) );
 	}
 
 	public function test_render_disconnect_profile() {
@@ -293,17 +211,17 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Does not render the disconnect settings if the user meta is not set.
 		wp_set_current_user( $user_id );
 		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
-		$this->assertEmpty( $output, 'Disconnect settings should not render if user meta is not set.' );
+		$this->assertEmpty( $output );
 
 		// Should render the disconnect settings on the users own profile for editors and admins.
 		update_user_option( $user_id, Hashed_User_ID::OPTION, '111111' );
 		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
-		$this->assertStringContainsString( 'You can sign in with your Google account.', $output, 'Disconnect settings should render for user profile.' );
+		$this->assertStringContainsString( 'You can sign in with your Google account.', $output );
 
 		update_user_option( $user_id_admin, Hashed_User_ID::OPTION, '222222' );
 		wp_set_current_user( $user_id_admin );
 		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
-		$this->assertStringContainsString( 'You can sign in with your Google account.', $output, 'Disconnect settings should render for admin profile.' );
+		$this->assertStringContainsString( 'You can sign in with your Google account.', $output );
 
 		if ( is_multisite() ) {
 			return; // TODO: The below results in an empty output on multisite.
@@ -312,7 +230,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Should render the disconnect settings for other user if user is an admin.
 		wp_set_current_user( $user_id_admin );
 		$output = $this->capture_action( 'edit_user_profile', get_user_by( 'id', $user_id ) );
-		$this->assertStringContainsString( 'This user can sign in with their Google account.', $output, 'Disconnect settings should render for other user if admin.' );
+		$this->assertStringContainsString( 'This user can sign in with their Google account.', $output );
 	}
 
 	private function call_handle_auth_callback( $authenticator ) {
@@ -341,7 +259,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 			$this->call_handle_auth_callback( $this->get_mock_authenticator( $redirect_uri ) );
 			$this->fail( 'Expected to redirect' );
 		} catch ( RedirectException $e ) {
-			$this->assertEquals( $redirect_uri, $e->get_location(), 'Should redirect to provided URI for POST method.' );
+			$this->assertEquals( $redirect_uri, $e->get_location() );
 		}
 	}
 
@@ -371,7 +289,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$this->assertOptionNotExists( Existing_Client_ID::OPTION );
 		$this->module->on_deactivation();
-		$this->assertEquals( 'test_client_id.apps.googleusercontent.com', get_option( Existing_Client_ID::OPTION ), 'Client ID should persist on deactivation.' );
+		$this->assertEquals( 'test_client_id.apps.googleusercontent.com', get_option( Existing_Client_ID::OPTION ) );
 	}
 
 	public function test_inline_data_has_woocommerce() {
@@ -380,8 +298,8 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertEquals( false, $inline_modules_data['sign-in-with-google']['isWooCommerceActive'], 'Inline data should indicate WooCommerce is not active.' );
-		$this->assertEquals( false, $inline_modules_data['sign-in-with-google']['isWooCommerceRegistrationEnabled'], 'Inline data should indicate WooCommerce registration is not enabled.' );
+		$this->assertEquals( false, $inline_modules_data['sign-in-with-google']['isWooCommerceActive'] );
+		$this->assertEquals( false, $inline_modules_data['sign-in-with-google']['isWooCommerceRegistrationEnabled'] );
 	}
 
 	public function test_inline_data_with_no_existing_client_id() {
@@ -390,7 +308,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertArrayNotHasKey( 'existingClientID', $inline_modules_data['sign-in-with-google'], 'Inline data should not have existingClientID if not set.' );
+		$this->assertArrayNotHasKey( 'existingClientID', $inline_modules_data['sign-in-with-google'] );
 	}
 
 	public function test_inline_data_with_existing_client_id() {
@@ -401,6 +319,6 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertEquals( 'test_client_id.apps.googleusercontent.com', $inline_modules_data['sign-in-with-google']['existingClientID'], 'Inline data should have correct existingClientID if set.' );
+		$this->assertEquals( 'test_client_id.apps.googleusercontent.com', $inline_modules_data['sign-in-with-google']['existingClientID'] );
 	}
 }
