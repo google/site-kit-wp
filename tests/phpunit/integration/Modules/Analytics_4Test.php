@@ -3854,9 +3854,10 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'], 'Analytics inline module data should contain customDimensionsDataAvailable key when custom dimension data is available after measurement ID change.' );
 		$this->assertEquals(
 			array(
-				'googlesitekit_post_author'     => true,
+				'googlesitekit_post_author'     => false,
 				'googlesitekit_post_type'       => false,
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
