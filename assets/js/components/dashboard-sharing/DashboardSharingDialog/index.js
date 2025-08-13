@@ -140,7 +140,7 @@ export default function DashboardSharingDialog() {
 	const closeDialog = useCallback( () => {
 		if ( resetDialogOpen ) {
 			closeResetDialog();
-			return null;
+			return;
 		}
 
 		closeSettingsDialog();
@@ -149,7 +149,7 @@ export default function DashboardSharingDialog() {
 	// Handle scrim click for reset dialog.
 	useEffect( () => {
 		if ( ! resetDialogOpen ) {
-			return;
+			return () => {};
 		}
 
 		function handleScrimClick( event ) {
