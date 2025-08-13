@@ -102,6 +102,8 @@ class SiteVerification extends Component {
 					loading: false,
 					siteURL: identifier,
 				} );
+
+				return false;
 			} catch ( err ) {
 				let message = err.message;
 
@@ -118,6 +120,8 @@ class SiteVerification extends Component {
 					errorMsg: message,
 					siteURL: global._googlesitekitLegacyData.admin.siteURL, // Fallback to site URL from the settings.
 				} );
+
+				return false;
 			}
 		} )();
 	}
