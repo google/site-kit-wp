@@ -87,7 +87,8 @@ describe( 'googlesitekit.api', () => {
 			try {
 				await get();
 
-				return unexpectedSuccess();
+				unexpectedSuccess();
+				return;
 			} catch ( error ) {
 				expect( error.message ).toEqual(
 					'`type` argument for requests is required.'
@@ -97,7 +98,7 @@ describe( 'googlesitekit.api', () => {
 			try {
 				await get( 'core' );
 
-				return unexpectedSuccess();
+				unexpectedSuccess();
 			} catch ( error ) {
 				expect( error.message ).toEqual(
 					'`identifier` argument for requests is required.'
@@ -107,7 +108,7 @@ describe( 'googlesitekit.api', () => {
 			try {
 				await get( 'core', MODULE_SLUG_SEARCH_CONSOLE );
 
-				return unexpectedSuccess();
+				unexpectedSuccess();
 			} catch ( error ) {
 				expect( error.message ).toEqual(
 					'`datapoint` argument for requests is required.'
@@ -391,7 +392,8 @@ describe( 'googlesitekit.api', () => {
 			try {
 				await set();
 
-				return unexpectedSuccess();
+				unexpectedSuccess();
+				return;
 			} catch ( error ) {
 				expect( error.message ).toEqual(
 					'`type` argument for requests is required.'
@@ -401,7 +403,7 @@ describe( 'googlesitekit.api', () => {
 			try {
 				await set( 'core' );
 
-				return unexpectedSuccess();
+				unexpectedSuccess();
 			} catch ( error ) {
 				expect( error.message ).toEqual(
 					'`identifier` argument for requests is required.'
@@ -411,7 +413,7 @@ describe( 'googlesitekit.api', () => {
 			try {
 				await set( 'core', MODULE_SLUG_SEARCH_CONSOLE );
 
-				return unexpectedSuccess();
+				unexpectedSuccess();
 			} catch ( error ) {
 				expect( error.message ).toEqual(
 					'`datapoint` argument for requests is required.'
