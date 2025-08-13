@@ -2679,7 +2679,7 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Verify that the EDIT_SCOPE is required.
-		$this->assertWPErrorWithMessage( 'You\'ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics web data stream on your behalf.', $data );
+		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics web data stream on your behalf.', $data );
 		$this->assertEquals( 'missing_required_scopes', $data->get_error_code(), 'Error code should be missing_required_scopes when Analytics edit scope is not granted for enhanced measurement settings.' );
 		$this->assertEquals(
 			array(
@@ -5011,7 +5011,7 @@ class Analytics_4Test extends TestCase {
 		// Set up test data in transients.
 		$transients = new Transients( $this->context );
 		$transients->set( 'googlesitekit_inline_tag_id_mismatch', 'test-mismatch' );
-		$transients->set( 'googlesitekit_web_data_stream_availability', true );
+		$transients->set( 'googlesitekit_web_data_stream_unavailable_1', true );
 		$transients->set(
 			Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT,
 			array( 'event1', 'event2' )
@@ -5028,23 +5028,23 @@ class Analytics_4Test extends TestCase {
 		$inline_data = $this->analytics->get_inline_data();
 
 		// Verify the structure exists and contains expected keys.
-		$this->assertArrayHasKey( 'analytics-4', $inline_data, 'Inline data should contain analytics-4 module data.' );
+		$this->assertArrayHasKey( 'analytics-4', $inline_data, 'Inline data should contain analytics-4 key.' );
 		$analytics_data = $inline_data['analytics-4'];
 
-		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $analytics_data, 'Analytics data should contain customDimensionsDataAvailable key.' );
-		$this->assertArrayHasKey( 'resourceAvailabilityDates', $analytics_data, 'Analytics data should contain resourceAvailabilityDates key.' );
-		$this->assertArrayHasKey( 'tagIDMismatch', $analytics_data, 'Analytics data should contain tagIDMismatch key.' );
-		$this->assertArrayHasKey( 'newEvents', $analytics_data, 'Analytics data should contain newEvents key.' );
-		$this->assertArrayHasKey( 'lostEvents', $analytics_data, 'Analytics data should contain lostEvents key.' );
-		$this->assertArrayHasKey( 'newBadgeEvents', $analytics_data, 'Analytics data should contain newBadgeEvents key.' );
-		$this->assertArrayHasKey( 'isWebDataStreamAvailable', $analytics_data, 'Analytics data should contain isWebDataStreamAvailable key.' );
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $analytics_data, 'Inline data should contain customDimensionsDataAvailable key.' );
+		$this->assertArrayHasKey( 'resourceAvailabilityDates', $analytics_data, 'Inline data should contain resourceAvailabilityDates key.' );
+		$this->assertArrayHasKey( 'tagIDMismatch', $analytics_data, 'Inline data should contain tagIDMismatch key.' );
+		$this->assertArrayHasKey( 'newEvents', $analytics_data, 'Inline data should contain newEvents key.' );
+		$this->assertArrayHasKey( 'lostEvents', $analytics_data, 'Inline data should contain lostEvents key.' );
+		$this->assertArrayHasKey( 'newBadgeEvents', $analytics_data, 'Inline data should contain newBadgeEvents key.' );
+		$this->assertArrayHasKey( 'isWebDataStreamUnavailable', $analytics_data, 'Inline data should contain isWebDataStreamUnavailable key.' );
 
 		// Verify the transient data.
-		$this->assertSame( 'test-mismatch', $analytics_data['tagIDMismatch'], 'Tag ID mismatch should match transient value.' );
-		$this->assertSame( array( 'event1', 'event2' ), $analytics_data['newEvents'], 'New events should match transient value.' );
-		$this->assertSame( array( 'lost_event1' ), $analytics_data['lostEvents'], 'Lost events should match transient value.' );
-		$this->assertSame( array( 'badge_event1' ), $analytics_data['newBadgeEvents'], 'New badge events should match transient value.' );
-		$this->assertSame( true, $analytics_data['isWebDataStreamAvailable'], 'Web data stream availability should match transient value.' );
+		$this->assertSame( 'test-mismatch', $analytics_data['tagIDMismatch'], 'Inline data should contain tagIDMismatch value.' );
+		$this->assertSame( array( 'event1', 'event2' ), $analytics_data['newEvents'], 'Inline data should contain newEvents value.' );
+		$this->assertSame( array( 'lost_event1' ), $analytics_data['lostEvents'], 'Inline data should contain lostEvents value.' );
+		$this->assertSame( array( 'badge_event1' ), $analytics_data['newBadgeEvents'], 'Inline data should contain newBadgeEvents value.' );
+		$this->assertSame( true, $analytics_data['isWebDataStreamUnavailable'], 'Inline data should contain isWebDataStreamUnavailable value.' );
 	}
 
 	/**
