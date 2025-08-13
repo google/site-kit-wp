@@ -31,7 +31,8 @@ export function createWaitForFetchRequests() {
 		if ( req.resourceType() === 'fetch' ) {
 			const promise = page.waitForResponse(
 				// eslint-disable-next-line sitekit/acronym-case
-				( res ) => res.request()._requestId === req._requestId
+				( res ) => res.request()._requestId === req._requestId,
+				{ timeout: 60_000 }
 			);
 			// A promise may be rejected if the execution context it was
 			// captured in no longer exists (e.g. previous page) which
