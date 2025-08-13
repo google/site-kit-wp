@@ -49,10 +49,10 @@ export default function ModuleSetupSuccessNotification( { id, Notification } ) {
 		select( CORE_SITE ).getConnectMoreServicesURL()
 	);
 
-	const onDismiss = () => {
+	function onDismiss() {
 		setNotification( undefined );
 		setSlug( undefined );
-	};
+	}
 
 	// Since the notification ID here is generic (`setup-success-notification-module`),
 	// it will be helpful to track individual module notifications uniquely as we do for

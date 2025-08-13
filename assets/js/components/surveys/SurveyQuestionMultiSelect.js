@@ -74,7 +74,7 @@ function SurveyQuestionMultiSelect( {
 	const [ selectedValues, setSelectedValues ] = useState( initialState );
 
 	// eslint-disable-next-line camelcase
-	const handleCheck = ( answer_ordinal ) => {
+	function handleCheck( answer_ordinal ) {
 		const newState = {
 			...selectedValues,
 			[ answer_ordinal ]: {
@@ -84,10 +84,10 @@ function SurveyQuestionMultiSelect( {
 		};
 
 		setSelectedValues( newState );
-	};
+	}
 
 	// eslint-disable-next-line camelcase
-	const handleAnswerChange = ( event, answer_ordinal ) => {
+	function handleAnswerChange( event, answer_ordinal ) {
 		const newState = {
 			...selectedValues,
 			[ answer_ordinal ]: {
@@ -100,9 +100,9 @@ function SurveyQuestionMultiSelect( {
 		};
 
 		setSelectedValues( newState );
-	};
+	}
 
-	const handleSubmit = () => {
+	function handleSubmit() {
 		const answer = Object.values( selectedValues )
 			.filter( ( { selected } ) => selected )
 			// eslint-disable-next-line camelcase
@@ -116,7 +116,7 @@ function SurveyQuestionMultiSelect( {
 		answerQuestion( {
 			answer,
 		} );
-	};
+	}
 
 	const hasEmptySelectedTextValue =
 		// eslint-disable-next-line camelcase

@@ -171,6 +171,13 @@ export const HTML = () => {};
 		{
 			code: 'const ISO = {};',
 		},
+		{
+			code: `
+CTAButton.propTypes = {
+	label: PropTypes.string,
+};
+			`,
+		},
 	],
 	invalid: [
 		{

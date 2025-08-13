@@ -50,8 +50,8 @@ export const {
 	selectors,
 } = store;
 
-export const registerStore = ( registry ) => {
+export function registerStore( registry ) {
 	registry.registerStore( MODULES_TAGMANAGER, store );
-};
+}
 
 export default store;

@@ -11,7 +11,7 @@
  * @return {Function} Function that can be called to remove the added handler function from the page.
  */
 export function useRequestInterception( config ) {
-	const requestHandler = ( request ) => {
+	function requestHandler( request ) {
 		// Prevent errors for requests that happen after interception is disabled.
 		if ( ! request._allowInterception ) {
 			return;
@@ -46,7 +46,7 @@ export function useRequestInterception( config ) {
 			// No matching path, continue the request.
 			request.continue();
 		}
-	};
+	}
 
 	page.on( 'request', requestHandler );
 
@@ -70,7 +70,7 @@ export function useRequestInterception( config ) {
  */
 export function useSharedRequestInterception( requestCases ) {
 	const cases = [ ...requestCases ];
-	const requestHandler = ( request ) => {
+	function requestHandler( request ) {
 		// Prevent errors for requests that happen after interception is disabled.
 		if ( ! request._allowInterception ) {
 			return;
@@ -85,7 +85,7 @@ export function useSharedRequestInterception( requestCases ) {
 		} else {
 			request.continue();
 		}
-	};
+	}
 
 	page.on( 'request', requestHandler );
 

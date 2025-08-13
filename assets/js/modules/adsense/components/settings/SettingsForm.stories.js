@@ -48,7 +48,7 @@ const adSenseSettings = {
 	ownerID: 0,
 };
 
-const setUpAdUnits = ( registry ) => {
+function setUpAdUnits( registry ) {
 	const accountID = fixtures.accounts[ 0 ]._id;
 	const clientID = fixtures.clients[ 0 ]._id;
 	registry
@@ -57,7 +57,7 @@ const setUpAdUnits = ( registry ) => {
 	registry
 		.dispatch( MODULES_ADSENSE )
 		.finishResolution( 'getAdUnits', [ accountID, clientID ] );
-};
+}
 
 function Template( args ) {
 	return (
@@ -163,7 +163,7 @@ export default {
 	component: SettingsForm,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
 				registry
 					.dispatch( MODULES_ADSENSE )
@@ -183,7 +183,7 @@ export default {
 				provideModuleRegistrations( registry );
 
 				args?.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

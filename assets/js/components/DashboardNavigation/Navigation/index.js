@@ -84,7 +84,7 @@ export default function Navigation() {
 	/**
 	 * Handles the selection of a chip.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @param {Object} event The click event.
 	 * @return {void}
@@ -115,7 +115,7 @@ export default function Navigation() {
 	/**
 	 * Determines the sticky state of navigation based on scroll position.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @return {void}
 	 */
@@ -136,18 +136,18 @@ export default function Navigation() {
 	/**
 	 * Determines the selected state of a chip based on scroll position.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @param {Event} event The scroll event.
 	 * @return {void}
 	 */
 	const handleSelectedChip = useCallback(
 		( event ) => {
-			const changeSelectedChip = ( chipID ) => {
+			function changeSelectedChip( chipID ) {
 				setValue( ACTIVE_CONTEXT_ID, undefined );
 				setSelectedID( chipID );
 				setIsJumpingTo( undefined );
-			};
+			}
 
 			const closestID = findClosestSection( elementRef );
 
@@ -214,10 +214,10 @@ export default function Navigation() {
 
 	// Handle scroll events to update sticky state and selected chip.
 	useEffect( () => {
-		const onScroll = ( event ) => {
+		function onScroll( event ) {
 			handleSticky();
 			handleSelectedChip( event );
-		};
+		}
 
 		const throttledOnScroll = throttle( onScroll, 150 );
 		global.addEventListener( 'scroll', throttledOnScroll );

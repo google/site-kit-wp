@@ -32,13 +32,15 @@ import {
 } from './transform-case';
 import { stringifyObject } from '../../util';
 
-const defaultReducerCallback = ( state ) => state;
+function defaultReducerCallback( state ) {
+	return state;
+}
 
-const defaultArgsToParams = () => {
+function defaultArgsToParams() {
 	return {};
-};
+}
 
-const defaultValidateParams = () => {};
+function defaultValidateParams() {}
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
@@ -96,13 +98,13 @@ const { clearError, receiveError } = errorStoreActions;
  *                                          Any invalid parameters should cause a respective error to be thrown.
  * @return {Object} Partial store object with properties 'actions', 'controls', 'reducer', 'resolvers', and 'selectors'.
  */
-export const createFetchStore = ( {
+export function createFetchStore( {
 	baseName,
 	controlCallback,
 	reducerCallback = defaultReducerCallback,
 	argsToParams = defaultArgsToParams,
 	validateParams = defaultValidateParams,
-} ) => {
+} ) {
 	invariant( baseName, 'baseName is required.' );
 	invariant(
 		'function' === typeof controlCallback,
@@ -219,7 +221,7 @@ export const createFetchStore = ( {
 		},
 	};
 
-	const reducer = ( state, { type, payload } ) => {
+	function reducer( state, { type, payload } ) {
 		switch ( type ) {
 			case START_FETCH: {
 				const { params } = payload;
@@ -263,7 +265,7 @@ export const createFetchStore = ( {
 				return state;
 			}
 		}
-	};
+	}
 
 	const selectors = {
 		[ isFetching ]: ( state, ...args ) => {
@@ -293,4 +295,4 @@ export const createFetchStore = ( {
 		resolvers: {},
 		selectors,
 	};
-};
+}

@@ -46,7 +46,7 @@ module.exports = iterateJsdoc(
 				return tag.tag;
 			} );
 
-		const checkTagOrder = ( { previousTag, tag, tagOrder } ) => {
+		function checkTagOrder( { previousTag, tag, tagOrder } ) {
 			// Only check for the tag order for a grouping of tags.
 			if (
 				! tagOrder.includes( tag ) ||
@@ -80,7 +80,7 @@ module.exports = iterateJsdoc(
 					node: jsdocNode,
 				} );
 			}
-		};
+		}
 
 		utils
 			.filterTags( ( { tag } ) => {

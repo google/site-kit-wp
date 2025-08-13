@@ -36,7 +36,7 @@
 		},
 	} );
 
-	jQuery( document ).ready( function () {
+	jQuery( document ).ready( () => {
 		new ninjaFormEventController();
 	} );
 } )( global.jQuery, global.Marionette, global.Backbone );

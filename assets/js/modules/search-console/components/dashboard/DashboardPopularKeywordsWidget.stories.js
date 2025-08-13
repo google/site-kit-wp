@@ -143,7 +143,7 @@ export default {
 	component: DashboardPopularKeywordsWidget,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				// Activate the module.
 				provideModules( registry, [
 					{
@@ -162,7 +162,7 @@ export default {
 					} );
 
 				args?.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

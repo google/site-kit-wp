@@ -119,7 +119,7 @@ export default {
 	title: 'Modules/AdSense/Settings/AdBlockingRecoveryToggle',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
@@ -130,7 +130,7 @@ export default {
 				provideSiteInfo( registry );
 
 				args?.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

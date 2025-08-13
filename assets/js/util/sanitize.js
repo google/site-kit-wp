@@ -3,11 +3,11 @@
  */
 import { purify } from './purify';
 
-export const sanitizeHTML = ( unsafeHTML, domPurifyConfig = {} ) => {
+export function sanitizeHTML( unsafeHTML, domPurifyConfig = {} ) {
 	return {
 		__html: purify.sanitize( unsafeHTML, domPurifyConfig ),
 	};
-};
+}
 
 /**
  * Takes a string or an URL object, removes the trailing slash if any and returns it.

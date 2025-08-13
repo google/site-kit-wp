@@ -45,7 +45,7 @@ export default {
 	component: AccountSelect,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetAccounts( fixtures.accounts );
@@ -55,7 +55,7 @@ export default {
 				registry
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetSettings( {} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

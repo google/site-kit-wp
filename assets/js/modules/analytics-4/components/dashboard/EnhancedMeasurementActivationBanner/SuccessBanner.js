@@ -66,12 +66,12 @@ export default function SuccessBanner( { id, Notification } ) {
 		category: `${ viewContext }_enhanced-measurement-success`,
 	};
 
-	const learnMoreTrackEvent = () => {
+	function learnMoreTrackEvent() {
 		trackEvents.clickLearnMore(
 			gaTrackingEventArgs.label,
 			gaTrackingEventArgs.value
 		);
-	};
+	}
 
 	return (
 		<Notification onView={ handleView }>

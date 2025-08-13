@@ -54,7 +54,7 @@ export default {
 	title: 'Key Metrics/ConversionReportingNotificationCTAWidget',
 	decorators: [
 		( Story, { parameters } ) => {
-			const setupRegistry = async ( registry ) => {
+			async function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ANALYTICS_4,
@@ -109,7 +109,7 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setNewConversionEventsLastUpdateAt( 1734531413 );
-			};
+			}
 
 			return (
 				<WithRegistrySetup

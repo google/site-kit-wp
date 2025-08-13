@@ -76,7 +76,7 @@ export function getAccountDefaults(
  * @param {Object} account Account object.
  * @return {Object} Account object with an appended ID.
  */
-export const populateAccountID = ( account ) => {
+export function populateAccountID( account ) {
 	const matches = account.account?.match( /accounts\/([^/]+)/ );
 	const _id = matches?.[ 1 ];
 
@@ -84,7 +84,7 @@ export const populateAccountID = ( account ) => {
 		...account,
 		_id,
 	};
-};
+}
 
 /**
  * Appends property and account IDs to a property object.
@@ -94,7 +94,7 @@ export const populateAccountID = ( account ) => {
  * @param {Object} property Property object.
  * @return {Object} Property object with appended IDs.
  */
-export const populatePropertyAndAccountIds = ( property ) => {
+export function populatePropertyAndAccountIds( property ) {
 	const propertyMatches = property.property?.match( /properties\/([^/]+)/ );
 	const _id = propertyMatches?.[ 1 ];
 
@@ -106,7 +106,7 @@ export const populatePropertyAndAccountIds = ( property ) => {
 		_id,
 		_accountID,
 	};
-};
+}
 
 /**
  * Populates a list of accountSummaries with IDs for accounts and properties.
@@ -116,7 +116,7 @@ export const populatePropertyAndAccountIds = ( property ) => {
  * @param {Array|unknown} accountSummaries Account summaries to populate.
  * @return {Array|unknown} Populated account summaries or given value if not an array.
  */
-export const populateAccountSummaries = ( accountSummaries ) => {
+export function populateAccountSummaries( accountSummaries ) {
 	if ( ! Array.isArray( accountSummaries ) ) {
 		return accountSummaries;
 	}
@@ -129,4 +129,4 @@ export const populateAccountSummaries = ( accountSummaries ) => {
 			),
 		};
 	} );
-};
+}

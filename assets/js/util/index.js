@@ -50,7 +50,9 @@ export * from './partition-report';
  * @return {(number|null)} The percent change. Null if the input or output is invalid.
  */
 export function calculateChange( previous, current ) {
-	const isZero = ( value ) => value === '0' || value === 0;
+	function isZero( value ) {
+		return value === '0' || value === 0;
+	}
 
 	// Prevent null result when both values are legitimately zero.
 	if ( isZero( previous ) && isZero( current ) ) {
@@ -79,13 +81,13 @@ export function calculateChange( previous, current ) {
  * @param {string} stringToValidate The string to validate.
  * @return {boolean} Indicates JSON is valid.
  */
-export const validateJSON = ( stringToValidate ) => {
+export function validateJSON( stringToValidate ) {
 	try {
 		return JSON.parse( stringToValidate ) && !! stringToValidate;
 	} catch ( e ) {
 		return false;
 	}
-};
+}
 
 /**
  * Converts HTML text into an HTML entity.
@@ -98,16 +100,16 @@ export const validateJSON = ( stringToValidate ) => {
  * @param {string} str The string to decode.
  * @return {string} Decoded HTML entity.
  */
-export const decodeHTMLEntity = ( str ) => {
+export function decodeHTMLEntity( str ) {
 	if ( ! str ) {
 		return '';
 	}
 
 	const decoded = str
-		.replace( /&#(\d+);/g, function ( match, dec ) {
+		.replace( /&#(\d+);/g, ( match, dec ) => {
 			return String.fromCharCode( dec );
 		} )
 		.replace( /(\\)/g, '' );
 
 	return unescape( decoded );
-};
+}

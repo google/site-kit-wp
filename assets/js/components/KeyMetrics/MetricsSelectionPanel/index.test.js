@@ -819,7 +819,7 @@ describe( 'MetricsSelectionPanel', () => {
 					name: /Save selection/i,
 				} );
 
-				const isAutoSubmitTrue = () => {
+				function isAutoSubmitTrue() {
 					const autoSubmit = registry
 						.select( CORE_FORMS )
 						.getValue(
@@ -827,7 +827,7 @@ describe( 'MetricsSelectionPanel', () => {
 							'autoSubmit'
 						);
 					return autoSubmit === true;
-				};
+				}
 
 				await act( async () => {
 					fireEvent.click( submitButton );

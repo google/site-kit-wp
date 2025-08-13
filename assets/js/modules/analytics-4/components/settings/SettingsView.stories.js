@@ -95,7 +95,7 @@ export default {
 	title: 'Modules/Analytics4/Settings/SettingsView',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ANALYTICS_4,
@@ -136,7 +136,7 @@ export default {
 						isGTGHealthy: args.googleTagGateway || false,
 						isScriptAccessEnabled: args.googleTagGateway || false,
 					} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

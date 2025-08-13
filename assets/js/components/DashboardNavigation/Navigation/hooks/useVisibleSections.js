@@ -65,7 +65,7 @@ export const contexts = {
 /**
  * Returns the visible sections for the dashboard navigation.
  *
- * @since n.e.x.t
+ * @since 1.159.0
  *
  * @return {Array<string>} The visible sections.
  */

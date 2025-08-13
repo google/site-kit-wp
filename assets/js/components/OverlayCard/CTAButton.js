@@ -33,7 +33,6 @@ export default function CTAButton( props ) {
 	return <Button { ...otherProps }>{ label }</Button>;
 }
 
-// eslint-disable-next-line sitekit/acronym-case
 CTAButton.propTypes = {
 	...buttonProps,
 	href: PropTypes.string,

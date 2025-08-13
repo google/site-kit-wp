@@ -40,18 +40,18 @@ export const normalizeReportOptions = memize(
 	}
 );
 
-const normalizeMetrics = ( metrics ) => {
+function normalizeMetrics( metrics ) {
 	return castArray( metrics )
 		.map( ( metric ) =>
 			typeof metric === 'string' ? { name: metric } : metric
 		)
 		.filter( ( metric ) => isPlainObject( metric ) );
-};
+}
 
-const normalizeDimensions = ( dimensions ) => {
+function normalizeDimensions( dimensions ) {
 	return castArray( dimensions )
 		.map( ( dimension ) =>
 			typeof dimension === 'string' ? { name: dimension } : dimension
 		)
 		.filter( ( dimension ) => isPlainObject( dimension ) );
-};
+}

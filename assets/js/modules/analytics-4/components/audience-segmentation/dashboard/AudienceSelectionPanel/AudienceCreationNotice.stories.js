@@ -79,7 +79,7 @@ export default {
 	component: AudienceCreationNotice,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry, {
 					grantedScopes: [ EDIT_SCOPE ],
 				} );
@@ -114,7 +114,7 @@ export default {
 					} );
 
 				args?.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

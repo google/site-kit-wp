@@ -40,7 +40,7 @@ import SetupSuccessNotification from './components/notifications/SetupSuccessNot
 
 export { registerStore } from './datastore';
 
-export const registerModule = ( modules ) => {
+export function registerModule( modules ) {
 	modules.registerModule( MODULE_SLUG_PAGESPEED_INSIGHTS, {
 		storeName: MODULES_PAGESPEED_INSIGHTS,
 		SettingsViewComponent: SettingsView,
@@ -53,9 +53,9 @@ export const registerModule = ( modules ) => {
 		],
 		overrideSetupSuccessNotification: true,
 	} );
-};
+}
 
-export const registerWidgets = ( widgets ) => {
+export function registerWidgets( widgets ) {
 	widgets.registerWidget(
 		'pagespeedInsightsWebVitals',
 		{
@@ -69,7 +69,7 @@ export const registerWidgets = ( widgets ) => {
 			AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
 		]
 	);
-};
+}
 
 export const NOTIFICATIONS = {
 	'setup-success-notification-psi': {
@@ -92,11 +92,11 @@ export const NOTIFICATIONS = {
 	},
 };
 
-export const registerNotifications = ( notificationsAPI ) => {
+export function registerNotifications( notificationsAPI ) {
 	for ( const notificationID in NOTIFICATIONS ) {
 		notificationsAPI.registerNotification(
 			notificationID,
 			NOTIFICATIONS[ notificationID ]
 		);
 	}
-};
+}

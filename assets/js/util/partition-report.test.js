@@ -44,8 +44,12 @@ describe( 'partitionReport', () => {
 	} );
 
 	describe( 'partitions the given report into a currentRange and compareRange based on the dateRangeLength', () => {
-		const genItems = ( { batch, length } ) =>
-			Array.from( { length } ).map( ( _, i ) => ( { batch, index: i } ) );
+		function genItems( { batch, length } ) {
+			return Array.from( { length } ).map( ( _, i ) => ( {
+				batch,
+				index: i,
+			} ) );
+		}
 
 		it( 'partitions first items into compareRange and second items into currentRange', () => {
 			const firstThree = genItems( { batch: 1, length: 3 } );
@@ -135,9 +139,9 @@ describe( 'partitionReport', () => {
 
 			// Ensure specifically that weekdays between each entry in both
 			// arrays align.
-			const mapToWeekday = ( dataset ) => {
+			function mapToWeekday( dataset ) {
 				return dataset.weekday;
-			};
+			}
 			expect( mapToWeekday( partitionedReport.compareRange ) ).toEqual(
 				mapToWeekday( partitionedReport.currentRange )
 			);
