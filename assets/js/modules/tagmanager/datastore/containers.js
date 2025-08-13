@@ -63,15 +63,9 @@ const fetchGetContainersStore = createFetchStore( {
 			{ useCache: false }
 		);
 	},
-	reducerCallback: ( state, containers, { accountID } ) => {
-		return {
-			...state,
-			containers: {
-				...state.containers,
-				[ accountID ]: containers,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, containers, { accountID } ) => {
+		state.containers[ accountID ] = containers;
+	} ),
 } );
 
 const fetchCreateContainerStore = createFetchStore( {
