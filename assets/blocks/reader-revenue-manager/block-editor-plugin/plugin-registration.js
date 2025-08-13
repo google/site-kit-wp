@@ -40,7 +40,7 @@ export async function registerReaderRevenueManagerPlugin() {
 	const isSiteEditor = !! select( CORE_EDIT_SITE );
 
 	if ( isSiteEditor ) {
-		return;
+		return null;
 	}
 
 	await Promise.all( [
@@ -68,4 +68,6 @@ export async function registerReaderRevenueManagerPlugin() {
 	} );
 
 	initializeTracking();
+
+	return true;
 }
