@@ -18,16 +18,17 @@
 
 module.exports = {
 	'acronym-case': require( './acronym-case' ),
+	'function-declaration-consistency': require( './function-declaration-consistency' ),
 	'jsdoc-capitalization': require( './jsdoc-capitalization' ),
 	'jsdoc-fullstop': require( './jsdoc-fullstop' ),
 	'jsdoc-newlines': require( './jsdoc-newlines' ),
+	'jsdoc-no-unnamed-boolean-params': require( './jsdoc-no-unnamed-boolean-params' ),
 	'jsdoc-requires-since': require( './jsdoc-requires-since' ),
 	'jsdoc-tag-grouping': require( './jsdoc-tag-grouping' ),
 	'jsdoc-tag-order': require( './jsdoc-tag-order' ),
 	'jsdoc-third-person': require( './jsdoc-third-person' ),
-	'no-yield-dispatch': require( './no-yield-dispatch' ),
-	'no-direct-date': require( './no-direct-date' ),
 	'no-boolean-props-before-values': require( './no-boolean-props-before-values' ),
+	'no-direct-date': require( './no-direct-date' ),
 	'no-storybook-scenario-label': require( './no-storybook-scenario-label' ),
-	'jsdoc-no-unnamed-boolean-params': require( './jsdoc-no-unnamed-boolean-params' ),
+	'no-yield-dispatch': require( './no-yield-dispatch' ),
 };

@@ -19,7 +19,7 @@
 		return;
 	}
 
-	PUM.hooks.addAction( 'pum.integration.form.success', function () {
+	PUM.hooks.addAction( 'pum.integration.form.success', () => {
 		global._googlesitekit?.gtagEvent?.( 'submit_lead_form' );
 	} );
 } )( global.jQuery, global.PUM );

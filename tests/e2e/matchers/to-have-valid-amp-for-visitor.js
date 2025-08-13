@@ -59,7 +59,9 @@ export async function toHaveValidAMPForVisitor( path ) {
 	const validator = await ampHTMLValidator.getInstance();
 	const { status } = validator.validateString( html );
 	const pass = 'PASS' === status;
-	const message = () => `AMP Status: ${ status }`;
+	function message() {
+		return `AMP Status: ${ status }`;
+	}
 
 	return { pass, message };
 }

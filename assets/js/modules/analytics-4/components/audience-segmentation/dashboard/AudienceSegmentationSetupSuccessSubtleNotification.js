@@ -59,7 +59,7 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification( {
 		}
 	}, [ dismissNotification, isAudienceSegmentationWidgetHidden ] );
 
-	const scrollToWidgetArea = ( event ) => {
+	function scrollToWidgetArea( event ) {
 		event.preventDefault();
 
 		dismissNotification( AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION );
@@ -73,7 +73,7 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification( {
 				behavior: 'smooth',
 			} );
 		}, 50 );
-	};
+	}
 
 	if ( isAudienceSegmentationWidgetHidden === undefined ) {
 		return null;

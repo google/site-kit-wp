@@ -53,7 +53,7 @@ async function proceedToSetUpAnalytics() {
 	);
 }
 
-const setReferenceURL = () => {
+function setReferenceURL() {
 	return wpApiFetch( {
 		path: 'google-site-kit/v1/e2e/reference-url',
 		method: 'post',
@@ -61,7 +61,7 @@ const setReferenceURL = () => {
 			url: 'http://non-matching-url.test',
 		},
 	} );
-};
+}
 
 describe( 'setting up the Analytics module with an existing account and no existing tag', () => {
 	beforeAll( async () => {

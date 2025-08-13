@@ -96,14 +96,14 @@ export default function SetupForm( { onCompleteSetup } ) {
 
 	// Automatically pre-select a publication.
 	useEffect( () => {
-		const autoSelectPublication = async () => {
+		async function autoSelectPublication() {
 			const matchedPublication = await findMatchedPublication();
 
 			if ( matchedPublication ) {
 				selectPublication( matchedPublication );
 				autoSelectProductID( matchedPublication );
 			}
-		};
+		}
 
 		if ( ! publicationID ) {
 			autoSelectPublication();

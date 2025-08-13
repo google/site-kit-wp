@@ -56,10 +56,10 @@ const WAIT_FOR_DATA_AVAILABILITY_STATE = 'WAIT_FOR_DATA_AVAILABILITY_STATE';
  *                                               not be determined, the selector should return null.
  * @return {Object} The gathering data store object.
  */
-export const createGatheringDataStore = (
+export function createGatheringDataStore(
 	moduleSlug,
 	{ storeName, dataAvailable = false, selectDataAvailability } = {}
-) => {
+) {
 	invariant(
 		'string' === typeof moduleSlug && moduleSlug,
 		'module slug is required.'
@@ -144,9 +144,13 @@ export const createGatheringDataStore = (
 	const controls = {
 		[ WAIT_FOR_DATA_AVAILABILITY_STATE ]: createRegistryControl(
 			( registry ) => () => {
-				const dataAvailabityDetermined = () =>
-					registry.select( storeName ).selectDataAvailability() !==
-					undefined;
+				function dataAvailabityDetermined() {
+					return (
+						registry
+							.select( storeName )
+							.selectDataAvailability() !== undefined
+					);
+				}
 
 				if ( dataAvailabityDetermined() ) {
 					return true;
@@ -266,4 +270,4 @@ export const createGatheringDataStore = (
 		resolvers,
 		selectors,
 	} );
-};
+}

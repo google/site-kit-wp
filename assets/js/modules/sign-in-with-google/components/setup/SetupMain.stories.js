@@ -56,7 +56,7 @@ export default {
 	title: 'Modules/SignInWithGoogle/Setup/SetupMain',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
@@ -69,7 +69,7 @@ export default {
 					homeURL: 'https://example.com',
 				} );
 				provideModuleRegistrations( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

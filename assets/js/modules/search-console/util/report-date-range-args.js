@@ -37,7 +37,7 @@ import { isValidDateString } from '../../../util';
  * @param {string} [dates.compareEndDate]   Optional. End date in YYYY-MM-DD format.
  * @return {Object} Date range object.
  */
-export const generateDateRangeArgs = ( dates ) => {
+export function generateDateRangeArgs( dates ) {
 	const { startDate, endDate } = dates;
 
 	invariant(
@@ -50,4 +50,4 @@ export const generateDateRangeArgs = ( dates ) => {
 		start_date: startDate.replace( /-/g, '' ),
 		end_date: endDate.replace( /-/g, '' ),
 	};
-};
+}

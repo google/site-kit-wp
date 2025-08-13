@@ -152,11 +152,11 @@ export default function DashboardSharingDialog() {
 			return;
 		}
 
-		const handleScrimClick = ( event ) => {
+		function handleScrimClick( event ) {
 			if ( event.target.classList.contains( 'mdc-dialog__scrim' ) ) {
 				closeResetDialog();
 			}
-		};
+		}
 
 		document.addEventListener( 'click', handleScrimClick );
 

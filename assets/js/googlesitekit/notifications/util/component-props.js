@@ -62,7 +62,7 @@ function withNotificationID( id ) {
  * @param {string} id The id of the notification.
  * @return {Function} Enhancing function that adds the getNotificationComponentProps to the passed component.
  */
-export const withNotificationComponentProps = ( id ) => {
+export function withNotificationComponentProps( id ) {
 	const notificationComponentProps = getNotificationComponentProps( id );
 	return ( WrappedComponent ) => {
 		function DecoratedComponent( props ) {
@@ -81,4 +81,4 @@ export const withNotificationComponentProps = ( id ) => {
 		}
 		return DecoratedComponent;
 	};
-};
+}

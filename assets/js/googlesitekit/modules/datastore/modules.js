@@ -606,7 +606,7 @@ export const baseControls = {
 	),
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+function baseReducer( state, { type, payload } ) {
 	switch ( type ) {
 		case REGISTER_MODULE: {
 			const { slug, settings } = payload;
@@ -677,7 +677,7 @@ const baseReducer = ( state, { type, payload } ) => {
 			return state;
 		}
 	}
-};
+}
 
 function* waitForModules() {
 	const { resolveSelect } = yield commonActions.getRegistry();
@@ -1478,8 +1478,9 @@ const baseSelectors = {
 
 		const modules = Object.keys( recoverableModules );
 
-		const getRecoveryError = ( module ) =>
-			recoveredModules?.error?.[ module ];
+		function getRecoveryError( module ) {
+			return recoveredModules?.error?.[ module ];
+		}
 
 		return modules
 			.filter( ( module ) => !! getRecoveryError( module ) )

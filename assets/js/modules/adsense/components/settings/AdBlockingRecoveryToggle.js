@@ -89,7 +89,7 @@ export default function AdBlockingRecoveryToggle() {
 		setUseAdBlockingRecoveryErrorSnippet,
 	} = useDispatch( MODULES_ADSENSE );
 
-	const handleAdBlockingRecoveryToggleClick = () => {
+	function handleAdBlockingRecoveryToggleClick() {
 		const toggleValue = ! adBlockingRecoveryToggle;
 		setValues( AD_BLOCKING_FORM_SETTINGS, {
 			adBlockingRecoveryToggle: toggleValue,
@@ -101,9 +101,9 @@ export default function AdBlockingRecoveryToggle() {
 			toggleValue ? 'enable_tag' : 'disable_tag',
 			'abr_tag'
 		);
-	};
+	}
 
-	const handleErrorProtectionToggleClick = () => {
+	function handleErrorProtectionToggleClick() {
 		const toggleValue = ! adBlockingRecoveryErrorToggle;
 		setValues( AD_BLOCKING_FORM_SETTINGS, {
 			adBlockingRecoveryErrorToggle: toggleValue,
@@ -115,7 +115,7 @@ export default function AdBlockingRecoveryToggle() {
 			toggleValue ? 'enable_tag' : 'disable_tag',
 			'error_protection_tag'
 		);
-	};
+	}
 
 	useMount( () => {
 		const initialToggleValues = {

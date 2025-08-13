@@ -78,7 +78,7 @@ const ROLLBACK_SETTING = 'ROLLBACK_SETTING';
  * @return {Object} The settings store object, with additional `STORE_NAME` and
  *                  `initialState` properties.
  */
-export const createSettingsStore = (
+export function createSettingsStore(
 	type,
 	identifier,
 	datapoint,
@@ -89,7 +89,7 @@ export const createSettingsStore = (
 		initialSettings = undefined,
 		validateHaveSettingsChanged = makeDefaultHaveSettingsChanged(),
 	} = {}
-) => {
+) {
 	invariant( type, 'type is required.' );
 	invariant( identifier, 'identifier is required.' );
 	invariant( datapoint, 'datapoint is required.' );
@@ -242,7 +242,7 @@ export const createSettingsStore = (
 	const controls = {};
 
 	// eslint-disable-next-line no-shadow
-	const reducer = ( state = initialState, { type, payload } ) => {
+	function reducer( state = initialState, { type, payload } ) {
 		switch ( type ) {
 			case SET_SETTINGS: {
 				const { values } = payload;
@@ -290,7 +290,7 @@ export const createSettingsStore = (
 				return state;
 			}
 		}
-	};
+	}
 
 	const resolvers = {
 		*getSettings() {
@@ -479,7 +479,7 @@ export const createSettingsStore = (
 		...store,
 		STORE_NAME,
 	};
-};
+}
 
 /**
  * Creates a default submitChanges control function.

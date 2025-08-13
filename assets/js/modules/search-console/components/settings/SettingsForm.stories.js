@@ -68,7 +68,7 @@ export default {
 	component: SettingsForm,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( MODULES_SEARCH_CONSOLE )
 					.receiveGetSettings( {} );
@@ -105,7 +105,7 @@ export default {
 							siteURL: 'sc-domain:example.com',
 						},
 					] );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

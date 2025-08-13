@@ -49,12 +49,12 @@ import { createFetchStore } from './create-fetch-store';
  * @return {Object} The notifications store object, with additional `STORE_NAME` and
  *                  `initialState` properties.
  */
-export const createNotificationsStore = (
+export function createNotificationsStore(
 	type,
 	identifier,
 	datapoint,
 	{ server = true, storeName = undefined } = {}
-) => {
+) {
 	invariant( type, 'type is required.' );
 	invariant( identifier, 'identifier is required.' );
 	invariant( datapoint, 'datapoint is required.' );
@@ -88,13 +88,13 @@ export const createNotificationsStore = (
 	const controls = {};
 
 	// eslint-disable-next-line no-shadow
-	const reducer = ( state = initialState, { type } ) => {
+	function reducer( state = initialState, { type } ) {
 		switch ( type ) {
 			default: {
 				return state;
 			}
 		}
-	};
+	}
 
 	const resolvers = {
 		*getNotifications() {
@@ -160,4 +160,4 @@ export const createNotificationsStore = (
 		...store,
 		STORE_NAME,
 	};
-};
+}

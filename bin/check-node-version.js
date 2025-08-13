@@ -5,7 +5,7 @@ const { execSync } = require( 'child_process' );
 const fs = require( 'fs' );
 const path = require( 'path' );
 
-const getMajorVersion = ( version ) => {
+function getMajorVersion(version) {
 	const majorVersion = version.split( '.' )[ 0 ];
 
 	if ( majorVersion === undefined ) {

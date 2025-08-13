@@ -52,7 +52,7 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const scrollToWidgetAndDismissNotification = ( event ) => {
+	function scrollToWidgetAndDismissNotification( event ) {
 		event.preventDefault();
 
 		dismissNotification( id );
@@ -71,7 +71,7 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 				behavior: 'smooth',
 			} );
 		}, 50 );
-	};
+	}
 
 	const gaTrackingEventArgs = {
 		category: `${ viewContext }_top-earning-pages-widget`,

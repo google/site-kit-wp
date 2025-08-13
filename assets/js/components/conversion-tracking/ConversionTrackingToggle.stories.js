@@ -38,7 +38,7 @@ Enabled.title = 'Components/Conversion Tracking/ConversionTrackingToggle';
 Enabled.scenario = {};
 Enabled.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry
 				.dispatch( CORE_SITE )
 				.receiveGetConversionTrackingSettings( { enabled: true } );
@@ -52,7 +52,7 @@ Enabled.decorators = [
 					status: 200,
 				}
 			);
-		};
+		}
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
@@ -66,7 +66,7 @@ Default.storyName = 'Default Disabled';
 Default.scenario = {};
 Default.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry
 				.dispatch( CORE_SITE )
 				.receiveGetConversionTrackingSettings( { enabled: false } );
@@ -80,7 +80,7 @@ Default.decorators = [
 					status: 200,
 				}
 			);
-		};
+		}
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
 				<Story />

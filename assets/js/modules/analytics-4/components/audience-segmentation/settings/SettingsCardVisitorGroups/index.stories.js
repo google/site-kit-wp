@@ -69,7 +69,7 @@ export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Settings/SettingsCardVisitorGroups',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 					configuredAudiences: [ 'audienceA', 'audienceB' ],
 					isAudienceSegmentationWidgetHidden: false,
@@ -96,7 +96,7 @@ export default {
 				if ( args.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

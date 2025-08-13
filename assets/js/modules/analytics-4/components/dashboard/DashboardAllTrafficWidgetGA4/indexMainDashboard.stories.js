@@ -335,7 +335,7 @@ export default {
 	component: DashboardAllTrafficWidgetGA4,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				// Activate the module.
 				provideModules( registry, [
 					{
@@ -356,7 +356,7 @@ export default {
 				if ( args?.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

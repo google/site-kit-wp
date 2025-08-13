@@ -50,7 +50,7 @@ export default {
 	title: ' Modules/AdSense/Settings/AdBlockingRecoverySetupCTANotice',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
@@ -63,7 +63,7 @@ export default {
 				registry
 					.dispatch( MODULES_ADSENSE )
 					.receiveGetSettings( validSettings );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

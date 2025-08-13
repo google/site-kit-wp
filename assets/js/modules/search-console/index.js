@@ -40,16 +40,16 @@ import {
 
 export { registerStore } from './datastore';
 
-export const registerModule = ( modules ) => {
+export function registerModule( modules ) {
 	modules.registerModule( MODULE_SLUG_SEARCH_CONSOLE, {
 		storeName: MODULES_SEARCH_CONSOLE,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		Icon: SearchConsoleIcon,
 	} );
-};
+}
 
-export const registerWidgets = ( widgets ) => {
+export function registerWidgets( widgets ) {
 	widgets.registerWidget(
 		'searchConsolePopularKeywords',
 		{
@@ -99,4 +99,4 @@ export const registerWidgets = ( widgets ) => {
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
-};
+}

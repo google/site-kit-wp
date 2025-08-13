@@ -60,7 +60,7 @@ export default {
 	title: 'Key Metrics/SettingsCardKeyMetrics',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry );
 				provideSiteInfo( registry );
 
@@ -91,7 +91,7 @@ export default {
 				if ( args?.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

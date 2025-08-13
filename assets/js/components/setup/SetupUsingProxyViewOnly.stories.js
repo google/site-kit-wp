@@ -41,7 +41,7 @@ export default {
 	title: 'Setup / Using Proxy View-Only',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteConnection( registry, {
 					hasConnectedAdmins: false,
 				} );
@@ -54,7 +54,7 @@ export default {
 				if ( typeof args?.setupRegistry === 'function' ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

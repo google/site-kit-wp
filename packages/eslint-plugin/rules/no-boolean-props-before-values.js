@@ -83,7 +83,7 @@ module.exports = {
 					return;
 				}
 
-				const fix = ( fixer ) => {
+				function fix( fixer ) {
 					const sourceCode = context.getSourceCode();
 
 					const allBooleanAttributes =
@@ -115,7 +115,7 @@ module.exports = {
 					);
 
 					return [ ...removeFixes, insertFix ];
-				};
+				}
 
 				misplacedBooleanProps.forEach( ( { attribute }, index ) => {
 					const report = {

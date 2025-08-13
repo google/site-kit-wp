@@ -117,11 +117,11 @@ export default {
 	title: 'Components/Surveys/CurrentSurvey',
 	decorators: [
 		( Story, { parameters } ) => {
-			const commonSetup = ( registry ) => {
+			function commonSetup( registry ) {
 				mockSurveyEventResponse();
 				provideCurrentSurvey( registry, parameters.survey );
 				provideTracking( registry, parameters.trackingEnabled );
-			};
+			}
 			return (
 				<WithRegistrySetup func={ commonSetup }>
 					<Story />

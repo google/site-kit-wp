@@ -315,7 +315,7 @@ const baseActions = {
 	},
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+function baseReducer( state, { type, payload } ) {
 	switch ( type ) {
 		case SET_SHARING_MANAGEMENT: {
 			const { moduleSlug, management } = payload;
@@ -399,7 +399,7 @@ const baseReducer = ( state, { type, payload } ) => {
 			return state;
 		}
 	}
-};
+}
 
 const baseResolvers = {
 	*getSharingSettings() {

@@ -39,7 +39,7 @@ export default {
 	title: 'Components/Notifications/Banners',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				const currentAnalyticsSettingsMock = {
 					ownerID: 0,
 					propertyID: '1000',
@@ -52,7 +52,7 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setSettings( currentAnalyticsSettingsMock );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
