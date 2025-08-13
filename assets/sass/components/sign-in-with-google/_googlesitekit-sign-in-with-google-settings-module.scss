@@ -17,7 +17,9 @@
  */
 
 .googlesitekit-plugin {
+
 	.googlesitekit-settings-module--sign-in-with-google {
+
 		.googlesitekit-settings-module__footer {
 			margin-top: 30px;
 		}
@@ -27,6 +29,7 @@
 		}
 
 		.googlesitekit-sign-in-with-google-settings-fields {
+
 			.googlesitekit-text-field-client-id,
 			.mdc-select,
 			.mdc-select__selected-text {
@@ -76,6 +79,7 @@
 			}
 
 			.googlesitekit-sign-in-with-google-settings-fields__button-preview {
+
 				@media (min-width: $bp-xlarge) {
 					margin-left: 30px;
 				}
