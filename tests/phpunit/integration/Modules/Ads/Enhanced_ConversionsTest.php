@@ -222,6 +222,10 @@ class Enhanced_ConversionsTest extends TestCase {
 
 		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ), 'googlesitekit_setup_gtag should be hooked into' );
 
+		wp_scripts()->registered = array();
+		wp_scripts()->queue      = array();
+		wp_scripts()->done       = array();
+
 		$head_html       = $this->capture_action( 'wp_head' );
 		$expected_script = sprintf(
 			'gtag("set","user_data",{"sha256_email_address":"%s","address":{"sha256_first_name":"%s","sha256_last_name":"%s"}})',
