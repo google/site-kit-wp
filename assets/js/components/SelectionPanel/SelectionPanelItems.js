@@ -27,6 +27,11 @@ import PropTypes from 'prop-types';
 import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import Typography from '../Typography';
+
 export default function SelectionPanelItems( {
 	currentSelectionTitle = __( 'Current selection', 'google-site-kit' ),
 	availableItemsTitle = __( 'Additional items', 'google-site-kit' ),
@@ -58,16 +63,26 @@ export default function SelectionPanelItems( {
 				// additional items if there are already saved items.
 				savedItemSlugs.length !== 0 && (
 					<Fragment>
-						<p className="googlesitekit-selection-panel-items__subheading">
+						<Typography
+							as="p"
+							type="body"
+							size="medium"
+							className="googlesitekit-selection-panel-items__subheading"
+						>
 							{ currentSelectionTitle }
-						</p>
+						</Typography>
 						<div className="googlesitekit-selection-panel-items__subsection">
 							{ renderItems( availableSavedItems ) }
 						</div>
 						{ availableUnsavedItemsCount > 0 && (
-							<p className="googlesitekit-selection-panel-items__subheading">
+							<Typography
+								as="p"
+								type="body"
+								size="medium"
+								className="googlesitekit-selection-panel-items__subheading"
+							>
 								{ availableItemsTitle }
-							</p>
+							</Typography>
 						) }
 					</Fragment>
 				)

@@ -20,16 +20,24 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
+/**
+ * Internal dependencies
+ */
+import Typography from '../Typography';
+
 export default function HelpText( { className, children } ) {
 	return (
-		<p
+		<Typography
+			as="p"
+			type="body"
+			size="medium"
 			className={ classnames(
 				'googlesitekit-banner__help-text',
 				className
 			) }
 		>
 			{ children }
-		</p>
+		</Typography>
 	);
 }
 

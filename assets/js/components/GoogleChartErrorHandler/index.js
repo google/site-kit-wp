@@ -35,6 +35,7 @@ import CTA from '../notifications/CTA';
 import GenericErrorHandlerActions from '../GenericErrorHandlerActions';
 import ViewContextContext from '../Root/ViewContextContext';
 import { trackEvent } from '../../util';
+import Typography from '../Typography';
 
 class GoogleChartErrorHandler extends Component {
 	constructor( props ) {
@@ -82,12 +83,12 @@ class GoogleChartErrorHandler extends Component {
 				<CTA
 					description={
 						<Fragment>
-							<p>
+							<Typography as="p" type="body" size="medium">
 								{ __(
 									'An error prevented this Google chart from being displayed properly. Report the exact contents of the error on the support forum to find out what caused it.',
 									'google-site-kit'
 								) }
-							</p>
+							</Typography>
 							<GenericErrorHandlerActions
 								message={ error.message }
 								componentStack={ info.componentStack }

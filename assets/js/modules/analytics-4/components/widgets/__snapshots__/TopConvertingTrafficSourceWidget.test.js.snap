@@ -38,7 +38,7 @@ exports[`TopConvertingTrafficSourceWidget renders correctly with no data in the 
               Organic Search
             </div>
             <p
-              class="googlesitekit-km-widget-tile__subtext"
+              class="googlesitekit-typography googlesitekit-km-widget-tile__subtext googlesitekit-typography--body googlesitekit-typography--medium"
             >
               54.9% of visits led to key events
             </p>
@@ -97,7 +97,7 @@ exports[`TopConvertingTrafficSourceWidget should render correctly with the expec
               Organic Search
             </div>
             <p
-              class="googlesitekit-km-widget-tile__subtext"
+              class="googlesitekit-typography googlesitekit-km-widget-tile__subtext googlesitekit-typography--body googlesitekit-typography--medium"
             >
               54.9% of visits led to key events
             </p>

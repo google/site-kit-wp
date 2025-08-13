@@ -57,7 +57,12 @@ export default function OptionalSettingsView() {
 					>
 						{ __( 'Excluded from Analytics', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						{ !! trackingDisabled.length &&
 							trackingDisabled
 								.map(
@@ -76,7 +81,7 @@ export default function OptionalSettingsView() {
 								'Analytics is currently enabled for all visitors',
 								'google-site-kit'
 							) }
-					</p>
+					</Typography>
 				</div>
 			</div>
 
@@ -95,13 +100,18 @@ export default function OptionalSettingsView() {
 							>
 								{ __( 'Ads Conversion ID', 'google-site-kit' ) }
 							</Typography>
-							<p className="googlesitekit-settings-module__meta-item-data">
+							<Typography
+								as="p"
+								type="body"
+								size="medium"
+								className="googlesitekit-settings-module__meta-item-data"
+							>
 								{ !! adsConversionID && (
 									<DisplaySetting value={ adsConversionID } />
 								) }
 								{ ! adsConversionID &&
 									__( 'None', 'google-site-kit' ) }
-							</p>
+							</Typography>
 						</div>
 					</div>
 				) }

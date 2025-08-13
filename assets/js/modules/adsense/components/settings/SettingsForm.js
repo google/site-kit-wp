@@ -39,6 +39,7 @@ import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
+import Typography from '../../../../components/Typography';
 
 export default function SettingsForm() {
 	const webStoriesActive = useSelect( ( select ) =>
@@ -118,7 +119,7 @@ export default function SettingsForm() {
 			{ webStoriesActive && (
 				<Fragment>
 					<WebStoriesAdUnitSelect />
-					<p>
+					<Typography as="p" type="body" size="medium">
 						{ createInterpolateElement(
 							__(
 								'This ad unit will be used for your Web Stories. <LearnMoreLink />',
@@ -142,7 +143,7 @@ export default function SettingsForm() {
 								),
 							}
 						) }
-					</p>
+					</Typography>
 				</Fragment>
 			) }
 

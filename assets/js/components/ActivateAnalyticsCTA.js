@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { SpinnerButton } from 'googlesitekit-components';
+import Typography from './Typography';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
@@ -114,12 +115,17 @@ export default function ActivateAnalyticsCTA( { children } ) {
 				{ children }
 			</div>
 			<div className="googlesitekit-analytics-cta__details">
-				<p className="googlesitekit-analytics-cta--description">
+				<Typography
+					as="p"
+					className="googlesitekit-analytics-cta--description"
+					type="body"
+					size="medium"
+				>
 					{ __(
 						'See how many people visit your site from Search and track how you’re achieving your goals',
 						'google-site-kit'
 					) }
-				</p>
+				</Typography>
 				<SpinnerButton
 					onClick={ onClickCallback }
 					isSaving={ inProgress }

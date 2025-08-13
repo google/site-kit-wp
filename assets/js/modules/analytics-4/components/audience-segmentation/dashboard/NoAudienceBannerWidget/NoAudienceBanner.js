@@ -39,6 +39,7 @@ import useViewContext from '../../../../../../hooks/useViewContext';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import { trackEvent } from '../../../../../../util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import Typography from '../../../../../../components/Typography';
 
 const NoAudienceBanner = forwardRef( ( props, ref ) => {
 	const viewContext = useViewContext();
@@ -79,7 +80,7 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 			Icon={ Icon }
 			SVGGraphic={ NoAudienceBannerGraphic }
 		>
-			<p>
+			<Typography as="p" type="body" size="medium">
 				{ didSetAudiences &&
 					createInterpolateElement(
 						__(
@@ -110,9 +111,9 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 							),
 						}
 					) }
-			</p>
+			</Typography>
 			{ ! isViewOnly && (
-				<p>
+				<Typography as="p" type="body" size="medium">
 					{ createInterpolateElement(
 						__(
 							'You can deactivate this widget in <a>Settings</a>.',
@@ -135,7 +136,7 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 							),
 						}
 					) }
-				</p>
+				</Typography>
 			) }
 		</LeanCTABanner>
 	);

@@ -35,6 +35,7 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../../util';
 import Link from '../../components/Link';
+import Typography from '../Typography';
 import useViewContext from '../../hooks/useViewContext';
 import { setItem } from '../../googlesitekit/api/cache';
 
@@ -116,7 +117,9 @@ export default function Description() {
 
 	return (
 		<li className="googlesitekit-view-only-menu__list-item googlesitekit-view-only-menu__description">
-			<p>{ description }</p>
+			<Typography as="p" type="body" size="medium">
+				{ description }
+			</Typography>
 			{ canAuthenticate && (
 				<Button onClick={ onButtonClick }>
 					{ _x(

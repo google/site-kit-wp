@@ -61,7 +61,9 @@ export default function SetupAccountSiteUI( {
 
 			<ErrorNotices />
 
-			<p>{ description }</p>
+			<Typography as="p" type="body" size="medium">
+				{ description }
+			</Typography>
 
 			<SetupUseSnippetSwitch />
 

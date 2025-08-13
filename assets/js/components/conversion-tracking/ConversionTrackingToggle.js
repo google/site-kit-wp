@@ -32,6 +32,7 @@ import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
 import PropTypes from 'prop-types';
 import ErrorNotice from '../../components/ErrorNotice';
+import Typography from '../Typography';
 
 export default function ConversionTrackingToggle( { children, loading } ) {
 	const viewContext = useViewContext();
@@ -89,9 +90,14 @@ export default function ConversionTrackingToggle( { children, loading } ) {
 				tabletWidth="540px"
 				tabletHeight="84px"
 			>
-				<p className="googlesitekit-module-settings-group__helper-text">
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
+					className="googlesitekit-module-settings-group__helper-text"
+				>
 					{ children }
-				</p>
+				</Typography>
 			</LoadingWrapper>
 			{ showConfirmDialog && (
 				<ConfirmDisableConversionTrackingDialog

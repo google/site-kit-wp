@@ -254,12 +254,17 @@ class SearchConsole extends Component {
 						'google-site-kit'
 					) }
 				</Typography>
-				<p className="googlesitekit-setup-module__text--no-margin">
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
+					className="googlesitekit-setup-module__text--no-margin"
+				>
 					{ __(
 						'Your Search Console is set up with Site Kit.',
 						'google-site-kit'
 					) }
-				</p>
+				</Typography>
 				{ /* TODO This needs a continue button or redirect. */ }
 			</section>
 		);
@@ -293,12 +298,12 @@ class SearchConsole extends Component {
 		if ( loading ) {
 			return (
 				<Fragment>
-					<p>
+					<Typography as="p" type="body" size="medium">
 						{ __(
 							'We’re locating your Search Console account.',
 							'google-site-kit'
 						) }
-					</p>
+					</Typography>
 					<ProgressBar />
 				</Fragment>
 			);
@@ -335,7 +340,14 @@ class SearchConsole extends Component {
 				</Typography>
 
 				{ errorMsg && 0 < errorMsg.length && (
-					<p className="googlesitekit-error-text">{ errorMsg }</p>
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-error-text"
+					>
+						{ errorMsg }
+					</Typography>
 				) }
 
 				{ isAuthenticated && shouldSetup && this.renderForm() }

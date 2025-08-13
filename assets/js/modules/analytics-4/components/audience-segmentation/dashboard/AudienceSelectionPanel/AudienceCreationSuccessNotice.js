@@ -34,6 +34,7 @@ import {
 } from './constants';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { Button } from 'googlesitekit-components';
+import Typography from '../../../../../../components/Typography';
 import CheckFill from '../../../../../../../svg/icons/check-fill.svg';
 
 export default function AudienceCreationSuccessNotice() {
@@ -67,12 +68,17 @@ export default function AudienceCreationSuccessNotice() {
 			<div className="googlesitekit-audience-selection-panel__success-notice-icon">
 				<CheckFill width={ 24 } height={ 24 } />
 			</div>
-			<p className="googlesitekit-audience-selection-panel__success-notice-message">
+			<Typography
+				as="p"
+				type="body"
+				size="medium"
+				className="googlesitekit-audience-selection-panel__success-notice-message"
+			>
 				{ __(
 					'Visitor group created successfully!',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 			<div className="googlesitekit-audience-selection-panel__success-notice-actions">
 				<Button
 					onClick={ () => {

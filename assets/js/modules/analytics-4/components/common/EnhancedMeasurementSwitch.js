@@ -35,6 +35,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { ProgressBar, Switch } from 'googlesitekit-components';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import Typography from '../../../../components/Typography';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -134,7 +135,12 @@ export default function EnhancedMeasurementSwitch( {
 					hideLabel={ false }
 				/>
 			) }
-			<p className="googlesitekit-module-settings-group__helper-text">
+			<Typography
+				as="p"
+				type="body"
+				size="medium"
+				className="googlesitekit-module-settings-group__helper-text"
+			>
 				{ createInterpolateElement(
 					__(
 						'This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). <a>Learn more</a>',
@@ -149,7 +155,7 @@ export default function EnhancedMeasurementSwitch( {
 						),
 					}
 				) }
-			</p>
+			</Typography>
 		</div>
 	);
 }

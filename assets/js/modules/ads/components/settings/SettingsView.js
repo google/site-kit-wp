@@ -106,14 +106,19 @@ export default function SettingsView() {
 					>
 						{ __( 'Conversion ID', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						{ conversionIDValue === '' &&
 							__( 'None', 'google-site-kit' ) }
 						{ conversionIDValue ||
 							( typeof conversionIDValue === 'undefined' && (
 								<DisplaySetting value={ conversionIDValue } />
 							) ) }
-					</p>
+					</Typography>
 				</div>
 			) }
 
@@ -127,14 +132,19 @@ export default function SettingsView() {
 					>
 						{ __( 'Customer ID', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<Typography
+						as="p"
+						type="body"
+						size="medium"
+						className="googlesitekit-settings-module__meta-item-data"
+					>
 						{ extCustomerID === '' &&
 							__( 'None', 'google-site-kit' ) }
 						{ extCustomerID ||
 							( typeof extCustomerID === 'undefined' && (
 								<DisplaySetting value={ extCustomerID } />
 							) ) }
-					</p>
+					</Typography>
 				</div>
 			) }
 

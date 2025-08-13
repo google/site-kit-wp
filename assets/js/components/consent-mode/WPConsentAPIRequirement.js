@@ -18,6 +18,10 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
 import Typography from '../Typography';
 
 export default function WPConsentAPIRequirement( {
@@ -30,9 +34,14 @@ export default function WPConsentAPIRequirement( {
 			<Typography as="h4" size="large" type="title">
 				{ title }
 			</Typography>
-			<p className="googlesitekit-settings-consent-mode-requirement__description">
+			<Typography
+				as="p"
+				type="body"
+				size="medium"
+				className="googlesitekit-settings-consent-mode-requirement__description"
+			>
 				{ description }
-			</p>
+			</Typography>
 			<footer className="googlesitekit-settings-consent-mode-requirement__footer">
 				{ footer }
 			</footer>

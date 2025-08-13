@@ -37,6 +37,7 @@ import { Checkbox, SpinnerButton } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import ErrorNotice from '../../../../../../components/ErrorNotice';
 import Link from '../../../../../../components/Link';
+import Typography from '../../../../../../components/Typography';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../../util';
@@ -130,12 +131,12 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 
 	return (
 		<Fragment>
-			<p>
+			<Typography as="p" type="body" size="medium">
 				{ __(
 					'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense.',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 			<Checkbox
 				checked={ useAdBlockingRecoveryErrorSnippet }
 				id="ad-blocking-recovery-error-protection-tag-checkbox"
@@ -149,7 +150,12 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 					'google-site-kit'
 				) }
 			</Checkbox>
-			<p className="googlesitekit-ad-blocking-recovery__error-protection-tag-info">
+			<Typography
+				as="p"
+				type="body"
+				size="medium"
+				className="googlesitekit-ad-blocking-recovery__error-protection-tag-info"
+			>
 				{ createInterpolateElement(
 					__(
 						'If a site visitor’s ad blocker browser extension blocks the message you create in AdSense, a default, non-customizable ad blocking recovery message will display instead. <a>Learn more</a>',
@@ -159,7 +165,7 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 						a: <Link href={ learnMoreURL } external />,
 					}
 				) }
-			</p>
+			</Typography>
 			{ error && <ErrorNotice error={ error } /> }
 			<SpinnerButton
 				onClick={ onCTAClick }

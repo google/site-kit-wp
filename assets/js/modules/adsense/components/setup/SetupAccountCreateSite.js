@@ -65,12 +65,12 @@ export default function SetupAccountCreateSite() {
 
 			<ErrorNotices />
 
-			<p>
+			<Typography as="p" type="body" size="medium">
 				{ __(
 					'We’ve detected that you haven’t added this site to your AdSense account yet',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 
 			<div className="googlesitekit-setup-module__action">
 				<Button onClick={ addSiteHandler } href={ addSiteURL }>

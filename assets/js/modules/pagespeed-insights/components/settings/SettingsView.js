@@ -19,35 +19,33 @@
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { sanitizeHTML } from '../../../../util';
 import { MODULES_PAGESPEED_INSIGHTS } from '../../datastore/constants';
+import Typography from '../../../../components/Typography';
+import Link from '../../../../components/Link';
 
 export default function SettingsView() {
 	const dashboardPermalink = useSelect( ( select ) =>
 		select( MODULES_PAGESPEED_INSIGHTS ).getAdminScreenURL()
 	);
 
-	const content = sprintf(
-		/* translators: %s: is the URL to the Site Kit dashboard. */
-		__(
-			'To view insights, <a href="%s">visit the dashboard</a>',
-			'google-site-kit'
-		),
-		`${ dashboardPermalink }#speed`
-	);
-
 	return (
-		<p
-			dangerouslySetInnerHTML={ sanitizeHTML( content, {
-				ALLOWED_TAGS: [ 'a' ],
-				ALLOWED_ATTR: [ 'href' ],
-			} ) }
-		/>
+		<Typography as="p" type="body" size="medium">
+			{ createInterpolateElement(
+				__(
+					'To view insights, <a>visit the dashboard</a>',
+					'google-site-kit'
+				),
+				{
+					a: <Link href={ `${ dashboardPermalink }#speed` } />,
+				}
+			) }
+		</Typography>
 	);
 }

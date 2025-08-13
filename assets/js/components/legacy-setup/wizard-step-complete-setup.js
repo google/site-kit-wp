@@ -63,12 +63,12 @@ class WizardStepCompleteSetup extends Component {
 							>
 								{ __( 'Congratulations!', 'google-site-kit' ) }
 							</Typography>
-							<p>
+							<Typography as="p" type="body" size="medium">
 								{ __(
 									'You successfully completed the Site Kit setup and connected Search Console. Check the dashboard for more services to connect.',
 									'google-site-kit'
 								) }
-							</p>
+							</Typography>
 							<div className="googlesitekit-wizard-step__action">
 								<Button
 									id="wizard-step-five-proceed"

@@ -52,6 +52,7 @@ import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import Link from './Link';
 import VisuallyHidden from './VisuallyHidden';
+import Typography from './Typography';
 import { Cell, Grid, Row } from '../material-components';
 import PageHeader from './PageHeader';
 import Layout from './layout/Layout';
@@ -165,7 +166,11 @@ function DashboardEntityApp() {
 									<Grid>
 										<Row>
 											<Cell size={ 12 }>
-												<p>
+												<Typography
+													as="p"
+													type="body"
+													size="medium"
+												>
 													{ createInterpolateElement(
 														sprintf(
 															/* translators: %s: current entity URL. */
@@ -196,7 +201,7 @@ function DashboardEntityApp() {
 															),
 														}
 													) }
-												</p>
+												</Typography>
 											</Cell>
 										</Row>
 									</Grid>

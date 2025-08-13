@@ -43,6 +43,7 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
+import Typography from '../Typography';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 	USER_INPUT_CURRENTLY_EDITING_KEY,
@@ -54,7 +55,6 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
-import Typography from '../Typography';
 
 function ConfirmSitePurposeChangeModal( {
 	dialogActive = false,
@@ -237,7 +237,7 @@ function ConfirmSitePurposeChangeModal( {
 			<DialogTitle>
 				{ __( 'Tailored metrics suggestions', 'google-site-kit' ) }
 			</DialogTitle>
-			<p>
+			<Typography as="p" type="body" size="medium">
 				{ __(
 					'You have changed your website purpose. We can suggest new tailored metrics for you based on your answers or you can keep your current metrics selection on your dashboard.',
 					'google-site-kit'
@@ -247,7 +247,7 @@ function ConfirmSitePurposeChangeModal( {
 					'You can always edit your metrics selection from the dashboard.',
 					'google-site-kit'
 				) }
-			</p>
+			</Typography>
 			<DialogContent>
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">

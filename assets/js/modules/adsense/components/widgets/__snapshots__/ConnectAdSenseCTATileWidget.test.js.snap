@@ -36,7 +36,7 @@ exports[`ConnectAdSenseCTATileWidget should render a title when only a single Co
               class="googlesitekit-km-connect-module-cta-tile__content"
             >
               <p
-                class="googlesitekit-km-connect-module-cta-tile__text"
+                class="googlesitekit-typography googlesitekit-km-connect-module-cta-tile__text googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 AdSense is disconnected, metric can’t be displayed
               </p>
@@ -79,7 +79,7 @@ exports[`ConnectAdSenseCTATileWidget should render the Connect AdSense CTA tile 
               class="googlesitekit-km-connect-module-cta-tile__content"
             >
               <p
-                class="googlesitekit-km-connect-module-cta-tile__text"
+                class="googlesitekit-typography googlesitekit-km-connect-module-cta-tile__text googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 AdSense is disconnected, some of your metrics can’t be displayed
               </p>

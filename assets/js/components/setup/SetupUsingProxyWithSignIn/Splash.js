@@ -149,7 +149,12 @@ export default function Splash( { children } ) {
 							{ title }
 						</Typography>
 
-						<p className="googlesitekit-setup__description">
+						<Typography
+							as="p"
+							className="googlesitekit-setup__description"
+							type="body"
+							size="medium"
+						>
 							{ ! showLearnMoreLink && description }
 
 							{ showLearnMoreLink &&
@@ -174,7 +179,7 @@ export default function Splash( { children } ) {
 										),
 									}
 								) }
-						</p>
+						</Typography>
 						{ getHelpURL && (
 							<Link href={ getHelpURL } external>
 								{ __( 'Get help', 'google-site-kit' ) }
@@ -183,7 +188,7 @@ export default function Splash( { children } ) {
 						{ DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ===
 							disconnectedReason &&
 							connectedProxyURL !== homeURL && (
-								<p>
+								<Typography as="p" type="body" size="medium">
 									{ sprintf(
 										/* translators: %s: Previous Connected Proxy URL */
 										__(
@@ -201,7 +206,7 @@ export default function Splash( { children } ) {
 										),
 										homeURL
 									) }
-								</p>
+								</Typography>
 							) }
 
 						{ analyticsModuleAvailable &&

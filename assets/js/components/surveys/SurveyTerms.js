@@ -28,6 +28,7 @@ import { createInterpolateElement } from '@wordpress/element';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Link from '../Link';
+import Typography from '../Typography';
 
 export default function SurveyTerms() {
 	const privacy = useSelect( ( select ) =>
@@ -38,7 +39,12 @@ export default function SurveyTerms() {
 	);
 
 	return (
-		<p className="googlesitekit-survey__terms">
+		<Typography
+			as="p"
+			type="body"
+			size="medium"
+			className="googlesitekit-survey__terms"
+		>
 			{ createInterpolateElement(
 				__(
 					'By continuing, you agree to allow Google to use your answers and account info to improve services, per our <privacy>Privacy</privacy> & <terms>Terms</terms>.',
@@ -63,6 +69,6 @@ export default function SurveyTerms() {
 					),
 				}
 			) }
-		</p>
+		</Typography>
 	);
 }

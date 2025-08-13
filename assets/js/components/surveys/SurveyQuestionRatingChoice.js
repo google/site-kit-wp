@@ -35,6 +35,7 @@ import IconSurveyDissatisfied from '../../../svg/icons/survey-dissatisfied.svg';
 import IconSurveyNeutral from '../../../svg/icons/survey-neutral.svg';
 import IconSurveySatisfied from '../../../svg/icons/survey-satisfied.svg';
 import IconSurveyDelighted from '../../../svg/icons/survey-delighted.svg';
+import Typography from '../Typography';
 
 const ordinalIconMap = {
 	1: IconSurveyUnhappy,
@@ -67,7 +68,9 @@ function SurveyQuestionRatingChoice( { choice, answerQuestion } ) {
 				onClick={ handleButtonClick }
 			/>
 
-			<p>{ choice.text }</p>
+			<Typography as="p" type="body" size="medium">
+				{ choice.text }
+			</Typography>
 		</div>
 	);
 }

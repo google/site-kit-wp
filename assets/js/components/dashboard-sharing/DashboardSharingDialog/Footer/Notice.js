@@ -27,6 +27,7 @@ import { createInterpolateElement } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import Typography from '../../../Typography';
 
 export default function Notice() {
 	const canSubmitSharingChanges = useSelect( ( select ) =>
@@ -40,7 +41,12 @@ export default function Notice() {
 	);
 
 	return (
-		<p className="googlesitekit-dashboard-sharing-settings__notice">
+		<Typography
+			as="p"
+			type="body"
+			size="medium"
+			className="googlesitekit-dashboard-sharing-settings__notice"
+		>
 			{ haveSharingSettingsChangedManagement && canSubmitSharingChanges && (
 				<span>
 					{ createInterpolateElement(
@@ -69,6 +75,6 @@ export default function Notice() {
 						) }
 					</span>
 				) }
-		</p>
+		</Typography>
 	);
 }

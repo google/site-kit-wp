@@ -44,9 +44,14 @@ export default function SettingsView() {
 			>
 				{ __( 'Connected Property', 'google-site-kit' ) }
 			</Typography>
-			<p className="googlesitekit-settings-module__meta-item-data">
+			<Typography
+				as="p"
+				type="body"
+				size="medium"
+				className="googlesitekit-settings-module__meta-item-data"
+			>
 				<DisplaySetting value={ propertyID } />
-			</p>
+			</Typography>
 		</div>
 	);
 }

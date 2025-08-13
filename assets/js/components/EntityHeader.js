@@ -42,6 +42,7 @@ import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 } from '../hooks/useDashboardType';
 import useViewContext from '../hooks/useViewContext';
+import Typography from './Typography';
 
 function EntityHeader() {
 	const viewContext = useViewContext();
@@ -128,7 +129,9 @@ function EntityHeader() {
 				ref={ headerDetailsRef }
 				className="googlesitekit-entity-header__details"
 			>
-				<p>{ currentEntityTitle }</p>
+				<Typography as="p" type="body" size="medium">
+					{ currentEntityTitle }
+				</Typography>
 				<Link
 					href={ entityURL }
 					aria-label={ entityURL }

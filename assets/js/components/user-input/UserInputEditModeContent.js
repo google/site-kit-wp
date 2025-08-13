@@ -31,6 +31,7 @@ import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import ErrorNotice from '../ErrorNotice';
+import Typography from '../Typography';
 import useViewContext from '../../hooks/useViewContext';
 import { trackEvent } from '../../util';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
@@ -135,7 +136,14 @@ export default function UserInputEditModeContent( {
 				alignLeftOptions
 			/>
 			{ errorMessage && (
-				<p className="googlesitekit-error-text">{ errorMessage }</p>
+				<Typography
+					as="p"
+					type="body"
+					size="medium"
+					className="googlesitekit-error-text"
+				>
+					{ errorMessage }
+				</Typography>
 			) }
 			{ settingsView && (
 				<Fragment>
