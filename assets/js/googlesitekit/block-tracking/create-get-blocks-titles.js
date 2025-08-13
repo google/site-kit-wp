@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { CORE_BLOCK_EDITOR } from '@/blocks/reader-revenue-manager/common/constants';
 import { subscribe, select } from 'googlesitekit-data';
 
 /**
@@ -33,11 +34,11 @@ import { subscribe, select } from 'googlesitekit-data';
  * @param {Array.<string>} blocks Array of block IDs to retrieve titles for.
  * @return {Function} A function that takes a block ID and returns its title.
  */
-export const getBlocksTitles = ( blocks ) => {
+export const createGetBlockTitle = ( blocks ) => {
 	const blocksTitles = new Map();
 
 	const unsubscribeInserterItems = subscribe( () => {
-		select( 'core/block-editor' )
+		select( CORE_BLOCK_EDITOR )
 			.getInserterItems()
 			.filter( ( { id } ) => blocks.includes( id ) )
 			.forEach( ( { id, title } ) => blocksTitles.set( id, title ) );

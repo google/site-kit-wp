@@ -22,7 +22,7 @@
 import { trackEvent } from '@/js/util';
 import { subscribe, select } from 'googlesitekit-data';
 import { VIEW_CONTEXT_WP_BLOCK_EDITOR } from '../constants';
-import { getBlocksTitles } from './get-blocks-titles';
+import { createGetBlockTitle } from './create-get-blocks-titles';
 
 /**
  * Watches for specific blocks being inserted in the WordPress block editor and tracks them.
@@ -35,13 +35,13 @@ import { getBlocksTitles } from './get-blocks-titles';
  * @param {Array.<string>} blocksToTrack Array of block names to track (e.g., 'google-site-kit/rrm-subscribe-with-google').
  */
 export const watchBlocks = ( blocksToTrack ) => {
-	const getBlockTitle = getBlocksTitles( blocksToTrack );
+	const getBlockTitle = createGetBlockTitle( blocksToTrack );
 
 	const addedBlocks = new Set(
 		select( 'core/block-editor' )
 			.getBlocks()
 			// eslint-disable-next-line sitekit/acronym-case
-			.map( ( b ) => b.clientId )
+			.map( ( block ) => block.clientId )
 	);
 
 	subscribe( () => {

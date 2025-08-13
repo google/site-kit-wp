@@ -25,6 +25,10 @@ import { select, subscribe } from 'googlesitekit-data';
 import { watchBlocks } from './watch-blocks';
 import * as tracking from '../../util/tracking';
 import { VIEW_CONTEXT_WP_BLOCK_EDITOR } from '../constants';
+import {
+	CONTRIBUE_WITH_GOOGLE_BLOCK,
+	SUBSCRIBE_WITH_GOOGLE_BLOCK,
+} from '@/blocks/reader-revenue-manager/common/constants';
 
 jest.mock( 'googlesitekit-data', () => ( {
 	select: jest.fn(),
@@ -35,10 +39,8 @@ jest.mock( './get-blocks-titles', () => ( {
 	getBlocksTitles: jest.fn( () =>
 		jest.fn( ( name ) => {
 			const titles = {
-				'google-site-kit/rrm-subscribe-with-google':
-					'Subscribe with Google',
-				'google-site-kit/rrm-contribute-with-google':
-					'Contribute with Google',
+				SUBSCRIBE_WITH_GOOGLE_BLOCK: 'Subscribe with Google',
+				CONTRIBUE_WITH_GOOGLE_BLOCK: 'Contribute with Google',
 			};
 			return titles[ name ];
 		} )
@@ -76,8 +78,8 @@ describe( 'watchBlocks', () => {
 
 	it( 'should track block insertion when a new tracked block is added and selected', () => {
 		const blocksToTrack = [
-			'google-site-kit/rrm-subscribe-with-google',
-			'google-site-kit/rrm-contribute-with-google',
+			SUBSCRIBE_WITH_GOOGLE_BLOCK,
+			CONTRIBUE_WITH_GOOGLE_BLOCK,
 		];
 
 		mockSelectReturnValue.getBlocks.mockReturnValue( [] );
@@ -88,7 +90,7 @@ describe( 'watchBlocks', () => {
 
 		const newBlock = {
 			clientId: 'block-123',
-			name: 'google-site-kit/rrm-subscribe-with-google',
+			name: SUBSCRIBE_WITH_GOOGLE_BLOCK,
 		};
 
 		mockSelectReturnValue.getBlocks.mockReturnValue( [ newBlock ] );
@@ -104,7 +106,7 @@ describe( 'watchBlocks', () => {
 	} );
 
 	it( 'should not track blocks that are not in the tracking list', () => {
-		const blocksToTrack = [ 'google-site-kit/rrm-subscribe-with-google' ];
+		const blocksToTrack = [ SUBSCRIBE_WITH_GOOGLE_BLOCK ];
 
 		mockSelectReturnValue.getBlocks.mockReturnValue( [] );
 
@@ -124,11 +126,11 @@ describe( 'watchBlocks', () => {
 	} );
 
 	it( 'should not track blocks that were already present on initialization', () => {
-		const blocksToTrack = [ 'google-site-kit/rrm-subscribe-with-google' ];
+		const blocksToTrack = [ SUBSCRIBE_WITH_GOOGLE_BLOCK ];
 
 		const existingBlock = {
 			clientId: 'block-existing',
-			name: 'google-site-kit/rrm-subscribe-with-google',
+			name: SUBSCRIBE_WITH_GOOGLE_BLOCK,
 		};
 
 		mockSelectReturnValue.getBlocks.mockReturnValue( [ existingBlock ] );
@@ -143,7 +145,7 @@ describe( 'watchBlocks', () => {
 	} );
 
 	it( 'should not track blocks that are not selected', () => {
-		const blocksToTrack = [ 'google-site-kit/rrm-subscribe-with-google' ];
+		const blocksToTrack = [ SUBSCRIBE_WITH_GOOGLE_BLOCK ];
 
 		mockSelectReturnValue.getBlocks.mockReturnValue( [] );
 
@@ -151,7 +153,7 @@ describe( 'watchBlocks', () => {
 
 		const newBlock = {
 			clientId: 'block-789',
-			name: 'google-site-kit/rrm-subscribe-with-google',
+			name: SUBSCRIBE_WITH_GOOGLE_BLOCK,
 		};
 
 		mockSelectReturnValue.getBlocks.mockReturnValue( [ newBlock ] );
@@ -163,7 +165,7 @@ describe( 'watchBlocks', () => {
 	} );
 
 	it( 'should track each block only once', () => {
-		const blocksToTrack = [ 'google-site-kit/rrm-subscribe-with-google' ];
+		const blocksToTrack = [ SUBSCRIBE_WITH_GOOGLE_BLOCK ];
 
 		mockSelectReturnValue.getBlocks.mockReturnValue( [] );
 
@@ -171,7 +173,7 @@ describe( 'watchBlocks', () => {
 
 		const newBlock = {
 			clientId: 'block-once',
-			name: 'google-site-kit/rrm-subscribe-with-google',
+			name: SUBSCRIBE_WITH_GOOGLE_BLOCK,
 		};
 
 		mockSelectReturnValue.getBlocks.mockReturnValue( [ newBlock ] );
@@ -186,8 +188,8 @@ describe( 'watchBlocks', () => {
 
 	it( 'should handle multiple tracked blocks being added', () => {
 		const blocksToTrack = [
-			'google-site-kit/rrm-subscribe-with-google',
-			'google-site-kit/rrm-contribute-with-google',
+			SUBSCRIBE_WITH_GOOGLE_BLOCK,
+			CONTRIBUE_WITH_GOOGLE_BLOCK,
 		];
 
 		mockSelectReturnValue.getBlocks.mockReturnValue( [] );
@@ -196,7 +198,7 @@ describe( 'watchBlocks', () => {
 
 		const block1 = {
 			clientId: 'block-multi-1',
-			name: 'google-site-kit/rrm-subscribe-with-google',
+			name: SUBSCRIBE_WITH_GOOGLE_BLOCK,
 		};
 
 		mockSelectReturnValue.getBlocks.mockReturnValue( [ block1 ] );
@@ -210,7 +212,7 @@ describe( 'watchBlocks', () => {
 
 		const block2 = {
 			clientId: 'block-multi-2',
-			name: 'google-site-kit/rrm-contribute-with-google',
+			name: CONTRIBUE_WITH_GOOGLE_BLOCK,
 		};
 
 		mockSelectReturnValue.getBlocks.mockReturnValue( [ block1, block2 ] );

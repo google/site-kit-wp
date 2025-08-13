@@ -1,5 +1,5 @@
 /**
- * Tests for getBlocksTitles.
+ * Tests for createGetBlockTitle.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -20,7 +20,11 @@
  * Internal dependencies
  */
 import { select, subscribe } from 'googlesitekit-data';
-import { getBlocksTitles } from './get-blocks-titles';
+import { createGetBlockTitle } from './create-get-blocks-titles';
+import {
+	CONTRIBUE_WITH_GOOGLE_BLOCK,
+	SUBSCRIBE_WITH_GOOGLE_BLOCK,
+} from '@/blocks/reader-revenue-manager/common/constants';
 
 jest.mock( 'googlesitekit-data', () => ( {
 	select: jest.fn(),
@@ -54,11 +58,11 @@ describe( 'getBlocksTitles', () => {
 	} );
 
 	it( 'should return a function that retrieves block titles', () => {
-		const blocks = [ 'google-site-kit/rrm-subscribe-with-google' ];
+		const blocks = [ SUBSCRIBE_WITH_GOOGLE_BLOCK ];
 
 		mockSelectReturnValue.getInserterItems.mockReturnValue( [
 			{
-				id: 'google-site-kit/rrm-subscribe-with-google',
+				id: SUBSCRIBE_WITH_GOOGLE_BLOCK,
 				title: 'Subscribe with Google',
 			},
 			{
@@ -67,28 +71,28 @@ describe( 'getBlocksTitles', () => {
 			},
 		] );
 
-		const getBlockTitle = getBlocksTitles( blocks );
+		const getBlockTitle = createGetBlockTitle( blocks );
 
 		expect( subscribe ).toHaveBeenCalledTimes( 1 );
 
 		subscribeCallback();
 
-		expect(
-			getBlockTitle( 'google-site-kit/rrm-subscribe-with-google' )
-		).toBe( 'Subscribe with Google' );
+		expect( getBlockTitle( SUBSCRIBE_WITH_GOOGLE_BLOCK ) ).toBe(
+			'Subscribe with Google'
+		);
 		expect( getBlockTitle( 'core/paragraph' ) ).toBeUndefined();
 		expect( getBlockTitle( 'non-existent-block' ) ).toBeUndefined();
 	} );
 
 	it( 'should filter inserter items to only requested blocks', () => {
 		const blocks = [
-			'google-site-kit/rrm-subscribe-with-google',
-			'google-site-kit/rrm-contribute-with-google',
+			SUBSCRIBE_WITH_GOOGLE_BLOCK,
+			CONTRIBUE_WITH_GOOGLE_BLOCK,
 		];
 
 		mockSelectReturnValue.getInserterItems.mockReturnValue( [
 			{
-				id: 'google-site-kit/rrm-subscribe-with-google',
+				id: SUBSCRIBE_WITH_GOOGLE_BLOCK,
 				title: 'Subscribe with Google',
 			},
 			{
@@ -96,7 +100,7 @@ describe( 'getBlocksTitles', () => {
 				title: 'Paragraph',
 			},
 			{
-				id: 'google-site-kit/rrm-contribute-with-google',
+				id: CONTRIBUE_WITH_GOOGLE_BLOCK,
 				title: 'Contribute with Google',
 			},
 			{
@@ -105,34 +109,34 @@ describe( 'getBlocksTitles', () => {
 			},
 		] );
 
-		const getBlockTitle = getBlocksTitles( blocks );
+		const getBlockTitle = createGetBlockTitle( blocks );
 
 		subscribeCallback();
 
-		expect(
-			getBlockTitle( 'google-site-kit/rrm-subscribe-with-google' )
-		).toBe( 'Subscribe with Google' );
-		expect(
-			getBlockTitle( 'google-site-kit/rrm-contribute-with-google' )
-		).toBe( 'Contribute with Google' );
+		expect( getBlockTitle( SUBSCRIBE_WITH_GOOGLE_BLOCK ) ).toBe(
+			'Subscribe with Google'
+		);
+		expect( getBlockTitle( CONTRIBUE_WITH_GOOGLE_BLOCK ) ).toBe(
+			'Contribute with Google'
+		);
 		expect( getBlockTitle( 'core/paragraph' ) ).toBeUndefined();
 		expect( getBlockTitle( 'core/heading' ) ).toBeUndefined();
 	} );
 
 	it( 'should unsubscribe once all requested block titles are found', () => {
 		const blocks = [
-			'google-site-kit/rrm-subscribe-with-google',
-			'google-site-kit/rrm-contribute-with-google',
+			SUBSCRIBE_WITH_GOOGLE_BLOCK,
+			CONTRIBUE_WITH_GOOGLE_BLOCK,
 		];
 
 		mockSelectReturnValue.getInserterItems.mockReturnValueOnce( [
 			{
-				id: 'google-site-kit/rrm-subscribe-with-google',
+				id: SUBSCRIBE_WITH_GOOGLE_BLOCK,
 				title: 'Subscribe with Google',
 			},
 		] );
 
-		getBlocksTitles( blocks );
+		createGetBlockTitle( blocks );
 
 		subscribeCallback();
 
@@ -140,11 +144,11 @@ describe( 'getBlocksTitles', () => {
 
 		mockSelectReturnValue.getInserterItems.mockReturnValueOnce( [
 			{
-				id: 'google-site-kit/rrm-subscribe-with-google',
+				id: SUBSCRIBE_WITH_GOOGLE_BLOCK,
 				title: 'Subscribe with Google',
 			},
 			{
-				id: 'google-site-kit/rrm-contribute-with-google',
+				id: CONTRIBUE_WITH_GOOGLE_BLOCK,
 				title: 'Contribute with Google',
 			},
 		] );
@@ -154,66 +158,64 @@ describe( 'getBlocksTitles', () => {
 		expect( unsubscribeMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'should handle empty blocks array', () => {
+	it( 'should handle an empty blocks array', () => {
 		const blocks = [];
 
 		mockSelectReturnValue.getInserterItems.mockReturnValue( [
 			{
-				id: 'google-site-kit/rrm-subscribe-with-google',
+				id: SUBSCRIBE_WITH_GOOGLE_BLOCK,
 				title: 'Subscribe with Google',
 			},
 		] );
 
-		const getBlockTitle = getBlocksTitles( blocks );
+		const getBlockTitle = createGetBlockTitle( blocks );
 
 		subscribeCallback();
 
 		expect( unsubscribeMock ).toHaveBeenCalledTimes( 1 );
 
-		expect(
-			getBlockTitle( 'google-site-kit/rrm-subscribe-with-google' )
-		).toBeUndefined();
+		expect( getBlockTitle( SUBSCRIBE_WITH_GOOGLE_BLOCK ) ).toBeUndefined();
 	} );
 
-	it( 'should maintain block titles map across multiple subscription callbacks', () => {
+	it( 'should maintain its block titles map across multiple subscription callbacks', () => {
 		const blocks = [
-			'google-site-kit/rrm-subscribe-with-google',
-			'google-site-kit/rrm-contribute-with-google',
+			SUBSCRIBE_WITH_GOOGLE_BLOCK,
+			CONTRIBUE_WITH_GOOGLE_BLOCK,
 		];
 
 		mockSelectReturnValue.getInserterItems.mockReturnValueOnce( [
 			{
-				id: 'google-site-kit/rrm-subscribe-with-google',
+				id: SUBSCRIBE_WITH_GOOGLE_BLOCK,
 				title: 'Subscribe with Google',
 			},
 		] );
 
-		const getBlockTitle = getBlocksTitles( blocks );
+		const getBlockTitle = createGetBlockTitle( blocks );
 
 		subscribeCallback();
 
-		expect(
-			getBlockTitle( 'google-site-kit/rrm-subscribe-with-google' )
-		).toBe( 'Subscribe with Google' );
+		expect( getBlockTitle( SUBSCRIBE_WITH_GOOGLE_BLOCK ) ).toBe(
+			'Subscribe with Google'
+		);
 
 		mockSelectReturnValue.getInserterItems.mockReturnValueOnce( [
 			{
-				id: 'google-site-kit/rrm-subscribe-with-google',
+				id: SUBSCRIBE_WITH_GOOGLE_BLOCK,
 				title: 'Subscribe with Google',
 			},
 			{
-				id: 'google-site-kit/rrm-contribute-with-google',
+				id: CONTRIBUE_WITH_GOOGLE_BLOCK,
 				title: 'Contribute with Google',
 			},
 		] );
 
 		subscribeCallback();
 
-		expect(
-			getBlockTitle( 'google-site-kit/rrm-subscribe-with-google' )
-		).toBe( 'Subscribe with Google' );
-		expect(
-			getBlockTitle( 'google-site-kit/rrm-contribute-with-google' )
-		).toBe( 'Contribute with Google' );
+		expect( getBlockTitle( SUBSCRIBE_WITH_GOOGLE_BLOCK ) ).toBe(
+			'Subscribe with Google'
+		);
+		expect( getBlockTitle( CONTRIBUE_WITH_GOOGLE_BLOCK ) ).toBe(
+			'Contribute with Google'
+		);
 	} );
 } );

@@ -19,11 +19,15 @@
 /**
  * Internal dependencies
  */
+import {
+	CONTRIBUE_WITH_GOOGLE_BLOCK,
+	SUBSCRIBE_WITH_GOOGLE_BLOCK,
+} from '@/blocks/reader-revenue-manager/common/constants';
 import { watchBlocks } from './googlesitekit/block-tracking/watch-blocks';
 
 const blocksToTrack = [
-	'google-site-kit/rrm-subscribe-with-google',
-	'google-site-kit/rrm-contribute-with-google',
+	SUBSCRIBE_WITH_GOOGLE_BLOCK,
+	CONTRIBUE_WITH_GOOGLE_BLOCK,
 ];
 
 watchBlocks( blocksToTrack );
