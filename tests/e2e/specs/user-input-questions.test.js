@@ -203,7 +203,7 @@ describe( 'User Input Settings', () => {
 	} );
 
 	afterEach( async () => {
-		await page.waitForNetworkIdle( { timeout: 15_000 } );
+		// await page.waitForNetworkIdle( { timeout: 15_000 } );
 		await waitForFetchRequests();
 
 		await deactivateUtilityPlugins();
