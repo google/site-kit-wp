@@ -118,6 +118,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 		await setItem( 'module_setup', MODULE_SLUG_ADSENSE, { ttl: 300 } );
 
 		navigateTo( response.moduleReauthURL );
+		return null;
 	}, [ activateModule, navigateTo, setInternalServerError, viewContext ] );
 
 	const handleCompleteSetup = useCallback(
