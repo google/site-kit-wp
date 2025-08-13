@@ -91,7 +91,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 		}
 
 		default: {
-			return state;
+			break;
 		}
 	}
 } );
