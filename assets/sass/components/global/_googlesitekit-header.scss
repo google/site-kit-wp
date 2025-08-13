@@ -125,7 +125,7 @@
 			.mdc-list-item {
 				&:hover {
 					&::before {
-						background-color: $c-interactive-tertiary-hover !important;
+						background-color: $c-interactive-tertiary-hover;
 						opacity: 1;
 						transition: none;
 					}
@@ -159,11 +159,11 @@
 				}
 
 				&:hover {
-					background-color: $c-interactive-tertiary-hover !important;
+					background-color: $c-interactive-tertiary-hover;
 					color: $c-neutral-n-900;
 
 					&::before {
-						background-color: $c-interactive-tertiary-hover !important;
+						background-color: $c-interactive-tertiary-hover;
 						opacity: 1;
 						transition: none;
 					}
@@ -189,7 +189,7 @@
 					color: $c-neutral-n-900;
 
 					&::before {
-						background-color: $c-interactive-tertiary-hover !important;
+						background-color: $c-interactive-tertiary-hover;
 						opacity: 1;
 						transition: none;
 					}
