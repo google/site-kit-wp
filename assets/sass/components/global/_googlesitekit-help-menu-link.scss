@@ -23,7 +23,7 @@
 		padding: 0;
 
 		&:hover {
-			background-color: $c-interactive-tertiary-hover;
+			background-color: unset;
 			color: rgba($c-black, 0.87);
 
 			&::before {
