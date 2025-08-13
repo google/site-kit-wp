@@ -41,15 +41,15 @@ describe( 'blocks', () => {
 	 *
 	 * @return {Promise<boolean>} Promise resolving to true if block support is available, false otherwise.
 	 */
-	const hasBlockSupport = async () => {
+	async function hasBlockSupport() {
 		const version = await getWPVersion();
 		return version.major >= 5 && version.minor >= 8;
-	};
+	}
 
 	/**
 	 * Closes the Gutenberg welcome modal if present.
 	 */
-	const closeWelcomeModalIfPresent = async () => {
+	async function closeWelcomeModalIfPresent() {
 		const closeModalSelector =
 			'.components-modal__header button[aria-label="Close"]';
 		try {
@@ -60,7 +60,7 @@ describe( 'blocks', () => {
 		} catch ( error ) {
 			// Modal not present, continue with test.
 		}
-	};
+	}
 
 	describe( 'google-site-kit/rrm-contribute-with-google block', () => {
 		it( 'can be inserted without console errors', async () => {

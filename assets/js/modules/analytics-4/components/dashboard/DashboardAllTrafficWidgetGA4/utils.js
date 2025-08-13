@@ -62,8 +62,8 @@ export function createZeroDataRow( date ) {
  * @param {string} rowLabel The label for the row.
  * @return {string} The HTML string for the tooltip help link.
  */
-export const getTooltipHelp = ( url, label, rowLabel ) =>
-	renderToString(
+export function getTooltipHelp( url, label, rowLabel ) {
+	return renderToString(
 		<p>
 			<Link
 				className="googlesitekit-cta-link__tooltip"
@@ -75,3 +75,4 @@ export const getTooltipHelp = ( url, label, rowLabel ) =>
 			</Link>
 		</p>
 	);
+}

@@ -74,14 +74,14 @@ export default function createTracking(
 
 	const onceTrackedEventsMap = {};
 
-	const trackEventOnce = ( ...params ) => {
+	function trackEventOnce( ...params ) {
 		const key = JSON.stringify( params );
 		if ( ! onceTrackedEventsMap[ key ] ) {
 			onceTrackedEventsMap[ key ] = once( trackEvent );
 		}
 
 		onceTrackedEventsMap[ key ]( ...params );
-	};
+	}
 
 	return {
 		enableTracking: function enableTracking() {

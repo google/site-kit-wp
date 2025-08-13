@@ -46,10 +46,10 @@ export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 		)
 	);
 
-	const onDismiss = () => {
+	function onDismiss() {
 		setNotification( undefined );
 		setSlug( undefined );
-	};
+	}
 
 	return (
 		<Notification>

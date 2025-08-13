@@ -42,7 +42,7 @@ import { CORE_USER } from './constants';
 
 const { receiveError, clearError } = errorStoreActions;
 
-const validateUserAudienceSettings = ( settings ) => {
+function validateUserAudienceSettings( settings ) {
 	invariant(
 		isPlainObject( settings ),
 		'Audience settings should be an object.'
@@ -55,7 +55,7 @@ const validateUserAudienceSettings = ( settings ) => {
 		typeof settings.isAudienceSegmentationWidgetHidden === 'boolean',
 		'Audience segmentation widget visibility should be a boolean.'
 	);
-};
+}
 
 const fetchStoreReducerCallback = createReducer(
 	( state, audienceSettings ) => {

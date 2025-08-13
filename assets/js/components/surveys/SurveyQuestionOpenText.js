@@ -45,9 +45,9 @@ function SurveyQuestionOpenText( {
 } ) {
 	const [ value, setValue ] = useState( '' );
 
-	const handleSubmit = () => {
+	function handleSubmit() {
 		answerQuestion( { answer: value } );
-	};
+	}
 
 	const onChange = useCallback(
 		( event ) => {

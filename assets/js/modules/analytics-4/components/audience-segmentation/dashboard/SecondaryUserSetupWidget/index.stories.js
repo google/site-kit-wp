@@ -103,7 +103,7 @@ export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/SecondaryUserSetupWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = async ( registry ) => {
+			async function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
@@ -143,7 +143,7 @@ export default {
 					.receiveGetUserAudienceSettings( audienceSettings );
 
 				await args?.setupRegistry( registry );
-			};
+			}
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
 					<Story />

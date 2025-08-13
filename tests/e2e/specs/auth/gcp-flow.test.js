@@ -53,7 +53,7 @@ function handleRequest( request ) {
 	}
 }
 
-const disconnectFromSiteKit = async () => {
+async function disconnectFromSiteKit() {
 	await page.waitForSelector( 'button[aria-controls="user-menu"]' );
 	await page.click( 'button[aria-controls="user-menu"]' );
 
@@ -65,7 +65,7 @@ const disconnectFromSiteKit = async () => {
 	);
 	await page.click( '.mdc-dialog__container button.mdc-button--danger' );
 	await page.waitForNavigation();
-};
+}
 
 describe( 'Site Kit set up flow for the first time', () => {
 	beforeEach( async () => {

@@ -54,7 +54,7 @@ export default function ReportError( { moduleSlug, error } ) {
 
 	let title;
 
-	const getMessage = ( err ) => {
+	function getMessage( err ) {
 		if ( isInsufficientPermissionsError( err ) ) {
 			if ( isViewOnly ) {
 				title = sprintf(
@@ -86,7 +86,7 @@ export default function ReportError( { moduleSlug, error } ) {
 		}
 
 		return getReportErrorMessage( err );
-	};
+	}
 
 	const uniqueErrors = uniqWith(
 		errors.map( ( err ) => ( {

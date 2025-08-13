@@ -21,56 +21,31 @@
  * since the function was called to complete.
  *
  * @since 1.25.0
- * @since n.e.x.t Updated to use progressive strategy for waiting for requests.
  *
- * @param {Object} options                 Options for the wait function.
- * @param {number} options.responseTimeout Maximum time to wait for requests in milliseconds.
  * @return {Function} Wait function.
  */
-export function createWaitForFetchRequests( {
-	responseTimeout = 15_000,
-} = {} ) {
-	const activeRequests = new Set();
+export function createWaitForFetchRequests() {
+	const responsePromises = [];
 
-	const listener = ( req ) => {
-		if ( req.resourceType() !== 'fetch' ) {
-			return;
+	function listener( req ) {
+		if ( req.resourceType() === 'fetch' ) {
+			const promise = page.waitForResponse(
+				// eslint-disable-next-line sitekit/acronym-case
+				( res ) => res.request()._requestId === req._requestId
+			);
+			// A promise may be rejected if the execution context it was
+			// captured in no longer exists (e.g. previous page) which
+			// is necessary in some cases, and can be ignored since
+			// there is nothing to wait for any more.
+			responsePromises.push( promise.catch( () => {} ) );
 		}
-
-		const requestID = req._requestId; // eslint-disable-line sitekit/acronym-case
-		activeRequests.add( requestID );
-
-		// Wait for response or timeout
-		page.waitForResponse(
-			( res ) => res.request()._requestID === req._requestID,
-			{ timeout: responseTimeout }
-		)
-			.then( ( response ) => {
-				activeRequests.delete( requestID );
-				return response;
-			} )
-			.catch( () => {
-				// Clean up request ID on error
-				activeRequests.delete( requestID );
-			} );
-	};
+	}
 
 	page.on( 'request', listener );
 
 	return () => {
 		page.off( 'request', listener );
 
-		return new Promise( ( resolve ) => {
-			const checkCompletion = () => {
-				if ( activeRequests.size === 0 ) {
-					resolve();
-					return;
-				}
-
-				setTimeout( checkCompletion, 500 );
-			};
-
-			checkCompletion();
-		} );
+		return Promise.all( responsePromises );
 	};
 }

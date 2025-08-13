@@ -42,13 +42,13 @@ export default {
 	title: 'Modules/ReaderRevenueManager/Components/Dashboard/PublicationApprovedOverlayNotification',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( {
 						publicationID: '1234567',
 					} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

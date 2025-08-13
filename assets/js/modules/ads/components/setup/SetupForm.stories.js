@@ -131,7 +131,7 @@ export default {
 	title: 'Modules/Ads/Setup/SetupForm',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ADS,
@@ -152,7 +152,7 @@ export default {
 				registry
 					.dispatch( MODULES_ADS )
 					.setSettings( { conversionID: 'AW-123456789' } );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
