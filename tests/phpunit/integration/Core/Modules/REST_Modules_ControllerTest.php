@@ -432,7 +432,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'module_not_connected', $response->get_data()['code'], 'Unconnected module should be reported as not connected.' );
+		$this->assertEquals( 'module_not_connected', $response->get_data()['code'], 'Response code should be "module_not_connected" when module is not connected.' );
 		$this->assertEquals( 500, $response->get_status(), 'Not connected should return 500.' );
 	}
 
