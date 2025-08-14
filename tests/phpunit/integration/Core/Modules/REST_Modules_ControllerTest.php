@@ -991,7 +991,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 403, $response->get_status(), 'GET data should require active module.' );
+		$this->assertEquals( 403, $response->get_status(), 'GET on module data should return 403 when module is inactive.' );
 		$this->assertEquals( 'module_not_active', $response->get_data()['code'], 'Error code should indicate module not active.' );
 		$this->assertEquals( 'Module must be active to request data.', $response->get_data()['message'], 'Error message should indicate active module required.' );
 
