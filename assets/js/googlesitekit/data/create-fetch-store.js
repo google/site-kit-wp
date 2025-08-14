@@ -228,30 +228,29 @@ export function createFetchStore( {
 				const { params } = payload;
 				state[ isFetching ] = state[ isFetching ] || {};
 				state[ isFetching ][ stringifyObject( params ) ] = true;
-				break;
+				return state;
 			}
 
 			case RECEIVE: {
 				const { response, params } = payload;
-				reducerCallback( state, response, params );
-				break;
+				return reducerCallback( state, response, params );
 			}
 
 			case FINISH_FETCH: {
 				const { params } = payload;
 				state[ isFetching ] = state[ isFetching ] || {};
 				state[ isFetching ][ stringifyObject( params ) ] = false;
-				break;
+				return state;
 			}
 
 			case CATCH_FETCH: {
 				const { params } = payload;
 				state[ isFetching ] = state[ isFetching ] || {};
 				state[ isFetching ][ stringifyObject( params ) ] = false;
-				break;
+				return state;
 			}
 			default:
-				break;
+				return state;
 		}
 	} );
 
