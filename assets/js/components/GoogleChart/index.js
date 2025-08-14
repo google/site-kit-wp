@@ -375,14 +375,13 @@ export default function GoogleChart( props ) {
 		onSelect
 	);
 
-	const chartOptions = getChartOptions(
-		options,
+	const chartOptions = getChartOptions( options, {
 		gatheringData,
 		chartType,
 		startDate,
 		endDate,
-		breakpoint
-	);
+		breakpoint,
+	} );
 
 	return (
 		<GoogleChartErrorHandler>
