@@ -20,11 +20,12 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, useRegistry } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
@@ -35,6 +36,7 @@ import useViewContext from '../../hooks/useViewContext';
 import BannerNotification, {
 	TYPES,
 } from '../../googlesitekit/notifications/components/layout/BannerNotification';
+import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
 
 export default function SetupErrorMessageNotification( { Notification } ) {
 	const id = 'setup_error';
@@ -97,6 +99,15 @@ export default function SetupErrorMessageNotification( { Notification } ) {
 		}
 	}
 
+	const registry = useRegistry();
+	const snapshotCoreFormsStore = useCallback( async () => {
+		if ( temporaryPersistedPermissionsError?.data ) {
+			// Snapshot `CORE_FORMS` store to ensure the form data with current error data
+			//  is retained across page navigations.
+			await snapshotAllStores( registry );
+		}
+	}, [ temporaryPersistedPermissionsError, registry ] );
+
 	const gaTrackingProps = {
 		gaTrackingEventArgs: { category: `${ viewContext }_${ id }` },
 	};
@@ -112,6 +123,7 @@ export default function SetupErrorMessageNotification( { Notification } ) {
 					setupErrorRedoURL && {
 						label: ctaLabel,
 						href: setupErrorRedoURL,
+						onClick: snapshotCoreFormsStore,
 					}
 				}
 				learnMoreLink={ {
