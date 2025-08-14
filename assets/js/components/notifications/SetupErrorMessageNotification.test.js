@@ -35,6 +35,14 @@ import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '../../googlesitekit/datastore/user/constants';
 
+// Mock the snapshotAllStores function while preserving other exports
+jest.mock( '../../googlesitekit/data/create-snapshot-store', () => ( {
+	...jest.requireActual( '../../googlesitekit/data/create-snapshot-store' ),
+	snapshotAllStores: jest.fn(),
+} ) );
+
+import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
+
 const SETUP_ERROR_NOTIFICATION = 'setup_plugin_error';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -144,6 +152,57 @@ describe( 'SetupErrorMessageNotification', () => {
 
 		expect( container ).toHaveTextContent( 'Setup was interrupted' );
 		expect( container ).toHaveTextContent( 'Grant permission' );
+	} );
+
+	it( 'calls snapshotAllStores when CTA button is clicked with persisted permissions error', async () => {
+		// Clear any previous calls to the mock
+		snapshotAllStores.mockClear();
+
+		provideUserAuthentication( registry );
+		provideSiteInfo( registry, {
+			setupErrorCode: 'access_denied',
+			setupErrorMessage:
+				'Setup was interrupted because you did not grant the necessary permissions',
+			setupErrorRedoURL: '#',
+		} );
+
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_TEMPORARY_PERSIST_PERMISSION_ERROR, {
+				permissionsError: {
+					status: 403,
+					message: 'Generic scope',
+					data: {
+						scopes: [
+							'https://www.googleapis.com/auth/analytics.edit',
+						],
+					},
+				},
+			} );
+
+		const { getByRole, waitForRegistry } = render(
+			<NotificationWithComponentProps />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+		await waitForRegistry();
+
+		const ctaButton = getByRole( 'button', { name: /grant permission/i } );
+		expect( ctaButton ).toBeInTheDocument();
+
+		// Prevent navigation by intercepting the click.
+		const handleClick = jest.fn( ( event ) => {
+			event.preventDefault();
+		} );
+		ctaButton.addEventListener( 'click', handleClick );
+
+		// Click the CTA button
+		ctaButton.click();
+
+		// Verify snapshotAllStores was called with the registry
+		expect( snapshotAllStores ).toHaveBeenCalledWith( registry );
 	} );
 
 	describe( 'checkRequirements', () => {
