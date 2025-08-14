@@ -358,7 +358,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/info' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'], 'Missing module slug should be invalid.' );
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'], 'Response code should indicate invalid module slug when module_slug is missing.' );
 		$this->assertEquals( 500, $response->get_status(), 'Invalid slug should return 500.' );
 	}
 
