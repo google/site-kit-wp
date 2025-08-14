@@ -3372,9 +3372,6 @@ class Analytics_4Test extends TestCase {
 	 * @param bool $is_content_creator
 	 */
 	public function test_tracking_opt_out_snippet( $settings, $logged_in, $is_tracking_active, $is_content_creator = false ) {
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
 		wp_styles(); // Prevent potential ->queue of non-object error.
 
 		// Remove irrelevant script from throwing errors in CI from readfile().
@@ -4659,9 +4656,6 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
 		remove_all_actions( 'template_redirect' );
 		$analytics->register();
 

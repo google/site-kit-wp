@@ -29,10 +29,6 @@ class Web_TagTest extends TestCase {
 
 		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
 
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
-
 		$head_html = $this->capture_action( 'wp_head' );
 		$this->assertNotEmpty( $head_html );
 

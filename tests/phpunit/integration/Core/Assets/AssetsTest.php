@@ -57,10 +57,8 @@ class AssetsTest extends TestCase {
 
 		$this->assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_styles()->registered  = array();
-		wp_styles()->queue       = array();
+		wp_styles()->registered = array();
+		wp_styles()->queue      = array();
 	}
 
 	public function tear_down() {

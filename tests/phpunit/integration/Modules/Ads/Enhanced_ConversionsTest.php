@@ -220,11 +220,7 @@ class Enhanced_ConversionsTest extends TestCase {
 		$enhanced_conversions = new Enhanced_Conversions();
 		$enhanced_conversions->register();
 
-		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ), 'googlesitekit_setup_gtag should be hooked into' );
-
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
+		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ), 'The googlesitekit_setup_gtag action should be registered.' );
 
 		$head_html       = $this->capture_action( 'wp_head' );
 		$expected_script = sprintf(
@@ -234,6 +230,6 @@ class Enhanced_ConversionsTest extends TestCase {
 			Enhanced_Conversions::get_formatted_value( 'Doe' )
 		);
 
-		$this->assertStringContainsString( $expected_script, $head_html, 'The inline script containing user data should be in the HTML' );
+		$this->assertStringContainsString( $expected_script, $head_html, 'The inline script containing user data should be in the HTML.' );
 	}
 }
