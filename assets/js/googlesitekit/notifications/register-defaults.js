@@ -66,7 +66,6 @@ import UnsatisfiedScopesAlertGTE from '../../components/notifications/Unsatisfie
 import GatheringDataNotification from '../../components/notifications/GatheringDataNotification';
 import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
 import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSenseLinkedNotification';
-import SetupErrorNotification from '../../components/notifications/SetupErrorNotification';
 import SetupErrorMessageNotification from '../../components/notifications/SetupErrorMessageNotification';
 import GoogleTagGatewayWarningNotification from '../../components/notifications/GoogleTagGatewayWarningNotification';
 import GoogleTagGatewaySetupBanner from '../../components/notifications/GoogleTagGatewaySetupBanner';
@@ -186,37 +185,6 @@ export const DEFAULT_NOTIFICATIONS = {
 				isAuthenticated &&
 				showUnsatisfiedScopesAlertGTE
 			);
-		},
-		isDismissible: false,
-	},
-	setup_error: {
-		Component: SetupErrorNotification,
-		priority: PRIORITY.ERROR_HIGH,
-		areaSlug: NOTIFICATION_AREAS.HEADER,
-		viewContexts: [ VIEW_CONTEXT_SPLASH ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			// The getSetupErrorMessage selector relies on the resolution
-			// of the getSiteInfo() resolver.
-			await resolveSelect( CORE_SITE ).getSiteInfo();
-
-			const setupErrorMessage =
-				select( CORE_SITE ).getSetupErrorMessage();
-
-			const { data: permissionsErrorData } =
-				select( CORE_FORMS ).getValue(
-					FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-					'permissionsError'
-				) || {};
-
-			// If there's no setup error message or the temporary persisted permissions error has skipDefaultErrorNotifications flag set, return false.
-			if (
-				! setupErrorMessage ||
-				permissionsErrorData?.skipDefaultErrorNotifications
-			) {
-				return false;
-			}
-
-			return true;
 		},
 		isDismissible: false,
 	},
