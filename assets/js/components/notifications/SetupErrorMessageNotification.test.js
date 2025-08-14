@@ -34,13 +34,12 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '../../googlesitekit/datastore/user/constants';
+import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
 
 jest.mock( '../../googlesitekit/data/create-snapshot-store', () => ( {
 	...jest.requireActual( '../../googlesitekit/data/create-snapshot-store' ),
 	snapshotAllStores: jest.fn(),
 } ) );
-
-import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
 
 const SETUP_ERROR_NOTIFICATION = 'setup_plugin_error';
 
