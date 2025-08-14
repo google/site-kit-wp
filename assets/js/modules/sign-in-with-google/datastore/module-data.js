@@ -104,12 +104,12 @@ export const resolvers = {
 	 * @since n.e.x.t Updated to use centralized module data access.
 	 */
 	*getModuleData() {
-		const { resolveSelect } = yield commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
 		const moduleData = yield commonActions.await(
-			resolveSelect( CORE_MODULES ).getModuleInlineData(
-				MODULE_SLUG_SIGN_IN_WITH_GOOGLE
-			)
+			registry
+				.resolveSelect( CORE_MODULES )
+				.getModuleInlineData( MODULE_SLUG_SIGN_IN_WITH_GOOGLE )
 		);
 
 		if ( ! moduleData ) {

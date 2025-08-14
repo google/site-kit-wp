@@ -579,7 +579,7 @@ const baseActions = {
 		( inlineModulesData ) => {
 			invariant( inlineModulesData, 'inlineModulesData is required' );
 		},
-		function ( inlineModulesData ) {
+		( inlineModulesData ) => {
 			return {
 				payload: { inlineModulesData },
 				type: RECEIVE_INLINE_MODULES_DATA,
