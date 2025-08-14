@@ -601,7 +601,7 @@ class REST_Modules_ControllerTest extends TestCase {
 
 			$response = $this->request_get_module_setings();
 
-			$this->assertEquals( '500', $response->get_status(), 'Shared roles without view-only settings should fail.' );
+			$this->assertEquals( '500', $response->get_status(), 'Response status should return 500 for shared roles without view-only settings.' );
 			$this->assertEquals( 'no_view_only_settings', $response->get_data()['code'], 'Error code should indicate no view-only settings.' );
 		}
 	}
