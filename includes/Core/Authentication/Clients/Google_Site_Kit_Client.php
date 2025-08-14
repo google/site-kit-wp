@@ -96,7 +96,7 @@ class Google_Site_Kit_Client extends Google_Client {
 	 *
 	 * @throws Exception Thrown when fetching a new access token via refresh token on-the-fly fails.
 	 */
-	public function authorize( ClientInterface $http = null ) {
+	public function authorize( ?ClientInterface $http = null ) {
 		if ( $this->isUsingApplicationDefaultCredentials() ) {
 			return parent::authorize( $http );
 		}
@@ -257,7 +257,7 @@ class Google_Site_Kit_Client extends Google_Client {
 	 * @param array         $extra_params Optional. Array of extra parameters to fetch with.
 	 * @return array Access token.
 	 */
-	protected function fetchAuthToken( OAuth2 $auth, callable $http_handler = null, $extra_params = array() ) {
+	protected function fetchAuthToken( OAuth2 $auth, ?callable $http_handler = null, $extra_params = array() ) {
 		if ( is_null( $http_handler ) ) {
 			$http_handler = HttpHandlerFactory::build( HttpClientCache::getHttpClient() );
 		}
