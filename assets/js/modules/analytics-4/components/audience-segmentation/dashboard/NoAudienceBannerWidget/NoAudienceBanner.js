@@ -52,7 +52,9 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 		select( CORE_MODULES ).getModuleIcon( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const adminSettingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getSiteKitAdminSettingsURL()
+		select( CORE_SITE ).getSiteKitAdminSettingsURL( {
+			scrollTo: 'visitor-groups',
+		} )
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
