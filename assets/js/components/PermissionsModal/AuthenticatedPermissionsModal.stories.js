@@ -32,7 +32,7 @@ export const Default = Template.bind( {} );
 Default.storyName = 'AuthenticatedPermissionsModal';
 Default.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 			registry.dispatch( CORE_USER ).setPermissionScopeError( {
 				status: 500,
@@ -45,7 +45,7 @@ Default.decorators = [
 				},
 			} );
 			provideUserAuthentication( registry );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>

@@ -94,7 +94,7 @@ export default function UserDimensionsPieChart( props ) {
 	const containerRef = useRef();
 
 	useEffect( () => {
-		const onTooltipClick = ( event ) => {
+		function onTooltipClick( event ) {
 			const { target } = event || {};
 			if (
 				! target?.classList?.contains(
@@ -112,12 +112,12 @@ export default function UserDimensionsPieChart( props ) {
 					label
 				);
 			}
-		};
+		}
 
 		const currentContainerRef = containerRef.current;
 
 		// When the user hits the 'escape' key and the tooltip is open, close the tooltip and reset UI vars.
-		const onEscape = ( event = {} ) => {
+		function onEscape( event = {} ) {
 			if ( event?.keyCode === ESCAPE && isTooltipOpen ) {
 				setIsTooltipOpen( false );
 				setValues( {
@@ -126,10 +126,10 @@ export default function UserDimensionsPieChart( props ) {
 					[ UI_ACTIVE_ROW_INDEX ]: null,
 				} );
 			}
-		};
+		}
 
 		// When the use clicks on anything except the legend while the tooltip is open, close the tooltip.
-		const onExitClick = ( event ) => {
+		function onExitClick( event ) {
 			if (
 				isTooltipOpen &&
 				! event?.target?.closest(
@@ -138,7 +138,7 @@ export default function UserDimensionsPieChart( props ) {
 			) {
 				setIsTooltipOpen( false );
 			}
-		};
+		}
 
 		if ( currentContainerRef ) {
 			currentContainerRef.addEventListener( 'click', onTooltipClick );
@@ -308,7 +308,7 @@ export default function UserDimensionsPieChart( props ) {
 
 	const { slices } = UserDimensionsPieChart.chartOptions;
 
-	const onLegendClick = ( index ) => {
+	function onLegendClick( index ) {
 		if ( ! chartWrapperRef.current ) {
 			return;
 		}
@@ -347,13 +347,13 @@ export default function UserDimensionsPieChart( props ) {
 				`${ dimensionName }:${ newDimensionValue }`
 			);
 		}
-	};
+	}
 
-	const onMouseOut = () => {
+	function onMouseOut() {
 		setSelectable( false );
-	};
+	}
 
-	const onMouseOver = ( event, { chartWrapper } ) => {
+	function onMouseOver( event, { chartWrapper } ) {
 		const { row } = event;
 
 		if ( row === undefined || row === null ) {
@@ -364,9 +364,9 @@ export default function UserDimensionsPieChart( props ) {
 		setSelectable(
 			dataTable.getValue( row, 0 ) !== __( 'Others', 'google-site-kit' )
 		);
-	};
+	}
 
-	const onSelect = ( { chartWrapper } ) => {
+	function onSelect( { chartWrapper } ) {
 		const chart = chartWrapper.getChart();
 		const { row } = chart.getSelection()?.[ 0 ] || {};
 
@@ -412,9 +412,9 @@ export default function UserDimensionsPieChart( props ) {
 				}
 			}
 		}
-	};
+	}
 
-	const onReady = ( { chartWrapper } ) => {
+	function onReady( { chartWrapper } ) {
 		const chart = chartWrapper.getChart();
 
 		// If there is a dimension value set but the initialized chart does not have a
@@ -465,7 +465,7 @@ export default function UserDimensionsPieChart( props ) {
 				[ UI_DIMENSION_COLOR ]: '',
 			} );
 		}
-	};
+	}
 
 	const options = cloneDeep( UserDimensionsPieChart.chartOptions );
 

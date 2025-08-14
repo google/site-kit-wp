@@ -53,9 +53,9 @@ export function AdminMenuTooltip() {
 			}
 	);
 
-	const handleViewTooltip = () => {
+	function handleViewTooltip() {
 		trackEvent( `${ viewContext }_${ tooltipSlug }`, 'tooltip_view' );
-	};
+	}
 
 	const handleDismissTooltip = useCallback( () => {
 		// Track dismiss event.

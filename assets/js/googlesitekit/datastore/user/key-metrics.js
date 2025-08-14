@@ -328,7 +328,7 @@ const baseSelectors = {
 			const userInputSettings =
 				select( CORE_USER ).getUserInputSettings();
 
-			const showConversionTailoredMetrics = ( events ) => {
+			function showConversionTailoredMetrics( events ) {
 				return events.some(
 					( event ) =>
 						userInputSettings?.includeConversionEvents?.values?.includes(
@@ -339,7 +339,7 @@ const baseSelectors = {
 								event
 							) )
 				);
-			};
+			}
 
 			return {
 				publish_blog: [

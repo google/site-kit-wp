@@ -97,9 +97,9 @@ export default function AudienceCreationNotice() {
 		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 	);
 
-	const onCloseClick = () => {
+	function onCloseClick() {
 		dismissItem( AUDIENCE_CREATION_NOTICE_SLUG );
-	};
+	}
 
 	const redirectURL = addQueryArgs( global.location.href, {
 		notification: 'audience_segmentation',
@@ -184,14 +184,14 @@ export default function AudienceCreationNotice() {
 		]
 	);
 
-	const handleDismissEditScopeNotice = () => {
+	function handleDismissEditScopeNotice() {
 		trackEvent(
 			`${ viewContext }_audiences-sidebar-create-audiences`,
 			'dismiss_oauth_notice'
 		).finally( () => {
 			dismissItem( AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG );
 		} );
-	};
+	}
 
 	const setupErrorCode = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorCode()

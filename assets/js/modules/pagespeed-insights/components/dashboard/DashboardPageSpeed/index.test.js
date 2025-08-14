@@ -84,7 +84,7 @@ describe( 'DashboardPageSpeed', () => {
 
 	afterEach( fetchMock.mockClear );
 
-	const setupRegistryNoFieldDataDesktop = () => {
+	function setupRegistryNoFieldDataDesktop() {
 		registry = createTestRegistry();
 
 		const { dispatch } = registry;
@@ -115,7 +115,7 @@ describe( 'DashboardPageSpeed', () => {
 			referenceSiteURL: url,
 			currentEntityURL: null,
 		} );
-	};
+	}
 
 	it( 'renders preview blocks while reports are requested', async () => {
 		registry = createTestRegistry();

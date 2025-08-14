@@ -265,7 +265,7 @@ export default function SettingsView() {
 					},
 					{
 						label: __(
-							'Enhanced Conversion Tracking',
+							'Plugin conversion tracking',
 							'google-site-kit'
 						),
 						status: isConversionTrackingEnabled,

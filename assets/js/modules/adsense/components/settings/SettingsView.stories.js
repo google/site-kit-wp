@@ -122,7 +122,7 @@ export default {
 	component: SettingsView,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
 				registry
 					.dispatch( MODULES_ADSENSE )
@@ -142,7 +142,7 @@ export default {
 				provideModuleRegistrations( registry );
 
 				args?.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

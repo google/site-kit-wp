@@ -49,16 +49,20 @@ const basicStore = {
 		getCount: ( state ) => state.count,
 	},
 };
-const wait = ( ms ) => new Promise( ( resolve ) => setTimeout( resolve, ms ) );
+function wait( ms ) {
+	return new Promise( ( resolve ) => setTimeout( resolve, ms ) );
+}
 
 describe( 'test utilities', () => {
 	describe( 'subscribeUntil', () => {
 		it( 'subscribes to registry updates until predicates are satisfied', async () => {
 			const registry = createTestRegistry();
 			let count = 0;
-			const updateRegistry = async () =>
-				// async to allow await and trigger next tick
-				await registry.dispatch( CORE_UI ).setValue( 'count', count++ );
+			async function updateRegistry() {
+				return await registry
+					.dispatch( CORE_UI )
+					.setValue( 'count', count++ );
+			}
 
 			const listener = jest.fn( () => false );
 
@@ -90,9 +94,11 @@ describe( 'test utilities', () => {
 		it( 'subscribes to registry updates until ALL predicates are satisfied', async () => {
 			const registry = createTestRegistry();
 			let count = 0;
-			const updateRegistry = async () =>
-				// async to allow await and trigger next tick
-				await registry.dispatch( CORE_UI ).setValue( 'count', count++ );
+			async function updateRegistry() {
+				return await registry
+					.dispatch( CORE_UI )
+					.setValue( 'count', count++ );
+			}
 
 			// eslint-disable-next-line camelcase
 			const listener_a = jest.fn( () => true );

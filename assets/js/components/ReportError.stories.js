@@ -326,7 +326,7 @@ export default {
 		( Story, { args } ) => {
 			const { viewContext, ...rest } = args;
 
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{ slug: 'test-module', name: 'Test Module' },
 				] );
@@ -334,7 +334,7 @@ export default {
 				if ( args?.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

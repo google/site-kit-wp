@@ -90,18 +90,18 @@ export default function UserMenu() {
 		menuButtonRef.current?.focus();
 	} );
 
-	const handleClose = () => {
+	function handleClose() {
 		toggleDialog( false );
 		setMenuOpen( false );
-	};
+	}
 
 	useEffect( () => {
-		const handleEscapeKeyPress = ( e ) => {
+		function handleEscapeKeyPress( e ) {
 			// Close if Escape key is pressed.
 			if ( ESCAPE === e.keyCode ) {
 				handleClose();
 			}
-		};
+		}
 
 		global.addEventListener( 'keyup', handleEscapeKeyPress );
 

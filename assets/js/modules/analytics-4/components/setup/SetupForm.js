@@ -135,7 +135,7 @@ export default function SetupForm( { finishSetup } ) {
 
 			<SetupEnhancedConversionTrackingNotice
 				message={ __(
-					'To track how visitors interact with your site, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
+					'To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings.',
 					'google-site-kit'
 				) }
 			/>

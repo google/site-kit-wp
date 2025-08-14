@@ -47,7 +47,7 @@ export default {
 	component: WebContainerSelect,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				// eslint-disable-next-line sitekit/acronym-case
 				const accountID = fixtures.accounts[ 0 ].accountId;
 				registry
@@ -68,7 +68,7 @@ export default {
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetExistingTag( null );
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

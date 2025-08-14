@@ -151,7 +151,7 @@ export default function UserInputPreview( props ) {
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValues: setUIValues } = useDispatch( CORE_UI );
 
-	const openModalIfMetricsChanged = async () => {
+	async function openModalIfMetricsChanged() {
 		const differenceInMetrics = newMetrics.filter(
 			( x ) => ! currentMetrics.includes( x )
 		);
@@ -171,7 +171,7 @@ export default function UserInputPreview( props ) {
 				[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
 			} );
 		}
-	};
+	}
 
 	useEffect( () => {
 		if (

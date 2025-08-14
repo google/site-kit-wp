@@ -34,9 +34,9 @@ import md5 from 'md5';
  * @param {Object} obj The object to stringify.
  * @return {string} Hash for the object.
  */
-export const stringifyObject = ( obj ) => {
+export function stringifyObject( obj ) {
 	return md5( JSON.stringify( sortObjectProperties( obj ) ) );
-};
+}
 
 function sortObjectProperties( obj ) {
 	const orderedData = {};

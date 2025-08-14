@@ -58,7 +58,7 @@ NewUserAccountsEnabled.args = {
 
 Default.decorators = [
 	( Story, { args } ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			const { anyoneCanRegister = false } = args;
 			provideSiteInfo( registry, { anyoneCanRegister } );
 
@@ -77,7 +77,7 @@ Default.decorators = [
 			if ( args.setupRegistry ) {
 				args.setupRegistry( registry );
 			}
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -91,7 +91,7 @@ export const InvalidClientID = Template.bind( null );
 InvalidClientID.storyName = 'Invalid Client ID';
 InvalidClientID.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			provideSiteInfo( registry, { anyoneCanRegister: true } );
 
 			registry
@@ -103,7 +103,7 @@ InvalidClientID.decorators = [
 					shape: 'rectangular',
 					OneTapEnabled: true,
 				} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -120,7 +120,7 @@ export default {
 	title: 'Modules/SignInWithGoogle/Settings/SettingsEdit',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry, { anyoneCanRegister: true } );
 				provideModules( registry, [
 					{
@@ -129,7 +129,7 @@ export default {
 						connected: true,
 					},
 				] );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

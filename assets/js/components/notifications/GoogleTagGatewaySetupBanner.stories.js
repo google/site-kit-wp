@@ -71,7 +71,7 @@ export default {
 	title: 'Modules/GoogleTagGateway/Dashboard/GoogleTagGatewaySetupBanner',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: GTG_SETUP_CTA_BANNER_NOTIFICATION,
@@ -107,7 +107,7 @@ export default {
 				);
 
 				args.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<div

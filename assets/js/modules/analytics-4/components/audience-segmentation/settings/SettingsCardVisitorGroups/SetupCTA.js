@@ -85,14 +85,14 @@ export default function SetupCTA() {
 		).finally( onEnableGroups );
 	}
 
-	const onCancel = () => {
+	function onCancel() {
 		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
 			autoSubmit: false,
 		} );
 		clearPermissionScopeError();
 		setSetupErrorCode( null );
 		setShowErrorModal( false );
-	};
+	}
 
 	return (
 		<div className="googlesitekit-settings-visitor-groups__setup">

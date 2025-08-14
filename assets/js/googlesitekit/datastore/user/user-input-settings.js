@@ -105,8 +105,12 @@ const baseActions = {
 		const registry = yield commonActions.getRegistry();
 		yield clearError( 'saveUserInputSettings', [] );
 
-		const trim = ( value ) => value.trim();
-		const notEmpty = ( value ) => value.length > 0;
+		function trim( value ) {
+			return value.trim();
+		}
+		function notEmpty( value ) {
+			return value.length > 0;
+		}
 
 		const settings = registry.select( CORE_USER ).getUserInputSettings();
 		const values = Object.keys( settings ).reduce(

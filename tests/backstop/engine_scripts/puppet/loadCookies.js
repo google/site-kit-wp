@@ -17,13 +17,13 @@ module.exports = async ( page, scenario ) => {
 	} );
 
 	// SET COOKIES
-	const setCookies = () => {
+	function setCookies() {
 		return Promise.all(
 			cookies.map( async ( cookie ) => {
 				await page.setCookie( cookie );
 			} )
 		);
-	};
+	}
 	await setCookies();
 	// eslint-disable-next-line no-console
 	console.log(

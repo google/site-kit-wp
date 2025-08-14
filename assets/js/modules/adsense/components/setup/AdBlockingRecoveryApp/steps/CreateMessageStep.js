@@ -152,13 +152,13 @@ export default function CreateMessageStep() {
 		}
 	}, [ createMessageCTAClicked, viewContext ] );
 
-	const handleSecondaryCTAClick = () => {
+	function handleSecondaryCTAClick() {
 		trackEvent(
 			`${ viewContext }_adsense-abr`,
 			'create_message',
 			'secondary_cta'
 		);
-	};
+	}
 
 	return (
 		<Fragment>
