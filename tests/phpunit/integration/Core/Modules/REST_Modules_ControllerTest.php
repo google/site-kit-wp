@@ -377,7 +377,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'], 'Invalid module slug should be rejected.' );
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'], 'Response code should indicate invalid module slug when unknown module slug is requested' );
 		$this->assertEquals( 500, $response->get_status(), 'Invalid module slug should return 500.' );
 	}
 
