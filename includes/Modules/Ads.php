@@ -94,7 +94,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	 * @param Authentication|null $authentication Authentication object.
 	 * @param Assets|null         $assets         Assets object.
 	 */
-	public function __construct( Context $context, Options $options = null, User_Options $user_options = null, Authentication $authentication = null, Assets $assets = null ) {
+	public function __construct( Context $context, ?Options $options = null, ?User_Options $user_options = null, ?Authentication $authentication = null, ?Assets $assets = null ) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 
 		$this->conversion_tracking = new Conversion_Tracking( $context );
