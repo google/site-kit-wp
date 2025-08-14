@@ -26,7 +26,10 @@ import {
 	provideUserAuthentication,
 	render,
 } from '../../../../tests/js/test-utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_SPLASH,
+} from '../../googlesitekit/constants';
 import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
 import SetupErrorMessageNotification from './SetupErrorMessageNotification';
 import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
@@ -147,7 +150,7 @@ describe( 'SetupErrorMessageNotification', () => {
 	} );
 
 	describe( 'checkRequirements', () => {
-		it( 'is active', async () => {
+		it( 'is active on the splash screen when permissions are not granted', async () => {
 			provideSiteInfo( registry, {
 				setupErrorRedoURL: '#',
 				setupErrorCode: 'access_denied',
@@ -157,7 +160,7 @@ describe( 'SetupErrorMessageNotification', () => {
 
 			const isActive = await notification.checkRequirements(
 				registry,
-				VIEW_CONTEXT_MAIN_DASHBOARD
+				VIEW_CONTEXT_SPLASH
 			);
 
 			expect( isActive ).toBe( true );
@@ -168,7 +171,7 @@ describe( 'SetupErrorMessageNotification', () => {
 
 			const isActive = await notification.checkRequirements(
 				registry,
-				VIEW_CONTEXT_MAIN_DASHBOARD
+				VIEW_CONTEXT_SPLASH
 			);
 
 			expect( isActive ).toBe( false );
