@@ -35,7 +35,6 @@ import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '../../googlesitekit/datastore/user/constants';
 
-// Mock the snapshotAllStores function while preserving other exports
 jest.mock( '../../googlesitekit/data/create-snapshot-store', () => ( {
 	...jest.requireActual( '../../googlesitekit/data/create-snapshot-store' ),
 	snapshotAllStores: jest.fn(),
@@ -155,7 +154,6 @@ describe( 'SetupErrorMessageNotification', () => {
 	} );
 
 	it( 'calls snapshotAllStores when CTA button is clicked with persisted permissions error', async () => {
-		// Clear any previous calls to the mock
 		snapshotAllStores.mockClear();
 
 		provideUserAuthentication( registry );
@@ -193,15 +191,14 @@ describe( 'SetupErrorMessageNotification', () => {
 		expect( ctaButton ).toBeInTheDocument();
 
 		// Prevent navigation by intercepting the click.
+		// This is to prevent the leaking after the test cleanup.
 		const handleClick = jest.fn( ( event ) => {
 			event.preventDefault();
 		} );
 		ctaButton.addEventListener( 'click', handleClick );
 
-		// Click the CTA button
 		ctaButton.click();
 
-		// Verify snapshotAllStores was called with the registry
 		expect( snapshotAllStores ).toHaveBeenCalledWith( registry );
 	} );
 
