@@ -347,7 +347,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/info' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 404, $response->get_status(), 'POST should be required for info endpoint.' );
+		$this->assertEquals( 404, $response->get_status(), 'GET should be required for info endpoint.' );
 	}
 
 	public function test_info_rest_endpoint__require_module_slug() {
