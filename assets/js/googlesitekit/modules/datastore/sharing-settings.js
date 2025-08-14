@@ -30,6 +30,7 @@ import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { CORE_MODULES } from './constants';
@@ -72,13 +73,10 @@ const fetchSaveSharingSettingsStore = createFetchStore( {
 			savedSharingSettings
 		);
 	},
-	reducerCallback: ( state, { settings } ) => {
-		return {
-			...state,
-			savedSharingSettings: settings,
-			sharingSettings: settings,
-		};
-	},
+	reducerCallback: createReducer( ( state, { settings } ) => {
+		state.savedSharingSettings = settings;
+		state.sharingSettings = settings;
+	} ),
 	argsToParams: ( savedSharingSettings ) => ( { savedSharingSettings } ),
 	validateParams: ( { savedSharingSettings } = {} ) => {
 		invariant( savedSharingSettings, 'savedSharingSettings is required.' );
@@ -96,13 +94,10 @@ const fetchResetSharingSettingsStore = createFetchStore( {
 			{ method: 'DELETE' }
 		);
 	},
-	reducerCallback: ( state ) => {
-		return {
-			...state,
-			savedSharingSettings: {},
-			sharingSettings: {},
-		};
-	},
+	reducerCallback: createReducer( ( state ) => {
+		state.savedSharingSettings = {};
+		state.sharingSettings = {};
+	} ),
 } );
 
 const baseActions = {
@@ -315,91 +310,77 @@ const baseActions = {
 	},
 };
 
-function baseReducer( state, { type, payload } ) {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case SET_SHARING_MANAGEMENT: {
 			const { moduleSlug, management } = payload;
 
-			return {
-				...state,
-				sharingSettings: {
-					...state.sharingSettings,
-					[ moduleSlug ]: {
-						...state.sharingSettings[ moduleSlug ],
-						management,
-					},
-				},
+			state.sharingSettings[ moduleSlug ] = {
+				...state.sharingSettings[ moduleSlug ],
+				management,
 			};
+
+			break;
 		}
 
 		case SET_SHARED_ROLES: {
 			const { moduleSlug, roles } = payload;
 
-			return {
-				...state,
-				sharingSettings: {
-					...state.sharingSettings,
-					[ moduleSlug ]: {
-						...state.sharingSettings[ moduleSlug ],
-						sharedRoles: roles,
-					},
-				},
+			state.sharingSettings[ moduleSlug ] = {
+				...state.sharingSettings[ moduleSlug ],
+				sharedRoles: roles,
 			};
+
+			break;
 		}
 
 		case RECEIVE_GET_SHARING_SETTINGS: {
 			const { sharingSettings } = payload;
 
-			return {
-				...state,
-				sharingSettings,
-				savedSharingSettings: sharingSettings,
-			};
+			state.sharingSettings = sharingSettings;
+			state.savedSharingSettings = sharingSettings;
+
+			break;
 		}
 
 		case RECEIVE_SHAREABLE_ROLES: {
 			const { shareableRoles } = payload;
+			state.shareableRoles = shareableRoles;
 
-			return {
-				...state,
-				shareableRoles,
-			};
+			break;
 		}
 
 		case START_SUBMIT_SHARING_CHANGES: {
-			return {
-				...state,
-				isDoingSubmitSharingChanges: true,
-			};
+			state.isDoingSubmitSharingChanges = true;
+
+			break;
 		}
 
 		case FINISH_SUBMIT_SHARING_CHANGES: {
-			return {
-				...state,
-				isDoingSubmitSharingChanges: false,
-			};
+			state.isDoingSubmitSharingChanges = false;
+
+			break;
 		}
 
 		case ROLLBACK_SHARING_SETTINGS: {
-			return {
-				...state,
-				sharingSettings: state.savedSharingSettings,
-			};
+			state.sharingSettings = state.savedSharingSettings;
+
+			break;
 		}
 
-		case RECEIVE_DEFAULT_SHARED_OWNERSHIP_MODULE_SETTINGS:
+		case RECEIVE_DEFAULT_SHARED_OWNERSHIP_MODULE_SETTINGS: {
 			const { defaultSharedOwnershipModuleSettings } = payload;
 
-			return {
-				...state,
-				defaultSharedOwnershipModuleSettings,
-			};
+			state.defaultSharedOwnershipModuleSettings =
+				defaultSharedOwnershipModuleSettings;
 
-		default: {
-			return state;
+			break;
 		}
+
+		default:
+			break;
 	}
-}
+} );
 
 const baseResolvers = {
 	*getSharingSettings() {

@@ -34,6 +34,7 @@ import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
@@ -55,15 +56,9 @@ const fetchGetReportStore = createFetchStore( {
 			normalizeReportOptions( options )
 		);
 	},
-	reducerCallback: ( state, report, { options } ) => {
-		return {
-			...state,
-			reports: {
-				...state.reports,
-				[ stringifyObject( options ) ]: report,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, report, { options } ) => {
+		state.reports[ stringifyObject( options ) ] = report;
+	} ),
 	argsToParams: ( options ) => {
 		return { options };
 	},

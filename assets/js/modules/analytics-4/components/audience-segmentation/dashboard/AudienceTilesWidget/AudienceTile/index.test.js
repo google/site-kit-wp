@@ -217,9 +217,8 @@ describe( 'AudienceTile', () => {
 			propertyID: '12345',
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: {
 					[ audienceResourceName ]: 20201220,
 				},
@@ -227,7 +226,8 @@ describe( 'AudienceTile', () => {
 				property: {
 					12345: 20201218,
 				},
-			} );
+			},
+		} );
 	} );
 
 	afterEach( () => {
