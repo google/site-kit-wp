@@ -56,7 +56,7 @@ import {
 	getViewportWidth,
 	setViewportWidth,
 } from '../../../../../../../../tests/js/viewport-width-utils';
-import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '../../../../../../../../tests/js/utils/zeroReports';
+import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '../../../../../../util/zero-reports';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
