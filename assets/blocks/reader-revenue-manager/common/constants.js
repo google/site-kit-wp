@@ -22,5 +22,5 @@ export const CORE_BLOCK_EDITOR = 'core/block-editor';
 
 export const SUBSCRIBE_WITH_GOOGLE_BLOCK =
 	'google-site-kit/rrm-subscribe-with-google';
-export const CONTRIBUE_WITH_GOOGLE_BLOCK =
+export const CONTRIBUTE_WITH_GOOGLE_BLOCK =
 	'google-site-kit/rrm-contribute-with-google';

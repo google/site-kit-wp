@@ -20,14 +20,14 @@
  * Internal dependencies
  */
 import {
-	CONTRIBUE_WITH_GOOGLE_BLOCK,
+	CONTRIBUTE_WITH_GOOGLE_BLOCK,
 	SUBSCRIBE_WITH_GOOGLE_BLOCK,
 } from '@/blocks/reader-revenue-manager/common/constants';
 import { watchBlocks } from './googlesitekit/block-tracking/watch-blocks';
 
 const blocksToTrack = [
 	SUBSCRIBE_WITH_GOOGLE_BLOCK,
-	CONTRIBUE_WITH_GOOGLE_BLOCK,
+	CONTRIBUTE_WITH_GOOGLE_BLOCK,
 ];
 
 watchBlocks( blocksToTrack );

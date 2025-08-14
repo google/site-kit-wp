@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/acronym-case */
-
 /**
  * Internal dependencies
  */
@@ -26,7 +24,7 @@ import { watchBlocks } from './watch-blocks';
 import * as tracking from '../../util/tracking';
 import { VIEW_CONTEXT_WP_BLOCK_EDITOR } from '../constants';
 import {
-	CONTRIBUE_WITH_GOOGLE_BLOCK,
+	CONTRIBUTE_WITH_GOOGLE_BLOCK,
 	SUBSCRIBE_WITH_GOOGLE_BLOCK,
 } from '@/blocks/reader-revenue-manager/common/constants';
 
@@ -40,7 +38,7 @@ jest.mock( './get-blocks-titles', () => ( {
 		jest.fn( ( name ) => {
 			const titles = {
 				SUBSCRIBE_WITH_GOOGLE_BLOCK: 'Subscribe with Google',
-				CONTRIBUE_WITH_GOOGLE_BLOCK: 'Contribute with Google',
+				CONTRIBUTE_WITH_GOOGLE_BLOCK: 'Contribute with Google',
 			};
 			return titles[ name ];
 		} )
@@ -79,7 +77,7 @@ describe( 'watchBlocks', () => {
 	it( 'should track block insertion when a new tracked block is added and selected', () => {
 		const blocksToTrack = [
 			SUBSCRIBE_WITH_GOOGLE_BLOCK,
-			CONTRIBUE_WITH_GOOGLE_BLOCK,
+			CONTRIBUTE_WITH_GOOGLE_BLOCK,
 		];
 
 		mockSelectReturnValue.getBlocks.mockReturnValue( [] );
@@ -89,6 +87,7 @@ describe( 'watchBlocks', () => {
 		expect( subscribe ).toHaveBeenCalledTimes( 1 );
 
 		const newBlock = {
+			// eslint-disable-next-line sitekit/acronym-case
 			clientId: 'block-123',
 			name: SUBSCRIBE_WITH_GOOGLE_BLOCK,
 		};
@@ -113,6 +112,7 @@ describe( 'watchBlocks', () => {
 		watchBlocks( blocksToTrack );
 
 		const newBlock = {
+			// eslint-disable-next-line sitekit/acronym-case
 			clientId: 'block-456',
 			name: 'core/paragraph',
 		};
@@ -129,6 +129,7 @@ describe( 'watchBlocks', () => {
 		const blocksToTrack = [ SUBSCRIBE_WITH_GOOGLE_BLOCK ];
 
 		const existingBlock = {
+			// eslint-disable-next-line sitekit/acronym-case
 			clientId: 'block-existing',
 			name: SUBSCRIBE_WITH_GOOGLE_BLOCK,
 		};
@@ -152,6 +153,7 @@ describe( 'watchBlocks', () => {
 		watchBlocks( blocksToTrack );
 
 		const newBlock = {
+			// eslint-disable-next-line sitekit/acronym-case
 			clientId: 'block-789',
 			name: SUBSCRIBE_WITH_GOOGLE_BLOCK,
 		};
@@ -172,6 +174,7 @@ describe( 'watchBlocks', () => {
 		watchBlocks( blocksToTrack );
 
 		const newBlock = {
+			// eslint-disable-next-line sitekit/acronym-case
 			clientId: 'block-once',
 			name: SUBSCRIBE_WITH_GOOGLE_BLOCK,
 		};
@@ -189,7 +192,7 @@ describe( 'watchBlocks', () => {
 	it( 'should handle multiple tracked blocks being added', () => {
 		const blocksToTrack = [
 			SUBSCRIBE_WITH_GOOGLE_BLOCK,
-			CONTRIBUE_WITH_GOOGLE_BLOCK,
+			CONTRIBUTE_WITH_GOOGLE_BLOCK,
 		];
 
 		mockSelectReturnValue.getBlocks.mockReturnValue( [] );
@@ -197,13 +200,16 @@ describe( 'watchBlocks', () => {
 		watchBlocks( blocksToTrack );
 
 		const block1 = {
+			// eslint-disable-next-line sitekit/acronym-case
 			clientId: 'block-multi-1',
 			name: SUBSCRIBE_WITH_GOOGLE_BLOCK,
 		};
 
 		mockSelectReturnValue.getBlocks.mockReturnValue( [ block1 ] );
 		mockSelectReturnValue.isBlockSelected.mockImplementation(
+			// eslint-disable-next-line sitekit/acronym-case
 			( blockId ) => {
+				// eslint-disable-next-line sitekit/acronym-case
 				return blockId === 'block-multi-1';
 			}
 		);
@@ -211,13 +217,16 @@ describe( 'watchBlocks', () => {
 		subscribeCallback();
 
 		const block2 = {
+			// eslint-disable-next-line sitekit/acronym-case
 			clientId: 'block-multi-2',
-			name: CONTRIBUE_WITH_GOOGLE_BLOCK,
+			name: CONTRIBUTE_WITH_GOOGLE_BLOCK,
 		};
 
 		mockSelectReturnValue.getBlocks.mockReturnValue( [ block1, block2 ] );
 		mockSelectReturnValue.isBlockSelected.mockImplementation(
+			// eslint-disable-next-line sitekit/acronym-case
 			( blockId ) => {
+				// eslint-disable-next-line sitekit/acronym-case
 				return blockId === 'block-multi-2';
 			}
 		);

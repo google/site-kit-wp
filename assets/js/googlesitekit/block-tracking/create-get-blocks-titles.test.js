@@ -22,7 +22,7 @@
 import { select, subscribe } from 'googlesitekit-data';
 import { createGetBlockTitle } from './create-get-blocks-titles';
 import {
-	CONTRIBUE_WITH_GOOGLE_BLOCK,
+	CONTRIBUTE_WITH_GOOGLE_BLOCK,
 	SUBSCRIBE_WITH_GOOGLE_BLOCK,
 } from '@/blocks/reader-revenue-manager/common/constants';
 
@@ -87,7 +87,7 @@ describe( 'getBlocksTitles', () => {
 	it( 'should filter inserter items to only requested blocks', () => {
 		const blocks = [
 			SUBSCRIBE_WITH_GOOGLE_BLOCK,
-			CONTRIBUE_WITH_GOOGLE_BLOCK,
+			CONTRIBUTE_WITH_GOOGLE_BLOCK,
 		];
 
 		mockSelectReturnValue.getInserterItems.mockReturnValue( [
@@ -100,7 +100,7 @@ describe( 'getBlocksTitles', () => {
 				title: 'Paragraph',
 			},
 			{
-				id: CONTRIBUE_WITH_GOOGLE_BLOCK,
+				id: CONTRIBUTE_WITH_GOOGLE_BLOCK,
 				title: 'Contribute with Google',
 			},
 			{
@@ -116,7 +116,7 @@ describe( 'getBlocksTitles', () => {
 		expect( getBlockTitle( SUBSCRIBE_WITH_GOOGLE_BLOCK ) ).toBe(
 			'Subscribe with Google'
 		);
-		expect( getBlockTitle( CONTRIBUE_WITH_GOOGLE_BLOCK ) ).toBe(
+		expect( getBlockTitle( CONTRIBUTE_WITH_GOOGLE_BLOCK ) ).toBe(
 			'Contribute with Google'
 		);
 		expect( getBlockTitle( 'core/paragraph' ) ).toBeUndefined();
@@ -126,7 +126,7 @@ describe( 'getBlocksTitles', () => {
 	it( 'should unsubscribe once all requested block titles are found', () => {
 		const blocks = [
 			SUBSCRIBE_WITH_GOOGLE_BLOCK,
-			CONTRIBUE_WITH_GOOGLE_BLOCK,
+			CONTRIBUTE_WITH_GOOGLE_BLOCK,
 		];
 
 		mockSelectReturnValue.getInserterItems.mockReturnValueOnce( [
@@ -148,7 +148,7 @@ describe( 'getBlocksTitles', () => {
 				title: 'Subscribe with Google',
 			},
 			{
-				id: CONTRIBUE_WITH_GOOGLE_BLOCK,
+				id: CONTRIBUTE_WITH_GOOGLE_BLOCK,
 				title: 'Contribute with Google',
 			},
 		] );
@@ -180,7 +180,7 @@ describe( 'getBlocksTitles', () => {
 	it( 'should maintain its block titles map across multiple subscription callbacks', () => {
 		const blocks = [
 			SUBSCRIBE_WITH_GOOGLE_BLOCK,
-			CONTRIBUE_WITH_GOOGLE_BLOCK,
+			CONTRIBUTE_WITH_GOOGLE_BLOCK,
 		];
 
 		mockSelectReturnValue.getInserterItems.mockReturnValueOnce( [
@@ -204,7 +204,7 @@ describe( 'getBlocksTitles', () => {
 				title: 'Subscribe with Google',
 			},
 			{
-				id: CONTRIBUE_WITH_GOOGLE_BLOCK,
+				id: CONTRIBUTE_WITH_GOOGLE_BLOCK,
 				title: 'Contribute with Google',
 			},
 		] );
@@ -214,7 +214,7 @@ describe( 'getBlocksTitles', () => {
 		expect( getBlockTitle( SUBSCRIBE_WITH_GOOGLE_BLOCK ) ).toBe(
 			'Subscribe with Google'
 		);
-		expect( getBlockTitle( CONTRIBUE_WITH_GOOGLE_BLOCK ) ).toBe(
+		expect( getBlockTitle( CONTRIBUTE_WITH_GOOGLE_BLOCK ) ).toBe(
 			'Contribute with Google'
 		);
 	} );
