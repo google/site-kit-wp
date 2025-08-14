@@ -93,9 +93,9 @@ class User_Input {
 	 */
 	public function __construct(
 		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Survey_Queue $survey_queue = null
+		?Options $options = null,
+		?User_Options $user_options = null,
+		?Survey_Queue $survey_queue = null
 	) {
 		$this->site_specific_answers = new Site_Specific_Answers( $options ?: new Options( $context ) );
 		$this->user_options          = $user_options ?: new User_Options( $context );
