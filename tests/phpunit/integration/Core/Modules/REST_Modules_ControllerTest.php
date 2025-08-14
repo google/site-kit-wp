@@ -635,7 +635,7 @@ class REST_Modules_ControllerTest extends TestCase {
 
 			$response = $this->request_get_module_setings();
 
-			$this->assertEquals( '403', $response->get_status(), 'Non-admins should require view-only access.' );
+			$this->assertEquals( '403', $response->get_status(), 'Response status should return 403 Forbidden when a non-admin user attempts access without view-only permissions.' );
 		}
 	}
 
