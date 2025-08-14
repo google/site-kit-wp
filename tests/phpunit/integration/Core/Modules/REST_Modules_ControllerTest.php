@@ -1005,7 +1005,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 403, $response->get_status(), 'POST data should require active module.' );
+		$this->assertEquals( 403, $response->get_status(), 'POST request to module data endpoint should return 403 when module is inactive.' );
 		$this->assertEquals( 'module_not_active', $response->get_data()['code'], 'Error code should indicate module not active.' );
 		$this->assertEquals( 'Module must be active to request data.', $response->get_data()['message'], 'Error message should indicate active module required.' );
 	}
