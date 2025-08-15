@@ -44,6 +44,7 @@ import {
 } from '../../datastore/constants';
 import { parseAccountIDFromExistingTag } from '../../util';
 import Notice from '../../../../components/Notice';
+import useFormValue from '../../../../hooks/useFormValue';
 
 export default function AdBlockingRecoveryToggle() {
 	const viewContext = useViewContext();
@@ -71,17 +72,13 @@ export default function AdBlockingRecoveryToggle() {
 	const learnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'ad-blocking-recovery' )
 	);
-	const adBlockingRecoveryToggle = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AD_BLOCKING_FORM_SETTINGS,
-			'adBlockingRecoveryToggle'
-		)
+	const adBlockingRecoveryToggle = useFormValue(
+		AD_BLOCKING_FORM_SETTINGS,
+		'adBlockingRecoveryToggle'
 	);
-	const adBlockingRecoveryErrorToggle = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AD_BLOCKING_FORM_SETTINGS,
-			'adBlockingRecoveryErrorToggle'
-		)
+	const adBlockingRecoveryErrorToggle = useFormValue(
+		AD_BLOCKING_FORM_SETTINGS,
+		'adBlockingRecoveryErrorToggle'
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
