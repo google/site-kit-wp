@@ -119,8 +119,8 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 			10
 		);
 
-		// Register the Enhanced Conversions class if the feature flag is enabled.
-		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
+		// Register the Enhanced Conversions class if the feature flag is enabled and the Ads module is connected.
+		if ( $this->is_connected() && Feature_Flags::enabled( 'gtagUserData' ) ) {
 			$enhanced_conversions = new Enhanced_Conversions();
 			$enhanced_conversions->register();
 		}
