@@ -37,8 +37,9 @@ class PointersTest extends TestCase {
 		remove_all_actions( 'admin_enqueue_scripts' );
 		remove_all_actions( 'admin_print_footer_scripts' );
 
-		// Register the core WordPress script that the Pointers class depends on.
+		// Register the core WordPress script/style that the Pointers class depends on.
 		wp_register_script( 'wp-pointer', '', array(), GOOGLESITEKIT_VERSION, true );
+		wp_register_style( 'wp-pointer', '', array(), GOOGLESITEKIT_VERSION, true );
 
 		$this->pointers = new Pointers();
 		$this->pointers->register();

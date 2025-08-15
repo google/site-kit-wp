@@ -81,10 +81,13 @@ class TestCase extends WP_UnitTestCase {
 		// Clear screen related globals.
 		unset( $GLOBALS['current_screen'], $GLOBALS['taxnow'], $GLOBALS['typenow'] );
 
-		// Clean up scripts hooks to avoid interefence between tests
+		// Clean up scripts and styles hooks to avoid interference between tests.
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
+		wp_styles()->registered  = array();
+		wp_styles()->queue       = array();
+		wp_styles()->done        = array();
 	}
 
 	/**

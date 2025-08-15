@@ -71,7 +71,7 @@ class Enhanced_Conversions {
 	 * Conditionally enqueues the necessary script for Enhanced Conversions.
 	 *
 	 * @since 1.159.0
-	 * @since n.e.x.t Add the hashed user data to gtag if it exists
+	 * @since n.e.x.t Add the hashed user data to the GTag if it exists.
 	 *
 	 * @param GTag $gtag GTag instance.
 	 */
