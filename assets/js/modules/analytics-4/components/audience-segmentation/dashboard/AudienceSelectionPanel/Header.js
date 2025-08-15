@@ -43,7 +43,9 @@ export default function Header( { closePanel } ) {
 	const isViewOnly = useViewOnly();
 
 	const adminSettingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getSiteKitAdminSettingsURL()
+		select( CORE_SITE ).getSiteKitAdminSettingsURL( {
+			scrollTo: 'visitor-groups',
+		} )
 	);
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingUserAudienceSettings()
