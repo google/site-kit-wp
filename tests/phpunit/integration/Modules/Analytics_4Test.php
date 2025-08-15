@@ -1322,7 +1322,6 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_measurement_id',
 				'analytics_4_use_snippet',
 				'analytics_4_available_custom_dimensions',
-				'analytics_4_ads_conversion_id',
 				'analytics_4_ads_linked',
 				'analytics_4_ads_linked_last_synced_at',
 				'analytics_4_site_kit_audiences',
@@ -1337,7 +1336,6 @@ class Analytics_4Test extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'analytics_4_account_id',
-				'analytics_4_ads_conversion_id',
 				'analytics_4_available_custom_dimensions',
 				'analytics_4_measurement_id',
 				'analytics_4_property_id',
@@ -1365,7 +1363,6 @@ class Analytics_4Test extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'analytics_4_account_id',
-				'analytics_4_ads_conversion_id',
 				'analytics_4_available_custom_dimensions',
 				'analytics_4_measurement_id',
 				'analytics_4_property_id',
