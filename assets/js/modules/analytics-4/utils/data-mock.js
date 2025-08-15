@@ -722,6 +722,17 @@ export function provideAnalytics4MockReport( registry, options ) {
 		.receiveGetReport( getAnalytics4MockResponse( options ), { options } );
 }
 
+/**
+ * Provides a GA4 report with data for a specified date range removed.
+ *
+ * @since 1.155.0
+ *
+ * @param {Object} registry                   The registry instance to dispatch the report to.
+ * @param {Object} reportOptions              Options used to generate the mock GA4 report.
+ * @param {Object} [options]                  Optional behavior configuration.
+ * @param {string} [options.dateRangeKey]     The date range key to match in the report.
+ * @param {string} [options.emptyRowBehavior] Behavior for matching rows: zero out metrics or remove rows.
+ */
 export function provideAnalyticsReportWithoutDateRangeData(
 	registry,
 	reportOptions,
