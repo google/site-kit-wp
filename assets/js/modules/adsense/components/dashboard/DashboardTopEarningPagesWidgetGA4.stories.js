@@ -37,7 +37,7 @@ import {
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,

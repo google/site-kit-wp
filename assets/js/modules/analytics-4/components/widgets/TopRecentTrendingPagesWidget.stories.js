@@ -43,7 +43,7 @@ import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 
 const KM_WIDGET_DEF =
 	KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ];

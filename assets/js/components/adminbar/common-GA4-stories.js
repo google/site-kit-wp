@@ -27,7 +27,7 @@ import {
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../tests/js/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import {
 	getAnalytics4MockResponse,
 	provideAnalyticsReportWithoutDateRangeData,

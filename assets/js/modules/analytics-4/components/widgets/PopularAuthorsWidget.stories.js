@@ -31,7 +31,7 @@ import { provideModules } from '../../../../../../tests/js/utils';
 import { provideCustomDimensionError } from '../../utils/custom-dimensions';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,

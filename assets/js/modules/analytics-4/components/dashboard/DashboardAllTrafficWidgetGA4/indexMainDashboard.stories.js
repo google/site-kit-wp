@@ -37,7 +37,7 @@ import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/ut
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import * as __fixtures__ from '../../../datastore/__fixtures__';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../tests/js/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import DashboardAllTrafficWidgetGA4 from '.';
 import {
 	limitResponseToSingleDate,

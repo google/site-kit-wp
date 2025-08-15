@@ -32,7 +32,7 @@ import {
 	provideAnalytics4MockReport,
 	provideAnalyticsReportWithoutDateRangeData,
 } from '../../modules/analytics-4/utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../tests/js/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import { DAY_IN_SECONDS } from '../../util';
 import * as __fixtures__ from '../../modules/analytics-4/datastore/__fixtures__';
 import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
