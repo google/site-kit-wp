@@ -125,6 +125,8 @@ class ModuleTest extends TestCase {
 		$module           = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$module->owner_id = $user_id;
 
+		$module->register();
+
 		// Verify that the user owns the module, and that it is shareable.
 		$this->assertEquals( $user_id, $module->get_owner_id() );
 		$this->assertTrue( $module->is_shareable() );
@@ -159,6 +161,8 @@ class ModuleTest extends TestCase {
 		$module           = new FakeModule( $context, $options, $user_options, $authentication );
 		$module->owner_id = $user_id;
 
+		$module->register();
+
 		// Ensure sharing is enabled for the module.
 		add_option(
 			Module_Sharing_Settings::OPTION,
@@ -192,6 +196,8 @@ class ModuleTest extends TestCase {
 
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
+		$module->register();
+
 		// Verify that the user does not own the module, and that it is shareable.
 		$this->assertNotEquals( $user_id, $module->get_owner_id() );
 		$this->assertTrue( $module->is_shareable() );
@@ -224,6 +230,8 @@ class ModuleTest extends TestCase {
 		$permissions->register();
 
 		$module = new FakeModule( $context, $options, $user_options, $authentication );
+
+		$module->register();
 
 		// Ensure sharing is enabled for the module.
 		add_option(

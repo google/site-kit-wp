@@ -38,6 +38,7 @@ import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { elementsOverlap } from '../../../util/geometry';
 import whenActive from '../../../util/when-active';
 import useFormValue from '../../../hooks/useFormValue';
+import P from '../../Typography/P';
 
 function CustomDimensionsNotice() {
 	const selectedMetrics = useFormValue(
@@ -116,7 +117,7 @@ function CustomDimensionsNotice() {
 
 	return (
 		<div className="googlesitekit-selection-panel-notice" ref={ noticeRef }>
-			<p>{ customDimensionMessage }</p>
+			<P>{ customDimensionMessage }</P>
 		</div>
 	);
 }
