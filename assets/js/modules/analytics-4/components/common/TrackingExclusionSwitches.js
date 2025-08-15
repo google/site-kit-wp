@@ -29,6 +29,7 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import Typography from '../../../../components/Typography';
+import P from '../../../../components/Typography/P';
 
 export const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
 export const TRACKING_CONTENT_CREATORS = 'contentCreators';
@@ -151,7 +152,7 @@ export default function TrackingExclusionSwitches() {
 						</div>
 					) }
 				</div>
-				<p>{ message }</p>
+				<P>{ message }</P>
 			</div>
 		</div>
 	);

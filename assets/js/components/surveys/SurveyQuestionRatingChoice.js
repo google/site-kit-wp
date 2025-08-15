@@ -30,6 +30,7 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
+import P from '../Typography/P';
 import IconSurveyUnhappy from '../../../svg/icons/survey-unhappy.svg';
 import IconSurveyDissatisfied from '../../../svg/icons/survey-dissatisfied.svg';
 import IconSurveyNeutral from '../../../svg/icons/survey-neutral.svg';
@@ -67,7 +68,7 @@ function SurveyQuestionRatingChoice( { choice, answerQuestion } ) {
 				onClick={ handleButtonClick }
 			/>
 
-			<p>{ choice.text }</p>
+			<P>{ choice.text }</P>
 		</div>
 	);
 }

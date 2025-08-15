@@ -26,6 +26,7 @@ import {
 	CUSTOM_DIMENSION_DEFINITIONS,
 	DATE_RANGE_OFFSET,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
+	RESOURCE_TYPE_AUDIENCE,
 } from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import {
@@ -40,7 +41,6 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getPreviousDate } from '../../../util';
 import { isInsufficientPermissionsError } from '../../../util/errors';
 import { validateAudience } from '../utils/validation';
-import { RESOURCE_TYPE_AUDIENCE } from './partial-data';
 
 const MAX_INITIAL_AUDIENCES = 2;
 const START_AUDIENCES_SETUP = 'START_AUDIENCES_SETUP';

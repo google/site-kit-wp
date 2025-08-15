@@ -79,7 +79,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				<ConversionTrackingToggle>
 					{ createInterpolateElement(
 						__(
-							'To track the performance of your campaigns, Site Kit will enable enhanced conversion tracking. <a>Learn more</a>',
+							'To track the performance of your campaigns, Site Kit will enable plugin conversion tracking. <a>Learn more</a>',
 							'google-site-kit'
 						),
 						{

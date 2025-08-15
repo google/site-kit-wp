@@ -34,7 +34,6 @@ import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { DAY_IN_SECONDS } from '../../../util';
 import Description from './Description';
 import BannerNotification, {
@@ -56,12 +55,6 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 	const userRecoverableModuleSlugs = useSelect( ( select ) =>
 		select( CORE_MODULES ).getUserRecoverableModuleSlugs()
 	);
-
-	const documentationURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getDocumentationLinkURL(
-			'dashboard-sharing'
-		);
-	} );
 
 	// The alert renders conditional copy and actions based on:
 	// 1. If there is one or more than one module to recover.
@@ -169,14 +162,6 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 							}
 						/>
 					)
-				}
-				learnMoreLink={
-					! isLoading
-						? {
-								label: __( 'Learn more', 'google-site-kit' ),
-								href: documentationURL,
-						  }
-						: undefined
 				}
 				additionalDescription={
 					! isLoading && (

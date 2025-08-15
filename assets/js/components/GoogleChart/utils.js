@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -132,22 +130,20 @@ export function getCombinedChartEvents( chartEvents, onReady, onSelect ) {
  *
  * @since 1.93.0
  * @since 1.119.0 Added `breakpoint` parameter.
+ * @since n.e.x.t Refactored `gatheringData`, `chartType`, `startDate`, `endDate`, and `breakpoint` to be named parameters.
  *
- * @param {Object}  options       Configuration data.
- * @param {boolean} gatheringData If chart is in gathering info state.
- * @param {string}  chartType     Chart types: PieChart, LineChart.
- * @param {string}  startDate     Start date for a user data range.
- * @param {string}  endDate       End date for a user data range.
- * @param {string}  breakpoint    Current breakpoint.
- * @return {Object} Chart options configuration.
+ * @param {Object}  options                     Chart options to extend.
+ * @param {Object}  configuration               Configuration for the extended chart options.
+ * @param {boolean} configuration.gatheringData If chart is in gathering info state.
+ * @param {string}  configuration.chartType     Chart types: PieChart, LineChart.
+ * @param {string}  configuration.startDate     Start date for a user data range.
+ * @param {string}  configuration.endDate       End date for a user data range.
+ * @param {string}  configuration.breakpoint    Current breakpoint.
+ * @return {Object} Chart options object.
  */
 export function getChartOptions(
 	options,
-	gatheringData,
-	chartType,
-	startDate,
-	endDate,
-	breakpoint
+	{ gatheringData, chartType, startDate, endDate, breakpoint }
 ) {
 	const chartOptions = cloneDeep( options );
 	if ( gatheringData && chartType === 'LineChart' ) {

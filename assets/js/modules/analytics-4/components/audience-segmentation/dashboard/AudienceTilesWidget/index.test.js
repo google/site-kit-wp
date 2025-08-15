@@ -315,9 +315,8 @@ describe( 'AudienceTilesWidget', () => {
 			},
 			{ propertyID: '12345' }
 		);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 					return acc;
@@ -328,7 +327,8 @@ describe( 'AudienceTilesWidget', () => {
 				property: {
 					12345: 20201220,
 				},
-			} );
+			},
+		} );
 
 		muteFetch(
 			new RegExp(
