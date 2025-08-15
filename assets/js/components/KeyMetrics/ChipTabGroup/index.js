@@ -77,7 +77,9 @@ const icons = {
 	[ KEY_METRICS_GROUP_CURRENT.SLUG ]: CheckMark,
 	[ KEY_METRICS_GROUP_SUGGESTED.SLUG ]: StarFill,
 };
+const emptyArray = Object.freeze( [] );
 
+/* eslint complexity: [ "error", 17 ] */
 export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	const containerRef = useRef();
 	const [ isActive, setIsActive ] = useState(
@@ -94,21 +96,13 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 		KEY_METRICS_SELECTION_FORM,
 		KEY_METRICS_SELECTED
 	);
-	const effectiveSelection = useSelect(
-		( select ) =>
-			select( CORE_FORMS ).getValue(
-				KEY_METRICS_SELECTION_FORM,
-				EFFECTIVE_SELECTION
-			) || []
-	);
+	const effectiveSelection =
+		useFormValue( KEY_METRICS_SELECTION_FORM, EFFECTIVE_SELECTION ) ||
+		emptyArray;
+	const unstagedSelection =
+		useFormValue( KEY_METRICS_SELECTION_FORM, UNSTAGED_SELECTION ) ||
+		emptyArray;
 
-	const unstagedSelection = useSelect(
-		( select ) =>
-			select( CORE_FORMS ).getValue(
-				KEY_METRICS_SELECTION_FORM,
-				UNSTAGED_SELECTION
-			) || []
-	);
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()
 	);

@@ -45,6 +45,7 @@ import { SURVEY_QUESTION_TYPE } from './constants';
 import useFormValue from '../../../hooks/useFormValue';
 
 const SURVEY_ANSWER_DELAY_MS = 300;
+const defaultAnswers = Object.freeze( [] );
 
 export default function CurrentSurvey() {
 	const [ sentSurveyShownEvent, setSentSurveyShownEvent ] = useState( false );
@@ -69,9 +70,7 @@ export default function CurrentSurvey() {
 		? `survey-${ surveySession.session_id }`
 		: null;
 	const shouldHide = useFormValue( formName, 'hideSurvey' );
-	const answers = useSelect(
-		( select ) => select( CORE_FORMS ).getValue( formName, 'answers' ) || []
-	);
+	const answers = useFormValue( formName, 'answers' ) || defaultAnswers;
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { sendSurveyEvent } = useDispatch( CORE_USER );
