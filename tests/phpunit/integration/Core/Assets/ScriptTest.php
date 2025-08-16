@@ -19,13 +19,6 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class ScriptTest extends TestCase {
 
-	public function set_up() {
-		parent::set_up();
-
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-	}
-
 	public function test_get_handle() {
 		$script = new Script( 'test-handle', array() );
 

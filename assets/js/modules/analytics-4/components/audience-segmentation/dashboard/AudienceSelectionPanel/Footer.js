@@ -39,19 +39,17 @@ import {
 	MAX_SELECTED_AUDIENCES_COUNT,
 	MIN_SELECTED_AUDIENCES_COUNT,
 } from './constants';
-import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { SelectionPanelFooter } from '../../../../../../components/SelectionPanel';
+import useFormValue from '../../../../../../hooks/useFormValue';
 
 export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 	const viewContext = useViewContext();
 
-	const selectedItems = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_SELECTION_FORM,
-			AUDIENCE_SELECTED
-		)
+	const selectedItems = useFormValue(
+		AUDIENCE_SELECTION_FORM,
+		AUDIENCE_SELECTED
 	);
 	const audienceSettings = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getUserAudienceSettings()

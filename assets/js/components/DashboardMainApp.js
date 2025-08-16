@@ -78,6 +78,7 @@ import {
 	NOTIFICATION_AREAS,
 } from '../googlesitekit/notifications/constants';
 import { AdminMenuTooltip } from './AdminMenuTooltip';
+import useFormValue from '../hooks/useFormValue';
 
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
@@ -93,11 +94,9 @@ export default function DashboardMainApp() {
 	const grantedScopes = useSelect( ( select ) =>
 		select( CORE_USER ).getGrantedScopes()
 	);
-	const temporaryPersistedPermissionsError = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-			'permissionsError'
-		)
+	const temporaryPersistedPermissionsError = useFormValue(
+		FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+		'permissionsError'
 	);
 	const hasReceivedGrantedScopes =
 		grantedScopes !== undefined &&

@@ -50,6 +50,7 @@ import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useSh
 import ProcessingBanner from './ProcessingBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
+import useFormValue from '../../../../../hooks/useFormValue';
 
 export default function EnhancedMeasurementActivationBanner( {
 	id,
@@ -63,9 +64,7 @@ export default function EnhancedMeasurementActivationBanner( {
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' )
-	);
+	const autoSubmit = useFormValue( FORM_SETUP, 'autoSubmit' );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );

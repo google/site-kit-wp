@@ -32,18 +32,16 @@ import {
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 } from '../../googlesitekit/datastore/user/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import BannerNotification from '../../googlesitekit/notifications/components/layout/BannerNotification';
 import { TYPES } from '../Notice/constants';
+import useFormValue from '../../hooks/useFormValue';
 
 export default function UnsatisfiedScopesAlertGTE( { id, Notification } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 
-	const temporaryPersistedPermissionsError = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-			'permissionsError'
-		)
+	const temporaryPersistedPermissionsError = useFormValue(
+		FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+		'permissionsError'
 	);
 	const connectURL = useSelect( ( select ) =>
 		select( CORE_USER ).getConnectURL( {
