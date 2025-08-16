@@ -95,7 +95,9 @@ export default function SettingsCardVisitorGroups() {
 
 		setTimeout( () => {
 			global.scrollTo( {
-				top: getNavigationalScrollTop( '#visitor-groups', breakpoint ),
+				top:
+					getNavigationalScrollTop( '#visitor-groups', breakpoint ) -
+					20,
 				behavior: 'smooth',
 			} );
 		}, 50 );
@@ -113,16 +115,14 @@ export default function SettingsCardVisitorGroups() {
 
 	return (
 		<Layout
+			id="visitor-groups"
 			className="googlesitekit-settings-meta"
 			title={ __( 'Visitor groups', 'google-site-kit' ) }
 			header
 			fill
 			rounded
 		>
-			<div
-				id="visitor-groups"
-				className="googlesitekit-settings-module googlesitekit-settings-module--active"
-			>
+			<div className="googlesitekit-settings-module googlesitekit-settings-module--active">
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
