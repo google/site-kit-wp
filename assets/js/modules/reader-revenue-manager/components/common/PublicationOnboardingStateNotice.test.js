@@ -153,7 +153,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 		const mockNow = new Date( '2020-01-01 12:30:00' ).getTime();
 		Date.now = jest.fn( () => mockNow );
 
-		jest.useFakeTimers();
+		jest.useFakeTimers( 'modern' );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -195,6 +195,11 @@ describe( 'PublicationOnboardingStateNotice', () => {
 
 		act( () => {
 			global.window.dispatchEvent( new Event( 'focus' ) );
+		} );
+
+		// Allow microtasks to flush after triggering the focus event.
+		await act( async () => {
+			await jest.runAllTimersAsync();
 		} );
 
 		await waitFor( () => {

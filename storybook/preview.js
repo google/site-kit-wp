@@ -41,11 +41,7 @@ import { resetGlobals } from './utils/resetGlobals';
 import { bootstrapFetchMocks } from './fetch-mocks';
 import { enabledFeatures } from '../assets/js/features';
 import { Cell, Grid, Row } from '../assets/js/material-components';
-import {
-	createTestRegistry,
-	provideUserInfo,
-	setEnabledFeatures,
-} from '../tests/js/test-utils';
+import { createTestRegistry, provideUserInfo } from '../tests/js/test-utils';
 import InViewProvider from '../assets/js/components/InViewProvider';
 import FeaturesProvider from '../assets/js/components/FeaturesProvider';
 
@@ -94,7 +90,10 @@ export const decorators = [
 		useUnmount( () => enabledFeatures.clear() );
 
 		if ( isFirstMount ) {
-			setEnabledFeatures( features );
+			enabledFeatures.clear();
+			for ( const feature of features ) {
+				enabledFeatures.add( feature );
+			}
 		}
 
 		const registry = createTestRegistry();

@@ -30,14 +30,11 @@ import { map, reduce, take, toArray, mergeMap } from 'rxjs/operators';
  * Internal dependencies
  */
 import { MODULES_ANALYTICS_4 } from '../datastore/constants';
-import {
-	isValidDateString,
-	stringifyObject,
-	stringToDate,
-} from '../../../util';
+import { isValidDateString, stringToDate } from '../../../util/dates';
+import { stringifyObject } from '../../../util/stringify';
 import { isValidDimensionFilters } from './report-validation';
 import { isValidPivotsObject } from './report-pivots-validation';
-import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '../../../../../tests/js/utils/zeroReports';
+import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '../../../util/zero-reports';
 
 export const STRATEGY_CARTESIAN = 'cartesian';
 export const STRATEGY_ZIP = 'zip';

@@ -17,21 +17,12 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
  * Internal dependencies
  */
 import { provideModules } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import AdSenseConnectCTAWidget from './AdSenseConnectCTAWidget';
-import {
-	useBreakpoint,
-	BREAKPOINT_SMALL,
-} from '../../../../hooks/useBreakpoint';
 import { MODULE_SLUG_ADSENSE } from '../../constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -82,8 +73,6 @@ export default {
 				] );
 			}
 
-			const breakpoint = useBreakpoint();
-
 			return (
 				<div
 					style={ {
@@ -96,16 +85,7 @@ export default {
 						{ /* eslint-disable-next-line jsx-a11y/anchor-has-content */ }
 						<a href="http://test.test/?page=googlesitekit-settings" />
 					</div>
-					<div
-						style={ { flex: 1 } }
-						className={ classnames( {
-							// Turn off animations for non-mobile breakpoints. The standard VRT behaviour is to set
-							// animation-duration to 0ms, this does not play well with this component as there is a
-							// continual chain of animation at non-mobile breakpoints.
-							'googlesitekit-vrt-animation-none':
-								breakpoint !== BREAKPOINT_SMALL,
-						} ) }
-					>
+					<div style={ { flex: 1 } }>
 						<WithRegistrySetup func={ setupRegistry }>
 							<Story />
 						</WithRegistrySetup>

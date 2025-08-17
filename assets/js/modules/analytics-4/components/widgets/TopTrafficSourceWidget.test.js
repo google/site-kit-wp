@@ -31,7 +31,7 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '../../../../../../tests/js/utils/zeroReports';
+import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '../../../../util/zero-reports';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
