@@ -24,7 +24,7 @@
  * @param {string} type Browser storage to test. ex localStorage or sessionStorage.
  * @return {boolean} True if the given storage is available, false otherwise.
  */
-export const storageAvailable = ( type ) => {
+export function storageAvailable( type ) {
 	const storage = global[ type ];
 	if ( ! storage ) {
 		return false;
@@ -51,7 +51,7 @@ export const storageAvailable = ( type ) => {
 			0 !== storage.length
 		);
 	}
-};
+}
 
 // Custom no-op implementation of window.Storage.
 class NullStorage {
@@ -90,7 +90,7 @@ let storageObj;
  * @return {Storage} Either window.sessionStorage, window.localStorage', or a
  *                   no-op implementation if neither is available.
  */
-export const getStorage = () => {
+export function getStorage() {
 	// Only run the logic to determine the storage object once.
 	if ( ! storageObj ) {
 		if ( storageAvailable( 'sessionStorage' ) ) {
@@ -102,4 +102,4 @@ export const getStorage = () => {
 		}
 	}
 	return storageObj;
-};
+}

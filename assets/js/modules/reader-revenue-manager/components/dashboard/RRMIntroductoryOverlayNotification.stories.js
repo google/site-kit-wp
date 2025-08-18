@@ -52,7 +52,7 @@ export default {
 	title: 'Modules/ReaderRevenueManager/Components/Dashboard/RRMIntroductoryOverlayNotification',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( {
@@ -60,7 +60,7 @@ export default {
 						publicationOnboardingState: 'ONBOARDING_COMPLETE',
 						paymentOption: args.paymentOption,
 					} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

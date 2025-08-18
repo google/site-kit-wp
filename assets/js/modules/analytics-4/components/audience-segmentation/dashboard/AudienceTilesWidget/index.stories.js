@@ -240,9 +240,8 @@ DefaultWithZeroTile.args = {
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 		);
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: {
 					'properties/12345/audiences/1': dataAvailabilityDate,
 					'properties/12345/audiences/3': audienceDate,
@@ -250,7 +249,8 @@ DefaultWithZeroTile.args = {
 				},
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 	},
 };
 DefaultWithZeroTile.scenario = {};
@@ -361,16 +361,16 @@ TwoTilesWithZeroTile.args = {
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 		);
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: {
 					'properties/12345/audiences/1': dataAvailabilityDate,
 					'properties/12345/audiences/4': audienceDate,
 				},
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 	},
 };
 TwoTilesWithZeroTile.scenario = {};
@@ -421,15 +421,15 @@ ZeroTileWithPlaceholder.args = {
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 		);
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: {
 					'properties/12345/audiences/1': dataAvailabilityDate,
 				},
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 	},
 };
 ZeroTileWithPlaceholder.scenario = {};
@@ -457,9 +457,8 @@ DefaultAudiencesPartialData.args = {
 			propertyID: '12345',
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: {
 					'properties/12345/audiences/1': dataAvailabilityDate,
 					'properties/12345/audiences/2': dataAvailabilityDate,
@@ -468,7 +467,8 @@ DefaultAudiencesPartialData.args = {
 				property: {
 					12345: 20200101,
 				},
-			} );
+			},
+		} );
 	},
 };
 DefaultAudiencesPartialData.scenario = {};
@@ -497,9 +497,8 @@ SiteKitAudiencesPartialData.args = {
 			propertyID: '12345',
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: {
 					'properties/12345/audiences/3': dataAvailabilityDate,
 					'properties/12345/audiences/4': dataAvailabilityDate,
@@ -508,7 +507,8 @@ SiteKitAudiencesPartialData.args = {
 				property: {
 					12345: 20200101,
 				},
-			} );
+			},
+		} );
 
 		availableAudiences
 			.filter(
@@ -775,7 +775,7 @@ export default {
 					'audience-segmentation_use-audience-tiles-reports_hook_newVsReturningReportOptions',
 			};
 
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry, {
 					grantedScopes,
 					authenticated: isAuthenticated,
@@ -870,13 +870,13 @@ export default {
 				availableAudiences.forEach( ( audience ) => {
 					audienceResourceData[ audience.name ] = audienceDate;
 				} );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: audienceResourceData,
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -889,7 +889,7 @@ export default {
 					reportOptions,
 					newVsReturningReportOptions,
 				} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

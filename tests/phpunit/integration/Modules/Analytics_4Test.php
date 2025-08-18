@@ -1322,7 +1322,6 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_measurement_id',
 				'analytics_4_use_snippet',
 				'analytics_4_available_custom_dimensions',
-				'analytics_4_ads_conversion_id',
 				'analytics_4_ads_linked',
 				'analytics_4_ads_linked_last_synced_at',
 				'analytics_4_site_kit_audiences',
@@ -1337,7 +1336,6 @@ class Analytics_4Test extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'analytics_4_account_id',
-				'analytics_4_ads_conversion_id',
 				'analytics_4_available_custom_dimensions',
 				'analytics_4_measurement_id',
 				'analytics_4_property_id',
@@ -1365,7 +1363,6 @@ class Analytics_4Test extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'analytics_4_account_id',
-				'analytics_4_ads_conversion_id',
 				'analytics_4_available_custom_dimensions',
 				'analytics_4_measurement_id',
 				'analytics_4_property_id',
@@ -3372,9 +3369,6 @@ class Analytics_4Test extends TestCase {
 	 * @param bool $is_content_creator
 	 */
 	public function test_tracking_opt_out_snippet( $settings, $logged_in, $is_tracking_active, $is_content_creator = false ) {
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
 		wp_styles(); // Prevent potential ->queue of non-object error.
 
 		// Remove irrelevant script from throwing errors in CI from readfile().
@@ -4659,9 +4653,6 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
 		remove_all_actions( 'template_redirect' );
 		$analytics->register();
 

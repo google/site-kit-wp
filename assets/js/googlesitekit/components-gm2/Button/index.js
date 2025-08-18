@@ -68,7 +68,7 @@ const Button = forwardRef(
 		}, [] );
 		const mergedRefs = useMergedRef( ref, buttonRef );
 
-		const getAriaLabel = () => {
+		function getAriaLabel() {
 			let label = ariaLabel;
 
 			if ( target !== '_blank' ) {
@@ -90,7 +90,7 @@ const Button = forwardRef(
 			}
 
 			return newTabText;
-		};
+		}
 
 		const tooltipTitle = ! hideTooltipTitle
 			? title || customizedTooltip || ariaLabel

@@ -38,7 +38,6 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 import { NOTIFICATION_AREAS } from '../../../../../googlesitekit/notifications/constants';
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../datastore/constants';
-import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/SettingsCardVisitorGroups/SetupSuccess';
 import useViewContext from '../../../../../hooks/useViewContext';
 import { useShowTooltip } from '../../../../../components/AdminMenuTooltip';
 import { WEEK_IN_SECONDS } from '../../../../../util';
@@ -53,6 +52,7 @@ import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import AudienceSegmentationSetupSuccessSubtleNotification, {
 	AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
 } from './AudienceSegmentationSetupSuccessSubtleNotification';
+import useFormValue from '../../../../../hooks/useFormValue';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
@@ -84,16 +84,12 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
 
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_SEGMENTATION_SETUP_FORM,
-			'autoSubmit'
-		)
+	const autoSubmit = useFormValue(
+		AUDIENCE_SEGMENTATION_SETUP_FORM,
+		'autoSubmit'
 	);
 
 	const [ showErrorModal, setShowErrorModal ] = useState( false );
-
-	const { dismissItem } = useDispatch( CORE_USER );
 
 	const onSuccess = useCallback( () => {
 		registerNotification(
@@ -101,13 +97,10 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 			{
 				Component: AudienceSegmentationSetupSuccessSubtleNotification,
 				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-				isDismissible: true,
 			}
 		);
 		dismissNotification( id );
-		// Dismiss success notification in settings.
-		dismissItem( SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION );
-	}, [ registerNotification, dismissNotification, id, dismissItem ] );
+	}, [ registerNotification, dismissNotification, id ] );
 
 	const onError = useCallback( () => {
 		setShowErrorModal( true );

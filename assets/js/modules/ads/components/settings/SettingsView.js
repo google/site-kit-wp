@@ -37,6 +37,7 @@ import DisplaySetting from '../../../../components/DisplaySetting';
 import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
 import { useFeature } from './../../../../hooks/useFeature';
 import SettingsStatuses from '../../../../components/settings/SettingsStatuses';
+import Typography from '../../../../components/Typography';
 
 export default function SettingsView() {
 	const paxEnabled = useFeature( 'adsPax' );
@@ -97,9 +98,14 @@ export default function SettingsView() {
 
 			{ ! isAdBlockerActive && (
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Conversion ID', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ conversionIDValue === '' &&
 							__( 'None', 'google-site-kit' ) }
@@ -113,9 +119,14 @@ export default function SettingsView() {
 
 			{ ! isAdBlockerActive && isPaxView && (
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="body"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Customer ID', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ extCustomerID === '' &&
 							__( 'None', 'google-site-kit' ) }
@@ -133,7 +144,7 @@ export default function SettingsView() {
 						? [
 								{
 									label: __(
-										'Enhanced Conversion Tracking',
+										'Plugin conversion tracking',
 										'google-site-kit'
 									),
 									status: isConversionTrackingEnabled,

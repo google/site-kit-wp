@@ -40,27 +40,43 @@ describe( 'getWidgetLayout', () => {
 	};
 	const fullOrHalf = { width: [ WIDGET_WIDTHS.FULL, WIDGET_WIDTHS.HALF ] };
 
-	const getQuarterWidget = ( slug ) => ( {
-		slug,
-		width: WIDGET_WIDTHS.QUARTER,
-	} );
-	const getHalfWidget = ( slug ) => ( { slug, width: WIDGET_WIDTHS.HALF } );
-	const getFullWidget = ( slug ) => ( { slug, width: WIDGET_WIDTHS.FULL } );
-	const getHalfOrFullWidget = ( slug ) => ( {
-		slug,
-		width: [ WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.FULL ],
-	} );
+	function getQuarterWidget( slug ) {
+		return {
+			slug,
+			width: WIDGET_WIDTHS.QUARTER,
+		};
+	}
+	function getHalfWidget( slug ) {
+		return { slug, width: WIDGET_WIDTHS.HALF };
+	}
+	function getFullWidget( slug ) {
+		return { slug, width: WIDGET_WIDTHS.FULL };
+	}
+	function getHalfOrFullWidget( slug ) {
+		return {
+			slug,
+			width: [ WIDGET_WIDTHS.HALF, WIDGET_WIDTHS.FULL ],
+		};
+	}
 
-	const getRegularState = () => null;
-	const getReportZeroState = ( moduleSlug ) => ( {
-		Component: ReportZero,
-		metadata: { moduleSlug },
-	} );
-	const getRecoverableModulesState = ( moduleSlugs ) => ( {
-		Component: RecoverableModules,
-		metadata: { moduleSlugs },
-	} );
-	const getNullState = () => ( { Component: Null, metadata: {} } );
+	function getRegularState() {
+		return null;
+	}
+	function getReportZeroState( moduleSlug ) {
+		return {
+			Component: ReportZero,
+			metadata: { moduleSlug },
+		};
+	}
+	function getRecoverableModulesState( moduleSlugs ) {
+		return {
+			Component: RecoverableModules,
+			metadata: { moduleSlugs },
+		};
+	}
+	function getNullState() {
+		return { Component: Null, metadata: {} };
+	}
 
 	it( 'computes expected columnWidths', () => {
 		const widgets = [

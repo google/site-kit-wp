@@ -21,7 +21,7 @@ const IMAGE_DATA_BUFFER = fs.readFileSync( IMAGE_STUB_URL );
 const HEADERS_STUB = {};
 
 module.exports = async function ( page ) {
-	const intercept = async ( request ) => {
+	async function intercept( request ) {
 		if ( IMAGE_URL_RE.test( request.url() ) ) {
 			await request.respond( {
 				body: IMAGE_DATA_BUFFER,
@@ -31,7 +31,7 @@ module.exports = async function ( page ) {
 		} else {
 			request.continue();
 		}
-	};
+	}
 	await page.setRequestInterception( true );
 	page.on( 'request', intercept );
 };

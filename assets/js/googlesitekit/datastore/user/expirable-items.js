@@ -94,7 +94,7 @@ const baseActions = {
 				);
 			} );
 		},
-		function ( items ) {
+		( items ) => {
 			return fetchSetExpirableItemTimersStore.actions.fetchSetExpirableItemTimers(
 				items
 			);

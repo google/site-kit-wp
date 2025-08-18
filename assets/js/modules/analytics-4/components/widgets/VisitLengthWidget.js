@@ -80,8 +80,9 @@ function VisitLengthWidget( { Widget } ) {
 
 	const { rows = [] } = report || {};
 
-	const makeFind = ( dateRange ) => ( row ) =>
-		get( row, 'dimensionValues.0.value' ) === dateRange;
+	function makeFind( dateRange ) {
+		return ( row ) => get( row, 'dimensionValues.0.value' ) === dateRange;
+	}
 
 	const currentVisitLength =
 		Number(

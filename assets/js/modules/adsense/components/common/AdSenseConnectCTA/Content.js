@@ -35,6 +35,7 @@ import { Row, Cell } from '../../../../../material-components';
 import ContentSVG from './ContentSVG';
 import AdSenseIcon from '../../../../../../svg/graphics/adsense.svg';
 import Typography from '../../../../../components/Typography';
+import P from '../../../../../components/Typography/P';
 
 const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 	const stageContent = [
@@ -117,8 +118,14 @@ const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 								>
 									<div className="googlesitekit-setup-module--adsense__stage-caption-indicator" />
 									<div>
-										<h4>{ title }</h4>
-										<p>{ description }</p>
+										<Typography
+											as="h4"
+											size="large"
+											type="title"
+										>
+											{ title }
+										</Typography>
+										<P>{ description }</P>
 									</div>
 								</li>
 							)

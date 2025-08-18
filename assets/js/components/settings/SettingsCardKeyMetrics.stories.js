@@ -19,12 +19,11 @@
  */
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import {
-	WithTestRegistry,
-	createTestRegistry,
 	muteFetch,
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
 function Template() {
@@ -61,42 +60,43 @@ export default {
 	title: 'Key Metrics/SettingsCardKeyMetrics',
 	decorators: [
 		( Story, { args } ) => {
-			const registry = createTestRegistry();
+			function setupRegistry( registry ) {
+				provideUserAuthentication( registry );
+				provideSiteInfo( registry );
 
-			provideUserAuthentication( registry );
-			provideSiteInfo( registry );
+				registry
+					.dispatch( CORE_USER )
+					.receiveIsUserInputCompleted( false );
 
-			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [],
+					isWidgetHidden: false,
+				} );
 
-			registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-				widgetSlugs: [],
-				isWidgetHidden: false,
-			} );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetUserInputSettings( {} );
 
-			registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {} );
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/survey-trigger'
+					)
+				);
+				muteFetch(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/survey-timeouts'
+					)
+				);
 
-			muteFetch(
-				new RegExp(
-					'^/google-site-kit/v1/core/user/data/survey-trigger'
-				)
-			);
-			muteFetch(
-				new RegExp(
-					'^/google-site-kit/v1/core/user/data/survey-timeouts'
-				)
-			);
-
-			if ( args.setupRegistry ) {
-				args.setupRegistry( registry );
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
 			}
 
 			return (
-				<WithTestRegistry
-					registry={ registry }
-					features={ args.features || [] }
-				>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

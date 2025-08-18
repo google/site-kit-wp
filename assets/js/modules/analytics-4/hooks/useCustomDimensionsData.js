@@ -31,7 +31,6 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
@@ -41,6 +40,7 @@ import {
 } from '../datastore/constants';
 import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
 import { isInvalidCustomDimensionError } from '../utils/custom-dimensions';
+import useFormValue from '../../../hooks/useFormValue';
 
 /**
  * Gets custom dimensions data and state.
@@ -85,11 +85,9 @@ export default function useCustomDimensionsData( {
 			)
 	);
 
-	const isAutoCreatingCustomDimensions = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_CUSTOM_DIMENSIONS_CREATE,
-			'isAutoCreatingCustomDimensions'
-		)
+	const isAutoCreatingCustomDimensions = useFormValue(
+		FORM_CUSTOM_DIMENSIONS_CREATE,
+		'isAutoCreatingCustomDimensions'
 	);
 
 	const isCreatingCustomDimensions = useSelect( ( select ) => {

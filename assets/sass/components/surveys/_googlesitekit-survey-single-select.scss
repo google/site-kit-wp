@@ -1,7 +1,5 @@
 .googlesitekit-single-select {
-
 	.googlesitekit-survey__body {
-
 		padding: $grid-gap-phone;
 
 		@media (min-width: $bp-desktop) {
@@ -25,6 +23,12 @@
 			background: transparent;
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;
+		}
+	}
+
+	.mdc-form-field {
+		> label {
+			padding: 5px 0 5px 4px;
 		}
 	}
 }

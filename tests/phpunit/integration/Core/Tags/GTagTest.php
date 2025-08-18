@@ -46,9 +46,6 @@ class GTagTest extends TestCase {
 
 	public function set_up() {
 		parent::set_up();
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
 
 		$context       = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->options = new Options( $context );

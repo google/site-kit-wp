@@ -49,7 +49,7 @@ export default function MetricItems( { savedMetrics } ) {
 		[ isViewOnlyDashboard ]
 	);
 
-	const metricsListReducer = ( acc, metricSlug ) => {
+	function metricsListReducer( acc, metricSlug ) {
 		if ( ! isKeyMetricAvailable( metricSlug ) ) {
 			return acc;
 		}
@@ -77,7 +77,7 @@ export default function MetricItems( { savedMetrics } ) {
 				group,
 			},
 		};
-	};
+	}
 
 	const allMetricItems = Object.keys( KEY_METRICS_WIDGETS ).reduce(
 		metricsListReducer,

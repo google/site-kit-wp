@@ -50,14 +50,13 @@ import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import SetupEnhancedConversionTrackingNotice from '../../../../components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
+import useFormValue from '../../../../hooks/useFormValue';
 
 export default function SetupForm( { finishSetup } ) {
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' )
-	);
+	const autoSubmit = useFormValue( FORM_SETUP, 'autoSubmit' );
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).canSubmitChanges()
 	);
@@ -73,11 +72,9 @@ export default function SetupForm( { finishSetup } ) {
 	const { setConversionTrackingEnabled, saveConversionTrackingSettings } =
 		useDispatch( CORE_SITE );
 
-	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			ENHANCED_MEASUREMENT_FORM,
-			ENHANCED_MEASUREMENT_ENABLED
-		)
+	const isEnhancedMeasurementEnabled = useFormValue(
+		ENHANCED_MEASUREMENT_FORM,
+		ENHANCED_MEASUREMENT_ENABLED
 	);
 
 	const submitForm = useCallback(
@@ -138,7 +135,7 @@ export default function SetupForm( { finishSetup } ) {
 
 			<SetupEnhancedConversionTrackingNotice
 				message={ __(
-					'To track how visitors interact with your site, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
+					'To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings.',
 					'google-site-kit'
 				) }
 			/>

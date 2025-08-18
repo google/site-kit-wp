@@ -102,7 +102,7 @@ export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/NoAudienceBannerWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = async ( registry ) => {
+			async function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
@@ -117,7 +117,7 @@ export default {
 					.setAvailableAudiences( availableAudiences );
 
 				await args.setupRegistry( registry );
-			};
+			}
 
 			const viewContext = args.isViewOnly
 				? VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY

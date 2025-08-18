@@ -94,7 +94,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	 * @param Authentication|null $authentication Authentication object.
 	 * @param Assets|null         $assets         Assets object.
 	 */
-	public function __construct( Context $context, Options $options = null, User_Options $user_options = null, Authentication $authentication = null, Assets $assets = null ) {
+	public function __construct( Context $context, ?Options $options = null, ?User_Options $user_options = null, ?Authentication $authentication = null, ?Assets $assets = null ) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 
 		$this->conversion_tracking = new Conversion_Tracking( $context );
@@ -119,9 +119,9 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 			10
 		);
 
-		// Register the Enhanced Conversions class if the feature flag is enabled.
-		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
-			$enhanced_conversions = new Enhanced_Conversions( $this->context );
+		// Register the Enhanced Conversions class if the feature flag is enabled and the Ads module is connected.
+		if ( $this->is_connected() && Feature_Flags::enabled( 'gtagUserData' ) ) {
+			$enhanced_conversions = new Enhanced_Conversions();
 			$enhanced_conversions->register();
 		}
 	}
@@ -213,7 +213,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 					'googlesitekit-ads-pax-integrator',
 					array(
 						// When updating, mirror the fixed version for google-pax-sdk in package.json.
-						'src'          => 'https://www.gstatic.com/pax/1.1.8/pax_integrator.js',
+						'src'          => 'https://www.gstatic.com/pax/1.1.9/pax_integrator.js',
 						'execution'    => 'async',
 						'dependencies' => array(
 							'googlesitekit-ads-pax-config',

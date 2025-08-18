@@ -8,7 +8,7 @@ import { useState } from '@wordpress/element';
  */
 import { Button } from 'googlesitekit-components';
 
-export const ThrowError = ( event ) => {
+export function ThrowError( event ) {
 	if ( event ) {
 		event.preventDefault();
 	}
@@ -16,7 +16,7 @@ export const ThrowError = ( event ) => {
 	throw new Error(
 		'Something bad happened. 💣 (On purpose; ErrorComponent was used to simulate an error.)'
 	);
-};
+}
 
 function ThrowErrorComponent( { throwErrorOnMount = false } ) {
 	const [ shouldThrow, setShouldThrow ] = useState( throwErrorOnMount );

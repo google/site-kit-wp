@@ -86,8 +86,8 @@ final class Admin_Bar {
 	 */
 	public function __construct(
 		Context $context,
-		Assets $assets = null,
-		Modules $modules = null
+		?Assets $assets = null,
+		?Modules $modules = null
 	) {
 		$this->context = $context;
 		$this->assets  = $assets ?: new Assets( $this->context );

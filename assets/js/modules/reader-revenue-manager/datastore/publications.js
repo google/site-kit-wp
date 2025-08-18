@@ -51,7 +51,9 @@ const fetchGetPublicationsStore = createFetchStore( {
 			{},
 			{ useCache: false }
 		),
-	reducerCallback: ( state, publications ) => ( { ...state, publications } ),
+	reducerCallback: createReducer( ( state, publications ) => {
+		state.publications = publications;
+	} ),
 } );
 
 const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
@@ -285,17 +287,16 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = ( state, { type } ) => {
+const baseReducer = createReducer( ( state, { type } ) => {
 	switch ( type ) {
 		case 'RESET_PUBLICATIONS':
-			return {
-				...state,
-				publications: baseInitialState.publications,
-			};
+			state.publications = baseInitialState.publications;
+			break;
+
 		default:
-			return state;
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getPublications() {

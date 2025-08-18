@@ -45,6 +45,7 @@ import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
 import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
 import { TYPES } from '../../../../components/Notice/constants';
+import useFormValue from '../../../../hooks/useFormValue';
 
 const {
 	ONBOARDING_COMPLETE,
@@ -81,14 +82,14 @@ export default function RRMSetupSuccessSubtleNotification( {
 		} )
 	);
 
-	const shouldSyncPublication = useSelect(
-		( select ) =>
-			select( CORE_FORMS ).getValue(
-				READER_REVENUE_MANAGER_NOTICES_FORM,
-				SYNC_PUBLICATION
-			) &&
-			actionableOnboardingStates.includes( publicationOnboardingState )
+	const shouldSyncPublicationValue = useFormValue(
+		READER_REVENUE_MANAGER_NOTICES_FORM,
+		SYNC_PUBLICATION
 	);
+
+	const shouldSyncPublication =
+		shouldSyncPublicationValue &&
+		actionableOnboardingStates.includes( publicationOnboardingState );
 
 	const paymentOption = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPaymentOption()
@@ -119,7 +120,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 		setSlug( undefined );
 	}, [ setNotification, setSlug ] );
 
-	const onCTAClick = () => {
+	function onCTAClick() {
 		// Set publication data to be reset when user re-focuses window.
 		if (
 			actionableOnboardingStates.includes( publicationOnboardingState )
@@ -130,7 +131,7 @@ export default function RRMSetupSuccessSubtleNotification( {
 		}
 
 		global.open( serviceURL, '_blank' );
-	};
+	}
 
 	const syncPublication = useCallback( async () => {
 		if ( ! shouldSyncPublication ) {

@@ -26,6 +26,7 @@ import { SpinnerButton } from 'googlesitekit-components';
 
 export default function CTAButton( {
 	label,
+	ariaLabel,
 	disabled,
 	inProgress,
 	onClick,
@@ -38,6 +39,7 @@ export default function CTAButton( {
 	return (
 		<SpinnerButton
 			className="googlesitekit-banner__cta"
+			aria-label={ ariaLabel }
 			disabled={ disabled || inProgress }
 			isSaving={ inProgress }
 			onClick={ onClick }
@@ -48,9 +50,9 @@ export default function CTAButton( {
 	);
 }
 
-// eslint-disable-next-line sitekit/acronym-case
 CTAButton.propTypes = {
 	label: PropTypes.string,
+	ariaLabel: PropTypes.string,
 	disabled: PropTypes.bool,
 	inProgress: PropTypes.bool,
 	onClick: PropTypes.func,

@@ -73,13 +73,13 @@ export default function UserInputSelectOptions( {
 			return;
 		}
 
-		const focusOption = ( element ) => {
+		function focusOption( element ) {
 			if ( element ) {
 				setTimeout( () => {
 					element.focus();
 				}, 50 );
 			}
-		};
+		}
 
 		const optionType = max === 1 ? 'radio' : 'checkbox';
 		const checkedEl = optionsRef.current.querySelector(

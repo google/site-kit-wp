@@ -43,7 +43,7 @@ export default {
 	component: ChangeMetricsLink,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry );
 				provideKeyMetrics( registry, {
 					widgetSlugs: [
@@ -51,7 +51,7 @@ export default {
 						KM_ANALYTICS_RETURNING_VISITORS,
 					],
 				} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

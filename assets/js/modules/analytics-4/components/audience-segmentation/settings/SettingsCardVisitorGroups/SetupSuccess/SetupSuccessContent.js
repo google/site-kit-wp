@@ -29,15 +29,16 @@ import { addQueryArgs } from '@wordpress/url';
 import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../../googlesitekit/widgets/default-areas';
 import { CORE_LOCATION } from '../../../../../../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '../../../../../../../googlesitekit/datastore/ui/constants';
 import { trackEvent } from '../../../../../../../util';
 import useViewContext from '../../../../../../../hooks/useViewContext';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
+import P from '../../../../../../../components/Typography/P';
 import CheckFill from '../../../../../../../../svg/icons/check-fill.svg';
 
-export const SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION =
-	'settings_visitor_groups_setup_success_notification';
+export const SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION =
+	'show_settings_visitor_groups_success_notification';
 
 const SetupSuccessContent = forwardRef( ( props, ref ) => {
 	const viewContext = useViewContext();
@@ -53,12 +54,10 @@ const SetupSuccessContent = forwardRef( ( props, ref ) => {
 	} );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const { dismissItem } = useDispatch( CORE_USER );
+	const { setValue } = useDispatch( CORE_UI );
 
 	function dismissNotificationForUser() {
-		return dismissItem(
-			SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
-		);
+		setValue( SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION, false );
 	}
 
 	function handleDismiss() {
@@ -87,12 +86,12 @@ const SetupSuccessContent = forwardRef( ( props, ref ) => {
 				<CheckFill width={ 24 } height={ 24 } />
 			</div>
 			<div className="googlesitekit-subtle-notification__content">
-				<p>
+				<P>
 					{ __(
 						'We’ve added the visitor groups section to your dashboard!',
 						'google-site-kit'
 					) }
-				</p>
+				</P>
 			</div>
 			<div className="googlesitekit-subtle-notification__action">
 				<Button onClick={ handleDismiss } tertiary>

@@ -67,12 +67,13 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             >
               <svg
                 class="mdc-checkbox__checkmark"
-                viewBox="0 0 24 24"
+                viewBox="0 0 12 9"
               >
                 <path
                   class="mdc-checkbox__checkmark-path"
-                  d="M1.73,12.91 8.1,19.28 22.79,4.59"
+                  d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
                   fill="none"
+                  stroke="none"
                 />
               </svg>
               <div
@@ -109,12 +110,13 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             >
               <svg
                 class="mdc-checkbox__checkmark"
-                viewBox="0 0 24 24"
+                viewBox="0 0 12 9"
               >
                 <path
                   class="mdc-checkbox__checkmark-path"
-                  d="M1.73,12.91 8.1,19.28 22.79,4.59"
+                  d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
                   fill="none"
+                  stroke="none"
                 />
               </svg>
               <div
@@ -151,12 +153,13 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             >
               <svg
                 class="mdc-checkbox__checkmark"
-                viewBox="0 0 24 24"
+                viewBox="0 0 12 9"
               >
                 <path
                   class="mdc-checkbox__checkmark-path"
-                  d="M1.73,12.91 8.1,19.28 22.79,4.59"
+                  d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
                   fill="none"
+                  stroke="none"
                 />
               </svg>
               <div
@@ -193,12 +196,13 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             >
               <svg
                 class="mdc-checkbox__checkmark"
-                viewBox="0 0 24 24"
+                viewBox="0 0 12 9"
               >
                 <path
                   class="mdc-checkbox__checkmark-path"
-                  d="M1.73,12.91 8.1,19.28 22.79,4.59"
+                  d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
                   fill="none"
+                  stroke="none"
                 />
               </svg>
               <div
@@ -235,12 +239,13 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             >
               <svg
                 class="mdc-checkbox__checkmark"
-                viewBox="0 0 24 24"
+                viewBox="0 0 12 9"
               >
                 <path
                   class="mdc-checkbox__checkmark-path"
-                  d="M1.73,12.91 8.1,19.28 22.79,4.59"
+                  d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
                   fill="none"
+                  stroke="none"
                 />
               </svg>
               <div
@@ -277,12 +282,13 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             >
               <svg
                 class="mdc-checkbox__checkmark"
-                viewBox="0 0 24 24"
+                viewBox="0 0 12 9"
               >
                 <path
                   class="mdc-checkbox__checkmark-path"
-                  d="M1.73,12.91 8.1,19.28 22.79,4.59"
+                  d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
                   fill="none"
+                  stroke="none"
                 />
               </svg>
               <div
@@ -406,7 +412,9 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p>
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
             Unhappy
           </p>
         </div>
@@ -421,7 +429,9 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p>
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
             Dissatisfied
           </p>
         </div>
@@ -436,7 +446,9 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p>
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
             Neutral
           </p>
         </div>
@@ -451,7 +463,9 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p>
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
             Satisfied
           </p>
         </div>
@@ -466,7 +480,9 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p>
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
             Delighted
           </p>
         </div>

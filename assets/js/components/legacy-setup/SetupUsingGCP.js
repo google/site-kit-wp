@@ -208,7 +208,7 @@ class SetupUsingGCP extends Component {
 
 		if ( this.isSetupFinished() ) {
 			delay(
-				function () {
+				() => {
 					global.location.replace( redirectURL );
 				},
 				500,

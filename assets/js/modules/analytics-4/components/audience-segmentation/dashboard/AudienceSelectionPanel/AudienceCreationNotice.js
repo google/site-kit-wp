@@ -54,6 +54,7 @@ import SpinnerButton, {
 import AudienceCreationErrorNotice from './AudienceCreationErrorNotice';
 import Notice from '../../../../../../components/Notice';
 import Typography from '../../../../../../components/Typography';
+import useFormValue from '../../../../../../hooks/useFormValue';
 
 export default function AudienceCreationNotice() {
 	const viewContext = useViewContext();
@@ -96,9 +97,9 @@ export default function AudienceCreationNotice() {
 		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 	);
 
-	const onCloseClick = () => {
+	function onCloseClick() {
 		dismissItem( AUDIENCE_CREATION_NOTICE_SLUG );
-	};
+	}
 
 	const redirectURL = addQueryArgs( global.location.href, {
 		notification: 'audience_segmentation',
@@ -109,15 +110,14 @@ export default function AudienceCreationNotice() {
 	const { createAudience, syncAvailableAudiences } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
-	const isCreatingAudienceFromOAuth = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( AUDIENCE_CREATION_FORM, 'autoSubmit' )
+	const isCreatingAudienceFromOAuth = useFormValue(
+		AUDIENCE_CREATION_FORM,
+		'autoSubmit'
 	);
 
-	const failedAudienceToCreate = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_CREATION_FORM,
-			'audienceToCreate'
-		)
+	const failedAudienceToCreate = useFormValue(
+		AUDIENCE_CREATION_FORM,
+		'audienceToCreate'
 	);
 
 	const [ apiErrors, setApiErrors ] = useState( [] );
@@ -184,14 +184,14 @@ export default function AudienceCreationNotice() {
 		]
 	);
 
-	const handleDismissEditScopeNotice = () => {
+	function handleDismissEditScopeNotice() {
 		trackEvent(
 			`${ viewContext }_audiences-sidebar-create-audiences`,
 			'dismiss_oauth_notice'
 		).finally( () => {
 			dismissItem( AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG );
 		} );
-	};
+	}
 
 	const setupErrorCode = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorCode()

@@ -24,7 +24,7 @@
  * @param {string} receivedURL The URL to decode.
  * @return {string} The decoded URL.
  */
-export const decodeServiceURL = ( receivedURL ) => {
+export function decodeServiceURL( receivedURL ) {
 	const url = new URL( receivedURL );
 
 	const received = Array.from( url.searchParams ).reduce(
@@ -43,4 +43,4 @@ export const decodeServiceURL = ( receivedURL ) => {
 	const serviceURL = decodeURIComponent( received.continue );
 
 	return serviceURL;
-};
+}

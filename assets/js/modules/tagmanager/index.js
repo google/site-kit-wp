@@ -32,7 +32,7 @@ import { MODULE_SLUG_TAGMANAGER } from './constants';
 
 export { registerStore } from './datastore';
 
-export const registerModule = ( modules ) => {
+export function registerModule( modules ) {
 	modules.registerModule( MODULE_SLUG_TAGMANAGER, {
 		storeName: MODULES_TAGMANAGER,
 		SettingsEditComponent: SettingsEdit,
@@ -46,4 +46,4 @@ export const registerModule = ( modules ) => {
 			),
 		],
 	} );
-};
+}

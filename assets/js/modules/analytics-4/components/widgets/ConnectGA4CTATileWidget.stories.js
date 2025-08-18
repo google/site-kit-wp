@@ -71,7 +71,7 @@ export default {
 	title: 'Key Metrics/ConnectGA4CTATileWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry );
 				provideUserCapabilities( registry );
 				provideModules( registry, [
@@ -89,7 +89,7 @@ export default {
 					registry,
 					args?.keyMetricsWidgets
 				);
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

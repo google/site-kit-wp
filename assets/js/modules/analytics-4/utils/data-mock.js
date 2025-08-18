@@ -216,14 +216,14 @@ function generateMetricValues( validMetrics ) {
  */
 function cartesianProduct( arrays ) {
 	return arrays.reduce(
-		function ( arrayA, arrayB ) {
+		( arrayA, arrayB ) => {
 			return arrayA
-				.map( function ( valueA ) {
-					return arrayB.map( function ( valueB ) {
+				.map( ( valueA ) => {
+					return arrayB.map( ( valueB ) => {
 						return valueA.concat( [ valueB ] );
 					} );
 				} )
-				.reduce( function ( innerA, innerB ) {
+				.reduce( ( innerA, innerB ) => {
 					return innerA.concat( innerB );
 				}, [] );
 		},

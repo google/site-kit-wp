@@ -46,10 +46,11 @@ export default function TourTooltip( {
 	tooltipProps,
 } ) {
 	const indicatorArray = size > 1 ? createIncrementalArrayBySize( size ) : [];
-	const getIndicatorClassName = ( indicatorIndex ) =>
-		classnames( 'googlesitekit-tooltip-indicator', {
+	function getIndicatorClassName( indicatorIndex ) {
+		return classnames( 'googlesitekit-tooltip-indicator', {
 			active: indicatorIndex === index,
 		} );
+	}
 
 	return (
 		<div

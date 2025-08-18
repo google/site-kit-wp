@@ -83,7 +83,7 @@ import { isEqual } from 'lodash';
 		updateGrantedConsent
 	);
 
-	global.document.addEventListener( 'DOMContentLoaded', function () {
+	global.document.addEventListener( 'DOMContentLoaded', () => {
 		if ( ! global.waitfor_consent_hook ) {
 			updateGrantedConsent();
 		}

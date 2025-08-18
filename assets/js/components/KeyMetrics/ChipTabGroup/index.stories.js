@@ -69,7 +69,7 @@ function Template() {
 		return metrics.filter( isKeyMetricAvailable );
 	} );
 
-	const metricsListReducer = ( acc, metricSlug ) => {
+	function metricsListReducer( acc, metricSlug ) {
 		const {
 			title,
 			description,
@@ -84,7 +84,7 @@ function Template() {
 				group,
 			},
 		};
-	};
+	}
 	const allMetricItems = Object.keys( KEY_METRICS_WIDGETS ).reduce(
 		metricsListReducer,
 		{}
@@ -169,7 +169,7 @@ export default {
 	component: SelectionPanel,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry );
 
 				provideSiteInfo( registry );
@@ -231,7 +231,7 @@ export default {
 				if ( args && args?.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup

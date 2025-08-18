@@ -103,13 +103,13 @@ const baseActions = {};
 
 const baseControls = {};
 
-const baseReducer = ( state, { type } ) => {
+function baseReducer( state, { type } ) {
 	switch ( type ) {
 		default: {
 			return state;
 		}
 	}
-};
+}
 
 const baseResolvers = {
 	*getGoogleTagContainer( measurementID ) {

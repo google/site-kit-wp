@@ -55,6 +55,7 @@ import {
 import SetupErrorNotice from './SetupErrorNotice';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import useFormValue from '../../../../hooks/useFormValue';
 
 export default function SetupForm( { finishSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) =>
@@ -73,24 +74,19 @@ export default function SetupForm( { finishSetup } ) {
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 	// Only select the initial autosubmit + submitMode once from form state which will already be set if a snapshot was restored.
-	const initialAutoSubmit = useSelect(
-		( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ),
-		[]
-	);
-	const initialSubmitMode = useSelect(
-		( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitMode' ),
-		[]
-	);
+	const initialAutoSubmit = useFormValue( FORM_SETUP, 'autoSubmit' );
+	const initialSubmitMode = useFormValue( FORM_SETUP, 'submitMode' );
 
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
 
+	const submitInProgress = useFormValue( FORM_SETUP, 'submitInProgress' );
 	const isSaving = useSelect(
 		( select ) =>
 			select( MODULES_TAGMANAGER ).isDoingSubmitChanges() ||
 			select( CORE_LOCATION ).isNavigating() ||
-			select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' )
+			submitInProgress
 	);
 
 	// This flag is be used to determine whether to show the loading spinner
@@ -104,12 +100,12 @@ export default function SetupForm( { finishSetup } ) {
 	const { submitChanges } = useDispatch( MODULES_TAGMANAGER );
 	const submitForm = useCallback(
 		async ( { submitMode } = {} ) => {
-			const throwOnError = async ( func ) => {
+			async function throwOnError( func ) {
 				const { error } = ( await func() ) || {};
 				if ( error ) {
 					throw error;
 				}
-			};
+			}
 			// We'll use form state to persist the chosen submit choice
 			// in order to preserve support for auto-submit.
 			setValues( FORM_SETUP, { submitMode, submitInProgress: true } );

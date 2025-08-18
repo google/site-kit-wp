@@ -31,14 +31,17 @@ import {
 	camelCaseToConstantCase,
 } from './transform-case';
 import { stringifyObject } from '../../util';
+import { createReducer } from 'googlesitekit-data';
 
-const defaultReducerCallback = ( state ) => state;
+function defaultReducerCallback( state ) {
+	return state;
+}
 
-const defaultArgsToParams = () => {
+function defaultArgsToParams() {
 	return {};
-};
+}
 
-const defaultValidateParams = () => {};
+function defaultValidateParams() {}
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
@@ -96,13 +99,13 @@ const { clearError, receiveError } = errorStoreActions;
  *                                          Any invalid parameters should cause a respective error to be thrown.
  * @return {Object} Partial store object with properties 'actions', 'controls', 'reducer', 'resolvers', and 'selectors'.
  */
-export const createFetchStore = ( {
+export function createFetchStore( {
 	baseName,
 	controlCallback,
 	reducerCallback = defaultReducerCallback,
 	argsToParams = defaultArgsToParams,
 	validateParams = defaultValidateParams,
-} ) => {
+} ) {
 	invariant( baseName, 'baseName is required.' );
 	invariant(
 		'function' === typeof controlCallback,
@@ -219,17 +222,13 @@ export const createFetchStore = ( {
 		},
 	};
 
-	const reducer = ( state, { type, payload } ) => {
+	const reducer = createReducer( ( state, { type, payload } ) => {
 		switch ( type ) {
 			case START_FETCH: {
 				const { params } = payload;
-				return {
-					...state,
-					[ isFetching ]: {
-						...state[ isFetching ],
-						[ stringifyObject( params ) ]: true,
-					},
-				};
+				state[ isFetching ] = state[ isFetching ] || {};
+				state[ isFetching ][ stringifyObject( params ) ] = true;
+				break;
 			}
 
 			case RECEIVE: {
@@ -239,31 +238,19 @@ export const createFetchStore = ( {
 
 			case FINISH_FETCH: {
 				const { params } = payload;
-				return {
-					...state,
-					[ isFetching ]: {
-						...state[ isFetching ],
-						[ stringifyObject( params ) ]: false,
-					},
-				};
+				state[ isFetching ] = state[ isFetching ] || {};
+				state[ isFetching ][ stringifyObject( params ) ] = false;
+				break;
 			}
 
 			case CATCH_FETCH: {
 				const { params } = payload;
-				return {
-					...state,
-					[ isFetching ]: {
-						...state[ isFetching ],
-						[ stringifyObject( params ) ]: false,
-					},
-				};
-			}
-
-			default: {
-				return state;
+				state[ isFetching ] = state[ isFetching ] || {};
+				state[ isFetching ][ stringifyObject( params ) ] = false;
+				break;
 			}
 		}
-	};
+	} );
 
 	const selectors = {
 		[ isFetching ]: ( state, ...args ) => {
@@ -293,4 +280,4 @@ export const createFetchStore = ( {
 		resolvers: {},
 		selectors,
 	};
-};
+}

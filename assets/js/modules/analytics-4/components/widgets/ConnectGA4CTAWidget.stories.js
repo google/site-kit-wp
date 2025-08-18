@@ -54,7 +54,7 @@ export default {
 	title: 'Key Metrics/ConnectGA4CTAWidget',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				const keyMetricWidgets = [
 					KM_ANALYTICS_RETURNING_VISITORS,
 					KM_ANALYTICS_NEW_VISITORS,
@@ -78,7 +78,7 @@ export default {
 						{}
 					)
 				);
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
