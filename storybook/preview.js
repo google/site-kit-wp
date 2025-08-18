@@ -133,8 +133,24 @@ export const decorators = [
 export const parameters = {
 	layout: 'fullscreen',
 	options: {
-		storySort: {
-			method: 'alphabetical',
+		storySort: ( a, b ) => {
+			const aTitle = a[ 1 ].title;
+			const bTitle = b[ 1 ].title;
+
+			const aIsRootFolder = ( aTitle.match( /\//g ) || [] ).length > 1;
+			const bIsRootFolder = ( bTitle.match( /\//g ) || [] ).length > 1;
+
+			// If one is a folder and the other isn't, folder comes first
+			if ( aIsRootFolder && ! bIsRootFolder ) {
+				return -1;
+			}
+			if ( ! aIsRootFolder && bIsRootFolder ) {
+				return 1;
+			}
+
+			// If both are the same type, sort alphabetically
+			// return a.title.localeCompare( b.title );
+			return aTitle.localeCompare( bTitle );
 		},
 	},
 	async puppeteerTest( page ) {
