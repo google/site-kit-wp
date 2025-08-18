@@ -199,10 +199,10 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 */
 	public function __construct(
 		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Authentication $authentication = null,
-		Assets $assets = null
+		?Options $options = null,
+		?User_Options $user_options = null,
+		?Authentication $authentication = null,
+		?Assets $assets = null
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
@@ -584,11 +584,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'label' => __( 'Analytics: Snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
-			),
-			'analytics_4_ads_conversion_id'           => array(
-				'label' => __( 'Analytics: Ads Conversion ID', 'google-site-kit' ),
-				'value' => $settings['adsConversionID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['adsConversionID'] ),
 			),
 			'analytics_4_available_custom_dimensions' => array(
 				'label' => __( 'Analytics: Available Custom Dimensions', 'google-site-kit' ),
@@ -2100,10 +2095,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		if ( ! empty( $custom_dimensions_data ) && $tag instanceof Tag_Interface ) {
 			$tag->set_custom_dimensions( $custom_dimensions_data );
 		}
-
-		$tag->set_ads_conversion_id(
-			$this->get_settings()->get()['adsConversionID']
-		);
 
 		$tag->register();
 	}

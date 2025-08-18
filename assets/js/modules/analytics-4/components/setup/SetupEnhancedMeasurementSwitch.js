@@ -42,6 +42,7 @@ import {
 	isValidWebDataStreamID,
 	isValidWebDataStreamSelection,
 } from '../../utils/validation';
+import useFormValue from '../../../../hooks/useFormValue';
 
 export default function SetupEnhancedMeasurementSwitch() {
 	const accountID = useSelect( ( select ) =>
@@ -109,15 +110,11 @@ export default function SetupEnhancedMeasurementSwitch() {
 		);
 	} );
 
-	const isAutoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' )
-	);
+	const isAutoSubmit = useFormValue( FORM_SETUP, 'autoSubmit' );
 
-	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			ENHANCED_MEASUREMENT_FORM,
-			ENHANCED_MEASUREMENT_ENABLED
-		)
+	const isEnhancedMeasurementEnabled = useFormValue(
+		ENHANCED_MEASUREMENT_FORM,
+		ENHANCED_MEASUREMENT_ENABLED
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );

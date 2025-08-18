@@ -10,6 +10,10 @@
 
 namespace Google\Site_Kit\Tests\Modules\Ads;
 
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Tags\GTag;
+use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Modules\Ads\Enhanced_Conversions;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -192,5 +196,40 @@ class Enhanced_ConversionsTest extends TestCase {
 			$hashed = $enhanced_conversions::get_hashed_value( $input );
 			$this->assertEquals( hash( 'sha256', $input ), $hashed, "Failed for input: '$input'" );
 		}
+	}
+
+	public function test_injects_gtag_script_with_user_data() {
+		// Prevent test from failing in CI with deprecation notice.
+		remove_action( 'wp_print_styles', 'print_emoji_styles' );
+
+		$user = $this->factory()->user->create_and_get(
+			array(
+				'role'       => 'subscriber',
+				'user_email' => 'john@doe.com',
+				'first_name' => 'John',
+				'last_name'  => 'Doe',
+			)
+		);
+
+		wp_set_current_user( $user->ID );
+
+		$gtag = new GTag( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$gtag->add_tag( 'test-tag' );
+		$gtag->register();
+
+		$enhanced_conversions = new Enhanced_Conversions();
+		$enhanced_conversions->register();
+
+		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ), 'The googlesitekit_setup_gtag action should be registered.' );
+
+		$head_html       = $this->capture_action( 'wp_head' );
+		$expected_script = sprintf(
+			'gtag("set","user_data",{"sha256_email_address":"%s","address":{"sha256_first_name":"%s","sha256_last_name":"%s"}})',
+			Enhanced_Conversions::get_formatted_email( 'john@doe.com' ),
+			Enhanced_Conversions::get_formatted_value( 'John' ),
+			Enhanced_Conversions::get_formatted_value( 'Doe' )
+		);
+
+		$this->assertStringContainsString( $expected_script, $head_html, 'The inline script containing user data should be in the HTML.' );
 	}
 }

@@ -39,6 +39,7 @@ import {
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import ContainerNameTextField from './ContainerNameTextField';
+import useFormValue from '../../../../hooks/useFormValue';
 
 export default function WebContainerNameTextField() {
 	const containerID = useSelect( ( select ) =>
@@ -51,11 +52,7 @@ export default function WebContainerNameTextField() {
 	const referenceSiteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
-	const initialContainerName = useSelect(
-		( select ) =>
-			select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' ),
-		[]
-	);
+	const initialContainerName = useFormValue( FORM_SETUP, 'containerName' );
 
 	let containerName = siteName;
 	if ( ! containerName && isURL( referenceSiteURL ) ) {

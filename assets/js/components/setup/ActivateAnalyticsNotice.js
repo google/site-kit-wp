@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import { Checkbox } from 'googlesitekit-components';
 import {
 	ANALYTICS_NOTICE_FORM_NAME,
@@ -33,14 +33,14 @@ import {
 } from './constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import AnalyticsSetupSidekickSVG from '../../../svg/graphics/analytics-setup-sidekick.svg';
+import useFormValue from '../../hooks/useFormValue';
 
 export default function ActivateAnalyticsNotice() {
 	const { setValues } = useDispatch( CORE_FORMS );
-	const checked = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			ANALYTICS_NOTICE_FORM_NAME,
-			ANALYTICS_NOTICE_CHECKBOX
-		)
+
+	const checked = useFormValue(
+		ANALYTICS_NOTICE_FORM_NAME,
+		ANALYTICS_NOTICE_CHECKBOX
 	);
 
 	const handleOnChange = useCallback(
