@@ -7,7 +7,6 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
-	createWaitForFetchRequests,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setAnalyticsExistingPropertyID,
@@ -142,8 +141,6 @@ describe( 'setting up the Analytics module with an existing account and existing
 		useRequestInterception( getRequestResponseMappings() );
 	} );
 
-	let waitForFetchRequests;
-
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await activatePlugin( 'e2e-tests-analytics-existing-tag' );
@@ -162,13 +159,16 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await page.waitForSelector(
 			'.googlesitekit-settings-connect-module--analytics-4'
 		);
-
-		waitForFetchRequests = createWaitForFetchRequests();
 	} );
 
 	afterEach( async () => {
-		// await page.waitForNetworkIdle( { timeout: 15_000 } );
-		await waitForFetchRequests();
+		// Wait for network idle to allow outstanding requests to resolve
+		// and prevent Invalid JSON Response error.
+		try {
+			await page.waitForNetworkIdle( { timeout: 15_000 } );
+		} catch ( error ) {
+			// Allow to fail silently if timeout is reached which can occur mostly running locally.
+		}
 
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
