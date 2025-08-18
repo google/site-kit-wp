@@ -34,10 +34,12 @@ import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants'
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
 import Link from '../../../../../../components/Link';
+import P from '../../../../../../components/Typography/P';
 import { AudienceErrorModal } from '../../dashboard';
 import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../../util';
+import useFormValue from '../../../../../../hooks/useFormValue';
 
 export default function SetupCTA() {
 	const viewContext = useViewContext();
@@ -66,11 +68,9 @@ export default function SetupCTA() {
 		select( CORE_SITE ).getSetupErrorCode()
 	);
 
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_SEGMENTATION_SETUP_FORM,
-			'autoSubmit'
-		)
+	const autoSubmit = useFormValue(
+		AUDIENCE_SEGMENTATION_SETUP_FORM,
+		'autoSubmit'
 	);
 
 	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
@@ -97,15 +97,15 @@ export default function SetupCTA() {
 
 	return (
 		<div className="googlesitekit-settings-visitor-groups__setup">
-			<p>
+			<P>
 				{ __(
 					'To set up new visitor groups for your site, Site Kit needs to update your Google Analytics property.',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 			{ isSaving && (
 				<div className="googlesitekit-settings-visitor-groups__setup-progress">
-					<p>{ __( 'Enabling groups', 'google-site-kit' ) }</p>
+					<P>{ __( 'Enabling groups', 'google-site-kit' ) }</P>
 					<ProgressBar compress />
 				</div>
 			) }

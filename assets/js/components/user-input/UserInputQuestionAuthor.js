@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import P from '../Typography/P';
 
 export default function UserInputQuestionAuthor( { slug } ) {
 	const author = useSelect( ( select ) =>
@@ -43,12 +44,12 @@ export default function UserInputQuestionAuthor( { slug } ) {
 
 	return (
 		<div className="googlesitekit-user-input__author">
-			<p>
+			<P>
 				{ __(
 					'This question has been answered by:',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 
 			<div className="googlesitekit-user-input__author-info">
 				<img alt={ author.login } src={ author.photo } />

@@ -25,6 +25,7 @@ import { renderToString } from '@wordpress/element';
  * Internal dependencies
  */
 import Link from '../../../../../components/Link';
+import P from '../../../../../components/Typography/P';
 
 /**
  * Creates a GA4 report row for the given date, with a zero for the metric value.
@@ -64,7 +65,7 @@ export function createZeroDataRow( date ) {
  */
 export function getTooltipHelp( url, label, rowLabel ) {
 	return renderToString(
-		<p>
+		<P>
 			<Link
 				className="googlesitekit-cta-link__tooltip"
 				href={ url }
@@ -73,6 +74,6 @@ export function getTooltipHelp( url, label, rowLabel ) {
 			>
 				{ label }
 			</Link>
-		</p>
+		</P>
 	);
 }
