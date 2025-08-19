@@ -21,6 +21,7 @@
  */
 import {
 	isLikelyEmail,
+	isLikelyPhone,
 	normalizeEmail,
 	normalizePhone,
 	normalizeValue,
@@ -93,6 +94,21 @@ describe( 'Event Providers Utilities', () => {
 			'should check if %s is likely an email address',
 			( input, result ) => {
 				expect( isLikelyEmail( input ) ).toBe( result );
+			}
+		);
+	} );
+
+	describe( 'isLikelyPhone', () => {
+		it.each( [
+			[ ' 123-456-7890 ', true ],
+			[ ' (123) 456-7890 ', true ],
+			[ '+1 (123) 456-7890', true ],
+			[ ' 12345 ', false ],
+			[ 'foo bar', false ],
+		] )(
+			'should check if %s is likely a phone number',
+			( input, result ) => {
+				expect( isLikelyPhone( input ) ).toBe( result );
 			}
 		);
 	} );
