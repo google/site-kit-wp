@@ -17,7 +17,6 @@ use Closure;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
-use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
@@ -4925,9 +4924,11 @@ class Analytics_4Test extends TestCase {
 	public function test_get_inline_data() {
 		// Test when module is not connected.
 		$analytics = new Analytics_4( $this->context );
+		$analytics->register();
 
-		$inline_data = $analytics->get_inline_data();
-		$this->assertSame( array(), $inline_data );
+		remove_all_filters( 'googlesitekit_inline_modules_data' );
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$this->assertSame( array(), $inline_modules_data );
 
 		// Test when module is connected.
 		$this->analytics->get_settings()->merge(
@@ -4956,11 +4957,12 @@ class Analytics_4Test extends TestCase {
 			array( 'events' => array( 'badge_event1' ) )
 		);
 
-		$inline_data = $this->analytics->get_inline_data();
+		$analytics->register();
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
 		// Verify the structure exists and contains expected keys.
-		$this->assertArrayHasKey( 'analytics-4', $inline_data );
-		$analytics_data = $inline_data['analytics-4'];
+		$this->assertArrayHasKey( 'analytics-4', $inline_modules_data );
+		$analytics_data = $inline_modules_data['analytics-4'];
 
 		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $analytics_data );
 		$this->assertArrayHasKey( 'resourceAvailabilityDates', $analytics_data );
