@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { isFeatureEnabled } from '../features';
+
 ( ( jQuery ) => {
 	// eslint-disable-next-line no-undef
 	if ( ! jQuery ) {
 		return;
 	}
 
+	const { easyDigitalDownloadsCurrency: currency, edddata } =
+		global._googlesitekit || {};
+
 	const body = jQuery( 'body' );
 
+	// Handle add_to_cart events (existing functionality unchanged)
 	body.on( 'edd_cart_item_added', ( event, details ) => {
 		const { name, value } = parseCartItemHTML( details.cart_item );
-		const currency = global._googlesitekit.easyDigitalDownloadsCurrency;
 
 		global._googlesitekit?.gtagEvent?.( 'add_to_cart', {
 			currency,
@@ -36,6 +44,86 @@
 				},
 			],
 		} );
+	} );
+
+	// Listen for EDD purchase completion events
+	body.on( 'edd_complete_purchase', ( event, data ) => {
+		global.console.log( '🎯 EDD Complete Purchase Event Fired:', {
+			event,
+			data,
+			eventType: event.type,
+			timestamp: new Date().toISOString(),
+			currentPage: global.location.href,
+			edddata: global._googlesitekit?.edddata,
+		} );
+	} );
+
+	// Also listen for any other EDD events that might be relevant
+	body.on( 'edd_purchase_complete', ( event, data ) => {
+		global.console.log( '🎯 EDD Purchase Complete Event Fired:', {
+			event,
+			data,
+			timestamp: new Date().toISOString(),
+		} );
+	} );
+
+	// Listen for general purchase events
+	body.on( 'purchase', ( event, data ) => {
+		global.console.log( '🎯 Generic Purchase Event Fired:', {
+			event,
+			data,
+			timestamp: new Date().toISOString(),
+		} );
+	} );
+
+	// Handle Enhanced Conversions user data if available
+	// This will only have data on the purchase completion page
+	if ( isFeatureEnabled( 'gtagUserData' ) && edddata?.user_data ) {
+		// User data is already normalized from PHP and available for use by other integrations
+		global._googlesitekit.enhancedConversionsUserData = edddata.user_data;
+
+		global.console.log(
+			'✅ EDD Enhanced Conversions User Data Available:',
+			{
+				userData: global._googlesitekit.enhancedConversionsUserData,
+				paymentID: edddata.payment_id,
+				note: 'This data is only available on the purchase completion page',
+			}
+		);
+
+		// Example: You could send this data to analytics with any conversion event
+		// global._googlesitekit?.gtagEvent?.( 'conversion', {
+		//     user_data: edddata.user_data
+		// } );
+	}
+
+	// Listen for ALL EDD events to see what's available
+	jQuery( document ).on( 'edd_checkout_complete', ( event, data ) => {
+		global.console.log( '🎯 EDD Checkout Complete Event:', {
+			event,
+			data,
+		} );
+	} );
+
+	jQuery( document ).on( 'edd_purchase_form_submit', ( event, data ) => {
+		global.console.log( '🎯 EDD Purchase Form Submit Event:', {
+			event,
+			data,
+		} );
+	} );
+
+	jQuery( document ).on( 'edd_payment_complete', ( event, data ) => {
+		global.console.log( '🎯 EDD Payment Complete Event:', { event, data } );
+	} );
+
+	// Debug: Show what data is available
+	global.console.log( 'EDD Event Provider loaded', {
+		edddata,
+		featureEnabled: isFeatureEnabled( 'gtagUserData' ),
+		hasUserData: !! edddata?.user_data,
+		currentPage: global.location.href,
+		enabledFeatures: global?._googlesitekitBaseData?.enabledFeatures,
+		note: 'Listening for EDD events: edd_complete_purchase, edd_purchase_complete, edd_checkout_complete, edd_payment_complete',
 	} );
 } )( global.jQuery );
 
