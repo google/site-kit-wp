@@ -380,6 +380,8 @@ final class Screens {
 							$assets->enqueue_asset( 'googlesitekit-main-dashboard' );
 						}
 					},
+					// This callback will redirect to the Analytics or user input screen if the initial setup
+					// was exited on one of these screens.
 					'initialize_callback' => function ( Context $context ) {
 						$is_view_only = ! $this->authentication->is_authenticated();
 
