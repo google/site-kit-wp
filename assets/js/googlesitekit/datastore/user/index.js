@@ -40,6 +40,7 @@ import tracking from './tracking';
 import userInfo from './user-info';
 import userInputSettings from './user-input-settings';
 import conversionReportingSettings from './conversion-reporting-settings';
+import initialSetup from './initial-setup';
 
 const store = combineStores(
 	commonStore,
@@ -61,7 +62,8 @@ const store = combineStores(
 	tracking,
 	userInfo,
 	userInputSettings,
-	conversionReportingSettings
+	conversionReportingSettings,
+	initialSetup
 );
 
 export const {

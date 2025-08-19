@@ -124,7 +124,6 @@ export default function ModuleSetup( { moduleSlug } ) {
 			<Header>
 				{ showProgress && (
 					<Link
-						id={ `exit-setup-${ module.slug }` }
 						href={ `${ adminURL }/plugins.php` }
 						onClick={ onCancelButtonClick }
 					>

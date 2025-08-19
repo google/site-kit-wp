@@ -38,24 +38,36 @@ class User {
 	private $conversion_reporting;
 
 	/**
+	 * Initial_Setup instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Initial_Setup
+	 */
+	private $initial_setup;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.134.0
+	 * @since n.e.x.t Introduced Initial_Setup.
 	 *
 	 * @param User_Options $user_options User_Options instance.
 	 */
 	public function __construct( User_Options $user_options ) {
 		$this->audience_segmentation = new Audience_Segmentation( $user_options );
 		$this->conversion_reporting  = new Conversion_Reporting( $user_options );
+		$this->initial_setup         = new Initial_Setup( $user_options );
 	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.134.0
+	 * @since n.e.x.t Introduced Initial_Setup.
 	 */
 	public function register() {
 		$this->audience_segmentation->register();
 		$this->conversion_reporting->register();
+		$this->initial_setup->register();
 	}
 }

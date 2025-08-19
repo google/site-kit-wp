@@ -21,6 +21,7 @@
  */
 import { useEffect, useState, Fragment } from '@wordpress/element';
 import { getQueryArg } from '@wordpress/url';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -38,6 +39,8 @@ import { getUserInputQuestions } from './util/constants';
 import ProgressSegments from '../ProgressSegments';
 import CheckFill from '../../../svg/icons/check-fill.svg';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import Link from '../Link';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 export default function UserInputApp() {
 	const questions = getUserInputQuestions();
@@ -84,7 +87,7 @@ export default function UserInputApp() {
 	useEffect( () => {
 		setIsSyncingAudiences( true );
 
-		const syncAudiences = async () => {
+		async function syncAudiences() {
 			// Sync audiences and custom dimensions, so the `PrimaryUserSetupWidget` component
 			// can quickly setup audiences when the user lands on the dashboard.
 			// eslint-disable-next-line no-unused-vars
@@ -104,14 +107,23 @@ export default function UserInputApp() {
 			}
 
 			setIsSyncingAudiences( false );
-		};
+		}
 
 		syncAudiences();
 	}, [ fetchSyncAvailableCustomDimensions, syncAvailableAudiences ] );
 
+	const adminURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL()
+	);
+
 	return (
 		<Fragment>
 			<Header>
+				{ showProgress && (
+					<Link href={ `${ adminURL }/plugins.php` }>
+						{ __( 'Exit setup', 'google-site-kit' ) }
+					</Link>
+				) }
 				<HelpMenu />
 			</Header>
 			{ showProgress && (
