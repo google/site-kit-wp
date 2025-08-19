@@ -82,3 +82,19 @@ export function normalizePhone( phone ) {
 
 	return digits;
 }
+
+/**
+ * Checks if a value is likely an email address.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} value The value to check.
+ * @return {boolean} True if the value is likely an email address, false otherwise.
+ */
+export function isLikelyEmail( value ) {
+	const normalizedEmail = normalizeEmail( value );
+
+	const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+	return emailPattern.test( normalizedEmail );
+}
