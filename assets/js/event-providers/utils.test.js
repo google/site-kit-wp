@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { normalizeEmail, normalizeValue } from './utils';
+import { normalizeEmail, normalizePhone, normalizeValue } from './utils';
 
 describe( 'Event Providers Utilities', () => {
 	describe( 'normalizeValue', () => {
@@ -55,6 +55,25 @@ describe( 'Event Providers Utilities', () => {
 			[ ' "fo.o@ba.r"@googlemail.com', '"foo@bar"@googlemail.com' ],
 		] )( 'should normalize %s to %s', ( input, output ) => {
 			expect( normalizeEmail( input ) ).toBe( output );
+		} );
+	} );
+
+	describe( 'normalizePhone', () => {
+		it( 'should return an empty string when no phone number is provided', () => {
+			expect( normalizePhone() ).toBe( '' );
+		} );
+
+		it.each( [
+			[ ' 123-456-7890 ', '1234567890' ],
+			[ '(123) 456-7890', '1234567890' ],
+			[ '+1 (123) 456-7890', '+11234567890' ],
+			[ '123.456.7890', '1234567890' ],
+			[ ' 1234567890 ', '1234567890' ],
+			[ ' +44 20 7946 0958 ', '+442079460958' ],
+			[ ' +91-9876543210 ', '+919876543210' ],
+			[ ' 9876543210 ', '9876543210' ],
+		] )( 'should normalize %s to %s', ( input, output ) => {
+			expect( normalizePhone( input ) ).toBe( output );
 		} );
 	} );
 } );
