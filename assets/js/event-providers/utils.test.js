@@ -20,11 +20,13 @@
  * Internal dependencies
  */
 import {
+	classifyPII,
 	isLikelyEmail,
 	isLikelyPhone,
 	normalizeEmail,
 	normalizePhone,
 	normalizeValue,
+	PII_TYPE,
 } from './utils';
 
 describe( 'Event Providers Utilities', () => {
@@ -111,5 +113,84 @@ describe( 'Event Providers Utilities', () => {
 				expect( isLikelyPhone( input ) ).toBe( result );
 			}
 		);
+	} );
+
+	describe( 'classifyPII', () => {
+		it( 'should classify accordingly if type is specified', () => {
+			expect(
+				classifyPII( {
+					type: 'email',
+				} )
+			).toEqual( {
+				type: PII_TYPE.EMAIL,
+				value: '',
+			} );
+
+			expect(
+				classifyPII( {
+					type: 'tel',
+				} )
+			).toEqual( {
+				type: PII_TYPE.PHONE,
+				value: '',
+			} );
+		} );
+
+		it( 'should fallback to matching value pattern if type is not specified', () => {
+			expect(
+				classifyPII( {
+					type: 'text',
+					value: '   foo@bar.com ',
+				} )
+			).toEqual( {
+				type: PII_TYPE.EMAIL,
+				value: 'foo@bar.com',
+			} );
+
+			expect(
+				classifyPII( {
+					type: 'number',
+					value: '+(121)-11-4213-1212',
+				} )
+			).toEqual( {
+				type: PII_TYPE.PHONE,
+				value: '+1211142131212',
+			} );
+		} );
+
+		it( 'should fallback to checking indicators in name or label otherwise', () => {
+			expect(
+				classifyPII( {
+					type: 'text',
+					value: 'John ',
+					name: 'first-name',
+				} )
+			).toEqual( {
+				type: PII_TYPE.NAME,
+				value: 'john',
+			} );
+
+			expect(
+				classifyPII( {
+					type: 'text',
+					value: 'foo@bar ',
+					label: 'Email address ',
+				} )
+			).toEqual( {
+				type: PII_TYPE.EMAIL,
+				value: 'foo@bar',
+			} );
+
+			expect(
+				classifyPII( {
+					type: 'text',
+					value: '21231 ',
+					name: 'phone',
+				} )
+			).toEqual( {
+				type: PII_TYPE.PHONE,
+				value: '21231',
+			} );
+		} );
 	} );
 } );
