@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { useCallback, useEffect } from '@wordpress/element';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -47,6 +48,7 @@ export default function UserInputQuestionnaire( { isSyncingAudiences } ) {
 
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { saveInitialSetup } = useDispatch( CORE_USER );
 
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
@@ -84,6 +86,8 @@ export default function UserInputQuestionnaire( { isSyncingAudiences } ) {
 
 	const { setUserInputSetting } = useDispatch( CORE_USER );
 
+	const showProgress = getQueryArg( location.href, 'showProgress' );
+
 	const submitChanges = useCallback( async () => {
 		trackEvent( gaEventCategory, 'summary_submit' );
 
@@ -97,16 +101,23 @@ export default function UserInputQuestionnaire( { isSyncingAudiences } ) {
 
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
+			if ( showProgress ) {
+				await saveInitialSetup( {
+					isAnalyticsSetupComplete: true,
+				} );
+			}
 			const url = new URL( dashboardURL );
 			navigateTo( url.toString() );
 		}
 	}, [
 		gaEventCategory,
-		saveUserInputSettings,
-		userInputPurposeConversionEvents,
-		dashboardURL,
 		setUserInputSetting,
+		userInputPurposeConversionEvents,
+		saveUserInputSettings,
+		showProgress,
+		dashboardURL,
 		navigateTo,
+		saveInitialSetup,
 	] );
 
 	const settings = useSelect( ( select ) =>

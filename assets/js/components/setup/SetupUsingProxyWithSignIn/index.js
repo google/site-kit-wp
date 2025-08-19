@@ -83,7 +83,7 @@ export default function SetupUsingProxyWithSignIn() {
 							'start_setup_with_analytics'
 						),
 						saveInitialSetup( {
-							isAnalyticsSetupComplete: true,
+							isAnalyticsSetupComplete: false,
 						} ),
 					] );
 

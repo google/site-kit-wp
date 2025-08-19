@@ -190,7 +190,7 @@ final class Plugin {
 				// Assets must be registered after Modules instance is registered.
 				$assets->register();
 
-				$screens = new Core\Admin\Screens( $this->context, $assets, $modules, $authentication );
+				$screens = new Core\Admin\Screens( $this->context, $user_options, $assets, $modules, $authentication );
 				$screens->register();
 
 				$user_surveys = new Core\User_Surveys\User_Surveys( $authentication, $user_options, $survey_queue );
