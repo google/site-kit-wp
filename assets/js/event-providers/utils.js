@@ -16,6 +16,13 @@
  * limitations under the License.
  */
 
+// PII types for classification.
+export const PII_TYPE = {
+	EMAIL: 'email',
+	PHONE: 'phone',
+	NAME: 'name',
+};
+
 /**
  * Normalizes a value for use in conversion tracking.
  *
@@ -113,4 +120,110 @@ export function isLikelyPhone( value ) {
 	const phonePattern = /^\+?\d{7,}$/;
 
 	return phonePattern.test( normalizedPhone );
+}
+
+/**
+ * Classifies a field as PII based on its metadata.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} fieldMeta The metadata of the field to classify.
+ * @return {Object} An object containing the PII type and normalized value.
+ */
+export function classifyPII( fieldMeta ) {
+	let { type, name, value, label } = fieldMeta;
+
+	type = normalizeValue( type );
+	name = normalizeValue( name );
+	value = normalizeValue( value );
+	label = normalizeValue( label );
+
+	switch ( type ) {
+		case 'email':
+			return {
+				type: PII_TYPE.EMAIL,
+				value: normalizeEmail( value ),
+			};
+		case 'tel':
+			return {
+				type: PII_TYPE.PHONE,
+				value: normalizePhone( value ),
+			};
+	}
+
+	if ( isLikelyEmail( value ) ) {
+		return {
+			type: PII_TYPE.EMAIL,
+			value: normalizeEmail( value ),
+		};
+	}
+
+	if ( isLikelyPhone( value ) ) {
+		return {
+			type: PII_TYPE.PHONE,
+			value: normalizePhone( value ),
+		};
+	}
+
+	const indicators = {
+		[ PII_TYPE.EMAIL ]: [ 'email', 'e-mail', 'mail', 'email address' ],
+		[ PII_TYPE.PHONE ]: [
+			'phone',
+			'tel',
+			'mobile',
+			'cell',
+			'telephone',
+			'phone number',
+		],
+		[ PII_TYPE.NAME ]: [
+			'name',
+			'full-name',
+			'full name',
+			'fullname',
+			'first-name',
+			'first name',
+			'firstname',
+			'last-name',
+			'last name',
+			'lastname',
+			'given-name',
+			'given name',
+			'givenname',
+			'family-name',
+			'family name',
+			'familyname',
+			'fname',
+			'lname',
+		],
+	};
+
+	if (
+		indicators[ PII_TYPE.EMAIL ].includes( name ) ||
+		indicators[ PII_TYPE.EMAIL ].includes( label )
+	) {
+		return {
+			type: PII_TYPE.EMAIL,
+			value: normalizeEmail( value ),
+		};
+	}
+
+	if (
+		indicators[ PII_TYPE.PHONE ].includes( name ) ||
+		indicators[ PII_TYPE.PHONE ].includes( label )
+	) {
+		return {
+			type: PII_TYPE.PHONE,
+			value: normalizePhone( value ),
+		};
+	}
+
+	if (
+		indicators[ PII_TYPE.NAME ].includes( name ) ||
+		indicators[ PII_TYPE.NAME ].includes( label )
+	) {
+		return {
+			type: PII_TYPE.NAME,
+			value: normalizeValue( value ),
+		};
+	}
 }
