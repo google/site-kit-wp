@@ -137,20 +137,43 @@ export const parameters = {
 			const aTitle = a[ 1 ].title;
 			const bTitle = b[ 1 ].title;
 
-			const aIsRootFolder = ( aTitle.match( /\//g ) || [] ).length > 1;
-			const bIsRootFolder = ( bTitle.match( /\//g ) || [] ).length > 1;
+			const aParts = aTitle.split( '/' );
+			const bParts = bTitle.split( '/' );
 
-			// If one is a folder and the other isn't, folder comes first
-			if ( aIsRootFolder && ! bIsRootFolder ) {
-				return -1;
-			}
-			if ( ! aIsRootFolder && bIsRootFolder ) {
-				return 1;
+			// Normalize segments for comparison, required for consistent folder sorting.
+			function normalize( s ) {
+				return s
+					.trim()
+					.replace( /^[^A-Za-z0-9]+/, '' )
+					.toLowerCase();
 			}
 
-			// If both are the same type, sort alphabetically
-			// return a.title.localeCompare( b.title );
-			return aTitle.localeCompare( bTitle );
+			const len = Math.min( aParts.length, bParts.length );
+
+			for ( let i = 0; i < len; i++ ) {
+				const aSegRaw = aParts[ i ];
+				const bSegRaw = bParts[ i ];
+
+				const aSeg = normalize( aSegRaw );
+				const bSeg = normalize( bSegRaw );
+
+				// Find the first segment which does not match and sort by this title.
+				if ( aSeg !== bSeg ) {
+					// Sort folders before files by checking if they have children.
+					const aIsFolderHere = aParts.length > i + 1;
+					const bIsFolderHere = bParts.length > i + 1;
+
+					if ( aIsFolderHere !== bIsFolderHere ) {
+						return aIsFolderHere ? -1 : 1;
+					}
+
+					// Otherwise, sort alphabetically by normalized segment title.
+					return aSeg.localeCompare( bSeg );
+				}
+			}
+
+			// Fallback to compare full normalized titles.
+			return normalize( aTitle ).localeCompare( normalize( bTitle ) );
 		},
 	},
 	async puppeteerTest( page ) {
