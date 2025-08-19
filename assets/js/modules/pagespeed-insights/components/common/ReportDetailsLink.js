@@ -43,7 +43,7 @@ export default function ReportDetailsLink() {
 	);
 
 	return (
-		<P size="small" weight="medium">
+		<P size="small">
 			{ createInterpolateElement(
 				sprintf(
 					/* translators: %s: link with translated service name */

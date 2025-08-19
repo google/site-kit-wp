@@ -28,18 +28,11 @@ import {
 	SIZE_SMALL,
 	SIZE_MEDIUM,
 	TYPE_BODY,
-	VALID_SIZES,
 	VALID_TYPES,
-	VALID_WEIGHTS,
+	VALID_SIZES,
 } from './constants';
 
-export default function P( {
-	type = TYPE_BODY,
-	size,
-	weight,
-	children,
-	...props
-} ) {
+export default function P( { type = TYPE_BODY, size, children, ...props } ) {
 	const breakpoint = useBreakpoint();
 
 	return (
@@ -50,7 +43,6 @@ export default function P( {
 				size ||
 				( breakpoint === BREAKPOINT_SMALL ? SIZE_SMALL : SIZE_MEDIUM )
 			}
-			weight={ weight ?? 'normal' }
 			{ ...props }
 		>
 			{ children }
@@ -59,7 +51,6 @@ export default function P( {
 }
 
 P.propTypes = {
-	size: PropTypes.oneOf( VALID_SIZES ),
 	type: PropTypes.oneOf( VALID_TYPES ),
-	weight: PropTypes.oneOf( VALID_WEIGHTS ),
+	size: PropTypes.oneOf( VALID_SIZES ),
 };

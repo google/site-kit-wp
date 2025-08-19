@@ -33,16 +33,3 @@ export const SIZE_MEDIUM = 'medium';
 export const SIZE_LARGE = 'large';
 
 export const VALID_SIZES = [ SIZE_SMALL, SIZE_MEDIUM, SIZE_LARGE ];
-
-export const FONT_WEIGHT_LIGHT = 'font-weight--light';
-export const FONT_WEIGHT_NORMAL = 'font-weight--normal';
-export const FONT_WEIGHT_MEDIUM = 'font-weight--medium';
-export const FONT_WEIGHT_SEMI_BOLD = 'font-weight--semi-bold';
-export const FONT_WEIGHT_BOLD = 'font-weight--bold';
-export const VALID_WEIGHTS = [
-	FONT_WEIGHT_LIGHT,
-	FONT_WEIGHT_NORMAL,
-	FONT_WEIGHT_MEDIUM,
-	FONT_WEIGHT_SEMI_BOLD,
-	FONT_WEIGHT_BOLD,
-];

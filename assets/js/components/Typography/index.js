@@ -23,13 +23,12 @@ import classnames from 'classnames';
 /**
  * Internal dependencies
  */
-import { VALID_TYPES, VALID_SIZES, VALID_WEIGHTS } from './constants';
+import { VALID_TYPES, VALID_SIZES } from './constants';
 
 export default function Typography( {
 	className,
 	type,
 	size,
-	weight,
 	as: Component = 'span',
 	children,
 	...props
@@ -37,12 +36,10 @@ export default function Typography( {
 	return (
 		<Component
 			className={ classnames( 'googlesitekit-typography', className, {
-				[ `googlesitekit-typography--${ size }` ]:
-					size && VALID_SIZES.includes( size ),
 				[ `googlesitekit-typography--${ type }` ]:
 					type && VALID_TYPES.includes( type ),
-				[ `googlesitekit-typography--${ weight }` ]:
-					type && VALID_TYPES.includes( weight ),
+				[ `googlesitekit-typography--${ size }` ]:
+					size && VALID_SIZES.includes( size ),
 			} ) }
 			{ ...props }
 		>
@@ -52,9 +49,8 @@ export default function Typography( {
 }
 
 Typography.propTypes = {
-	as: PropTypes.oneOfType( [ PropTypes.string, PropTypes.elementType ] ),
 	className: PropTypes.string,
-	size: PropTypes.oneOf( VALID_SIZES ),
 	type: PropTypes.oneOf( VALID_TYPES ),
-	weight: PropTypes.oneOf( VALID_WEIGHTS ),
+	size: PropTypes.oneOf( VALID_SIZES ),
+	as: PropTypes.oneOfType( [ PropTypes.string, PropTypes.elementType ] ),
 };

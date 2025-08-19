@@ -52,14 +52,6 @@ $typography-font-families: (
 	label: $f-primary
 );
 
-$typography-font-weights: (
-	light: $fw-light,
-	normal: $fw-normal,
-	medium: $fw-medium,
-	semi-bold: $fw-semi-bold,
-	bold: $fw-bold
-);
-
 .googlesitekit-plugin {
 
 	.googlesitekit-typography {
@@ -70,15 +62,6 @@ $typography-font-weights: (
 
 				@each $size, $styles in $sizes {
 					&.googlesitekit-typography--#{$size} {
-
-						@each $prop, $value in $styles {
-							#{$prop}: #{$value};
-						}
-					}
-				}
-
-				@each $weight, $styles in $typography-font-weights {
-					&.googlesitekit-typography--#{$weight} {
 
 						@each $prop, $value in $styles {
 							#{$prop}: #{$value};
