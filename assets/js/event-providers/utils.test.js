@@ -19,7 +19,12 @@
 /**
  * Internal dependencies
  */
-import { normalizeEmail, normalizePhone, normalizeValue } from './utils';
+import {
+	isLikelyEmail,
+	normalizeEmail,
+	normalizePhone,
+	normalizeValue,
+} from './utils';
 
 describe( 'Event Providers Utilities', () => {
 	describe( 'normalizeValue', () => {
@@ -75,5 +80,20 @@ describe( 'Event Providers Utilities', () => {
 		] )( 'should normalize %s to %s', ( input, output ) => {
 			expect( normalizePhone( input ) ).toBe( output );
 		} );
+	} );
+
+	describe( 'isLikelyEmail', () => {
+		it.each( [
+			[ ' foo@bar.com ', true ],
+			[ ' FOO BAR', false ],
+			[ 'foo@bar', false ],
+			[ ' bar.com ', false ],
+			[ '123123', false ],
+		] )(
+			'should check if %s is likely an email address',
+			( input, result ) => {
+				expect( isLikelyEmail( input ) ).toBe( result );
+			}
+		);
 	} );
 } );
