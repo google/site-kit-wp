@@ -48,6 +48,7 @@ import ProgressSegments from '../ProgressSegments';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import useFormValue from '../../hooks/useFormValue';
 
 export default function UserInputQuestionnaire() {
 	const viewContext = useViewContext();
@@ -62,13 +63,12 @@ export default function UserInputQuestionnaire() {
 	}
 
 	const { setValues } = useDispatch( CORE_FORMS );
+	const questionNumberExists = useFormValue(
+		FORM_USER_INPUT_QUESTION_NUMBER,
+		'questionNumber'
+	);
 	const questionNumber =
-		useSelect( ( select ) =>
-			select( CORE_FORMS ).getValue(
-				FORM_USER_INPUT_QUESTION_NUMBER,
-				'questionNumber'
-			)
-		) || 1;
+		questionNumberExists !== undefined ? questionNumberExists : 1;
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 

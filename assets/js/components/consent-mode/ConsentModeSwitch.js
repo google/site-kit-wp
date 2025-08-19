@@ -38,6 +38,7 @@ import { DAY_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 import ErrorNotice from '../ErrorNotice';
+import P from '../Typography/P';
 
 export default function ConsentModeSwitch( { loading } ) {
 	const viewContext = useViewContext();
@@ -156,7 +157,7 @@ export default function ConsentModeSwitch( { loading } ) {
 						tabletWidth="540px"
 						tabletHeight="84px"
 					>
-						<p>
+						<P>
 							{ createInterpolateElement(
 								__(
 									'Consent mode will help adjust tracking on your site, so only visitors who have explicitly given consent are tracked. <br />This is required in some parts of the world, like the European Economic Area. <a>Learn more</a>',
@@ -182,7 +183,7 @@ export default function ConsentModeSwitch( { loading } ) {
 									),
 								}
 							) }
-						</p>
+						</P>
 					</LoadingWrapper>
 				}
 			</div>

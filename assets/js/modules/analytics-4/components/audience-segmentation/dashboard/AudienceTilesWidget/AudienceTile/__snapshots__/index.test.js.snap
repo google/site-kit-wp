@@ -255,7 +255,9 @@ exports[`AudienceTile Partial data badge should render a partial data badge for 
                   class="googlesitekit-audience-segmentation-tile-metric__no-data"
                 >
                   No data to show
-                  <p>
+                  <p
+                    class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+                  >
                     Update Analytics to track metric
                   </p>
                   <button
@@ -534,7 +536,9 @@ exports[`AudienceTile Partial data badge should render a partial data badge for 
                   class="googlesitekit-audience-segmentation-tile-metric__no-data"
                 >
                   No data to show
-                  <p>
+                  <p
+                    class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+                  >
                     Update Analytics to track metric
                   </p>
                   <button
@@ -802,7 +806,9 @@ exports[`AudienceTile should render the AudienceTile component 1`] = `
                   class="googlesitekit-audience-segmentation-tile-metric__no-data"
                 >
                   No data to show
-                  <p>
+                  <p
+                    class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+                  >
                     Update Analytics to track metric
                   </p>
                   <button

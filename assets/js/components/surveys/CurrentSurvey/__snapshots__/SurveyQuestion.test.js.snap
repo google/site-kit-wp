@@ -412,7 +412,9 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p>
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
             Unhappy
           </p>
         </div>
@@ -427,7 +429,9 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p>
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
             Dissatisfied
           </p>
         </div>
@@ -442,7 +446,9 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p>
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
             Neutral
           </p>
         </div>
@@ -457,7 +463,9 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p>
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
             Satisfied
           </p>
         </div>
@@ -472,7 +480,9 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p>
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
             Delighted
           </p>
         </div>

@@ -32,7 +32,6 @@ import Layout from '../../layout/Layout';
 import { Grid, Row, Cell } from '../../../material-components';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
 import {
 	ANALYTICS_NOTICE_FORM_NAME,
@@ -46,6 +45,7 @@ import Splash from './Splash';
 import Actions from './Actions';
 import Notice from '../../Notice';
 import { TYPES } from '../../Notice/constants';
+import useFormValue from '../../../hooks/useFormValue';
 
 export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
@@ -58,11 +58,9 @@ export default function SetupUsingProxyWithSignIn() {
 	const isConnected = useSelect( ( select ) =>
 		select( CORE_SITE ).isConnected()
 	);
-	const connectAnalytics = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			ANALYTICS_NOTICE_FORM_NAME,
-			ANALYTICS_NOTICE_CHECKBOX
-		)
+	const connectAnalytics = useFormValue(
+		ANALYTICS_NOTICE_FORM_NAME,
+		ANALYTICS_NOTICE_CHECKBOX
 	);
 
 	const onButtonClick = useCallback(

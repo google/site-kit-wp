@@ -34,6 +34,7 @@ import { Button } from 'googlesitekit-components';
 import { Cell, Grid, Row } from '../../material-components';
 import { trackEvent } from '../../util';
 import Typography from '../Typography';
+import P from '../Typography/P';
 
 class WizardStepCompleteSetup extends Component {
 	constructor( props ) {
@@ -63,12 +64,12 @@ class WizardStepCompleteSetup extends Component {
 							>
 								{ __( 'Congratulations!', 'google-site-kit' ) }
 							</Typography>
-							<p>
+							<P>
 								{ __(
 									'You successfully completed the Site Kit setup and connected Search Console. Check the dashboard for more services to connect.',
 									'google-site-kit'
 								) }
-							</p>
+							</P>
 							<div className="googlesitekit-wizard-step__action">
 								<Button
 									id="wizard-step-five-proceed"

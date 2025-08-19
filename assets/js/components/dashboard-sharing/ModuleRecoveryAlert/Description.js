@@ -21,14 +21,30 @@
  */
 import { sprintf, __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies.
+ */
+import { useSelect } from 'googlesitekit-data';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import P from '../../Typography/P';
+import LearnMoreLink from '../../Banner/LearnMoreLink';
+
 export default function Description( {
 	recoverableModules,
 	userRecoverableModuleSlugs,
 	hasUserRecoverableModules,
 	hasMultipleRecoverableModules,
 } ) {
+	const documentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'dashboard-sharing'
+		);
+	} );
+
+	let descriptionContent;
+
 	if ( ! hasMultipleRecoverableModules && hasUserRecoverableModules ) {
-		return sprintf(
+		descriptionContent = sprintf(
 			/* translators: %s: module name. */
 			__(
 				'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
@@ -36,21 +52,17 @@ export default function Description( {
 			),
 			recoverableModules[ userRecoverableModuleSlugs[ 0 ] ]?.name
 		);
-	}
-
-	if ( hasMultipleRecoverableModules && hasUserRecoverableModules ) {
-		return __(
+	} else if ( hasMultipleRecoverableModules && hasUserRecoverableModules ) {
+		descriptionContent = __(
 			'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
 			'google-site-kit'
 		);
-	}
-
-	if (
+	} else if (
 		! hasMultipleRecoverableModules &&
 		! hasUserRecoverableModules &&
 		recoverableModules
 	) {
-		return sprintf(
+		descriptionContent = sprintf(
 			/* translators: %s: module name. */
 			__(
 				'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
@@ -58,12 +70,24 @@ export default function Description( {
 			),
 			Object.values( recoverableModules )[ 0 ]?.name
 		);
-	}
-
-	if ( hasMultipleRecoverableModules && ! hasUserRecoverableModules ) {
-		return __(
+	} else if ( hasMultipleRecoverableModules && ! hasUserRecoverableModules ) {
+		descriptionContent = __(
 			'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
 			'google-site-kit'
 		);
 	}
+
+	if ( descriptionContent ) {
+		return (
+			<P>
+				{ descriptionContent }{ ' ' }
+				<LearnMoreLink
+					label={ __( 'Learn more', 'google-site-kit' ) }
+					href={ documentationURL }
+				/>
+			</P>
+		);
+	}
+
+	return null;
 }

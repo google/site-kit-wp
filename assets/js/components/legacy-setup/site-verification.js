@@ -34,6 +34,7 @@ import { get, set } from 'googlesitekit-api';
 import { Button, ProgressBar, TextField } from 'googlesitekit-components';
 import { validateJSON, trackEvent } from '../../util';
 import Typography from '../Typography';
+import P from '../Typography/P';
 
 class SiteVerification extends Component {
 	constructor( props ) {
@@ -177,7 +178,7 @@ class SiteVerification extends Component {
 
 		const loadingDiv = (
 			<Fragment>
-				{ loadingMsg && <p>{ loadingMsg }</p> }
+				{ loadingMsg && <P>{ loadingMsg }</P> }
 				<ProgressBar />
 			</Fragment>
 		);

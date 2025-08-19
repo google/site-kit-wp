@@ -50,7 +50,7 @@ final class Activation_Flag {
 	 */
 	public function __construct(
 		Context $context,
-		Options $options = null
+		?Options $options = null
 	) {
 		$this->context = $context;
 		$this->options = $options ?: new Options( $this->context );

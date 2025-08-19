@@ -239,7 +239,7 @@ describe( 'NoAudienceBannerWidget', () => {
 			await waitForDefaultTimeouts();
 
 			expect( global.location.assign ).toHaveBeenCalledWith(
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings'
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings&scrollTo=visitor-groups#/admin-settings'
 			);
 		} );
 
@@ -355,7 +355,7 @@ describe( 'NoAudienceBannerWidget', () => {
 			await waitForDefaultTimeouts();
 
 			expect( global.location.assign ).toHaveBeenCalledWith(
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings'
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings&scrollTo=visitor-groups#/admin-settings'
 			);
 		} );
 

@@ -37,12 +37,12 @@ import {
 	AUDIENCE_SELECTION_FORM,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
-import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import InfoIcon from '../../../../../../../svg/icons/info-circle.svg';
 import InfoNotice from '../InfoNotice';
 import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import useFormValue from '../../../../../../hooks/useFormValue';
 
 export default function AddGroupNotice() {
 	const [ twoOrMoreAudiencesSelected, setTwoOrMoreAudiencesSelected ] =
@@ -57,11 +57,9 @@ export default function AddGroupNotice() {
 	const isLoading = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isFetchingSyncAvailableAudiences()
 	);
-	const selectedAudiences = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_SELECTION_FORM,
-			AUDIENCE_SELECTED
-		)
+	const selectedAudiences = useFormValue(
+		AUDIENCE_SELECTION_FORM,
+		AUDIENCE_SELECTED
 	);
 
 	const { dismissItem } = useDispatch( CORE_USER );

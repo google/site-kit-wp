@@ -66,7 +66,7 @@ class Consent_Mode {
 	public function __construct(
 		Context $context,
 		Modules $modules,
-		Options $options = null
+		?Options $options = null
 	) {
 		$this->context               = $context;
 		$options                     = $options ?: new Options( $context );

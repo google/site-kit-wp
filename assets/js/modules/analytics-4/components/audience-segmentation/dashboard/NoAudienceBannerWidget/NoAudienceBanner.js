@@ -28,6 +28,7 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import NoAudienceBannerGraphic from '../../../../../../../svg/graphics/no-audience-banner-graphic.svg';
 import Link from '../../../../../../components/Link';
+import P from '../../../../../../components/Typography/P';
 import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
 import LeanCTABanner from '../../../../../../components/LeanCTABanner';
 import { CORE_LOCATION } from '../../../../../../googlesitekit/datastore/location/constants';
@@ -52,7 +53,9 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 		select( CORE_MODULES ).getModuleIcon( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const adminSettingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getSiteKitAdminSettingsURL()
+		select( CORE_SITE ).getSiteKitAdminSettingsURL( {
+			scrollTo: 'visitor-groups',
+		} )
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
@@ -79,7 +82,7 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 			Icon={ Icon }
 			SVGGraphic={ NoAudienceBannerGraphic }
 		>
-			<p>
+			<P>
 				{ didSetAudiences &&
 					createInterpolateElement(
 						__(
@@ -110,9 +113,9 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 							),
 						}
 					) }
-			</p>
+			</P>
 			{ ! isViewOnly && (
-				<p>
+				<P>
 					{ createInterpolateElement(
 						__(
 							'You can deactivate this widget in <a>Settings</a>.',
@@ -135,7 +138,7 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 							),
 						}
 					) }
-				</p>
+				</P>
 			) }
 		</LeanCTABanner>
 	);
