@@ -60,3 +60,25 @@ export function normalizeEmail( email ) {
 
 	return normalizedEmail;
 }
+
+/**
+ * Normalizes a phone number for conversion tracking.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} phone The phone number to normalize.
+ * @return {string} The normalized phone number.
+ */
+export function normalizePhone( phone ) {
+	const normalizedPhone = normalizeValue( phone );
+
+	// Remove all non-numeric characters.
+	const digits = normalizedPhone.replace( /\D/g, '' );
+
+	// If the phone number starts with a '+' sign, keep it.
+	if ( normalizedPhone.startsWith( '+' ) ) {
+		return `+${ digits }`;
+	}
+
+	return digits;
+}
