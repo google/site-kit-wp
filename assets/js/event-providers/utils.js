@@ -98,3 +98,19 @@ export function isLikelyEmail( value ) {
 
 	return emailPattern.test( normalizedEmail );
 }
+
+/**
+ * Checks if a value is likely a phone number.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} value The value to check.
+ * @return {boolean} True if the value is likely a phone number, false otherwise.
+ */
+export function isLikelyPhone( value ) {
+	const normalizedPhone = normalizePhone( value );
+
+	const phonePattern = /^\+?\d{7,}$/;
+
+	return phonePattern.test( normalizedPhone );
+}
