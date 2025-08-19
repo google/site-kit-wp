@@ -125,9 +125,12 @@
 		justify-content: flex-end;
 		padding-top: 0;
 
+		.googlesitekit-plugin & .googlesitekit-typography.googlesitekit-typography--body.googlesitekit-typography--small {
+			font-weight: $fw-medium;
+		}
+
 		button.googlesitekit-cta-link {
 			color: $c-surfaces-on-surface-variant;
-			font-weight: $fw-medium;
 		}
 	}
 
