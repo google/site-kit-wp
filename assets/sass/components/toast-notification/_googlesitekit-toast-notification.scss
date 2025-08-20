@@ -1,0 +1,42 @@
+/**
+ * Toast notification styles.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *		 https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-toast-notification {
+	bottom: 24px;
+	position: fixed;
+	right: 24px;
+	z-index: 10;
+
+	.googlesitekit-toast-notification__wrapper {
+		align-items: center;
+		background-color: $c-content-primary-container;
+		border-radius: $br-xs;
+		color: $c-content-on-primary-container;
+		display: flex;
+		font-size: $fs-body-lg;
+		letter-spacing: $ls-xxs;
+		padding: 14px 24px;
+
+		p {
+			align-items: center;
+			display: flex;
+			gap: 12px;
+			margin: 0;
+		}
+	}
+}

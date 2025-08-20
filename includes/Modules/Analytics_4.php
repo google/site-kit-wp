@@ -1016,8 +1016,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			$this->context->admin_url(
 				'user-input',
 				array(
-					'showProgress'   => $show_progress,
-					'accountCreated' => true,
+					'showProgress' => $show_progress,
 				)
 			)
 		);

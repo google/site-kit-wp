@@ -45,6 +45,7 @@ import ModuleSetupFooter from './ModuleSetupFooter';
 import { getQueryArg } from '@wordpress/url';
 import ProgressSegments from '../ProgressSegments';
 import Link from '../Link';
+import ToastNotification from '../ToastNotification';
 
 export default function ModuleSetup( { moduleSlug } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -134,7 +135,23 @@ export default function ModuleSetup( { moduleSlug } ) {
 			</Header>
 			{ showProgress && (
 				// `currentSegment` and `totalSegments` can be hardcoded, at least for phase 1, although we might want to tweak their values.
-				<ProgressSegments currentSegment={ 5 } totalSegments={ 7 } />
+				<Fragment>
+					<ProgressSegments
+						currentSegment={ 5 }
+						totalSegments={ 7 }
+					/>
+					{ /* It would be preferable not to hardcode the Search Console service name here. It's a safe assumption for now, as the
+					 * `showProgress` query parameter will only be set when the user has just successfully set up Search Console in the initial
+					 * setup flow.
+					 *
+					 * We can treat this as technical debt to be addressed in phase 4. */ }
+					<ToastNotification>
+						{ __(
+							'Search Console was successfully set up',
+							'google-site-kit'
+						) }
+					</ToastNotification>
+				</Fragment>
 			) }
 			<div className="googlesitekit-setup">
 				<Grid>

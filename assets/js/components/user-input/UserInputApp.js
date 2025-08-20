@@ -37,10 +37,10 @@ import UserInputQuestionnaire from './UserInputQuestionnaire';
 import Layout from '../layout/Layout';
 import { getUserInputQuestions } from './util/constants';
 import ProgressSegments from '../ProgressSegments';
-import CheckFill from '../../../svg/icons/check-fill.svg';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import Link from '../Link';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import ToastNotification from '../ToastNotification';
 
 export default function UserInputApp() {
 	const questions = getUserInputQuestions();
@@ -62,27 +62,10 @@ export default function UserInputApp() {
 	// TODO: Also check the query param `slug` is `analytics-4`, to be on the safe side.
 	const showProgress = getQueryArg( location.href, 'showProgress' );
 
-	const accountCreated = getQueryArg( location.href, 'accountCreated' );
-
-	const [ isAccountCreatedVisible, setIsAccountCreatedVisible ] = useState(
-		!! accountCreated
-	);
-
 	const [ isSyncingAudiences, setIsSyncingAudiences ] = useState( false );
 
 	const { syncAvailableAudiences, fetchSyncAvailableCustomDimensions } =
 		useDispatch( MODULES_ANALYTICS_4 );
-
-	useEffect( () => {
-		if ( ! accountCreated ) {
-			return;
-		}
-
-		setIsAccountCreatedVisible( true );
-		setTimeout( () => {
-			setIsAccountCreatedVisible( false );
-		}, 3000 );
-	}, [ accountCreated ] );
 
 	useEffect( () => {
 		setIsSyncingAudiences( true );
@@ -128,21 +111,26 @@ export default function UserInputApp() {
 			</Header>
 			{ showProgress && (
 				// `currentSegment` and `totalSegments` can be hardcoded, at least for phase 1, although we might want to tweak their values.
-				<ProgressSegments currentSegment={ 6 } totalSegments={ 7 } />
+				<Fragment>
+					<ProgressSegments
+						currentSegment={ 6 }
+						totalSegments={ 7 }
+					/>
+
+					{ /* It would be preferable not to hardcode the Google Analytics service name here. It's a safe assumption for now, as the
+					 * `showProgress` query parameter will only be set when the user has just successfully set up Google Analytics in the initial
+					 * setup flow.
+					 *
+					 * We can treat this as technical debt to be addressed in phase 4. */ }
+					<ToastNotification>
+						{ __(
+							'Google Analytics was successfully set up',
+							'google-site-kit'
+						) }
+					</ToastNotification>
+				</Fragment>
 			) }
 			<div className="googlesitekit-user-input">
-				<div className="googlesite-user-input__notification">
-					{ isAccountCreatedVisible && (
-						<div className="googlesitekit-user-input__notification-wrapper">
-							<p>
-								<CheckFill width={ 24 } height={ 24 } />
-								<span>
-									Your account has been successfully created
-								</span>
-							</p>
-						</div>
-					) }
-				</div>
 				<div className="googlesitekit-module-page">
 					{ ! hasFinishedGettingInputSettings && (
 						<Grid>
