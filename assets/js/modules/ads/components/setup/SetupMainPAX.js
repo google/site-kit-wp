@@ -98,7 +98,11 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 		return select( CORE_LOCATION ).isNavigatingTo( oAuthURL );
 	} );
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
 
+	const { triggerSurvey } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const {
 		setPaxConversionID,
@@ -150,6 +154,9 @@ export default function SetupMainPAX( { finishSetup } ) {
 		}
 
 		trackEvent( `${ viewContext }_pax`, 'pax_campaign_created' );
+		if ( usingProxy ) {
+			triggerSurvey( 'pax_campaign_created' );
+		}
 
 		setUserID( customerData.userId );
 		setCustomerID( customerData.customerId );
@@ -166,7 +173,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 			setConversionTrackingEnabled( true );
 			await saveConversionTrackingSettings();
 		}
-	}, [ setExtCustomerID, setPaxConversionID, viewContext ] );
+	}, [ setExtCustomerID, setPaxConversionID, viewContext, usingProxy ] );
 
 	const registry = useRegistry();
 	const onCompleteSetup = useCallbackOne( async () => {
@@ -180,6 +187,9 @@ export default function SetupMainPAX( { finishSetup } ) {
 			}
 		);
 		await trackEvent( `${ viewContext }_pax`, 'pax_setup_completed' );
+		if ( usingProxy ) {
+			triggerSurvey( 'pax_setup_completed' );
+		}
 		finishSetup( redirectURL );
 	}, [ registry, finishSetup, viewContext ] );
 
@@ -202,9 +212,12 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const onLaunch = useCallback(
 		( app ) => {
 			trackEvent( `${ viewContext }_pax`, 'pax_launch' );
+			if ( usingProxy ) {
+				triggerSurvey( 'pax_launch' );
+			}
 			paxAppRef.current = app;
 		},
-		[ viewContext ]
+		[ viewContext, usingProxy, triggerSurvey ]
 	);
 
 	const onSetupCallback = useCallback( async () => {
@@ -213,11 +226,17 @@ export default function SetupMainPAX( { finishSetup } ) {
 			return;
 		}
 
+		if ( usingProxy ) {
+			triggerSurvey( 'start_setup_pax' );
+		}
+
 		// awaiting because `createAccount` may trigger a navigation.
 		await trackEvent( viewContext, 'start_setup_pax' );
 
 		createAccount();
 	}, [
+		usingProxy,
+		triggerSurvey,
 		isWooCommerceActivated,
 		isWooCommerceRedirectModalDismissed,
 		setOpenDialog,
