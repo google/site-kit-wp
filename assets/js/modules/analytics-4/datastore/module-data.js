@@ -73,7 +73,7 @@ export const actions = {
 	 * Sets the data availability date for a specific resource.
 	 *
 	 * @since 1.127.0
-	 * @since n.e.x.t Moved to `module-data` store partial from `partial-data` store partial.
+	 * @since 1.160.0 Moved to `module-data` store partial from `partial-data` store partial.
 	 *
 	 * @param {string} resourceSlug Resource slug.
 	 * @param {string} resourceType Resource type.
@@ -205,7 +205,7 @@ export const selectors = {
 	 * Gets the data availability date for all resources.
 	 *
 	 * @since 1.127.0
-	 * @since n.e.x.t Moved over from partial-data store partial.
+	 * @since 1.160.0 Moved over from partial-data store partial.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object} Resource data availability dates. Undefined if not loaded.
@@ -217,7 +217,7 @@ export const selectors = {
 	/**
 	 * Gets the custom dimensions data availability object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.160.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object|undefined} Object mapping custom dimension slugs to their data availability state.

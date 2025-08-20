@@ -23,7 +23,7 @@ class Datapoint {
 	 * Service identifier.
 	 *
 	 * @since 1.77.0
-	 * @since n.e.x.t Updated to allow a function to return the service identifier.
+	 * @since 1.160.0 Updated to allow a function to return the service identifier.
 	 * @var string|callable
 	 */
 	private $service = '';

@@ -2729,7 +2729,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * Gets required inline data for the module.
 	 *
 	 * @since 1.158.0
-	 * @since n.e.x.t Include $modules_data parameter to match the interface.
+	 * @since 1.160.0 Include $modules_data parameter to match the interface.
 	 *
 	 * @param array $modules_data Inline modules data.
 	 * @return array An array of the module's inline data.
