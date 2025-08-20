@@ -29,6 +29,7 @@ import {
 	createInterpolateElement,
 	Fragment,
 	useCallback,
+	useEffect,
 	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -39,7 +40,11 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MINUTE_IN_SECONDS, WEEK_IN_SECONDS } from '../../../../util';
+import {
+	DAY_IN_SECONDS,
+	MINUTE_IN_SECONDS,
+	WEEK_IN_SECONDS,
+} from '../../../../util';
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
 	MODULES_ADS,
@@ -101,7 +106,16 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 
 	const activateModule = useActivateModuleCallback( MODULE_SLUG_ADS );
 
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
 	const onSetupCallback = useCallback( () => {
+		if ( usingProxy ) {
+			triggerSurvey( 'accept_ads_setup_cta' );
+		}
+
 		if (
 			! shouldShowWooCommerceRedirectModal ||
 			isWooCommerceRedirectModalDismissed
@@ -113,6 +127,8 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 
 		setOpenDialog( true );
 	}, [
+		usingProxy,
+		triggerSurvey,
 		shouldShowWooCommerceRedirectModal,
 		activateModule,
 		isWooCommerceRedirectModalDismissed,
@@ -141,6 +157,12 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 			setDismissLabel( __( 'Don’t show again', 'google-site-kit' ) );
 		}
 	} );
+
+	useEffect( () => {
+		if ( usingProxy ) {
+			triggerSurvey( 'view_ads_setup_cta', { ttl: DAY_IN_SECONDS } );
+		}
+	}, [ triggerSurvey, usingProxy ] );
 
 	return (
 		<Notification>
