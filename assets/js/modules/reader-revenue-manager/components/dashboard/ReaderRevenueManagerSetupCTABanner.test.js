@@ -33,6 +33,7 @@ import {
 	provideModules,
 	waitFor,
 	provideUserAuthentication,
+	provideSiteInfo,
 } from '../../../../../../tests/js/test-utils';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -73,6 +74,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		activateModuleMock = jest.fn( () => activateModuleCallbackMock );
 
 		provideUserAuthentication( registry );
+		provideSiteInfo( registry );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
 
