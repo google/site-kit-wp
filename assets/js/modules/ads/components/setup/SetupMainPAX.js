@@ -98,9 +98,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 
 		return select( CORE_LOCATION ).isNavigatingTo( oAuthURL );
 	} );
-	const usingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -154,9 +151,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		}
 
 		trackEvent( `${ viewContext }_pax`, 'pax_campaign_created' );
-		if ( usingProxy ) {
-			triggerSurvey( 'pax_campaign_created' );
-		}
+		triggerSurvey( 'pax_campaign_created' );
 
 		setUserID( customerData.userId );
 		setCustomerID( customerData.customerId );
@@ -173,7 +168,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 			setConversionTrackingEnabled( true );
 			await saveConversionTrackingSettings();
 		}
-	}, [ setExtCustomerID, setPaxConversionID, viewContext, usingProxy ] );
+	}, [ setExtCustomerID, setPaxConversionID, viewContext ] );
 
 	const registry = useRegistry();
 	const onCompleteSetup = useCallbackOne( async () => {
@@ -188,7 +183,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		);
 		await Promise.all( [
 			trackEvent( `${ viewContext }_pax`, 'pax_setup_completed' ),
-			usingProxy && triggerSurvey( 'pax_setup_completed' ),
+			triggerSurvey( 'pax_setup_completed' ),
 		] );
 
 		finishSetup( redirectURL );
@@ -213,12 +208,10 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const onLaunch = useCallback(
 		( app ) => {
 			trackEvent( `${ viewContext }_pax`, 'pax_launch' );
-			if ( usingProxy ) {
-				triggerSurvey( 'pax_launch' );
-			}
+			triggerSurvey( 'pax_launch' );
 			paxAppRef.current = app;
 		},
-		[ viewContext, usingProxy, triggerSurvey ]
+		[ viewContext, triggerSurvey ]
 	);
 
 	const onSetupCallback = useCallback( async () => {
@@ -230,12 +223,11 @@ export default function SetupMainPAX( { finishSetup } ) {
 		// awaiting because `createAccount` may trigger a navigation.
 		await Promise.all( [
 			trackEvent( viewContext, 'start_setup_pax' ),
-			usingProxy && triggerSurvey( 'start_setup_pax' ),
+			triggerSurvey( 'start_setup_pax' ),
 		] );
 
 		createAccount();
 	}, [
-		usingProxy,
 		triggerSurvey,
 		isWooCommerceActivated,
 		isWooCommerceRedirectModalDismissed,
