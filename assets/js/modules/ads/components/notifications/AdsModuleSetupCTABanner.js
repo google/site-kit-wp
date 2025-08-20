@@ -106,15 +106,10 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 
 	const activateModule = useActivateModuleCallback( MODULE_SLUG_ADS );
 
-	const usingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	const onSetupCallback = useCallback( () => {
-		if ( usingProxy ) {
-			triggerSurvey( 'accept_ads_setup_cta' );
-		}
+		triggerSurvey( 'accept_ads_setup_cta' );
 
 		if (
 			! shouldShowWooCommerceRedirectModal ||
@@ -127,7 +122,6 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 
 		setOpenDialog( true );
 	}, [
-		usingProxy,
 		triggerSurvey,
 		shouldShowWooCommerceRedirectModal,
 		activateModule,
