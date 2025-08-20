@@ -29,7 +29,6 @@ import {
 	createInterpolateElement,
 	Fragment,
 	useCallback,
-	useEffect,
 	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -59,6 +58,7 @@ import SetupCTA from '../../../../googlesitekit/notifications/components/layout/
 import BannerSVGDesktop from '@/svg/graphics/banner-ads-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-ads-setup-cta-mobile.svg?url';
 import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
+import SurveyViewTrigger from '../../../../components/surveys/SurveyViewTrigger';
 
 export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );
@@ -158,12 +158,6 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 		}
 	} );
 
-	useEffect( () => {
-		if ( usingProxy ) {
-			triggerSurvey( 'view_ads_setup_cta', { ttl: DAY_IN_SECONDS } );
-		}
-	}, [ triggerSurvey, usingProxy ] );
-
 	return (
 		<Notification>
 			<SetupCTA
@@ -232,6 +226,10 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 					dialogActive
 				/>
 			) }
+			<SurveyViewTrigger
+				triggerID="view_ads_setup_cta"
+				ttl={ DAY_IN_SECONDS }
+			/>
 		</Notification>
 	);
 }
