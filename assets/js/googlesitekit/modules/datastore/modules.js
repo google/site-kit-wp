@@ -671,10 +671,9 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 
 		case RECEIVE_INLINE_MODULES_DATA: {
 			const { inlineModulesData } = payload;
-			return {
-				...state,
-				inlineModulesData,
-			};
+
+			state.inlineModulesData = inlineModulesData;
+			break;
 		}
 
 		default:
