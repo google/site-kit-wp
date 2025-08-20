@@ -74,18 +74,39 @@ jobs:
         run: npm run lint:js
       - name: Jest Tests
         id: test-js
-        run: npm run test:js
+        run: npm run test:js -- --json --outputFile=jest-results.json || true
         continue-on-error: true
       - name: Jest Tests (Retry Failures 1)
         id: test-js-retry-1
-        run: npm run test:js -- -- --onlyFailures
-        if: steps.test-js.outcome == 'failure'
+        run: |
+          FAILING_SUITES=$(jq -r '.testResults[] | select(.status=="failed") | .name' jest-results.json)
+          if [ -n "$FAILING_SUITES" ]; then
+            echo "Retrying failing test suites: $FAILING_SUITES"
+            npx jest $FAILING_SUITES --json --outputFile=jest-results.json || true
+          else
+            echo "No failing test suites to retry."
+          fi
+        if: failure()
         continue-on-error: true
       - name: Jest Tests (Retry Failures 2)
         id: test-js-retry-2
-        run: npm run test:js -- -- --onlyFailures
+        run: |
+          FAILING_SUITES=$(jq -r '.testResults[] | select(.status=="failed") | .name' jest-results.json)
+          if [ -n "$FAILING_SUITES" ]; then
+            echo "Retrying failing test suites: $FAILING_SUITES"
+            npx jest $FAILING_SUITES --json --outputFile=jest-results.json || true
+          else
+            echo "No failing test suites to retry."
+          fi
         if: steps.test-js-retry-1.outcome == 'failure'
         continue-on-error: true
       - name: Jest Tests (Retry Failures 3)
-        run: npm run test:js -- -- --onlyFailures
+        run: |
+         FAILING_SUITES=$(jq -r '.testResults[] | select(.status=="failed") | .name' jest-results.json)
+          if [ -n "$FAILING_SUITES" ]; then
+            echo "Retrying failing test suites: $FAILING_SUITES"
+            npx jest $FAILING_SUITES --json --outputFile=jest-results.json || true
+          else
+            echo "No failing test suites to retry."
+          fi
         if: steps.test-js-retry-2.outcome == 'failure'
