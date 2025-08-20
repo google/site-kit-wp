@@ -186,10 +186,11 @@ export default function SetupMainPAX( { finishSetup } ) {
 				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
 			}
 		);
-		await trackEvent( `${ viewContext }_pax`, 'pax_setup_completed' );
-		if ( usingProxy ) {
-			triggerSurvey( 'pax_setup_completed' );
-		}
+		await Promise.all( [
+			trackEvent( `${ viewContext }_pax`, 'pax_setup_completed' ),
+			usingProxy && triggerSurvey( 'pax_setup_completed' ),
+		] );
+
 		finishSetup( redirectURL );
 	}, [ registry, finishSetup, viewContext ] );
 
@@ -221,17 +222,16 @@ export default function SetupMainPAX( { finishSetup } ) {
 	);
 
 	const onSetupCallback = useCallback( async () => {
-		if ( usingProxy ) {
-			triggerSurvey( 'start_setup_pax' );
-		}
-
 		if ( isWooCommerceActivated && ! isWooCommerceRedirectModalDismissed ) {
 			setOpenDialog( true );
 			return;
 		}
 
 		// awaiting because `createAccount` may trigger a navigation.
-		await trackEvent( viewContext, 'start_setup_pax' );
+		await Promise.all( [
+			trackEvent( viewContext, 'start_setup_pax' ),
+			usingProxy && triggerSurvey( 'start_setup_pax' ),
+		] );
 
 		createAccount();
 	}, [
