@@ -863,11 +863,9 @@ const baseResolvers = {
 			return googleTagSettings;
 		}
 
-		yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
+		return yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
 			measurementID
 		);
-
-		return true;
 	},
 };
 
