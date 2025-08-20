@@ -298,7 +298,7 @@ export default function WooCommerceRedirectModal( {
 						isGoogleForWooCommerceAdsConnected ? '_self' : '_blank'
 					}
 					disabled={ !! isSaving }
-					tertiary
+					tertiary={ ! isGoogleForWooCommerceAdsConnected }
 				>
 					{ isGoogleForWooCommerceAdsConnected
 						? __( 'View current Ads account', 'google-site-kit' )
