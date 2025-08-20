@@ -58,9 +58,6 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
-      # nvm@7 is the minimum version required for npm workspace support.
-      # This is needed to prevent js lint failures due to module resolution to the workspace packages.
-      # This can be removed once our node base version comes with nvm@7 or greater.
       - name: Install npm Globally
         run: npm run install-global-npm
 
@@ -74,38 +71,55 @@ jobs:
         run: npm run lint:js
       - name: Jest Tests
         id: test-js
-        run: npm run test:js -- --json --outputFile=jest-results.json || true
+        run: npm run test:js -- --json --outputFile=test-results.json
         continue-on-error: true
       - name: Jest Tests (Retry Failures 1)
         id: test-js-retry-1
-        run: |
-          FAILING_SUITES=$(jq -r '.testResults[] | select(.status=="failed") | .name' jest-results.json)
-          if [ -n "$FAILING_SUITES" ]; then
-            echo "Retrying failing test suites: $FAILING_SUITES"
-            npx jest $FAILING_SUITES --json --outputFile=jest-results.json || true
-          else
-            echo "No failing test suites to retry."
-          fi
+        run: npm run test:js -- -- --onlyFailures
+        if: steps.test-js.outcome == 'failure'
         continue-on-error: true
       - name: Jest Tests (Retry Failures 2)
         id: test-js-retry-2
-        run: |
-          FAILING_SUITES=$(jq -r '.testResults[] | select(.status=="failed") | .name' jest-results.json)
-          if [ -n "$FAILING_SUITES" ]; then
-            echo "Retrying failing test suites: $FAILING_SUITES"
-            npx jest $FAILING_SUITES --json --outputFile=jest-results.json || true
-          else
-            echo "No failing test suites to retry."
-          fi
+        run: npm run test:js -- -- --onlyFailures
+        if: steps.test-js-retry-1.outcome == 'failure'
         continue-on-error: true
       - name: Jest Tests (Retry Failures 3)
         id: test-js-retry-3
-        run: |
-         FAILING_SUITES=$(jq -r '.testResults[] | select(.status=="failed") | .name' jest-results.json)
-          if [ -n "$FAILING_SUITES" ]; then
-            echo "Retrying failing test suites: $FAILING_SUITES"
-            npx jest $FAILING_SUITES --json --outputFile=jest-results.json || true
-          else
-            echo "No failing test suites to retry."
-          fi
+        run: npm run test:js -- -- --onlyFailures
+        if: steps.test-js-retry-2.outcome == 'failure'
         continue-on-error: true
+
+      - name: Check for catastrophic suite failures
+        if: always() && steps.test-js.outcome == 'failure'
+        run: |
+          # The final retry step might have succeeded for flaky tests,
+          # so we check its outcome. If it also failed, we let that failure
+          # be the one that stops the workflow. If it succeeded, we proceed
+          # with our check for ignored catastrophic failures.
+          if [ "${{ steps.test-js-retry-3.outcome }}" == "failure" ]; then
+            echo "Final retry step failed. Failing the job."
+            exit 1
+          fi
+
+          # Install jq, a command-line JSON processor
+          sudo apt-get install -y jq
+
+          # Check for test suites that have a "failed" status but ran 0 tests,
+          # which indicates a crash before tests could run.
+          CRASHED_SUITES=$(jq '[.testResults[] | select(.status == "failed" and .assertionResults | length == 0)] | length' test-results.json)
+
+          if [ "$CRASHED_SUITES" -gt 0 ]; then
+            echo "Error: Found $CRASHED_SUITES test suite(s) that failed to run."
+            echo "This is a catastrophic failure that retries cannot fix."
+            exit 1
+          fi
+
+          echo "No catastrophic suite failures found."
+
+      - name: Final status check
+        if: always()
+        run: |
+          if [ "${{ steps.test-js-retry-3.outcome }}" == "failure" ]; then
+            echo "One or more tests failed after all retries."
+            exit 1
+          fi
