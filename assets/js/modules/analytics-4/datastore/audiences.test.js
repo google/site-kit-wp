@@ -24,6 +24,7 @@ import {
 	freezeFetch,
 	muteFetch,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
 	provideUserInfo,
@@ -619,6 +620,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					},
 				] );
 
+				provideSiteInfo( registry );
 				provideUserAuthentication( registry );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
