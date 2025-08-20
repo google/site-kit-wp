@@ -1008,8 +1008,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		$this->provision_property_webdatastream( $account_id, $account_ticket );
 
-		$show_progress   = (bool) $input->filter( INPUT_GET, 'showProgress' );
-		$account_created = (bool) $input->filter( INPUT_GET, 'accountCreated' );
+		$show_progress = (bool) $input->filter( INPUT_GET, 'showProgress' );
 
 		wp_safe_redirect(
 			// Redirect to the user input screen instead of the dashboard. For production, we'll need to add a new screen instead
@@ -1018,7 +1017,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				'user-input',
 				array(
 					'showProgress'   => $show_progress,
-					'accountCreated' => $account_created,
+					'accountCreated' => true,
 				)
 			)
 		);
