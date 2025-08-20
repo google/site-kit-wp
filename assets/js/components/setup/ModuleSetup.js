@@ -117,6 +117,10 @@ export default function ModuleSetup( { moduleSlug } ) {
 
 	// TODO: Also check the query param `slug` is `analytics-4`, to be on the safe side.
 	const showProgress = getQueryArg( location.href, 'showProgress' );
+	const searchConsoleSetupSuccess = getQueryArg(
+		location.href,
+		'searchConsoleSetupSuccess'
+	);
 
 	const { SetupComponent } = module;
 
@@ -140,17 +144,14 @@ export default function ModuleSetup( { moduleSlug } ) {
 						currentSegment={ 5 }
 						totalSegments={ 7 }
 					/>
-					{ /* It would be preferable not to hardcode the Search Console service name here. It's a safe assumption for now, as the
-					 * `showProgress` query parameter will only be set when the user has just successfully set up Search Console in the initial
-					 * setup flow.
-					 *
-					 * We can treat this as technical debt to be addressed in phase 4. */ }
-					<ToastNotification>
-						{ __(
-							'Search Console was successfully set up',
-							'google-site-kit'
-						) }
-					</ToastNotification>
+					{ searchConsoleSetupSuccess && (
+						<ToastNotification>
+							{ __(
+								'Search Console was successfully set up',
+								'google-site-kit'
+							) }
+						</ToastNotification>
+					) }
 				</Fragment>
 			) }
 			<div className="googlesitekit-setup">
