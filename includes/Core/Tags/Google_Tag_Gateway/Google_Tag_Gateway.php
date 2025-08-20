@@ -67,7 +67,7 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields {
 	 * @param Context $context Plugin context.
 	 * @param Options $options Optional. Option API instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, Options $options = null ) {
+	public function __construct( Context $context, ?Options $options = null ) {
 		$this->context                     = $context;
 		$options                           = $options ?: new Options( $context );
 		$this->google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $options );

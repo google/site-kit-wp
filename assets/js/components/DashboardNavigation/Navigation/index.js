@@ -20,13 +20,13 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { throttle } from 'lodash';
 import { useMount } from 'react-use';
 import { Chip } from '@material/react-chips';
 
 /**
  * WordPress dependencies
  */
+import { useThrottle } from '@wordpress/compose';
 import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -120,6 +120,10 @@ export default function Navigation() {
 	 * @return {void}
 	 */
 	const handleSticky = useCallback( () => {
+		if ( ! elementRef?.current ) {
+			return;
+		}
+
 		const { top } = elementRef?.current?.getBoundingClientRect();
 
 		if ( global.scrollY === 0 ) {
@@ -127,7 +131,7 @@ export default function Navigation() {
 		} else {
 			const headerBottom = document
 				.querySelector( '.googlesitekit-header' )
-				?.getBoundingClientRect().bottom;
+				?.getBoundingClientRect?.()?.bottom;
 
 			setIsSticky( top === headerBottom );
 		}
@@ -212,20 +216,24 @@ export default function Navigation() {
 		}, 50 );
 	} );
 
-	// Handle scroll events to update sticky state and selected chip.
-	useEffect( () => {
-		function onScroll( event ) {
+	const onScroll = useCallback(
+		( event ) => {
 			handleSticky();
 			handleSelectedChip( event );
-		}
+		},
+		[ handleSelectedChip, handleSticky ]
+	);
 
-		const throttledOnScroll = throttle( onScroll, 150 );
+	const throttledOnScroll = useThrottle( onScroll, 150 );
+
+	// Handle scroll events to update sticky state and selected chip.
+	useEffect( () => {
 		global.addEventListener( 'scroll', throttledOnScroll );
 
 		return () => {
 			global.removeEventListener( 'scroll', throttledOnScroll );
 		};
-	}, [ handleSelectedChip, handleSticky ] );
+	}, [ throttledOnScroll ] );
 
 	const chips = {
 		[ ANCHOR_ID_KEY_METRICS ]: {

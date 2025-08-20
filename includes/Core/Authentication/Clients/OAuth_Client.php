@@ -74,13 +74,13 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 */
 	public function __construct(
 		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Credentials $credentials = null,
-		Google_Proxy $google_proxy = null,
-		Profile $profile = null,
-		Token $token = null,
-		Transients $transients = null
+		?Options $options = null,
+		?User_Options $user_options = null,
+		?Credentials $credentials = null,
+		?Google_Proxy $google_proxy = null,
+		?Profile $profile = null,
+		?Token $token = null,
+		?Transients $transients = null
 	) {
 		parent::__construct(
 			$context,
@@ -199,7 +199,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 *                         Default is the list of required scopes.
 	 * @return string[] Filtered $scopes list, only including scopes that are not satisfied.
 	 */
-	public function get_unsatisfied_scopes( array $scopes = null ) {
+	public function get_unsatisfied_scopes( ?array $scopes = null ) {
 		if ( null === $scopes ) {
 			$scopes = $this->get_required_scopes();
 		}
@@ -224,7 +224,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 *                         Default is the list of required scopes.
 	 * @return bool True if all $scopes are satisfied, false otherwise.
 	 */
-	public function has_sufficient_scopes( array $scopes = null ) {
+	public function has_sufficient_scopes( ?array $scopes = null ) {
 		if ( null === $scopes ) {
 			$scopes = $this->get_required_scopes();
 		}
