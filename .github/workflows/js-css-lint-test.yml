@@ -92,20 +92,19 @@ jobs:
       - name: Check for catastrophic suite failures
         if: always() && steps.test-js.outcome == 'failure'
         run: |
-          # The final retry step might have succeeded for flaky tests,
-          # so we check its outcome. If it also failed, we let that failure
-          # be the one that stops the workflow. If it succeeded, we proceed
-          # with our check for ignored catastrophic failures.
           if [ "${{ steps.test-js-retry-3.outcome }}" == "failure" ]; then
             echo "Final retry step failed. Failing the job."
             exit 1
           fi
 
-          # Install jq, a command-line JSON processor
+          if [ ! -f test-results.json ]; then
+            echo "Error: Jest test report 'test-results.json' was not generated."
+            echo "This indicates a critical failure in the initial test run, preventing report creation."
+            exit 1
+          fi
+
           sudo apt-get install -y jq
 
-          # Check for test suites that have a "failed" status but ran 0 tests,
-          # which indicates a crash before tests could run.
           CRASHED_SUITES=$(jq '[.testResults[] | select(.status == "failed" and .assertionResults | length == 0)] | length' test-results.json)
 
           if [ "$CRASHED_SUITES" -gt 0 ]; then
