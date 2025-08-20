@@ -221,13 +221,13 @@ export default function SetupMainPAX( { finishSetup } ) {
 	);
 
 	const onSetupCallback = useCallback( async () => {
+		if ( usingProxy ) {
+			triggerSurvey( 'start_setup_pax' );
+		}
+
 		if ( isWooCommerceActivated && ! isWooCommerceRedirectModalDismissed ) {
 			setOpenDialog( true );
 			return;
-		}
-
-		if ( usingProxy ) {
-			triggerSurvey( 'start_setup_pax' );
 		}
 
 		// awaiting because `createAccount` may trigger a navigation.
