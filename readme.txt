@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.8
 Requires PHP:      7.4
-Stable tag:        1.159.0
+Stable tag:        1.160.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,35 +109,27 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.159.0 =
+= 1.160.0 =
 
 **Enhanced**
 
-* Upgrade Partner Ads Experience to version `1.1.8`. See [#11236](https://github.com/google/site-kit-wp/issues/11236).
-* Update the Internal Server error notice styles. See [#11201](https://github.com/google/site-kit-wp/issues/11201).
-* Update Search Console icon to use the newest one. See [#11178](https://github.com/google/site-kit-wp/issues/11178).
-* Update the "No more modules to connect" notice in Settings. See [#11166](https://github.com/google/site-kit-wp/issues/11166).
-* Update the notice that appears when Site Kit is refreshed. See [#11164](https://github.com/google/site-kit-wp/issues/11164).
-* Update ErrorHandler to use new Error Banner component. See [#11137](https://github.com/google/site-kit-wp/issues/11137).
-* Update older notification banners to use new styles. See [#11124](https://github.com/google/site-kit-wp/issues/11124).
-* Replace h3 headings with the new Typography component. See [#10944](https://github.com/google/site-kit-wp/issues/10944).
-* Update the ProgressBar component to use vertical spacing properties instead of height properties. See [#10894](https://github.com/google/site-kit-wp/issues/10894).
-* Add validation to Sign in with Google client ID provisioning names. See [#10844](https://github.com/google/site-kit-wp/issues/10844).
-* Reduce usage of the Analytics Admin API's `properties.dataStreams.list` endpoint, replacing it with a lightweight Analytics Data API `properties.runReport` request for checking module access. See [#10708](https://github.com/google/site-kit-wp/issues/10708).
-* Update the style of the banners shown when AdSense accounts encounter an issue. See [#10426](https://github.com/google/site-kit-wp/issues/10426).
-* Update notice about web data stream availability to be persistent. See [#10165](https://github.com/google/site-kit-wp/issues/10165).
-* Refactor Sign in with Google to use common web tag infrastructure. See [#10027](https://github.com/google/site-kit-wp/issues/10027).
-* Update Google API client to respect WP external HTTP request controls. See [#3957](https://github.com/google/site-kit-wp/issues/3957).
+* Update the Partner Ads Experience script version to `1.1.9`. See [#11283](https://github.com/google/site-kit-wp/issues/11283).
+* Rename the "Enhanced conversion tracking" toggle, the new name is "Plugin conversion tracking". See [#11192](https://github.com/google/site-kit-wp/issues/11192).
+* Add ARIA label to the Recover CTA of the ModuleRecoveryAlert banner. See [#11022](https://github.com/google/site-kit-wp/issues/11022).
+* Track Enhanced Conversions user data for logged in users. See [#11015](https://github.com/google/site-kit-wp/issues/11015).
+* Update paragraph text styling across plugin. See [#10946](https://github.com/google/site-kit-wp/issues/10946).
+* Harmonize heading styles throughout Site Kit. See [#10945](https://github.com/google/site-kit-wp/issues/10945).
+* Add GA event tracking for Reader Revenue Manager block insertion. See [#10334](https://github.com/google/site-kit-wp/issues/10334).
+* Add vertical padding to the **Enable One Tap sign in** toggle, ensuring its interaction states don't overlap adjacent controls. See [#9968](https://github.com/google/site-kit-wp/issues/9968).
+* Remove Ads Conversion ID under Analytics from Site Health information. See [#9960](https://github.com/google/site-kit-wp/issues/9960).
+* Fix the icon, hover and focus styling for the `Checkbox` component. See [#9692](https://github.com/google/site-kit-wp/issues/9692).
+* Scroll down to the "Visitor groups" section when following the Settings links on the Audience Selection Panel and the "no audiences" banner, ensuring the section is visible. See [#8875](https://github.com/google/site-kit-wp/issues/8875).
+* Update styles for survey answers. See [#7591](https://github.com/google/site-kit-wp/issues/7591).
 
 **Fixed**
 
-* Fix bug that could cause HTML text to appear in notification. See [#11194](https://github.com/google/site-kit-wp/issues/11194).
-* Ensure the Consent Mode toggle is enabled immediately upon clicking the "Enable consent mode" CTA in the feature setup banner, and the enabled state is reflected when navigating to the settings screen. See [#11073](https://github.com/google/site-kit-wp/issues/11073).
-* Prevent the Module Recovery Banner's **Recover** CTA button from flickering while module recovery is in progress. See [#11055](https://github.com/google/site-kit-wp/issues/11055).
-* Update tooltips in the All Traffic Widget to omit percentage if the previous period data is not available. See [#10907](https://github.com/google/site-kit-wp/issues/10907).
-* Fix double clicking issue for different CTA buttons. See [#10281](https://github.com/google/site-kit-wp/issues/10281).
-* Update the user input app styles to correctly look on mobile devices. See [#10211](https://github.com/google/site-kit-wp/issues/10211).
-* Fix the issue when the Enhanced Measurement setting switched back to the enabled state after returning from the OAuth flow. See [#10123](https://github.com/google/site-kit-wp/issues/10123).
-* Improve support for Google Translate inside Site Kit plugin content and charts. See [#6532](https://github.com/google/site-kit-wp/issues/6532).
+* Ensure WooCommerce Redirect Modal appears when WooCommerce and Google for WooCommerce plugins are installed. See [#11310](https://github.com/google/site-kit-wp/issues/11310).
+* Fix deprecation errors from appearing when `WP_DEBUG_DISPLAY` is enabled on PHP 8.4+. See [#10883](https://github.com/google/site-kit-wp/issues/10883).
+* Fix bug that allowed buttons to submit multiple times. See [#10837](https://github.com/google/site-kit-wp/issues/10837).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

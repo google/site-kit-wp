@@ -24,7 +24,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Computes the aria-label for the Recover CTA button.
  *
- * @since n.e.x.t
+ * @since 1.160.0
  *
  * @param {Object}        args                               Parameters object.
  * @param {Object}        args.recoverableModules            Map of module slugs to module objects.

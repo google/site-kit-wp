@@ -30,7 +30,7 @@ import { createGetBlockTitle } from './create-get-blocks-titles';
  * Sets up a subscription to monitor when blocks are added to the editor. When a tracked
  * block is newly inserted and selected, it sends a Google Analytics event to track the insertion.
  *
- * @since n.e.x.t
+ * @since 1.160.0
  *
  * @param {Array.<string>} blocksToTrack Array of block names to track (e.g., 'google-site-kit/rrm-subscribe-with-google').
  */

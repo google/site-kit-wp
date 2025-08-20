@@ -15,14 +15,14 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 /**
  * Interface for a datapoint that can be executed.
  *
- * @since n.e.x.t
+ * @since 1.160.0
  */
 interface Executable_Datapoint {
 
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.160.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 */
@@ -31,7 +31,7 @@ interface Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.160.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data Data request object.
