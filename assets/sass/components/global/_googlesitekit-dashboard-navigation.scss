@@ -79,6 +79,18 @@
 				margin: 4px 12px;
 			}
 
+			&::before {
+				background: none;
+			}
+
+			&:hover {
+				&::before {
+					background-color: $c-interactive-tertiary-hover;
+					opacity: 1;
+					transition: none;
+				}
+			}
+
 			.mdc-chip__icon {
 				border-radius: 0;
 				height: auto;
