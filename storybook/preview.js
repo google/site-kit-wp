@@ -133,32 +133,30 @@ export const decorators = [
 export const parameters = {
 	layout: 'fullscreen',
 	options: {
-		storySort: ( a, b ) => {
-			const aTitle = a[ 1 ].title;
-			const bTitle = b[ 1 ].title;
+		storySort: ( aStory, bStory ) => {
+			const aParts = aStory[ 1 ].title.split( '/' );
+			const bParts = bStory[ 1 ].title.split( '/' );
 
-			const aParts = aTitle.split( '/' );
-			const bParts = bTitle.split( '/' );
-
-			// Normalize segments for comparison, required for consistent folder sorting.
-			function normalize( s ) {
-				return s
+			// Normalize segments for comparison, required for consistent
+			// folder sorting.
+			function normalize( segmentName ) {
+				return segmentName
 					.trim()
 					.replace( /^[^A-Za-z0-9]+/, '' )
 					.toLowerCase();
 			}
 
-			const len = Math.min( aParts.length, bParts.length );
+			const lowestNumberOfSegments = Math.min(
+				aParts.length,
+				bParts.length
+			);
 
-			for ( let i = 0; i < len; i++ ) {
-				const aSegRaw = aParts[ i ];
-				const bSegRaw = bParts[ i ];
-
-				const aSeg = normalize( aSegRaw );
-				const bSeg = normalize( bSegRaw );
+			for ( let i = 0; i < lowestNumberOfSegments; i++ ) {
+				const aStorySegment = normalize( aParts[ i ] );
+				const bStorySegment = normalize( bParts[ i ] );
 
 				// Find the first segment which does not match and sort by this title.
-				if ( aSeg !== bSeg ) {
+				if ( aStorySegment !== bStorySegment ) {
 					// Sort folders before files by checking if they have children.
 					const aIsFolderHere = aParts.length > i + 1;
 					const bIsFolderHere = bParts.length > i + 1;
@@ -168,12 +166,14 @@ export const parameters = {
 					}
 
 					// Otherwise, sort alphabetically by normalized segment title.
-					return aSeg.localeCompare( bSeg );
+					return aStorySegment.localeCompare( bStorySegment );
 				}
 			}
 
 			// Fallback to compare full normalized titles.
-			return normalize( aTitle ).localeCompare( normalize( bTitle ) );
+			return normalize( aStory[ 1 ].title ).localeCompare(
+				normalize( bStory[ 1 ].title )
+			);
 		},
 	},
 	async puppeteerTest( page ) {
