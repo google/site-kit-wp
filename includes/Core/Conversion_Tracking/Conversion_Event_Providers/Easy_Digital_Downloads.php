@@ -56,7 +56,14 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	 * @return array List of event names.
 	 */
 	protected function events_to_track() {
-		return array( 'add_to_cart', 'purchase' );
+		$events = array( 'add_to_cart' );
+		
+		// Only include purchase event if Enhanced Conversions feature flag is enabled
+		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
+			$events[] = 'purchase';
+		}
+		
+		return $events;
 	}
 
 	/**
@@ -87,34 +94,37 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	 * @since n.e.x.t
 	 */
 	public function register_hooks() {
-		add_action(
-			'edd_complete_purchase',
-			fn( $payment_id ) => $this->maybe_add_purchase_inline_script( $payment_id ),
-			10,
-			1
-		);
+		// Only register Enhanced Conversions hooks if feature flag is enabled
+		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
+			add_action(
+				'edd_complete_purchase',
+				fn( $payment_id ) => $this->maybe_add_purchase_inline_script( $payment_id ),
+				10,
+				1
+			);
 
-		add_action(
-			'wp_footer',
-			function () {
-				$script_slug = 'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG;
+			add_action(
+				'wp_footer',
+				function () {
+					$script_slug = 'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG;
 
-				$events_to_track = $this->events_to_track();
+					$events_to_track = $this->events_to_track();
 
-				$inline_script = join(
-					"\n",
-					array(
-						'window._googlesitekit.edddata = window._googlesitekit.edddata || {};',
-						sprintf( 'window._googlesitekit.edddata.eventsToTrack = %s;', wp_json_encode( $events_to_track ) ),
-					)
-				);
+					$inline_script = join(
+						"\n",
+						array(
+							'window._googlesitekit.edddata = window._googlesitekit.edddata || {};',
+							sprintf( 'window._googlesitekit.edddata.eventsToTrack = %s;', wp_json_encode( $events_to_track ) ),
+						)
+					);
 
-				// Check if we're on an EDD purchase completion page and add purchase data
-				$this->maybe_add_purchase_data_on_completion_page( $inline_script );
+					// Check if we're on an EDD purchase completion page and add purchase data
+					$this->maybe_add_purchase_data_on_completion_page( $inline_script );
 
-				wp_add_inline_script( $script_slug, $inline_script, 'before' );
-			}
-		);
+					wp_add_inline_script( $script_slug, $inline_script, 'before' );
+				}
+			);
+		}
 	}
 
 	/**
