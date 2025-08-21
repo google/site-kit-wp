@@ -76,7 +76,7 @@ class Context {
 	 * @param string $main_file Absolute path to the plugin main file.
 	 * @param Input  $input Input instance.
 	 */
-	public function __construct( $main_file, Input $input = null ) {
+	public function __construct( $main_file, ?Input $input = null ) {
 		$this->main_file = $main_file;
 		$this->input     = $input ?: new Input();
 	}
@@ -435,7 +435,7 @@ class Context {
 	 * @param Entity|null $entity Entity to filter reference ID for, or null.
 	 * @return Entity|null Filtered entity or null, based on $entity.
 	 */
-	private function filter_entity_reference_url( Entity $entity = null ) {
+	private function filter_entity_reference_url( ?Entity $entity = null ) {
 		if ( ! $entity ) {
 			return null;
 		}

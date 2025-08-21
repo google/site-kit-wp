@@ -117,10 +117,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 */
 	public function __construct(
 		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Authentication $authentication = null,
-		Assets $assets = null
+		?Options $options = null,
+		?User_Options $user_options = null,
+		?Authentication $authentication = null,
+		?Assets $assets = null
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 
@@ -385,7 +385,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		}
 
 		?>
-		<div class="googlesitekit-sign-in-with-google__frontend-output-button woocommerce-form-row form-row"></div>
+<div class="googlesitekit-sign-in-with-google__frontend-output-button woocommerce-form-row form-row"></div>
 		<?php
 	}
 
@@ -678,10 +678,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		?>
 	</p>
 	<p>
-		<a
-			class="button button-secondary"
-			href="<?php echo esc_url( self::disconnect_url( $user->ID ) ); ?>"
-		>
+		<a class="button button-secondary" href="<?php echo esc_url( self::disconnect_url( $user->ID ) ); ?>">
 			<?php esc_html_e( 'Disconnect Google Account', 'google-site-kit' ); ?>
 		</a>
 	</p>
@@ -696,9 +693,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * @since 1.146.0 Added isWooCommerceActive and isWooCommerceRegistrationEnabled to the inline data.
 	 * @since 1.158.0 Renamed method to `get_inline_data()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
+	 * @param array $modules_data Inline modules data.
 	 * @return array An array of the module's inline data.
 	 */
-	public function get_inline_data() {
+	public function get_inline_data( $modules_data ) {
 		$inline_data = array();
 
 		$existing_client_id = $this->existing_client_id->get();
@@ -713,9 +711,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		$inline_data['isWooCommerceActive']              = $is_woocommerce_active;
 		$inline_data['isWooCommerceRegistrationEnabled'] = $is_woocommerce_active && 'yes' === $woocommerce_registration_enabled;
 
-		return array(
-			self::MODULE_SLUG => $inline_data,
-		);
+		$modules_data[ self::MODULE_SLUG ] = $inline_data;
+
+		return $modules_data;
 	}
 
 	/**

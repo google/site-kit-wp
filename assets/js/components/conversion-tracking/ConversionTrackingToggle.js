@@ -54,7 +54,7 @@ export default function ConversionTrackingToggle( { children, loading } ) {
 				<div className="googlesitekit-module-settings-group__switch">
 					<Switch
 						label={ __(
-							'Enhanced conversion tracking',
+							'Plugin conversion tracking',
 							'google-site-kit'
 						) }
 						checked={ isConversionTrackingEnabled }

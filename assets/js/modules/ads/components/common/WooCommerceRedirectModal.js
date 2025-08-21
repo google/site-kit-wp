@@ -58,6 +58,7 @@ import ExternalIcon from '../../../../../svg/icons/external.svg';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
+import P from '../../../../components/Typography/P';
 
 export default function WooCommerceRedirectModal( {
 	dialogActive,
@@ -230,7 +231,7 @@ export default function WooCommerceRedirectModal( {
 					: __( 'Using the WooCommerce plugin?', 'google-site-kit' ) }
 			</DialogTitle>
 			<DialogContent>
-				<p>
+				<P>
 					{ isGoogleForWooCommerceAdsConnected ? (
 						<Fragment>
 							{ __(
@@ -249,7 +250,7 @@ export default function WooCommerceRedirectModal( {
 							'google-site-kit'
 						)
 					) }
-				</p>
+				</P>
 			</DialogContent>
 			<DialogFooter>
 				<Button
@@ -297,7 +298,7 @@ export default function WooCommerceRedirectModal( {
 						isGoogleForWooCommerceAdsConnected ? '_self' : '_blank'
 					}
 					disabled={ !! isSaving }
-					tertiary
+					tertiary={ ! isGoogleForWooCommerceAdsConnected }
 				>
 					{ isGoogleForWooCommerceAdsConnected
 						? __( 'View current Ads account', 'google-site-kit' )

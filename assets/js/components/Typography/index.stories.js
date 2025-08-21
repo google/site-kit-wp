@@ -1,6 +1,4 @@
 /**
- * Typography stories.
- *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,9 +17,9 @@
 /**
  * Internal dependencies
  */
-import { Cell, Grid, Row } from '../material-components';
-import Widget from '../googlesitekit/widgets/components/Widget';
-import Typography from './Typography';
+import { Cell, Grid, Row } from '../../material-components';
+import Widget from '../../googlesitekit/widgets/components/Widget';
+import Typography from './index';
 
 function GroupWrapper( { size = 6, header, children } ) {
 	return (

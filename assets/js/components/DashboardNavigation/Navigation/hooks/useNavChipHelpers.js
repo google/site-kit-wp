@@ -142,9 +142,9 @@ export default function useNavChipHelpers( { visibleSections } ) {
 		( ref ) => {
 			const entityHeader = document
 				.querySelector( '.googlesitekit-entity-header' )
-				?.getBoundingClientRect()?.bottom;
+				?.getBoundingClientRect?.()?.bottom;
 
-			const { bottom } = ref?.current?.getBoundingClientRect();
+			const { bottom } = ref?.current?.getBoundingClientRect?.() ?? {};
 
 			const margin = 20;
 

@@ -35,6 +35,7 @@ import { ErrorNotices } from '../common';
 import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 import Typography from '../../../../components/Typography';
+import P from '../../../../components/Typography/P';
 
 export default function SetupAccountNoClient() {
 	const viewContext = useViewContext();
@@ -59,7 +60,7 @@ export default function SetupAccountNoClient() {
 
 			<ErrorNotices />
 
-			<p>
+			<P>
 				{ createInterpolateElement(
 					__(
 						'To start using AdSense on your website, you need to upgrade your account to add “AdSense for content”. <a>Learn more</a>',
@@ -78,7 +79,7 @@ export default function SetupAccountNoClient() {
 						),
 					}
 				) }
-			</p>
+			</P>
 
 			<div className="googlesitekit-setup-module__action">
 				<Button

@@ -30,11 +30,11 @@ import {
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import useViewContext from '../../hooks/useViewContext';
 import BannerNotification, {
 	TYPES,
 } from '../../googlesitekit/notifications/components/layout/BannerNotification';
+import useFormValue from '../../hooks/useFormValue';
 
 export default function SetupErrorMessageNotification( { Notification } ) {
 	const id = 'setup_error';
@@ -50,11 +50,9 @@ export default function SetupErrorMessageNotification( { Notification } ) {
 	const setupErrorMessage = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorMessage()
 	);
-	const temporaryPersistedPermissionsError = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-			'permissionsError'
-		)
+	const temporaryPersistedPermissionsError = useFormValue(
+		FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+		'permissionsError'
 	);
 	const setupErrorRedoURL = useSelect( ( select ) => {
 		if ( temporaryPersistedPermissionsError?.data ) {

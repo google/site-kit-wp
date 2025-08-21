@@ -507,10 +507,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	public function test_template_redirect__singular( $settings, $post_product_id, $expected_product_id ) {
 		$publication_id = 'ABCDEFGH';
 
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
-
 		// Prevent test from failing in CI with deprecation notice.
 		remove_action( 'wp_print_styles', 'print_emoji_styles' );
 
@@ -585,10 +581,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	 */
 	public function test_template_redirect__non_singular( $settings, $expected_product_id ) {
 		$publication_id = 'ABCDEFGH';
-
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
 
 		// Prevent test from failing in CI with deprecation notice.
 		remove_action( 'wp_print_styles', 'print_emoji_styles' );

@@ -27,9 +27,7 @@ trait Module_With_Inline_Data_Trait {
 	private function register_inline_data() {
 		add_filter(
 			'googlesitekit_inline_modules_data',
-			function ( array $modules_data ) {
-				return array_merge( $modules_data, $this->get_inline_data() );
-			}
+			array( $this, 'get_inline_data' ),
 		);
 	}
 }

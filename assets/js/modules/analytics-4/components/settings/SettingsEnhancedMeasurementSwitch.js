@@ -45,15 +45,14 @@ import {
 	isValidWebDataStreamID,
 	isValidWebDataStreamSelection,
 } from '../../utils/validation';
+import useFormValue from '../../../../hooks/useFormValue';
 
 export default function SettingsEnhancedMeasurementSwitch( {
 	hasModuleAccess,
 } ) {
-	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			ENHANCED_MEASUREMENT_FORM,
-			ENHANCED_MEASUREMENT_ENABLED
-		)
+	const isEnhancedMeasurementEnabled = useFormValue(
+		ENHANCED_MEASUREMENT_FORM,
+		ENHANCED_MEASUREMENT_ENABLED
 	);
 
 	const propertyID = useSelect( ( select ) =>

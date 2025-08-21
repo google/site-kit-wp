@@ -39,6 +39,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { ErrorNotices, UserProfile } from '../common';
 import useViewContext from '../../../../hooks/useViewContext';
 import Typography from '../../../../components/Typography';
+import P from '../../../../components/Typography/P';
 
 export default function SetupCreateAccount() {
 	const viewContext = useViewContext();
@@ -73,12 +74,12 @@ export default function SetupCreateAccount() {
 
 			<ErrorNotices />
 
-			<p>
+			<P>
 				{ __(
 					'Once you create your account, Site Kit will place AdSense code on every page across your site. This means your site will be automatically optimized to help you earn money from your content.',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 
 			<UserProfile />
 

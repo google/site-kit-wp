@@ -236,10 +236,10 @@ final class Authentication {
 	 */
 	public function __construct(
 		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Transients $transients = null,
-		User_Input $user_input = null
+		?Options $options = null,
+		?User_Options $user_options = null,
+		?Transients $transients = null,
+		?User_Input $user_input = null
 	) {
 		$this->context                        = $context;
 		$this->options                        = $options ?: new Options( $this->context );

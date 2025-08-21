@@ -15,7 +15,6 @@ use Closure;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
-use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
@@ -1265,7 +1264,6 @@ class Analytics_4Test extends TestCase {
 				'create-property',
 				'create-webdatastream',
 				'non-shareable-report',
-				'pivot-report',
 				'properties',
 				'property',
 				'report',
@@ -1303,7 +1301,6 @@ class Analytics_4Test extends TestCase {
 				'create-property',
 				'create-webdatastream',
 				'non-shareable-report',
-				'pivot-report',
 				'properties',
 				'property',
 				'report',
@@ -1337,7 +1334,6 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_measurement_id',
 				'analytics_4_use_snippet',
 				'analytics_4_available_custom_dimensions',
-				'analytics_4_ads_conversion_id',
 				'analytics_4_ads_linked',
 				'analytics_4_ads_linked_last_synced_at',
 				'analytics_4_site_kit_audiences',
@@ -1353,7 +1349,6 @@ class Analytics_4Test extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'analytics_4_account_id',
-				'analytics_4_ads_conversion_id',
 				'analytics_4_available_custom_dimensions',
 				'analytics_4_measurement_id',
 				'analytics_4_property_id',
@@ -1382,7 +1377,6 @@ class Analytics_4Test extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'analytics_4_account_id',
-				'analytics_4_ads_conversion_id',
 				'analytics_4_available_custom_dimensions',
 				'analytics_4_measurement_id',
 				'analytics_4_property_id',
@@ -1770,222 +1764,6 @@ class Analytics_4Test extends TestCase {
 			),
 			$request_params['orderBys'],
 			'Request orderBys parameter should match expected ordering structure.'
-		);
-	}
-
-	/**
-	 * @dataProvider data_access_token
-	 *
-	 * When an access token is provided, the user will be authenticated for the test.
-	 *
-	 * @param string $access_token Access token, or empty string if none.
-	 */
-	public function test_get_pivot_report( $access_token ) {
-		$this->setup_user_authentication( $access_token );
-
-		$property_id = '123456789';
-
-		$this->analytics->get_settings()->merge(
-			array(
-				'propertyID' => $property_id,
-			)
-		);
-
-		// Grant scopes so request doesn't fail.
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->analytics->get_scopes()
-		);
-
-		FakeHttp::fake_google_http_handler(
-			$this->analytics->get_client(),
-			$this->create_fake_http_handler( $property_id )
-		);
-
-		$this->analytics->register();
-
-		// Fetch a pivot report with all input parameters.
-		$data = $this->analytics->get_data(
-			'pivot-report',
-			array(
-				'startDate'        => '2022-11-02',
-				'endDate'          => '2022-11-04',
-				'metrics'          => array(
-					array(
-						'name' => 'totalUsers',
-					),
-				),
-				'dimensions'       => array(
-					'city',
-					'operatingSystem',
-				),
-				'dimensionFilters' => array(
-					'operatingSystem' => array(
-						'city',
-						'operatingSystem',
-					),
-				),
-				'pivots'           => array(
-					array(
-						'fieldNames' => array( 'operatingSystem' ),
-						'limit'      => 3,
-					),
-					array(
-						'fieldNames' => array( 'city' ),
-						'limit'      => 2,
-						'orderby'    => array(
-							array(
-								'metric' => array(
-									'metricName' => 'totalUsers',
-								),
-								'desc'   => true,
-							),
-						),
-					),
-				),
-			)
-		);
-
-		$this->assertNotWPError( $data, 'Analytics report should be retrieved successfully when all required parameters are provided.' );
-
-		// Verify the reports are returned by checking a metric value.
-		$this->assertEquals( 'some-value', $data['modelData'][0]['rows'][0]['metricValues'][0]['value'], 'Pivot report should return expected metric value.' );
-
-		// Verify the request URL and params were correctly generated.
-		$this->assertCount( 1, $this->request_handler_calls, 'Should have exactly one request handler call for Analytics report.' );
-
-		$request_url = $this->request_handler_calls[0]['url'];
-
-		$this->assertEquals( 'analyticsdata.googleapis.com', $request_url['host'], 'Pivot report request host should be analyticsdata.googleapis.com.' );
-		$this->assertEquals( '/v1beta/properties/123456789:runPivotReport', $request_url['path'], 'Pivot report request path should match expected runPivotReport endpoint.' );
-
-		$request_params = $this->request_handler_calls[0]['params'];
-
-		// Verify the request params that are set by default.
-		$this->assertEquals(
-			'properties/123456789',
-			$request_params['property'],
-			'Pivot report request property parameter should match expected value.'
-		);
-
-		$this->assertEquals(
-			1,
-			$request_params['keepEmptyRows'],
-			'Pivot report request keepEmptyRows parameter should be set to 1 by default.'
-		);
-
-		// Verify the request params that are derived from the input parameters.
-		$this->assertEquals(
-			array(
-				array(
-					'name' => 'totalUsers',
-				),
-			),
-			$request_params['metrics'],
-			'Pivot report request metrics parameter should match expected format.'
-		);
-
-		$this->assertEquals(
-			array(
-				array(
-					'startDate' => '2022-11-02',
-					'endDate'   => '2022-11-04',
-				),
-			),
-			$request_params['dateRanges'],
-			'Pivot report request dateRanges parameter should match expected format.'
-		);
-
-		$this->assertEquals(
-			array(
-				array(
-					'name' => 'city',
-				),
-				array(
-					'name' => 'operatingSystem',
-				),
-				// The hostName dimension will be auto added to every request because
-				// we add a dimension filter in Analytics_4/Report/Request to
-				// the data to the WordPress site URL.
-				array(
-					'name' => 'hostName',
-				),
-			),
-			$request_params['dimensions'],
-			'Pivot report request dimensions parameter should include expected dimensions plus auto-added hostName.'
-		);
-
-		$this->assertEquals(
-			array(
-				'andGroup' => array(
-					'expressions' => array(
-						// Site URLs are added as dimension filters as above because
-						// we add a dimension filter in Analytics_4/Report/Request to
-						// the data to the WordPress site URL.
-								array(
-
-									'filter' =>
-									array(
-										'fieldName'    => 'hostName',
-										'inListFilter' =>
-										array(
-											'values' =>
-											array(
-												'example.org',
-												'www.example.org',
-											),
-										),
-
-									),
-								),
-						array(
-							'filter' => array(
-								'fieldName'    => 'operatingSystem',
-								'inListFilter' => array(
-									'values' => array(
-										'city',
-										'operatingSystem',
-									),
-								),
-							),
-						),
-					),
-				),
-			),
-			$request_params['dimensionFilter'],
-			'Pivot report request dimensionFilter parameter should match expected filter structure.'
-		);
-
-		$this->assertEquals(
-			array(
-				array(
-					'fieldNames'         => array( 'operatingSystem' ),
-					'limit'              => 3,
-					'metricAggregations' => array(
-						'TOTAL',
-						'MINIMUM',
-						'MAXIMUM',
-					),
-				),
-				array(
-					'fieldNames'         => array( 'city' ),
-					'limit'              => 2,
-					'orderBys'           => array(
-						array(
-							'metric' => array(
-								'metricName' => 'totalUsers',
-							),
-							'desc'   => true,
-						),
-					),
-					'metricAggregations' => array(
-						'TOTAL',
-						'MINIMUM',
-						'MAXIMUM',
-					),
-				),
-			),
-			$request_params['pivots'],
-			'Pivot report request pivots parameter should match expected pivot structure.'
 		);
 	}
 
@@ -3128,31 +2906,6 @@ class Analytics_4Test extends TestCase {
 						)
 					);
 
-				case "/v1beta/properties/$property_id:runPivotReport":
-					// Return a mock pivot report.
-					return new FulfilledPromise(
-						new Response(
-							200,
-							array(),
-							json_encode(
-								array(
-									'kind' => 'analyticsData#runPivotReport',
-									array(
-										'rows' => array(
-											array(
-												'metricValues' => array(
-													array(
-														'value' => 'some-value',
-													),
-												),
-											),
-										),
-									),
-								)
-							)
-						)
-					);
-
 				case "/v1beta/properties/$property_id/keyEvents":
 					$key_event = new GoogleAnalyticsAdminV1betaKeyEvent();
 					$key_event->setName( "properties/$property_id/keyEvents/some-name" );
@@ -3415,9 +3168,6 @@ class Analytics_4Test extends TestCase {
 	 * @param bool $is_content_creator
 	 */
 	public function test_tracking_opt_out_snippet( $settings, $logged_in, $is_tracking_active, $is_content_creator = false ) {
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
 		wp_styles(); // Prevent potential ->queue of non-object error.
 
 		// Remove irrelevant script from throwing errors in CI from readfile().
@@ -4719,9 +4469,6 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
 		remove_all_actions( 'template_redirect' );
 		$analytics->register();
 
@@ -4994,9 +4741,11 @@ class Analytics_4Test extends TestCase {
 	public function test_get_inline_data() {
 		// Test when module is not connected.
 		$analytics = new Analytics_4( $this->context );
+		$analytics->register();
 
-		$inline_data = $analytics->get_inline_data();
-		$this->assertSame( array(), $inline_data, 'Inline data should be empty when module is not connected.' );
+		remove_all_filters( 'googlesitekit_inline_modules_data' );
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$this->assertSame( array(), $inline_modules_data, 'Inline data should be empty when module is not connected.' );
 
 		// Test when module is connected.
 		$this->analytics->get_settings()->merge(
@@ -5025,11 +4774,12 @@ class Analytics_4Test extends TestCase {
 			array( 'events' => array( 'badge_event1' ) )
 		);
 
-		$inline_data = $this->analytics->get_inline_data();
+		$analytics->register();
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
 		// Verify the structure exists and contains expected keys.
-		$this->assertArrayHasKey( 'analytics-4', $inline_data, 'Inline data should contain analytics-4 key.' );
-		$analytics_data = $inline_data['analytics-4'];
+		$this->assertArrayHasKey( 'analytics-4', $inline_modules_data, 'Inline data should contain analytics-4 key.' );
+		$analytics_data = $inline_modules_data['analytics-4'];
 
 		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $analytics_data, 'Inline data should contain customDimensionsDataAvailable key.' );
 		$this->assertArrayHasKey( 'resourceAvailabilityDates', $analytics_data, 'Inline data should contain resourceAvailabilityDates key.' );

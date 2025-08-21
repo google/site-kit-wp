@@ -34,6 +34,7 @@ import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
@@ -55,15 +56,9 @@ const fetchGetReportStore = createFetchStore( {
 			normalizeReportOptions( options )
 		);
 	},
-	reducerCallback: ( state, report, { options } ) => {
-		return {
-			...state,
-			reports: {
-				...state.reports,
-				[ stringifyObject( options ) ]: report,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, report, { options } ) => {
+		state.reports[ stringifyObject( options ) ] = report;
+	} ),
 	argsToParams: ( options ) => {
 		return { options };
 	},
@@ -358,8 +353,6 @@ const baseSelectors = {
 
 	/**
 	 * Gets a given report for each of the provided audiences.
-	 *
-	 * TODO: This will be refactored to use pivot reports in #8484.
 	 *
 	 * @since 1.126.0
 	 *

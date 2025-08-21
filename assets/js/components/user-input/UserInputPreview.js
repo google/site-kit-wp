@@ -63,6 +63,7 @@ import ConfirmSitePurposeChangeModal from '../KeyMetrics/ConfirmSitePurposeChang
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
 import KeyMetricsSettingsSellProductsSubtleNotification from './KeyMetricsSettingsSellProductsSubtleNotification';
+import useFormValue from '../../hooks/useFormValue';
 
 export default function UserInputPreview( props ) {
 	const {
@@ -114,11 +115,9 @@ export default function UserInputPreview( props ) {
 
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
 
-	const savedPurposeSnapshot = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_USER_INPUT_QUESTION_SNAPSHOT,
-			USER_INPUT_QUESTIONS_PURPOSE
-		)
+	const savedPurposeSnapshot = useFormValue(
+		FORM_USER_INPUT_QUESTION_SNAPSHOT,
+		USER_INPUT_QUESTIONS_PURPOSE
 	);
 
 	const savedPurpose = useSelect( ( select ) =>

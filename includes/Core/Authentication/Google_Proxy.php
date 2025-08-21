@@ -427,7 +427,7 @@ class Google_Proxy {
 	 * @param string      $mode        Sync mode.
 	 * @return string|WP_Error Redirect URL on success, otherwise an error.
 	 */
-	private function send_site_fields( Credentials $credentials = null, $mode = 'async' ) {
+	private function send_site_fields( ?Credentials $credentials = null, $mode = 'async' ) {
 		$response = $this->request(
 			self::OAUTH2_SITE_URI,
 			$credentials,

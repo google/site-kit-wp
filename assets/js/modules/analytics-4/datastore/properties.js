@@ -205,15 +205,10 @@ const fetchSetIsWebDataStreamUnavailable = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, isWebDataStreamUnavailable ) {
-		return {
-			...state,
-			moduleData: {
-				...state.moduleData,
-				isWebDataStreamUnavailable: !! isWebDataStreamUnavailable,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, isWebDataStreamUnavailable ) => {
+		state.moduleData.isWebDataStreamUnavailable =
+			!! isWebDataStreamUnavailable;
+	} ),
 	argsToParams( isWebDataStreamUnavailable ) {
 		return { isWebDataStreamUnavailable };
 	},

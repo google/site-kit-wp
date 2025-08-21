@@ -37,6 +37,7 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 import { useRefocus } from '../../../../hooks/useRefocus';
 import Notice from '../../../../components/Notice';
+import useFormValue from '../../../../hooks/useFormValue';
 
 const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
 	PUBLICATION_ONBOARDING_STATES;
@@ -65,13 +66,14 @@ export default function PublicationOnboardingStateNotice() {
 		} )
 	);
 
-	const shouldSyncPublication = useSelect(
-		( select ) =>
-			select( CORE_FORMS ).getValue(
-				READER_REVENUE_MANAGER_NOTICES_FORM,
-				SYNC_PUBLICATION
-			) && actionableOnboardingStates.includes( onboardingState )
+	const shouldSyncPublicationValue = useFormValue(
+		READER_REVENUE_MANAGER_NOTICES_FORM,
+		SYNC_PUBLICATION
 	);
+
+	const shouldSyncPublication =
+		shouldSyncPublicationValue &&
+		actionableOnboardingStates.includes( onboardingState );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { syncPublicationOnboardingState } = useDispatch(

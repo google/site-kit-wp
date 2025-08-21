@@ -61,8 +61,6 @@ function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 
 const audienceResourceName = 'properties/12345/audiences/12345';
 
-// TODO: As part of #8484, update these stories to use the data-mock
-// functions to provide report data rather than hardcoding props.
 const readyProps = {
 	audienceResourceName,
 	title: 'New visitors',
@@ -246,9 +244,8 @@ AudiencePartialData.args = {
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 		);
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: {
 					[ audienceResourceName ]: dataAvailabilityDate,
 				},
@@ -256,7 +253,8 @@ AudiencePartialData.args = {
 				property: {
 					12345: 20201218,
 				},
-			} );
+			},
+		} );
 	},
 };
 AudiencePartialData.scenario = {};
@@ -284,9 +282,8 @@ TopContentPartialData.args = {
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 		);
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: {},
 				customDimension: {
 					googlesitekit_post_type: dataAvailabilityDate,
@@ -294,7 +291,8 @@ TopContentPartialData.args = {
 				property: {
 					12345: 20201218,
 				},
-			} );
+			},
+		} );
 	},
 };
 TopContentPartialData.scenario = {};

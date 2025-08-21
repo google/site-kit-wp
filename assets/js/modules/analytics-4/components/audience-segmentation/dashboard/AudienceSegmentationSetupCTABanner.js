@@ -52,6 +52,7 @@ import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import AudienceSegmentationSetupSuccessSubtleNotification, {
 	AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
 } from './AudienceSegmentationSetupSuccessSubtleNotification';
+import useFormValue from '../../../../../hooks/useFormValue';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
@@ -83,11 +84,9 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
 
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_SEGMENTATION_SETUP_FORM,
-			'autoSubmit'
-		)
+	const autoSubmit = useFormValue(
+		AUDIENCE_SEGMENTATION_SETUP_FORM,
+		'autoSubmit'
 	);
 
 	const [ showErrorModal, setShowErrorModal ] = useState( false );
