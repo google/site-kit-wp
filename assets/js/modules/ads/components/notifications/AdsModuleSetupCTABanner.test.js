@@ -37,6 +37,7 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
 } from '../../../../../../tests/js/test-utils';
@@ -75,7 +76,9 @@ describe( 'AdsModuleSetupCTABanner', () => {
 				connected: false,
 			},
 		] );
-		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
+		// Avoid invoking survey triggers for now.
+		provideSiteInfo( registry, { usingProxy: false } );
 
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {

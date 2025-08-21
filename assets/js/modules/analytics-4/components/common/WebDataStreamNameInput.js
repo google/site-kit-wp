@@ -46,6 +46,7 @@ import {
 	isValidPropertyID,
 	isValidWebDataStreamName,
 } from '../../utils/validation';
+import useFormValue from '../../../../hooks/useFormValue';
 
 export default function WebDataStreamNameInput() {
 	const propertyID = useSelect( ( select ) =>
@@ -54,9 +55,7 @@ export default function WebDataStreamNameInput() {
 	const webDataStreamID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
-	const webDataStreamName = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, 'webDataStreamName' )
-	);
+	const webDataStreamName = useFormValue( FORM_SETUP, 'webDataStreamName' );
 	const webDataStreamAlreadyExists = useSelect( ( select ) =>
 		isValidPropertyID( propertyID )
 			? select( MODULES_ANALYTICS_4 ).doesWebDataStreamExist(

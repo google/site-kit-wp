@@ -17,13 +17,9 @@
  */
 
 /**
- * External dependencies
- */
-import { throttle } from 'lodash';
-
-/**
  * WordPress dependencies
  */
+import { useThrottle } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 
@@ -57,37 +53,35 @@ function EntityHeader() {
 	const headerDetailsRef = useRef();
 	const [ url, setURL ] = useState( entityURL );
 
-	useEffect( () => {
-		function shortenEntityURL() {
-			if ( ! headerDetailsRef.current ) {
-				return;
-			}
-
-			// Remove 40 px for margins + SVG at the end of the URL link.
-			const availableWidth = headerDetailsRef.current.clientWidth - 40;
-
-			const urlFontSize = global
-				.getComputedStyle( headerDetailsRef.current.lastChild, null )
-				.getPropertyValue( 'font-size' );
-			const fontSize = parseFloat( urlFontSize );
-
-			// 2 is appox. the minimum character constant for sans-serif fonts:
-			// https://pearsonified.com/characters-per-line/
-			const maxChars = ( availableWidth * 2 ) / fontSize;
-
-			setURL( shortenURL( entityURL, maxChars ) );
+	const shortenEntityURL = useCallback( () => {
+		if ( ! headerDetailsRef.current ) {
+			return;
 		}
 
-		// Use throttled version only on window resize.
-		const throttledShortenURL = throttle( shortenEntityURL, 100 );
+		// Remove 40 px for margins + SVG at the end of the URL link.
+		const availableWidth = headerDetailsRef.current.clientWidth - 40;
 
-		shortenEntityURL();
+		const urlFontSize = global
+			.getComputedStyle( headerDetailsRef.current.lastChild, null )
+			.getPropertyValue( 'font-size' );
+		const fontSize = parseFloat( urlFontSize );
 
-		global.addEventListener( 'resize', throttledShortenURL );
+		// 2 is appox. the minimum character constant for sans-serif fonts:
+		// https://pearsonified.com/characters-per-line/
+		const maxChars = ( availableWidth * 2 ) / fontSize;
+
+		setURL( shortenURL( entityURL, maxChars ) );
+	}, [ entityURL ] );
+
+	const throttledShortenEntityURL = useThrottle( shortenEntityURL, 150 );
+
+	useEffect( () => {
+		global.addEventListener( 'resize', throttledShortenEntityURL );
+
 		return () => {
-			global.removeEventListener( 'resize', throttledShortenURL );
+			global.removeEventListener( 'resize', throttledShortenEntityURL );
 		};
-	}, [ entityURL, headerDetailsRef, setURL ] );
+	}, [ throttledShortenEntityURL ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const returnURL = useSelect( ( select ) =>

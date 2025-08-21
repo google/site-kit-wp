@@ -60,6 +60,7 @@ import useViewContext from '../../../hooks/useViewContext';
 import { snapshotAllStores } from '../../../googlesitekit/data/create-snapshot-store';
 import { trackEvent } from '../../../util';
 import SelectionPanelFooter from './SelectionPanelFooter';
+import useFormValue from '../../../hooks/useFormValue';
 
 export default function Footer( {
 	isOpen,
@@ -71,11 +72,9 @@ export default function Footer( {
 	const registry = useRegistry();
 	const viewContext = useViewContext();
 
-	const selectedMetrics = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			KEY_METRICS_SELECTION_FORM,
-			KEY_METRICS_SELECTED
-		)
+	const selectedMetrics = useFormValue(
+		KEY_METRICS_SELECTION_FORM,
+		KEY_METRICS_SELECTED
 	);
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingKeyMetricsSettings()

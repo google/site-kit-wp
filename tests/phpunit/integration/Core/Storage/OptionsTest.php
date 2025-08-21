@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Storage;
 
@@ -27,23 +25,23 @@ class OptionsTest extends TestCase {
 		// Ensure default is a truthy value.
 		add_filter( 'default_option_test_option', '__return_true' );
 		delete_option( 'test_option' );
-		$this->assertTrue( get_option( 'test_option' ) );
-		$this->assertFalse( $options->has( 'test_option' ) );
+		$this->assertTrue( get_option( 'test_option' ), 'Default option should be truthy when set via filter.' );
+		$this->assertFalse( $options->has( 'test_option' ), 'Options::has should be false when only default is set.' );
 
 		// Ensure default is a truthy value.
 		add_filter( 'default_option_test_option', '__return_false' );
 		update_option( 'test_option', '1' );
-		$this->assertTrue( $options->has( 'test_option' ) );
+		$this->assertTrue( $options->has( 'test_option' ), 'Options::has should be true when option value exists.' );
 	}
 
 	public function test_get() {
 		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		delete_option( 'test_option' );
 
-		$this->assertFalse( $options->get( 'test_option' ) );
+		$this->assertFalse( $options->get( 'test_option' ), 'Options::get should return false when option not set.' );
 		update_option( 'test_option', 'test-value' );
 
-		$this->assertEquals( 'test-value', $options->get( 'test_option' ) );
+		$this->assertEquals( 'test-value', $options->get( 'test_option' ), 'Options::get should return stored option value.' );
 	}
 
 	/**
@@ -58,21 +56,21 @@ class OptionsTest extends TestCase {
 		// Force enable network mode.
 		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
 
-		$this->assertTrue( $context->is_network_mode() );
+		$this->assertTrue( $context->is_network_mode(), 'Context should report network mode enabled.' );
 
-		$this->assertFalse( $options->get( 'test_option' ) );
+		$this->assertFalse( $options->get( 'test_option' ), 'Network Options::get should return false when option not set.' );
 		update_network_option( null, 'test_option', 'test-value' );
 
-		$this->assertEquals( 'test-value', $options->get( 'test_option' ) );
+		$this->assertEquals( 'test-value', $options->get( 'test_option' ), 'Network Options::get should return network option value.' );
 	}
 
 	public function test_set() {
 		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->assertFalse( get_option( 'test_option' ) );
+		$this->assertFalse( get_option( 'test_option' ), 'Option should not exist before set.' );
 
 		$options->set( 'test_option', 'test-value' );
 
-		$this->assertEquals( 'test-value', get_option( 'test_option' ) );
+		$this->assertEquals( 'test-value', get_option( 'test_option' ), 'Option should be updated by Options::set.' );
 	}
 
 	/**
@@ -86,22 +84,22 @@ class OptionsTest extends TestCase {
 		// Force enable network mode.
 		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
 
-		$this->assertTrue( $context->is_network_mode() );
+		$this->assertTrue( $context->is_network_mode(), 'Context should report network mode enabled.' );
 
-		$this->assertFalse( get_network_option( null, 'test_option' ) );
+		$this->assertFalse( get_network_option( null, 'test_option' ), 'Network option should not exist before set.' );
 		$options->set( 'test_option', 'test-value' );
 
-		$this->assertEquals( 'test-value', get_network_option( null, 'test_option' ) );
+		$this->assertEquals( 'test-value', get_network_option( null, 'test_option' ), 'Network option should be updated by Options::set.' );
 	}
 
 	public function test_delete() {
 		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		update_option( 'test_option', 'test-value' );
-		$this->assertEquals( 'test-value', get_option( 'test_option' ) );
+		$this->assertEquals( 'test-value', get_option( 'test_option' ), 'Option should be present before delete.' );
 
 		$options->delete( 'test_option' );
 
-		$this->assertFalse( get_option( 'test_option' ) );
+		$this->assertFalse( get_option( 'test_option' ), 'Option should be deleted by Options::delete.' );
 	}
 
 	/**
@@ -115,13 +113,13 @@ class OptionsTest extends TestCase {
 		// Force enable network mode.
 		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
 
-		$this->assertTrue( $context->is_network_mode() );
+		$this->assertTrue( $context->is_network_mode(), 'Context should report network mode enabled.' );
 
 		update_network_option( null, 'test_option', 'test-value' );
-		$this->assertEquals( 'test-value', get_network_option( null, 'test_option' ) );
+		$this->assertEquals( 'test-value', get_network_option( null, 'test_option' ), 'Network option should be present before delete.' );
 
 		$options->delete( 'test_option' );
 
-		$this->assertFalse( get_network_option( null, 'test_option' ) );
+		$this->assertFalse( get_network_option( null, 'test_option' ), 'Network option should be deleted by Options::delete.' );
 	}
 }

@@ -10,6 +10,9 @@
 
 namespace Google\Site_Kit\Modules\Ads;
 
+use Google\Site_Kit\Core\Tags\GTag;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+
 /**
  * Class Enhanced_Conversions.
  *
@@ -18,6 +21,7 @@ namespace Google\Site_Kit\Modules\Ads;
  * @ignore
  */
 class Enhanced_Conversions {
+	use Method_Proxy_Trait;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -25,6 +29,7 @@ class Enhanced_Conversions {
 	 * @since 1.159.0
 	 */
 	public function register() {
+		add_action( 'googlesitekit_setup_gtag', $this->get_method_proxy( 'maybe_enqueue_gtag_user_data' ) );
 	}
 
 	/**
@@ -66,14 +71,24 @@ class Enhanced_Conversions {
 	 * Conditionally enqueues the necessary script for Enhanced Conversions.
 	 *
 	 * @since 1.159.0
+	 * @since 1.160.0 Add the hashed user data to the GTag if it exists.
+	 *
+	 * @param GTag $gtag GTag instance.
 	 */
-	public function maybe_enqueue_gtag_user_data() {
+	public function maybe_enqueue_gtag_user_data( GTag $gtag ) {
+		$user_data = $this->get_user_data();
+
+		if ( empty( $user_data ) ) {
+			return;
+		}
+
+		$gtag->add_command( 'set', array( 'user_data', $user_data ) );
 	}
 
 	/**
 	 * Gets the formatted value for Enhanced Conversions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.160.0
 	 *
 	 * @param string $value The value to format.
 	 * @return string Formatted value.
@@ -87,7 +102,7 @@ class Enhanced_Conversions {
 	/**
 	 * Gets the formatted email for Enhanced Conversions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.160.0
 	 *
 	 * @param string $email The email address to format.
 	 * @return string Formatted email address.
@@ -101,7 +116,7 @@ class Enhanced_Conversions {
 	/**
 	 * Normalizes a value for Enhanced Conversions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.160.0
 	 *
 	 * @param string $value The value to normalize.
 	 * @return string Normalized value.
@@ -113,7 +128,7 @@ class Enhanced_Conversions {
 	/**
 	 * Normalizes an email address for Enhanced Conversions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.160.0
 	 *
 	 * @param string $email The email address to normalize.
 	 * @return string Normalized email address.
@@ -146,7 +161,7 @@ class Enhanced_Conversions {
 	/**
 	 * Hashes a value for Enhanced Conversions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.160.0
 	 *
 	 * @param string $value The value to hash.
 	 * @return string Hashed value.

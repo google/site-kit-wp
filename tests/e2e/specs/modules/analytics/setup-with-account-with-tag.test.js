@@ -162,6 +162,14 @@ describe( 'setting up the Analytics module with an existing account and existing
 	} );
 
 	afterEach( async () => {
+		// Wait for network idle to allow outstanding requests to resolve
+		// and prevent Invalid JSON Response error.
+		try {
+			await page.waitForNetworkIdle( { timeout: 15_000 } );
+		} catch ( error ) {
+			// Allow to fail silently if timeout is reached which can occur mostly running locally.
+		}
+
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );

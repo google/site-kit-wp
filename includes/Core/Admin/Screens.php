@@ -84,9 +84,9 @@ final class Screens {
 	 */
 	public function __construct(
 		Context $context,
-		Assets $assets = null,
-		Modules $modules = null,
-		Authentication $authentication = null
+		?Assets $assets = null,
+		?Modules $modules = null,
+		?Authentication $authentication = null
 	) {
 		$this->context        = $context;
 		$this->assets         = $assets ?: new Assets( $this->context );
