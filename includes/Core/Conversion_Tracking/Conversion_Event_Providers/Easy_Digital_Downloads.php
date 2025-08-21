@@ -109,11 +109,6 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 					)
 				);
 
-				// Add currency for add_to_cart events.
-				if ( function_exists( 'edd_get_currency' ) ) {
-					$inline_script .= sprintf( "\n" . 'window._googlesitekit.easyDigitalDownloadsCurrency = "%s";', esc_js( edd_get_currency() ) );
-				}
-
 				// Check if we're on an EDD purchase completion page and add purchase data
 				$this->maybe_add_purchase_data_on_completion_page( $inline_script );
 
@@ -138,8 +133,6 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 		if ( ! $payment_meta ) {
 			return;
 		}
-
-
 
 		// Get Enhanced Conversions data (if feature flag enabled)
 		$purchase_user_data = $this->get_enhanced_conversions_data( $payment_meta );
