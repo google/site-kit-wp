@@ -1,7 +1,7 @@
 [
-  "adsPax",
-  "proactiveUserEngagement",
-  "gtagUserData",
-  "googleTagGateway",
-  "privacySandboxModule"
+	"adsPax",
+	"googleTagGateway",
+	"gtagUserData",
+	"privacySandboxModule",
+	"proactiveUserEngagement"
 ]
