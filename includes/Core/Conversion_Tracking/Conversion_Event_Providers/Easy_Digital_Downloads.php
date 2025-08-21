@@ -45,7 +45,18 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	 * @return array List of event names.
 	 */
 	public function get_event_names() {
-		return array( 'add_to_cart' );
+		return $this->events_to_track();
+	}
+
+	/**
+	 * Gets the conversion event names that are tracked by this provider.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of event names.
+	 */
+	protected function events_to_track() {
+		return array( 'add_to_cart', 'purchase' );
 	}
 
 	/**
@@ -78,67 +89,118 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	public function register_hooks() {
 		add_action(
 			'edd_complete_purchase',
-			fn( $payment_id ) => $this->maybe_add_user_data_inline_script( $payment_id ),
+			fn( $payment_id ) => $this->maybe_add_purchase_inline_script( $payment_id ),
 			10,
 			1
+		);
+
+		add_action(
+			'wp_footer',
+			function () {
+				$script_slug = 'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG;
+
+				$events_to_track = $this->events_to_track();
+
+				$inline_script = join(
+					"\n",
+					array(
+						'window._googlesitekit.edddata = window._googlesitekit.edddata || {};',
+						sprintf( 'window._googlesitekit.edddata.eventsToTrack = %s;', wp_json_encode( $events_to_track ) ),
+					)
+				);
+
+				// Add currency for add_to_cart events.
+				if ( function_exists( 'edd_get_currency' ) ) {
+					$inline_script .= sprintf( "\n" . 'window._googlesitekit.easyDigitalDownloadsCurrency = "%s";', esc_js( edd_get_currency() ) );
+				}
+
+				// Check if we're on an EDD purchase completion page and add purchase data
+				$this->maybe_add_purchase_data_on_completion_page( $inline_script );
+
+				wp_add_inline_script( $script_slug, $inline_script, 'before' );
+			}
 		);
 	}
 
 	/**
-	 * Adds user data inline script for Enhanced Conversions.
+	 * Adds purchase inline script for EDD (like WooCommerce).
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param int $payment_id The EDD payment ID.
 	 */
-	protected function maybe_add_user_data_inline_script( $payment_id ) {
-		// Only proceed if the feature flag is enabled.
-		if ( ! Feature_Flags::enabled( 'gtagUserData' ) ) {
-			return;
-		}
-
+	protected function maybe_add_purchase_inline_script( $payment_id ) {
 		if ( ! function_exists( 'edd_get_payment_meta' ) ) {
 			return;
 		}
 
 		$payment_meta = edd_get_payment_meta( $payment_id );
-
 		if ( ! $payment_meta ) {
 			return;
 		}
 
-		// Check if user data has already been tracked.
-		$tracked = get_post_meta( $payment_id, '_googlesitekit_edd_user_data_tracked', true );
-		if ( $tracked === '1' ) {
-			return;
-		}
 
-		// Extract user data for Enhanced Conversions
-		$user_data = $this->extract_user_data_from_payment( $payment_meta );
 
-		// Only proceed if we have user data.
-		if ( empty( $user_data ) ) {
-			return;
-		}
+		// Get Enhanced Conversions data (if feature flag enabled)
+		$purchase_user_data = $this->get_enhanced_conversions_data( $payment_meta );
 
-		// Mark as processed.
-		update_post_meta( $payment_id, '_googlesitekit_edd_user_data_tracked', 1 );
-
-		// Output user data using wp_add_inline_script (like WooCommerce)
-		wp_add_inline_script(
-			'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,
-			join(
-				"\n",
-				array(
-					'window._googlesitekit.edddata = window._googlesitekit.edddata || {};',
-					sprintf( 'window._googlesitekit.edddata.user_data = %s;', wp_json_encode( $user_data ) ),
-				)
-			),
-			'before'
-		);
+		// Store user data in transient for the completion page to pick up (short expiry)
+		$transient_key = 'googlesitekit_edd_user_data_' . get_current_user_id();
+		set_transient( $transient_key, $purchase_user_data, 30 ); // 30 seconds - just enough for page redirect
 	}
 
+	/**
+	 * Checks if we're on EDD purchase completion page and adds purchase data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string &$inline_script Reference to the inline script being built.
+	 */
+	protected function maybe_add_purchase_data_on_completion_page( &$inline_script ) {
+		// Check if we're on EDD purchase completion page using EDD's native function
+		$is_edd_completion = function_exists( 'edd_is_success_page' ) && edd_is_success_page();
 
+		if ( ! $is_edd_completion ) {
+			return;
+		}
+
+		// Get user data from transient (stored during edd_complete_purchase)
+		$transient_key = 'googlesitekit_edd_user_data_' . get_current_user_id();
+		$purchase_user_data = get_transient( $transient_key );
+
+		if ( ! $purchase_user_data ) {
+			return;
+		}
+
+		// Delete the transient so it doesn't persist
+		delete_transient( $transient_key );
+
+		// Add user data to the inline script
+		$inline_script .= "\n" . sprintf( 'window._googlesitekit.edddata.purchase = %s;', wp_json_encode( $purchase_user_data ) );
+		$inline_script .= "\n" . 'console.log("✅ EDD Enhanced Conversions user data added on completion page:", window._googlesitekit.edddata.purchase);';
+	}
+
+	/**
+	 * Gets Enhanced Conversions data for purchase.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $payment_meta The EDD payment metadata.
+	 * @return array Enhanced Conversions data with 'user_data' key or empty array.
+	 */
+	protected function get_enhanced_conversions_data( $payment_meta ) {
+		if ( ! Feature_Flags::enabled( 'gtagUserData' ) ) {
+			return array();
+		}
+
+		$user_data = $this->extract_user_data_from_payment( $payment_meta );
+		
+		if ( ! empty( $user_data ) ) {
+			return array( 'user_data' => $user_data );
+		}
+
+		return array();
+	}
 
 	/**
 	 * Extracts and normalizes user data from EDD payment for Enhanced Conversions.
@@ -154,8 +216,6 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 		if ( ! is_array( $payment_meta ) ) {
 			return $user_data;
 		}
-
-
 
 		// Extract email from payment meta.
 		$email = isset( $payment_meta['email'] ) ? $payment_meta['email'] : '';
@@ -208,8 +268,4 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 		// Return user data only if it contains at least one supported field.
 		return $user_data;
 	}
-
-
-
-
 }
