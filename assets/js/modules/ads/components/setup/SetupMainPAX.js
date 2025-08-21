@@ -99,6 +99,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		return select( CORE_LOCATION ).isNavigatingTo( oAuthURL );
 	} );
 
+	const { triggerSurvey } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const {
 		setPaxConversionID,
@@ -150,6 +151,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		}
 
 		trackEvent( `${ viewContext }_pax`, 'pax_campaign_created' );
+		triggerSurvey( 'pax_campaign_created' );
 
 		setUserID( customerData.userId );
 		setCustomerID( customerData.customerId );
@@ -179,7 +181,11 @@ export default function SetupMainPAX( { finishSetup } ) {
 				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
 			}
 		);
-		await trackEvent( `${ viewContext }_pax`, 'pax_setup_completed' );
+		await Promise.all( [
+			trackEvent( `${ viewContext }_pax`, 'pax_setup_completed' ),
+			triggerSurvey( 'pax_setup_completed' ),
+		] );
+
 		finishSetup( redirectURL );
 	}, [ registry, finishSetup, viewContext ] );
 
@@ -202,9 +208,10 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const onLaunch = useCallback(
 		( app ) => {
 			trackEvent( `${ viewContext }_pax`, 'pax_launch' );
+			triggerSurvey( 'pax_launch' );
 			paxAppRef.current = app;
 		},
-		[ viewContext ]
+		[ viewContext, triggerSurvey ]
 	);
 
 	const onSetupCallback = useCallback( async () => {
@@ -214,10 +221,14 @@ export default function SetupMainPAX( { finishSetup } ) {
 		}
 
 		// awaiting because `createAccount` may trigger a navigation.
-		await trackEvent( viewContext, 'start_setup_pax' );
+		await Promise.all( [
+			trackEvent( viewContext, 'start_setup_pax' ),
+			triggerSurvey( 'start_setup_pax' ),
+		] );
 
 		createAccount();
 	}, [
+		triggerSurvey,
 		isWooCommerceActivated,
 		isWooCommerceRedirectModalDismissed,
 		setOpenDialog,

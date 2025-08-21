@@ -29,7 +29,7 @@ import { subscribe, select } from 'googlesitekit-data';
  * Once all requested block titles are found, the subscription is automatically unsubscribed.
  * Returns a closure function that can be used to look up block titles by their ID.
  *
- * @since n.e.x.t
+ * @since 1.160.0
  *
  * @param {Array.<string>} blocks Array of block IDs to retrieve titles for.
  * @return {Function} A function that takes a block ID and returns its title.

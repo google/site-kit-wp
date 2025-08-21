@@ -94,7 +94,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	 * @param Authentication|null $authentication Authentication object.
 	 * @param Assets|null         $assets         Assets object.
 	 */
-	public function __construct( Context $context, Options $options = null, User_Options $user_options = null, Authentication $authentication = null, Assets $assets = null ) {
+	public function __construct( Context $context, ?Options $options = null, ?User_Options $user_options = null, ?Authentication $authentication = null, ?Assets $assets = null ) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 
 		$this->conversion_tracking = new Conversion_Tracking( $context );
@@ -213,7 +213,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 					'googlesitekit-ads-pax-integrator',
 					array(
 						// When updating, mirror the fixed version for google-pax-sdk in package.json.
-						'src'          => 'https://www.gstatic.com/pax/1.1.8/pax_integrator.js',
+						'src'          => 'https://www.gstatic.com/pax/1.1.9/pax_integrator.js',
 						'execution'    => 'async',
 						'dependencies' => array(
 							'googlesitekit-ads-pax-config',
@@ -456,18 +456,22 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	 * Gets required inline data for the module.
 	 *
 	 * @since 1.158.0
+	 * @since 1.160.0 Include $modules_data parameter to match the interface.
 	 *
+	 * @param array $modules_data Inline modules data.
 	 * @return array An array of the module's inline data.
 	 */
-	public function get_inline_data() {
+	public function get_inline_data( $modules_data ) {
 		if ( ! Feature_Flags::enabled( 'adsPax' ) ) {
-			return array();
+			return $modules_data;
 		}
 
-		return array(
-			self::MODULE_SLUG => array(
-				'supportedConversionEvents' => $this->get_supported_conversion_events(),
-			),
-		);
+		if ( empty( $modules_data['ads'] ) ) {
+			$modules_data['ads'] = array();
+		}
+
+		$modules_data[ self::MODULE_SLUG ]['supportedConversionEvents'] = $this->get_supported_conversion_events();
+
+		return $modules_data;
 	}
 }

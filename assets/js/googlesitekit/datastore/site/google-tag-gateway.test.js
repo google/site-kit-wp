@@ -26,6 +26,7 @@ import { setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
+	provideSiteInfo,
 	provideUserAuthentication,
 	subscribeUntil,
 	untilResolved,
@@ -48,6 +49,7 @@ describe( 'core/site Google tag gateway', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		provideSiteInfo( registry );
 	} );
 
 	afterAll( () => {

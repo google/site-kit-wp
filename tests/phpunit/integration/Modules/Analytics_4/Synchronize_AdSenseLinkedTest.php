@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Analytics_4;
 
 use Google\Site_Kit\Context;
@@ -159,7 +157,7 @@ class Synchronize_AdSenseLinkedTest extends TestCase {
 
 		$this->synchronize_adsense_linked->register();
 
-		$this->assertTrue( has_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED ) );
+		$this->assertTrue( has_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED ), 'Cron action for synchronizing AdSense links should be registered.' );
 	}
 
 	public function test_maybe_schedule_synchronize_adsense_linked() {
@@ -169,7 +167,8 @@ class Synchronize_AdSenseLinkedTest extends TestCase {
 		$this->synchronize_adsense_linked->maybe_schedule_synchronize_adsense_linked();
 
 		$this->assertTrue(
-			(bool) wp_next_scheduled( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED )
+			(bool) wp_next_scheduled( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED ),
+			'Cron event should be scheduled for AdSense links synchronization.'
 		);
 	}
 
@@ -189,12 +188,12 @@ class Synchronize_AdSenseLinkedTest extends TestCase {
 		$this->fake_adsense_linked_response( $test_parameters['adSenseLink_clientID'] );
 
 		// Confirm that module is connected, as it will be needed in the cron callback.
-		$this->assertTrue( $this->analytics_4->is_connected() );
+		$this->assertTrue( $this->analytics_4->is_connected(), 'Analytics 4 module should be connected before running cron.' );
 
 		$settings = $this->analytics_4->get_settings()->get();
 		$this->synchronize_adsense_linked->register();
 
-		$this->assertFalse( $settings['adSenseLinked'] );
+		$this->assertFalse( $settings['adSenseLinked'], 'adSenseLinked should be false prior to synchronization.' );
 
 		$adsense_settings->merge(
 			array( 'clientID' => $test_parameters['adSenseSettings_clientID'] )
@@ -207,13 +206,14 @@ class Synchronize_AdSenseLinkedTest extends TestCase {
 		$settings = $this->analytics_4->get_settings()->get();
 		// Assert that the adSenseLinked status is true when the adClientCode from AdSense
 		// links data and clientID from adSense settings are identical.
-		$this->assertSame( $test_parameters['expected_match'], $settings['adSenseLinked'] );
+		$this->assertSame( $test_parameters['expected_match'], $settings['adSenseLinked'], 'adSenseLinked status should reflect whether client IDs match.' );
 
 		// Assert that the timestamp is always updated.
 		$this->assertEqualsWithDelta(
 			$test_synced_at,
 			$settings['adSenseLinkedLastSyncedAt'],
-			1 // 1 second threshold to allow for micro changes at runtime.
+			1, // 1 second threshold to allow for micro changes at runtime.
+			'Last synced timestamp should be updated to current time.'
 		);
 	}
 

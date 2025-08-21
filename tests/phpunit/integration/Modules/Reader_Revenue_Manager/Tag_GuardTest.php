@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager;
 
 use Google\Site_Kit\Context;
@@ -145,7 +143,7 @@ class Tag_GuardTest extends TestCase {
 
 		$guard = new Tag_Guard( $this->settings, $this->post_product_id );
 
-		$this->assertEquals( $expected, $guard->can_activate() );
+		$this->assertEquals( $expected, $guard->can_activate(), 'Tag_Guard can_activate should return the expected value for singular.' );
 	}
 
 	public function data_configurations__non_singular() {
@@ -191,6 +189,6 @@ class Tag_GuardTest extends TestCase {
 
 		$guard = new Tag_Guard( $this->settings, $this->post_product_id );
 
-		$this->assertEquals( $expected, $guard->can_activate() );
+		$this->assertEquals( $expected, $guard->can_activate(), 'Tag_Guard can_activate should return the expected value for non-singular.' );
 	}
 }

@@ -74,7 +74,7 @@ class Reset_Audiences {
 	 *
 	 * @param User_Options $user_options User option API.
 	 */
-	public function __construct( User_Options $user_options = null ) {
+	public function __construct( ?User_Options $user_options = null ) {
 		$this->user_options      = $user_options;
 		$this->dismissed_prompts = new Dismissed_Prompts( $this->user_options );
 		$this->dismissed_items   = new Dismissed_Items( $this->user_options );
