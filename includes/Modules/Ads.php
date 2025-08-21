@@ -456,18 +456,22 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	 * Gets required inline data for the module.
 	 *
 	 * @since 1.158.0
+	 * @since 1.160.0 Include $modules_data parameter to match the interface.
 	 *
+	 * @param array $modules_data Inline modules data.
 	 * @return array An array of the module's inline data.
 	 */
-	public function get_inline_data() {
+	public function get_inline_data( $modules_data ) {
 		if ( ! Feature_Flags::enabled( 'adsPax' ) ) {
-			return array();
+			return $modules_data;
 		}
 
-		return array(
-			self::MODULE_SLUG => array(
-				'supportedConversionEvents' => $this->get_supported_conversion_events(),
-			),
-		);
+		if ( empty( $modules_data['ads'] ) ) {
+			$modules_data['ads'] = array();
+		}
+
+		$modules_data[ self::MODULE_SLUG ]['supportedConversionEvents'] = $this->get_supported_conversion_events();
+
+		return $modules_data;
 	}
 }

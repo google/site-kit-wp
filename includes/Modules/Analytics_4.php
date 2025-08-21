@@ -2729,34 +2729,17 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * Gets required inline data for the module.
 	 *
 	 * @since 1.158.0
+	 * @since 1.160.0 Include $modules_data parameter to match the interface.
 	 *
+	 * @param array $modules_data Inline modules data.
 	 * @return array An array of the module's inline data.
 	 */
-	public function get_inline_data() {
+	public function get_inline_data( $modules_data ) {
 		if ( ! $this->is_connected() ) {
-			return array();
+			return $modules_data;
 		}
 
 		$inline_data = array();
-
-		// Custom dimensions data.
-		$inline_data['customDimensionsDataAvailable'] = $this->custom_dimensions_data_available->get_data_availability();
-
-		// Resource availability dates data.
-		$inline_data['resourceAvailabilityDates'] = $this->resource_data_availability_date->get_all_resource_dates();
-
-		// Tag ID mismatch data.
-		$tag_id_mismatch              = $this->transients->get( 'googlesitekit_inline_tag_id_mismatch' );
-		$inline_data['tagIDMismatch'] = $tag_id_mismatch;
-
-		// Conversion reporting events detection data.
-		$detected_events  = $this->transients->get( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
-		$lost_events      = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
-		$new_events_badge = $this->transients->get( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
-
-		$inline_data['newEvents']      = is_array( $detected_events ) ? $detected_events : array();
-		$inline_data['lostEvents']     = is_array( $lost_events ) ? $lost_events : array();
-		$inline_data['newBadgeEvents'] = is_array( $new_events_badge ) ? $new_events_badge['events'] : array();
 
 		// Web data stream availability data.
 		$settings                                  = $this->get_settings()->get();
@@ -2764,8 +2747,15 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$is_web_data_stream_unavailable            = $this->transients->get( $transient_key );
 		$inline_data['isWebDataStreamUnavailable'] = (bool) $is_web_data_stream_unavailable;
 
-		return array(
-			self::MODULE_SLUG => $inline_data,
+		$inline_data = array_merge(
+			$inline_data,
+			$this->get_inline_custom_dimensions_data(),
+			$this->get_inline_tag_id_mismatch(),
+			$this->get_inline_resource_availability_dates_data(),
+			$this->get_inline_conversion_reporting_events_detection()
 		);
+
+		$modules_data[ self::MODULE_SLUG ] = $inline_data;
+		return $modules_data;
 	}
 }

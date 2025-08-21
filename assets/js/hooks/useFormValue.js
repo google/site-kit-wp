@@ -29,7 +29,7 @@ import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
 /**
  * Returns the value of a form field.
  *
- * @since n.e.x.t
+ * @since 1.160.0
  *
  * @param {string} formName The name of the form.
  * @param {string} key      The key of the form field.
