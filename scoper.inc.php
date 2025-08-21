@@ -34,6 +34,7 @@ return array(
 					'tests',
 					'Tests',
 					'vendor-bin',
+					'.github',
 				)
 			),
 	),
