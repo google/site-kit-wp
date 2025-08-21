@@ -101,7 +101,7 @@ export default function SetupErrorMessageNotification( { Notification } ) {
 	const snapshotCoreFormsStore = useCallback( async () => {
 		if ( temporaryPersistedPermissionsError?.data ) {
 			// Snapshot `CORE_FORMS` store to ensure the form data with current error data
-			//  is retained across page navigations.
+			// is retained across page navigations.
 			await snapshotAllStores( registry );
 		}
 	}, [ temporaryPersistedPermissionsError, registry ] );
