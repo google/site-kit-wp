@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Tracking;
 
@@ -31,10 +29,10 @@ class TrackingTest extends TestCase {
 
 		$tracking->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_inline_tracking_data' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_inline_tracking_data' ), 'Inline tracking data filter should be registered.' );
 		$tracking_data = apply_filters( 'googlesitekit_inline_tracking_data', array() );
-		$this->assertArrayHasKey( 'trackingEnabled', $tracking_data );
-		$this->assertEquals( Tracking::TRACKING_ID, $tracking_data['trackingID'] );
+		$this->assertArrayHasKey( 'trackingEnabled', $tracking_data, 'Inline tracking data should include trackingEnabled.' );
+		$this->assertEquals( Tracking::TRACKING_ID, $tracking_data['trackingID'], 'Inline tracking data should include correct trackingID.' );
 	}
 
 	public function test_is_active() {
@@ -45,11 +43,11 @@ class TrackingTest extends TestCase {
 		// Set Tracking_Consent::get() to return an empty string on the first call, and '1' on the second.
 		$tracking_consent_mock->expects( $this->any() )->method( 'get' )->willReturnOnConsecutiveCalls( '', '1' );
 
-		$this->assertFalse( $tracking->is_active() );
+		$this->assertFalse( $tracking->is_active(), 'Tracking should be inactive when consent is not granted.' );
 
 		// User option change is simulated with mock above.
 
-		$this->assertTrue( $tracking->is_active() );
+		$this->assertTrue( $tracking->is_active(), 'Tracking should be active when consent is granted.' );
 	}
 
 	protected function getTrackingConsentMock( $methods ) {
