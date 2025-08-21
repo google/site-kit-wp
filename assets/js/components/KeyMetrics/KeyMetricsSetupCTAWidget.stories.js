@@ -53,7 +53,8 @@ Default.storyName = 'SetupCTAWidget';
 Default.scenario = {};
 
 export default {
-	title: 'Key Metrics',
+	title: 'Key Metrics/KeyMetricsSetupCTAWidget',
+	component: KeyMetricsSetupCTAWidget,
 	decorators: [
 		( Story ) => {
 			function setupRegistry( registry ) {
