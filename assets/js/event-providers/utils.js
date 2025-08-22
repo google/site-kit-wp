@@ -156,6 +156,10 @@ export function isLikelyEmail( value ) {
  * @return {boolean} True if the value is likely a phone number, false otherwise.
  */
 export function isLikelyPhone( value ) {
+	if ( ! value ) {
+		return false;
+	}
+
 	const normalizedPhone = normalizePhone( value );
 
 	const phonePattern = /^\+?\d{7,}$/;
