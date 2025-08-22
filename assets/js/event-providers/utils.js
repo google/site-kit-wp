@@ -23,6 +23,39 @@ export const PII_TYPE = {
 	NAME: 'name',
 };
 
+// Indicators for identifying PII fields.
+export const PII_INDICATORS = {
+	[ PII_TYPE.EMAIL ]: [ 'email', 'e-mail', 'mail', 'email address' ],
+	[ PII_TYPE.PHONE ]: [
+		'phone',
+		'tel',
+		'mobile',
+		'cell',
+		'telephone',
+		'phone number',
+	],
+	[ PII_TYPE.NAME ]: [
+		'name',
+		'full-name',
+		'full name',
+		'fullname',
+		'first-name',
+		'first name',
+		'firstname',
+		'last-name',
+		'last name',
+		'lastname',
+		'given-name',
+		'given name',
+		'givenname',
+		'family-name',
+		'family name',
+		'familyname',
+		'fname',
+		'lname',
+	],
+};
+
 /**
  * Normalizes a value for use in conversion tracking.
  *
@@ -165,41 +198,9 @@ export function classifyPII( fieldMeta ) {
 		};
 	}
 
-	const indicators = {
-		[ PII_TYPE.EMAIL ]: [ 'email', 'e-mail', 'mail', 'email address' ],
-		[ PII_TYPE.PHONE ]: [
-			'phone',
-			'tel',
-			'mobile',
-			'cell',
-			'telephone',
-			'phone number',
-		],
-		[ PII_TYPE.NAME ]: [
-			'name',
-			'full-name',
-			'full name',
-			'fullname',
-			'first-name',
-			'first name',
-			'firstname',
-			'last-name',
-			'last name',
-			'lastname',
-			'given-name',
-			'given name',
-			'givenname',
-			'family-name',
-			'family name',
-			'familyname',
-			'fname',
-			'lname',
-		],
-	};
-
 	if (
-		indicators[ PII_TYPE.EMAIL ].includes( name ) ||
-		indicators[ PII_TYPE.EMAIL ].includes( label )
+		PII_INDICATORS[ PII_TYPE.EMAIL ].includes( name ) ||
+		PII_INDICATORS[ PII_TYPE.EMAIL ].includes( label )
 	) {
 		return {
 			type: PII_TYPE.EMAIL,
@@ -208,8 +209,8 @@ export function classifyPII( fieldMeta ) {
 	}
 
 	if (
-		indicators[ PII_TYPE.PHONE ].includes( name ) ||
-		indicators[ PII_TYPE.PHONE ].includes( label )
+		PII_INDICATORS[ PII_TYPE.PHONE ].includes( name ) ||
+		PII_INDICATORS[ PII_TYPE.PHONE ].includes( label )
 	) {
 		return {
 			type: PII_TYPE.PHONE,
@@ -218,8 +219,8 @@ export function classifyPII( fieldMeta ) {
 	}
 
 	if (
-		indicators[ PII_TYPE.NAME ].includes( name ) ||
-		indicators[ PII_TYPE.NAME ].includes( label )
+		PII_INDICATORS[ PII_TYPE.NAME ].includes( name ) ||
+		PII_INDICATORS[ PII_TYPE.NAME ].includes( label )
 	) {
 		return {
 			type: PII_TYPE.NAME,
