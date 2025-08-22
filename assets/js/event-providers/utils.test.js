@@ -43,13 +43,13 @@ describe( 'Event Providers Utilities', () => {
 			[ '  ', '' ],
 			[ '  Special!@#Value$%^ ', 'special!@#value$%^' ],
 		] )( 'should normalize %s to %s', ( input, output ) => {
-			expect( normalizeEmail( input ) ).toBe( output );
+			expect( normalizeValue( input ) ).toBe( output );
 		} );
 	} );
 
 	describe( 'normalizeEmail', () => {
 		it( 'should return an empty string when no email is provided', () => {
-			expect( normalizeValue() ).toBe( '' );
+			expect( normalizeEmail() ).toBe( '' );
 		} );
 
 		it.each( [
