@@ -92,6 +92,11 @@ describe( 'Event Providers Utilities', () => {
 			[ 'foo@bar', false ],
 			[ ' bar.com ', false ],
 			[ '123123', false ],
+			[ '@domain.com', false ],
+			[ 'user@', false ],
+			[ '', false ],
+			[ null, false ],
+			[ undefined, false ],
 		] )(
 			'should check if %s is likely an email address',
 			( input, result ) => {
@@ -107,6 +112,11 @@ describe( 'Event Providers Utilities', () => {
 			[ '+1 (123) 456-7890', true ],
 			[ ' 12345 ', false ],
 			[ 'foo bar', false ],
+			[ '+1 123', false ],
+			[ '12-34', false ],
+			[ '', false ],
+			[ null, false ],
+			[ undefined, false ],
 		] )(
 			'should check if %s is likely a phone number',
 			( input, result ) => {
@@ -191,6 +201,42 @@ describe( 'Event Providers Utilities', () => {
 				type: PII_TYPE.PHONE,
 				value: '21231',
 			} );
+		} );
+
+		it( 'should handle null and undefined field meta gracefully', () => {
+			expect( classifyPII( null ) ).toBe( null );
+			expect( classifyPII( undefined ) ).toBe( null );
+			expect( classifyPII( {} ) ).toBe( null );
+		} );
+
+		it( 'should handle null properties gracefully', () => {
+			expect(
+				classifyPII( {
+					type: null,
+					name: null,
+					value: null,
+					label: null,
+				} )
+			).toBe( null );
+		} );
+
+		it( 'should return null for unclassifiable inputs', () => {
+			expect(
+				classifyPII( {
+					type: 'text',
+					value: 'random text',
+					name: 'unknown-field',
+					label: 'Random Field',
+				} )
+			).toBe( null );
+
+			expect(
+				classifyPII( {
+					type: 'number',
+					value: '123',
+					name: 'quantity',
+				} )
+			).toBe( null );
 		} );
 	} );
 } );
