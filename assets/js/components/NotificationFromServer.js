@@ -40,7 +40,6 @@ import { HOUR_IN_SECONDS } from '../util';
 /**
  * Maps props received from the server (e.g. from a `select( CORE_SITE ).getNotifications()`
  * selector call) to the props expected by the new BannerNotification component.
- * .
  *
  * @since 1.157.0
  *
