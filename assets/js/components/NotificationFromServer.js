@@ -88,10 +88,14 @@ function NotificationFromServer( {
 			type={ TYPES.WARNING }
 			title={ title }
 			description={ content }
-			learnMoreLink={ {
-				label: learnMoreLabel,
-				href: learnMoreURL,
-			} }
+			learnMoreLink={
+				learnMoreURL
+					? {
+							label: learnMoreLabel,
+							href: learnMoreURL,
+					  }
+					: undefined
+			}
 			ctaButton={ {
 				label: ctaLabel,
 				href: ctaURL,
