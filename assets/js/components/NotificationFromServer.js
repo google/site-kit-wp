@@ -43,19 +43,20 @@ import { HOUR_IN_SECONDS } from '../util';
  *
  * @since 1.157.0
  *
- * @param {Object}     props                Component props.
- * @param {string}     props.id             Notification ID/slug.
- * @param {string}     props.title          Notification title/heading.
- * @param {?ReactNode} props.content        Description for notification.
- * @param {string}     props.ctaLabel       Label for the call-to-action button.
- * @param {?string}    props.ctaTarget      `target` for the call-to-action link, e.g. `_blank`. Optional.
- * @param {?string}    props.ctaURL         URL for the call-to-action link.
- * @param {?boolean}   props.dismissible    Whether the notification is dismissible. Optional.
- * @param {?string}    props.dismissLabel   Label for the dismiss button. Optional.
- * @param {?string}    props.learnMoreLabel Label for the "Learn More" link. Optional.
- * @param {?string}    props.learnMoreURL   URL for the "Learn More" link. Optional.
- * @param {?Function}  props.onCTAClick     Callback to run when CTA is clicked. Optional.
- * @param {?Function}  props.onDismissClick Callback to run when the Dismiss button is clicked. Optional.
+ * @param {Object}     props                     Component props.
+ * @param {string}     props.id                  Notification ID/slug.
+ * @param {string}     props.title               Notification title/heading.
+ * @param {?ReactNode} props.content             Description for notification.
+ * @param {string}     props.ctaLabel            Label for the call-to-action button.
+ * @param {?string}    props.ctaTarget           `target` for the call-to-action link, e.g. `_blank`. Optional.
+ * @param {?string}    props.ctaURL              URL for the call-to-action link.
+ * @param {?boolean}   props.dismissible         Whether the notification is dismissible. Optional.
+ * @param {?string}    props.dismissLabel        Label for the dismiss button. Optional.
+ * @param {?string}    props.learnMoreLabel      Label for the "Learn More" link. Optional.
+ * @param {?string}    props.learnMoreURL        URL for the "Learn More" link. Optional.
+ * @param {?Function}  props.onCTAClick          Callback to run when CTA is clicked. Optional.
+ * @param {?Function}  props.onDismissClick      Callback to run when the Dismiss button is clicked. Optional.
+ * @param {?Object}    props.gaTrackingEventArgs Custom GA tracking event category and label options. Optional.
  * @return {JSX.Element} Notification component.
  */
 function NotificationFromServer( {
@@ -71,6 +72,7 @@ function NotificationFromServer( {
 	learnMoreURL,
 	onCTAClick,
 	onDismissClick,
+	gaTrackingEventArgs,
 } ) {
 	// Notifications from the server should not be dismissed permanently in the database.
 	// CoreSiteBannerNotifications are "marked as accepted/dismissed" on the server.
@@ -112,6 +114,7 @@ function NotificationFromServer( {
 					  }
 					: undefined
 			}
+			gaTrackingEventArgs={ gaTrackingEventArgs }
 		/>
 	);
 }
@@ -129,6 +132,7 @@ NotificationFromServer.propTypes = {
 	learnMoreURL: PropTypes.string,
 	onCTAClick: PropTypes.func,
 	onDismissClick: PropTypes.func,
+	gaTrackingEventArgs: PropTypes.object,
 };
 
 export default NotificationFromServer;
