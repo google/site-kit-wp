@@ -176,7 +176,7 @@ export function isLikelyPhone( value ) {
  * @return {Object} An object containing the PII type and normalized value.
  */
 export function classifyPII( fieldMeta ) {
-	let { type, name, value, label } = fieldMeta;
+	let { type, name, value, label } = fieldMeta || {};
 
 	type = normalizeValue( type );
 	name = normalizeValue( name );
