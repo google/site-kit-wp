@@ -136,6 +136,10 @@ export function normalizePhone( phone ) {
  * @return {boolean} True if the value is likely an email address, false otherwise.
  */
 export function isLikelyEmail( value ) {
+	if ( ! value ) {
+		return false;
+	}
+
 	const normalizedEmail = normalizeEmail( value );
 
 	const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
