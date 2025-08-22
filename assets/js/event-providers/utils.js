@@ -173,7 +173,7 @@ export function isLikelyPhone( value ) {
  * @since n.e.x.t
  *
  * @param {Object} fieldMeta The metadata of the field to classify.
- * @return {Object} An object containing the PII type and normalized value.
+ * @return {Object|null} An object containing the PII type and value, or null if not classified.
  */
 export function classifyPII( fieldMeta ) {
 	let { type, name, value, label } = fieldMeta || {};
@@ -239,4 +239,6 @@ export function classifyPII( fieldMeta ) {
 			value: normalizeValue( value ),
 		};
 	}
+
+	return null;
 }
