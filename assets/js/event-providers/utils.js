@@ -64,7 +64,11 @@ export const PII_INDICATORS = {
  * @param {string} value The value to normalize.
  * @return {string} The normalized value.
  */
-export function normalizeValue( value = '' ) {
+export function normalizeValue( value ) {
+	if ( ! value || typeof value !== 'string' ) {
+		return '';
+	}
+
 	return value.trim().toLowerCase();
 }
 
