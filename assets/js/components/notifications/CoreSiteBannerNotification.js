@@ -63,6 +63,7 @@ CoreSiteBannerNotification.propTypes = {
 	ctaURL: PropTypes.string,
 	dismissLabel: PropTypes.string,
 	dismissible: PropTypes.bool,
+	gaTrackingEventArgs: PropTypes.object,
 	id: PropTypes.string.isRequired,
 	learnMoreLabel: PropTypes.string,
 	learnMoreURL: PropTypes.string,
