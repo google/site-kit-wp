@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "98d75cb265e067be47e4a3f1345c1cfd",
+    "content-hash": "c71ae91707a1e63e890687b66846c64c",
     "packages": [
         {
             "name": "cweagans/composer-patches",
@@ -5249,7 +5249,7 @@
         "ext-json": "*",
         "ext-openssl": "*"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "platform-overrides": {
         "php": "7.4.33"
     },
