@@ -40,7 +40,7 @@ export async function registerReaderRevenueManagerPlugin() {
 	const isSiteEditor = !! select( CORE_EDIT_SITE );
 
 	if ( isSiteEditor ) {
-		return null;
+		return;
 	}
 
 	await Promise.all( [
@@ -60,7 +60,7 @@ export async function registerReaderRevenueManagerPlugin() {
 	}
 
 	if ( ! hasModuleOwnershipOrAccess ) {
-		return null;
+		return;
 	}
 
 	registerPlugin( 'googlesitekit-rrm-plugin', {
@@ -68,6 +68,4 @@ export async function registerReaderRevenueManagerPlugin() {
 	} );
 
 	initializeTracking();
-
-	return true;
 }
