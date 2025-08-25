@@ -252,4 +252,17 @@ class Proactive_User_Engagement_SettingsTest extends TestCase {
 			),
 		);
 	}
+
+	public function test_is_user_subscribed() {
+		// Test default value.
+		$this->assertFalse( $this->settings->is_user_subscribed(), 'User should not be subscribed by default' );
+
+		// Test when user is subscribed.
+		$this->settings->merge( array( 'subscribed' => true ) );
+		$this->assertTrue( $this->settings->is_user_subscribed(), 'User should be subscribed after setting to true' );
+
+		// Test when user is unsubscribed.
+		$this->settings->merge( array( 'subscribed' => false ) );
+		$this->assertFalse( $this->settings->is_user_subscribed(), 'User should not be subscribed after setting to false' );
+	}
 }
