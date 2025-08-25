@@ -82,13 +82,13 @@ describe( 'googlesitekit.api', () => {
 		expect( usingCache() ).toEqual( true );
 	} );
 
+	/* eslint-disable consistent-return */
 	describe( 'get', () => {
 		it( 'should throw an error when required arguments are missing', async () => {
 			try {
 				await get();
 
-				unexpectedSuccess();
-				return;
+				return unexpectedSuccess();
 			} catch ( error ) {
 				expect( error.message ).toEqual(
 					'`type` argument for requests is required.'
@@ -98,7 +98,7 @@ describe( 'googlesitekit.api', () => {
 			try {
 				await get( 'core' );
 
-				unexpectedSuccess();
+				return unexpectedSuccess();
 			} catch ( error ) {
 				expect( error.message ).toEqual(
 					'`identifier` argument for requests is required.'
@@ -108,7 +108,7 @@ describe( 'googlesitekit.api', () => {
 			try {
 				await get( 'core', MODULE_SLUG_SEARCH_CONSOLE );
 
-				unexpectedSuccess();
+				return unexpectedSuccess();
 			} catch ( error ) {
 				expect( error.message ).toEqual(
 					'`datapoint` argument for requests is required.'
@@ -386,14 +386,15 @@ describe( 'googlesitekit.api', () => {
 			}
 		} );
 	} );
+	/* eslint-enable consistent-return */
 
+	/* eslint-disable consistent-return */
 	describe( 'set', () => {
 		it( 'should throw an error when required arguments are missing', async () => {
 			try {
 				await set();
 
-				unexpectedSuccess();
-				return;
+				return unexpectedSuccess();
 			} catch ( error ) {
 				expect( error.message ).toEqual(
 					'`type` argument for requests is required.'
@@ -403,7 +404,7 @@ describe( 'googlesitekit.api', () => {
 			try {
 				await set( 'core' );
 
-				unexpectedSuccess();
+				return unexpectedSuccess();
 			} catch ( error ) {
 				expect( error.message ).toEqual(
 					'`identifier` argument for requests is required.'
@@ -413,7 +414,7 @@ describe( 'googlesitekit.api', () => {
 			try {
 				await set( 'core', MODULE_SLUG_SEARCH_CONSOLE );
 
-				unexpectedSuccess();
+				return unexpectedSuccess();
 			} catch ( error ) {
 				expect( error.message ).toEqual(
 					'`datapoint` argument for requests is required.'
@@ -657,6 +658,7 @@ describe( 'googlesitekit.api', () => {
 			}
 		} );
 	} );
+	/* eslint-enable consistent-return */
 
 	describe( 'invalidateCache', () => {
 		it( 'should remove all cached items when called', async () => {
