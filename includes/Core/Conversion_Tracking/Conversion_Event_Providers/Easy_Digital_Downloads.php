@@ -45,17 +45,6 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	 * @return array List of event names.
 	 */
 	public function get_event_names() {
-		return $this->events_to_track();
-	}
-
-	/**
-	 * Gets the conversion event names that are tracked by this provider.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return array List of event names.
-	 */
-	protected function events_to_track() {
 		$events = array( 'add_to_cart' );
 		
 		// Only include purchase event if Enhanced Conversions feature flag is enabled
@@ -108,7 +97,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 				function () {
 					$script_slug = 'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG;
 
-					$events_to_track = $this->events_to_track();
+					$events_to_track = $this->get_event_names();
 
 					$inline_script = join(
 						"\n",
