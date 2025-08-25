@@ -33,12 +33,18 @@ jest.mock( 'googlesitekit-data', () => ( {
 	subscribe: jest.fn(),
 } ) );
 
-jest.mock( './get-blocks-titles', () => ( {
-	getBlocksTitles: jest.fn( () =>
+jest.mock( './create-get-blocks-titles', () => ( {
+	createGetBlockTitle: jest.fn( () =>
 		jest.fn( ( name ) => {
+			const constants = jest.requireActual(
+				'@/blocks/reader-revenue-manager/common/constants'
+			);
+
 			const titles = {
-				SUBSCRIBE_WITH_GOOGLE_BLOCK: 'Subscribe with Google',
-				CONTRIBUTE_WITH_GOOGLE_BLOCK: 'Contribute with Google',
+				[ constants.SUBSCRIBE_WITH_GOOGLE_BLOCK ]:
+					'Subscribe with Google',
+				[ constants.CONTRIBUTE_WITH_GOOGLE_BLOCK ]:
+					'Contribute with Google',
 			};
 			return titles[ name ];
 		} )
