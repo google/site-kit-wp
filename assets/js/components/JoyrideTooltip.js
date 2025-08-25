@@ -81,17 +81,24 @@ export default function JoyrideTooltip( props ) {
 	);
 
 	useEffect( () => {
-		const targetElement = global.document.querySelector( target );
-		const resizeObserver = new ResizeObserver( () => {
-			// Dispatch a window resize event to trigger the tooltip to reposition.
-			global.dispatchEvent( new Event( 'resize' ) );
-		} );
+		//eslint-disable-next-line sitekit/function-declaration-consistency
+		let disconnect = () => {};
 
-		if ( targetElement ) {
-			resizeObserver.observe( targetElement );
+		if ( typeof global.ResizeObserver === 'function' ) {
+			const targetElement = global.document.querySelector( target );
+
+			if ( targetElement ) {
+				const resizeObserver = new ResizeObserver( () => {
+					// Dispatch a window resize event to trigger the tooltip to reposition.
+					global.dispatchEvent( new Event( 'resize' ) );
+				} );
+
+				resizeObserver.observe( targetElement );
+				disconnect = () => resizeObserver.disconnect();
+			}
 		}
 
-		return resizeObserver.disconnect;
+		return disconnect;
 	}, [ target, targetExists ] );
 
 	// Reset the component between mobile and desktop layouts they use different
