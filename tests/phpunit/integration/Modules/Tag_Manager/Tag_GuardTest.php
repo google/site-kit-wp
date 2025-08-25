@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Tag_Manager;
 
 use Google\Site_Kit\Context;
@@ -36,7 +34,7 @@ class Tag_GuardTest extends TestCase {
 			)
 		);
 
-		$this->assertTrue( $guard->can_activate() );
+		$this->assertTrue( $guard->can_activate(), 'Guard should allow activation for web when containerID set and useSnippet true.' );
 	}
 
 	public function test_cant_activate_for_web() {
@@ -76,7 +74,7 @@ class Tag_GuardTest extends TestCase {
 			)
 		);
 
-		$this->assertTrue( $guard->can_activate() );
+		$this->assertTrue( $guard->can_activate(), 'Guard should allow activation for AMP when ampContainerID set and useSnippet true.' );
 	}
 
 	public function test_cant_activate_for_amp() {

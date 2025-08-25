@@ -39,7 +39,11 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MINUTE_IN_SECONDS, WEEK_IN_SECONDS } from '../../../../util';
+import {
+	DAY_IN_SECONDS,
+	MINUTE_IN_SECONDS,
+	WEEK_IN_SECONDS,
+} from '../../../../util';
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
 	MODULES_ADS,
@@ -54,6 +58,7 @@ import SetupCTA from '../../../../googlesitekit/notifications/components/layout/
 import BannerSVGDesktop from '@/svg/graphics/banner-ads-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-ads-setup-cta-mobile.svg?url';
 import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
+import SurveyViewTrigger from '../../../../components/surveys/SurveyViewTrigger';
 
 export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );
@@ -101,7 +106,11 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 
 	const activateModule = useActivateModuleCallback( MODULE_SLUG_ADS );
 
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
 	const onSetupCallback = useCallback( () => {
+		triggerSurvey( 'accept_ads_setup_cta' );
+
 		if (
 			! shouldShowWooCommerceRedirectModal ||
 			isWooCommerceRedirectModalDismissed
@@ -113,6 +122,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 
 		setOpenDialog( true );
 	}, [
+		triggerSurvey,
 		shouldShowWooCommerceRedirectModal,
 		activateModule,
 		isWooCommerceRedirectModalDismissed,
@@ -210,6 +220,10 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 					dialogActive
 				/>
 			) }
+			<SurveyViewTrigger
+				triggerID="view_ads_setup_cta"
+				ttl={ DAY_IN_SECONDS }
+			/>
 		</Notification>
 	);
 }

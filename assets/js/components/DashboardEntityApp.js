@@ -32,6 +32,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import Header from './Header';
+import P from './Typography/P';
 import {
 	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
 	CONTEXT_ENTITY_DASHBOARD_CONTENT,
@@ -165,7 +166,7 @@ function DashboardEntityApp() {
 									<Grid>
 										<Row>
 											<Cell size={ 12 }>
-												<p>
+												<P>
 													{ createInterpolateElement(
 														sprintf(
 															/* translators: %s: current entity URL. */
@@ -196,7 +197,7 @@ function DashboardEntityApp() {
 															),
 														}
 													) }
-												</p>
+												</P>
 											</Cell>
 										</Row>
 									</Grid>

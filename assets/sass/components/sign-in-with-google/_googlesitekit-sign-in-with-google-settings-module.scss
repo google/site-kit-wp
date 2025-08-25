@@ -62,7 +62,7 @@
 			.googlesitekit-settings-module__one-tap,
 			.googlesitekit-settings-module__one-tap-on-all-pages {
 				@media (min-width: $bp-xlarge) {
-					margin-top: 10px;
+					margin-top: $grid-gap-desktop;
 				}
 
 				border-bottom: none;

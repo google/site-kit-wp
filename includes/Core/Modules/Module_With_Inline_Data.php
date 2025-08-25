@@ -22,8 +22,10 @@ interface Module_With_Inline_Data {
 	 * Gets required inline data for the module.
 	 *
 	 * @since 1.158.0
+	 * @since 1.160.0 Include `$modules_data` parameter.
 	 *
+	 * @param array $modules_data Inline modules data.
 	 * @return array An array of the module's inline data.
 	 */
-	public function get_inline_data();
+	public function get_inline_data( $modules_data );
 }

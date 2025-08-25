@@ -22,6 +22,16 @@
 
 		padding: 0;
 
+		&:hover {
+			background-color: unset;
+			color: rgba($c-black, 0.87);
+
+			&::before {
+				background-color: $c-interactive-tertiary-hover;
+				opacity: 1;
+			}
+		}
+
 		.googlesitekit-cta-link {
 			align-items: center;
 			color: $c-surfaces-on-surface;

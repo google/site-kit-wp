@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Analytics_4;
 
 use Google\Site_Kit\Context;
@@ -47,7 +45,7 @@ class Tag_GuardTest extends TestCase {
 			)
 		);
 
-		$this->assertTrue( $this->guard->can_activate() );
+		$this->assertTrue( $this->guard->can_activate(), 'Guard should allow activation when measurementID set and useSnippet true.' );
 	}
 
 	public function test_can_activate__with_use_snippet_false() {

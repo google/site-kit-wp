@@ -54,6 +54,7 @@ import SpinnerButton, {
 import AudienceCreationErrorNotice from './AudienceCreationErrorNotice';
 import Notice from '../../../../../../components/Notice';
 import Typography from '../../../../../../components/Typography';
+import useFormValue from '../../../../../../hooks/useFormValue';
 
 export default function AudienceCreationNotice() {
 	const viewContext = useViewContext();
@@ -109,15 +110,14 @@ export default function AudienceCreationNotice() {
 	const { createAudience, syncAvailableAudiences } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
-	const isCreatingAudienceFromOAuth = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( AUDIENCE_CREATION_FORM, 'autoSubmit' )
+	const isCreatingAudienceFromOAuth = useFormValue(
+		AUDIENCE_CREATION_FORM,
+		'autoSubmit'
 	);
 
-	const failedAudienceToCreate = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_CREATION_FORM,
-			'audienceToCreate'
-		)
+	const failedAudienceToCreate = useFormValue(
+		AUDIENCE_CREATION_FORM,
+		'audienceToCreate'
 	);
 
 	const [ apiErrors, setApiErrors ] = useState( [] );

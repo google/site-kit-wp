@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 $typography-settings: (
 	display: (
 		small:   (font-size: $fs-display-sm, font-weight: $fw-normal, letter-spacing: 0, line-height: $lh-display-sm),
@@ -69,5 +70,10 @@ $typography-font-families: (
 				}
 			}
 		}
+	}
+
+	// Two consecutive body elements should have only one margin in between.
+	.googlesitekit-typography--body + .googlesitekit-typography--body {
+		margin-top: 0;
 	}
 }

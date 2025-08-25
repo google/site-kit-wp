@@ -18,3 +18,9 @@
 
 export const CORE_EDITOR = 'core/editor';
 export const CORE_EDIT_SITE = 'core/edit-site';
+export const CORE_BLOCK_EDITOR = 'core/block-editor';
+
+export const SUBSCRIBE_WITH_GOOGLE_BLOCK =
+	'google-site-kit/rrm-subscribe-with-google';
+export const CONTRIBUTE_WITH_GOOGLE_BLOCK =
+	'google-site-kit/rrm-contribute-with-google';

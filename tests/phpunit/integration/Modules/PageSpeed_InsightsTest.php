@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
@@ -29,7 +27,7 @@ class PageSpeed_InsightsTest extends TestCase {
 	public function test_is_connected() {
 		$pagespeed = new PageSpeed_Insights( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertTrue( $pagespeed->is_connected() );
+		$this->assertTrue( $pagespeed->is_connected(), 'PageSpeed Insights module should be connected by default.' );
 	}
 
 	public function test_get_datapoints() {
@@ -39,7 +37,8 @@ class PageSpeed_InsightsTest extends TestCase {
 			array(
 				'pagespeed',
 			),
-			$pagespeed->get_datapoints()
+			$pagespeed->get_datapoints(),
+			'PageSpeed Insights module should return the correct datapoints.'
 		);
 	}
 

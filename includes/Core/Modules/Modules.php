@@ -169,10 +169,10 @@ final class Modules {
 	 */
 	public function __construct(
 		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Authentication $authentication = null,
-		Assets $assets = null
+		?Options $options = null,
+		?User_Options $user_options = null,
+		?Authentication $authentication = null,
+		?Assets $assets = null
 	) {
 		$this->context          = $context;
 		$this->options          = $options ?: new Options( $this->context );

@@ -354,8 +354,6 @@ const baseSelectors = {
 	/**
 	 * Gets a given report for each of the provided audiences.
 	 *
-	 * TODO: This will be refactored to use pivot reports in #8484.
-	 *
 	 * @since 1.126.0
 	 *
 	 * @param {Object}   state                 Data store's state.

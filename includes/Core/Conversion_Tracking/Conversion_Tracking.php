@@ -82,7 +82,7 @@ class Conversion_Tracking {
 	 * @param Context $context Plugin context.
 	 * @param Options $options Optional. Option API instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, Options $options = null ) {
+	public function __construct( Context $context, ?Options $options = null ) {
 		$this->context                             = $context;
 		$options                                   = $options ?: new Options( $context );
 		$this->conversion_tracking_settings        = new Conversion_Tracking_Settings( $options );

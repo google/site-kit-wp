@@ -37,15 +37,14 @@ import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants'
 import AccessibleWarningIcon from '../../../../components/AccessibleWarningIcon';
 import { TextField } from 'googlesitekit-components';
 import { isUniqueContainerName } from '../../util';
+import useFormValue from '../../../../hooks/useFormValue';
 
 export default function ContainerNameTextField( { label, name } ) {
 	const containers = useSelect( ( select ) => {
 		const accountID = select( MODULES_TAGMANAGER ).getAccountID();
 		return select( MODULES_TAGMANAGER ).getContainers( accountID );
 	} );
-	const containerName = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, name )
-	);
+	const containerName = useFormValue( FORM_SETUP, name );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onChange = useCallback(

@@ -27,7 +27,7 @@ import fetchMock from 'fetch-mock';
 function Template() {
 	return (
 		<ConversionTrackingToggle>
-			Example text for enhanced conversion tracking
+			Example text for plugin conversion tracking
 		</ConversionTrackingToggle>
 	);
 }
