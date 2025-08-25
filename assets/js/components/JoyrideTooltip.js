@@ -81,38 +81,39 @@ export default function JoyrideTooltip( props ) {
 	);
 
 	useEffect( () => {
-		if ( targetExists && global.ResizeObserver ) {
-			const targetElement = global.document.querySelector( target );
-			const resizeObserver = new ResizeObserver( () => {
-				// Dispatch a window resize event to trigger the tooltip to reposition.
-				global.dispatchEvent( new Event( 'resize' ) );
-			} );
-			resizeObserver.observe( targetElement );
+		const targetElement = global.document.querySelector( target );
+		const resizeObserver = new ResizeObserver( () => {
+			// Dispatch a window resize event to trigger the tooltip to reposition.
+			global.dispatchEvent( new Event( 'resize' ) );
+		} );
 
-			return () => {
-				resizeObserver.disconnect();
-			};
+		if ( targetElement ) {
+			resizeObserver.observe( targetElement );
 		}
-		// Return noop cleanup function to satisfy consistent-return rule.
-		return () => {};
+
+		return resizeObserver.disconnect;
 	}, [ target, targetExists ] );
 
 	// Reset the component between mobile and desktop layouts they use different
 	// targets which requires the tooltip to be re-rendered to display correctly.
 	useEffect( () => {
+		let timeoutID;
+
 		if ( previousIsMobileTabletRef.current !== isMobileTablet ) {
 			setShouldRun( false );
 
-			const timeoutID = setTimeout( () => {
+			timeoutID = setTimeout( () => {
 				setShouldRun( true );
 			}, 50 );
 
 			previousIsMobileTabletRef.current = isMobileTablet;
-
-			return () => clearTimeout( timeoutID );
 		}
-		// Return noop cleanup function to satisfy consistent-return rule.
-		return () => {};
+
+		return () => {
+			if ( timeoutID ) {
+				clearTimeout( timeoutID );
+			}
+		};
 	}, [ isMobileTablet ] );
 
 	// Joyride expects the step's target to be in the DOM immediately
