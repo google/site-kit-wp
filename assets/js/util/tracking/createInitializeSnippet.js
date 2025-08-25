@@ -43,7 +43,7 @@ export default function createInitializeSnippet( config, dataLayerTarget ) {
 			);
 		}
 		if ( hasInsertedTag ) {
-			return;
+			return false;
 		}
 
 		hasInsertedTag = true;

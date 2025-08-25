@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable consistent-return */
+
 const {
 	default: iterateJsdoc,
 } = require( 'eslint-plugin-jsdoc/dist/iterateJsdoc' );

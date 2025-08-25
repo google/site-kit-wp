@@ -60,6 +60,7 @@ export default function PAXSetupSuccessSubtleNotification( {
 				accountOverviewURL
 			);
 		}
+		return null;
 	} );
 
 	const onPrimaryCTAClickCallback = useCallback( () => {

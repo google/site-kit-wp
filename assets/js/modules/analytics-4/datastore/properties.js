@@ -851,7 +851,7 @@ const baseResolvers = {
 	},
 	*getGoogleTagSettings( measurementID ) {
 		if ( ! measurementID ) {
-			return;
+			return null;
 		}
 
 		const registry = yield commonActions.getRegistry();
@@ -863,7 +863,7 @@ const baseResolvers = {
 			return googleTagSettings;
 		}
 
-		yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
+		return yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
 			measurementID
 		);
 	},

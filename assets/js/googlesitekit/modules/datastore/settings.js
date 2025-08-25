@@ -118,6 +118,10 @@ export const controls = {
 				if ( rollbackChanges ) {
 					return rollbackChanges( slug );
 				}
+
+				return {
+					error: `The module '${ slug }' does not support rollbackChanges().`,
+				};
 			}
 	),
 };

@@ -37,7 +37,7 @@ export function decodeServiceURL( receivedURL ) {
 	);
 
 	if ( ! received.continue ) {
-		return;
+		return null;
 	}
 
 	const serviceURL = decodeURIComponent( received.continue );

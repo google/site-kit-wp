@@ -1,210 +1,176 @@
 {
-  "extends": [
-    "plugin:@wordpress/eslint-plugin/recommended",
-    "plugin:jest/recommended",
-    "plugin:sitekit/main",
-    "plugin:react-hooks/recommended",
-    "plugin:import/recommended"
-  ],
-  "env": {
-    "browser": true,
-    "es6": true
-  },
-  "globals": {
-    "fetchMock": false
-  },
-  "rules": {
-    "import/no-unresolved": [
-      "error",
-      {
-        "ignore": [
-          "^@wordpress-core\/?.*"
-        ]
-      }
-    ],
-    "jsdoc/check-tag-names": "error",
-    "jsdoc/check-types": "error",
-    "jsdoc/check-line-alignment": [
-      "error",
-      "always"
-    ],
-    "jsdoc/require-description": "error",
-    "jsdoc/require-description-complete-sentence": "off",
-    "jsdoc/require-param": "error",
-    "jsdoc/require-param-description": "error",
-    "jsdoc/require-param-name": "error",
-    "jsdoc/require-param-type": "error",
-    "jsdoc/require-returns-check": "error",
-    "jsdoc/require-returns-description": "error",
-    "jsdoc/require-returns-type": "error",
-    "jsdoc/require-returns": "error",
-    "jsdoc/no-undefined-types": "error",
-    "jsdoc/valid-types": "error",
-    "lodash/import-scope": [
-      "error",
-      "member"
-    ],
-    "require-await": "error",
-    "react/function-component-definition": [
-      "error",
-      {
-        "namedComponents": "function-declaration",
-        "unnamedComponents": "function-expression"
-      }
-    ],
-    "react/jsx-boolean-value": [
-      "error",
-      "never"
-    ],
-    "react/jsx-curly-brace-presence": "error",
-    "no-invalid-regexp": "error",
-    "no-useless-escape": "error",
-    "complexity": [
-      "error",
-      15
-    ],
-    "no-restricted-globals": [
-      "error",
-      {
-        "name": "window",
-        "message": "Use 'global' instead."
-      }
-    ],
-    "no-use-before-define": [
-      "error",
-      {
-        "functions": false,
-        "classes": false,
-        "variables": false
-      }
-    ],
-    "react/jsx-fragments": [
-      "error",
-      "element"
-    ],
-    "valid-jsdoc": [
-      "error",
-      {
-        "requireReturn": false
-      }
-    ],
-    "@wordpress/i18n-text-domain": [
-      "error",
-      {
-        "allowedTextDomain": "google-site-kit"
-      }
-    ],
-    "quotes": [
-      "error",
-      "single",
-      {
-        "avoidEscape": true
-      }
-    ],
-    "curly": [
-      "error",
-      "all"
-    ],
-    "prettier/prettier": [
-      "error",
-      {},
-      {
-        "usePrettierrc": true
-      }
-    ],
-    "react/jsx-no-useless-fragment": "error"
-  },
-  "settings": {
-    "import/core-modules": [
-      "googlesitekit-data",
-      "googlesitekit-modules",
-      "googlesitekit-api",
-      "googlesitekit-widgets",
-      "googlesitekit-components",
-      "googlesitekit-notifications",
-      "@wordpress/i18n__non-shim",
-      "@wordpress/api-fetch__non-shim"
-    ],
-    "import/resolver": {
-      "alias": {
-        "map": [
-          [
-            "@/(.*\\.svg)\\?url",
-            "assets/"
-          ],
-          [
-            "@/(.*)",
-            "assets/"
-          ],
-          [
-            "@wordpress-core",
-            "@wordpress"
-          ]
-        ]
-      }
-    }
-  },
-  "overrides": [
-    {
-      "files": [
-        "tests/e2e/**/*.js"
-      ],
-      "env": {
-        "browser": true
-      },
-      "globals": {
-        "browser": true,
-        "page": true
-      },
-      "rules": {
-        "no-restricted-globals": [
-          "off"
-        ],
-        "react-hooks/rules-of-hooks": "off"
-      }
-    },
-    {
-      "files": [
-        "assets/js/components/**/*.js",
-        "**/modules/*/components/**/*.js",
-        "assets/js/googlesitekit/*/components/**/*.js"
-      ],
-      "rules": {
-        "filenames/match-exported": [
-          2,
-          "[A-Z]([A-Z0-9]*[a-z][a-z0-9]*[A-Z]|[a-z0-9]*[A-Z][A-Z0-9]*[a-z])[A-Za-z0-9]*"
-        ]
-      }
-    },
-    {
-      "files": [
-        "assets/js/components/data/**/*.js",
-        "assets/js/components/legacy*/**/*.js"
-      ],
-      "rules": {
-        "filenames/match-exported": [
-          "off"
-        ]
-      }
-    },
-    {
-      "files": [
-        "webpack/*",
-        "**/__factories__/*",
-        "*.stories.js",
-        "*.test.js"
-      ],
-      "rules": {
-        "sitekit/no-direct-date": "off"
-      }
-    }
-  ],
-  "plugins": [
-    "filenames",
-    "sitekit",
-    "jsdoc",
-    "react",
-    "react-hooks",
-    "lodash"
-  ]
+	"extends": [
+		"plugin:@wordpress/eslint-plugin/recommended",
+		"plugin:jest/recommended",
+		"plugin:sitekit/main",
+		"plugin:react-hooks/recommended",
+		"plugin:import/recommended"
+	],
+	"env": {
+		"browser": true,
+		"es6": true
+	},
+	"globals": {
+		"fetchMock": false
+	},
+	"rules": {
+		"import/no-unresolved": [
+			"error",
+			{
+				"ignore": [ "^@wordpress-core/?.*" ]
+			}
+		],
+		"jsdoc/check-tag-names": "error",
+		"jsdoc/check-types": "error",
+		"jsdoc/check-line-alignment": [ "error", "always" ],
+		"jsdoc/require-description": "error",
+		"jsdoc/require-description-complete-sentence": "off",
+		"jsdoc/require-param": "error",
+		"jsdoc/require-param-description": "error",
+		"jsdoc/require-param-name": "error",
+		"jsdoc/require-param-type": "error",
+		"jsdoc/require-returns-check": "error",
+		"jsdoc/require-returns-description": "error",
+		"jsdoc/require-returns-type": "error",
+		"jsdoc/require-returns": "error",
+		"jsdoc/no-undefined-types": "error",
+		"jsdoc/valid-types": "error",
+		"lodash/import-scope": [ "error", "member" ],
+		"require-await": "error",
+		"react/function-component-definition": [
+			"error",
+			{
+				"namedComponents": "function-declaration",
+				"unnamedComponents": "function-expression"
+			}
+		],
+		"react/jsx-boolean-value": [ "error", "never" ],
+		"react/jsx-curly-brace-presence": "error",
+		"no-invalid-regexp": "error",
+		"no-useless-escape": "error",
+		"complexity": [ "error", 15 ],
+		"no-restricted-globals": [
+			"error",
+			{
+				"name": "window",
+				"message": "Use 'global' instead."
+			}
+		],
+		"no-use-before-define": [
+			"error",
+			{
+				"functions": false,
+				"classes": false,
+				"variables": false
+			}
+		],
+		"react/jsx-fragments": [ "error", "element" ],
+		"valid-jsdoc": [
+			"error",
+			{
+				"requireReturn": false
+			}
+		],
+		"@wordpress/i18n-text-domain": [
+			"error",
+			{
+				"allowedTextDomain": "google-site-kit"
+			}
+		],
+		"quotes": [
+			"error",
+			"single",
+			{
+				"avoidEscape": true
+			}
+		],
+		"curly": [ "error", "all" ],
+		"prettier/prettier": [
+			"error",
+			{},
+			{
+				"usePrettierrc": true
+			}
+		],
+		"react/jsx-no-useless-fragment": "error",
+		"consistent-return": "error"
+	},
+	"settings": {
+		"import/core-modules": [
+			"googlesitekit-data",
+			"googlesitekit-modules",
+			"googlesitekit-api",
+			"googlesitekit-widgets",
+			"googlesitekit-components",
+			"googlesitekit-notifications",
+			"@wordpress/i18n__non-shim",
+			"@wordpress/api-fetch__non-shim"
+		],
+		"import/resolver": {
+			"alias": {
+				"map": [
+					[ "@/(.*\\.svg)\\?url", "assets/" ],
+					[ "@/(.*)", "assets/" ],
+					[ "@wordpress-core", "@wordpress" ]
+				]
+			}
+		}
+	},
+	"overrides": [
+		{
+			"files": [ "tests/e2e/**/*.js" ],
+			"env": {
+				"browser": true
+			},
+			"globals": {
+				"browser": true,
+				"page": true
+			},
+			"rules": {
+				"no-restricted-globals": [ "off" ],
+				"react-hooks/rules-of-hooks": "off"
+			}
+		},
+		{
+			"files": [
+				"assets/js/components/**/*.js",
+				"**/modules/*/components/**/*.js",
+				"assets/js/googlesitekit/*/components/**/*.js"
+			],
+			"rules": {
+				"filenames/match-exported": [
+					2,
+					"[A-Z]([A-Z0-9]*[a-z][a-z0-9]*[A-Z]|[a-z0-9]*[A-Z][A-Z0-9]*[a-z])[A-Za-z0-9]*"
+				]
+			}
+		},
+		{
+			"files": [
+				"assets/js/components/data/**/*.js",
+				"assets/js/components/legacy*/**/*.js"
+			],
+			"rules": {
+				"filenames/match-exported": [ "off" ]
+			}
+		},
+		{
+			"files": [
+				"webpack/*",
+				"**/__factories__/*",
+				"*.stories.js",
+				"*.test.js"
+			],
+			"rules": {
+				"sitekit/no-direct-date": "off"
+			}
+		}
+	],
+	"plugins": [
+		"filenames",
+		"sitekit",
+		"jsdoc",
+		"react",
+		"react-hooks",
+		"lodash"
+	]
 }

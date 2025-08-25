@@ -70,7 +70,8 @@ const Menu = forwardRef(
 
 		useEffect( () => {
 			if ( ! menuRef?.current ) {
-				return;
+				// Return noop cleanup function to satisfy consistent-return rule.
+				return () => {};
 			}
 
 			const menuComponent = new MDCMenu( menuRef.current );

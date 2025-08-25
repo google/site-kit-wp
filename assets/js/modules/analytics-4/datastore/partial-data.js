@@ -431,6 +431,9 @@ const baseSelectors = {
 						reportID:
 							'analytics-4_get-partial-data-report-options_store:selector_RESOURCE_TYPE_PROPERTY',
 					};
+
+				default:
+					return undefined;
 			}
 		}
 	),
