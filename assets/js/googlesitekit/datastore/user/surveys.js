@@ -253,7 +253,7 @@ const baseActions = {
 				return { response, error };
 			}
 
-			return null;
+			return { response: null, error: 'no session found' };
 		}
 	),
 };
