@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable consistent-return */
+
 const {
 	default: iterateJsdoc,
 } = require( 'eslint-plugin-jsdoc/dist/iterateJsdoc' );
@@ -28,7 +30,6 @@ const SINCE_VALIDATION_RULES = [
 		if ( ! tag.description?.length ) {
 			return 'The @since tag cannot be empty.';
 		}
-		return undefined;
 	},
 	( { versionString } ) => {
 		if (
@@ -37,14 +38,12 @@ const SINCE_VALIDATION_RULES = [
 		) {
 			return `The @since tag requires a valid semVer value or the "${ NEXT_VERSION }" label.`;
 		}
-		return undefined;
 	},
 	( { index, description } ) => {
 		// The first since tag doesn't require a description.
 		if ( index > 0 && ! description.trim() ) {
 			return 'All @since tags after the first require a description.';
 		}
-		return undefined;
 	},
 	( { description } ) => {
 		// Ignore if the first character is a backtick; this is often used
@@ -53,13 +52,11 @@ const SINCE_VALIDATION_RULES = [
 		if ( description && ! /^[A-Z`("']/.test( description.trim() ) ) {
 			return 'All @since tags should have a description starting with a capital letter.';
 		}
-		return undefined;
 	},
 	( { description } ) => {
 		if ( description && ! /[.]$/.test( description.trim() ) ) {
 			return 'All @since tags should have a description that ends with a period/full-stop.';
 		}
-		return undefined;
 	},
 	( { versionString, previousVersionString } ) => {
 		if (
@@ -76,7 +73,6 @@ const SINCE_VALIDATION_RULES = [
 				return '@since tags should appear in order of version number.';
 			}
 		}
-		return undefined;
 	},
 ];
 
