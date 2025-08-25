@@ -38,6 +38,8 @@ import { MODULES_ADSENSE } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { ErrorNotices, UserProfile } from '../common';
 import useViewContext from '../../../../hooks/useViewContext';
+import Typography from '../../../../components/Typography';
+import P from '../../../../components/Typography/P';
 
 export default function SetupCreateAccount() {
 	const viewContext = useViewContext();
@@ -61,18 +63,23 @@ export default function SetupCreateAccount() {
 
 	return (
 		<Fragment>
-			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
+			<Typography
+				as="h3"
+				type="title"
+				size="large"
+				className="googlesitekit-setup-module__title"
+			>
 				{ __( 'Create your AdSense account', 'google-site-kit' ) }
-			</h3>
+			</Typography>
 
 			<ErrorNotices />
 
-			<p>
+			<P>
 				{ __(
 					'Once you create your account, Site Kit will place AdSense code on every page across your site. This means your site will be automatically optimized to help you earn money from your content.',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 
 			<UserProfile />
 
@@ -108,11 +115,11 @@ export default function SetupCreateAccount() {
 							a: (
 								<SupportLink
 									path="/adsense/answer/2659101"
-									external
 									aria-label={ __(
 										'Learn more about adding a user to an existing AdSense account',
 										'google-site-kit'
 									) }
+									external
 								/>
 							),
 						}

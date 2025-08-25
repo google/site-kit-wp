@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ModalDialog from '../ModalDialog';
+import RefocusableModalDialog from '../RefocusableModalDialog';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 
@@ -39,7 +39,7 @@ export default function ConfirmDisableConversionTrackingDialog( {
 	const viewContext = useViewContext();
 
 	const subtitle = __(
-		'By disabling enhanced conversion tracking, you will no longer have access to:',
+		'By disabling plugin conversion tracking, you will no longer have access to:',
 		'google-site-kit'
 	);
 
@@ -56,19 +56,19 @@ export default function ConfirmDisableConversionTrackingDialog( {
 	} );
 
 	return (
-		<ModalDialog
+		<RefocusableModalDialog
 			className="googlesitekit-settings-module__confirm-disconnect-modal"
-			dialogActive
 			title={ __(
-				'Disable enhanced conversion tracking',
+				'Disable plugin conversion tracking',
 				'google-site-kit'
 			) }
 			subtitle={ subtitle }
 			handleConfirm={ onConfirm }
-			handleDialog={ onCancel }
+			handleCancel={ onCancel }
 			onClose={ onCancel }
 			provides={ provides }
 			confirmButton={ __( 'Disable', 'google-site-kit' ) }
+			dialogActive
 			danger
 		/>
 	);

@@ -39,6 +39,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { MetricTileNumeric } from '../../../../components/KeyMetrics';
 import { numFmt } from '../../../../util';
 import whenActive from '../../../../util/when-active';
@@ -56,6 +57,7 @@ function ReturningVisitorsWidget( { Widget } ) {
 		...dates,
 		dimensions: [ 'newVsReturning' ],
 		metrics: [ { name: 'activeUsers' } ],
+		reportID: 'analytics-4_returning-visitors-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(
@@ -79,9 +81,11 @@ function ReturningVisitorsWidget( { Widget } ) {
 
 	const { rows = [], totals = [] } = report || {};
 
-	const makeFind = ( dateRange ) => ( row ) =>
-		get( row, 'dimensionValues.0.value' ) === 'returning' &&
-		get( row, 'dimensionValues.1.value' ) === dateRange;
+	function makeFind( dateRange ) {
+		return ( row ) =>
+			get( row, 'dimensionValues.0.value' ) === 'returning' &&
+			get( row, 'dimensionValues.1.value' ) === dateRange;
+	}
 
 	const returning =
 		rows.find( makeFind( 'date_range_0' ) )?.metricValues?.[ 0 ]?.value ||
@@ -129,6 +133,6 @@ ReturningVisitorsWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( ReturningVisitorsWidget );

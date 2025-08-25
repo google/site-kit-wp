@@ -28,6 +28,7 @@ import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
@@ -75,7 +76,7 @@ export const EnhancedMeasurementSwitch = Template.bind( null );
 EnhancedMeasurementSwitch.storyName = 'With enhanced measurement switch';
 EnhancedMeasurementSwitch.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetEnhancedMeasurementSettings(
@@ -85,7 +86,7 @@ EnhancedMeasurementSwitch.decorators = [
 						webDataStreamID,
 					}
 				);
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -95,32 +96,32 @@ EnhancedMeasurementSwitch.decorators = [
 	},
 ];
 
-export const WithFirstPartyModeAvailable = Template.bind( null );
-WithFirstPartyModeAvailable.storyName = 'With first party mode available';
-WithFirstPartyModeAvailable.parameters = {
-	features: [ 'firstPartyMode' ],
+export const WithGoogleTagGatewayAvailable = Template.bind( null );
+WithGoogleTagGatewayAvailable.storyName = 'With Google tag gateway available';
+WithGoogleTagGatewayAvailable.parameters = {
+	features: [ 'googleTagGateway' ],
 };
-WithFirstPartyModeAvailable.decorators = [
+WithGoogleTagGatewayAvailable.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			const fpmServerRequirementsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+		function setupRegistry( registry ) {
+			const gtgServerRequirementsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
 
-			const fpmSettings = {
+			const gtgSettings = {
 				isEnabled: true,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			};
 
-			fetchMock.get( fpmServerRequirementsEndpoint, {
-				body: fpmSettings,
+			fetchMock.get( gtgServerRequirementsEndpoint, {
+				body: gtgSettings,
 			} );
 
 			registry
 				.dispatch( CORE_SITE )
-				.receiveGetFirstPartyModeSettings( fpmSettings );
-		};
+				.receiveGetGoogleTagGatewaySettings( gtgSettings );
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -129,34 +130,35 @@ WithFirstPartyModeAvailable.decorators = [
 		);
 	},
 ];
-WithFirstPartyModeAvailable.scenario = {};
+WithGoogleTagGatewayAvailable.scenario = {};
 
-export const WithFirstPartyModeUnavailable = Template.bind( null );
-WithFirstPartyModeUnavailable.storyName = 'With first party mode unavailable';
-WithFirstPartyModeUnavailable.parameters = {
-	features: [ 'firstPartyMode' ],
+export const WithGoogleTagGatewayUnavailable = Template.bind( null );
+WithGoogleTagGatewayUnavailable.storyName =
+	'With Google tag gateway unavailable';
+WithGoogleTagGatewayUnavailable.parameters = {
+	features: [ 'googleTagGateway' ],
 };
-WithFirstPartyModeUnavailable.decorators = [
+WithGoogleTagGatewayUnavailable.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			const fpmServerRequirementsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+		function setupRegistry( registry ) {
+			const gtgServerRequirementsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
 
-			const fpmSettings = {
+			const gtgSettings = {
 				isEnabled: true,
-				isFPMHealthy: false,
+				isGTGHealthy: false,
 				isScriptAccessEnabled: false,
 			};
 
-			fetchMock.get( fpmServerRequirementsEndpoint, {
-				body: fpmSettings,
+			fetchMock.get( gtgServerRequirementsEndpoint, {
+				body: gtgSettings,
 			} );
 
 			registry
 				.dispatch( CORE_SITE )
-				.receiveGetFirstPartyModeSettings( fpmSettings );
-		};
+				.receiveGetGoogleTagGatewaySettings( gtgSettings );
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -165,7 +167,7 @@ WithFirstPartyModeUnavailable.decorators = [
 		);
 	},
 ];
-WithFirstPartyModeUnavailable.scenario = {};
+WithGoogleTagGatewayUnavailable.scenario = {};
 
 export const WithoutModuleAccess = Template.bind( null );
 WithoutModuleAccess.storyName = 'Without module access';
@@ -186,14 +188,14 @@ export const WebDataStreamNotAvailable = Template.bind( null );
 WebDataStreamNotAvailable.storyName = 'Web data stream not available';
 WebDataStreamNotAvailable.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams(
 				{},
 				{
 					propertyID,
 				}
 			);
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -208,11 +210,11 @@ WithExistingTagMatch.storyName =
 	'With existing tag matching the measurement ID';
 WithExistingTagMatch.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetExistingTag( measurementID );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -227,11 +229,11 @@ WithExistingTagNoMatch.storyName =
 	'With existing tag not matching the measurement ID';
 WithExistingTagNoMatch.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetExistingTag( 'G-123456789' );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -246,7 +248,7 @@ IceEnabled.storyName = 'With ICE Enabled';
 IceEnabled.scenario = {};
 IceEnabled.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			global._googlesitekitDashboardSharingData = {
 				settings: {},
 				roles: [],
@@ -254,7 +256,7 @@ IceEnabled.decorators = [
 
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: true,
 					connected: true,
 					owner: { login: 'analytics_4-owner-username' },
@@ -292,7 +294,7 @@ IceEnabled.decorators = [
 						webDataStreamID,
 					}
 				);
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -306,7 +308,7 @@ export default {
 	title: 'Modules/Analytics4/Settings/SettingsEdit',
 	decorators: [
 		( Story, { parameters } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				global._googlesitekitDashboardSharingData = {
 					settings: {},
 					roles: [],
@@ -314,7 +316,7 @@ export default {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 						owner: { login: 'analytics_4-owner-username' },
@@ -354,7 +356,7 @@ export default {
 							webDataStreamID,
 						}
 					);
-			};
+			}
 
 			return (
 				<WithRegistrySetup

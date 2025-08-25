@@ -43,6 +43,7 @@ import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../googlesitekit/constants';
 import AudienceCreationNotice from './AudienceCreationNotice';
 
@@ -72,7 +73,7 @@ describe( 'AudienceCreationNotice', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideModuleRegistrations( registry );
@@ -91,6 +92,10 @@ describe( 'AudienceCreationNotice', () => {
 	} );
 
 	it( 'should render null if no audiences are available', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAudienceSettings( {} );
+
 		const { container } = render( <AudienceCreationNotice />, {
 			registry,
 		} );
@@ -100,12 +105,15 @@ describe( 'AudienceCreationNotice', () => {
 
 	it( 'should render null if the user has dismissed the notice', async () => {
 		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAudienceSettings( {} );
+
+		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [ AUDIENCE_CREATION_NOTICE_SLUG ] );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 
@@ -113,7 +121,8 @@ describe( 'AudienceCreationNotice', () => {
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: '12345',
@@ -135,9 +144,8 @@ describe( 'AudienceCreationNotice', () => {
 	} );
 
 	it( 'should render the notice if the user has not dismissed the notice and there are 2 available audiences', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 
@@ -145,7 +153,8 @@ describe( 'AudienceCreationNotice', () => {
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: '12345',
@@ -184,9 +193,8 @@ describe( 'AudienceCreationNotice', () => {
 	} );
 
 	it( 'should render the notice if the user has not dismissed the notice and there is 1 available audience', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 
@@ -194,7 +202,8 @@ describe( 'AudienceCreationNotice', () => {
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: '12345',
@@ -255,9 +264,8 @@ describe( 'AudienceCreationNotice', () => {
 				didSetAudiences: true,
 			} );
 
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveResourceDataAvailabilityDates( {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+				resourceAvailabilityDates: {
 					audience: availableAudiences.reduce( ( acc, { name } ) => {
 						acc[ name ] = 20201220;
 
@@ -265,7 +273,8 @@ describe( 'AudienceCreationNotice', () => {
 					}, {} ),
 					customDimension: {},
 					property: {},
-				} );
+				},
+			} );
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 				accountID: '12345',
@@ -310,9 +319,8 @@ describe( 'AudienceCreationNotice', () => {
 			grantedScopes: [],
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 
@@ -320,7 +328,8 @@ describe( 'AudienceCreationNotice', () => {
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: '12345',
@@ -363,9 +372,8 @@ describe( 'AudienceCreationNotice', () => {
 			grantedScopes: [],
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 
@@ -373,7 +381,8 @@ describe( 'AudienceCreationNotice', () => {
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: '12345',
@@ -416,9 +425,8 @@ describe( 'AudienceCreationNotice', () => {
 				AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG,
 			] );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 
@@ -426,7 +434,8 @@ describe( 'AudienceCreationNotice', () => {
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: '12345',

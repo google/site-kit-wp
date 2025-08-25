@@ -43,7 +43,7 @@ import {
 	registryCheckSetupTag,
 } from './checks';
 
-const createCompatibilityChecks = ( registry ) => {
+function createCompatibilityChecks( registry ) {
 	if ( registry.select( CORE_SITE ).isConnected() ) {
 		return [];
 	}
@@ -54,7 +54,7 @@ const createCompatibilityChecks = ( registry ) => {
 		registryCheckSetupTag( registry ),
 		checkAMPConnectivity,
 	];
-};
+}
 
 export default function CompatibilityChecks( { children, ...props } ) {
 	const registry = useRegistry();
@@ -63,7 +63,7 @@ export default function CompatibilityChecks( { children, ...props } ) {
 	);
 
 	const ctaFeedback = error && (
-		<Grid alignLeft className="googlesitekit-setup-compat">
+		<Grid className="googlesitekit-setup-compat" alignLeft>
 			<div className="googlesitekit-setup__warning">
 				<Warning />
 

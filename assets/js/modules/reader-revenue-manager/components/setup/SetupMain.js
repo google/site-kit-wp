@@ -44,6 +44,8 @@ import { ProgressBar } from 'googlesitekit-components';
 import { PublicationCreate } from '../common';
 import ReaderRevenueManagerIcon from '../../../../../svg/graphics/reader-revenue-manager.svg';
 import SetupForm from './SetupForm';
+import Typography from '../../../../components/Typography';
+import useFormValue from '../../../../hooks/useFormValue';
 
 export default function SetupMain( { finishSetup = () => {} } ) {
 	const publications = useSelect( ( select ) =>
@@ -54,17 +56,13 @@ export default function SetupMain( { finishSetup = () => {} } ) {
 			'getPublications'
 		)
 	);
-	const publicationCreateShown = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			READER_REVENUE_MANAGER_SETUP_FORM,
-			SHOW_PUBLICATION_CREATE
-		)
+	const publicationCreateShown = useFormValue(
+		READER_REVENUE_MANAGER_SETUP_FORM,
+		SHOW_PUBLICATION_CREATE
 	);
-	const shouldResetPublications = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			READER_REVENUE_MANAGER_SETUP_FORM,
-			RESET_PUBLICATIONS
-		)
+	const shouldResetPublications = useFormValue(
+		READER_REVENUE_MANAGER_SETUP_FORM,
+		RESET_PUBLICATIONS
 	);
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
@@ -152,13 +150,18 @@ export default function SetupMain( { finishSetup = () => {} } ) {
 					<ReaderRevenueManagerIcon width="40" height="40" />
 				</div>
 
-				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+				<Typography
+					as="h3"
+					className="googlesitekit-setup-module__title"
+					size="small"
+					type="headline"
+				>
 					{ _x(
 						'Reader Revenue Manager',
 						'Service name',
 						'google-site-kit'
 					) }
-				</h2>
+				</Typography>
 			</div>
 
 			<div className="googlesitekit-setup-module__step">

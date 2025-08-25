@@ -27,6 +27,7 @@ import {
 import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
 import { KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT } from '../../../../googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -42,10 +43,10 @@ Default.storyName = 'ConnectAdSenseCTATileWidget';
 Default.args = {
 	keyMetricsWidgets: {
 		[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
-			modules: [ 'adsense' ],
+			modules: [ MODULE_SLUG_ADSENSE ],
 		},
 		secondAdSenseWidget: {
-			modules: [ 'adsense' ],
+			modules: [ MODULE_SLUG_ADSENSE ],
 		},
 	},
 };
@@ -56,7 +57,7 @@ WithSingleWidget.storyName = 'ConnectAdSenseCTATileWidget (for single widget)';
 WithSingleWidget.args = {
 	keyMetricsWidgets: {
 		[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
-			modules: [ 'adsense' ],
+			modules: [ MODULE_SLUG_ADSENSE ],
 		},
 	},
 };
@@ -66,10 +67,10 @@ export default {
 	title: 'Key Metrics/ConnectAdSenseCTATileWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 						active: false,
 						connected: false,
 					},
@@ -79,7 +80,7 @@ export default {
 					registry,
 					args?.keyMetricsWidgets
 				);
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

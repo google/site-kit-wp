@@ -22,14 +22,12 @@
 import {
 	provideModuleRegistrations,
 	provideSiteInfo,
-	WithTestRegistry,
 } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { Grid, Row, Cell } from '../../../../material-components';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
-} from '../../datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import { publications } from '../../datastore/__fixtures__';
 import SettingsView from './SettingsView';
 
@@ -97,7 +95,7 @@ WithoutModuleAccess.args = {
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
-				{ slug: READER_REVENUE_MANAGER_MODULE_SLUG }
+				{ slug: MODULE_SLUG_READER_REVENUE_MANAGER }
 			);
 
 		registry
@@ -112,7 +110,7 @@ export default {
 	component: SettingsView,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry, {
 					postTypes: [
 						{ slug: 'post', label: 'Posts' },
@@ -122,7 +120,7 @@ export default {
 
 				provideModuleRegistrations( registry, [
 					{
-						slug: 'reader-revenue-manager',
+						slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 						active: true,
 						connected: true,
 					},
@@ -148,12 +146,12 @@ export default {
 				if ( args?.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
-				<WithTestRegistry callback={ setupRegistry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

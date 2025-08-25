@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
+
 /**
  * External dependencies
  */
@@ -51,10 +53,10 @@ const WAIT_FOR_REAUTH_RESOLVERS = 'WAIT_FOR_REAUTH_RESOLVERS';
  * @param {boolean} [args.requiresSetup] Optional. Store flag, for requires setup. Default is 'true'.
  * @return {Object} The info store object.
  */
-export const createInfoStore = (
+export function createInfoStore(
 	slug,
 	{ storeName = undefined, requiresSetup = true } = {}
-) => {
+) {
 	invariant( storeName, 'storeName is required.' );
 
 	const initialState = {};
@@ -79,9 +81,9 @@ export const createInfoStore = (
 			}
 		),
 	};
-	const reducer = ( state ) => {
+	function reducer( state ) {
 		return state;
-	};
+	}
 	const resolvers = {
 		*getAdminReauthURL() {
 			yield {
@@ -163,4 +165,4 @@ export const createInfoStore = (
 		resolvers,
 		selectors,
 	};
-};
+}

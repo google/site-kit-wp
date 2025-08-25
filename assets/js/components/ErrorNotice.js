@@ -24,25 +24,27 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
+import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
 import { isPermissionScopeError, isErrorRetryable } from '../util/errors';
-import ErrorText from './ErrorText';
+import Notice from './Notice';
+import { sanitizeHTML } from '../util';
 
 export default function ErrorNotice( {
+	className,
 	error,
 	hasButton = false,
 	storeName,
 	message = error.message,
 	noPrefix = false,
 	skipRetryMessage,
-	Icon,
+	hideIcon = false,
 } ) {
 	const dispatch = useDispatch();
 
@@ -61,49 +63,100 @@ export default function ErrorNotice( {
 		);
 	}, [ dispatch, selectorData ] );
 
-	// Do not display if there is no error, or if the error is for missing scopes.
-	if ( ! error || isPermissionScopeError( error ) ) {
+	// Do not display if there is no error and no direct message text is passed as a direct prop.
+	// Also do not display if the error is for missing scopes as these are handled by a popup modal.
+	if ( ! message || isPermissionScopeError( error ) ) {
 		return null;
 	}
 
 	const shouldDisplayRetry =
 		hasButton && isErrorRetryable( error, selectorData );
 
+	/**
+	 * Error message to display to the user. Sometimes we append a retry message
+	 * or a reconnect URL, so we create a new variable for the message to display.
+	 */
+	let errorMessageWithModifications = message;
+
 	// Append "Try again" messaging if no retry button is present.
 	if ( ! hasButton && ! skipRetryMessage ) {
-		message = sprintf(
-			/* translators: %1$s: Error message from Google API. */
-			__( '%1$s%2$s Please try again.', 'google-site-kit' ),
-			message,
-			message.endsWith( '.' ) ? '' : '.'
+		errorMessageWithModifications = sprintf(
+			/* translators: %s: Error message from Google API. */
+			__( '%s (Please try again.)', 'google-site-kit' ),
+			errorMessageWithModifications
 		);
 	}
 
+	if ( ! noPrefix ) {
+		errorMessageWithModifications = sprintf(
+			/* translators: $%s: Error message */
+			__( 'Error: %s', 'google-site-kit' ),
+			errorMessageWithModifications
+		);
+	}
+
+	const reconnectURL = error?.data?.reconnectURL;
+
+	if ( reconnectURL && isURL( reconnectURL ) ) {
+		/**
+		 * This error message uses HTML tags without using
+		 * `createInterpolateElement` because the error messages
+		 * that come from the server/API can also contain HTML (eg. links)
+		 * we want to render.
+		 *
+		 * Instead of creating a React node using `createInterpolateElement`,
+		 * we use `dangerouslySetInnerHTML` to allow the HTML we create and from
+		 * the server/API to be rendered as-intended.
+		 */
+		errorMessageWithModifications = sprintf(
+			/* translators: 1: Original error message 2: Reconnect URL */
+			__(
+				'%1$s To fix this, <a href="%2$s">redo the plugin setup</a>.',
+				'google-site-kit'
+			),
+			errorMessageWithModifications,
+			reconnectURL
+		);
+	}
+
+	const sanitizeArgs = {
+		ALLOWED_TAGS: [ 'a' ],
+		ALLOWED_ATTR: [ 'href' ],
+	};
+
 	return (
-		<Fragment>
-			{ Icon && (
-				<div className="googlesitekit-error-notice__icon">
-					<Icon width="24" height="24" />
-				</div>
-			) }
-			<ErrorText
-				message={ message }
-				reconnectURL={ error.data?.reconnectURL }
-				noPrefix={ noPrefix }
-			/>
-			{ shouldDisplayRetry && (
-				<Button
-					className="googlesitekit-error-notice__retry-button"
-					onClick={ handleRetry }
-				>
-					{ __( 'Retry', 'google-site-kit' ) }
-				</Button>
-			) }
-		</Fragment>
+		<Notice
+			className={ className }
+			type={ Notice.TYPES.ERROR }
+			description={
+				// The error messages that come from the server/API can contain
+				// HTML (eg. links), so we use `dangerouslySetInnerHTML` and sanitize
+				// the HTML to render these links.
+				//
+				// We tried to use `createInterpolateElement` but it does not work
+				// with HTML tags that come from the server/API.
+				<span
+					dangerouslySetInnerHTML={ sanitizeHTML(
+						errorMessageWithModifications,
+						sanitizeArgs
+					) }
+				/>
+			}
+			ctaButton={
+				shouldDisplayRetry
+					? {
+							label: __( 'Retry', 'google-site-kit' ),
+							onClick: handleRetry,
+					  }
+					: undefined
+			}
+			hideIcon={ hideIcon }
+		/>
 	);
 }
 
 ErrorNotice.propTypes = {
+	className: PropTypes.string,
 	error: PropTypes.shape( {
 		message: PropTypes.string,
 	} ),
@@ -112,5 +165,5 @@ ErrorNotice.propTypes = {
 	message: PropTypes.string,
 	noPrefix: PropTypes.bool,
 	skipRetryMessage: PropTypes.bool,
-	Icon: PropTypes.elementType,
+	hideIcon: PropTypes.bool,
 };

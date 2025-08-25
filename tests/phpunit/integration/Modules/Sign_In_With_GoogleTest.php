@@ -8,6 +8,8 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
@@ -39,21 +41,24 @@ class Sign_In_With_GoogleTest extends TestCase {
 	 *
 	 * @var array
 	 */
-	private $server_data;
+	private static $server_data = array();
+
+	public static function set_up_before_class() {
+		parent::set_up_before_class();
+
+		self::$server_data = $_SERVER;
+	}
 
 	public function set_up() {
 		parent::set_up();
 
-		// Store the original $_SERVER data.
-		$this->server_data = $_SERVER;
-		$this->module      = new Sign_In_With_Google( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
+		$this->module = new Sign_In_With_Google( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
 	}
 
 	public function tear_down() {
 		parent::tear_down();
 
-		// Restore the original $_SERVER data.
-		$_SERVER = $this->server_data;
+		$_SERVER = self::$server_data;
 	}
 
 	public function test_magic_methods() {
@@ -62,92 +67,6 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEquals( 'https://developers.google.com/identity/gsi/web/guides/overview', $this->module->homepage );
 		$this->assertEquals( 'Improve user engagement, trust and data privacy, while creating a simple, secure and personalized experience for your visitors', $this->module->description );
 		$this->assertEquals( 10, $this->module->order );
-	}
-
-	public function test_render_signinwithgoogle() {
-		$reset_site_url = site_url();
-		update_option( 'home', 'http://example.com/' );
-		update_option( 'siteurl', 'http://example.com/' );
-		remove_action( 'wp_footer', 'the_block_template_skip_link' );
-
-		$this->module->register();
-		$this->module->get_settings()->register();
-
-		// Does not render the if the site is not https.
-		$this->module->get_settings()->set( array( 'clientID' => '1234567890.googleusercontent.com' ) );
-		$output = $this->capture_action( 'wp_footer' );
-		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output );
-
-		// Update site URL to https.
-		$_SERVER['HTTPS']       = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
-		$_SERVER['SCRIPT_NAME'] = wp_login_url(); // Required because is_login() uses this var.
-		update_option( 'siteurl', 'https://example.com/' );
-		update_option( 'home', 'https://example.com/' );
-
-		// Does not render if clientID is not set.
-		$this->module->get_settings()->set( array( 'clientID' => '' ) );
-		$output = $this->capture_action( 'wp_footer' );
-		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output );
-
-		$this->module->get_settings()->set( array( 'clientID' => null ) );
-		$output = $this->capture_action( 'wp_footer' );
-		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output );
-
-		// Renders the button with the correct clientID and redirect_uri.
-		$this->module->get_settings()->set(
-			array(
-				'clientID' => '1234567890.googleusercontent.com',
-				'text'     => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
-				'theme'    => Sign_In_With_Google_Settings::THEME_LIGHT['value'],
-				'shape'    => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'],
-			)
-		);
-
-		// Render the button.
-		$output = $this->capture_action( 'wp_footer' );
-
-		// Check the rendered button contains the expected data.
-		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
-
-		$this->assertStringContainsString( "client_id:'1234567890.googleusercontent.com'", $output );
-		$this->assertStringContainsString( "fetch('https://example.com/wp-login.php?action=googlesitekit_auth'", $output );
-
-		$this->assertStringContainsString( sprintf( '"text":"%s"', Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'] ), $output );
-		$this->assertStringContainsString( sprintf( '"theme":"%s"', Sign_In_With_Google_Settings::THEME_LIGHT['value'] ), $output );
-		$this->assertStringContainsString( sprintf( '"shape":"%s"', Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'] ), $output );
-
-		// The Sign in with Google JS should always render, even on the front
-		// page.
-		$_SERVER['SCRIPT_NAME'] = '/index.php';
-		$output                 = $this->capture_action( 'wp_footer' );
-
-		// The button shouldn't be rendered on a non-login page.
-		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
-
-		// Enable the Sign in with Google One Tap on all pages.
-		$this->module->get_settings()->set(
-			array(
-				'clientID'         => '1234567890.googleusercontent.com',
-				'text'             => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
-				'theme'            => Sign_In_With_Google_Settings::THEME_LIGHT['value'],
-				'shape'            => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'],
-				'oneTapEnabled'    => true,
-				'oneTapOnAllPages' => true,
-			)
-		);
-
-		// Now the button should be rendered on a non-login page.
-		$output = $this->capture_action( 'wp_footer' );
-
-		// Check the rendered button contains the expected data.
-		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
-
-		// Revert home and siteurl and https value.
-		update_option( 'home', $reset_site_url );
-		update_option( 'siteurl', $reset_site_url );
-		unset( $_SERVER['HTTPS'] );
-		unset( $_SERVER['SCRIPT_NAME'] );
-		add_action( 'wp_footer', 'the_block_template_skip_link' );
 	}
 
 	public function test_render_signinwithgoogle__woocommerce_active() {
@@ -175,7 +94,6 @@ class Sign_In_With_GoogleTest extends TestCase {
 	}
 
 	public function test_render_button_in_wp_login_form() {
-		$reset_site_url = site_url();
 		update_option( 'home', 'http://example.com/' );
 		update_option( 'siteurl', 'http://example.com/' );
 
@@ -372,5 +290,35 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertOptionNotExists( Existing_Client_ID::OPTION );
 		$this->module->on_deactivation();
 		$this->assertEquals( 'test_client_id.apps.googleusercontent.com', get_option( Existing_Client_ID::OPTION ) );
+	}
+
+	public function test_inline_data_has_woocommerce() {
+		$this->module->register();
+		$this->module->get_settings()->register();
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals( false, $inline_modules_data['sign-in-with-google']['isWooCommerceActive'] );
+		$this->assertEquals( false, $inline_modules_data['sign-in-with-google']['isWooCommerceRegistrationEnabled'] );
+	}
+
+	public function test_inline_data_with_no_existing_client_id() {
+		$this->module->register();
+		$this->module->get_settings()->register();
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertArrayNotHasKey( 'existingClientID', $inline_modules_data['sign-in-with-google'] );
+	}
+
+	public function test_inline_data_with_existing_client_id() {
+		$this->module->register();
+		$this->module->get_settings()->register();
+
+		update_option( Existing_Client_ID::OPTION, 'test_client_id.apps.googleusercontent.com' );
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals( 'test_client_id.apps.googleusercontent.com', $inline_modules_data['sign-in-with-google']['existingClientID'] );
 	}
 }

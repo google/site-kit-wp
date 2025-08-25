@@ -48,13 +48,13 @@ import Header from './Header';
 import useAudienceTilesReports from '../../../../../hooks/useAudienceTilesReports';
 import { isInvalidCustomDimensionError } from '../../../../../utils/custom-dimensions';
 
-const hasZeroDataForAudience = ( report, dimensionName ) => {
+function hasZeroDataForAudience( report, dimensionName ) {
 	const audienceData = report?.rows?.find(
 		( row ) => row.dimensionValues?.[ 0 ]?.value === dimensionName
 	);
 	const totalUsers = audienceData?.metricValues?.[ 0 ]?.value || 0;
 	return totalUsers === 0;
-};
+}
 
 export default function AudienceTiles( { Widget, widgetLoading } ) {
 	const breakpoint = useBreakpoint();
@@ -86,11 +86,11 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		siteKitAudiencesReportError,
 		totalPageviewsReportLoaded,
 		totalPageviewsReportError,
-		topCitiesReportLoaded,
+		topCitiesReportsLoaded,
 		topCitiesReportErrors,
-		topContentReportLoaded,
+		topContentReportsLoaded,
 		topContentReportErrors,
-		topContentPageTitlesReportLoaded,
+		topContentPageTitlesReportsLoaded,
 		topContentPageTitlesReportErrors,
 	} = useAudienceTilesReports( {
 		isSiteKitAudiencePartialData,
@@ -272,9 +272,9 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		! reportLoaded ||
 		! siteKitAudiencesReportLoaded ||
 		! totalPageviewsReportLoaded ||
-		! topCitiesReportLoaded ||
-		! topContentReportLoaded ||
-		! topContentPageTitlesReportLoaded ||
+		! topCitiesReportsLoaded ||
+		! topContentReportsLoaded ||
+		! topContentPageTitlesReportsLoaded ||
 		isSyncingAvailableCustomDimensions;
 
 	return (
@@ -294,6 +294,11 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 				allTilesError={ allTilesError }
 				individualTileErrors={ individualTileErrors }
 				loading={ loading }
+				topCitiesReportsLoaded={ topCitiesReportsLoaded }
+				topContentReportsLoaded={ topContentReportsLoaded }
+				topContentPageTitlesReportsLoaded={
+					topContentPageTitlesReportsLoaded
+				}
 				visibleAudiences={ visibleAudiences }
 				Widget={ Widget }
 			/>

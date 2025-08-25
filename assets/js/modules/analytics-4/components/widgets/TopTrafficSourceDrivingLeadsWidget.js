@@ -40,6 +40,7 @@ import {
 	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { numFmt } from '../../../../util';
 import { get } from 'lodash';
 import whenActive from '../../../../util/when-active';
@@ -102,6 +103,8 @@ function TopTrafficSourceDrivingLeadsWidget( { Widget } ) {
 				value: eventNames,
 			},
 		},
+		reportID:
+			'analytics-4_top-traffic-source-driving-leads-widget_widget_totalLeadsReportOptions',
 	};
 
 	const trafficSourceReportOptions = {
@@ -120,6 +123,8 @@ function TopTrafficSourceDrivingLeadsWidget( { Widget } ) {
 		],
 		limit: 1,
 		orderBy: 'eventCount',
+		reportID:
+			'analytics-4_top-traffic-source-driving-leads-widget_widget_trafficSourceReportOptions',
 	};
 
 	const totalLeadsReport = useInViewSelect(
@@ -175,14 +180,14 @@ function TopTrafficSourceDrivingLeadsWidget( { Widget } ) {
 		);
 	} );
 
-	const makeFilter = ( dateRange, dimensionIndex ) => {
+	function makeFilter( dateRange, dimensionIndex ) {
 		return ( row ) => {
 			return (
 				get( row, `dimensionValues.${ dimensionIndex }.value` ) ===
 				dateRange
 			);
 		};
-	};
+	}
 
 	// Prevents running a filter on `report.rows` which could be undefined.
 	const { rows: totalLeadsReportRows = [] } = totalLeadsReport || {};
@@ -292,6 +297,6 @@ TopTrafficSourceDrivingLeadsWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( TopTrafficSourceDrivingLeadsWidget );

@@ -21,6 +21,7 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { MODULES_ADSENSE } from './constants';
+import { MODULE_SLUG_ADSENSE } from '../constants';
 import { ACCOUNT_STATUS_APPROVED, SITE_STATUS_ADDED } from '../util/status';
 import {
 	createTestRegistry,
@@ -130,7 +131,7 @@ describe( 'modules/adsense settings', () => {
 
 				const cacheKey = createCacheKey(
 					'modules',
-					'adsense',
+					MODULE_SLUG_ADSENSE,
 					'arbitrary-datapoint'
 				);
 				expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );

@@ -61,6 +61,7 @@ export default function PopularKeywordsWidget( { Widget } ) {
 		...dates,
 		dimensions: 'query',
 		limit: 100,
+		reportID: 'search-console_popular-keywords-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(
@@ -135,7 +136,7 @@ export default function PopularKeywordsWidget( { Widget } ) {
 		},
 	];
 
-	const rows = ( report || [] ).sort(
+	const rows = [ ...( report || [] ) ].sort(
 		( { ctr: ctrA = 0 }, { ctr: ctrB = 0 } ) => ctrB - ctrA
 	);
 

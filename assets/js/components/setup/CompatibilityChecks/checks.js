@@ -43,7 +43,7 @@ const invalidIPRanges = [
 ];
 // Check for a known non-public/reserved domain.
 // eslint-disable-next-line require-await
-export const checkHostname = async () => {
+export async function checkHostname() {
 	const { hostname, port } = global.location;
 
 	if ( port ) {
@@ -59,16 +59,20 @@ export const checkHostname = async () => {
 	} else if ( ! hostname.includes( '.' ) || hostname.match( invalidTLDs ) ) {
 		throw ERROR_INVALID_HOSTNAME;
 	}
-};
+}
 // Check for a Site Kit specific meta tag on the page to test for aggressive caching.
-export const registryCheckSetupTag = ( registry ) => async () => {
-	const setupTag = await registry.dispatch( CORE_SITE ).checkForSetupTag();
-	if ( setupTag.error ) {
-		throw ERROR_TOKEN_MISMATCH;
-	}
-};
+export function registryCheckSetupTag( registry ) {
+	return async () => {
+		const setupTag = await registry
+			.dispatch( CORE_SITE )
+			.checkForSetupTag();
+		if ( setupTag.error ) {
+			throw ERROR_TOKEN_MISMATCH;
+		}
+	};
+}
 // Check that server can connect to Google's APIs via the core/site/data/health-checks endpoint.
-export const checkHealthChecks = async () => {
+export async function checkHealthChecks() {
 	const response = await get( 'core', 'site', 'health-checks', undefined, {
 		useCache: false,
 	} ).catch( ( error ) => {
@@ -85,9 +89,9 @@ export const checkHealthChecks = async () => {
 	if ( ! response?.checks?.skService?.pass ) {
 		throw ERROR_SK_SERVICE_CONNECTION_FAIL;
 	}
-};
+}
 // Check that client can connect to AMP Project.
-export const checkAMPConnectivity = async () => {
+export async function checkAMPConnectivity() {
 	const response = await fetch( AMP_PROJECT_TEST_URL ).catch( () => {
 		throw ERROR_AMP_CDN_RESTRICTED;
 	} );
@@ -95,4 +99,4 @@ export const checkAMPConnectivity = async () => {
 	if ( ! response.ok ) {
 		throw ERROR_AMP_CDN_RESTRICTED;
 	}
-};
+}

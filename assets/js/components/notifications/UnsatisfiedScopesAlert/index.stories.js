@@ -27,6 +27,7 @@ import {
 import { withNotificationComponentProps } from '../../../googlesitekit/notifications/util/component-props';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import UnsatisfiedScopesAlert from '.';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'gathering-data-notification'
@@ -43,7 +44,7 @@ export const ModuleSetupInProgress = Template.bind( {} );
 ModuleSetupInProgress.storyName = 'Module setup in progress';
 ModuleSetupInProgress.args = {
 	setupRegistry: () => {
-		setItem( 'module_setup', 'analytics-4' );
+		setItem( 'module_setup', MODULE_SLUG_ANALYTICS_4 );
 	},
 };
 
@@ -51,7 +52,7 @@ export default {
 	title: 'Components/Notifications/Errors/UnsatisfiedScopesAlert',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry );
 				provideUserAuthentication( registry, {
 					unsatisfiedScopes: [
@@ -64,7 +65,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

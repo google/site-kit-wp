@@ -26,22 +26,29 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { AccountSelect, ErrorNotices } from '../common';
+import Typography from '../../../../components/Typography';
+import P from '../../../../components/Typography/P';
 
 export default function SetupSelectAccount() {
 	return (
 		<Fragment>
-			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
+			<Typography
+				as="h3"
+				type="title"
+				size="large"
+				className="googlesitekit-setup-module__title"
+			>
 				{ __( 'Select your AdSense account', 'google-site-kit' ) }
-			</h3>
+			</Typography>
 
 			<ErrorNotices />
 
-			<p>
+			<P>
 				{ __(
 					'Looks like you have multiple AdSense accounts associated with your Google account. Select the account to use with Site Kit below.',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />

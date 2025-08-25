@@ -48,9 +48,10 @@ import {
 import Link from '../Link';
 import LoadingWrapper from '../LoadingWrapper';
 import ChevronDownIcon from '../../../svg/icons/chevron-down.svg';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import UserInputPreviewAnswers from './UserInputPreviewAnswers';
 import UserInputEditModeContent from './UserInputEditModeContent';
+import useFormValue from '../../hooks/useFormValue';
+import P from '../Typography/P';
 
 export default function UserInputPreviewGroup( {
 	slug,
@@ -76,11 +77,9 @@ export default function UserInputPreviewGroup( {
 			userInputSettings
 		);
 	} );
-	const savedPurposeAnswer = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_USER_INPUT_QUESTION_SNAPSHOT,
-			USER_INPUT_QUESTIONS_PURPOSE
-		)
+	const savedPurposeAnswer = useFormValue(
+		FORM_USER_INPUT_QUESTION_SNAPSHOT,
+		USER_INPUT_QUESTIONS_PURPOSE
 	);
 	const previousPurposeAnswer = usePrevious( savedPurposeAnswer );
 
@@ -176,7 +175,7 @@ export default function UserInputPreviewGroup( {
 				) }
 			>
 				<LoadingWrapper loading={ loading } width="340px" height="21px">
-					<p>{ title }</p>
+					<P>{ title }</P>
 				</LoadingWrapper>
 				<LoadingWrapper
 					loading={ loading }
@@ -185,17 +184,17 @@ export default function UserInputPreviewGroup( {
 					height="26px"
 				>
 					<Link
-						secondary
 						onClick={ handleOnEditClick }
 						ref={ editButtonRef }
 						disabled={
 							isScreenLoading ||
 							( !! currentlyEditingSlug && ! isEditing )
 						}
-						linkButton
 						trailingIcon={
 							<ChevronDownIcon width={ 20 } height={ 20 } />
 						}
+						secondary
+						linkButton
 					>
 						{ isEditing && __( 'Close', 'google-site-kit' ) }
 						{ ! isEditing && __( 'Edit', 'google-site-kit' ) }
@@ -210,7 +209,7 @@ export default function UserInputPreviewGroup( {
 							<Subtitle />
 						</div>
 					) }
-					{ ! Subtitle && <p>{ subtitle }</p> }
+					{ ! Subtitle && <P>{ subtitle }</P> }
 				</div>
 			</LoadingWrapper>
 

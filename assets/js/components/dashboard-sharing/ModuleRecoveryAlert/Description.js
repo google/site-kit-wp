@@ -22,15 +22,14 @@
 import { sprintf, __ } from '@wordpress/i18n';
 
 /**
- * Internal dependencies
+ * Internal dependencies.
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { default as CommonDescription } from '../../../googlesitekit/notifications/components/common/Description';
-import LearnMoreLink from '../../../googlesitekit/notifications/components/common/LearnMoreLink';
+import P from '../../Typography/P';
+import LearnMoreLink from '../../Banner/LearnMoreLink';
 
 export default function Description( {
-	id,
 	recoverableModules,
 	userRecoverableModuleSlugs,
 	hasUserRecoverableModules,
@@ -42,55 +41,53 @@ export default function Description( {
 		);
 	} );
 
-	const getText = () => {
-		if ( ! hasMultipleRecoverableModules && hasUserRecoverableModules ) {
-			return sprintf(
-				/* translators: %s: module name. */
-				__(
-					'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
-					'google-site-kit'
-				),
-				recoverableModules[ userRecoverableModuleSlugs[ 0 ] ]?.name
-			);
-		}
-		if ( hasMultipleRecoverableModules && hasUserRecoverableModules ) {
-			return __(
-				'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
-				'google-site-kit'
-			);
-		}
-		if (
-			! hasMultipleRecoverableModules &&
-			! hasUserRecoverableModules &&
-			recoverableModules
-		) {
-			return sprintf(
-				/* translators: %s: module name. */
-				__(
-					'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
-					'google-site-kit'
-				),
-				Object.values( recoverableModules )[ 0 ]?.name
-			);
-		}
-		if ( hasMultipleRecoverableModules && ! hasUserRecoverableModules ) {
-			return __(
-				'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
-				'google-site-kit'
-			);
-		}
-	};
+	let descriptionContent;
 
-	return (
-		<CommonDescription
-			text={ getText() }
-			learnMoreLink={
+	if ( ! hasMultipleRecoverableModules && hasUserRecoverableModules ) {
+		descriptionContent = sprintf(
+			/* translators: %s: module name. */
+			__(
+				'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
+				'google-site-kit'
+			),
+			recoverableModules[ userRecoverableModuleSlugs[ 0 ] ]?.name
+		);
+	} else if ( hasMultipleRecoverableModules && hasUserRecoverableModules ) {
+		descriptionContent = __(
+			'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, you may recover the module as the new owner.',
+			'google-site-kit'
+		);
+	} else if (
+		! hasMultipleRecoverableModules &&
+		! hasUserRecoverableModules &&
+		recoverableModules
+	) {
+		descriptionContent = sprintf(
+			/* translators: %s: module name. */
+			__(
+				'%s data was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
+				'google-site-kit'
+			),
+			Object.values( recoverableModules )[ 0 ]?.name
+		);
+	} else if ( hasMultipleRecoverableModules && ! hasUserRecoverableModules ) {
+		descriptionContent = __(
+			'The data for the following modules was previously shared with other users on the site by another admin who no longer has access. To restore access, the module must be recovered by another admin who has access.',
+			'google-site-kit'
+		);
+	}
+
+	if ( descriptionContent ) {
+		return (
+			<P>
+				{ descriptionContent }{ ' ' }
 				<LearnMoreLink
-					id={ id }
 					label={ __( 'Learn more', 'google-site-kit' ) }
-					url={ documentationURL }
+					href={ documentationURL }
 				/>
-			}
-		/>
-	);
+			</P>
+		);
+	}
+
+	return null;
 }

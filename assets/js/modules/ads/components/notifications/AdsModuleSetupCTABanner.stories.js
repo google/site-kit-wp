@@ -26,6 +26,7 @@ import {
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ADS } from '../../constants';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -59,10 +60,10 @@ export default {
 	title: 'Modules/Ads/Components/Dashboard/AdsModuleSetupCTABanner',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'ads',
+						slug: MODULE_SLUG_ADS,
 						active: false,
 					},
 				] );
@@ -72,7 +73,7 @@ export default {
 					.finishResolution( 'getDismissedPrompts', [] );
 
 				args?.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

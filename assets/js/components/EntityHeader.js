@@ -36,6 +36,7 @@ import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import BackspaceIcon from '../../svg/icons/keyboard-backspace.svg';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import Link from './Link';
+import P from './Typography/P';
 import { shortenURL } from '../util/urls';
 import { trackEvent } from '../util';
 import useDashboardType, {
@@ -57,7 +58,7 @@ function EntityHeader() {
 	const [ url, setURL ] = useState( entityURL );
 
 	useEffect( () => {
-		const shortenEntityURL = () => {
+		function shortenEntityURL() {
 			if ( ! headerDetailsRef.current ) {
 				return;
 			}
@@ -75,7 +76,7 @@ function EntityHeader() {
 			const maxChars = ( availableWidth * 2 ) / fontSize;
 
 			setURL( shortenURL( entityURL, maxChars ) );
-		};
+		}
 
 		// Use throttled version only on window resize.
 		const throttledShortenURL = throttle( shortenEntityURL, 100 );
@@ -128,11 +129,11 @@ function EntityHeader() {
 				ref={ headerDetailsRef }
 				className="googlesitekit-entity-header__details"
 			>
-				<p>{ currentEntityTitle }</p>
+				<P>{ currentEntityTitle }</P>
 				<Link
-					secondary
 					href={ entityURL }
 					aria-label={ entityURL }
+					secondary
 					external
 				>
 					{ url }

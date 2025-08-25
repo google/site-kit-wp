@@ -34,13 +34,13 @@ import {
 } from '../user-input/util/constants';
 
 function Template( args ) {
-	const handleDialog = () => {};
+	function handleDialog() {}
 
 	return (
 		<ConfirmSitePurposeChangeModal
-			dialogActive
 			handleDialog={ handleDialog }
 			{ ...args }
+			dialogActive
 		/>
 	);
 }
@@ -53,7 +53,7 @@ export default {
 	title: 'Key Metrics/Key Metrics Confirm Site Purpose Change Modal',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( CORE_FORMS )
 					.setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
@@ -70,7 +70,7 @@ export default {
 					.dispatch( CORE_USER )
 					.setUserInputSetting( 'purpose', [ 'sell_products' ] );
 				provideSiteInfo( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

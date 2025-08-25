@@ -7,6 +7,8 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 
 namespace Google\Site_Kit\Tests\Core\Modules;
 
@@ -28,6 +30,14 @@ use WP_REST_Request;
 class REST_Modules_ControllerTest extends TestCase {
 
 	use RestTestTrait;
+
+	/**
+	 * Authentication object.
+	 *
+	 * @since 1.159.0
+	 * @var Authentication
+	 */
+	private $authentication;
 
 	/**
 	 * Plugin context.
@@ -75,11 +85,12 @@ class REST_Modules_ControllerTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options      = new Options( $this->context );
-		$this->user_options = new User_Options( $this->context, $user_id );
-		$this->modules      = new Modules( $this->context, $this->options, $this->user_options );
-		$this->controller   = new REST_Modules_Controller( $this->modules );
+		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->options        = new Options( $this->context );
+		$this->user_options   = new User_Options( $this->context, $user_id );
+		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );
+		$this->modules        = new Modules( $this->context, $this->options, $this->user_options );
+		$this->controller     = new REST_Modules_Controller( $this->modules );
 
 		wp_set_current_user( $user_id );
 	}
@@ -461,6 +472,10 @@ class REST_Modules_ControllerTest extends TestCase {
 				'webDataStreamID' => '987654321',
 				'measurementID'   => 'G-123',
 			)
+		);
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$analytics->get_scopes()
 		);
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
@@ -932,6 +947,10 @@ class REST_Modules_ControllerTest extends TestCase {
 			),
 		);
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$analytics_4->get_scopes()
+		);
 
 		// Make analytics-4 service requests accessible
 		FakeHttp::fake_google_http_handler( $analytics_4->get_client() );

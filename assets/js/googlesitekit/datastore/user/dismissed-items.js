@@ -160,7 +160,7 @@ const baseActions = {
 				'All slugs must be strings.'
 			);
 		},
-		function ( ...slugs ) {
+		( ...slugs ) => {
 			return fetchRemoveDismissedItemsStore.actions.fetchRemoveDismissedItems(
 				slugs
 			);
@@ -174,21 +174,18 @@ const baseActions = {
 	},
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case 'SET_IS_ITEM_DISMISSING':
+		case 'SET_IS_ITEM_DISMISSING': {
 			const { slug, isDismissing } = payload;
-			return {
-				...state,
-				isDismissingItems: {
-					[ slug ]: isDismissing,
-				},
-			};
-		default: {
-			return state;
+			state.isDismissingItems = { [ slug ]: isDismissing };
+			break;
 		}
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getDismissedItems() {

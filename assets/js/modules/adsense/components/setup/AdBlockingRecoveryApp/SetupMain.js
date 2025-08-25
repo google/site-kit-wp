@@ -28,6 +28,7 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import Link from '../../../../../components/Link';
 import PageHeader from '../../../../../components/PageHeader';
+import P from '../../../../../components/Typography/P';
 import Stepper from '../../../../../components/Stepper';
 import Step from '../../../../../components/Stepper/Step';
 import Layout from '../../../../../components/layout/Layout';
@@ -46,6 +47,7 @@ import {
 import Content from './Content';
 import CreateMessageStep from './steps/CreateMessageStep';
 import PlaceTagsStep from './steps/PlaceTagsStep';
+import { MODULE_SLUG_ADSENSE } from '../../../constants';
 
 export default function SetupMain() {
 	const viewContext = useViewContext();
@@ -53,7 +55,10 @@ export default function SetupMain() {
 	const settingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
-	const adSenseSettingsURL = `${ settingsURL }#/connected-services/adsense`;
+
+	const adSenseSettingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getModuleSettingsURL( MODULE_SLUG_ADSENSE )
+	);
 	const createMessageCTAClicked = useSelect(
 		( select ) =>
 			!! select( CORE_UI ).getValue(
@@ -213,18 +218,18 @@ export default function SetupMain() {
 				{ ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.COMPLETE ===
 					activeStep && (
 					<div className="googlesitekit-ad-blocking-recovery__complete-content">
-						<p>
+						<P>
 							{ __(
 								'Create and publish an ad blocking recovery message in AdSense',
 								'google-site-kit'
 							) }
-						</p>
-						<p>
+						</P>
+						<P>
 							{ __(
 								'Site visitors will be given the option to allow ads on your site. You can also present them with other options to fund your site (optional)',
 								'google-site-kit'
 							) }
-						</p>
+						</P>
 					</div>
 				) }
 			</Content>

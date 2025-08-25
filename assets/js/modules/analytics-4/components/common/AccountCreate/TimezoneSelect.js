@@ -26,18 +26,15 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Option, Select } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import { timeZonesByCountryCode } from '../../../utils/countries-timezones';
 import { FORM_ACCOUNT_CREATE } from '../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import useFormValue from '../../../../../hooks/useFormValue';
 
 export default function TimezoneSelect() {
-	const countryCode = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'countryCode' )
-	);
-	const value = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'timezone' )
-	);
+	const countryCode = useFormValue( FORM_ACCOUNT_CREATE, 'countryCode' );
+	const value = useFormValue( FORM_ACCOUNT_CREATE, 'timezone' );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onEnhancedChange = useCallback(

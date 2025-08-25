@@ -46,6 +46,7 @@ import Header from './Header';
 import LearnMoreLink from './LearnMoreLink';
 import SelectionPanel from '../../../../../../components/SelectionPanel';
 import AudienceCreationSuccessNotice from './AudienceCreationSuccessNotice';
+import useFormValue from '../../../../../../hooks/useFormValue';
 
 export default function Panel() {
 	const viewContext = useViewContext();
@@ -73,8 +74,9 @@ export default function Panel() {
 			.map( ( { name } ) => name );
 	} );
 
-	const isCreatingAudienceFromOAuth = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( AUDIENCE_CREATION_FORM, 'autoSubmit' )
+	const isCreatingAudienceFromOAuth = useFormValue(
+		AUDIENCE_CREATION_FORM,
+		'autoSubmit'
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );

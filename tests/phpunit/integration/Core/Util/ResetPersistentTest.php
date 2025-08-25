@@ -21,15 +21,15 @@ class ResetPersistentTest extends TestCase {
 
 	public function test_all() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->assertFalse( $context->is_network_mode() );
+		$this->assertFalse( $context->is_network_mode(), 'Context should not be in network mode by default.' );
 		update_option( 'googlesitekitpersistentkeep', 'keep' );
 		update_option( 'googlesitekitpersistent-keep', 'keep' );
 
 		$this->run_reset( $context );
 
 		// Ensure options that don't start with googlesitekitpersistent_ are not deleted.
-		$this->assertEquals( 'keep', get_option( 'googlesitekitpersistentkeep' ) );
-		$this->assertEquals( 'keep', get_option( 'googlesitekitpersistent-keep' ) );
+		$this->assertEquals( 'keep', get_option( 'googlesitekitpersistentkeep', 'Option without persistent prefix should be kept.' ), 'Option without persistent prefix should be kept.' );
+		$this->assertEquals( 'keep', get_option( 'googlesitekitpersistent-keep', 'Option with dash instead of underscore should be kept.' ), 'Option with dash instead of underscore should be kept.' );
 	}
 
 	/**
@@ -42,14 +42,14 @@ class ResetPersistentTest extends TestCase {
 		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
 
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->assertTrue( $context->is_network_mode() );
+		$this->assertTrue( $context->is_network_mode(), 'Context should be in network mode when filter is enabled.' );
 
 		$this->run_reset( $context );
 	}
 
 	protected function run_reset( Context $context ) {
 		wp_load_alloptions();
-		$this->assertNotFalse( wp_cache_get( 'alloptions', 'options' ) );
+		$this->assertNotFalse( wp_cache_get( 'alloptions', 'options' ), 'Options cache should be loaded.' );
 		$reset           = new Reset_Persistent( $context );
 		$user_id         = $this->factory()->user->create();
 		$is_network_mode = $context->is_network_mode();
@@ -69,18 +69,18 @@ class ResetPersistentTest extends TestCase {
 		$reset->all();
 
 		// Ensure options cache is flushed (must check before accessing other options as this will re-prime the cache)
-		$this->assertFalse( wp_cache_get( 'alloptions', 'options' ) );
+		$this->assertFalse( wp_cache_get( 'alloptions', 'options' ), 'Options cache should be flushed after reset.' );
 
 		if ( $is_network_mode ) {
 			remove_all_filters( "default_site_option_$option_name" );
-			$this->assertFalse( get_network_option( null, $option_name ) );
-			$this->assertFalse( metadata_exists( 'user', $user_id, $option_name ) );
-			$this->assertFalse( get_site_transient( $transient_key ) );
+			$this->assertFalse( get_network_option( null, $option_name ), 'Network option should be deleted after reset.' );
+			$this->assertFalse( metadata_exists( 'user', $user_id, $option_name ), 'User meta should be deleted after reset.' );
+			$this->assertFalse( get_site_transient( $transient_key ), 'Site transient should be deleted after reset.' );
 		} else {
 			remove_all_filters( "default_option_$option_name" );
-			$this->assertFalse( get_option( $option_name ) );
-			$this->assertFalse( get_user_option( $option_name, $user_id ) );
-			$this->assertFalse( get_transient( $transient_key ) );
+			$this->assertFalse( get_option( $option_name ), 'Option should be deleted after reset.' );
+			$this->assertFalse( get_user_option( $option_name, $user_id ), 'User option should be deleted after reset.' );
+			$this->assertFalse( get_transient( $transient_key ), 'Transient should be deleted after reset.' );
 		}
 	}
 }

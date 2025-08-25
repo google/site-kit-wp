@@ -36,6 +36,7 @@ import {
 } from '../common';
 import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
 import Link from '../../../../components/Link';
+import P from '../../../../components/Typography/P';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
@@ -118,7 +119,7 @@ export default function SettingsForm() {
 			{ webStoriesActive && (
 				<Fragment>
 					<WebStoriesAdUnitSelect />
-					<p>
+					<P>
 						{ createInterpolateElement(
 							__(
 								'This ad unit will be used for your Web Stories. <LearnMoreLink />',
@@ -128,11 +129,11 @@ export default function SettingsForm() {
 								LearnMoreLink: (
 									<Link
 										href={ supportURL }
-										external
 										aria-label={ __(
 											'Learn more about Ad Sense Web Stories.',
 											'google-site-kit'
 										) }
+										external
 									>
 										{ __(
 											'Learn more',
@@ -142,16 +143,14 @@ export default function SettingsForm() {
 								),
 							}
 						) }
-					</p>
+					</P>
 				</Fragment>
 			) }
 
 			<AutoAdExclusionSwitches />
 
-			<Fragment>
-				<AdBlockingRecoverySetupCTANotice />
-				<AdBlockingRecoveryToggle />
-			</Fragment>
+			<AdBlockingRecoverySetupCTANotice />
+			<AdBlockingRecoveryToggle />
 		</div>
 	);
 }

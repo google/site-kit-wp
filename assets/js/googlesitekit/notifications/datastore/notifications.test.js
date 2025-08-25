@@ -24,12 +24,9 @@ import {
 	provideNotifications,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { render } from '../../../../../tests/js/test-utils';
-import {
-	CORE_NOTIFICATIONS,
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-} from './constants';
+import { render, waitFor } from '../../../../../tests/js/test-utils';
+import { CORE_NOTIFICATIONS } from './constants';
+import { NOTIFICATION_GROUPS, NOTIFICATION_AREAS } from '../constants';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -47,16 +44,53 @@ describe( 'core/notifications Notifications', () => {
 
 	let registry;
 	let store;
+	let insertNotificationIntoResolvedQueue;
 	let registerNotification;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_NOTIFICATIONS ].store;
-		( { registerNotification } = registry.dispatch( CORE_NOTIFICATIONS ) );
+		( { insertNotificationIntoResolvedQueue, registerNotification } =
+			registry.dispatch( CORE_NOTIFICATIONS ) );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );
 
 	describe( 'actions', () => {
+		describe( 'insertNotificationIntoResolvedQueue', () => {
+			const id = 'test-notification-id';
+			function TestNotificationComponent( props ) {
+				return <div>Hello { props.children }!</div>;
+			}
+
+			it( 'should not try to insert an unregistered notification', () => {
+				insertNotificationIntoResolvedQueue( id );
+
+				const { queuedNotifications } = store.getState();
+
+				expect( console ).toHaveWarnedWith(
+					'Could not add notification with ID "test-notification-id" to queue. Notification "test-notification-id" is not registered.'
+				);
+				expect( queuedNotifications ).toEqual( {} );
+			} );
+
+			it( 'should not try to insert a notification into an unresolved queue', () => {
+				// Register the notification so it can be added.
+				registerNotification( id, {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 11,
+					isDismissible: false,
+				} );
+
+				insertNotificationIntoResolvedQueue( id );
+
+				const { queuedNotifications } = store.getState();
+
+				expect( queuedNotifications ).toEqual( {} );
+			} );
+		} );
+
 		describe( 'registerNotification', () => {
 			const id = 'test-notification-id';
 			function TestNotificationComponent( props ) {
@@ -82,7 +116,7 @@ describe( 'core/notifications Notifications', () => {
 				expect( () =>
 					registerNotification( id, {
 						Component: TestNotificationComponent,
-						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						areaSlug: NOTIFICATION_AREAS.HEADER,
 						viewContexts: [ 'some-random-view-context' ],
 					} )
 				).toThrow( 'Notification view context should be one of:' );
@@ -91,7 +125,7 @@ describe( 'core/notifications Notifications', () => {
 			it( 'should register the notification with the given settings and component', () => {
 				registerNotification( id, {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					priority: 11,
 					checkRequirements: () => true,
@@ -104,7 +138,7 @@ describe( 'core/notifications Notifications', () => {
 					TestNotificationComponent
 				);
 				expect( notifications[ id ].areaSlug ).toBe(
-					NOTIFICATION_AREAS.BANNERS_ABOVE_NAV
+					NOTIFICATION_AREAS.HEADER
 				);
 				expect( notifications[ id ].viewContexts ).toEqual( [
 					VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -130,13 +164,13 @@ describe( 'core/notifications Notifications', () => {
 				}
 				registerNotification( id, {
 					Component: NotificationOne,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 				} );
 
 				registerNotification( id, {
 					Component: NotificationOneRedone,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 				} );
 				expect( console ).toHaveWarnedWith(
@@ -147,6 +181,407 @@ describe( 'core/notifications Notifications', () => {
 				expect( store.getState().notifications[ id ].Component ).toBe(
 					NotificationOne
 				);
+			} );
+
+			it( 'should add the notification to the queue if the queue is already resolved', async () => {
+				fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+
+				const { getQueuedNotifications } =
+					registry.select( CORE_NOTIFICATIONS );
+
+				getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
+
+				expect(
+					getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.DEFAULT
+					)
+				).toEqual( [] );
+
+				registerNotification( id, {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 11,
+					checkRequirements: () => true,
+					isDismissible: false,
+				} );
+
+				insertNotificationIntoResolvedQueue( id );
+
+				expect(
+					getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.DEFAULT
+					)
+				).toMatchInlineSnapshot( `
+			[
+			  {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-header",
+			    "checkRequirements": [Function],
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "test-notification-id",
+			    "isDismissible": false,
+			    "priority": 11,
+			    "viewContexts": [
+			      "mainDashboard",
+			    ],
+			  },
+			]
+		` );
+			} );
+
+			it( 'should place the notification at the end of the queue if it is the lowest priority', async () => {
+				fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+
+				registerNotification( 'first', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 5,
+					isDismissible: false,
+				} );
+
+				registerNotification( 'second', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 10,
+					isDismissible: false,
+				} );
+
+				const { getQueuedNotifications } =
+					registry.select( CORE_NOTIFICATIONS );
+
+				getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
+
+				registerNotification( id, {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 20,
+					isDismissible: false,
+				} );
+
+				// Wait for the queue to be updated by the `registerNotification`
+				// action.
+				await waitFor( () => {
+					expect(
+						getQueuedNotifications(
+							VIEW_CONTEXT_MAIN_DASHBOARD,
+							NOTIFICATION_GROUPS.DEFAULT
+						)
+					).toHaveLength( 3 );
+				} );
+
+				expect(
+					getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.DEFAULT
+					)
+				).toMatchInlineSnapshot( `
+			[
+			  {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-header",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "first",
+			    "isDismissible": false,
+			    "priority": 5,
+			    "viewContexts": [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			  {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-header",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "second",
+			    "isDismissible": false,
+			    "priority": 10,
+			    "viewContexts": [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			  {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-header",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "test-notification-id",
+			    "isDismissible": false,
+			    "priority": 20,
+			    "viewContexts": [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			]
+		` );
+			} );
+
+			it( 'should place the notification in between two notifications of lower/higher priority', async () => {
+				fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+
+				registerNotification( 'first', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 5,
+					isDismissible: false,
+				} );
+
+				registerNotification( 'second', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 10,
+					isDismissible: false,
+				} );
+
+				const { getQueuedNotifications } =
+					registry.select( CORE_NOTIFICATIONS );
+
+				getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
+
+				registerNotification( 'in-between', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 6,
+					isDismissible: false,
+				} );
+
+				// Wait for the queue to be updated by the `registerNotification`
+				// action.
+				await waitFor( () => {
+					expect(
+						getQueuedNotifications(
+							VIEW_CONTEXT_MAIN_DASHBOARD,
+							NOTIFICATION_GROUPS.DEFAULT
+						)
+					).toHaveLength( 3 );
+				} );
+
+				expect(
+					getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.DEFAULT
+					)
+				).toMatchInlineSnapshot( `
+			[
+			  {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-header",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "first",
+			    "isDismissible": false,
+			    "priority": 5,
+			    "viewContexts": [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			  {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-header",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "in-between",
+			    "isDismissible": false,
+			    "priority": 6,
+			    "viewContexts": [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			  {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-header",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "second",
+			    "isDismissible": false,
+			    "priority": 10,
+			    "viewContexts": [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			]
+		` );
+			} );
+
+			it( 'should place the notification in the front of the queue when it has the highest priority', async () => {
+				fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+
+				registerNotification( 'first', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 5,
+					isDismissible: false,
+				} );
+
+				registerNotification( 'second', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 10,
+					isDismissible: false,
+				} );
+
+				const { getQueuedNotifications } =
+					registry.select( CORE_NOTIFICATIONS );
+
+				getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.DEFAULT
+				);
+
+				registerNotification( 'in-between', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 1,
+					isDismissible: false,
+				} );
+
+				// Wait for the queue to be updated by the `registerNotification`
+				// action.
+				await waitFor( () => {
+					expect(
+						getQueuedNotifications(
+							VIEW_CONTEXT_MAIN_DASHBOARD,
+							NOTIFICATION_GROUPS.DEFAULT
+						)
+					).toHaveLength( 3 );
+				} );
+
+				expect(
+					getQueuedNotifications(
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						NOTIFICATION_GROUPS.DEFAULT
+					)
+				).toMatchInlineSnapshot( `
+			[
+			  {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-header",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "in-between",
+			    "isDismissible": false,
+			    "priority": 1,
+			    "viewContexts": [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			  {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-header",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "first",
+			    "isDismissible": false,
+			    "priority": 5,
+			    "viewContexts": [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			  {
+			    "Component": [Function],
+			    "areaSlug": "notification-area-header",
+			    "check": [Function],
+			    "checkRequirements": undefined,
+			    "dismissRetries": 0,
+			    "featureFlag": "",
+			    "groupID": "default",
+			    "id": "second",
+			    "isDismissible": false,
+			    "priority": 10,
+			    "viewContexts": [
+			      "mainDashboard",
+			    ],
+			    "viewCount": 0,
+			  },
+			]
+		` );
 			} );
 		} );
 
@@ -164,13 +599,13 @@ describe( 'core/notifications Notifications', () => {
 				}
 				registerNotification( 'test-notification-id', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					isDismissible: true,
 				} );
 				registerNotification( 'test-undismissible-notification-id', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					isDismissible: false,
 				} );
@@ -236,7 +671,7 @@ describe( 'core/notifications Notifications', () => {
 				// dismissNotification checks for a registered notification's isDismissible property.
 				registerNotification( 'test-notification', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					isDismissible: true,
 				} );
@@ -304,7 +739,7 @@ describe( 'core/notifications Notifications', () => {
 				// dismissNotification checks for a registered notification's isDismissible property.
 				registerNotification( 'not-dismissible-notification', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					isDismissible: false,
 				} );
@@ -323,7 +758,7 @@ describe( 'core/notifications Notifications', () => {
 				// dismissNotification checks for a registered notification's isDismissible property.
 				registerNotification( 'dismissible-notification', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					isDismissible: true,
 				} );
@@ -425,13 +860,13 @@ describe( 'core/notifications Notifications', () => {
 				registry.dispatch( CORE_USER ).setReferenceDate( '2025-04-29' );
 				registerNotification( 'notification-1', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					isDismissible: true,
 				} );
 				registerNotification( 'notification-2', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					isDismissible: true,
 				} );
@@ -471,7 +906,7 @@ describe( 'core/notifications Notifications', () => {
 			it( 'should return an array of dates for seen notifications', async () => {
 				registerNotification( 'notification-1', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					isDismissible: true,
 				} );
@@ -522,17 +957,17 @@ describe( 'core/notifications Notifications', () => {
 			it( 'should return registered notifications for a given viewContext', async () => {
 				registerNotification( 'test-notification-1', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 				} );
 				registerNotification( 'test-notification-2', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_ENTITY_DASHBOARD ],
 				} );
 				registerNotification( 'test-notification-3', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [
 						VIEW_CONTEXT_ENTITY_DASHBOARD,
 						VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -554,26 +989,26 @@ describe( 'core/notifications Notifications', () => {
 			it( 'should return registered and grouped notifications by their groupID', async () => {
 				registerNotification( 'default-1', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					priority: 10,
 				} );
 				registerNotification( 'setup-cta-1', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 					priority: 20,
 				} );
 				registerNotification( 'default-2', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					priority: 10,
 				} );
 				registerNotification( 'setup-cta-2', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 					priority: 20,
@@ -610,7 +1045,7 @@ describe( 'core/notifications Notifications', () => {
 
 				registerNotification( 'check-requirements-true', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					checkRequirements: ( { select } ) =>
 						select( TEST_STORE ).testActiveNotification(),
@@ -618,7 +1053,7 @@ describe( 'core/notifications Notifications', () => {
 
 				registerNotification( 'check-requirements-false', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					checkRequirements: ( { select } ) =>
 						select( TEST_STORE ).testInactiveNotification(),
@@ -626,7 +1061,7 @@ describe( 'core/notifications Notifications', () => {
 
 				registerNotification( 'check-requirements-errored-false', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					checkRequirements: ( { select } ) =>
 						select( TEST_STORE ).testErroredInactiveNotification(),
@@ -634,7 +1069,7 @@ describe( 'core/notifications Notifications', () => {
 
 				registerNotification( 'check-requirements-undefined', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 				} );
 
@@ -653,28 +1088,28 @@ describe( 'core/notifications Notifications', () => {
 			it( 'should return registered notifications filtered by their dismissal status when specified', async () => {
 				registerNotification( 'is-dismissible-true-and-dismissed', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					isDismissible: true,
 				} );
 
 				registerNotification( 'is-dismissible-true-but-not-dismissed', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					isDismissible: true,
 				} );
 
 				registerNotification( 'is-dismissible-false', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					isDismissible: false,
 				} );
 
 				registerNotification( 'is-dismissible-undefined', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 				} );
 
@@ -700,25 +1135,25 @@ describe( 'core/notifications Notifications', () => {
 			it( 'should return registered notifications ordered by priority', async () => {
 				registerNotification( 'medium-2-priority', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					priority: 25,
 				} );
 				registerNotification( 'lowest-priority', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					priority: 30,
 				} );
 				registerNotification( 'medium-1-priority', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 					priority: 20,
 				} );
 				registerNotification( 'highest-priority', {
 					Component: TestNotificationComponent,
-					areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 				} );
 
@@ -785,7 +1220,7 @@ describe( 'core/notifications Notifications', () => {
 						{
 							id: 'test-notification-using-prompts',
 							Component: () => {},
-							areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+							areaSlug: NOTIFICATION_AREAS.HEADER,
 							viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 							priority: 11,
 							checkRequirements: () => true,
@@ -807,7 +1242,7 @@ describe( 'core/notifications Notifications', () => {
 						{
 							id: 'test-notification-using-prompts',
 							Component: () => {},
-							areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+							areaSlug: NOTIFICATION_AREAS.HEADER,
 							viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 							priority: 11,
 							checkRequirements: () => true,
@@ -880,7 +1315,7 @@ describe( 'core/notifications Notifications', () => {
 					{
 						id: 'test-notification',
 						Component: () => {},
-						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						areaSlug: NOTIFICATION_AREAS.HEADER,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						dismissRetries: 1,
 					},
@@ -898,7 +1333,7 @@ describe( 'core/notifications Notifications', () => {
 					{
 						id: 'test-notification',
 						Component: () => {},
-						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						areaSlug: NOTIFICATION_AREAS.HEADER,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						isDismissible: true,
 					},
@@ -914,7 +1349,7 @@ describe( 'core/notifications Notifications', () => {
 					{
 						id: 'test-notification',
 						Component: () => {},
-						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						areaSlug: NOTIFICATION_AREAS.HEADER,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						isDismissible: true,
 						dismissRetries: 2,
@@ -939,7 +1374,7 @@ describe( 'core/notifications Notifications', () => {
 					{
 						id: 'test-notification',
 						Component: () => {},
-						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						areaSlug: NOTIFICATION_AREAS.HEADER,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						isDismissible: true,
 						dismissRetries: 1,
@@ -956,7 +1391,7 @@ describe( 'core/notifications Notifications', () => {
 					{
 						id: 'test-notification',
 						Component: () => {},
-						areaSlug: NOTIFICATION_AREAS.BANNERS_ABOVE_NAV,
+						areaSlug: NOTIFICATION_AREAS.HEADER,
 						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 						isDismissible: true,
 						dismissRetries: 2,

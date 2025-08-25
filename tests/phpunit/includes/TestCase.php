@@ -8,6 +8,8 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 namespace Google\Site_Kit\Tests;
 
 use Closure;
@@ -78,6 +80,14 @@ class TestCase extends WP_UnitTestCase {
 		parent::tear_down();
 		// Clear screen related globals.
 		unset( $GLOBALS['current_screen'], $GLOBALS['taxnow'], $GLOBALS['typenow'] );
+
+		// Clean up scripts and styles hooks to avoid interference between tests.
+		wp_scripts()->registered = array();
+		wp_scripts()->queue      = array();
+		wp_scripts()->done       = array();
+		wp_styles()->registered  = array();
+		wp_styles()->queue       = array();
+		wp_styles()->done        = array();
 	}
 
 	/**

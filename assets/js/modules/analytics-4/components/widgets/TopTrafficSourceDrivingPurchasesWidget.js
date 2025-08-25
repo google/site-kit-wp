@@ -39,6 +39,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { numFmt } from '../../../../util';
 import { get } from 'lodash';
 import whenActive from '../../../../util/when-active';
@@ -64,6 +65,8 @@ function TopTrafficSourceDrivingPurchasesWidget( { Widget } ) {
 				name: 'ecommercePurchases',
 			},
 		],
+		reportID:
+			'analytics-4_top-traffic-source-driving-purchases-widget_widget_totalPurchasesReportOptions',
 	};
 
 	const trafficSourceReportOptions = {
@@ -76,6 +79,8 @@ function TopTrafficSourceDrivingPurchasesWidget( { Widget } ) {
 		],
 		limit: 1,
 		orderBy: 'ecommercePurchases',
+		reportID:
+			'analytics-4_top-traffic-source-driving-purchases-widget_widget_trafficSourceReportOptions',
 	};
 
 	const totalPurchasesReport = useInViewSelect(
@@ -140,8 +145,11 @@ function TopTrafficSourceDrivingPurchasesWidget( { Widget } ) {
 			: undefined
 	);
 
-	const makeFilter = ( dateRange, dimensionIndex ) => ( row ) =>
-		get( row, `dimensionValues.${ dimensionIndex }.value` ) === dateRange;
+	function makeFilter( dateRange, dimensionIndex ) {
+		return ( row ) =>
+			get( row, `dimensionValues.${ dimensionIndex }.value` ) ===
+			dateRange;
+	}
 
 	// Prevents running a filter on `report.rows` which could be undefined.
 	const { rows: totalPurchasesReportRows = [] } = totalPurchasesReport || {};
@@ -221,6 +229,6 @@ TopTrafficSourceDrivingPurchasesWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( TopTrafficSourceDrivingPurchasesWidget );

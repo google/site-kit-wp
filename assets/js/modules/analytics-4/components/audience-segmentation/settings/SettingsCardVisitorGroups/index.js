@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -28,13 +28,19 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { Cell, Grid, Row } from '../../../../../../material-components';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../../util';
 import Layout from '../../../../../../components/layout/Layout';
 import SetupCTA from './SetupCTA';
-import SetupSuccess from './SetupSuccess';
+import SetupSuccess, {
+	SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION,
+} from './SetupSuccess';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import { getNavigationalScrollTop } from '@/js/util/scroll';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 
 export default function SettingsCardVisitorGroups() {
 	const viewContext = useViewContext();
@@ -47,6 +53,12 @@ export default function SettingsCardVisitorGroups() {
 	);
 	const audienceSegmentationSetupCompletedBy = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAudienceSegmentationSetupCompletedBy()
+	);
+
+	const showSetupSuccess = useSelect( ( select ) =>
+		select( CORE_UI ).getValue(
+			SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION
+		)
 	);
 
 	const { setAudienceSegmentationWidgetHidden, saveUserAudienceSettings } =
@@ -72,6 +84,23 @@ export default function SettingsCardVisitorGroups() {
 		viewContext,
 	] );
 
+	const [ scrollTo ] = useQueryArg( 'scrollTo' );
+
+	const breakpoint = useBreakpoint();
+
+	useEffect( () => {
+		if ( scrollTo !== 'visitor-groups' ) {
+			return;
+		}
+
+		setTimeout( () => {
+			global.scrollTo( {
+				top: getNavigationalScrollTop( '#visitor-groups', breakpoint ),
+				behavior: 'smooth',
+			} );
+		}, 50 );
+	}, [ scrollTo, breakpoint ] );
+
 	if (
 		configuredAudiences === undefined ||
 		audienceSegmentationSetupCompletedBy === undefined
@@ -90,14 +119,17 @@ export default function SettingsCardVisitorGroups() {
 			fill
 			rounded
 		>
-			<div className="googlesitekit-settings-module googlesitekit-settings-module--active">
+			<div
+				id="visitor-groups"
+				className="googlesitekit-settings-module googlesitekit-settings-module--active"
+			>
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
 							{ showSetupCTA && <SetupCTA /> }
 							{ ! showSetupCTA && (
 								<Fragment>
-									<SetupSuccess />
+									{ showSetupSuccess && <SetupSuccess /> }
 									<Switch
 										label={ __(
 											'Display visitor groups in dashboard',

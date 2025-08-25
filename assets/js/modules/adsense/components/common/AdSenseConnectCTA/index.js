@@ -40,6 +40,7 @@ import {
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../../constants';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
@@ -48,6 +49,7 @@ import { setItem } from '../../../../../googlesitekit/api/cache';
 import { trackEvent } from '../../../../../util';
 import ContentAutoUpdate from './ContentAutoUpdate';
 import SupportLink from '../../../../../components/SupportLink';
+import P from '../../../../../components/Typography/P';
 import useViewContext from '../../../../../hooks/useViewContext';
 
 export default function AdSenseConnectCTA( { onDismissModule } ) {
@@ -74,15 +76,15 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 		select( MODULES_ADSENSE ).getAdminReauthURL()
 	);
 	const adSenseModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'adsense' )
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ADSENSE )
 	);
 	const adSenseModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'adsense' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE )
 	);
 
 	const isConnectingAdSense = useSelect( ( select ) => {
 		const isFetching = select( CORE_MODULES ).isFetchingSetModuleActivation(
-			'adsense',
+			MODULE_SLUG_ADSENSE,
 			true
 		);
 
@@ -98,7 +100,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 	} );
 
 	const handleConnect = useCallback( async () => {
-		const { response, error } = await activateModule( 'adsense' );
+		const { response, error } = await activateModule( MODULE_SLUG_ADSENSE );
 
 		if ( error ) {
 			setInternalServerError( {
@@ -111,10 +113,10 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 		await trackEvent(
 			`${ viewContext }_adsense-cta-widget`,
 			'activate_module',
-			'adsense'
+			MODULE_SLUG_ADSENSE
 		);
 
-		await setItem( 'module_setup', 'adsense', { ttl: 300 } );
+		await setItem( 'module_setup', MODULE_SLUG_ADSENSE, { ttl: 300 } );
 
 		navigateTo( response.moduleReauthURL );
 	}, [ activateModule, navigateTo, setInternalServerError, viewContext ] );
@@ -149,6 +151,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 								<SpinnerButton
 									onClick={ handleConnect }
 									isSaving={ isConnectingAdSense }
+									disabled={ isConnectingAdSense }
 								>
 									{ __( 'Connect now', 'google-site-kit' ) }
 								</SpinnerButton>
@@ -166,7 +169,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 								</SpinnerButton>
 							) }
 
-							<Button tertiary onClick={ handleDismissModule }>
+							<Button onClick={ handleDismissModule } tertiary>
 								{ __( 'Maybe later', 'google-site-kit' ) }
 							</Button>
 						</div>
@@ -175,7 +178,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 						{ ...cellProps }
 						className="googlesitekit-setup-module__footer-text"
 					>
-						<p>
+						<P>
 							{ createInterpolateElement(
 								__(
 									'AdSense accounts are <a>subject to review and approval</a> by the Google AdSense team',
@@ -191,7 +194,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 									),
 								}
 							) }
-						</p>
+						</P>
 					</Cell>
 				</Row>
 			</Grid>

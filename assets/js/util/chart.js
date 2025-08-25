@@ -36,7 +36,7 @@ import ChangeArrow from '../components/ChangeArrow';
  * @param {boolean} [options.invertColor] Whether we need to reverse the +/- colors of the arrow.
  * @return {string} SVG for the +/- difference.
  */
-export const getChartDifferenceArrow = ( difference, options = {} ) => {
+export function getChartDifferenceArrow( difference, options = {} ) {
 	if ( Number.isNaN( Number( difference ) ) ) {
 		return '';
 	}
@@ -48,7 +48,7 @@ export const getChartDifferenceArrow = ( difference, options = {} ) => {
 			invertColor={ invertColor }
 		/>
 	);
-};
+}
 
 /**
  * Checks if there is a single row of data or one row is contributing 100% of the total for a given dimension.
@@ -58,7 +58,7 @@ export const getChartDifferenceArrow = ( difference, options = {} ) => {
  * @param {Array.<Object>} report An array of report data objects.
  * @return {(boolean|undefined)} Returns undefined if report is undefined, true/false for the above conditions.
  */
-export const isSingleSlice = ( report ) => {
+export function isSingleSlice( report ) {
 	if ( report === undefined ) {
 		return undefined;
 	}
@@ -72,7 +72,7 @@ export const isSingleSlice = ( report ) => {
 	}
 
 	return false;
-};
+}
 
 /**
  * Calculates difference between two chart values.
@@ -83,10 +83,10 @@ export const isSingleSlice = ( report ) => {
  * @param {number} previousValue Previous chart value.
  * @return {number} The difference.
  */
-export const calculateDifferenceBetweenChartValues = (
+export function calculateDifferenceBetweenChartValues(
 	currentValue,
 	previousValue
-) => {
+) {
 	if ( currentValue > 0 && previousValue > 0 ) {
 		return currentValue / previousValue - 1;
 	}
@@ -97,4 +97,4 @@ export const calculateDifferenceBetweenChartValues = (
 		return -1;
 	}
 	return 0;
-};
+}

@@ -8,6 +8,8 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
@@ -503,10 +505,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	public function test_template_redirect__singular( $settings, $post_product_id, $expected_product_id ) {
 		$publication_id = 'ABCDEFGH';
 
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
-
 		// Prevent test from failing in CI with deprecation notice.
 		remove_action( 'wp_print_styles', 'print_emoji_styles' );
 
@@ -581,10 +579,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	 */
 	public function test_template_redirect__non_singular( $settings, $expected_product_id ) {
 		$publication_id = 'ABCDEFGH';
-
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
 
 		// Prevent test from failing in CI with deprecation notice.
 		remove_action( 'wp_print_styles', 'print_emoji_styles' );
@@ -763,6 +757,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
 		}
 
+		// Ensure the module is connected.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => 'ABCDEFGH',
+			)
+		);
+
 		$registerable_asset_handles = array_map(
 			function ( $asset ) {
 				return $asset->get_handle();
@@ -790,6 +791,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) === false ) {
 			$this->markTestSkipped( 'This test only runs on WordPress 5.8 <.' );
 		}
+
+		// Ensure the module is connected.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => 'ABCDEFGH',
+			)
+		);
 
 		$registerable_asset_handles = array_map(
 			function ( $asset ) {
@@ -829,8 +837,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->enable_feature( 'rrmModule' );
-
 		remove_all_actions( 'googlesitekit_assets' );
 		remove_all_actions( 'enqueue_block_editor_assets' );
 
@@ -857,8 +863,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
 		}
 
-		$this->enable_feature( 'rrmModule' );
-
 		remove_all_actions( 'googlesitekit_assets' );
 		remove_all_actions( 'enqueue_block_editor_assets' );
 		$modules = new Modules( $this->context, $this->options, $this->user_options );
@@ -883,8 +887,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) ) {
 			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );
 		}
-
-		$this->enable_feature( 'rrmModule' );
 
 		remove_all_actions( 'googlesitekit_assets' );
 		remove_all_actions( 'enqueue_block_assets' );

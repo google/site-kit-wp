@@ -26,6 +26,7 @@ import invariant from 'invariant';
  */
 import { get, set } from 'googlesitekit-api';
 import {
+	createReducer,
 	createRegistrySelector,
 	commonActions,
 	combineStores,
@@ -36,13 +37,10 @@ import { createValidatedAction } from '../../data/utils';
 
 const { getRegistry } = commonActions;
 
-function reducerCallback( state, dismissedPrompts ) {
-	return {
-		...state,
-		dismissedPrompts:
-			typeof dismissedPrompts === 'object' ? dismissedPrompts : {},
-	};
-}
+const reducerCallback = createReducer( ( state, dismissedPrompts ) => {
+	state.dismissedPrompts =
+		typeof dismissedPrompts === 'object' ? dismissedPrompts : {};
+} );
 
 const fetchGetDismissedPromptsStore = createFetchStore( {
 	baseName: 'getDismissedPrompts',
@@ -101,7 +99,7 @@ const baseActions = {
 
 			const registry = yield commonActions.getRegistry();
 
-			registry.dispatch( CORE_USER ).setIsPromptDimissing( slug, true );
+			registry.dispatch( CORE_USER ).setIsPromptDismissing( slug, true );
 
 			const { response, error } =
 				yield fetchDismissPromptStore.actions.fetchDismissPrompt(
@@ -109,12 +107,12 @@ const baseActions = {
 					expiresInSeconds
 				);
 
-			registry.dispatch( CORE_USER ).setIsPromptDimissing( slug, false );
+			registry.dispatch( CORE_USER ).setIsPromptDismissing( slug, false );
 
 			return { response, error };
 		}
 	),
-	setIsPromptDimissing( slug, isDismissing ) {
+	setIsPromptDismissing( slug, isDismissing ) {
 		return {
 			payload: { slug, isDismissing },
 			type: 'SET_IS_PROMPT_DISMISSING',
@@ -133,21 +131,20 @@ const baseResolvers = {
 	},
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case 'SET_IS_PROMPT_DISMISSING':
 			const { slug, isDismissing } = payload;
-			return {
-				...state,
-				isDismissingPrompts: {
-					[ slug ]: isDismissing,
-				},
+
+			state.isDismissingPrompts = {
+				[ slug ]: isDismissing,
 			};
-		default: {
-			return state;
-		}
+			break;
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseSelectors = {
 	/**

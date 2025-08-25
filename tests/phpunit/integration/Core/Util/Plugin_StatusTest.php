@@ -29,7 +29,7 @@ class Plugin_StatusTest extends TestCase {
 	public function test_is_plugin_installed( $input, $expected ) {
 		$this->mock_installed_plugins();
 		$actual = Plugin_Status::is_plugin_installed( $input );
-		$this->assertEquals( $expected, $actual );
+		$this->assertEquals( $expected, $actual, 'Plugin installation status should match expected result.' );
 	}
 
 	public function data_is_plugin_installed() {

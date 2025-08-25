@@ -120,16 +120,24 @@ describe( 'data utils', () => {
 
 	describe( 'combineStores()', () => {
 		it( 'should combine multiple stores into one', () => {
-			const actionOne = () => ( { type: 'ACTION_ONE', payload: {} } );
-			const actionTwo = () => ( { type: 'ACTION_TWO', payload: {} } );
+			function actionOne() {
+				return { type: 'ACTION_ONE', payload: {} };
+			}
+			function actionTwo() {
+				return { type: 'ACTION_TWO', payload: {} };
+			}
 			function CONTROL_ONE() {
 				return null;
 			}
 			function CONTROL_TWO() {
 				return null;
 			}
-			const getOne = ( state ) => state.one;
-			const getTwo = ( state ) => state.two;
+			function getOne( state ) {
+				return state.one;
+			}
+			function getTwo( state ) {
+				return state.two;
+			}
 			function* getActionOne() {
 				yield actionOne();
 			}
@@ -226,16 +234,24 @@ describe( 'data utils', () => {
 		} );
 
 		it( 'should modify combined state', () => {
-			const actionOne = () => ( { type: 'ACTION_ONE', payload: {} } );
-			const actionTwo = () => ( { type: 'ACTION_TWO', payload: {} } );
+			function actionOne() {
+				return { type: 'ACTION_ONE', payload: {} };
+			}
+			function actionTwo() {
+				return { type: 'ACTION_TWO', payload: {} };
+			}
 			function CONTROL_ONE() {
 				return null;
 			}
 			function CONTROL_TWO() {
 				return null;
 			}
-			const getOne = ( state ) => state.one;
-			const getTwo = ( state ) => state.two;
+			function getOne( state ) {
+				return state.one;
+			}
+			function getTwo( state ) {
+				return state.two;
+			}
 			function* getActionOne() {
 				yield actionOne();
 			}
@@ -422,16 +438,24 @@ describe( 'data utils', () => {
 
 		it( 'should combine several stores that each contain values for only one key', () => {
 			// Define actions, controls, resolvers and selectors
-			const actionOne = () => ( { type: 'ACTION_ONE', payload: {} } );
-			const actionTwo = () => ( { type: 'ACTION_TWO', payload: {} } );
+			function actionOne() {
+				return { type: 'ACTION_ONE', payload: {} };
+			}
+			function actionTwo() {
+				return { type: 'ACTION_TWO', payload: {} };
+			}
 			function CONTROL_ONE() {
 				return null;
 			}
 			function CONTROL_TWO() {
 				return null;
 			}
-			const getOne = ( state ) => state.one;
-			const getTwo = ( state ) => state.two;
+			function getOne( state ) {
+				return state.one;
+			}
+			function getTwo( state ) {
+				return state.two;
+			}
 			function* getActionOne() {
 				yield actionOne();
 			}
@@ -546,10 +570,18 @@ describe( 'data utils', () => {
 
 		it( 'initialStates, reducers, actions, and selectors should work together when provided by separate stores', () => {
 			// Define actions, controls, resolvers and selectors
-			const actionOne = () => ( { type: 'ACTION_ONE', payload: {} } );
-			const actionTwo = () => ( { type: 'ACTION_TWO', payload: {} } );
-			const getOne = ( state ) => state.one;
-			const getTwo = ( state ) => state.two;
+			function actionOne() {
+				return { type: 'ACTION_ONE', payload: {} };
+			}
+			function actionTwo() {
+				return { type: 'ACTION_TWO', payload: {} };
+			}
+			function getOne( state ) {
+				return state.one;
+			}
+			function getTwo( state ) {
+				return state.two;
+			}
 
 			// Create combined store from several stores which each contain values for only one key
 			const combinedStore = combineStores(
@@ -705,14 +737,14 @@ describe( 'data utils', () => {
 	} );
 
 	describe( 'reducer utility functions', () => {
-		const fakeAction = () => {
+		function fakeAction() {
 			return { type: 'ACTION_ONE', payload: {} };
-		};
-		const anotherFakeAction = () => {
+		}
+		function anotherFakeAction() {
 			return { type: 'ACTION_TWO', payload: {} };
-		};
+		}
 
-		const fakeReducer = ( state, action ) => {
+		function fakeReducer( state, action ) {
 			switch ( action.type ) {
 				case 'ACTION_ONE':
 					return { ...state, one: true };
@@ -720,8 +752,8 @@ describe( 'data utils', () => {
 					return state;
 				}
 			}
-		};
-		const fakeReducerTwo = ( state, action ) => {
+		}
+		function fakeReducerTwo( state, action ) {
 			switch ( action.type ) {
 				case 'ACTION_TWO':
 					return { ...state, two: 2 };
@@ -729,7 +761,7 @@ describe( 'data utils', () => {
 					return state;
 				}
 			}
-		};
+		}
 
 		describe( 'collectReducers()', () => {
 			it( 'should return modified state based on the reducers supplied', () => {
@@ -927,9 +959,9 @@ describe( 'data utils', () => {
 
 		it( 'should not call action creator if validator throws an exception ', () => {
 			const args = { foo: 'bar' };
-			const validator = () => {
+			function validator() {
 				throw new Error( 'foo' );
-			};
+			}
 			const actionCreator = vi.fn();
 
 			const validatedAction = createValidatedAction(

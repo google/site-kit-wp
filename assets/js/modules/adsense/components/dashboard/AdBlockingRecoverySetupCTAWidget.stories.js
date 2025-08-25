@@ -17,22 +17,14 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
  * Internal dependencies
  */
 import { provideModules } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import {
-	useBreakpoint,
-	BREAKPOINT_SMALL,
-} from '../../../../hooks/useBreakpoint';
 import AdBlockingRecoverySetupCTAWidget from './AdBlockingRecoverySetupCTAWidget';
 import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -71,19 +63,17 @@ export default {
 	title: 'Modules/AdSense/Widgets/AdBlockingRecoverySetupCTAWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
 						connected: true,
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 					},
 				] );
 
 				args?.setupRegistry( registry );
-			};
-
-			const breakpoint = useBreakpoint();
+			}
 
 			return (
 				<div
@@ -97,16 +87,7 @@ export default {
 						{ /* eslint-disable-next-line jsx-a11y/anchor-has-content */ }
 						<a href="http://test.test/?page=googlesitekit-settings" />
 					</div>
-					<div
-						style={ { flex: 1 } }
-						className={ classnames( {
-							// Turn off animations for non-mobile breakpoints. The standard VRT behaviour is to set
-							// animation-duration to 0ms, this does not play well with this component as there is a
-							// continual chain of animation at non-mobile breakpoints.
-							'googlesitekit-vrt-animation-none':
-								breakpoint !== BREAKPOINT_SMALL,
-						} ) }
-					>
+					<div style={ { flex: 1 } }>
 						<WithRegistrySetup func={ setupRegistry }>
 							<Story />
 						</WithRegistrySetup>

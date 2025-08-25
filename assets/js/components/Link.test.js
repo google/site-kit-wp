@@ -65,7 +65,7 @@ describe( 'Link', () => {
 
 		it( 'adds an aria-label with the text content for disabled links', () => {
 			const { container } = render(
-				<Link disabled onClick={ () => {} }>
+				<Link onClick={ () => {} } disabled>
 					text content
 				</Link>
 			);
@@ -78,7 +78,7 @@ describe( 'Link', () => {
 
 		it( 'uses the existing aria-label for disabled links', () => {
 			const { container } = render(
-				<Link aria-label="label prop" disabled onClick={ () => {} }>
+				<Link aria-label="label prop" onClick={ () => {} } disabled>
 					text content
 				</Link>
 			);

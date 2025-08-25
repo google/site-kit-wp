@@ -36,10 +36,14 @@ vi.mock( '@wordpress-core/components', () => ( {} ), {
 	virtual: true,
 } );
 vi.mock( '@wordpress-core/element', () => ( {} ), { virtual: true } );
+vi.mock( './tracking', () => ( {
+	initializeTracking: vi.fn(),
+} ) );
 
 import Data from 'googlesitekit-data';
 import SettingPanel from './SettingPanel';
 import { MODULES_READER_REVENUE_MANAGER } from '../../../js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { registerStore as registerCoreModulesStore } from '../../../js/googlesitekit/modules';
 import { registerStore as registerCoreUserStore } from '../../../js/googlesitekit/datastore/user';
 import { registerStore as registerReaderRevenueManagerStore } from '../../../js/modules/reader-revenue-manager/datastore';
@@ -51,7 +55,7 @@ const { dispatch } = Data;
 
 describe( 'registerReaderRevenueManagerPlugin', () => {
 	const rrmModuleDefaults = {
-		slug: 'reader-revenue-manager',
+		slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 		active: true,
 		connected: true,
 		storeName: MODULES_READER_REVENUE_MANAGER,
@@ -73,7 +77,7 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 		vi.clearAllMocks();
 	} );
 
-	it( 'should register the plugin if the module is connected and the user has ownership', async () => {
+	it( 'should register the plugin if the user has ownership', async () => {
 		provideModules( Data, [ rrmModuleDefaults ] );
 
 		provideUserInfo( Data );
@@ -88,7 +92,7 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 		);
 	} );
 
-	it( 'should register the plugin if the module is connected and the user has access', async () => {
+	it( 'should register the plugin if the user has access', async () => {
 		provideModules( Data, [ rrmModuleDefaults ] );
 
 		provideUserInfo( Data );
@@ -112,7 +116,7 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 		);
 	} );
 
-	it( 'should not register the plugin if the module is connected and does not have ownership or access', async () => {
+	it( 'should not register the plugin if the user does not have ownership or access', async () => {
 		provideModules( Data, [ rrmModuleDefaults ] );
 
 		provideUserInfo( Data );
@@ -125,19 +129,6 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 			new RegExp( '^/google-site-kit/v1/core/modules/data/check-access' ),
 			{ body: { access: false } }
 		);
-
-		await registerReaderRevenueManagerPlugin();
-
-		expect( registerPlugin ).not.toHaveBeenCalled();
-	} );
-
-	it( 'should not register the plugin if the module is not connected', async () => {
-		provideModules( Data, [
-			{
-				...rrmModuleDefaults,
-				connected: false,
-			},
-		] );
 
 		await registerReaderRevenueManagerPlugin();
 

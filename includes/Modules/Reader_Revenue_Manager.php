@@ -533,12 +533,13 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			),
 		);
 
-		if ( Block_Support::has_block_support() ) {
+		if ( Block_Support::has_block_support() && $this->is_connected() ) {
 			$assets[] = new Script(
 				'blocks-reader-revenue-manager-block-editor-plugin',
 				array(
-					'src'           => $base_url . 'js/blocks/reader-revenue-manager/block-editor-plugin/index.js',
+					'src'           => $base_url . 'blocks/reader-revenue-manager/block-editor-plugin/index.js',
 					'dependencies'  => array(
+						'googlesitekit-components',
 						'googlesitekit-data',
 						'googlesitekit-i18n',
 						'googlesitekit-modules',
@@ -552,7 +553,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			$assets[] = new Stylesheet(
 				'blocks-reader-revenue-manager-block-editor-plugin-styles',
 				array(
-					'src'           => $base_url . 'js/blocks/reader-revenue-manager/block-editor-plugin/editor-styles.css',
+					'src'           => $base_url . 'blocks/reader-revenue-manager/block-editor-plugin/editor-styles.css',
 					'dependencies'  => array(),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
@@ -561,8 +562,9 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			$assets[] = new Script(
 				'blocks-contribute-with-google',
 				array(
-					'src'           => $base_url . 'js/blocks/reader-revenue-manager/contribute-with-google/index.js',
+					'src'           => $base_url . 'blocks/reader-revenue-manager/contribute-with-google/index.js',
 					'dependencies'  => array(
+						'googlesitekit-components',
 						'googlesitekit-data',
 						'googlesitekit-i18n',
 						'googlesitekit-modules',
@@ -576,8 +578,9 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			$assets[] = new Script(
 				'blocks-subscribe-with-google',
 				array(
-					'src'           => $base_url . 'js/blocks/reader-revenue-manager/subscribe-with-google/index.js',
+					'src'           => $base_url . 'blocks/reader-revenue-manager/subscribe-with-google/index.js',
 					'dependencies'  => array(
+						'googlesitekit-components',
 						'googlesitekit-data',
 						'googlesitekit-i18n',
 						'googlesitekit-modules',
@@ -592,7 +595,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				$assets[] = new Script(
 					'blocks-contribute-with-google-non-sitekit-user',
 					array(
-						'src'           => $base_url . 'js/blocks/reader-revenue-manager/contribute-with-google/non-site-kit-user.js',
+						'src'           => $base_url . 'blocks/reader-revenue-manager/contribute-with-google/non-site-kit-user.js',
 						'dependencies'  => array(
 							'googlesitekit-i18n',
 						),
@@ -604,7 +607,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				$assets[] = new Script(
 					'blocks-subscribe-with-google-non-sitekit-user',
 					array(
-						'src'           => $base_url . 'js/blocks/reader-revenue-manager/subscribe-with-google/non-site-kit-user.js',
+						'src'           => $base_url . 'blocks/reader-revenue-manager/subscribe-with-google/non-site-kit-user.js',
 						'dependencies'  => array( 'googlesitekit-i18n' ),
 						'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 						'execution'     => 'defer',
@@ -615,7 +618,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			$assets[] = new Stylesheet(
 				'blocks-reader-revenue-manager-common-editor-styles',
 				array(
-					'src'           => $base_url . 'js/blocks/reader-revenue-manager/common/editor-styles.css',
+					'src'           => $base_url . 'blocks/reader-revenue-manager/common/editor-styles.css',
 					'dependencies'  => array(),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_BLOCK_EDITOR ),
 				)

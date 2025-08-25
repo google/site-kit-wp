@@ -34,6 +34,7 @@ import {
 	GTM_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
@@ -51,6 +52,9 @@ import WebDataStreamField from './WebDataStreamField';
 import EnhancedMeasurementSwitch from '../EnhancedMeasurementSwitch';
 import useViewContext from '../../../../../hooks/useViewContext';
 import SetupEnhancedConversionTrackingNotice from '../../../../../components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
+import Typography from '../../../../../components/Typography';
+import useFormValue from '../../../../../hooks/useFormValue';
+import P from '../../../../../components/Typography/P';
 
 export default function AccountCreate() {
 	const [ isNavigating, setIsNavigating ] = useState( false );
@@ -81,9 +85,7 @@ export default function AccountCreate() {
 	const hasAccountCreateForm = useSelect( ( select ) =>
 		select( CORE_FORMS ).hasForm( FORM_ACCOUNT_CREATE )
 	);
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'autoSubmit' )
-	);
+	const autoSubmit = useFormValue( FORM_ACCOUNT_CREATE, 'autoSubmit' );
 	const siteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
@@ -108,7 +110,7 @@ export default function AccountCreate() {
 	useEffect( () => {
 		if ( accountTicketTermsOfServiceURL ) {
 			( async () => {
-				await invalidateCache( 'modules', 'analytics-4' );
+				await invalidateCache( 'modules', MODULE_SLUG_ANALYTICS_4 );
 				navigateTo( accountTicketTermsOfServiceURL );
 			} )();
 		}
@@ -220,16 +222,16 @@ export default function AccountCreate() {
 				storeName={ MODULES_ANALYTICS_4 }
 			/>
 
-			<h3 className="googlesitekit-heading-4">
+			<Typography as="h3" type="title" size="large">
 				{ __( 'Create your Analytics account', 'google-site-kit' ) }
-			</h3>
+			</Typography>
 
-			<p>
+			<P>
 				{ __(
 					'We’ve pre-filled the required information for your new account. Confirm or edit any details:',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 
 			<div className="googlesitekit-setup-module__inputs">
 				<Cell size={ 6 }>
@@ -258,13 +260,13 @@ export default function AccountCreate() {
 				<SetupEnhancedConversionTrackingNotice
 					className="googlesitekit-margin-top-0"
 					message={ __(
-						'To track how visitors interact with your site, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
+						'To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings.',
 						'google-site-kit'
 					) }
 				/>
 			</div>
 
-			<p>
+			<P>
 				{ hasRequiredScope && (
 					<span>
 						{ __(
@@ -281,7 +283,7 @@ export default function AccountCreate() {
 						) }
 					</span>
 				) }
-			</p>
+			</P>
 
 			<div className="googlesitekit-setup-module__action">
 				<Button
@@ -293,9 +295,9 @@ export default function AccountCreate() {
 
 				{ accounts && !! accounts.length && (
 					<Button
-						tertiary
 						className="googlesitekit-setup-module__sub-action"
 						onClick={ handleBack }
+						tertiary
 					>
 						{ __( 'Back', 'google-site-kit' ) }
 					</Button>

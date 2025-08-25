@@ -30,6 +30,7 @@ import { Button, ProgressBar } from 'googlesitekit-components';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import P from '../../../../components/Typography/P';
 import { trackEvent } from '../../../../util/tracking';
 import useViewContext from '../../../../hooks/useViewContext';
 
@@ -71,18 +72,18 @@ export default function AccountCreate() {
 				storeName={ MODULES_TAGMANAGER }
 			/>
 
-			<p>
+			<P>
 				{ __(
 					'To create a new account, click the button below which will open the Google Tag Manager account creation screen in a new window.',
 					'google-site-kit'
 				) }
-			</p>
-			<p>
+			</P>
+			<P>
 				{ __(
 					'Once completed, click the link below to re-fetch your accounts to continue.',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 
 			<div className="googlesitekit-setup-module__action">
 				<Button onClick={ createAccountHandler }>
@@ -90,7 +91,7 @@ export default function AccountCreate() {
 				</Button>
 
 				<div className="googlesitekit-setup-module__sub-action">
-					<Button tertiary onClick={ refetchAccountsHandler }>
+					<Button onClick={ refetchAccountsHandler } tertiary>
 						{ __( 'Re-fetch My Account', 'google-site-kit' ) }
 					</Button>
 				</div>

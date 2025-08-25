@@ -38,6 +38,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { listFormat, numFmt } from '../../../../util';
 import { ZeroDataMessage } from '../common';
 import {
@@ -83,6 +84,7 @@ function getReportOptions( select ) {
 		],
 		limit: 3,
 		keepEmptyRows: false,
+		reportID: 'analytics-4_top-categories-widget_widget_reportOptions',
 	};
 }
 
@@ -163,7 +165,7 @@ TopCategoriesWidget.propTypes = {
 
 export default compose(
 	whenActive( {
-		moduleName: 'analytics-4',
+		moduleName: MODULE_SLUG_ANALYTICS_4,
 		FallbackComponent: ConnectGA4CTATileWidget,
 	} ),
 	withCustomDimensions( {

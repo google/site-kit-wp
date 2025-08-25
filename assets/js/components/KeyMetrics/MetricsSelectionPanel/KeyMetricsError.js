@@ -31,7 +31,6 @@ import { useMemo } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	KEY_METRICS_SELECTED,
@@ -39,16 +38,16 @@ import {
 	MAX_SELECTED_METRICS_COUNT,
 	MIN_SELECTED_METRICS_COUNT,
 } from '../constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import SelectionPanelError from '../../SelectionPanel/SelectionPanelError';
 import { safelySort } from '../../../util';
 import whenActive from '../../../util/when-active';
+import useFormValue from '../../../hooks/useFormValue';
 
 function KeyMetricsError( { savedMetrics } ) {
-	const selectedMetrics = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			KEY_METRICS_SELECTION_FORM,
-			KEY_METRICS_SELECTED
-		)
+	const selectedMetrics = useFormValue(
+		KEY_METRICS_SELECTION_FORM,
+		KEY_METRICS_SELECTED
 	);
 
 	const keyMetricsSettings = useInViewSelect( ( select ) =>
@@ -111,4 +110,6 @@ function KeyMetricsError( { savedMetrics } ) {
 	);
 }
 
-export default whenActive( { moduleName: 'analytics-4' } )( KeyMetricsError );
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
+	KeyMetricsError
+);

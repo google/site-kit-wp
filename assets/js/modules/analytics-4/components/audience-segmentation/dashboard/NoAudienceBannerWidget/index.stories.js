@@ -27,6 +27,7 @@ import {
 } from '../../../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
 import { Provider as ViewContextProvider } from '../../../../../../components/Root/ViewContextContext';
@@ -101,12 +102,12 @@ export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/NoAudienceBannerWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = async ( registry ) => {
+			async function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 					},
 				] );
 				provideModuleRegistrations( registry );
@@ -116,7 +117,7 @@ export default {
 					.setAvailableAudiences( availableAudiences );
 
 				await args.setupRegistry( registry );
-			};
+			}
 
 			const viewContext = args.isViewOnly
 				? VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY

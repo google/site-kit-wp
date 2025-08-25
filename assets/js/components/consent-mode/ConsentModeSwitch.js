@@ -31,13 +31,14 @@ import { Switch } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import ErrorText from '../../components/ErrorText';
 import Link from '../Link';
 import LoadingWrapper from '../LoadingWrapper';
 import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
 import { DAY_IN_SECONDS, trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
+import ErrorNotice from '../ErrorNotice';
+import P from '../Typography/P';
 
 export default function ConsentModeSwitch( { loading } ) {
 	const viewContext = useViewContext();
@@ -136,7 +137,7 @@ export default function ConsentModeSwitch( { loading } ) {
 						/>
 					</LoadingWrapper>
 				}
-				{ saveError && <ErrorText message={ saveError.message } /> }
+				{ saveError && <ErrorNotice message={ saveError.message } /> }
 				{ ! loading && isConsentModeEnabled && (
 					<p className="googlesitekit-settings-consent-mode-switch__enabled-notice">
 						{ __(
@@ -156,7 +157,7 @@ export default function ConsentModeSwitch( { loading } ) {
 						tabletWidth="540px"
 						tabletHeight="84px"
 					>
-						<p>
+						<P>
 							{ createInterpolateElement(
 								__(
 									'Consent mode will help adjust tracking on your site, so only visitors who have explicitly given consent are tracked. <br />This is required in some parts of the world, like the European Economic Area. <a>Learn more</a>',
@@ -167,7 +168,6 @@ export default function ConsentModeSwitch( { loading } ) {
 									a: (
 										<Link
 											href={ consentModeDocumentationURL }
-											external
 											aria-label={ __(
 												'Learn more about consent mode',
 												'google-site-kit'
@@ -178,11 +178,12 @@ export default function ConsentModeSwitch( { loading } ) {
 													'como_learn_more'
 												);
 											} }
+											external
 										/>
 									),
 								}
 							) }
-						</p>
+						</P>
 					</LoadingWrapper>
 				}
 			</div>

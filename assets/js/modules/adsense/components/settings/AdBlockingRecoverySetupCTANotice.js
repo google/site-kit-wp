@@ -83,20 +83,20 @@ export default function AdBlockingRecoverySetupCTANotice() {
 		}
 	}, [ inView, isCTAHidden, viewContext ] );
 
-	const handleCTAClick = async () => {
+	async function handleCTAClick() {
 		await trackEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'confirm_notification'
 		);
 		return navigateTo( recoveryPageURL );
-	};
+	}
 
-	const handleLearnMoreClick = () => {
+	function handleLearnMoreClick() {
 		trackEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'click_learn_more_link'
 		);
-	};
+	}
 
 	if ( isCTAHidden ) {
 		return null;
@@ -123,8 +123,8 @@ export default function AdBlockingRecoverySetupCTANotice() {
 					a: (
 						<SupportLink
 							path="/adsense/answer/11576589"
-							external
 							onClick={ handleLearnMoreClick }
+							external
 						/>
 					),
 				}

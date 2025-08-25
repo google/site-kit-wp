@@ -36,7 +36,7 @@ const propertyID = properties[ 0 ]._id;
 const measurementID =
 	fixtures.webDataStreamsBatch[ propertyID ][ 0 ].webStreamData.measurementId; // eslint-disable-line sitekit/acronym-case
 
-const provideGA4PropertyAndWebDataStream = ( registry ) => {
+function provideGA4PropertyAndWebDataStream( registry ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.receiveGetAccountSummaries( fixtures.accountSummaries );
@@ -45,7 +45,7 @@ const provideGA4PropertyAndWebDataStream = ( registry ) => {
 		.receiveGetWebDataStreamsBatch( fixtures.webDataStreamsBatch, {
 			propertyIDs: [ propertyID ],
 		} );
-};
+}
 
 describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 	let registry;
@@ -88,8 +88,8 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 
 		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
-				hasModuleAccess
 				isDisabled={ false }
+				hasModuleAccess
 			/>,
 			{ registry }
 		);
@@ -112,8 +112,8 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 
 		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
-				hasModuleAccess
 				isDisabled={ false }
+				hasModuleAccess
 			/>,
 			{ registry }
 		);
@@ -128,8 +128,8 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 
 		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
-				hasModuleAccess
 				isDisabled={ false }
+				hasModuleAccess
 			/>,
 			{ registry }
 		);
@@ -182,8 +182,8 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 
 		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
-				hasModuleAccess
 				isDisabled={ false }
+				hasModuleAccess
 			/>,
 			{ registry }
 		);
@@ -208,8 +208,8 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 
 		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
-				hasModuleAccess
 				isDisabled={ false }
+				hasModuleAccess
 			/>,
 			{ registry }
 		);

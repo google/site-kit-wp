@@ -26,7 +26,7 @@
  * @param {string} dateString String representing the date in the format of `YYYYMMDD`.
  * @return {(Date|boolean)} Object representing the date passed, or false if parsing fails or a non-string is passed.
  */
-const parseDimensionStringToDate = ( dateString ) => {
+function parseDimensionStringToDate( dateString ) {
 	if ( 'string' === typeof dateString && dateString.match( /[0-9]{8}/ ) ) {
 		const year = dateString.slice( 0, 4 );
 		const monthIndex = Number( dateString.slice( 4, 6 ) ) - 1;
@@ -34,6 +34,6 @@ const parseDimensionStringToDate = ( dateString ) => {
 		return new Date( year, monthIndex.toString(), day );
 	}
 	return false;
-};
+}
 
 export default parseDimensionStringToDate;

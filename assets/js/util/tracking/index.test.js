@@ -14,17 +14,17 @@ import createTracking from './createTracking';
 import { DATA_LAYER } from './constants';
 import { disableTracking, enableTracking, isTrackingEnabled } from './index';
 
-const resetGlobals = () => {
+function resetGlobals() {
 	delete global._googlesitekitBaseData;
 	delete global[ DATA_LAYER ];
-};
+}
 
-const fakeTimeouts = ( func ) => {
+function fakeTimeouts( func ) {
 	vi.useFakeTimers();
 	const promise = func();
 	vi.runAllTimers();
 	return promise;
-};
+}
 
 describe( 'disableTracking and isTrackingEnabled', () => {
 	afterEach( resetGlobals );

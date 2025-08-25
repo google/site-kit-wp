@@ -17,23 +17,37 @@
 BIN_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 ROOT_DIR="$(dirname "$BIN_DIR")/../../"
 
+# Remember to update the version tag in the publish-vrt-docker-image workflow when updating this version.
 VERSION=6.3.25
-IMAGE=googlesitekit/vrt:$VERSION
 
-# (re)Build the backstopjs image as needed.
-docker build \
-	--pull \
-	--tag $IMAGE \
-	--build-arg BACKSTOPJS_VERSION=$VERSION \
-	"$ROOT_DIR/tests/backstop"
+# Use the GitHub Container Registry image.
+IMAGE=ghcr.io/google/site-kit-wp/vrt:$VERSION
 
-# Run the backstopjs command.
+# Run the backstopjs command inside a Docker container with an HTTP server for Storybook.
+#
+# The `--pull` flag is used to ensure the docker image used is the correct
+# architecture; if a previous image was pulled on a different architecture,
+# it will be used below unless this pull command is run first.
+# For local development, set BACKSTOP_NO_PULL=1 to skip pulling and use a local build.
+
+# Set pull behavior based on environment variable.
+PULL_FLAG=""
+if [ "$BACKSTOP_NO_PULL" != "1" ]; then
+	PULL_FLAG="--pull=always"
+fi
+
+# FIXME: Temporarily force local build for testing - remove this later.
+echo "Building Docker image locally for testing..."
+docker build -t $IMAGE "$ROOT_DIR/tests/backstop"
+
+# Run with the locally built image.
+# FIXME: Restore $PULL_FLAG when testing is complete.
 docker run --rm --tty \
 	--shm-size=512m \
 	--mount "type=bind,source=$ROOT_DIR,target=/src" \
+	--env STORYBOOK_SERVER_URL=http://localhost:3000/iframe.html?id= \
 	$IMAGE \
-	"$@" \
-	--config=/src/tests/backstop/config.js
+	"$@"
 
 DOCKER_EXIT_CODE=$?
 

@@ -28,6 +28,7 @@ import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
 
@@ -118,18 +119,18 @@ export default {
 	title: 'Modules/AdSense/Settings/AdBlockingRecoveryToggle',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
 						connected: true,
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 					},
 				] );
 				provideSiteInfo( registry );
 
 				args?.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

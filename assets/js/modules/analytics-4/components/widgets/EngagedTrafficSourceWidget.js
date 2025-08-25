@@ -39,6 +39,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { MetricTileText } from '../../../../components/KeyMetrics';
 import { numFmt } from '../../../../util';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
@@ -60,6 +61,8 @@ function EngagedTrafficSourceWidget( props ) {
 		metrics: [ { name: 'engagedSessions' } ],
 		orderBy: 'engagedSessions',
 		limit: 1,
+		reportID:
+			'analytics-4_engaged-traffic-source-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(
@@ -82,8 +85,11 @@ function EngagedTrafficSourceWidget( props ) {
 	);
 
 	const { rows = [], totals = [] } = report || {};
-	const makeFilter = ( dateRange, dimensionIndex ) => ( row ) =>
-		get( row, `dimensionValues.${ dimensionIndex }.value` ) === dateRange;
+	function makeFilter( dateRange, dimensionIndex ) {
+		return ( row ) =>
+			get( row, `dimensionValues.${ dimensionIndex }.value` ) ===
+			dateRange;
+	}
 
 	const topTrafficSource =
 		rows.filter( makeFilter( 'date_range_0', 1 ) )[ 0 ]
@@ -147,6 +153,6 @@ EngagedTrafficSourceWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( EngagedTrafficSourceWidget );

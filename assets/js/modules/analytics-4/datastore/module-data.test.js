@@ -24,16 +24,31 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { initialState } from './index';
-import { ENUM_CONVERSION_EVENTS, MODULES_ANALYTICS_4 } from './constants';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+	RESOURCE_TYPE_AUDIENCE,
+} from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 
-describe( 'modules/ads module data', () => {
+describe( 'modules/analytics-4 module data', () => {
 	const baseModulesGlobalName = '_googlesitekitModulesData';
 	const baseData = {
-		'analytics-4': {
+		[ MODULE_SLUG_ANALYTICS_4 ]: {
 			newEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
 			lostEvents: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
 			newBadgeEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
 			hasMismatchedTag: false,
+			resourceAvailabilityDates: {
+				audience: {
+					'properties/12345/audiences/1': 20201220,
+				},
+				customDimension: {},
+			},
+			customDimensionsDataAvailable: {
+				googlesitekit_post_type: true,
+			},
+			isWebDataStreamUnavailable: false,
 		},
 	};
 
@@ -72,6 +87,55 @@ describe( 'modules/ads module data', () => {
 				expect( moduleData ).toEqual( store.getState().moduleData );
 			} );
 		} );
+
+		describe( 'setResourceDataAvailabilityDate', () => {
+			it( 'requires resourceSlug to be a non-empty string', () => {
+				expect( () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setResourceDataAvailabilityDate( '' );
+				} ).toThrow( 'resourceSlug must be a non-empty string.' );
+			} );
+
+			it( 'requires resourceType to be a valid resource type', () => {
+				expect( () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setResourceDataAvailabilityDate( 'test', 'invalid' );
+				} ).toThrow( 'resourceType must be a valid resource type.' );
+			} );
+
+			it( 'requires date to be an integer', () => {
+				expect( () => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setResourceDataAvailabilityDate(
+							'test',
+							RESOURCE_TYPE_AUDIENCE,
+							'2020-20-20'
+						);
+				} ).toThrow( 'date must be an integer.' );
+			} );
+
+			it( 'sets the date for the resource', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setResourceDataAvailabilityDate(
+						'properties/12345/audiences/12345',
+						RESOURCE_TYPE_AUDIENCE,
+						20201220
+					);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getResourceDataAvailabilityDate(
+							'properties/12345/audiences/12345',
+							RESOURCE_TYPE_AUDIENCE
+						)
+				).toEqual( 20201220 );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -97,7 +161,7 @@ describe( 'modules/ads module data', () => {
 					.getNewEvents();
 
 				expect( newEvents ).toEqual(
-					baseData[ 'analytics-4' ].newEvents
+					baseData[ MODULE_SLUG_ANALYTICS_4 ].newEvents
 				);
 
 				// Data must not be wiped after retrieving, as it could be used by other dependants.
@@ -127,6 +191,11 @@ describe( 'modules/ads module data', () => {
 
 		describe.each( [
 			[ 'hasMismatchedGoogleTagID', 'hasMismatchedTag' ],
+			[ 'getResourceDataAvailabilityDates', 'resourceAvailabilityDates' ],
+			[
+				'getCustomDimensionsDataAvailable',
+				'customDimensionsDataAvailable',
+			],
 			[ 'getNewEvents', 'newEvents' ],
 			[ 'getLostEvents', 'lostEvents' ],
 			[ 'getNewBadgeEvents', 'newBadgeEvents' ],
@@ -144,7 +213,9 @@ describe( 'modules/ads module data', () => {
 					.getModuleData();
 
 				expect( moduleData ).toHaveProperty( dataKey );
-				expect( moduleData ).toEqual( baseData[ 'analytics-4' ] );
+				expect( moduleData ).toEqual(
+					baseData[ MODULE_SLUG_ANALYTICS_4 ]
+				);
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {

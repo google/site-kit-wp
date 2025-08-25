@@ -26,6 +26,7 @@ import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/consta
 import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
 import { availableAudiences } from '../../../../datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { AUDIENCE_INFO_NOTICE_SLUG } from './constants';
 
 const WidgetWithComponentProps =
@@ -134,12 +135,12 @@ export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/InfoNoticeWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = async ( registry ) => {
+			async function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 					},
 				] );
 				registry
@@ -154,7 +155,7 @@ export default {
 					isAudienceSegmentationWidgetHidden: false,
 				} );
 				await args?.setupRegistry( registry );
-			};
+			}
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
 					<Story />

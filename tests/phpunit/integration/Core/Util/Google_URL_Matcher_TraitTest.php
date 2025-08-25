@@ -36,9 +36,9 @@ class Google_URL_Matcher_TraitTest extends TestCase {
 	public function test_is_url_match( $url, $compare, $expected ) {
 		$result = $this->matcher->is_url_match( $url, $compare );
 		if ( $expected ) {
-			$this->assertTrue( $result );
+			$this->assertTrue( $result, 'URLs should match when expected.' );
 		} else {
-			$this->assertFalse( $result );
+			$this->assertFalse( $result, 'URLs should not match when not expected.' );
 		}
 	}
 
@@ -117,9 +117,9 @@ class Google_URL_Matcher_TraitTest extends TestCase {
 	public function test_is_domain_match( $domain, $compare, $expected ) {
 		$result = $this->matcher->is_domain_match( $domain, $compare );
 		if ( $expected ) {
-			$this->assertTrue( $result );
+			$this->assertTrue( $result, 'Domains should match when expected.' );
 		} else {
-			$this->assertFalse( $result );
+			$this->assertFalse( $result, 'Domains should not match when not expected.' );
 		}
 	}
 

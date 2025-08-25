@@ -35,9 +35,9 @@ exports.formattedFeaturesToPHPArray = features
 	.map( ( feature ) => `'${ feature }'` )
 	.join( ',' );
 
-const projectPath = ( relativePath ) => {
+function projectPath( relativePath ) {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
-};
+}
 
 exports.projectPath = projectPath;
 
@@ -89,12 +89,12 @@ exports.manifestArgs = ( mode ) => ( {
 	fileName: path.resolve( rootDir, 'dist/manifest.php' ),
 	seed: manifestSeed,
 	generate( seedObj, files ) {
-		const entry = ( filename, hash ) => {
+		function entry( filename, hash ) {
 			if ( mode === 'production' ) {
 				return [ filename, null ];
 			}
 			return [ filename, hash ];
-		};
+		}
 		files.forEach( ( file ) => {
 			if ( file.name.match( /\.css$/ ) ) {
 				// CSS file paths contain the destination directory which needs to be stripped

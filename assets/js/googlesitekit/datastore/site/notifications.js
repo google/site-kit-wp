@@ -35,8 +35,9 @@ import { actions as errorStoreActions } from '../../data/create-error-store';
 const ACCEPTED = 'accepted';
 const DISMISSED = 'dismissed';
 
-const isValidNotificationID = ( notificationID ) =>
-	'string' === typeof notificationID;
+function isValidNotificationID( notificationID ) {
+	return 'string' === typeof notificationID;
+}
 
 const fetchMarkNotificationStore = createFetchStore( {
 	baseName: 'markNotification',

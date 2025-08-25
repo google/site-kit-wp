@@ -37,7 +37,7 @@ export const AlternativeGA4Config = Template.bind( {} );
 AlternativeGA4Config.storyName = 'AlternativeGA4Config';
 AlternativeGA4Config.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			const gtmAccountID = '6065484567';
 			const gtmContainerID = '98369876';
 			const containerDestinationsMock =
@@ -60,7 +60,7 @@ AlternativeGA4Config.decorators = [
 						gtmContainerID,
 					}
 				);
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -75,7 +75,7 @@ export const NoAlternativeGA4Config = Template.bind( {} );
 NoAlternativeGA4Config.storyName = 'NoAlternativeGA4Config';
 NoAlternativeGA4Config.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			const gtmAccountID = '6065484567';
 			const gtmContainerID = '98369876';
 
@@ -91,7 +91,7 @@ NoAlternativeGA4Config.decorators = [
 					gtmAccountID,
 					gtmContainerID,
 				} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -107,7 +107,7 @@ export default {
 	component: GoogleTagIDMismatchNotification,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 
 				registry
@@ -168,7 +168,7 @@ export default {
 						{
 							_id: '110',
 							webStreamData: {
-								defaultUri: 'http://example-1.test',
+								defaultUri: 'http://example-1.test', // eslint-disable-line sitekit/acronym-case
 								measurementId: currentMeasurementID, // eslint-disable-line sitekit/acronym-case
 							},
 						},
@@ -195,7 +195,7 @@ export default {
 					.receiveGetProperty( fixtures.properties[ 1 ], {
 						propertyID: newAnalyticsPropertyID,
 					} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

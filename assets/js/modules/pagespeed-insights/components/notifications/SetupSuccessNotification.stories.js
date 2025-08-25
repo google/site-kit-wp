@@ -28,6 +28,7 @@ import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import SetupSuccessNotification from './SetupSuccessNotification';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-site-kit'
@@ -42,7 +43,7 @@ Default.storyName = 'SetupSuccessNotification';
 Default.parameters = {
 	query: {
 		notification: 'authentication_success',
-		slug: 'pagespeed-insights',
+		slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 	},
 };
 Default.scenario = {};
@@ -52,9 +53,9 @@ export default {
 	decorators: [
 		withQuery,
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

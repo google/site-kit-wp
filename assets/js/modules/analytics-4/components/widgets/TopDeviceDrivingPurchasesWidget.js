@@ -39,6 +39,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { numFmt } from '../../../../util';
 import { get } from 'lodash';
 import whenActive from '../../../../util/when-active';
@@ -64,6 +65,8 @@ function TopDeviceDrivingPurchases( { Widget } ) {
 				name: 'ecommercePurchases',
 			},
 		],
+		reportID:
+			'analytics-4_top-device-driving-purchases-widget_widget_totalPurchasesReportOptions',
 	};
 
 	const deviceReportOptions = {
@@ -76,6 +79,8 @@ function TopDeviceDrivingPurchases( { Widget } ) {
 		],
 		limit: 1,
 		orderBy: 'ecommercePurchases',
+		reportID:
+			'analytics-4_top-device-driving-purchases-widget_widget_deviceReportOptions',
 	};
 
 	const totalPurchasesReport = useInViewSelect(
@@ -136,8 +141,11 @@ function TopDeviceDrivingPurchases( { Widget } ) {
 			: undefined
 	);
 
-	const makeFilter = ( dateRange, dimensionIndex ) => ( row ) =>
-		get( row, `dimensionValues.${ dimensionIndex }.value` ) === dateRange;
+	function makeFilter( dateRange, dimensionIndex ) {
+		return ( row ) =>
+			get( row, `dimensionValues.${ dimensionIndex }.value` ) ===
+			dateRange;
+	}
 
 	// Prevents running a filter on `report.rows` which could be undefined.
 	const { rows: totalPurchasesReportRows = [] } = totalPurchasesReport || {};
@@ -212,6 +220,6 @@ TopDeviceDrivingPurchases.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( TopDeviceDrivingPurchases );

@@ -29,10 +29,12 @@ import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_TAGMANAGER, CONTAINER_CREATE } from './constants';
+import { MODULE_SLUG_TAGMANAGER } from '../constants';
 import { isValidAccountSelection } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { ACCOUNT_CREATE } from '../../analytics-4/datastore/constants';
@@ -43,15 +45,12 @@ const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 const fetchGetAccountsStore = createFetchStore( {
 	baseName: 'getAccounts',
 	controlCallback: () =>
-		get( 'modules', 'tagmanager', 'accounts', null, {
+		get( 'modules', MODULE_SLUG_TAGMANAGER, 'accounts', null, {
 			useCache: false,
 		} ),
-	reducerCallback: ( state, accounts ) => {
-		return {
-			...state,
-			accounts,
-		};
-	},
+	reducerCallback: createReducer( ( state, accounts ) => {
+		state.accounts = accounts;
+	} ),
 } );
 
 export const baseInitialState = {
@@ -174,28 +173,23 @@ export const baseActions = {
 	),
 };
 
-export const baseReducer = ( state, { type } ) => {
+export const baseReducer = createReducer( ( state, { type } ) => {
 	switch ( type ) {
 		case RESET_ACCOUNTS: {
-			return {
-				...state,
-				accounts: undefined,
-				settings: {
-					...state.settings,
-					accountID: undefined,
-					ampContainerID: undefined,
-					containerID: undefined,
-					internalAMPContainerID: undefined,
-					internalContainerID: undefined,
-				},
-			};
+			state.accounts = undefined;
+			state.settings.accountID = undefined;
+			state.settings.ampContainerID = undefined;
+			state.settings.containerID = undefined;
+			state.settings.internalAMPContainerID = undefined;
+			state.settings.internalContainerID = undefined;
+
+			break;
 		}
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 export const baseResolvers = {
 	*getAccounts() {

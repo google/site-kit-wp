@@ -35,9 +35,9 @@ export function AccountChooser() {
 	);
 	const registry = useRegistry();
 	const email = useSelect( ( select ) => select( CORE_USER ).getEmail() );
-	const onEmailChange = ( { target } ) => {
+	function onEmailChange( { target } ) {
 		provideUserInfo( registry, { email: target.value } );
-	};
+	}
 
 	const accountChooserURL = useSelect( ( select ) =>
 		select( CORE_USER ).getAccountChooserURL( destURL )
@@ -53,15 +53,15 @@ export function AccountChooser() {
 			<TextField
 				label="Google Account Email"
 				onChange={ onEmailChange }
-				outlined
 				value={ email }
+				outlined
 			/>
 
 			<TextField
 				label="Destination URL"
 				onChange={ ( { target } ) => setDestURL( target.value ) }
-				outlined
 				value={ destURL }
+				outlined
 			/>
 
 			<pre>{ accountChooserURL }</pre>

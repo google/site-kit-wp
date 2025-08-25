@@ -74,12 +74,12 @@ function ResetButton( { children } ) {
 	}, [ isDoingReset, isNavigatingToPostResetURL, debouncedSetInProgress ] );
 
 	useEffect( () => {
-		const handleCloseModal = ( event ) => {
+		function handleCloseModal( event ) {
 			if ( ESCAPE === event.keyCode ) {
 				// Only close the modal if the "Escape" key is pressed.
 				setDialogActive( false );
 			}
-		};
+		}
 
 		if ( dialogActive ) {
 			// When the dialogActive changes and it is set to true(has opened), add the event listener.
@@ -124,7 +124,7 @@ function ResetButton( { children } ) {
 				<ModalDialog
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
-					handleDialog={ closeDialog }
+					handleCancel={ closeDialog }
 					onClose={ closeDialog }
 					title={ __( 'Reset Site Kit', 'google-site-kit' ) }
 					subtitle={ createInterpolateElement(
@@ -137,9 +137,9 @@ function ResetButton( { children } ) {
 						}
 					) }
 					confirmButton={ __( 'Reset', 'google-site-kit' ) }
+					inProgress={ inProgress }
 					danger
 					small
-					inProgress={ inProgress }
 				/>
 			</Portal>
 		</Fragment>

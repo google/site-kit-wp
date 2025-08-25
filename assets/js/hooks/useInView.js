@@ -44,7 +44,7 @@ import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
  * @param {boolean} options.sticky Set to `true` to always return `true` after the nearest viewport-detecting component has been in-view once. Defaults to `false`.
  * @return {boolean} `true` if the nearest parent component is in-view (or if `sticky` is `true`, if the component has ever been in-view); `false` if not..
  */
-export const useInView = ( { sticky = false } = {} ) => {
+export function useInView( { sticky = false } = {} ) {
 	const inView = useContext( InViewContext );
 
 	const [ hasBeenInViewOnce, setHasBeenInViewOnce ] = useState( false );
@@ -77,4 +77,4 @@ export const useInView = ( { sticky = false } = {} ) => {
 	}
 
 	return !! inView.value;
-};
+}

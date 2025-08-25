@@ -118,6 +118,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
     <div
       class="mdc-linear-progress googlesitekit-analytics-enable-enhanced-measurement__progress--settings-edit mdc-linear-progress--indeterminate mdc-linear-progress--small"
       role="progressbar"
+      style="height: 4px;"
     >
       <div
         class="mdc-linear-progress__buffering-dots"
@@ -176,6 +177,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
     <div
       class="mdc-linear-progress googlesitekit-analytics-enable-enhanced-measurement__progress--settings-edit mdc-linear-progress--indeterminate mdc-linear-progress--small"
       role="progressbar"
+      style="height: 4px;"
     >
       <div
         class="mdc-linear-progress__buffering-dots"
@@ -234,6 +236,7 @@ exports[`SettingsEnhancedMeasurementSwitch should render correctly, with the swi
     <div
       class="mdc-linear-progress googlesitekit-analytics-enable-enhanced-measurement__progress--settings-edit mdc-linear-progress--indeterminate mdc-linear-progress--small"
       role="progressbar"
+      style="height: 4px;"
     >
       <div
         class="mdc-linear-progress__buffering-dots"

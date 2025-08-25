@@ -40,16 +40,16 @@ export default function MetricItems( { savedMetrics } ) {
 	const displayInSelectionPanel = useInViewSelect(
 		( select ) => {
 			return ( metric ) =>
-				KEY_METRICS_WIDGETS[ metric ].displayInSelectionPanel(
+				KEY_METRICS_WIDGETS[ metric ].displayInSelectionPanel( {
 					select,
 					isViewOnlyDashboard,
-					metric
-				);
+					slug: metric,
+				} );
 		},
 		[ isViewOnlyDashboard ]
 	);
 
-	const metricsListReducer = ( acc, metricSlug ) => {
+	function metricsListReducer( acc, metricSlug ) {
 		if ( ! isKeyMetricAvailable( metricSlug ) ) {
 			return acc;
 		}
@@ -77,7 +77,7 @@ export default function MetricItems( { savedMetrics } ) {
 				group,
 			},
 		};
-	};
+	}
 
 	const allMetricItems = Object.keys( KEY_METRICS_WIDGETS ).reduce(
 		metricsListReducer,

@@ -54,6 +54,8 @@ import {
 } from '../common';
 import SetupErrorNotice from './SetupErrorNotice';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import useFormValue from '../../../../hooks/useFormValue';
 
 export default function SetupForm( { finishSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) =>
@@ -63,33 +65,28 @@ export default function SetupForm( { finishSetup } ) {
 		select( MODULES_TAGMANAGER ).getCurrentGTMGoogleTagID()
 	);
 	const analyticsModuleAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
+		select( CORE_MODULES ).isModuleAvailable( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 	// Only select the initial autosubmit + submitMode once from form state which will already be set if a snapshot was restored.
-	const initialAutoSubmit = useSelect(
-		( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ),
-		[]
-	);
-	const initialSubmitMode = useSelect(
-		( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitMode' ),
-		[]
-	);
+	const initialAutoSubmit = useFormValue( FORM_SETUP, 'autoSubmit' );
+	const initialSubmitMode = useFormValue( FORM_SETUP, 'submitMode' );
 
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
 
+	const submitInProgress = useFormValue( FORM_SETUP, 'submitInProgress' );
 	const isSaving = useSelect(
 		( select ) =>
 			select( MODULES_TAGMANAGER ).isDoingSubmitChanges() ||
 			select( CORE_LOCATION ).isNavigating() ||
-			select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' )
+			submitInProgress
 	);
 
 	// This flag is be used to determine whether to show the loading spinner
@@ -103,12 +100,12 @@ export default function SetupForm( { finishSetup } ) {
 	const { submitChanges } = useDispatch( MODULES_TAGMANAGER );
 	const submitForm = useCallback(
 		async ( { submitMode } = {} ) => {
-			const throwOnError = async ( func ) => {
+			async function throwOnError( func ) {
 				const { error } = ( await func() ) || {};
 				if ( error ) {
 					throw error;
 				}
-			};
+			}
 			// We'll use form state to persist the chosen submit choice
 			// in order to preserve support for auto-submit.
 			setValues( FORM_SETUP, { submitMode, submitInProgress: true } );
@@ -125,13 +122,13 @@ export default function SetupForm( { finishSetup } ) {
 					! analyticsModuleActive
 				) {
 					const { response, error } = await activateModule(
-						'analytics-4'
+						MODULE_SLUG_ANALYTICS_4
 					);
 					if ( error ) {
 						throw error;
 					}
 
-					await setItem( 'module_setup', 'analytics-4', {
+					await setItem( 'module_setup', MODULE_SLUG_ANALYTICS_4, {
 						ttl: 300,
 					} );
 
@@ -231,11 +228,11 @@ export default function SetupForm( { finishSetup } ) {
 						when clicked, hence the `type="button"`.
 						*/ }
 						<Button
-							tertiary
 							className="googlesitekit-setup-module__sub-action"
 							type="button"
 							onClick={ onSetupWithoutAnalytics }
 							disabled={ ! canSubmitChanges }
+							tertiary
 						>
 							{ __(
 								'Complete setup without Analytics',

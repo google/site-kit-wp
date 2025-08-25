@@ -43,10 +43,10 @@ export default {
 	component: UseSnippetSwitch,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 				registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

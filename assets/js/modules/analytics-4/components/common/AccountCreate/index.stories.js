@@ -31,6 +31,7 @@ import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../../../analytics-4/datastore/__fixtures__';
 import { Cell, Grid, Row } from '../../../../../material-components';
@@ -65,10 +66,10 @@ export default {
 	title: 'Modules/Analytics4/Components/AccountCreate',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 						owner: { login: 'analytics_4-owner-username' },
@@ -88,7 +89,7 @@ export default {
 					accountID: ACCOUNT_CREATE,
 					useSnippet: true,
 				} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

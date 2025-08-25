@@ -24,7 +24,9 @@ import fetchMock from 'fetch-mock';
  */
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from '../../modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import SettingsCardConsentMode from './SettingsCardConsentMode';
 import { freezeFetch, provideModules } from '../../../../tests/js/utils';
@@ -52,12 +54,12 @@ WithAdsConnected.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 			{
 				active: true,
 				connected: true,
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 			},
 		] );
 
@@ -151,17 +153,17 @@ export default {
 	title: 'Consent Mode/SettingsCardConsentMode',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 					},
 					{
 						active: false,
 						connected: false,
-						slug: 'ads',
+						slug: MODULE_SLUG_ADS,
 					},
 				] );
 
@@ -186,7 +188,7 @@ export default {
 				if ( args.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

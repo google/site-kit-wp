@@ -40,6 +40,7 @@ import {
 	UNSTAGED_SELECTION,
 } from '../constants';
 import { SelectionPanelItem } from '../../SelectionPanel';
+import useFormValue from '../../../hooks/useFormValue';
 
 export default function MetricItem( {
 	slug,
@@ -62,11 +63,9 @@ export default function MetricItem( {
 		}, [] );
 	} );
 
-	const selectedMetrics = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			KEY_METRICS_SELECTION_FORM,
-			KEY_METRICS_SELECTED
-		)
+	const selectedMetrics = useFormValue(
+		KEY_METRICS_SELECTION_FORM,
+		KEY_METRICS_SELECTED
 	);
 
 	const { getValue } = useSelect( ( select ) => select( CORE_FORMS ) );

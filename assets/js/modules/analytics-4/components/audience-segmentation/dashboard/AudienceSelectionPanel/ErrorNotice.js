@@ -41,6 +41,7 @@ import Link from '../../../../../../components/Link';
 import ReportErrorActions from '../../../../../../components/ReportErrorActions';
 import RequestAccessButton from './RequestAccessButton';
 import RetryButton from './RetryButton';
+import Notice from '../../../../../../components/Notice';
 
 export default function ErrorNotice() {
 	const viewContext = useViewContext();
@@ -116,9 +117,11 @@ export default function ErrorNotice() {
 	].some( ( error ) => !! error );
 
 	return (
-		<div className="googlesitekit-audience-selection-panel__error-notice">
-			<p>
-				{ hasInsufficientPermissionsError
+		<Notice
+			className="googlesitekit-audience-selection-panel__error-notice googlesitekit-notice--error googlesitekit-notice--small googlesitekit-notice--square"
+			type={ Notice.TYPES.ERROR }
+			description={
+				hasInsufficientPermissionsError
 					? createInterpolateElement(
 							__(
 								'Insufficient permissions, contact your administrator. Trouble getting access? <HelpLink />',
@@ -136,22 +139,22 @@ export default function ErrorNotice() {
 								),
 							}
 					  )
-					: __( 'Data loading failed', 'google-site-kit' ) }
-			</p>
-			<div className="googlesitekit-audience-selection-panel__error-notice-actions">
-				{ hasInsufficientPermissionsError || userCountError ? (
-					<ReportErrorActions
-						moduleSlug="analytics-4"
-						error={ errors }
-						hideGetHelpLink
-						buttonVariant="danger"
-						RequestAccessButton={ RequestAccessButton }
-						RetryButton={ RetryButton }
-					/>
-				) : (
-					<RetryButton handleRetry={ retrySyncAvailableAudiences } />
-				) }
-			</div>
-		</div>
+					: __( 'Data loading failed', 'google-site-kit' )
+			}
+			hideIcon
+		>
+			{ hasInsufficientPermissionsError || userCountError ? (
+				<ReportErrorActions
+					moduleSlug="analytics-4"
+					error={ errors }
+					buttonVariant="danger"
+					RequestAccessButton={ RequestAccessButton }
+					RetryButton={ RetryButton }
+					hideGetHelpLink
+				/>
+			) : (
+				<RetryButton handleRetry={ retrySyncAvailableAudiences } />
+			) }
+		</Notice>
 	);
 }

@@ -48,15 +48,17 @@ import {
 	CircularProgress,
 } from 'googlesitekit-components';
 import { MODULES_ADS, PLUGINS } from '../../datastore/constants';
+import { MODULE_SLUG_ADS } from '../../constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import WooLogoIcon from '../../../../../svg/graphics/woo-logo.svg';
 import ExternalIcon from '../../../../../svg/icons/external.svg';
 import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import useViewContext from '../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../util';
+import P from '../../../../components/Typography/P';
 
 export default function WooCommerceRedirectModal( {
 	dialogActive,
@@ -165,7 +167,7 @@ export default function WooCommerceRedirectModal( {
 		isGoogleForWooCommerceAdsConnected,
 	] );
 
-	const onSetupCallback = useActivateModuleCallback( 'ads' );
+	const onSetupCallback = useActivateModuleCallback( MODULE_SLUG_ADS );
 
 	const onContinueWithSiteKit = useCallback( () => {
 		trackEvent(
@@ -229,7 +231,7 @@ export default function WooCommerceRedirectModal( {
 					: __( 'Using the WooCommerce plugin?', 'google-site-kit' ) }
 			</DialogTitle>
 			<DialogContent>
-				<p>
+				<P>
 					{ isGoogleForWooCommerceAdsConnected ? (
 						<Fragment>
 							{ __(
@@ -248,7 +250,7 @@ export default function WooCommerceRedirectModal( {
 							'google-site-kit'
 						)
 					) }
-				</p>
+				</P>
 			</DialogContent>
 			<DialogFooter>
 				<Button
@@ -259,6 +261,7 @@ export default function WooCommerceRedirectModal( {
 							<CircularProgress size={ 14 } />
 						) : undefined
 					}
+					disabled={ !! isSaving }
 					tertiary
 				>
 					{ isGoogleForWooCommerceAdsConnected
@@ -294,6 +297,7 @@ export default function WooCommerceRedirectModal( {
 					target={
 						isGoogleForWooCommerceAdsConnected ? '_self' : '_blank'
 					}
+					disabled={ !! isSaving }
 					tertiary
 				>
 					{ isGoogleForWooCommerceAdsConnected

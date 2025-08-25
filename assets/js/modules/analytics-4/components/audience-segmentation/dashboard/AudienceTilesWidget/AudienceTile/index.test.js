@@ -50,6 +50,7 @@ import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
 } from '../../../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { provideCustomDimensionError } from '../../../../../utils/custom-dimensions';
 import { getAnalytics4MockResponse } from '../../../../../utils/data-mock';
 import {
@@ -173,7 +174,7 @@ describe( 'AudienceTile', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideModuleRegistrations( registry );
@@ -216,9 +217,8 @@ describe( 'AudienceTile', () => {
 			propertyID: '12345',
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: {
 					[ audienceResourceName ]: 20201220,
 				},
@@ -226,7 +226,8 @@ describe( 'AudienceTile', () => {
 				property: {
 					12345: 20201218,
 				},
-			} );
+			},
+		} );
 	} );
 
 	afterEach( () => {
@@ -261,6 +262,7 @@ describe( 'AudienceTile', () => {
 		);
 
 		// Wait for the tooltip to appear, its delay is 100ms.
+		// waitForRegistry() is not suitable to use here as no state changes occur.
 		await act( () => waitForTimeouts( 100 ) );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -413,6 +415,7 @@ describe( 'AudienceTile', () => {
 			);
 
 			// Wait for the tooltip to appear, its delay is 100ms.
+			// waitForRegistry() is not suitable to use here as no state changes occur.
 			await act( () => waitForTimeouts( 100 ) );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -448,6 +451,7 @@ describe( 'AudienceTile', () => {
 			);
 
 			// Wait for the tooltip to appear, its delay is 100ms.
+			// waitForRegistry() is not suitable to use here as no state changes occur.
 			await act( () => waitForTimeouts( 100 ) );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -557,6 +561,7 @@ describe( 'AudienceTile', () => {
 			);
 
 			// Wait for the tooltip to appear, its delay is 100ms.
+			// waitForRegistry() is not suitable to use here as no state changes occur.
 			await act( () => waitForTimeouts( 100 ) );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -594,6 +599,7 @@ describe( 'AudienceTile', () => {
 					);
 
 					// Allow the `trackEvent()` promise to resolve so the custom dimension creation logic can be executed.
+					// waitForRegistry() is not suitable to use here as no state changes occur.
 					await waitForTimeouts( 10 );
 				} );
 			} );

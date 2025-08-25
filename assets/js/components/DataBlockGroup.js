@@ -30,36 +30,21 @@ import { useDebounce } from '../hooks/useDebounce';
 export default function DataBlockGroup( { className, children } ) {
 	const ref = useRef();
 
-	const adjustFontSize = () => {
+	function adjustFontSize() {
 		const blocks = ref?.current?.querySelectorAll(
 			'.googlesitekit-data-block'
 		);
 
-		if ( ! blocks ) {
+		if ( ! blocks?.length ) {
 			return;
 		}
 
-		const firstDataPoint = blocks[ 0 ]?.querySelector(
-			'.googlesitekit-data-block__datapoint'
-		);
+		// Find the smallest font size needed across all blocks to fit without overflow.
+		let smallestScaleFactor = 1;
 
-		if ( ! firstDataPoint ) {
-			return;
-		}
-
-		// Reset font sizes, so on screen rotation/resize the font size
-		// can be re-calculated.
+		// Reset font sizes first to get accurate measurement, specifically on resize.
 		setFontSizes( blocks, '' );
 
-		// Set the default value to the current font size of the blocks.
-		const originalSize = parseInt(
-			global?.getComputedStyle( firstDataPoint )?.fontSize,
-			10
-		);
-		let adjustedSize = originalSize;
-
-		// Loop through the blocks to determine the smallest size needed to fit
-		// if any of the blocks are outside their container.
 		blocks.forEach( ( block ) => {
 			const dataPoint = block.querySelector(
 				'.googlesitekit-data-block__datapoint'
@@ -69,35 +54,42 @@ export default function DataBlockGroup( { className, children } ) {
 				return;
 			}
 
-			let fontSize = parseInt(
-				global?.getComputedStyle( dataPoint )?.fontSize,
-				10
-			);
 			const parentWidth = dataPoint?.parentElement?.offsetWidth;
 
-			// If the block value overflows the parent container, we want to keep
-			// decrementing the font size by 1 until it fits the container,
-			// so we can find the optimal font size. And it should't go below minimal value
-			// which is 14px.
-			if ( dataPoint.scrollWidth > parentWidth && fontSize > 14 ) {
-				while ( dataPoint.scrollWidth > parentWidth && fontSize > 14 ) {
-					fontSize -= 1;
-					dataPoint.style.fontSize = `${ fontSize }px`;
+			if ( dataPoint.scrollWidth > parentWidth ) {
+				// Calculate the exact scale factor needed to resize the content to the parent.
+				const scaleFactor = parentWidth / dataPoint.scrollWidth;
+
+				// Round the scale factor down to one decimal place. This creates a
+				// small visual buffer to prevent the text from appearing cramped.
+				// It also improves stability by preventing minor pixel fluctuations
+				// during resize from causing distracting font size changes.
+				const roundedScaleFactor = Math.floor( scaleFactor * 10 ) / 10;
+
+				if ( roundedScaleFactor < smallestScaleFactor ) {
+					smallestScaleFactor = roundedScaleFactor;
 				}
-				adjustedSize = fontSize;
 			}
 		} );
 
-		// If the initial loop found a block or blocks that needed adjustments to fit
-		// the container, only in that case, apply the final font size to all the blocks as well.
-		if ( originalSize !== adjustedSize ) {
-			// Loop through the blocks to set the adjusted font size to
-			// all the blocks in the current group.
-			setFontSizes( blocks, `${ adjustedSize }px` );
-		}
-	};
+		// Apply the smallest font size to all blocks if adjustment is needed.
+		if ( smallestScaleFactor < 1 && smallestScaleFactor > 0 ) {
+			const fontSize = parseInt(
+				global?.getComputedStyle(
+					blocks[ 0 ].querySelector(
+						'.googlesitekit-data-block__datapoint'
+					)
+				)?.fontSize,
+				10
+			);
 
-	const setFontSizes = ( blocks, adjustedSize ) => {
+			const newSize = Math.floor( fontSize * smallestScaleFactor );
+			const clampedNewSize = Math.max( newSize, 14 ); // Don't allow the font size to go below 14px.
+			setFontSizes( blocks, `${ clampedNewSize }px` );
+		}
+	}
+
+	function setFontSizes( blocks, adjustedSize ) {
 		blocks.forEach( ( block ) => {
 			const dataPoint = block?.querySelector(
 				'.googlesitekit-data-block__datapoint'
@@ -108,13 +100,13 @@ export default function DataBlockGroup( { className, children } ) {
 
 			dataPoint.style.fontSize = adjustedSize;
 		} );
-	};
+	}
 
-	// Debounce the adjustFontSize function
+	// Debounce the adjustFontSize function to prevent excessive calls on resize.
 	const debouncedAdjustFontSize = useDebounce( adjustFontSize, 50 );
 
 	useMount( () => {
-		adjustFontSize();
+		debouncedAdjustFontSize();
 
 		global.addEventListener( 'resize', debouncedAdjustFontSize );
 	} );

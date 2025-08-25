@@ -6,7 +6,7 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
- */
+ * */
 
 namespace Google\Site_Kit\Tests\Core\Authentication;
 
@@ -40,9 +40,9 @@ class Disconnected_ReasonTest extends SettingsTestCase {
 		$action   = 'googlesitekit_authorize_user';
 		$callback = array( $disconnected_reason, 'delete' );
 
-		$this->assertFalse( has_action( $action, $callback ) );
+		$this->assertFalse( has_action( $action, $callback ), 'Disconnected reason action should not be registered initially.' );
 		$disconnected_reason->register();
-		$this->assertTrue( false !== has_action( $action, $callback ) );
+		$this->assertTrue( false !== has_action( $action, $callback ), 'Disconnected reason action should be registered after registration.' );
 	}
 
 	/**

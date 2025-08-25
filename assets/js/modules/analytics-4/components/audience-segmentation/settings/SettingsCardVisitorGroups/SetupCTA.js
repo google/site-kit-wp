@@ -27,38 +27,40 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
+import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { CORE_NOTIFICATIONS } from '../../../../../../googlesitekit/notifications/datastore/constants';
-import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../../datastore/constants';
-import { AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION } from '../../dashboard/AudienceSegmentationSetupSuccessSubtleNotification';
+import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
 import Link from '../../../../../../components/Link';
+import P from '../../../../../../components/Typography/P';
 import { AudienceErrorModal } from '../../dashboard';
 import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import { trackEvent } from '../../../../../../util';
+import useFormValue from '../../../../../../hooks/useFormValue';
 
 export default function SetupCTA() {
 	const viewContext = useViewContext();
 
 	const [ showErrorModal, setShowErrorModal ] = useState( false );
 
-	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
-
-	const onSuccess = useCallback( () => {
-		// Dismiss success notification in dashboard.
-		dismissNotification( AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION );
-	}, [ dismissNotification ] );
-
 	const onError = useCallback( () => {
 		setShowErrorModal( true );
 	}, [ setShowErrorModal ] );
 
+	const { setValue } = useDispatch( CORE_UI );
+
 	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
 		useEnableAudienceGroup( {
 			redirectURL: global.location.href,
-			onSuccess,
+			onSuccess: () => {
+				setValue(
+					SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION,
+					true
+				);
+			},
 			onError,
 		} );
 
@@ -66,11 +68,9 @@ export default function SetupCTA() {
 		select( CORE_SITE ).getSetupErrorCode()
 	);
 
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_SEGMENTATION_SETUP_FORM,
-			'autoSubmit'
-		)
+	const autoSubmit = useFormValue(
+		AUDIENCE_SEGMENTATION_SETUP_FORM,
+		'autoSubmit'
 	);
 
 	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
@@ -86,26 +86,26 @@ export default function SetupCTA() {
 		).finally( onEnableGroups );
 	}
 
-	const onCancel = () => {
+	function onCancel() {
 		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
 			autoSubmit: false,
 		} );
 		clearPermissionScopeError();
 		setSetupErrorCode( null );
 		setShowErrorModal( false );
-	};
+	}
 
 	return (
 		<div className="googlesitekit-settings-visitor-groups__setup">
-			<p>
+			<P>
 				{ __(
 					'To set up new visitor groups for your site, Site Kit needs to update your Google Analytics property.',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 			{ isSaving && (
 				<div className="googlesitekit-settings-visitor-groups__setup-progress">
-					<p>{ __( 'Enabling groups', 'google-site-kit' ) }</p>
+					<P>{ __( 'Enabling groups', 'google-site-kit' ) }</P>
 					<ProgressBar compress />
 				</div>
 			) }

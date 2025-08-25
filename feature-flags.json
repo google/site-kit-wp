@@ -1,6 +1,6 @@
 [
   "adsPax",
-  "firstPartyMode",
-  "privacySandboxModule",
-  "rrmModule"
+  "gtagUserData",
+  "googleTagGateway",
+  "privacySandboxModule"
 ]

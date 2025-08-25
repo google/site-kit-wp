@@ -44,6 +44,8 @@ import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants'
 import { Grid, Row, Cell } from '../../material-components';
 import { trackEvent } from '../../util';
 import useViewContext from '../../hooks/useViewContext';
+import Typography from '../Typography';
+import P from '../Typography/P';
 
 export default function SetupUsingProxyViewOnly() {
 	const viewContext = useViewContext();
@@ -106,12 +108,17 @@ export default function SetupUsingProxyViewOnly() {
 												lgSize={ 8 }
 												lgOrder={ 1 }
 											>
-												<h1 className="googlesitekit-setup__title">
+												<Typography
+													as="h1"
+													className="googlesitekit-setup__title"
+													size="large"
+													type="headline"
+												>
 													{ __(
 														'View-only Dashboard Access',
 														'google-site-kit'
 													) }
-												</h1>
+												</Typography>
 												<p className="googlesitekit-setup__description">
 													{ createInterpolateElement(
 														__(
@@ -134,12 +141,12 @@ export default function SetupUsingProxyViewOnly() {
 														}
 													) }
 												</p>
-												<p>
+												<P>
 													{ __(
 														'Get insights about how people find and use your site as well as how to improve and monetize your content, directly in your WordPress dashboard',
 														'google-site-kit'
 													) }
-												</p>
+												</P>
 
 												<OptIn />
 
@@ -150,7 +157,7 @@ export default function SetupUsingProxyViewOnly() {
 														}
 													>
 														{ __(
-															'Go to Dashboard',
+															'Go to dashboard',
 															'google-site-kit'
 														) }
 													</Button>

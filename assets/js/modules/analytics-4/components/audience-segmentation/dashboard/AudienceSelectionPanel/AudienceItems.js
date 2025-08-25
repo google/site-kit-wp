@@ -67,9 +67,9 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 			return;
 		}
 
-		const syncAudiences = async () => {
+		async function syncAudiences() {
 			await syncAvailableAudiences();
-		};
+		}
 
 		setFirstView( false );
 		syncAudiences();
@@ -117,6 +117,8 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 					},
 				],
 				dimensions: [ { name: 'newVsReturning' } ],
+				reportID:
+					'audience-segmentation_audience-items_component_newVsReturningReport',
 			} );
 
 		// Get the user count for the available audiences using the `audienceResourceName` dimension.
@@ -171,10 +173,10 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 		} );
 	} );
 
-	const audiencesListReducer = (
+	function audiencesListReducer(
 		acc,
 		{ audienceType, description, displayName, name, userCount }
-	) => {
+	) {
 		let citation = '';
 
 		switch ( audienceType ) {
@@ -206,7 +208,7 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 				audienceType,
 			},
 		};
-	};
+	}
 
 	const availableSavedItems = availableAudiences
 		?.filter( ( { name } ) => savedItemSlugs.includes( name ) )

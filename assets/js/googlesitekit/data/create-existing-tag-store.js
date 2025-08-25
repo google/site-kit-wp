@@ -28,6 +28,7 @@ import {
 	commonActions,
 	createRegistryControl,
 	createRegistrySelector,
+	createReducer,
 } from 'googlesitekit-data';
 import { CORE_SITE } from '../datastore/site/constants';
 import { getExistingTagURLs, extractExistingTag } from '../../util/tag';
@@ -49,11 +50,11 @@ const RECEIVE_GET_EXISTING_TAG = 'RECEIVE_GET_EXISTING_TAG';
  * @return {Object} The existing tag store object, with additional `STORE_NAME` and
  * initialState` properties.
  */
-export const createExistingTagStore = ( {
+export function createExistingTagStore( {
 	storeName: STORE_NAME,
 	isValidTag,
 	tagMatchers,
-} = {} ) => {
+} = {} ) {
 	invariant(
 		'string' === typeof STORE_NAME && STORE_NAME,
 		'storeName is required.'
@@ -115,22 +116,16 @@ export const createExistingTagStore = ( {
 		),
 	};
 
-	const reducer = ( state = initialState, { type, payload } ) => {
+	const reducer = createReducer( ( state, { type, payload } ) => {
 		switch ( type ) {
 			case RECEIVE_GET_EXISTING_TAG: {
 				const { existingTag } = payload;
 
-				return {
-					...state,
-					existingTag,
-				};
-			}
-
-			default: {
-				return state;
+				state.existingTag = existingTag;
+				break;
 			}
 		}
-	};
+	} );
 
 	const resolvers = {
 		*getExistingTag() {
@@ -191,4 +186,4 @@ export const createExistingTagStore = ( {
 		...store,
 		STORE_NAME,
 	};
-};
+}

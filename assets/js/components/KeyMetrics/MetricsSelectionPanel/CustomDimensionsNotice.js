@@ -26,24 +26,24 @@ import { useEffect, useRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useInViewSelect, useSelect } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { useInViewSelect } from 'googlesitekit-data';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_ANALYTICS_4,
 	EDIT_SCOPE,
 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { KEY_METRICS_SELECTED, KEY_METRICS_SELECTION_FORM } from '../constants';
 import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
 import { elementsOverlap } from '../../../util/geometry';
 import whenActive from '../../../util/when-active';
+import useFormValue from '../../../hooks/useFormValue';
+import P from '../../Typography/P';
 
 function CustomDimensionsNotice() {
-	const selectedMetrics = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			KEY_METRICS_SELECTION_FORM,
-			KEY_METRICS_SELECTED
-		)
+	const selectedMetrics = useFormValue(
+		KEY_METRICS_SELECTION_FORM,
+		KEY_METRICS_SELECTED
 	);
 
 	const requiredCustomDimensions = selectedMetrics?.flatMap( ( tileName ) => {
@@ -117,11 +117,11 @@ function CustomDimensionsNotice() {
 
 	return (
 		<div className="googlesitekit-selection-panel-notice" ref={ noticeRef }>
-			<p>{ customDimensionMessage }</p>
+			<P>{ customDimensionMessage }</P>
 		</div>
 	);
 }
 
-export default whenActive( { moduleName: 'analytics-4' } )(
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
 	CustomDimensionsNotice
 );

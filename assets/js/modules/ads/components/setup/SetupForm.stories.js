@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { MODULES_ADS } from '../../datastore/constants';
+import { MODULE_SLUG_ADS } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
@@ -52,7 +53,7 @@ AdBlocker.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: false,
 				connected: false,
 			},
@@ -68,7 +69,7 @@ Empty.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: true,
 				connected: true,
 			},
@@ -88,7 +89,7 @@ Invalid.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: true,
 				connected: true,
 			},
@@ -113,7 +114,7 @@ Initial.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: false,
 				connected: false,
 			},
@@ -130,10 +131,10 @@ export default {
 	title: 'Modules/Ads/Setup/SetupForm',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'ads',
+						slug: MODULE_SLUG_ADS,
 						active: true,
 						connected: true,
 					},
@@ -151,7 +152,7 @@ export default {
 				registry
 					.dispatch( MODULES_ADS )
 					.setSettings( { conversionID: 'AW-123456789' } );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

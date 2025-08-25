@@ -45,15 +45,14 @@ import {
 	isValidWebDataStreamID,
 	isValidWebDataStreamSelection,
 } from '../../utils/validation';
+import useFormValue from '../../../../hooks/useFormValue';
 
 export default function SettingsEnhancedMeasurementSwitch( {
 	hasModuleAccess,
 } ) {
-	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			ENHANCED_MEASUREMENT_FORM,
-			ENHANCED_MEASUREMENT_ENABLED
-		)
+	const isEnhancedMeasurementEnabled = useFormValue(
+		ENHANCED_MEASUREMENT_FORM,
+		ENHANCED_MEASUREMENT_ENABLED
 	);
 
 	const propertyID = useSelect( ( select ) =>
@@ -149,20 +148,18 @@ export default function SettingsEnhancedMeasurementSwitch( {
 	const { setEnhancedMeasurementStreamEnabled } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
-	// If `isEnhancedMeasurementEnabled` is already defined in the first render, and either `PROPERTY_CREATE` or
-	// `WEBDATASTREAM_CREATE` is selected, it means we're rendering this component after the user has actively
-	// selected the enhanced measurement setting for the creation flow, in which case we don't want to override
-	// the setting to `true` in the `useEffect()` unless the property or web data stream selection is subsequently
-	// changed.
-	const skipEffect = useRef(
-		( propertyID === PROPERTY_CREATE ||
-			webDataStreamID === WEBDATASTREAM_CREATE ) &&
-			isEnhancedMeasurementEnabled !== undefined
-	);
+	const initialValues = useRef( {
+		isEnhancedMeasurementEnabled,
+		propertyID,
+		webDataStreamID,
+	} );
 
 	useEffect( () => {
-		if ( skipEffect.current ) {
-			skipEffect.current = false;
+		if (
+			initialValues.current.isEnhancedMeasurementEnabled !== undefined &&
+			initialValues.current.webDataStreamID === webDataStreamID &&
+			initialValues.current.propertyID === propertyID
+		) {
 			return;
 		}
 
@@ -191,14 +188,12 @@ export default function SettingsEnhancedMeasurementSwitch( {
 	}, [
 		isEnhancedMeasurementStreamEnabled,
 		propertyID,
-		setEnhancedMeasurementStreamEnabled,
 		setValues,
 		webDataStreamID,
 	] );
 
 	return (
 		<EnhancedMeasurementSwitch
-			showTick
 			disabled={ ! hasModuleAccess }
 			loading={ isLoading }
 			isEnhancedMeasurementAlreadyEnabled={
@@ -214,12 +209,13 @@ export default function SettingsEnhancedMeasurementSwitch( {
 
 				// Here we update the enhanced measurement `streamEnabled` setting to ensure `validateCanSubmitChanges()` can detect
 				// that the setting has changed via its call to `haveEnhancedMeasurementSettingsChanged()`.
-				setEnhancedMeasurementStreamEnabled(
+				setEnhancedMeasurementStreamEnabled( {
 					propertyID,
 					webDataStreamID,
-					! isEnhancedMeasurementEnabled
-				);
+					enabled: ! isEnhancedMeasurementStreamEnabled,
+				} );
 			} }
+			showTick
 		/>
 	);
 }

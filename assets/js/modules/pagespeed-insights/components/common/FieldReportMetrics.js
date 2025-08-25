@@ -34,10 +34,12 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import ReportMetric from './ReportMetric';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import INPLearnMoreLink from './INPLearnMoreLink';
-import ErrorText from '../../../../components/ErrorText';
 import ReportErrorActions from '../../../../components/ReportErrorActions';
 import { getReportErrorMessage } from '../../../../util/errors';
 import { CATEGORY_AVERAGE } from '../../util/constants';
+import ErrorNotice from '../../../../components/ErrorNotice';
+import Typography from '../../../../components/Typography';
+import P from '../../../../components/Typography/P';
 
 export default function FieldReportMetrics( { data, error } ) {
 	const {
@@ -52,7 +54,7 @@ export default function FieldReportMetrics( { data, error } ) {
 		return (
 			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 				<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--error">
-					<ErrorText message={ errorMessage } />
+					<ErrorNotice message={ errorMessage } />
 
 					<ReportErrorActions
 						moduleSlug="pagespeed-insights"
@@ -71,15 +73,15 @@ export default function FieldReportMetrics( { data, error } ) {
 		return (
 			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics googlesitekit-pagespeed-insights-web-vitals-metrics--field-data-unavailable">
 				<div className="googlesitekit-pagespeed-insights-web-vitals-metrics__field-data-unavailable-content">
-					<h3>
+					<Typography as="h3" type="headline" size="small">
 						{ __( 'Field data unavailable', 'google-site-kit' ) }
-					</h3>
-					<p>
+					</Typography>
+					<P>
 						{ __(
 							'Field data shows how real users actually loaded and interacted with your page. We don’t have enough real-world experience and speed data for this page. It may be new, or not enough users with Chrome browsers have visited it yet.',
 							'google-site-kit'
 						) }
-					</p>
+					</P>
 				</div>
 			</div>
 		);
@@ -95,7 +97,7 @@ export default function FieldReportMetrics( { data, error } ) {
 	return (
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
-				<p>
+				<P>
 					{ createInterpolateElement(
 						__(
 							'Field data shows how real users actually loaded and interacted with your page over time. <LearnMoreLink />',
@@ -105,7 +107,7 @@ export default function FieldReportMetrics( { data, error } ) {
 							LearnMoreLink: <MetricsLearnMoreLink />,
 						}
 					) }
-				</p>
+				</P>
 			</div>
 			<table
 				className={ classnames(
@@ -170,7 +172,6 @@ export default function FieldReportMetrics( { data, error } ) {
 						category={
 							interactionToNextPaint?.category || CATEGORY_AVERAGE
 						}
-						isLast
 						isUnavailable={ ! interactionToNextPaint }
 						hintText={ createInterpolateElement(
 							__(
@@ -181,6 +182,7 @@ export default function FieldReportMetrics( { data, error } ) {
 								LearnMoreLink: <INPLearnMoreLink />,
 							}
 						) }
+						isLast
 					/>
 				</tbody>
 			</table>

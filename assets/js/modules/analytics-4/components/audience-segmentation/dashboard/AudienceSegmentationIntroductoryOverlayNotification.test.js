@@ -37,16 +37,19 @@ import AudienceSegmentationIntroductoryOverlayNotification, {
 	AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from './AudienceSegmentationIntroductoryOverlayNotification';
 import * as scrollUtils from '../../../../../util/scroll';
-import * as tracking from '../../../../../util/tracking';
 import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 import {
-	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '../../../../../googlesitekit/constants';
 import {
 	getViewportWidth,
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
+import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
+import { ANALYTICS_4_NOTIFICATIONS } from '../../..';
+import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 
 const getNavigationalScrollTopSpy = jest.spyOn(
 	scrollUtils,
@@ -54,10 +57,17 @@ const getNavigationalScrollTopSpy = jest.spyOn(
 );
 const scrollToSpy = jest.spyOn( global, 'scrollTo' );
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-mockTrackEvent.mockImplementation( () => Promise.resolve() );
-
 describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
+	const AudienceSegmentationIntroductoryOverlayNotificationComponent =
+		withNotificationComponentProps(
+			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
+		)( AudienceSegmentationIntroductoryOverlayNotification );
+
+	const notification =
+		ANALYTICS_4_NOTIFICATIONS[
+			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
+		];
+
 	let registry;
 	let originalViewportWidth;
 
@@ -71,7 +81,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		provideUserInfo( registry );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 				setupComplete: true,
@@ -90,12 +100,18 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			didSetAudiences: true,
 		} );
 
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
+				notification
+			);
+
 		originalViewportWidth = getViewportWidth();
 		setViewportWidth( 450 );
 	} );
 
 	afterEach( () => {
-		mockTrackEvent.mockClear();
 		setViewportWidth( originalViewportWidth );
 	} );
 
@@ -103,7 +119,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		const { getByText, waitForRegistry } = render(
-			<AudienceSegmentationIntroductoryOverlayNotification />,
+			<AudienceSegmentationIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -114,66 +130,16 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 
 		expect(
 			getByText(
-				'You can now learn more about your site visitor groups by comparing different metrics'
+				'You can now learn more about your site visitor groups by comparing different metrics.'
 			)
 		).toBeInTheDocument();
-
-		// Make sure that the component is tracking the view event.
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-secondary-user-intro`,
-			'view_notification'
-		);
-	} );
-
-	it( 'should return null if the notification is dismissed', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
-			] );
-
-		const { container, waitForRegistry } = render(
-			<AudienceSegmentationIntroductoryOverlayNotification />,
-			{
-				registry,
-				context: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
-	} );
-
-	it( 'should return null if the audiences widget area is hidden', async () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-		registry
-			.dispatch( CORE_USER )
-			.setAudienceSegmentationWidgetHidden( true );
-
-		const { container, waitForRegistry } = render(
-			<AudienceSegmentationIntroductoryOverlayNotification />,
-			{
-				registry,
-				context: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should dismiss the notification when the "Got it" button is clicked', async () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		const { getByRole, waitForRegistry } = render(
-			<AudienceSegmentationIntroductoryOverlayNotification />,
+			<AudienceSegmentationIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -181,12 +147,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		);
 
 		await waitForRegistry();
-
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			1,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-secondary-user-intro`,
-			'view_notification'
-		);
 
 		fetchMock.postOnce( dismissItemEndpoint, {
 			body: JSON.stringify( [
@@ -201,11 +161,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		} );
 
 		expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			2,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-secondary-user-intro`,
-			'dismiss_notification'
-		);
 	} );
 
 	it( 'should scroll to the traffic widget area and dismiss the notification when the notification is clicked', async () => {
@@ -226,7 +181,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		);
 
 		const { getByRole, waitForRegistry } = render(
-			<AudienceSegmentationIntroductoryOverlayNotification />,
+			<AudienceSegmentationIntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -234,12 +189,6 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		);
 
 		await waitForRegistry();
-
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			1,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-secondary-user-intro`,
-			'view_notification'
-		);
 
 		fetchMock.postOnce( dismissItemEndpoint, {
 			body: JSON.stringify( [
@@ -258,29 +207,95 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			top: 12345,
 			behavior: 'smooth',
 		} );
-
-		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-			2,
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-secondary-user-intro`,
-			'confirm_notification'
-		);
 	} );
 
-	it( 'should not render if the dashboard is entity dashboard', async () => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-		const { container, waitForRegistry } = render(
-			<AudienceSegmentationIntroductoryOverlayNotification />,
-			{
+	describe( 'checkRequirements', () => {
+		it( 'is active when all the conditions are met', async () => {
+			const isActive = await notification.checkRequirements(
 				registry,
-				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
-			}
-		);
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
+		} );
 
-		await waitForRegistry();
+		it( 'is not active when the module is not connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: false,
+					connected: false,
+				},
+			] );
 
-		expect( container ).toBeEmptyDOMElement();
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 
-		expect( mockTrackEvent ).not.toHaveBeenCalled();
+		it( 'is active when the view context is view only but the module can be viewed', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+					shareable: true,
+				},
+			] );
+			registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+				'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+			} );
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+			);
+			expect( isActive ).toBe( true );
+		} );
+
+		it( 'is not active when the view context is view only but the module cannot be viewed', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+					shareable: true,
+				},
+			] );
+			registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+				'googlesitekit_read_shared_module_data::["analytics-4"]': false,
+			} );
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+			);
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when the audiences widget area is hidden', async () => {
+			registry
+				.dispatch( CORE_USER )
+				.setAudienceSegmentationWidgetHidden( true );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when the current user is the one who completed the audience segmentation setup', async () => {
+			const userID = registry.select( CORE_USER ).getID();
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAudienceSegmentationSetupCompletedBy( userID );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );

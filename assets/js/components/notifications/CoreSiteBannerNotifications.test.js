@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { dismissedPromptsEndpoint } from '../../../../tests/js/mock-dismiss-prompt-endpoints';
 import {
 	render,
 	createTestRegistry,
@@ -26,55 +27,74 @@ import {
 	provideSiteInfo,
 	act,
 } from '../../../../tests/js/test-utils';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { NOTIFICATION_GROUPS } from '../../googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
-
-const notification1 = {
-	id: 'test-notification',
-	title: 'Google Analytics 5 Beta',
-	content: 'Upgrade to the latest and greatest version of Analytics!',
-	ctaURL: '#ga5-upgrade',
-	ctaLabel: 'Upgrade to GA5!',
-	ctaTarget: '_blank',
-	learnMoreURL: '#learn-more',
-	learnMoreLabel: 'Learn more',
-	dismissible: true,
-	dismissLabel: 'Dismiss this message',
-};
 
 describe( 'CoreSiteBannerNotifications', () => {
 	let registry;
 
 	beforeEach( () => {
 		jest.useFakeTimers();
-		jest.spyOn( global, 'setTimeout' );
 
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry );
 		provideModules( registry );
 
+		const notification1 = {
+			id: 'test-notification',
+			title: 'Google Analytics 5 Beta',
+			content: 'Upgrade to the latest and greatest version of Analytics!',
+			ctaURL: '#ga5-upgrade',
+			ctaLabel: 'Upgrade to GA5!',
+			ctaTarget: '_blank',
+			learnMoreURL: '#learn-more',
+			learnMoreLabel: 'Learn more',
+			dismissible: true,
+			dismissLabel: 'Dismiss this message',
+		};
+
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetNotifications( [ notification1 ], {} );
 	} );
 
-	it( 'does render notification after timeout', () => {
+	it( 'does register server notification after surveys have loaded', async () => {
+		const fetchGetDismissedItems = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismissed-items'
+		);
+		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+		fetchMock.getOnce( dismissedPromptsEndpoint, { body: [] } );
+
 		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 		registry.dispatch( CORE_USER ).receiveGetSurvey( { survey: null } );
 
-		const { container } = render( <CoreSiteBannerNotifications />, {
+		const container = render( <CoreSiteBannerNotifications />, {
 			registry,
 		} );
-
-		expect( container.childElementCount ).toBe( 0 );
 
 		act( () => {
 			jest.runAllTimers();
 		} );
 
-		expect( container.childElementCount ).toBe( 1 );
+		// This component does not render anything directly,
+		expect( container.childElementCount ).toBe( undefined );
+
+		// Switch to real timers for the async resolver.
+		jest.useRealTimers();
+
+		const queuedNotifications = await registry
+			.resolveSelect( CORE_NOTIFICATIONS )
+			.getQueuedNotifications(
+				VIEW_CONTEXT_MAIN_DASHBOARD,
+				NOTIFICATION_GROUPS.DEFAULT
+			);
+
+		expect( queuedNotifications.length ).toBe( 1 );
 	} );
 
 	it( 'does not render notification with survey', () => {

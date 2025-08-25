@@ -41,6 +41,7 @@ import {
 	FORM_SETUP,
 	CONTEXT_AMP,
 } from '../../datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '../../constants';
 import { buildAccountWithContainers } from '../../datastore/__factories__';
 import SetupMain from './SetupMain';
 
@@ -75,7 +76,7 @@ describe( 'SetupMain', () => {
 
 		registry
 			.dispatch( CORE_MODULES )
-			.receiveGetModules( withActive( 'tagmanager' ) );
+			.receiveGetModules( withActive( MODULE_SLUG_TAGMANAGER ) );
 
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );

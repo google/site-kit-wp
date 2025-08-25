@@ -32,6 +32,8 @@ import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
+import useFormValue from '../../../hooks/useFormValue';
 
 export default function useCreateCustomDimensionsEffect() {
 	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
@@ -39,18 +41,16 @@ export default function useCreateCustomDimensionsEffect() {
 	);
 
 	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const hasAnalyticsEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_CUSTOM_DIMENSIONS_CREATE,
-			'autoSubmit'
-		)
+	const autoSubmit = useFormValue(
+		FORM_CUSTOM_DIMENSIONS_CREATE,
+		'autoSubmit'
 	);
 	const { setValues } = useDispatch( CORE_FORMS );
 

@@ -57,18 +57,18 @@ export default function createTrackEvent(
 			// If the event beacon fails, it shouldn't reject the promise since event
 			// tracking should not result in user-facing errors. It will just
 			// trigger a console warning.
-			const failCallback = () => {
+			function failCallback() {
 				_global.console.warn(
 					`Tracking event "${ action }" (category "${ category }") took too long to fire.`
 				);
 				resolve();
-			};
+			}
 			const failTimeout = setTimeout( failCallback, 1000 );
 			// eslint-disable-next-line camelcase
-			const event_callback = () => {
+			function event_callback() {
 				clearTimeout( failTimeout );
 				resolve();
-			};
+			}
 
 			dataLayerPush( 'event', action, { ...eventData, event_callback } );
 

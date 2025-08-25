@@ -61,6 +61,8 @@ describe( 'ErrorNotice', () => {
 		startDate: '2024-02-29',
 		endDate: '2024-03-27',
 		metrics: [ { name: 'totalUsers' } ],
+		reportID:
+			'audience-segmentation_get-audiences-user-count-report-options_store:selector',
 	};
 
 	const reportOptions = {
@@ -92,9 +94,8 @@ describe( 'ErrorNotice', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 
@@ -102,7 +103,8 @@ describe( 'ErrorNotice', () => {
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: '12345',
@@ -355,9 +357,8 @@ describe( 'ErrorNotice', () => {
 				data: {},
 			};
 
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveResourceDataAvailabilityDates( {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+				resourceAvailabilityDates: {
 					audience: availableAudiences.reduce(
 						( acc, { name, audienceType } ) => {
 							if ( 'SITE_KIT_AUDIENCE' === audienceType ) {
@@ -372,7 +373,8 @@ describe( 'ErrorNotice', () => {
 					),
 					customDimension: {},
 					property: {},
-				} );
+				},
+			} );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )

@@ -26,9 +26,12 @@ import {
 	CUSTOM_DIMENSION_DEFINITIONS,
 	DATE_RANGE_OFFSET,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
+	RESOURCE_TYPE_AUDIENCE,
 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
 import {
 	combineStores,
+	createReducer,
 	createRegistrySelector,
 	commonActions,
 } from 'googlesitekit-data';
@@ -38,12 +41,12 @@ import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { getPreviousDate } from '../../../util';
 import { isInsufficientPermissionsError } from '../../../util/errors';
 import { validateAudience } from '../utils/validation';
-import { RESOURCE_TYPE_AUDIENCE } from './partial-data';
 
 const MAX_INITIAL_AUDIENCES = 2;
 const START_AUDIENCES_SETUP = 'START_AUDIENCES_SETUP';
 const FINISH_AUDIENCES_SETUP = 'FINISH_AUDIENCES_SETUP';
-
+const START_MAYBE_SYNC_AUDIENCES = 'START_MAYBE_SYNC_AUDIENCES';
+const FINISH_MAYBE_SYNC_AUDIENCES = 'FINISH_MAYBE_SYNC_AUDIENCES';
 /**
  * Retrieves user counts for the provided audiences, filters to those with data over the given date range,
  * sorts them by total users, and returns the audienceResourceNames in that order.
@@ -102,7 +105,7 @@ async function getNonZeroDataAudiencesSortedByTotalUsers(
 const fetchCreateAudienceStore = createFetchStore( {
 	baseName: 'createAudience',
 	controlCallback: ( { audience } ) =>
-		set( 'modules', 'analytics-4', 'create-audience', {
+		set( 'modules', MODULE_SLUG_ANALYTICS_4, 'create-audience', {
 			audience,
 		} ),
 	argsToParams: ( audience ) => ( {
@@ -238,6 +241,10 @@ async function getInitialConfiguredAudiences( registry, availableAudiences ) {
 
 export const baseInitialState = {
 	isSettingUpAudiences: false,
+	audienceSync: {
+		inProgress: false,
+		hasSynced: false,
+	},
 };
 
 const baseActions = {
@@ -349,12 +356,24 @@ const baseActions = {
 		const isAuthenticated = select( CORE_USER ).isAuthenticated();
 
 		if ( ! isAuthenticated ) {
+			// Unblock the flag so component relying on the value are not incorrectly blocked.
+			yield { type: FINISH_MAYBE_SYNC_AUDIENCES };
+
+			return;
+		}
+
+		const isSyncingAudiences =
+			select( MODULES_ANALYTICS_4 ).isSyncingAudiences();
+
+		if ( isSyncingAudiences ) {
 			return;
 		}
 
 		yield commonActions.await(
 			resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings()
 		);
+
+		yield { type: START_MAYBE_SYNC_AUDIENCES };
 
 		const availableAudiencesLastSyncedAt =
 			select( MODULES_ANALYTICS_4 ).getAvailableAudiencesLastSyncedAt();
@@ -370,6 +389,8 @@ const baseActions = {
 				dispatch( MODULES_ANALYTICS_4 ).syncAvailableAudiences()
 			);
 		}
+
+		yield { type: FINISH_MAYBE_SYNC_AUDIENCES };
 	},
 
 	/**
@@ -727,25 +748,34 @@ const baseActions = {
 	},
 };
 
-const baseReducer = ( state, { type } ) => {
+const baseReducer = createReducer( ( state, { type } ) => {
 	switch ( type ) {
-		case START_AUDIENCES_SETUP: {
-			return {
-				...state,
-				isSettingUpAudiences: true,
+		case START_AUDIENCES_SETUP:
+			state.isSettingUpAudiences = true;
+			break;
+
+		case START_MAYBE_SYNC_AUDIENCES:
+			state.audienceSync = {
+				inProgress: true,
+				hasSynced: false,
 			};
-		}
-		case FINISH_AUDIENCES_SETUP: {
-			return {
-				...state,
-				isSettingUpAudiences: false,
+			break;
+
+		case FINISH_MAYBE_SYNC_AUDIENCES:
+			state.audienceSync = {
+				inProgress: false,
+				hasSynced: true,
 			};
-		}
-		default: {
-			return state;
-		}
+			break;
+
+		case FINISH_AUDIENCES_SETUP:
+			state.isSettingUpAudiences = false;
+			break;
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {};
 
@@ -837,6 +867,26 @@ const baseSelectors = {
 			return audience?.audienceType === 'USER_AUDIENCE';
 		}
 	),
+
+	/**
+	 * Checks if the audience is syncing.
+	 *
+	 * @since 1.158.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean)} `true` if the audience is syncing, `false` if not.
+	 */
+	isSyncingAudiences: ( state ) => state.audienceSync.inProgress,
+
+	/**
+	 * Checks if the audience sync has completed.
+	 *
+	 * @since 1.158.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean)} `true` if the audience sync has completed, `false` if not.
+	 */
+	hasSyncedAudiences: ( state ) => state.audienceSync.hasSynced,
 
 	/**
 	 * Checks whether the provided audiences are available.
@@ -944,6 +994,8 @@ const baseSelectors = {
 							( { name } ) => name
 						),
 					},
+					reportID:
+						'audience-segmentation_get-audiences-user-count-report-options_store:selector',
 				};
 			}
 	),

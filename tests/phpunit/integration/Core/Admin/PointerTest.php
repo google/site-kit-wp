@@ -7,6 +7,8 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 
 namespace Google\Site_Kit\Tests\Core\Admin;
 
@@ -24,7 +26,7 @@ class PointerTest extends TestCase {
 	public function test_get_slug() {
 		$pointer = new Pointer( 'test-slug', array() );
 
-		$this->assertEquals( 'test-slug', $pointer->get_slug() );
+		$this->assertEquals( 'test-slug', $pointer->get_slug(), 'Pointer slug should match the provided value.' );
 	}
 
 	public function test_get_title() {
@@ -35,7 +37,7 @@ class PointerTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals( 'Test Title', $pointer->get_title() );
+		$this->assertEquals( 'Test Title', $pointer->get_title(), 'Pointer title should match the provided value.' );
 	}
 
 	public function test_get_content_string() {
@@ -46,7 +48,7 @@ class PointerTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals( '<p>Test Content</p>', $pointer->get_content() );
+		$this->assertEquals( '<p>Test Content</p>', $pointer->get_content(), 'Pointer content should be wrapped in a paragraph.' );
 	}
 
 	public function test_get_content_callback() {
@@ -59,7 +61,7 @@ class PointerTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals( '<strong>Test Content</strong>', $pointer->get_content() );
+		$this->assertEquals( '<strong>Test Content</strong>', $pointer->get_content(), 'Pointer content should match the callback output.' );
 	}
 
 	public function test_get_target_id() {
@@ -70,7 +72,7 @@ class PointerTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals( 'test-target-id', $pointer->get_target_id() );
+		$this->assertEquals( 'test-target-id', $pointer->get_target_id(), 'Pointer target ID should match the provided value.' );
 	}
 
 	public function test_get_position_string() {
@@ -83,7 +85,8 @@ class PointerTest extends TestCase {
 
 		$this->assertEquals(
 			'bottom',
-			$pointer->get_position()
+			$pointer->get_position(),
+			'Pointer position should match the provided string.'
 		);
 	}
 
@@ -103,7 +106,8 @@ class PointerTest extends TestCase {
 				'edge'  => 'top',
 				'align' => 'left',
 			),
-			$pointer->get_position()
+			$pointer->get_position(),
+			'Pointer position should match the provided array.'
 		);
 	}
 
@@ -112,7 +116,8 @@ class PointerTest extends TestCase {
 
 		$this->assertEquals(
 			'top',
-			$pointer->get_position()
+			$pointer->get_position(),
+			'Pointer position should default to top.'
 		);
 	}
 
@@ -125,9 +130,9 @@ class PointerTest extends TestCase {
 	public function test_is_active( array $args, $expected ) {
 		$pointer = new Pointer( 'test-slug', $args );
 		if ( $expected ) {
-			$this->assertTrue( $pointer->is_active( self::TEST_HOOK_SUFFIX ) );
+			$this->assertTrue( $pointer->is_active( self::TEST_HOOK_SUFFIX ), 'Pointer should be active for the given hook suffix.' );
 		} else {
-			$this->assertFalse( $pointer->is_active( self::TEST_HOOK_SUFFIX ) );
+			$this->assertFalse( $pointer->is_active( self::TEST_HOOK_SUFFIX ), 'Pointer should not be active for the given hook suffix.' );
 		}
 	}
 

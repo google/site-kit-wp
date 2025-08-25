@@ -19,6 +19,7 @@
  */
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
@@ -30,8 +31,9 @@ import EngagedTrafficSourceWidget from './EngagedTrafficSourceWidget';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
 } from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 
 const reportOptions = {
@@ -43,6 +45,7 @@ const reportOptions = {
 	metrics: [ { name: 'engagedSessions' } ],
 	orderBy: 'engagedSessions',
 	limit: 1,
+	reportID: 'analytics-4_engaged-traffic-source-widget_widget_reportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
@@ -147,14 +150,25 @@ InsufficientPermissions.args = {
 // `MetricTile___` or KMW component.
 InsufficientPermissions.scenario = {};
 
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideAnalyticsReportWithoutDateRangeData( registry, reportOptions, {
+			emptyRowBehavior: 'remove',
+		} );
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
+
 export default {
 	title: 'Key Metrics/EngagedTrafficSourceWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -184,7 +198,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

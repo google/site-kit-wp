@@ -19,6 +19,7 @@
  */
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
@@ -30,7 +31,7 @@ import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import {
@@ -46,6 +47,8 @@ const pageViewsReportOptions = {
 	dimensions: [ 'pagePath' ],
 	metrics: [ { name: 'screenPageViews' } ],
 	limit: 1,
+	reportID:
+		'analytics-4_most-engaging-pages-widget_widget_pageViewsReportOptions',
 };
 
 const pageTitlesReportOptions = {
@@ -61,6 +64,7 @@ const pageTitlesReportOptions = {
 	metrics: [ { name: 'screenPageViews' } ],
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 15,
+	reportID: 'analytics-4_get-page-titles_store:selector_options',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
@@ -136,6 +140,8 @@ Ready.args = {
 				},
 			},
 			limit: 3,
+			reportID:
+				'analytics-4_most-engaging-pages-widget_widget_reportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );
@@ -200,6 +206,8 @@ ReadyViewOnly.args = {
 				},
 			},
 			limit: 3,
+			reportID:
+				'analytics-4_most-engaging-pages-widget_widget_reportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );
@@ -280,6 +288,8 @@ ZeroData.args = {
 				},
 			},
 			limit: 3,
+			reportID:
+				'analytics-4_most-engaging-pages-widget_widget_reportOptions',
 		};
 
 		const report = getAnalytics4MockResponse( reportOptions );
@@ -347,10 +357,10 @@ export default {
 	title: 'Key Metrics/MostEngagingPagesWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -380,7 +390,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

@@ -28,8 +28,12 @@ import {
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import DashboardSharingSettings from './index';
 import { MODULES_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Dialog, DialogContent } from '../../../material-components';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
@@ -61,7 +65,7 @@ SingleAdminWithOwnedModules.args = {
 		provideModules( registry, [
 			...modules,
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				shareable: true,
 				owner: {
 					id: 1,
@@ -69,7 +73,7 @@ SingleAdminWithOwnedModules.args = {
 				},
 			},
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				shareable: true,
 				owner: {
 					id: 1,
@@ -95,7 +99,7 @@ SingleAdminWithNonOwnedModules.args = {
 		provideModules( registry, [
 			...modules,
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				shareable: true,
 				owner: {
 					id: 2,
@@ -103,7 +107,7 @@ SingleAdminWithNonOwnedModules.args = {
 				},
 			},
 			{
-				slug: 'pagespeed-insights',
+				slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 				shareable: true,
 				owner: {
 					id: 2,
@@ -138,7 +142,7 @@ MultiAdminsWithOwnedModules.args = {
 		provideModules( registry, [
 			...modules,
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				shareable: true,
 				owner: {
 					id: 1,
@@ -146,7 +150,7 @@ MultiAdminsWithOwnedModules.args = {
 				},
 			},
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				shareable: true,
 				owner: {
 					id: 1,
@@ -180,7 +184,7 @@ MultiAdminsWithNonOwnedModules.args = {
 		provideModules( registry, [
 			...modules,
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				shareable: true,
 				owner: {
 					id: 2,
@@ -188,7 +192,7 @@ MultiAdminsWithNonOwnedModules.args = {
 				},
 			},
 			{
-				slug: 'pagespeed-insights',
+				slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 				shareable: true,
 				owner: {
 					id: 2,
@@ -215,7 +219,7 @@ MultiAdminsWithSharedOwnershipModules.args = {
 		provideModules( registry, [
 			...modules,
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				shareable: true,
 				owner: {
 					id: 1,
@@ -223,7 +227,7 @@ MultiAdminsWithSharedOwnershipModules.args = {
 				},
 			},
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				shareable: true,
 				owner: {
 					id: 1,
@@ -239,10 +243,10 @@ MultiAdminsWithSharedOwnershipModules.args = {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveSharedOwnershipModules( [
-				'search-console',
-				'analytics-4',
-				'adsense',
-				'pagespeed-insights',
+				MODULE_SLUG_SEARCH_CONSOLE,
+				MODULE_SLUG_ANALYTICS_4,
+				MODULE_SLUG_ADSENSE,
+				MODULE_SLUG_PAGESPEED_INSIGHTS,
 			] );
 
 		registry.dispatch( CORE_USER ).receiveCapabilities( {
@@ -262,7 +266,7 @@ export default {
 	title: 'Components/DashboardSharingSettings',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( CORE_MODULES )
 					.receiveGetSharingSettings( sharingSettings );
@@ -271,7 +275,9 @@ export default {
 					.receiveShareableRoles( roles );
 				registry
 					.dispatch( CORE_MODULES )
-					.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
+					.receiveSharedOwnershipModules( [
+						MODULE_SLUG_PAGESPEED_INSIGHTS,
+					] );
 
 				provideModules( registry, modules );
 				provideModuleRegistrations( registry );
@@ -289,7 +295,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

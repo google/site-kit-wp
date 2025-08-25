@@ -26,7 +26,7 @@ import { useEffect, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
-import ModalDialog from '../ModalDialog';
+import RefocusableModalDialog from '../RefocusableModalDialog';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import {
@@ -79,14 +79,14 @@ function AuthenticatedPermissionsModal() {
 		// If error has flag to skip the modal, redirect to the authorization
 		// page immediately without prompting the user, essentially short-
 		// circuiting to the confirm step.
-		const confirmIfSkipModal = async () => {
+		async function confirmIfSkipModal() {
 			if (
 				permissionsError?.data?.skipModal &&
 				permissionsError?.data?.scopes?.length
 			) {
 				await onConfirm();
 			}
-		};
+		}
 		confirmIfSkipModal();
 	}, [ onConfirm, permissionsError ] );
 
@@ -119,17 +119,17 @@ function AuthenticatedPermissionsModal() {
 
 	return (
 		<Portal>
-			<ModalDialog
+			<RefocusableModalDialog
 				title={ __(
 					'Additional Permissions Required',
 					'google-site-kit'
 				) }
 				subtitle={ permissionsError.message }
 				confirmButton={ __( 'Proceed', 'google-site-kit' ) }
-				dialogActive
 				handleConfirm={ onConfirm }
-				handleDialog={ onCancel }
+				handleCancel={ onCancel }
 				onClose={ onCancel }
+				dialogActive
 				medium
 			/>
 		</Portal>

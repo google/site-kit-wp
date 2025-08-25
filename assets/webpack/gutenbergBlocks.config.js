@@ -63,7 +63,7 @@ module.exports = ( mode ) => ( {
 	externals: gutenbergExternals,
 	output: {
 		filename: '[name].js',
-		path: rootDir + '/dist/assets/js/blocks',
+		path: rootDir + '/dist/assets/blocks',
 		publicPath: '',
 	},
 	module: {
@@ -103,7 +103,7 @@ module.exports = ( mode ) => ( {
 					to: ( { context, absoluteFilename } ) => {
 						return absoluteFilename.replace(
 							`${ context }/blocks`,
-							`${ rootDir }/dist/assets/js/blocks`
+							`${ rootDir }/dist/assets/blocks`
 						);
 					},
 				},

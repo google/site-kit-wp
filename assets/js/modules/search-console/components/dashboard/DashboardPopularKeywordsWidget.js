@@ -60,6 +60,8 @@ export default function DashboardPopularKeywordsWidget( props ) {
 		...dateRangeDates,
 		dimensions: 'query',
 		limit: 10,
+		reportID:
+			'search-console_dashboard-popular-keywords-widget_widget_reportArgs',
 	};
 
 	const url = useSelect( ( select ) =>
@@ -124,14 +126,17 @@ export default function DashboardPopularKeywordsWidget( props ) {
 
 	if ( loading || isGatheringData === undefined ) {
 		return (
-			<Widget noPadding Footer={ Footer }>
+			<Widget Footer={ Footer } noPadding>
 				<PreviewTable padding />
 			</Widget>
 		);
 	}
 
+	const columnClassName =
+		'googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--medium';
 	const tableColumns = [
 		{
+			columnHeaderClassName: columnClassName,
 			title: url
 				? __( 'Top search queries for your page', 'google-site-kit' )
 				: __( 'Top search queries for your site', 'google-site-kit' ),
@@ -175,6 +180,7 @@ export default function DashboardPopularKeywordsWidget( props ) {
 			},
 		},
 		{
+			columnHeaderClassName: columnClassName,
 			title: __( 'Clicks', 'google-site-kit' ),
 			description: __(
 				'Number of times users clicked on your content in search results',
@@ -187,6 +193,7 @@ export default function DashboardPopularKeywordsWidget( props ) {
 			},
 		},
 		{
+			columnHeaderClassName: columnClassName,
 			title: __( 'Impressions', 'google-site-kit' ),
 			description: __(
 				'Counted each time your content appears in search results',
@@ -203,7 +210,7 @@ export default function DashboardPopularKeywordsWidget( props ) {
 	];
 
 	return (
-		<Widget noPadding Footer={ Footer }>
+		<Widget Footer={ Footer } noPadding>
 			<TableOverflowContainer>
 				<ReportTable
 					rows={ data }

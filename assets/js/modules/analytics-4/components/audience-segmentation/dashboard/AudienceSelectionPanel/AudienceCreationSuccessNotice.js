@@ -75,7 +75,6 @@ export default function AudienceCreationSuccessNotice() {
 			</p>
 			<div className="googlesitekit-audience-selection-panel__success-notice-actions">
 				<Button
-					tertiary
 					onClick={ () => {
 						trackEvent(
 							`${ viewContext }_audiences-sidebar-create-audiences-success`,
@@ -87,6 +86,7 @@ export default function AudienceCreationSuccessNotice() {
 							);
 						} );
 					} }
+					tertiary
 				>
 					{ __( 'Got it', 'google-site-kit' ) }
 				</Button>

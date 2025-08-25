@@ -25,6 +25,7 @@ import {
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
 import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 
@@ -49,12 +50,12 @@ export default {
 	title: ' Modules/AdSense/Settings/AdBlockingRecoverySetupCTANotice',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
 						connected: true,
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 					},
 				] );
 				provideSiteInfo( registry );
@@ -62,7 +63,7 @@ export default {
 				registry
 					.dispatch( MODULES_ADSENSE )
 					.receiveGetSettings( validSettings );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

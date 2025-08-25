@@ -44,11 +44,11 @@ export default function ViewedStateObserver( { id, observeRef, threshold } ) {
 	const viewed = useHasBeenViewed( id );
 	const timeoutRef = useRef();
 
-	const clearExistingTimeout = () => {
+	function clearExistingTimeout() {
 		if ( timeoutRef.current ) {
 			clearTimeout( timeoutRef.current );
 		}
-	};
+	}
 
 	useEffect( () => {
 		// If notification is not viewed yet and is in view, start the timer.

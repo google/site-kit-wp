@@ -28,11 +28,13 @@ import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import TopDeviceDrivingPurchasesWidget from './TopDeviceDrivingPurchasesWidget';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
 } from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
 
@@ -47,6 +49,8 @@ const reportOptions = [
 				name: 'ecommercePurchases',
 			},
 		],
+		reportID:
+			'analytics-4_top-device-driving-purchases-widget_widget_totalPurchasesReportOptions',
 	},
 	{
 		compareStartDate: '2020-07-14',
@@ -61,6 +65,8 @@ const reportOptions = [
 		],
 		limit: 1,
 		orderBy: 'ecommercePurchases',
+		reportID:
+			'analytics-4_top-device-driving-purchases-widget_widget_deviceReportOptions',
 	},
 ];
 
@@ -167,14 +173,31 @@ InsufficientPermissions.args = {
 	},
 };
 
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideAnalyticsReportWithoutDateRangeData(
+			registry,
+			reportOptions[ 0 ]
+		);
+		provideAnalyticsReportWithoutDateRangeData(
+			registry,
+			reportOptions[ 1 ],
+			{ emptyRowBehavior: 'remove' }
+		);
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
+
 export default {
 	title: 'Key Metrics/TopDeviceDrivingPurchases',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -207,7 +230,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

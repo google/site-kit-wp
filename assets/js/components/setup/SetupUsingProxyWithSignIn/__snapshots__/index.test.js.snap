@@ -255,7 +255,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                     class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
                   >
                     <h1
-                      class="googlesitekit-setup__title"
+                      class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--large"
                     >
                       Set up Site Kit
                     </h1>
@@ -592,7 +592,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                     class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
                   >
                     <h1
-                      class="googlesitekit-setup__title"
+                      class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--large"
                     >
                       Set up Site Kit
                     </h1>
@@ -625,12 +625,13 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                             >
                               <svg
                                 class="mdc-checkbox__checkmark"
-                                viewBox="0 0 24 24"
+                                viewBox="0 0 12 9"
                               >
                                 <path
                                   class="mdc-checkbox__checkmark-path"
-                                  d="M1.73,12.91 8.1,19.28 22.79,4.59"
+                                  d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
                                   fill="none"
+                                  stroke="none"
                                 />
                               </svg>
                               <div

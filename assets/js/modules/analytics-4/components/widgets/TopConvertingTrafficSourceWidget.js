@@ -38,6 +38,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { useInViewSelect } from '../../../../hooks/useInViewSelect';
 import MetricTileText from '../../../../components/KeyMetrics/MetricTileText';
 import { numFmt } from '../../../../util';
@@ -57,11 +58,13 @@ function TopConvertingTrafficSourceWidget( { Widget } ) {
 		dimensions: [ 'sessionDefaultChannelGroup' ],
 		metrics: [
 			{
-				name: 'sessionConversionRate',
+				name: 'sessionKeyEventRate',
 			},
 		],
 		limit: 1,
-		orderBy: 'sessionConversionRate',
+		orderBy: 'sessionKeyEventRate',
+		reportID:
+			'analytics-4_top-converting-traffic-source-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(
@@ -83,7 +86,7 @@ function TopConvertingTrafficSourceWidget( { Widget } ) {
 			)
 	);
 
-	const getRowForDateRange = ( dateRange ) => {
+	function getRowForDateRange( dateRange ) {
 		if ( ! report?.rows ) {
 			return null;
 		}
@@ -96,16 +99,16 @@ function TopConvertingTrafficSourceWidget( { Widget } ) {
 
 		// As the report is limited to 1 row per date range, return the first row.
 		return rows[ 0 ];
-	};
+	}
 
 	const currentRow = getRowForDateRange( 'date_range_0' );
 	const previousRow = getRowForDateRange( 'date_range_1' );
 
 	const topChannelGroup = currentRow?.dimensionValues?.[ 0 ].value || '-';
-	const topConversionRate = parseFloat(
+	const topKeyEventRate = parseFloat(
 		currentRow?.metricValues?.[ 0 ].value || '0'
 	);
-	const previousTopConversionRate = parseFloat(
+	const previousTopKeyEventRate = parseFloat(
 		previousRow?.metricValues?.[ 0 ].value || '0'
 	);
 
@@ -122,12 +125,12 @@ function TopConvertingTrafficSourceWidget( { Widget } ) {
 			metricValue={ topChannelGroup }
 			metricValueFormat={ format }
 			subText={ sprintf(
-				/* translators: %d: Percentage of visits that led to conversions. */
-				__( '%s of visits led to conversions', 'google-site-kit' ),
-				numFmt( topConversionRate, format )
+				/* translators: %d: Percentage of visits that led to key events. */
+				__( '%s of visits led to key events', 'google-site-kit' ),
+				numFmt( topKeyEventRate, format )
 			) }
-			previousValue={ previousTopConversionRate }
-			currentValue={ topConversionRate }
+			previousValue={ previousTopKeyEventRate }
+			currentValue={ topKeyEventRate }
 			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
@@ -140,6 +143,6 @@ TopConvertingTrafficSourceWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( TopConvertingTrafficSourceWidget );

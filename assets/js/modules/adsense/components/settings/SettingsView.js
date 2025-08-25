@@ -40,6 +40,7 @@ import {
 } from './utils';
 import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
+import Typography from '../../../../components/Typography';
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>
@@ -122,35 +123,37 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Publisher ID', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ accountID } />
 					</p>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Account Status', 'google-site-kit' ) }
-					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						{ accountStatusLabel }
-					</p>
-				</div>
-				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Site Status', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ siteStatusLabel + ' ' }
 						<Link
 							href={ siteStatusURL }
 							className="googlesitekit-settings-module__cta-button"
-							external
 							disabled={ siteStatusURL === undefined }
 							hideExternalIndicator={
 								siteStatusURL === undefined
 							}
+							external
 						>
 							{ siteStatusLinkLabel }
 						</Link>
@@ -160,9 +163,30 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
+						{ __( 'Account Status', 'google-site-kit' ) }
+					</Typography>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ accountStatusLabel }
+					</p>
+				</div>
+			</div>
+
+			<div className="googlesitekit-settings-module__meta-items">
+				<div className="googlesitekit-settings-module__meta-item">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'AdSense Code', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ snippetLabel }
 					</p>
@@ -171,9 +195,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Excluded from ads', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ autoAdsDisabledMessage }
 					</p>
@@ -183,9 +212,14 @@ export default function SettingsView() {
 			{ webStoriesActive && (
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
+						<Typography
+							as="h5"
+							size="medium"
+							type="label"
+							className="googlesitekit-settings-module__meta-item-type"
+						>
 							{ __( 'Web Stories Ad Unit', 'google-site-kit' ) }
-						</h5>
+						</Typography>
 						<p className="googlesitekit-settings-module__meta-item-data">
 							{ ! webStoriesAdUnit && (
 								<span>{ __( 'None', 'google-site-kit' ) }</span>
@@ -200,15 +234,20 @@ export default function SettingsView() {
 
 			{ adBlockingRecoverySetupStatus?.length > 0 && (
 				<div className="googlesitekit-settings-module__meta-items">
-					{ loading && <ProgressBar small height={ 90 } /> }
+					{ loading && <ProgressBar verticalSpacing={ 86 } small /> }
 					{ ! loading && (
 						<div className="googlesitekit-settings-module__meta-item">
-							<h5 className="googlesitekit-settings-module__meta-item-type">
+							<Typography
+								as="h5"
+								size="medium"
+								type="label"
+								className="googlesitekit-settings-module__meta-item-type"
+							>
 								{ __(
 									'Ad blocking recovery',
 									'google-site-kit'
 								) }
-							</h5>
+							</Typography>
 							{ ! useAdBlockingRecoverySnippet && (
 								<p className="googlesitekit-settings-module__meta-item-data">
 									{ __(
@@ -257,7 +296,7 @@ export default function SettingsView() {
 
 			{ ! adBlockingRecoverySetupStatus?.length && (
 				<Fragment>
-					{ loading && <ProgressBar small height={ 135 } /> }
+					{ loading && <ProgressBar verticalSpacing={ 131 } small /> }
 					{ ! loading && <AdBlockingRecoverySetupCTANotice /> }
 				</Fragment>
 			) }

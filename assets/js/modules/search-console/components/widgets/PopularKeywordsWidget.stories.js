@@ -27,6 +27,7 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import PopularKeywordsWidget from './PopularKeywordsWidget';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../constants';
 import { provideSearchConsoleMockReport } from '../../util/data-mock';
 import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
 import {
@@ -40,6 +41,7 @@ const reportOptions = {
 	endDate: '2020-09-07',
 	dimensions: 'query',
 	limit: 100,
+	reportID: 'search-console_popular-keywords-widget_widget_reportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
@@ -152,10 +154,10 @@ export default {
 	title: 'Key Metrics/PopularKeywordsWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'search-console',
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
 						active: true,
 						connected: true,
 					},
@@ -173,7 +175,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

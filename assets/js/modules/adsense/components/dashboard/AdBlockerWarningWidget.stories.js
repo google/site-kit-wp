@@ -22,6 +22,7 @@
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import AdBlockerWarningWidget from './AdBlockerWarningWidget';
 
@@ -40,17 +41,17 @@ export default {
 	title: 'Modules/AdSense/Widgets/AdBlockerWarning',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
 						connected: true,
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 					},
 				] );
 
 				registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

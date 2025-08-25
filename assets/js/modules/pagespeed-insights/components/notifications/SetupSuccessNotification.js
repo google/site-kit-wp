@@ -31,9 +31,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
-import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
-import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
+import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '../../../../components/Notice/constants';
 import useQueryArg from '../../../../hooks/useQueryArg';
 import { useBreakpoint } from '../../../../hooks/useBreakpoint';
 import { getNavigationalScrollTop } from '../../../../util/scroll';
@@ -47,13 +46,13 @@ export default function SetupSuccessNotification( { id, Notification } ) {
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const onDismiss = () => {
+	function onDismiss() {
 		setNotification( undefined );
 		setSlug( undefined );
-	};
+	}
 
 	const anchorLink = `#${ ANCHOR_ID_SPEED }`;
-	const onJumpLinkClick = ( event ) => {
+	function onJumpLinkClick( event ) {
 		event.preventDefault();
 
 		dismissNotification( id );
@@ -64,11 +63,13 @@ export default function SetupSuccessNotification( { id, Notification } ) {
 			top: getNavigationalScrollTop( anchorLink, breakpoint ),
 			behavior: 'smooth',
 		} );
-	};
+	}
 
 	return (
 		<Notification>
-			<SubtleNotification
+			<NoticeNotification
+				notificationID={ id }
+				type={ TYPES.SUCCESS }
 				title={ __(
 					'Congrats on completing the setup for PageSpeed Insights!',
 					'google-site-kit'
@@ -77,21 +78,13 @@ export default function SetupSuccessNotification( { id, Notification } ) {
 					'Jump to the bottom of the dashboard to see how fast your home page is',
 					'google-site-kit'
 				) }
-				dismissCTA={
-					<Dismiss
-						id={ id }
-						primary={ false }
-						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-						onDismiss={ onDismiss }
-					/>
-				}
-				additionalCTA={
-					<CTALinkSubtle
-						id={ id }
-						ctaLabel={ __( 'Show me', 'google-site-kit' ) }
-						onCTAClick={ onJumpLinkClick }
-					/>
-				}
+				dismissButton={ {
+					onClick: onDismiss,
+				} }
+				ctaButton={ {
+					label: __( 'Show me', 'google-site-kit' ),
+					onClick: onJumpLinkClick,
+				} }
 			/>
 		</Notification>
 	);

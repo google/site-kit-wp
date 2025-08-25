@@ -28,6 +28,7 @@ import {
 	provideSiteInfo,
 	provideModules,
 	provideUserCapabilities,
+	provideUserAuthentication,
 	provideModuleRegistrations,
 	act,
 } from '../../../../../../tests/js/test-utils';
@@ -40,6 +41,7 @@ import {
 	MODULES_ADS,
 	PLUGINS,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ADS } from '../../constants';
 import WooCommerceRedirectModal from './WooCommerceRedirectModal';
 import * as tracking from '../../../../util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
@@ -57,9 +59,9 @@ describe( 'WooCommerceRedirectModal', () => {
 	function ModalComponent() {
 		return (
 			<WooCommerceRedirectModal
-				dialogActive
 				onDismiss={ onDismiss }
 				onClose={ onClose }
+				dialogActive
 			/>
 		);
 	}
@@ -81,6 +83,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		provideModules( registry );
 		provideModuleRegistrations( registry );
 		provideUserCapabilities( registry );
+		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
@@ -189,7 +192,9 @@ describe( 'WooCommerceRedirectModal', () => {
 		expect( onDismiss ).toHaveBeenCalled();
 
 		expect(
-			registry.select( CORE_MODULES ).isDoingSetModuleActivation( 'ads' )
+			registry
+				.select( CORE_MODULES )
+				.isDoingSetModuleActivation( MODULE_SLUG_ADS )
 		).toBe( true );
 	} );
 
@@ -205,10 +210,10 @@ describe( 'WooCommerceRedirectModal', () => {
 
 		const { getByText, waitForRegistry } = render(
 			<WooCommerceRedirectModal
-				dialogActive
 				onDismiss={ onDismiss }
 				onClose={ onClose }
 				onBeforeSetupCallback={ onBeforeSetupCallback }
+				dialogActive
 			/>,
 			{
 				registry,
@@ -507,7 +512,9 @@ describe( 'WooCommerceRedirectModal', () => {
 		fireEvent.click( createAnotherAccountButton );
 
 		expect(
-			registry.select( CORE_MODULES ).isDoingSetModuleActivation( 'ads' )
+			registry
+				.select( CORE_MODULES )
+				.isDoingSetModuleActivation( MODULE_SLUG_ADS )
 		).toBe( true );
 		expect( onDismiss ).toHaveBeenCalled();
 	} );

@@ -36,29 +36,29 @@ export default function NoticeNotification( {
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const handleDismissWithTrackEvent = async ( event ) => {
+	async function handleDismissWithTrackEvent( event ) {
 		await dismissButton?.onClick?.( event );
 		trackEvents.dismiss(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
 		dismissNotification( notificationID, {
-			...dismissButton.dismissOptions,
+			...( dismissButton?.dismissOptions || {} ),
 		} );
-	};
+	}
 
-	const handleCTAClickWithTrackEvent = async ( event ) => {
+	async function handleCTAClickWithTrackEvent( event ) {
 		await ctaButton?.onClick?.( event );
 		trackEvents.confirm(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
-	};
+	}
 
 	return (
 		<Grid>
 			<Row>
-				<Cell alignMiddle size={ 12 }>
+				<Cell size={ 12 } alignMiddle>
 					<Notice
 						dismissButton={ {
 							...dismissButton,

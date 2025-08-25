@@ -125,6 +125,7 @@ class Notifications {
 							$endpoint = add_query_arg(
 								array(
 									'site_id' => $this->credentials->get()['oauth2_client_id'],
+									'hl'      => get_user_locale(),
 								),
 								$this->google_proxy->url( '/notifications/' )
 							);

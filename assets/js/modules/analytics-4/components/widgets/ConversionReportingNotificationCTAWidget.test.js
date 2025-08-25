@@ -42,6 +42,7 @@ import {
 	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../../components/KeyMetrics/constants';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -60,6 +61,7 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import ConversionReportingNotificationCTAWidget from './ConversionReportingNotificationCTAWidget';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -86,7 +88,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		provideKeyMetricsUserInputSettings( registry );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -309,12 +311,12 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: true,
 					connected: true,
 				},
 				{
-					slug: 'search-console',
+					slug: MODULE_SLUG_SEARCH_CONSOLE,
 					active: true,
 					connected: true,
 				},

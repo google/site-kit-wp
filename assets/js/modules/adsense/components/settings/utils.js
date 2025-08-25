@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
+
 /**
  * WordPress dependencies
  */
@@ -54,7 +56,7 @@ import {
  * @param {string} accountStatus The active account status.
  * @return {string} The account status label.
  */
-export const getAccountStatusLabel = ( accountStatus ) => {
+export function getAccountStatusLabel( accountStatus ) {
 	let accountStatusLabel = __(
 		'Your site isn’t ready to show ads yet',
 		'google-site-kit'
@@ -91,7 +93,7 @@ export const getAccountStatusLabel = ( accountStatus ) => {
 			break;
 	}
 	return accountStatusLabel;
-};
+}
 
 /**
  * Returns translatable site status label.
@@ -101,7 +103,7 @@ export const getAccountStatusLabel = ( accountStatus ) => {
  * @param {string} siteStatus The site status.
  * @return {string} The site status label.
  */
-export const getSiteStatusLabel = ( siteStatus ) => {
+export function getSiteStatusLabel( siteStatus ) {
 	let siteStatusLabel = '';
 	switch ( siteStatus ) {
 		case SITE_STATUS_NEEDS_ATTENTION:
@@ -131,7 +133,7 @@ export const getSiteStatusLabel = ( siteStatus ) => {
 			break;
 	}
 	return siteStatusLabel;
-};
+}
 
 /**
  * Returns translatable site snippet label.
@@ -143,7 +145,7 @@ export const getSiteStatusLabel = ( siteStatus ) => {
  * @param {string}  clientID    The client ID.
  * @return {string} The site snippet label.
  */
-export const getSnippetLabel = ( useSnippet, existingTag, clientID ) => {
+export function getSnippetLabel( useSnippet, existingTag, clientID ) {
 	let snippetLabel = __(
 		'The AdSense code has not been placed on your site',
 		'google-site-kit'
@@ -160,7 +162,7 @@ export const getSnippetLabel = ( useSnippet, existingTag, clientID ) => {
 		);
 	}
 	return snippetLabel;
-};
+}
 
 /**
  * Returns translatable auto ads disabled message.
@@ -170,7 +172,7 @@ export const getSnippetLabel = ( useSnippet, existingTag, clientID ) => {
  * @param {Array} autoAdsDisabled The array of user types strings.
  * @return {string} The auto ads disabled message.
  */
-export const getAutoAdsDisabledMessage = ( autoAdsDisabled ) => {
+export function getAutoAdsDisabledMessage( autoAdsDisabled ) {
 	let autoAdsDisabledMessage = __(
 		'Ads are currently displayed for all visitors',
 		'google-site-kit'
@@ -192,4 +194,4 @@ export const getAutoAdsDisabledMessage = ( autoAdsDisabled ) => {
 	}
 
 	return autoAdsDisabledMessage;
-};
+}

@@ -38,6 +38,7 @@ import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/consta
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../../../../../../hooks/useDashboardType';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import useViewOnly from '../../../../../../hooks/useViewOnly';
 import useViewContext from '../../../../../../hooks/useViewContext';
 import OptionalCells from './OptionalCells';
@@ -46,13 +47,13 @@ import DataBlocks from './DataBlocks';
 export default function Overview( props ) {
 	const {
 		ga4Data,
-		ga4ConversionsData,
+		ga4KeyEventsData,
 		ga4VisitorsData,
 		searchConsoleData,
 		selectedStats,
 		handleStatsSelection,
 		dateRangeLength,
-		error,
+		errors,
 		WidgetReportError,
 		showRecoverableAnalytics,
 	} = props;
@@ -63,7 +64,7 @@ export default function Overview( props ) {
 	const viewContext = useViewContext();
 
 	const isAnalytics4ModuleAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
+		select( CORE_MODULES ).isModuleAvailable( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const canViewSharedAnalytics4 = useSelect( ( select ) => {
@@ -75,11 +76,13 @@ export default function Overview( props ) {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+		return select( CORE_USER ).canViewSharedModule(
+			MODULE_SLUG_ANALYTICS_4
+		);
 	} );
 
 	const ga4ModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
@@ -94,22 +97,22 @@ export default function Overview( props ) {
 	const showGA4 =
 		canViewSharedAnalytics4 &&
 		ga4ModuleConnected &&
-		! error &&
+		! errors.length &&
 		! showRecoverableAnalytics;
 
 	const onGA4NewBadgeLearnMoreClick = useCallback( () => {
 		trackEvent( `${ viewContext }_ga4-new-badge`, 'click_learn_more_link' );
 	}, [ viewContext ] );
 
-	const showConversionsCTA =
+	const showKeyEventsCTA =
 		isAuthenticated &&
 		showGA4 &&
 		dashboardType === DASHBOARD_TYPE_MAIN &&
-		( ! ga4ConversionsData?.length ||
-			// Show the CTA if the sole conversion set up is the
-			// GA4 default "purchase" conversion event with no data value.
-			( ga4ConversionsData?.length === 1 &&
-				ga4ConversionsData[ 0 ].eventName === 'purchase' &&
+		( ! ga4KeyEventsData?.length ||
+			// Show the CTA if the sole key event set up is the
+			// GA4 default "purchase" key event event with no data value.
+			( ga4KeyEventsData?.length === 1 &&
+				ga4KeyEventsData[ 0 ].eventName === 'purchase' &&
 				ga4Data?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value === '0' ) );
 
 	return (
@@ -124,16 +127,16 @@ export default function Overview( props ) {
 					dateRangeLength={ dateRangeLength }
 					showGA4={ showGA4 }
 					dashboardType={ dashboardType }
-					showConversionsCTA={ showConversionsCTA }
+					showKeyEventsCTA={ showKeyEventsCTA }
 					engagementRateLearnMoreURL={ engagementRateLearnMoreURL }
 					onGA4NewBadgeLearnMoreClick={ onGA4NewBadgeLearnMoreClick }
 				/>
 
 				<OptionalCells
 					canViewSharedAnalytics4={ canViewSharedAnalytics4 }
-					error={ error }
+					errors={ errors }
 					showGA4={ showGA4 }
-					showConversionsCTA={ showConversionsCTA }
+					showKeyEventsCTA={ showKeyEventsCTA }
 					showRecoverableAnalytics={ showRecoverableAnalytics }
 					WidgetReportError={ WidgetReportError }
 				/>
@@ -144,11 +147,11 @@ export default function Overview( props ) {
 
 Overview.propTypes = {
 	ga4Data: PropTypes.object,
-	ga4ConversionsData: PropTypes.arrayOf( PropTypes.object ),
+	ga4KeyEventsData: PropTypes.arrayOf( PropTypes.object ),
 	ga4VisitorsData: PropTypes.object,
 	searchConsoleData: PropTypes.arrayOf( PropTypes.object ),
 	selectedStats: PropTypes.number.isRequired,
 	handleStatsSelection: PropTypes.func.isRequired,
-	error: PropTypes.object,
+	errors: PropTypes.arrayOf( PropTypes.object ),
 	WidgetReportError: PropTypes.elementType.isRequired,
 };

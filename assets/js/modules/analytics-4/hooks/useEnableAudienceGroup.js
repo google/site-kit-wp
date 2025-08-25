@@ -40,6 +40,7 @@ import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '../datastore/constants';
+import useFormValue from '../../../hooks/useFormValue';
 
 export default function useEnableAudienceGroup( {
 	redirectURL,
@@ -55,11 +56,9 @@ export default function useEnableAudienceGroup( {
 	const hasAnalytics4EditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_SEGMENTATION_SETUP_FORM,
-			'autoSubmit'
-		)
+	const autoSubmit = useFormValue(
+		AUDIENCE_SEGMENTATION_SETUP_FORM,
+		'autoSubmit'
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );

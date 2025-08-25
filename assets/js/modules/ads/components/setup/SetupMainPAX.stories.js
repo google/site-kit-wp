@@ -103,12 +103,12 @@ export default {
 	title: 'Modules/Ads/Setup/SetupMainPAX',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
 
 				args.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

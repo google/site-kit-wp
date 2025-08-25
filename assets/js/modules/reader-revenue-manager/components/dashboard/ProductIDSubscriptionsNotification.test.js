@@ -31,7 +31,10 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import { RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID } from '../../constants';
+import {
+	RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
+} from '../../constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
@@ -56,7 +59,7 @@ describe( 'ProductIDSubscriptionsNotification', () => {
 		provideSiteInfo( registry );
 		provideModules( registry, [
 			{
-				slug: 'reader-revenue-manager',
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 				active: true,
 				connected: true,
 			},

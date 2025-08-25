@@ -20,6 +20,8 @@
  * External dependencies
  */
 import { useFirstMountState, useUnmount } from 'react-use';
+import { createMemoryHistory } from 'history';
+import { Router } from 'react-router';
 
 /**
  * Internal dependencies
@@ -28,29 +30,47 @@ import '../assets/sass/wpdashboard.scss';
 import '../assets/sass/adminbar.scss';
 import '../assets/sass/admin.scss';
 import './assets/sass/wp-admin.scss';
+import './assets/sass/blocks.scss';
 import './assets/sass/stories/tokens.scss';
 import './assets/sass/stories/type-scale.scss';
 // Ensure all globals are set up before any other imports are run.
 import './polyfill-globals';
 import { setUsingCache } from 'googlesitekit-api';
+import { RegistryProvider } from 'googlesitekit-data';
 import { resetGlobals } from './utils/resetGlobals';
 import { bootstrapFetchMocks } from './fetch-mocks';
-import { WithTestRegistry } from '../tests/js/utils';
 import { enabledFeatures } from '../assets/js/features';
 import { Cell, Grid, Row } from '../assets/js/material-components';
+import { createTestRegistry, provideUserInfo } from '../tests/js/test-utils';
+import InViewProvider from '../assets/js/components/InViewProvider';
+import FeaturesProvider from '../assets/js/components/FeaturesProvider';
 
 setUsingCache( false );
 
 bootstrapFetchMocks();
 
+const inViewState = {
+	key: 'renderStory',
+	value: true,
+};
+
 // Decorators run from last added to first. (Eg. In reverse order as listed.)
 export const decorators = [
-	( Story, { parameters } ) => {
+	( Story, { parameters, kind } ) => {
 		const styles = {};
 
 		const { padding } = parameters || {};
 		if ( padding !== undefined ) {
 			styles.padding = padding;
+		}
+
+		// Render block stories in non-Site Kit context.
+		if ( kind.startsWith( 'Blocks/' ) ) {
+			return (
+				<Grid style={ styles }>
+					<Story />
+				</Grid>
+			);
 		}
 
 		return (
@@ -76,17 +96,30 @@ export const decorators = [
 			}
 		}
 
+		const registry = createTestRegistry();
+		const history = createMemoryHistory();
+		const featuresToEnable = new Set( features );
+
+		// Populate most basic data which should not affect any tests.
+		provideUserInfo( registry );
+
+		if ( route ) {
+			history.push( route );
+		}
+
+		// Expose registry as global for tinkering.
+		global.registry = registry;
+
 		return (
-			<WithTestRegistry
-				features={ features }
-				route={ route }
-				callback={ ( registry ) => {
-					// Expose registry as global for tinkering.
-					global.registry = registry;
-				} }
-			>
-				<Story />
-			</WithTestRegistry>
+			<InViewProvider value={ inViewState }>
+				<RegistryProvider value={ registry }>
+					<FeaturesProvider value={ featuresToEnable }>
+						<Router history={ history }>
+							<Story />
+						</Router>
+					</FeaturesProvider>
+				</RegistryProvider>
+			</InViewProvider>
 		);
 	},
 	( Story ) => {

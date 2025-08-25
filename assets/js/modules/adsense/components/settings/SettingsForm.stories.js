@@ -23,6 +23,7 @@ import * as fixtures from '../../datastore/__fixtures__';
 import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
@@ -47,7 +48,7 @@ const adSenseSettings = {
 	ownerID: 0,
 };
 
-const setUpAdUnits = ( registry ) => {
+function setUpAdUnits( registry ) {
 	const accountID = fixtures.accounts[ 0 ]._id;
 	const clientID = fixtures.clients[ 0 ]._id;
 	registry
@@ -56,7 +57,7 @@ const setUpAdUnits = ( registry ) => {
 	registry
 		.dispatch( MODULES_ADSENSE )
 		.finishResolution( 'getAdUnits', [ accountID, clientID ] );
-};
+}
 
 function Template( args ) {
 	return (
@@ -162,7 +163,7 @@ export default {
 	component: SettingsForm,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
 				registry
 					.dispatch( MODULES_ADSENSE )
@@ -174,7 +175,7 @@ export default {
 				provideUserAuthentication( registry );
 				provideModules( registry, [
 					{
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 						active: true,
 						connected: true,
 					},
@@ -182,7 +183,7 @@ export default {
 				provideModuleRegistrations( registry );
 
 				args?.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

@@ -38,6 +38,8 @@ import {
 	provideUserCapabilities,
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { getMetaCapabilityPropertyName } from '../../../googlesitekit/datastore/util/permissions';
 import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
@@ -62,7 +64,7 @@ Default.args = {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
 			},
@@ -77,7 +79,7 @@ DefaultWithStagingEnvironmentWarning.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
 			},
@@ -98,7 +100,7 @@ DefaultWithDashboardSharing.args = {
 		const commonModuleCapabilities = {
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'search-console'
+				MODULE_SLUG_SEARCH_CONSOLE
 			) ]: true,
 		};
 		provideUserCapabilities( registry, {
@@ -107,7 +109,7 @@ DefaultWithDashboardSharing.args = {
 		} );
 
 		provideModules( registry, [
-			{ slug: 'search-console', active: true, connected: true },
+			{ slug: MODULE_SLUG_SEARCH_CONSOLE, active: true, connected: true },
 		] );
 	},
 };
@@ -125,7 +127,7 @@ DefaultWithDashboardSharingOneAdmin.args = {
 		const commonModuleCapabilities = {
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'search-console'
+				MODULE_SLUG_SEARCH_CONSOLE
 			) ]: true,
 		};
 		provideUserCapabilities( registry, {
@@ -134,7 +136,7 @@ DefaultWithDashboardSharingOneAdmin.args = {
 		} );
 
 		provideModules( registry, [
-			{ slug: 'search-console', active: true, connected: true },
+			{ slug: MODULE_SLUG_SEARCH_CONSOLE, active: true, connected: true },
 		] );
 	},
 };
@@ -149,7 +151,7 @@ Connected.args = {
 		} );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
 			},
@@ -184,7 +186,7 @@ RevokedAccess.args = {
 		} );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
 			},
@@ -208,7 +210,7 @@ ResetSuccess.args = {
 		} );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
 			},
@@ -227,7 +229,7 @@ export default {
 	decorators: [
 		withQuery,
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetTracking( { enabled: false } );
@@ -236,7 +238,7 @@ export default {
 				if ( typeof args?.setupRegistry === 'function' ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

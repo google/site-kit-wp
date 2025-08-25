@@ -21,17 +21,19 @@
  */
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
 } from '../../utils/data-mock';
 import { properties } from '../../datastore/__fixtures__';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
@@ -74,6 +76,7 @@ const reportOptions = [
 			},
 		],
 		url: null,
+		reportID: 'analytics-4_dashboard-overall-page-metrics-widget-args',
 	},
 	{
 		dimensions: [ 'date' ],
@@ -82,7 +85,7 @@ const reportOptions = [
 		endDate: '2020-09-07',
 	},
 ];
-const currentEntityURL = 'https://www.example.com/example-page-3/';
+const currentEntityURL = 'https://www.example.com/example-page/';
 const reportOptionsWithEntity = reportOptions.map( ( options ) => {
 	return {
 		...options,
@@ -372,14 +375,57 @@ ErrorEntityURL.args = {
 	},
 };
 
+export const LongDataValues = Template.bind( {} );
+LongDataValues.storyName = 'Long Data Values';
+LongDataValues.args = {
+	setupRegistry: ( registry ) => {
+		const extremeReport = getAnalytics4MockResponse( reportOptions[ 0 ] );
+
+		if ( extremeReport.rows && extremeReport.rows.length ) {
+			// Set extremely large values for metrics to test limits of the DataBlockGroup resizing logic.
+			extremeReport.totals[ 0 ].metricValues = [
+				{ value: '9876543210' },
+				{ value: '8765432109' },
+				{ value: '0.9999' },
+				{ value: '54321.9876' },
+			];
+		}
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( extremeReport, { options: reportOptions[ 0 ] } );
+	},
+};
+LongDataValues.scenario = {
+	resetDataBlockGroup: true,
+	waitForFontSizeToMatch: '.googlesitekit-data-block__datapoint',
+	// Once #10798 is implemented we can have story level viewports which better
+	// capture sizes at each flexbox reflow that cause font size changes.
+	fontSizeLarge: 41,
+	fontSizeMedium: false, // No resizing occurs at this viewport.
+	fontSizeSmall: 27,
+};
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideAnalyticsReportWithoutDateRangeData(
+			registry,
+			reportOptions[ 0 ]
+		);
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
+
 export default {
 	title: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -395,7 +441,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

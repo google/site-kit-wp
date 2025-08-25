@@ -8,6 +8,8 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
@@ -258,10 +260,6 @@ class AdsTest extends TestCase {
 		remove_all_actions( 'wp_enqueue_scripts' );
 		( new GTag( new Options( $this->context ) ) )->register();
 
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
-
 		// Prevent test from failing in CI with deprecation notice.
 		remove_action( 'wp_print_styles', 'print_emoji_styles' );
 
@@ -302,10 +300,6 @@ class AdsTest extends TestCase {
 
 		remove_all_actions( 'wp_enqueue_scripts' );
 		( new GTag( new Options( $this->context ) ) )->register();
-
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
 
 		// Prevent test from failing in CI with deprecation notice.
 		remove_action( 'wp_print_styles', 'print_emoji_styles' );

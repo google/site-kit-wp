@@ -27,11 +27,8 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
-} from '../../datastore/constants';
-import ErrorText from '../../../../components/ErrorText';
+import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
 import {
 	PostTypesSelect,
 	PublicationOnboardingStateNotice,
@@ -42,6 +39,8 @@ import ProductIDSettings from './ProductIDSettings';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { getProductIDLabel } from '../../../../../../assets/js/modules/reader-revenue-manager/utils/settings';
 import Notice from '../../../../components/Notice';
+import ErrorNotice from '../../../../components/ErrorNotice';
+import Typography from '../../../../components/Typography';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const publicationID = useSelect( ( select ) =>
@@ -101,7 +100,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 
 	const formattedOwnerName = useSelect( ( select ) => {
 		const module = select( CORE_MODULES ).getModule(
-			READER_REVENUE_MANAGER_MODULE_SLUG
+			MODULE_SLUG_READER_REVENUE_MANAGER
 		);
 
 		return module?.owner?.login
@@ -121,12 +120,12 @@ export default function SettingsForm( { hasModuleAccess } ) {
 		<Fragment>
 			<div className="googlesitekit-settings-module__fields-group">
 				<StoreErrorNotices
-					moduleSlug={ READER_REVENUE_MANAGER_MODULE_SLUG }
+					moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
 					storeName={ MODULES_READER_REVENUE_MANAGER }
 				/>
 
 				{ hasModuleAccess && false === publicationAvailable && (
-					<ErrorText
+					<ErrorNotice
 						message={ sprintf(
 							/* translators: 1: Publication ID. */
 							__(
@@ -135,11 +134,12 @@ export default function SettingsForm( { hasModuleAccess } ) {
 							),
 							publicationID
 						) }
+						skipRetryMessage
 					/>
 				) }
 
 				{ hasModuleAccess && publicationAvailable && missingProductID && (
-					<ErrorText
+					<ErrorNotice
 						message={ sprintf(
 							/* translators: 1: Product ID. */
 							__(
@@ -148,6 +148,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 							),
 							getProductIDLabel( missingProductID )
 						) }
+						skipRetryMessage
 					/>
 				) }
 
@@ -159,6 +160,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				) }
 				{ ! hasModuleAccess && (
 					<Notice
+						className="googlesitekit-notice--bottom-margin"
 						type={ Notice.TYPES.WARNING }
 						description={ createInterpolateElement(
 							sprintf(
@@ -180,20 +182,25 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				) }
 			</div>
 			<div className="googlesitekit-settings-module__fields-group">
-				<h4 className="googlesitekit-settings-module__fields-group-title">
+				<Typography
+					as="h4"
+					size="small"
+					type="title"
+					className="googlesitekit-settings-module__fields-group-title"
+				>
 					{ __( 'CTA Placement', 'google-site-kit' ) }
-				</h4>
+				</Typography>
 				<div className="googlesitekit-rrm-settings-edit__snippet-mode">
 					<SnippetModeSelect hasModuleAccess={ hasModuleAccess } />
 				</div>
 				{ snippetMode === 'post_types' && (
 					<div className="googlesitekit-rrm-settings-edit__post-types">
-						<h5>
+						<Typography as="h5" size="small" type="label">
 							{ __(
 								'Select the content types where you want your CTAs to appear:',
 								'google-site-kit'
 							) }
-						</h5>
+						</Typography>
 						<PostTypesSelect hasModuleAccess={ hasModuleAccess } />
 					</div>
 				) }

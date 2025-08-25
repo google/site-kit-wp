@@ -39,6 +39,7 @@ import ErrorWidgetContent from './ErrorWidgetContent';
 import withIntersectionObserver from '../../../../../../util/withIntersectionObserver';
 import { trackEvent } from '../../../../../../util';
 import useViewContext from '../../../../../../hooks/useViewContext';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const ErrorWidgetContentWithIntersectionObserver =
 	withIntersectionObserver( ErrorWidgetContent );
@@ -59,7 +60,7 @@ function AudienceSegmentationErrorWidget( {
 		isInsufficientPermissionsError
 	);
 
-	const handleRetry = () => {
+	function handleRetry() {
 		trackEvent(
 			`${ viewContext }_audiences-all-tiles`,
 			'data_loading_error_retry'
@@ -67,7 +68,7 @@ function AudienceSegmentationErrorWidget( {
 			setValue( AUDIENCE_INFO_NOTICE_HIDE_UI, false );
 			onRetry?.();
 		} );
-	};
+	}
 
 	useEffect( () => {
 		// Set UI key to hide the info notice.
@@ -107,6 +108,6 @@ AudienceSegmentationErrorWidget.propTypes = {
 	showRetryButton: PropTypes.bool,
 };
 
-export default whenActive( { moduleName: 'analytics-4' } )(
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
 	AudienceSegmentationErrorWidget
 );

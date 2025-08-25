@@ -21,22 +21,20 @@
  */
 import SettingsAdmin from './SettingsAdmin';
 import { Grid } from './../../../js/material-components';
-import {
-	provideModules,
-	provideSiteInfo,
-	WithTestRegistry,
-} from './../../../../tests/js/utils';
+import { provideModules, provideSiteInfo } from './../../../../tests/js/utils';
+import WithRegistrySetup from './../../../../tests/js/WithRegistrySetup';
 import settingsData from './../../../../storybook/__fixtures__/_googlesitekitLegacyData';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { CORE_SITE } from './../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from './../../googlesitekit/datastore/user/constants';
 
 function Template() {
 	global._googlesitekitLegacyData = settingsData;
 
-	const setupRegistry = ( registry ) => {
+	function setupRegistry( registry ) {
 		provideSiteInfo( registry );
 		provideModules( registry, [
-			{ slug: 'ads', active: true, connected: true },
+			{ slug: MODULE_SLUG_ADS, active: true, connected: true },
 		] );
 
 		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: false } );
@@ -56,14 +54,14 @@ function Template() {
 					'http://example.com/wp-admin/update.php?action=install-plugin&plugin=some-plugin',
 			},
 		} );
-	};
+	}
 
 	return (
-		<WithTestRegistry callback={ setupRegistry }>
+		<WithRegistrySetup func={ setupRegistry }>
 			<Grid>
 				<SettingsAdmin />
 			</Grid>
-		</WithTestRegistry>
+		</WithRegistrySetup>
 	);
 }
 

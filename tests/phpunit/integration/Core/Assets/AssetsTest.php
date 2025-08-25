@@ -56,11 +56,6 @@ class AssetsTest extends TestCase {
 		parent::set_up();
 
 		$this->assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_styles()->registered  = array();
-		wp_styles()->queue       = array();
 	}
 
 	public function tear_down() {
@@ -122,13 +117,13 @@ class AssetsTest extends TestCase {
 		wp_set_current_user( $admin_id );
 
 		// First, ensure that the action is not added when not in admin context.
-		$this->assertFalse( is_admin() );
+		$this->assertFalse( is_admin(), 'Should not be in admin context initially.' );
 		$this->assets->register();
 		$this->assertFalse( has_action( 'enqueue_block_assets' ), 'Failed asserting that action was not added to enqueue_block_assets.' );
 
 		// Now, set admin context and ensure the action is added.
 		set_current_screen( 'dashboard' );
-		$this->assertTrue( is_admin() );
+		$this->assertTrue( is_admin(), 'Should be in admin context after setting current screen.' );
 		$this->assets->register();
 		$this->assertTrue( has_action( 'enqueue_block_assets' ), 'Failed asserting that action was added to enqueue_block_assets.' );
 	}
@@ -162,7 +157,7 @@ class AssetsTest extends TestCase {
 		// Make sure SiteKit is setup.
 		$this->fake_proxy_site_connection();
 		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
-		$this->assertTrue( $authentication->is_setup_completed() );
+		$this->assertTrue( $authentication->is_setup_completed(), 'Site Kit should be set up for dashboard sharing test.' );
 
 		wp_set_current_user( $contributor->ID );
 		$this->assets->register();
@@ -175,9 +170,9 @@ class AssetsTest extends TestCase {
 	}
 
 	public function test_enqueue_asset_with_unknown() {
-		$this->assertFalse( wp_script_is( 'unknown_script', 'enqueued' ) );
+		$this->assertFalse( wp_script_is( 'unknown_script', 'enqueued' ), 'Unknown script should not be enqueued initially.' );
 		$this->assets->enqueue_asset( 'unknown_script' );
-		$this->assertFalse( wp_script_is( 'unknown_script', 'enqueued' ) );
+		$this->assertFalse( wp_script_is( 'unknown_script', 'enqueued' ), 'Unknown script should not be enqueued after attempting to enqueue it.' );
 	}
 
 	public function test_enqueue_fonts() {
@@ -190,7 +185,7 @@ class AssetsTest extends TestCase {
 		// Ensure the method does not execute its logic twice (via the above once check).
 		do_action( 'login_enqueue_scripts' );
 
-		$this->assertTrue( has_action( 'login_head' ) );
+		$this->assertTrue( has_action( 'login_head' ), 'Fonts should be enqueued on login head.' );
 	}
 
 	public function test_run_before_print_callbacks() {
@@ -203,14 +198,14 @@ class AssetsTest extends TestCase {
 		$this->assets->enqueue_asset( 'googlesitekit-main-dashboard' );
 
 		// Ensure that 'googlesitekit-commons' is enqueued too.
-		$this->assertTrue( wp_script_is( 'googlesitekit-main-dashboard', 'enqueued' ) );
-		$this->assertTrue( wp_script_is( 'googlesitekit-commons', 'enqueued' ) );
+		$this->assertTrue( wp_script_is( 'googlesitekit-main-dashboard', 'enqueued' ), 'Main dashboard script should be enqueued.' );
+		$this->assertTrue( wp_script_is( 'googlesitekit-commons', 'enqueued' ), 'Commons script should be enqueued as dependency.' );
 
 		do_action( 'wp_print_scripts' );
 
 		// Ensure that before_print callback for 'googlesitekit-commons' was run (its localized script should be there).
 		$localized_script = wp_scripts()->get_data( 'googlesitekit-commons', 'data' );
-		$this->assertStringContainsString( 'var _googlesitekitLegacyData = ', $localized_script );
+		$this->assertStringContainsString( 'var _googlesitekitLegacyData = ', $localized_script, 'Legacy data should be localized in commons script.' );
 	}
 
 	private function get_inline_base_data() {
@@ -232,7 +227,7 @@ class AssetsTest extends TestCase {
 
 	public function test_base_data__reference_date_default() {
 		$data = $this->get_inline_base_data();
-		$this->assertEquals( null, $data['referenceDate'] );
+		$this->assertEquals( null, $data['referenceDate'], 'Reference date should be null by default.' );
 	}
 
 	public function test_base_data__reference_date_filter() {
@@ -244,12 +239,12 @@ class AssetsTest extends TestCase {
 		);
 
 		$data = $this->get_inline_base_data();
-		$this->assertEquals( '2020-01-01', $data['referenceDate'] );
+		$this->assertEquals( '2020-01-01', $data['referenceDate'], 'Reference date should match filter value.' );
 	}
 
 	public function test_base_data__product_post_type__no_products() {
 		$data = $this->get_inline_base_data();
-		$this->assertTrue( empty( $data['productPostType'] ) );
+		$this->assertTrue( empty( $data['productPostType'] ), 'Product post type should be empty when no products exist.' );
 	}
 
 	public function test_base_data__product_post_type__hidden_post_type() {
@@ -258,7 +253,7 @@ class AssetsTest extends TestCase {
 		register_post_type( 'product', array( 'public' => false ) );
 		$data = $this->get_inline_base_data();
 
-		$this->assertTrue( empty( $data['productPostType'] ) );
+		$this->assertTrue( empty( $data['productPostType'] ), 'Product post type should be empty for hidden post types.' );
 	}
 
 	public function test_base_data__product_post_type__filter_change_product_post() {
@@ -273,7 +268,7 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertEquals( 'digital_product', $data['productPostType'] );
+		$this->assertEquals( 'digital_product', $data['productPostType'], 'Product post type should match filter value.' );
 	}
 
 	public function test_base_data__product_post_type__invalid_post_type() {
@@ -286,7 +281,7 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertTrue( empty( $data['productPostType'] ) );
+		$this->assertTrue( empty( $data['productPostType'] ), 'Product post type should be empty for invalid post types.' );
 	}
 
 	public function test_base_data__product_post_type() {
@@ -294,6 +289,6 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertEquals( 'product', $data['productPostType'] );
+		$this->assertEquals( 'product', $data['productPostType'], 'Product post type should be set to default product type.' );
 	}
 }

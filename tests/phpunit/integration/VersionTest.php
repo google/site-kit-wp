@@ -6,7 +6,7 @@
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
- */
+ * */
 
 namespace Google\Site_Kit\Tests;
 
@@ -72,9 +72,17 @@ class VersionTest extends TestCase {
 		}
 
 		// Verify the number of version numbers found matches the number of version occurrences.
-		$this->assertEquals( count( $version_numbers ), count( $version_occurrences ) );
+		$this->assertEquals(
+			count( $version_numbers ),
+			count( $version_occurrences ),
+			'Number of version numbers found should match the number of version occurrences'
+		);
 
 		// Assert all version numbers are the same in the array.
-		$this->assertEquals( 1, count( array_unique( $version_numbers ) ) );
+		$this->assertEquals(
+			1,
+			count( array_unique( $version_numbers ) ),
+			'All version numbers should be identical across all files'
+		);
 	}
 }

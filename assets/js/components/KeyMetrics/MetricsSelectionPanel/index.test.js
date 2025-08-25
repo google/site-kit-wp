@@ -66,6 +66,9 @@ import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 
 describe( 'MetricsSelectionPanel', () => {
@@ -113,7 +116,7 @@ describe( 'MetricsSelectionPanel', () => {
 		beforeEach( () => {
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: true,
 					connected: true,
 				},
@@ -121,13 +124,13 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
+					modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 				},
 				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
-					modules: [ 'analytics-4' ],
+					modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				},
 				[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
-					modules: [ 'analytics-4' ],
+					modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				},
 			} );
 
@@ -184,7 +187,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: false,
 					connected: false,
 				},
@@ -192,10 +195,10 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
+					modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 				},
 				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
-					modules: [ 'analytics-4' ],
+					modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				},
 			} );
 
@@ -222,12 +225,12 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: true,
 					connected: true,
 				},
 				{
-					slug: 'search-console',
+					slug: MODULE_SLUG_SEARCH_CONSOLE,
 					active: false,
 					connected: false,
 				},
@@ -235,10 +238,10 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
+					modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 				},
 				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
-					modules: [ 'analytics-4' ],
+					modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				},
 			} );
 
@@ -264,12 +267,12 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: false,
 					connected: false,
 				},
 				{
-					slug: 'search-console',
+					slug: MODULE_SLUG_SEARCH_CONSOLE,
 					active: false,
 					connected: false,
 				},
@@ -277,10 +280,13 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
+					modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 				},
 				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
-					modules: [ 'analytics-4', 'search-console' ],
+					modules: [
+						MODULE_SLUG_ANALYTICS_4,
+						MODULE_SLUG_SEARCH_CONSOLE,
+					],
 				},
 			} );
 
@@ -314,7 +320,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: true,
 					connected: true,
 				},
@@ -326,7 +332,7 @@ describe( 'MetricsSelectionPanel', () => {
 					( acc, widget ) => ( {
 						...acc,
 						[ widget ]: {
-							modules: [ 'analytics-4' ],
+							modules: [ MODULE_SLUG_ANALYTICS_4 ],
 						},
 					} ),
 					{}
@@ -356,17 +362,17 @@ describe( 'MetricsSelectionPanel', () => {
 		it( 'should disable metrics that depend on a disconnected module', async () => {
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: true,
 					connected: true,
 				},
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: true,
 					connected: true,
 				},
 				{
-					slug: 'adsense',
+					slug: MODULE_SLUG_ADSENSE,
 					active: false,
 					connected: false,
 				},
@@ -374,13 +380,13 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
+					modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 				},
 				[ KM_ANALYTICS_LEAST_ENGAGING_PAGES ]: {
-					modules: [ 'analytics-4' ],
+					modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				},
 				[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
-					modules: [ 'adsense' ],
+					modules: [ MODULE_SLUG_ADSENSE ],
 				},
 			} );
 
@@ -450,7 +456,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: true,
 					connected: true,
 				},
@@ -462,7 +468,7 @@ describe( 'MetricsSelectionPanel', () => {
 					( acc, widget ) => ( {
 						...acc,
 						[ widget ]: {
-							modules: [ 'analytics-4' ],
+							modules: [ MODULE_SLUG_ANALYTICS_4 ],
 						},
 					} ),
 					{}
@@ -508,7 +514,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: true,
 					connected: true,
 					// Module is shareable after connected, but by default in fixtures it is false.
@@ -534,10 +540,10 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
+					modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 				},
 				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
-					modules: [ 'analytics-4' ],
+					modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				},
 			} );
 
@@ -578,7 +584,7 @@ describe( 'MetricsSelectionPanel', () => {
 		beforeEach( () => {
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: true,
 					connected: true,
 				},
@@ -586,13 +592,13 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-					modules: [ 'search-console' ],
+					modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 				},
 				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
-					modules: [ 'analytics-4' ],
+					modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				},
 				[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
-					modules: [ 'analytics-4' ],
+					modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				},
 			} );
 
@@ -687,7 +693,7 @@ describe( 'MetricsSelectionPanel', () => {
 		beforeEach( () => {
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: true,
 					connected: true,
 				},
@@ -695,10 +701,10 @@ describe( 'MetricsSelectionPanel', () => {
 
 			provideKeyMetricsWidgetRegistrations( registry, {
 				[ KM_ANALYTICS_RETURNING_VISITORS ]: {
-					modules: [ 'analytics-4' ],
+					modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				},
 				[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
-					modules: [ 'analytics-4' ],
+					modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				},
 			} );
 		} );
@@ -752,7 +758,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 			expect(
 				document.querySelector(
-					'.googlesitekit-km-selection-panel .googlesitekit-error-text'
+					'.googlesitekit-km-selection-panel .googlesitekit-notice--error .googlesitekit-notice__content p.googlesitekit-notice__description'
 				).textContent
 			).toBe( 'Select at least 2 metrics (1 selected)' );
 
@@ -813,7 +819,7 @@ describe( 'MetricsSelectionPanel', () => {
 					name: /Save selection/i,
 				} );
 
-				const isAutoSubmitTrue = () => {
+				function isAutoSubmitTrue() {
 					const autoSubmit = registry
 						.select( CORE_FORMS )
 						.getValue(
@@ -821,7 +827,7 @@ describe( 'MetricsSelectionPanel', () => {
 							'autoSubmit'
 						);
 					return autoSubmit === true;
-				};
+				}
 
 				await act( async () => {
 					fireEvent.click( submitButton );

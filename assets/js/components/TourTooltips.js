@@ -109,34 +109,38 @@ export default function TourTooltips( {
 		);
 	} );
 
-	const changeStep = ( index, action ) =>
-		setValue( stepKey, index + ( action === ACTIONS.PREV ? -1 : 1 ) );
+	function changeStep( index, action ) {
+		return setValue(
+			stepKey,
+			index + ( action === ACTIONS.PREV ? -1 : 1 )
+		);
+	}
 
-	const startTour = () => {
+	function startTour() {
 		global.document.body.classList.add(
 			'googlesitekit-showing-feature-tour',
 			`googlesitekit-showing-feature-tour--${ tourID }`
 		);
 		setValue( runKey, true );
-	};
+	}
 
-	const endTour = () => {
+	function endTour() {
 		global.document.body.classList.remove(
 			'googlesitekit-showing-feature-tour',
 			`googlesitekit-showing-feature-tour--${ tourID }`
 		);
 		// Dismiss tour to avoid unwanted repeat viewing.
 		dismissTour( tourID );
-	};
+	}
 
-	const trackAllTourEvents = ( {
+	function trackAllTourEvents( {
 		index,
 		action,
 		lifecycle,
 		size,
 		status,
 		type,
-	} ) => {
+	} ) {
 		// The index is 0-based, but step numbers are 1-based.
 		const stepNumber = index + 1;
 
@@ -175,7 +179,7 @@ export default function TourTooltips( {
 		if ( action === ACTIONS.NEXT ) {
 			trackEvent( eventCategory, GA_ACTIONS.NEXT, stepNumber );
 		}
-	};
+	}
 
 	/**
 	 * Handles `react-joyride` state changes using callback function.
@@ -193,7 +197,7 @@ export default function TourTooltips( {
 	 *
 	 * @param {JoyrideCallbackData} data Data object provided via `react-joyride` callback prop.
 	 */
-	const handleJoyrideCallback = ( data ) => {
+	function handleJoyrideCallback( data ) {
 		trackAllTourEvents( data );
 		const { action, index, status, step, type } = data;
 
@@ -227,7 +231,7 @@ export default function TourTooltips( {
 		if ( callback ) {
 			callback( data, registry );
 		}
-	};
+	}
 
 	// Start tour on initial render
 	useMount( startTour );
@@ -242,17 +246,17 @@ export default function TourTooltips( {
 	return (
 		<Joyride
 			callback={ handleJoyrideCallback }
-			continuous
-			disableOverlayClose
-			disableScrolling
 			floaterProps={ floaterProps }
 			locale={ joyrideLocale }
 			run={ run }
-			showProgress
 			stepIndex={ stepIndex }
 			steps={ parsedSteps }
 			styles={ joyrideStyles }
 			tooltipComponent={ TourTooltip }
+			continuous
+			disableOverlayClose
+			disableScrolling
+			showProgress
 		/>
 	);
 }

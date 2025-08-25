@@ -34,6 +34,7 @@ import {
 	provideUserAuthentication,
 	render,
 	waitFor,
+	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -49,6 +50,7 @@ import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '../../constants';
 import {
 	ACCOUNT_STATUS_PENDING,
 	ACCOUNT_STATUS_READY,
@@ -100,7 +102,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 			},
 		] );
 		registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
@@ -204,7 +206,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 			) => {
 				provideModules( registry, [
 					{
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 						active: true,
 						connected: isModuleConnected,
 					},
@@ -296,7 +298,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 			);
 		} );
 
-		it( 'should render the widget for the site with a setup completion time of more than three weeks', () => {
+		it( 'should render the widget for the site with a setup completion time of more than three weeks', async () => {
 			registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 				...validSettings,
 				setupCompletedTimestamp: timestampThreeWeeksPrior,
@@ -325,6 +327,8 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 				'mainDashboard_adsense-abr-cta-widget',
 				'view_notification'
 			);
+
+			await waitForDefaultTimeouts();
 		} );
 
 		it( 'should trigger a survey when in-view', async () => {
@@ -372,7 +376,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget', () => {
 
 			registry
 				.dispatch( CORE_USER )
-				.setIsPromptDimissing(
+				.setIsPromptDismissing(
 					AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
 					true
 				);

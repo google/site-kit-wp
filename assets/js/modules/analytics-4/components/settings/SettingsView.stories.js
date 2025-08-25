@@ -22,6 +22,7 @@
 import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '../../../../material-components';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
@@ -59,7 +60,7 @@ export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.scenario = {};
 Default.parameters = {
-	features: [ 'firstPartyMode' ],
+	features: [ 'googleTagGateway' ],
 };
 
 export const IceEnabled = Template.bind( null );
@@ -68,7 +69,7 @@ IceEnabled.args = {
 	enhancedConversionTracking: true,
 };
 IceEnabled.parameters = {
-	features: [ 'firstPartyMode' ],
+	features: [ 'googleTagGateway' ],
 };
 
 export const IceResolving = Template.bind( null );
@@ -77,27 +78,27 @@ IceResolving.args = {
 	enhancedConversionTracking: 'resolving',
 };
 IceResolving.parameters = {
-	features: [ 'firstPartyMode' ],
+	features: [ 'googleTagGateway' ],
 };
 
-export const FPMEnabled = Template.bind( null );
-FPMEnabled.storyName = 'SettingsView First-party mode Enabled';
-FPMEnabled.args = {
+export const GTGEnabled = Template.bind( null );
+GTGEnabled.storyName = 'SettingsView Google tag gateway Enabled';
+GTGEnabled.args = {
 	enhancedConversionTracking: false,
-	firstPartyMode: true,
+	googleTagGateway: true,
 };
-FPMEnabled.parameters = {
-	features: [ 'firstPartyMode' ],
+GTGEnabled.parameters = {
+	features: [ 'googleTagGateway' ],
 };
 
 export default {
 	title: 'Modules/Analytics4/Settings/SettingsView',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -114,11 +115,11 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setEnhancedMeasurementStreamEnabled(
+					.setEnhancedMeasurementStreamEnabled( {
 						propertyID,
 						webDataStreamID,
-						true
-					);
+						enabled: true,
+					} );
 
 				if ( args.enhancedConversionTracking !== 'resolving' ) {
 					registry
@@ -130,12 +131,12 @@ export default {
 
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
-						isEnabled: args.firstPartyMode || false,
-						isFPMHealthy: args.firstPartyMode || false,
-						isScriptAccessEnabled: args.firstPartyMode || false,
+					.receiveGetGoogleTagGatewaySettings( {
+						isEnabled: args.googleTagGateway || false,
+						isGTGHealthy: args.googleTagGateway || false,
+						isScriptAccessEnabled: args.googleTagGateway || false,
 					} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

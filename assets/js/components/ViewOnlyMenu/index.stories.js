@@ -25,8 +25,6 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import {
-	createTestRegistry,
-	WithTestRegistry,
 	provideModules,
 	provideModuleRegistrations,
 	provideSiteConnection,
@@ -38,9 +36,12 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/util/permissions';
 import { Cell, Grid, Row } from '../../material-components';
 import ViewOnlyMenu from './';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 
 function Template() {
 	return (
@@ -66,15 +67,15 @@ function Template() {
 const commonModuleCapabilities = {
 	[ getMetaCapabilityPropertyName(
 		PERMISSION_READ_SHARED_MODULE_DATA,
-		'search-console'
+		MODULE_SLUG_SEARCH_CONSOLE
 	) ]: true,
 	[ getMetaCapabilityPropertyName(
 		PERMISSION_READ_SHARED_MODULE_DATA,
-		'pagespeed-insights'
+		MODULE_SLUG_PAGESPEED_INSIGHTS
 	) ]: true,
 	[ getMetaCapabilityPropertyName(
 		PERMISSION_READ_SHARED_MODULE_DATA,
-		'analytics-4'
+		MODULE_SLUG_ANALYTICS_4
 	) ]: true,
 };
 
@@ -82,12 +83,12 @@ export const CanAuthenticate = Template.bind( {} );
 CanAuthenticate.storyName = 'Can Authenticate';
 CanAuthenticate.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			provideUserCapabilities( registry, {
 				[ PERMISSION_AUTHENTICATE ]: true,
 				...commonModuleCapabilities,
 			} );
-		};
+		}
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
@@ -95,17 +96,25 @@ CanAuthenticate.decorators = [
 		);
 	},
 ];
+CanAuthenticate.args = {
+	setupRegistry: ( registry ) => {
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: true,
+			...commonModuleCapabilities,
+		} );
+	},
+};
 
 export const CannotAuthenticate = Template.bind( {} );
 CannotAuthenticate.storyName = 'Cannot Authenticate';
 CannotAuthenticate.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			provideUserCapabilities( registry, {
 				[ PERMISSION_AUTHENTICATE ]: false,
 				...commonModuleCapabilities,
 			} );
-		};
+		}
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
@@ -113,49 +122,63 @@ CannotAuthenticate.decorators = [
 		);
 	},
 ];
+CannotAuthenticate.args = {
+	setupRegistry: ( registry ) => {
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: false,
+			...commonModuleCapabilities,
+		} );
+	},
+};
 
 export default {
 	title: 'Components/ViewOnlyMenu',
 	component: ViewOnlyMenu,
 	decorators: [
-		( Story ) => {
-			const registry = createTestRegistry();
-			provideSiteConnection( registry );
-			provideModules( registry, [
-				{
-					slug: 'search-console',
-					owner: {
-						id: '1',
-						login: 'Admin 1',
+		( Story, { args } ) => {
+			function setupRegistry( registry ) {
+				provideSiteConnection( registry );
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+						owner: {
+							id: '1',
+							login: 'Admin 1',
+						},
 					},
-				},
-				{
-					slug: 'pagespeed-insights',
-					owner: {
-						id: '2',
-						login: 'Admin 2',
+					{
+						slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
+						owner: {
+							id: '2',
+							login: 'Admin 2',
+						},
 					},
-				},
-			] );
-			provideModuleRegistrations( registry );
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetTracking( { enabled: false } );
+				] );
+				provideModuleRegistrations( registry );
 
-			// Mock the tracking endpoint to allow checking/unchecking the tracking checkbox.
-			fetchMock.post(
-				RegExp( 'google-site-kit/v1/core/user/data/tracking' ),
-				( url, { body } ) => {
-					const { data } = JSON.parse( body );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetTracking( { enabled: false } );
 
-					return { body: data };
+				// Mock the tracking endpoint to allow checking/unchecking the tracking checkbox.
+				fetchMock.post(
+					RegExp( 'google-site-kit/v1/core/user/data/tracking' ),
+					( url, { body } ) => {
+						const { data } = JSON.parse( body );
+
+						return { body: data };
+					}
+				);
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
 				}
-			);
+			}
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

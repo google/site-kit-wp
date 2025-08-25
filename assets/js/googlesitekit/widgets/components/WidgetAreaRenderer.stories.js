@@ -29,6 +29,8 @@ import {
 	WIDGET_WIDTHS,
 	WIDGET_AREA_STYLES,
 } from '../datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 const { HALF, QUARTER, FULL } = WIDGET_WIDTHS;
 
@@ -72,14 +74,16 @@ function createWidgetArea( registry, areaName, widgets ) {
 
 	widgets.forEach( ( { Component, slug, width }, i ) => {
 		const widgetSlug = slug || `${ areaName }-widget${ i + 1 }`;
-		const componentFallback = () => (
-			<div>
-				{ ( Array.isArray( width )
-					? width.join( ' / ' )
-					: width
-				).toUpperCase() }
-			</div>
-		);
+		function componentFallback() {
+			return (
+				<div>
+					{ ( Array.isArray( width )
+						? width.join( ' / ' )
+						: width
+					).toUpperCase() }
+				</div>
+			);
+		}
 
 		registry.dispatch( CORE_WIDGETS ).registerWidget( widgetSlug, {
 			Component: Component || componentFallback,
@@ -144,45 +148,55 @@ SpecialCombinationStates.args = {
 					width: QUARTER,
 				},
 				{
-					Component: getReportZeroWidget( 'search-console' ),
+					Component: getReportZeroWidget(
+						MODULE_SLUG_SEARCH_CONSOLE
+					),
 					width: QUARTER,
 				},
 				{
-					Component: getReportZeroWidget( 'analytics-4' ),
+					Component: getReportZeroWidget( MODULE_SLUG_ANALYTICS_4 ),
 					width: QUARTER,
 				},
 				{
-					Component: getRecoverableModulesWidget( [ 'analytics-4' ] ),
-					width: QUARTER,
-				},
-			],
-			[
-				{
-					Component: getReportZeroWidget( 'search-console' ),
-					width: QUARTER,
-				},
-				{
-					Component: getReportZeroWidget( 'search-console' ),
-					width: QUARTER,
-				},
-				{
-					Component: getReportZeroWidget( 'analytics-4' ),
+					Component: getRecoverableModulesWidget( [
+						MODULE_SLUG_ANALYTICS_4,
+					] ),
 					width: QUARTER,
 				},
 			],
 			[
 				{
-					Component: getReportZeroWidget( 'search-console' ),
+					Component: getReportZeroWidget(
+						MODULE_SLUG_SEARCH_CONSOLE
+					),
+					width: QUARTER,
+				},
+				{
+					Component: getReportZeroWidget(
+						MODULE_SLUG_SEARCH_CONSOLE
+					),
+					width: QUARTER,
+				},
+				{
+					Component: getReportZeroWidget( MODULE_SLUG_ANALYTICS_4 ),
+					width: QUARTER,
+				},
+			],
+			[
+				{
+					Component: getReportZeroWidget(
+						MODULE_SLUG_SEARCH_CONSOLE
+					),
 					width: HALF,
 				},
 				{
-					Component: getReportZeroWidget( 'analytics-4' ),
+					Component: getReportZeroWidget( MODULE_SLUG_ANALYTICS_4 ),
 					width: HALF,
 				},
 				{
 					Component: getRecoverableModulesWidget( [
-						'analytics-4',
-						'search-console',
+						MODULE_SLUG_ANALYTICS_4,
+						MODULE_SLUG_SEARCH_CONSOLE,
 					] ),
 					width: FULL,
 				},
@@ -227,12 +241,12 @@ export default {
 	component: WidgetAreaRenderer,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserCapabilities( registry );
 				provideModules( registry );
 
 				args?.registerWidgetAreas?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

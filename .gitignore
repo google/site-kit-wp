@@ -25,6 +25,7 @@ tmtags
 *.un~
 Session.vim
 *.swp
+*.log
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json

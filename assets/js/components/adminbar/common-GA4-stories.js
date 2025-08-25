@@ -27,19 +27,39 @@ import {
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../tests/js/utils/zeroReports';
-import { getAnalytics4MockResponse } from '../../modules/analytics-4/utils/data-mock';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
+import {
+	getAnalytics4MockResponse,
+	provideAnalyticsReportWithoutDateRangeData,
+} from '../../modules/analytics-4/utils/data-mock';
 import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { DAY_IN_SECONDS } from '../../util';
 import { properties } from '../../modules/analytics-4/datastore/__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 
-const adminbarSearchConsoleOptions = {
-	startDate: '2020-12-03',
-	endDate: '2021-01-27',
-	dimensions: 'date',
-	url: 'https://www.sitekitbygoogle.com/blog/',
-};
+const adminbarSearchConsoleOptions = [
+	{
+		startDate: '2020-12-03',
+		endDate: '2021-01-27',
+		dimensions: 'date',
+		url: 'https://www.sitekitbygoogle.com/blog/',
+	},
+	{
+		startDate: '2020-12-03',
+		endDate: '2021-01-27',
+		dimensions: 'date',
+		url: 'https://www.sitekitbygoogle.com/blog/',
+		reportID: 'adminbar_admin-bar-clicks_component_reportArgs',
+	},
+	{
+		startDate: '2020-12-03',
+		endDate: '2021-01-27',
+		dimensions: 'date',
+		url: 'https://www.sitekitbygoogle.com/blog/',
+		reportID: 'adminbar_admin-bar-impressions_component_reportArgs',
+	},
+];
 
 const adminbarAnalytics4OptionSets = [
 	// Mock options for mocking isGatheringData selector's response.
@@ -57,6 +77,7 @@ const adminbarAnalytics4OptionSets = [
 		startDate: '2020-12-31',
 		endDate: '2021-01-27',
 		url: 'https://www.sitekitbygoogle.com/blog/',
+		reportID: 'adminbar_admin-bar-unique-visitors-ga4_component_reportArgs',
 	},
 
 	// Mock options for mocking Total Users report's response.
@@ -83,6 +104,31 @@ const adminbarAnalytics4OptionSets = [
 		dimensions: [ 'date' ],
 		url: 'https://www.sitekitbygoogle.com/blog/',
 	},
+	{
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
+		metrics: [
+			{
+				name: 'totalUsers',
+			},
+		],
+		url: 'https://www.sitekitbygoogle.com/blog/',
+		reportID: 'adminbar_admin-bar-unique-visitors-ga4_component_reportArgs',
+	},
+	{
+		startDate: '2020-12-03',
+		endDate: '2021-01-27',
+		metrics: [
+			{
+				name: 'totalUsers',
+			},
+		],
+		dimensions: [ 'date' ],
+		url: 'https://www.sitekitbygoogle.com/blog/',
+		reportID: 'adminbar_admin-bar-unique-visitors-ga4_component_reportArgs',
+	},
 
 	// Mock options for mocking Sessions report's response.
 	{
@@ -102,10 +148,11 @@ const adminbarAnalytics4OptionSets = [
 			},
 		],
 		url: 'https://www.sitekitbygoogle.com/blog/',
+		reportID: 'adminbar_admin-bar-sessions-ga4_component_reportArgs',
 	},
 ];
 
-export const setupBaseRegistry = ( registry, args ) => {
+export function setupBaseRegistry( registry, args ) {
 	// Set some site information.
 	provideSiteInfo( registry, {
 		currentEntityURL: 'https://www.sitekitbygoogle.com/blog/',
@@ -119,7 +166,7 @@ export const setupBaseRegistry = ( registry, args ) => {
 	// Set up analytics-4 modules stores but provide no data.
 	provideModules( registry, [
 		{
-			slug: 'analytics-4',
+			slug: MODULE_SLUG_ANALYTICS_4,
 			active: true,
 			connected: true,
 		},
@@ -129,7 +176,7 @@ export const setupBaseRegistry = ( registry, args ) => {
 	if ( typeof args?.setupRegistry === 'function' ) {
 		args.setupRegistry( registry );
 	}
-};
+}
 
 export const widgetDecorators = [
 	( Story ) => (
@@ -140,9 +187,9 @@ export const widgetDecorators = [
 		</div>
 	),
 	( Story, { args } ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			setupBaseRegistry( registry, args );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -152,25 +199,26 @@ export const widgetDecorators = [
 	},
 ];
 
-export const setupSearchConsoleMockReports = ( registry, data ) => {
+export function setupSearchConsoleMockReports( registry, data ) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
-	if ( data ) {
-		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( data, {
-			options: adminbarSearchConsoleOptions,
-		} );
-	} else {
-		provideSearchConsoleMockReport(
-			registry,
-			adminbarSearchConsoleOptions
-		);
-	}
-};
+	adminbarSearchConsoleOptions.forEach( ( options ) => {
+		if ( data ) {
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.receiveGetReport( data, {
+					options,
+				} );
+		} else {
+			provideSearchConsoleMockReport( registry, options );
+		}
+	} );
+}
 
-export const setupAnalytics4MockReports = (
+export function setupAnalytics4MockReports(
 	registry,
 	mockOptions = adminbarAnalytics4OptionSets
-) => {
+) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1000' );
 	mockOptions.forEach( ( options ) => {
@@ -180,19 +228,30 @@ export const setupAnalytics4MockReports = (
 				options,
 			} );
 	} );
-};
+}
 
-export const setupSearchConsoleGatheringData = ( registry ) => {
+export function setupAnalytics4MockReportsWithNoDataInComparisonDateRange(
+	registry,
+	mockOptions = adminbarAnalytics4OptionSets
+) {
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1000' );
+	mockOptions.forEach( ( options ) =>
+		provideAnalyticsReportWithoutDateRangeData( registry, options )
+	);
+}
+
+export function setupSearchConsoleGatheringData( registry ) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
 		options: adminbarSearchConsoleOptions,
 	} );
-};
+}
 
-export const setupAnalytics4GatheringData = (
+export function setupAnalytics4GatheringData(
 	registry,
 	mockOptionSets = adminbarAnalytics4OptionSets
-) => {
+) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
 	const propertyID = properties[ 0 ]._id;
@@ -219,14 +278,14 @@ export const setupAnalytics4GatheringData = (
 			options,
 		} );
 	} );
-};
+}
 
-export const setupSearchConsoleAnalytics4GatheringData = ( registry ) => {
+export function setupSearchConsoleAnalytics4GatheringData( registry ) {
 	setupSearchConsoleGatheringData( registry );
 	setupAnalytics4GatheringData( registry );
-};
+}
 
-export const setupSearchConsoleZeroData = ( registry ) => {
+export function setupSearchConsoleZeroData( registry ) {
 	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
 		[
 			{
@@ -241,12 +300,12 @@ export const setupSearchConsoleZeroData = ( registry ) => {
 			options: adminbarSearchConsoleOptions,
 		}
 	);
-};
+}
 
-export const setupAnalytics4ZeroData = (
+export function setupAnalytics4ZeroData(
 	registry,
 	mockOptionSets = adminbarAnalytics4OptionSets
-) => {
+) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1000' );
 
@@ -258,17 +317,17 @@ export const setupAnalytics4ZeroData = (
 			options,
 		} );
 	} );
-};
+}
 
-export const setupSearchConsoleAnalytics4ZeroData = ( registry ) => {
+export function setupSearchConsoleAnalytics4ZeroData( registry ) {
 	setupSearchConsoleZeroData( registry );
 	setupAnalytics4ZeroData( registry );
-};
+}
 
-export const setupAnalytics4Loading = (
+export function setupAnalytics4Loading(
 	registry,
 	mockOptionSets = adminbarAnalytics4OptionSets
-) => {
+) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
 	mockOptionSets.forEach( ( options ) => {
@@ -276,12 +335,12 @@ export const setupAnalytics4Loading = (
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ options ] );
 	} );
-};
+}
 
-export const setupAnalytics4Error = (
+export function setupAnalytics4Error(
 	registry,
 	mockOptionSets = adminbarAnalytics4OptionSets
-) => {
+) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1000' );
 
@@ -298,4 +357,4 @@ export const setupAnalytics4Error = (
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ options ] );
 	} );
-};
+}

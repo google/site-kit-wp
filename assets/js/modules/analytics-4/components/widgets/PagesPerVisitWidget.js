@@ -39,6 +39,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '../../datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
 import { MetricTileNumeric } from '../../../../components/KeyMetrics';
 import { numFmt } from '../../../../util/i18n';
 import whenActive from '../../../../util/when-active';
@@ -58,6 +59,7 @@ function PagesPerVisitWidget( { Widget } ) {
 			{ name: 'screenPageViewsPerSession' },
 			{ name: 'screenPageViews' },
 		],
+		reportID: 'analytics-4_pages-per-visit-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(
@@ -81,8 +83,9 @@ function PagesPerVisitWidget( { Widget } ) {
 
 	const { rows = [] } = report || {};
 
-	const makeFind = ( dateRange ) => ( row ) =>
-		get( row, 'dimensionValues.0.value' ) === dateRange;
+	function makeFind( dateRange ) {
+		return ( row ) => get( row, 'dimensionValues.0.value' ) === dateRange;
+	}
 
 	const currentPagesPerVisit =
 		Number(
@@ -129,6 +132,6 @@ PagesPerVisitWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( PagesPerVisitWidget );
