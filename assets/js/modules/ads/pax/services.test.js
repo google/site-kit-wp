@@ -201,7 +201,7 @@ describe( 'PAX partner services', () => {
 		describe( 'campaignService', () => {
 			describe( 'notifyNewCampaignCreated', () => {
 				it( 'calls the given function when provided', async () => {
-					const onCampaignCreated = jest.fn();
+					const onCampaignCreated = vi.fn();
 					services = createPaxServices( registry, {
 						onCampaignCreated,
 					} );
@@ -377,7 +377,7 @@ describe( 'PAX partner services', () => {
 		describe( 'userActionService', () => {
 			describe( 'finishAndCloseSignUpFlow', () => {
 				it( 'calls the given function when provided', async () => {
-					const onFinishAndCloseSignUpFlow = jest.fn();
+					const onFinishAndCloseSignUpFlow = vi.fn();
 					services = createPaxServices( registry, {
 						onFinishAndCloseSignUpFlow,
 					} );

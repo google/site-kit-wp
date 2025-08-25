@@ -69,8 +69,8 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		activateModuleCallbackMock = jest.fn();
-		activateModuleMock = jest.fn( () => activateModuleCallbackMock );
+		activateModuleCallbackMock = vi.fn();
+		activateModuleMock = vi.fn( () => activateModuleCallbackMock );
 
 		provideUserAuthentication( registry );
 

@@ -48,7 +48,7 @@ import {
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
+	useIntersection: vi.fn(),
 } ) );
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -321,7 +321,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 
 		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
-		const handleRetrySpy = jest.fn();
+		const handleRetrySpy = vi.fn();
 
 		const { container, getByText, getByRole, waitForRegistry } = render(
 			<WidgetWithComponentProps

@@ -351,7 +351,7 @@ describe( 'createFetchStore store', () => {
 
 		describe( 'receive', () => {
 			it( 'requires params if validateParams raises an error with no params', () => {
-				const validateParams = jest.fn();
+				const validateParams = vi.fn();
 				validateParams.mockImplementationOnce( () => {
 					throw new Error( 'anything to require params!' );
 				} );
@@ -399,7 +399,7 @@ describe( 'createFetchStore store', () => {
 			} );
 
 			it( 'does not require params if validateParams does not throw', () => {
-				const validateParams = jest.fn();
+				const validateParams = vi.fn();
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
 					controlCallback: () => true,

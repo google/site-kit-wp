@@ -19,7 +19,11 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../tests/js/test-utils';
+import {
+	consoleErrorMock,
+	removeConsoleErrorMock,
+	render,
+} from '../../../tests/js/test-utils';
 import { createTestRegistry } from '../../../tests/js/utils';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -41,6 +45,9 @@ describe( 'whenInViewContext', () => {
 	} );
 
 	it( 'throws an error if both includeList and excludeList props are provided', () => {
+		// Mock console.error to prevent it from being logged and causing the suite level console capture to fail.
+		vi.spyOn( console, 'error' ).mockImplementation( () => {} );
+
 		const WhenInViewComponent = whenInViewContext( {
 			includeList: [ VIEW_CONTEXT_ENTITY_DASHBOARD ],
 			excludeList: [ VIEW_CONTEXT_ENTITY_DASHBOARD ],
@@ -53,9 +60,6 @@ describe( 'whenInViewContext', () => {
 				'Do not use both an include and exclude lists for `whenInViewContext`'
 			);
 		}
-
-		// Additional console error needs to be caught to prevent the test from failing.
-		expect( console ).toHaveErrored();
 	} );
 
 	it( 'throws an error if both allViewOnly and allNonViewOnly props are provided', () => {
@@ -71,9 +75,6 @@ describe( 'whenInViewContext', () => {
 				'Cannot allow both `allViewOnly` and `allNonViewOnly` contexts; if all contexts are allowed, remove this `whenInViewContext` wrapper.'
 			);
 		}
-
-		// Additional console error needs to be caught to prevent the test from failing.
-		expect( console ).toHaveErrored();
 	} );
 
 	describe( 'allViewOnly', () => {

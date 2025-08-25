@@ -141,7 +141,7 @@ describe( 'createGatheringDataStore', () => {
 			let selectDataAvailability;
 
 			beforeAll( () => {
-				selectDataAvailability = jest.fn();
+				selectDataAvailability = vi.fn();
 			} );
 
 			beforeEach( () => {

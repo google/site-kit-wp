@@ -61,7 +61,7 @@ import { getPreviousDate } from '../../../../../../../util';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
+	useIntersection: vi.fn(),
 } ) );
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

@@ -53,8 +53,8 @@ describe( 'WooCommerceRedirectModal', () => {
 	mockLocation();
 	let registry;
 
-	const onClose = jest.fn();
-	const onDismiss = jest.fn();
+	const onClose = vi.fn();
+	const onDismiss = vi.fn();
 
 	function ModalComponent() {
 		return (
@@ -206,7 +206,7 @@ describe( 'WooCommerceRedirectModal', () => {
 			body: { needsReauthentication: false },
 		} );
 
-		const onBeforeSetupCallback = jest.fn();
+		const onBeforeSetupCallback = vi.fn();
 
 		const { getByText, waitForRegistry } = render(
 			<WooCommerceRedirectModal

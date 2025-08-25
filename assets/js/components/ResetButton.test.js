@@ -39,7 +39,7 @@ import { subscribeUntil } from '../../../tests/js/utils';
 describe( 'ResetButton', () => {
 	let registry;
 	let oldLocation;
-	const locationAssignMock = jest.fn();
+	const locationAssignMock = vi.fn();
 
 	beforeAll( () => {
 		oldLocation = global.location;

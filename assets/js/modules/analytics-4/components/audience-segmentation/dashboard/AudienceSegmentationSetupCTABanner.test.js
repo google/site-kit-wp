@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
-const mockShowTooltip = jest.fn();
+const mockShowTooltip = vi.fn();
 jest.mock( '../../../../../components/AdminMenuTooltip', () => ( {
 	__esModule: true,
-	default: jest.fn(),
-	useShowTooltip: jest.fn( () => mockShowTooltip ),
+	default: vi.fn(),
+	useShowTooltip: vi.fn( () => mockShowTooltip ),
 } ) );
 
 import fetchMock from 'fetch-mock';
@@ -76,7 +76,7 @@ import { dismissItemEndpoint } from '../../../../../../../tests/js/mock-dismiss-
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
+	useIntersection: vi.fn(),
 } ) );
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
