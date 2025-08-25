@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { isFeatureEnabled } from '../features';
+
 ( ( jQuery ) => {
 	if ( ! jQuery ) {
 		return;
@@ -38,7 +43,7 @@
 	}
 
 	if ( purchase && canTrackPurchase ) {
-		const { id, totals, items } = purchase;
+		const { id, totals, items, user_data: userData } = purchase;
 
 		const eventData = formatEventData(
 			totals.total_price,
@@ -48,6 +53,11 @@
 			totals.shipping_total,
 			totals.tax_total
 		);
+
+		// User data is already normalized from WooCommerce.php.
+		if ( isFeatureEnabled( 'gtagUserData' ) && userData ) {
+			eventData.user_data = userData;
+		}
 
 		global._googlesitekit?.gtagEvent?.( 'purchase', eventData );
 	}
