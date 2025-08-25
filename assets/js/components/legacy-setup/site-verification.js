@@ -90,7 +90,7 @@ class SiteVerification extends Component {
 
 					if ( true === response.verified ) {
 						this.props.siteVerificationSetup( true );
-						return true;
+						return;
 					}
 				} else {
 					await trackEvent(
@@ -104,7 +104,7 @@ class SiteVerification extends Component {
 					siteURL: identifier,
 				} );
 
-				return false;
+				return;
 			} catch ( err ) {
 				let message = err.message;
 
@@ -121,8 +121,6 @@ class SiteVerification extends Component {
 					errorMsg: message,
 					siteURL: global._googlesitekitLegacyData.admin.siteURL, // Fallback to site URL from the settings.
 				} );
-
-				return false;
 			}
 		} )();
 	}
