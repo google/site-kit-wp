@@ -112,4 +112,15 @@ class Proactive_User_Engagement_Settings extends User_Setting {
 			return $sanitized_settings;
 		};
 	}
+
+	/**
+	 * Accessor for the `subscribed` setting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool TRUE if user is subscribed, otherwise FALSE.
+	 */
+	public function is_user_subscribed() {
+		return $this->get()['subscribed'];
+	}
 }
