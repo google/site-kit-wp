@@ -54,10 +54,6 @@ import { numFmt, trackEvent } from '../../../../../../../util';
 import BadgeWithTooltip from '../../../../../../../components/BadgeWithTooltip';
 import useViewContext from '../../../../../../../hooks/useViewContext';
 import AudienceTileZeroData from './AudienceTileZeroData';
-
-// TODO: as part of #8484 the report props should be updated to expect
-// the full report rows for the current tile to reduce data manipulation
-// in AudienceTiles.
 export default function AudienceTile( {
 	// TODO: The prop `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
 	// within `AudienceTilesWidget`. This should be removed once the `AudienceErrorModal` render is extracted

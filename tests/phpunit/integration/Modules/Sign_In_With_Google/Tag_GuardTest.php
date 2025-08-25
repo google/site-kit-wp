@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Sign_In_With_Google;
 
 use Google\Site_Kit\Context;
@@ -58,7 +56,7 @@ class Tag_GuardTest extends TestCase {
 		update_option( 'home', 'https://example.com/' );
 		$this->settings->merge( array( 'clientID' => '1234567890.apps.googleusercontent.com' ) );
 
-		$this->assertTrue( $this->guard->can_activate() );
+		$this->assertTrue( $this->guard->can_activate(), 'Guard should allow activation when HTTPS and valid clientID present.' );
 	}
 
 	public function test_cant_activate_when_not_https() {
@@ -68,7 +66,7 @@ class Tag_GuardTest extends TestCase {
 		update_option( 'home', 'http://example.com/' );
 		$this->settings->merge( array( 'clientID' => '1234567890.googleusercontent.com' ) );
 
-		$this->assertFalse( $this->guard->can_activate() );
+		$this->assertFalse( $this->guard->can_activate(), 'Guard should not allow activation when not HTTPS.' );
 	}
 
 	public function test_cant_activate_when_clientid_is_empty() {
@@ -78,7 +76,7 @@ class Tag_GuardTest extends TestCase {
 		update_option( 'home', 'https://example.com/' );
 		$this->settings->merge( array( 'clientID' => '' ) );
 
-		$this->assertFalse( $this->guard->can_activate() );
+		$this->assertFalse( $this->guard->can_activate(), 'Guard should not allow activation when clientID is empty.' );
 	}
 
 	public function test_cant_activate_when_clientid_is_null() {
@@ -88,6 +86,6 @@ class Tag_GuardTest extends TestCase {
 		update_option( 'home', 'https://example.com/' );
 		$this->settings->merge( array( 'clientID' => null ) );
 
-		$this->assertFalse( $this->guard->can_activate() );
+		$this->assertFalse( $this->guard->can_activate(), 'Guard should not allow activation when clientID is null.' );
 	}
 }
