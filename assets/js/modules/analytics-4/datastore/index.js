@@ -34,7 +34,6 @@ import enhancedMeasurement from './enhanced-measurement';
 import partialData from './partial-data';
 import properties from './properties';
 import report from './report';
-import pivotReport from './pivot-report';
 import service from './service';
 import settings from './settings';
 import tags from './tags';
@@ -56,7 +55,6 @@ const store = combineStores(
 	customDimensionsGatheringData,
 	enhancedMeasurement,
 	partialData,
-	pivotReport,
 	properties,
 	report,
 	settings,
