@@ -27,7 +27,7 @@ const REACT_CURRENT_DISPATCHER =
 /**
  * Wraps the given render function to fail if any React hook is used.
  *
- * @since n.e.x.t
+ * @since 1.160.1
  *
  * @param {Function} renderFn Function which renders one or more components.
  * @return {Function} Wrapped function.

@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 1.160.1 =
+
+**Fixed**
+
+* Fix bug that could cause errors to appear in the Analytics pie chart when switching to the "Locations" tab. See [#11359](https://github.com/google/site-kit-wp/issues/11359).
+
 = 1.160.0 =
 
 **Enhanced**
