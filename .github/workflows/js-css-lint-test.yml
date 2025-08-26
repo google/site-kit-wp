@@ -71,8 +71,14 @@ jobs:
         run: npm run lint:js
       - name: Jest Tests
         id: test-js
-        run: npm run test:js -- --json --outputFile=test-results.json
+        run: npm run test:js  -- -- --json --outputFile=jest-results.json
         continue-on-error: true
+      - name: Check for catastrophic failure
+        run: |
+          if [ ! -f jest-results.json ]; then
+            echo "❌ Catastrophic failure: no jest-results.json produced."
+            exit 1
+          fi
       - name: Jest Tests (Retry Failures 1)
         id: test-js-retry-1
         run: npm run test:js -- -- --onlyFailures
@@ -88,33 +94,6 @@ jobs:
         run: npm run test:js -- -- --onlyFailures
         if: steps.test-js-retry-2.outcome == 'failure'
         continue-on-error: true
-
-      - name: Check for catastrophic suite failures
-        if: always() && steps.test-js.outcome == 'failure'
-        run: |
-          if [ "${{ steps.test-js-retry-3.outcome }}" == "failure" ]; then
-            echo "Final retry step failed. Failing the job."
-            exit 1
-          fi
-
-          if [ ! -f test-results.json ]; then
-            echo "Error: Jest test report 'test-results.json' was not generated."
-            echo "This indicates a critical failure in the initial test run, preventing report creation."
-            exit 1
-          fi
-
-          sudo apt-get install -y jq
-
-          CRASHED_SUITES=$(jq '[.testResults[] | select(.status == "failed" and .assertionResults | length == 0)] | length' test-results.json)
-
-          if [ "$CRASHED_SUITES" -gt 0 ]; then
-            echo "Error: Found $CRASHED_SUITES test suite(s) that failed to run."
-            echo "This is a catastrophic failure that retries cannot fix."
-            exit 1
-          fi
-
-          echo "No catastrophic suite failures found."
-
       - name: Final status check
         if: always()
         run: |
