@@ -53,6 +53,26 @@ $typography-font-families: (
 );
 
 .googlesitekit-plugin {
+	// If no size is specified to the paragraph component, default
+	// to small on mobile and medium on tablet and up.
+	p.googlesitekit-typography {
+
+		@each $type, $sizes in $typography-settings {
+			&.googlesitekit-typography--#{$type} {
+
+				@each $prop, $value in map-get($sizes, "small") {
+					#{$prop}: #{$value};
+				}
+
+				@media (min-width: $bp-tablet) {
+
+					@each $prop, $value in map-get($sizes, "medium") {
+						#{$prop}: #{$value};
+					}
+				}
+			}
+		}
+	}
 
 	.googlesitekit-typography {
 
