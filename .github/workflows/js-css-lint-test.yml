@@ -93,4 +93,3 @@ jobs:
         id: test-js-retry-3
         run: npm run test:js -- -- --onlyFailures
         if: steps.test-js-retry-2.outcome == 'failure'
-        continue-on-error: true
