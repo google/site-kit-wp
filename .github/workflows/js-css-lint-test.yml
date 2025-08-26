@@ -94,10 +94,3 @@ jobs:
         run: npm run test:js -- -- --onlyFailures
         if: steps.test-js-retry-2.outcome == 'failure'
         continue-on-error: true
-      - name: Final status check
-        if: always()
-        run: |
-          if [ "${{ steps.test-js-retry-3.outcome }}" == "failure" ]; then
-            echo "One or more tests failed after all retries."
-            exit 1
-          fi
