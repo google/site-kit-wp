@@ -74,7 +74,7 @@ class Proactive_User_Engagement_SettingsTest extends TestCase {
 			'frequency should be updated to monthly'
 		);
 
-		// Test merging both settings
+		// Test merging both settings.
 		$this->assertTrue(
 			$this->settings->merge(
 				array(
@@ -95,8 +95,6 @@ class Proactive_User_Engagement_SettingsTest extends TestCase {
 	}
 
 	public function test_merge__filters_null_values() {
-
-		// Test that null values are filtered out.
 		$this->assertTrue(
 			$this->settings->merge(
 				array(
@@ -108,7 +106,7 @@ class Proactive_User_Engagement_SettingsTest extends TestCase {
 		);
 		$this->assertEquals(
 			array(
-				'subscribed' => false, // Should remain unchanged
+				'subscribed' => false,
 				'frequency'  => 'monthly',
 			),
 			$this->settings->get(),
@@ -117,8 +115,6 @@ class Proactive_User_Engagement_SettingsTest extends TestCase {
 	}
 
 	public function test_merge__ignores_invalid_keys() {
-
-		// Test that invalid keys are ignored.
 		$this->assertTrue(
 			$this->settings->merge(
 				array(
