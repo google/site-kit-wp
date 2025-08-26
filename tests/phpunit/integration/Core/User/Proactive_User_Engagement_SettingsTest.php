@@ -47,7 +47,7 @@ class Proactive_User_Engagement_SettingsTest extends TestCase {
 				'frequency'  => 'weekly',
 			),
 			$this->settings->get(),
-			'settings should match default'
+			'Default settings should be unsubscribed with weekly frequency'
 		);
 	}
 
@@ -60,7 +60,7 @@ class Proactive_User_Engagement_SettingsTest extends TestCase {
 				'frequency'  => 'weekly',
 			),
 			$this->settings->get(),
-			'subscribed should be updated to true'
+			'Subscribed setting should be updated to true'
 		);
 
 		// Test merging frequency setting.
@@ -71,7 +71,7 @@ class Proactive_User_Engagement_SettingsTest extends TestCase {
 				'frequency'  => 'monthly',
 			),
 			$this->settings->get(),
-			'frequency should be updated to monthly'
+			'Frequency setting should be updated to monthly'
 		);
 
 		// Test merging both settings.
@@ -82,7 +82,7 @@ class Proactive_User_Engagement_SettingsTest extends TestCase {
 					'frequency'  => 'quarterly',
 				)
 			),
-			'Merging both settings should return true'
+			'Merging all settings should work/return true'
 		);
 		$this->assertEquals(
 			array(
@@ -90,7 +90,7 @@ class Proactive_User_Engagement_SettingsTest extends TestCase {
 				'frequency'  => 'quarterly',
 			),
 			$this->settings->get(),
-			'both settings should be updated accordingly'
+			'All settings should be updated to their new values'
 		);
 	}
 
@@ -130,7 +130,7 @@ class Proactive_User_Engagement_SettingsTest extends TestCase {
 				'frequency'  => 'monthly',
 			),
 			$this->settings->get(),
-			'invalid keys should be ignored and original settings preserved'
+			'Invalid keys should be ignored and original settings preserved'
 		);
 	}
 
@@ -255,10 +255,10 @@ class Proactive_User_Engagement_SettingsTest extends TestCase {
 
 		// Test when user is subscribed.
 		$this->settings->merge( array( 'subscribed' => true ) );
-		$this->assertTrue( $this->settings->is_user_subscribed(), 'User should be subscribed after setting to true' );
+		$this->assertTrue( $this->settings->is_user_subscribed(), 'User should be subscribed after setting "subscribed" to true' );
 
 		// Test when user is unsubscribed.
 		$this->settings->merge( array( 'subscribed' => false ) );
-		$this->assertFalse( $this->settings->is_user_subscribed(), 'User should not be subscribed after setting to false' );
+		$this->assertFalse( $this->settings->is_user_subscribed(), 'Previously-subscribed user should not be subscribed after setting "subscribed" to false' );
 	}
 }
