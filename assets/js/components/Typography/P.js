@@ -22,29 +22,12 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 import Typography from '.';
-import {
-	SIZE_SMALL,
-	SIZE_MEDIUM,
-	TYPE_BODY,
-	VALID_TYPES,
-	VALID_SIZES,
-} from './constants';
+import { TYPE_BODY, VALID_TYPES, VALID_SIZES } from './constants';
 
 export default function P( { type = TYPE_BODY, size, children, ...props } ) {
-	const breakpoint = useBreakpoint();
-
 	return (
-		<Typography
-			as="p"
-			type={ type }
-			size={
-				size ||
-				( breakpoint === BREAKPOINT_SMALL ? SIZE_SMALL : SIZE_MEDIUM )
-			}
-			{ ...props }
-		>
+		<Typography as="p" type={ type } size={ size } { ...props }>
 			{ children }
 		</Typography>
 	);
