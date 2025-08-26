@@ -94,6 +94,8 @@ use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Batch_Report_Builder;
+use Google\Site_Kit\Modules\Analytics_4\Batch_Report_Processor;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
@@ -251,6 +253,30 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->audience_settings->register();
 
 		( new Advanced_Tracking( $this->context ) )->register();
+
+		// Batch report processor for debug data.
+		$start_time   = microtime( true );
+		$batch_report = new Batch_Report_Builder( $this->context, $this );
+		// phpcs:ignore Squiz.PHP.CommentedOutCode.Found -- Debug code for performance testing
+		// $reports = $batch_report->get_processed_dashboard_reports();
+		// var_dump($reports); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_dump
+		// var_dump($reports['total_visitors']); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_dump
+		$end_time   = microtime( true );
+		$duration_s = $end_time - $start_time;
+		error_log( sprintf( 'Batch requests took %.3f seconds.', $duration_s ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		// End Batch report processor for debug data.
+
+		// Single report processor for debug data.
+		$start_time = microtime( true );
+		// phpcs:ignore Squiz.PHP.CommentedOutCode.Found -- Debug code for performance testing
+		// $this->get_data( 'report', $batch_report->get_total_visitors_report() );
+		// $this->get_data( 'report', $batch_report->get_new_visitors_trend_report() );
+		// $this->get_data( 'report', $batch_report->get_returning_visitors_trend_report() );
+		// $this->get_data( 'report', $batch_report->get_top_traffic_channels_trend_report() );
+		$end_time   = microtime( true );
+		$duration_s = $end_time - $start_time;
+		error_log( sprintf( '4 single requests took %.3f seconds.', $duration_s ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		// End Single report processor for debug data.
 
 		add_action( 'admin_init', array( $synchronize_property, 'maybe_schedule_synchronize_property' ) );
 		add_action( 'admin_init', array( $synchronize_adsense_linked, 'maybe_schedule_synchronize_adsense_linked' ) );
@@ -706,6 +732,10 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			'GET:properties'                            => array( 'service' => 'analyticsadmin' ),
 			'GET:property'                              => array( 'service' => 'analyticsadmin' ),
 			'GET:report'                                => array(
+				'service'   => 'analyticsdata',
+				'shareable' => true,
+			),
+			'GET:batch-report'                          => array(
 				'service'   => 'analyticsdata',
 				'shareable' => true,
 			),
@@ -1305,6 +1335,58 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				$request->setProperty( $property_id );
 
 				return $this->get_analyticsdata_service()->properties->runReport( $property_id, $request );
+
+			case 'GET:batch-report':
+				if ( empty( $data['requests'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'requests' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! is_array( $data['requests'] ) || count( $data['requests'] ) > 5 ) {
+					return new WP_Error(
+						'invalid_batch_size',
+						__( 'Batch report requests must be an array with 1-5 requests.', 'google-site-kit' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$settings = $this->get_settings()->get();
+				if ( empty( $settings['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_setting',
+						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
+						array( 'status' => 500 )
+					);
+				}
+
+				$batch_requests = array();
+				$report         = new Analytics_4_Report_Request( $this->context );
+
+				foreach ( $data['requests'] as $request_data ) {
+					$data_request = new Data_Request( 'GET', 'modules', $this->slug, 'report', $request_data );
+					$request      = $report->create_request(
+						$data_request,
+						$this->is_shared_data_request( $data_request )
+					);
+					if ( is_wp_error( $request ) ) {
+						return $request;
+					}
+					$batch_requests[] = $request;
+				}
+
+				$property_id = self::normalize_property_id( $settings['propertyID'] );
+
+				$batch_request = new Google_Service_AnalyticsData\BatchRunReportsRequest();
+				$batch_request->setRequests( $batch_requests );
+
+				return $this->get_analyticsdata_service()->properties->batchRunReports(
+					$property_id,
+					$batch_request
+				);
 
 			case 'GET:enhanced-measurement-settings':
 				if ( ! isset( $data['propertyID'] ) ) {
