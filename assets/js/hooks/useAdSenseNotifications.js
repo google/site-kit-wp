@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
+import useViewContext from './useViewContext';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { MODULES_ADSENSE } from '../modules/adsense/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '../modules/adsense/constants';
@@ -34,6 +35,8 @@ import { CORE_NOTIFICATIONS } from '../googlesitekit/notifications/datastore/con
 import NotificationFromServer from '../components/NotificationFromServer';
 
 export default function useAdSenseNotifications() {
+	const viewContext = useViewContext();
+
 	const adSenseModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE )
 	);
@@ -102,11 +105,25 @@ export default function useAdSenseNotifications() {
 				delete notificationProps.isDismissible;
 			}
 
+			// Before refactoring Banner Notifications, `CoreSiteBannerNotification`
+			// added a constant GA event category but the notification ID from the
+			// server was passed as the event label to differentiate multiple notifications
+			// from the server. So we follow the same pattern here.
+			const gaTrackingEventArgs = {
+				category: `${ viewContext }_adsense-alerts-banner-notification`,
+				label: notification.id,
+			};
+
 			registerNotification( notification.id, {
 				Component( { Notification } ) {
 					return (
-						<Notification>
-							<NotificationFromServer { ...notificationProps } />
+						<Notification
+							gaTrackingEventArgs={ gaTrackingEventArgs }
+						>
+							<NotificationFromServer
+								{ ...notificationProps }
+								gaTrackingEventArgs={ gaTrackingEventArgs }
+							/>
 						</Notification>
 					);
 				},
@@ -120,6 +137,7 @@ export default function useAdSenseNotifications() {
 			} );
 		} );
 	}, [
+		viewContext,
 		accountID,
 		adSenseModuleConnected,
 		notifications,
