@@ -10,7 +10,7 @@ exports[`InfoNotice should render correctly in the default state 1`] = `
       class="googlesitekit-audience-segmentation-info-notice__body"
     >
       <p
-        class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+        class="googlesitekit-typography googlesitekit-typography--body"
       >
         Test content
       </p>

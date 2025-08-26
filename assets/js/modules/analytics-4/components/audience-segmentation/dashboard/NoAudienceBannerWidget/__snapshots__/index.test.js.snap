@@ -23,7 +23,7 @@ exports[`NoAudienceBannerWidget with a view-only user who's never populated thei
             class="googlesitekit-lean-cta-banner__body-content"
           >
             <p
-              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-typography--body"
             >
               You don’t have any visitor groups selected. 
               <button
@@ -73,7 +73,7 @@ exports[`NoAudienceBannerWidget with a view-only user who's previously populated
             class="googlesitekit-lean-cta-banner__body-content"
           >
             <p
-              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-typography--body"
             >
               It looks like your visitor groups aren’t available anymore. 
               <button
@@ -123,7 +123,7 @@ exports[`NoAudienceBannerWidget with an authenticated user who's never populated
             class="googlesitekit-lean-cta-banner__body-content"
           >
             <p
-              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-typography--body"
             >
               You don’t have any visitor groups selected. 
               <button
@@ -138,7 +138,7 @@ exports[`NoAudienceBannerWidget with an authenticated user who's never populated
               .
             </p>
             <p
-              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-typography--body"
             >
               You can deactivate this widget in 
               <button
@@ -188,7 +188,7 @@ exports[`NoAudienceBannerWidget with an authenticated user who's previously popu
             class="googlesitekit-lean-cta-banner__body-content"
           >
             <p
-              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-typography--body"
             >
               It looks like your visitor groups aren’t available anymore. 
               <button
@@ -203,7 +203,7 @@ exports[`NoAudienceBannerWidget with an authenticated user who's previously popu
               .
             </p>
             <p
-              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-typography--body"
             >
               You can deactivate this widget in 
               <button

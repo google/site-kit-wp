@@ -256,7 +256,7 @@ exports[`AudienceTile Partial data badge should render a partial data badge for 
                 >
                   No data to show
                   <p
-                    class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+                    class="googlesitekit-typography googlesitekit-typography--body"
                   >
                     Update Analytics to track metric
                   </p>
@@ -537,7 +537,7 @@ exports[`AudienceTile Partial data badge should render a partial data badge for 
                 >
                   No data to show
                   <p
-                    class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+                    class="googlesitekit-typography googlesitekit-typography--body"
                   >
                     Update Analytics to track metric
                   </p>
@@ -807,7 +807,7 @@ exports[`AudienceTile should render the AudienceTile component 1`] = `
                 >
                   No data to show
                   <p
-                    class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+                    class="googlesitekit-typography googlesitekit-typography--body"
                   >
                     Update Analytics to track metric
                   </p>

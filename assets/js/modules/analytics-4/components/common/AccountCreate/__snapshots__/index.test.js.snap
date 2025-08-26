@@ -40,7 +40,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
       Create your Analytics account
     </h3>
     <p
-      class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+      class="googlesitekit-typography googlesitekit-typography--body"
     >
       We’ve pre-filled the required information for your new account. Confirm or edit any details:
     </p>
@@ -303,7 +303,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
       </div>
     </div>
     <p
-      class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+      class="googlesitekit-typography googlesitekit-typography--body"
     >
       <span>
         You will be redirected to Google Analytics to accept the terms of service.

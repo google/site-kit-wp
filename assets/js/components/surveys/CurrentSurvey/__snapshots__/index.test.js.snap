@@ -65,7 +65,7 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
               <svg />
             </button>
             <p
-              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-typography--body"
             >
               Unhappy
             </p>
@@ -82,7 +82,7 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
               <svg />
             </button>
             <p
-              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-typography--body"
             >
               Dissatisfied
             </p>
@@ -99,7 +99,7 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
               <svg />
             </button>
             <p
-              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-typography--body"
             >
               Neutral
             </p>
@@ -116,7 +116,7 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
               <svg />
             </button>
             <p
-              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-typography--body"
             >
               Satisfied
             </p>
@@ -133,7 +133,7 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
               <svg />
             </button>
             <p
-              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-typography--body"
             >
               Delighted
             </p>
@@ -210,7 +210,7 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
               <svg />
             </button>
             <p
-              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-typography--body"
             >
               Unhappy
             </p>
@@ -227,7 +227,7 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
               <svg />
             </button>
             <p
-              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-typography--body"
             >
               Dissatisfied
             </p>
@@ -244,7 +244,7 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
               <svg />
             </button>
             <p
-              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-typography--body"
             >
               Neutral
             </p>
@@ -261,7 +261,7 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
               <svg />
             </button>
             <p
-              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-typography--body"
             >
               Satisfied
             </p>
@@ -278,7 +278,7 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
               <svg />
             </button>
             <p
-              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-typography--body"
             >
               Delighted
             </p>
