@@ -25,7 +25,12 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useCallback, createInterpolateElement } from '@wordpress/element';
+import {
+	useCallback,
+	useEffect,
+	useState,
+	createInterpolateElement,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -37,6 +42,7 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { toggleTracking, trackEvent } from '../util/tracking';
 import Link from './Link';
 import useViewContext from '../hooks/useViewContext';
+import { useDebounce } from '../hooks/useDebounce';
 
 export default function OptIn( {
 	id = 'googlesitekit-opt-in',
@@ -45,11 +51,10 @@ export default function OptIn( {
 	trackEventCategory,
 	alignLeftCheckbox = false,
 } ) {
+	const [ checked, setChecked ] = useState();
+
 	const enabled = useSelect( ( select ) =>
 		select( CORE_USER ).isTrackingEnabled()
-	);
-	const saving = useSelect( ( select ) =>
-		select( CORE_USER ).isSavingTrackingEnabled()
 	);
 	const error = useSelect( ( select ) =>
 		select( CORE_USER ).getErrorForAction( 'setTrackingEnabled', [
@@ -74,9 +79,27 @@ export default function OptIn( {
 						'tracking_optin'
 					);
 				}
+			} else {
+				setChecked( enabled );
 			}
 		},
-		[ setTrackingEnabled, trackEventCategory, viewContext ]
+		[ enabled, setTrackingEnabled, trackEventCategory, viewContext ]
+	);
+
+	useEffect( () => {
+		if ( enabled !== undefined && checked === undefined ) {
+			setChecked( enabled );
+		}
+	}, [ enabled, checked ] );
+
+	const debouncedHandleOptIn = useDebounce( handleOptIn, 300 );
+
+	const handleCheck = useCallback(
+		( e ) => {
+			setChecked( e.target.checked );
+			debouncedHandleOptIn( e );
+		},
+		[ debouncedHandleOptIn ]
 	);
 
 	return (
@@ -86,8 +109,7 @@ export default function OptIn( {
 				name={ name }
 				value="1"
 				checked={ enabled }
-				disabled={ saving }
-				onChange={ handleOptIn }
+				onChange={ handleCheck }
 				loading={ enabled === undefined }
 				alignLeft={ alignLeftCheckbox }
 			>
