@@ -72,6 +72,8 @@ export default function Stepper( { children, activeStep, className } ) {
 					childNumber,
 					childCount
 				);
+			default:
+				return '';
 		}
 	}
 

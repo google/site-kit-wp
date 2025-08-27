@@ -228,7 +228,7 @@ export function createFetchStore( {
 				const { params } = payload;
 				state[ isFetching ] = state[ isFetching ] || {};
 				state[ isFetching ][ stringifyObject( params ) ] = true;
-				break;
+				return state;
 			}
 
 			case RECEIVE: {
@@ -240,15 +240,17 @@ export function createFetchStore( {
 				const { params } = payload;
 				state[ isFetching ] = state[ isFetching ] || {};
 				state[ isFetching ][ stringifyObject( params ) ] = false;
-				break;
+				return state;
 			}
 
 			case CATCH_FETCH: {
 				const { params } = payload;
 				state[ isFetching ] = state[ isFetching ] || {};
 				state[ isFetching ][ stringifyObject( params ) ] = false;
-				break;
+				return state;
 			}
+			default:
+				return state;
 		}
 	} );
 

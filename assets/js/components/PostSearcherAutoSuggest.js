@@ -178,6 +178,8 @@ export default function PostSearcherAutoSuggest( {
 			// Clean-up abort
 			return () => controller?.abort();
 		}
+		// Return noop cleanup function to satisfy consistent-return rule.
+		return () => {};
 	}, [
 		debouncedValue,
 		setIsLoading,
@@ -224,9 +226,11 @@ export default function PostSearcherAutoSuggest( {
 
 			switch ( e.keyCode ) {
 				case ESCAPE:
-					return onClose();
+					onClose();
+					break;
 				case ENTER:
-					return onSelectCallback( searchTerm );
+					onSelectCallback( searchTerm );
+					break;
 				default:
 					break;
 			}

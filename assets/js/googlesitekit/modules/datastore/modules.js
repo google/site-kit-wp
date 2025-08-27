@@ -579,7 +579,7 @@ export const baseControls = {
 
 				// If a storeName wasn't specified on registerModule we assume there is no store for this module
 				if ( ! storeName ) {
-					return;
+					return null;
 				}
 
 				if ( select( storeName )?.getAdminReauthURL ) {

@@ -28,6 +28,7 @@ export async function setEditPostFeature( feature, setActivation ) {
 					.dispatch( 'core/edit-post' )
 					.toggleFeature( featureName );
 			}
+			return undefined;
 		},
 		feature,
 		setActivation

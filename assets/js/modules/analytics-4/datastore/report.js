@@ -194,7 +194,7 @@ const baseSelectors = {
 		( select ) =>
 			( state, report, { startDate, endDate } = {} ) => {
 				if ( ! isPlainObject( report ) ) {
-					return;
+					return undefined;
 				}
 
 				const pagePaths = [];
@@ -250,7 +250,7 @@ const baseSelectors = {
 				const pageTitlesReport =
 					select( MODULES_ANALYTICS_4 ).getReport( options );
 				if ( undefined === pageTitlesReport ) {
-					return;
+					return undefined;
 				}
 
 				( pageTitlesReport?.rows || [] ).forEach(

@@ -182,7 +182,7 @@ const baseActions = {
 		);
 
 		if ( ! settingsAnsweredOther.length > 0 ) {
-			return;
+			return {};
 		}
 
 		const triggerID = `userInput_answered_other__${ settingsAnsweredOther.join(

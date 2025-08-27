@@ -76,4 +76,5 @@ function isModuleDataAvailableOnLoad( select, slug, storeName ) {
 		isGatheringData();
 		return isDataAvailableOnLoad();
 	}
+	return false;
 }

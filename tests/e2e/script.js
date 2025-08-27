@@ -51,6 +51,7 @@ function getArgFromCLI( arg ) {
 			return value || null;
 		}
 	}
+	return undefined;
 }
 
 function hasArgInCLI( arg ) {
