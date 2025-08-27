@@ -33,11 +33,11 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
-import { trackEvent } from '../../../../util';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import useViewContext from '../../../../hooks/useViewContext';
-import Badge from '../../../../components/Badge';
-import Notice from '../../../../components/Notice';
+import { trackEvent } from '@/js/util';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import Badge from '@/js/components/Badge';
+import Notice from '@/js/components/Notice';
 
 export default function UseSnippetSwitch( props ) {
 	const {

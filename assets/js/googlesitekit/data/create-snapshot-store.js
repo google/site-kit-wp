@@ -25,8 +25,8 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data, { createRegistryControl } from 'googlesitekit-data';
-import { deleteItem, getItem, setItem } from '../api/cache';
-import { HOUR_IN_SECONDS } from '../../util';
+import { deleteItem, getItem, setItem } from '@/js/googlesitekit/api/cache';
+import { HOUR_IN_SECONDS } from '@/js/util';
 
 // Actions
 const CREATE_SNAPSHOT = 'CREATE_SNAPSHOT';

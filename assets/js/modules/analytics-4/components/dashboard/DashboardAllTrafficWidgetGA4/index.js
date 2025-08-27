@@ -31,22 +31,22 @@ import {
 	UI_DIMENSION_NAME,
 	UI_DIMENSION_VALUE,
 	UI_ALL_TRAFFIC_LOADED,
-} from '../../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
-import { DAY_IN_SECONDS } from '../../../../../util';
-import { isZeroReport } from '../../../utils';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import { Grid, Row, Cell } from '../../../../../material-components/layout';
-import whenActive from '../../../../../util/when-active';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
+import { isZeroReport } from '@/js/modules/analytics-4/utils';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { Grid, Row, Cell } from '@/js/material-components/layout';
+import whenActive from '@/js/util/when-active';
 import DataSourceLink from './DataSourceLink';
 import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
-import useAllTrafficWidgetReport from '../../../hooks/useAllTrafficWidgetReport';
-import useViewOnly from '../../../../../hooks/useViewOnly';
-import SurveyViewTrigger from '../../../../../components/surveys/SurveyViewTrigger';
+import useAllTrafficWidgetReport from '@/js/modules/analytics-4/hooks/useAllTrafficWidgetReport';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
 
 function DashboardAllTrafficWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;

@@ -30,12 +30,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import SupportLink from '../../../../components/SupportLink';
-import { ErrorNotices } from '../common';
-import { trackEvent } from '../../../../util';
-import useViewContext from '../../../../hooks/useViewContext';
-import Typography from '../../../../components/Typography';
-import P from '../../../../components/Typography/P';
+import SupportLink from '@/js/components/SupportLink';
+import { ErrorNotices } from '@/js/modules/adsense/components/common';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function SetupAccountNoClient() {
 	const viewContext = useViewContext();

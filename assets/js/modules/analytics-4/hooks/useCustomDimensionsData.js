@@ -31,16 +31,16 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
-} from '../datastore/constants';
-import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
-import { isInvalidCustomDimensionError } from '../utils/custom-dimensions';
-import useFormValue from '../../../hooks/useFormValue';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { isInvalidCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import useFormValue from '@/js/hooks/useFormValue';
 
 /**
  * Gets custom dimensions data and state.

@@ -25,10 +25,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import BannerNotification, {
 	TYPES,
-} from '../../googlesitekit/notifications/components/layout/BannerNotification';
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 
 export default function AuthError( { id, Notification } ) {
 	const error = useSelect( ( select ) => select( CORE_USER ).getAuthError() );

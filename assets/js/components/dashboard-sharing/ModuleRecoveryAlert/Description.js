@@ -25,9 +25,9 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies.
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import P from '../../Typography/P';
-import LearnMoreLink from '../../Banner/LearnMoreLink';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import P from '@/js/components/Typography/P';
+import LearnMoreLink from '@/js/components/Banner/LearnMoreLink';
 
 export default function Description( {
 	recoverableModules,

@@ -28,12 +28,12 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { ErrorNotices } from '../common';
-import { trackEvent } from '../../../../util';
-import useViewContext from '../../../../hooks/useViewContext';
-import Typography from '../../../../components/Typography';
-import P from '../../../../components/Typography/P';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { ErrorNotices } from '@/js/modules/adsense/components/common';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function SetupAccountPendingTasks() {
 	const viewContext = useViewContext();

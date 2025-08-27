@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { ProgressBar } from 'googlesitekit-components';
-import Typography from '../Typography';
+import Typography from '@/js/components/Typography';
 
 export default function SettingsStatuses( { statuses } ) {
 	if ( ! statuses || statuses.length === 0 ) {

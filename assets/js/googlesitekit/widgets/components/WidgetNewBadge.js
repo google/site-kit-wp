@@ -30,10 +30,10 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../datastore/user/constants';
-import NewBadge from '../../../components/NewBadge';
-import { WEEK_IN_SECONDS } from '../../../util';
-import { CORE_WIDGETS } from '../datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import NewBadge from '@/js/components/NewBadge';
+import { WEEK_IN_SECONDS } from '@/js/util';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 
 export default function WidgetNewBadge( { slug } ) {
 	const widgetArea = useSelect( ( select ) =>

@@ -24,13 +24,13 @@ import {
 } from '../../../../tests/js/test-utils';
 import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
 import ConsentModeSetupCTABanner from './ConsentModeSetupCTABanner';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
-import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 describe( 'ConsentModeSetupCTABanner', () => {
 	let registry;

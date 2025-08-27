@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import { isInactiveWidgetState } from './is-inactive-widget-state';
-import Null from '../../../components/Null';
-import ActivateAnalyticsCTA from '../../../components/ActivateAnalyticsCTA';
+import Null from '@/js/components/Null';
+import ActivateAnalyticsCTA from '@/js/components/ActivateAnalyticsCTA';
 
 describe( 'isInactiveWidgetState', () => {
 	it( 'returns true for an inactive widget', () => {

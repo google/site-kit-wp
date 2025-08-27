@@ -30,12 +30,12 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import NoticeNotification from '../../googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '../Notice/constants';
-import useQueryArg from '../../hooks/useQueryArg';
-import useViewContext from '../../hooks/useViewContext';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '@/js/components/Notice/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function ModuleSetupSuccessNotification( { id, Notification } ) {
 	const [ , setNotification ] = useQueryArg( 'notification' );

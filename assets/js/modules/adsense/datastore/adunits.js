@@ -31,8 +31,8 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
-import { MODULE_SLUG_ADSENSE } from '../constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 
 const fetchGetAdUnitsStore = createFetchStore( {
 	baseName: 'getAdUnits',

@@ -19,18 +19,18 @@
 /**
  * Internal dependencies
  */
-import * as fixtures from '../../datastore/__fixtures__';
+import * as fixtures from '@/js/modules/adsense/datastore/__fixtures__';
 import SettingsView from './SettingsView';
-import { Cell, Grid, Row } from '../../../../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import {
 	ACCOUNT_STATUS_APPROVED,
 	ACCOUNT_STATUS_PENDING,
 	SITE_STATUS_ADDED,
-} from '../../util';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/modules/adsense/util';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,

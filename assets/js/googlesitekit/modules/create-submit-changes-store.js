@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import { createReducer, createRegistryControl } from 'googlesitekit-data';
-import { createValidationSelector } from '../data/utils';
-import { actions as errorStoreActions } from '../data/create-error-store';
+import { createValidationSelector } from '@/js/googlesitekit/data/utils';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,

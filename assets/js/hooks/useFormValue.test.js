@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { createTestRegistry, renderHook } from '../../../tests/js/test-utils';
 import useFormValue from './useFormValue';
 

@@ -21,8 +21,8 @@
  */
 import { select, subscribe } from 'googlesitekit-data';
 import { watchBlocks } from './watch-blocks';
-import * as tracking from '../../util/tracking';
-import { VIEW_CONTEXT_WP_BLOCK_EDITOR } from '../constants';
+import * as tracking from '@/js/util/tracking';
+import { VIEW_CONTEXT_WP_BLOCK_EDITOR } from '@/js/googlesitekit/constants';
 import {
 	CONTRIBUTE_WITH_GOOGLE_BLOCK,
 	SUBSCRIBE_WITH_GOOGLE_BLOCK,

@@ -24,7 +24,7 @@ import { set, unset } from 'lodash';
 /**
  * Internal dependencies
  */
-import { numFmt } from '../';
+import { numFmt } from '@/js/util';
 
 function setupGoogleSiteKit( langCode ) {
 	set( global._googlesitekitLegacyData, 'locale', langCode );

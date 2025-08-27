@@ -25,15 +25,15 @@ import {
 	provideUserAuthentication,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { getPreviousDate, stringToDate } from '../../../util';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getPreviousDate, stringToDate } from '@/js/util';
 import { properties } from './__fixtures__';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 	RESOURCE_TYPE_AUDIENCE,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const testAudience1 = {
 	name: 'properties/12345/audiences/12345',

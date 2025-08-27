@@ -22,7 +22,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import Typography from '.';
 import {
 	SIZE_SMALL,

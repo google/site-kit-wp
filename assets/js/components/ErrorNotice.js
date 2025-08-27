@@ -32,9 +32,9 @@ import { isURL } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { isPermissionScopeError, isErrorRetryable } from '../util/errors';
+import { isPermissionScopeError, isErrorRetryable } from '@/js/util/errors';
 import Notice from './Notice';
-import { sanitizeHTML } from '../util';
+import { sanitizeHTML } from '@/js/util';
 
 export default function ErrorNotice( {
 	className,

@@ -34,12 +34,12 @@ import {
 	combineStores,
 	createRegistryControl,
 } from 'googlesitekit-data';
-import { createFetchStore } from '../../data/create-fetch-store';
-import { CORE_SITE } from '../../datastore/site/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from './constants';
-import featureTours from '../../../feature-tours';
-import { getItem } from '../../../googlesitekit/api/cache';
-import { createValidatedAction } from '../../data/utils';
+import featureTours from '@/js/feature-tours';
+import { getItem } from '@/js/googlesitekit/api/cache';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 
 const { getRegistry } = commonActions;
 

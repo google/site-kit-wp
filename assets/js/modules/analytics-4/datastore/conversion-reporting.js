@@ -37,15 +37,15 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
-} from '../../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	CONVERSION_REPORTING_LEAD_EVENTS,
 	MODULES_ANALYTICS_4,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
-import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '../../../components/user-input/util/constants';
-import { safelySort } from '../../../util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '@/js/components/user-input/util/constants';
+import { safelySort } from '@/js/util';
 
 export const selectors = {
 	/**

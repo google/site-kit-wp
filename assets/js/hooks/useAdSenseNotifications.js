@@ -26,12 +26,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { MODULES_ADSENSE } from '../modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../modules/adsense/constants';
-import { NOTIFICATION_AREAS } from '../googlesitekit/notifications/constants';
-import { CORE_NOTIFICATIONS } from '../googlesitekit/notifications/datastore/constants';
-import NotificationFromServer from '../components/NotificationFromServer';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import NotificationFromServer from '@/js/components/NotificationFromServer';
 
 export default function useAdSenseNotifications() {
 	const adSenseModuleConnected = useSelect( ( select ) =>

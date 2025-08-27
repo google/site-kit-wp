@@ -36,17 +36,17 @@ import {
 	AUDIENCE_SELECTION_CHANGED,
 	AUDIENCE_SELECTION_FORM,
 } from './constants';
-import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	MODULES_ANALYTICS_4,
-} from '../../../../datastore/constants';
-import { numFmt } from '../../../../../../util';
-import NewBadge from '../../../../../../components/NewBadge';
-import { SelectionPanelItem } from '../../../../../../components/SelectionPanel';
-import BadgeWithTooltip from '../../../../../../components/BadgeWithTooltip';
-import useFormValue from '../../../../../../hooks/useFormValue';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { numFmt } from '@/js/util';
+import NewBadge from '@/js/components/NewBadge';
+import { SelectionPanelItem } from '@/js/components/SelectionPanel';
+import BadgeWithTooltip from '@/js/components/BadgeWithTooltip';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function AudienceItem( {
 	slug,

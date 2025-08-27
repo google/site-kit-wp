@@ -26,29 +26,29 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
-} from '../datastore/constants';
-import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import {
 	InsufficientPermissionsError,
 	MetricTileTable,
 	MetricTileWrapper,
-} from '../../../components/KeyMetrics';
+} from '@/js/components/KeyMetrics';
 import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	isInsufficientPermissionsError,
-} from '../../../util/errors';
-import useViewOnly from '../../../hooks/useViewOnly';
+} from '@/js/util/errors';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	AnalyticsUpdateError,
 	CustomDimensionsMissingError,
-} from '../components/key-metrics';
-import useCustomDimensionsData from '../hooks/useCustomDimensionsData';
+} from '@/js/modules/analytics-4/components/key-metrics';
+import useCustomDimensionsData from '@/js/modules/analytics-4/hooks/useCustomDimensionsData';
 
 export default function withCustomDimensions( options = {} ) {
 	const {

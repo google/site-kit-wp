@@ -29,8 +29,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import NoticeNotification from '../../googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '../Notice/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '@/js/components/Notice/constants';
 
 export const GOOGLE_TAG_GATEWAY_SETUP_SUCCESS_NOTIFICATION =
 	'setup-success-notification-gtg';

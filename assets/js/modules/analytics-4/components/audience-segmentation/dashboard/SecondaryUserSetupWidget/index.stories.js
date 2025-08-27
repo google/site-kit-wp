@@ -32,10 +32,10 @@ import {
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const userAuthenticationEndpoint = new RegExp(

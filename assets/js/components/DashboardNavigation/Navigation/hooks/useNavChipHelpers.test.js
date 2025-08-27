@@ -27,7 +27,7 @@ import {
 	ANCHOR_ID_TRAFFIC,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import { actHook, renderHook } from '../../../../../../tests/js/test-utils';
 import useNavChipHelpers from './useNavChipHelpers';
 

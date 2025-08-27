@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import MainHeader from '../../Header';
-import HelpMenu from '../../help/HelpMenu';
+import MainHeader from '@/js/components/Header';
+import HelpMenu from '@/js/components/help/HelpMenu';
 
 export default function Header() {
 	return (

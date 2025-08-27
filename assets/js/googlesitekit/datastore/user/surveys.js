@@ -33,9 +33,9 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { CORE_USER, GLOBAL_SURVEYS_TIMEOUT_SLUG } from './constants';
-import { createFetchStore } from '../../data/create-fetch-store';
-import { createValidatedAction } from '../../data/utils';
-import { CORE_SITE } from '../site/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 const fetchTriggerSurveyStore = createFetchStore( {
 	baseName: 'triggerSurvey',
