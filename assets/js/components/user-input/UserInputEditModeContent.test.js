@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { createTestRegistry } from '../../../../tests/js/utils';
 import { render } from '../../../../tests/js/test-utils';
 import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -26,7 +27,6 @@ import {
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_QUESTIONS_PURPOSE,
 } from './util/constants';
-import { createTestRegistry } from '../../../../tests/js/utils';
 import UserInputEditModeContent from './UserInputEditModeContent';
 
 describe( 'UserInputEditModeContent', () => {
