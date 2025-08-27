@@ -21,13 +21,25 @@ google-site-kit*.zip
 *.tmproj
 *.tmproject
 tmtags
-.*.sw[a-z]
 *.un~
 Session.vim
 *.swp
-.vscode/*
+
+# Config files
+.*
+!.github
 !.vscode/extensions.json
 !.vscode/settings.json
+!.editorconfig
+!.eslintignore
+!.eslintrc.json
+!.eslintrc.staged.json
+!.gitignore
+!.nvmrc
+!.prettierignore
+!.prettierrc.js
+!.stylelintrc
+!.svgo.yml
 
 # Mac OSX
 .DS_Store
