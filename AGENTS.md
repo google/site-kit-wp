@@ -89,7 +89,7 @@ Each module follows a consistent structure:
 ```
 includes/Modules/ModuleName.php           # Main module class
 includes/Modules/ModuleName/              # Module-specific classes
-assets/js/modules/modulename/             # JS module code
+assets/js/modules/module-slug/            # JS module code
   ├── components/                         # React components
   ├── datastore/                          # Data store logic
   ├── utils/                              # Utility functions
@@ -114,7 +114,7 @@ The project uses `npm` workspaces and has scripts for different build scenarios:
 - **`npm run test`** - Run JavaScript tests (Jest)
 - **`npm run test:js`** - Run Jest tests once
 - **`npm run test:js:watch`** - Run Jest tests in watch mode
-- **`npm run test:e2e`** - Run end-to-end tests (Playwright)
+- **`npm run test:e2e`** - Run end-to-end tests (Puppeteer)
 - **`npm run test:visualtest`** - Run visual regression tests (Backstop.js)
 - **`npm run test:storybook`** - Run Storybook tests
 
@@ -175,7 +175,7 @@ The project uses `npm` workspaces and has scripts for different build scenarios:
 
 #### Key PHP Conventions
 - **Namespace**: All classes use `Google\Site_Kit\` namespace
-- **Class Names**: PascalCase with descriptive names
+- **Class Names**: PascalCase with descriptive names where each word is split using underscores `_`
 - **File Naming**: Match class names exactly (PSR-4)
 - **Method Naming**: snake_case following WordPress conventions
 - **Documentation**: Full PHPDoc blocks required for all classes and methods
@@ -264,10 +264,22 @@ The project has a comprehensive test suite with multiple types of testing at dif
 - **Namespace**: `Google\Site_Kit\Tests\`
 
 **Key Testing Utilities**:
-- **Fake Site Kit Class**: For testing plugin integration
-- **Mock Services**: Google API service mocking
-- **Authentication Mocks**: OAuth and authentication testing utilities
-- **Database Helpers**: WordPress database state management
+- **Base Test Case**: `tests/phpunit/includes/TestCase.php` - Extends WP_UnitTestCase with Site Kit specific setup including feature flag management
+- **Fake Site Connection Trait**: `tests/phpunit/includes/Fake_Site_Connection_Trait.php` - Provides fake Google OAuth credentials for testing site connections
+- **Authentication Test Traits**: 
+  - `tests/phpunit/includes/UserAuthenticationTrait.php` - User authentication testing utilities
+  - `tests/phpunit/includes/TestCase_Context_Trait.php` - Context setup for testing
+- **Data Storage Test Traits**:
+  - `tests/phpunit/includes/OptionsTestTrait.php` - WordPress options testing utilities
+  - `tests/phpunit/includes/UserOptionsTestTrait.php` - User options testing utilities
+  - `tests/phpunit/includes/TransientsTestTrait.php` - Transients testing utilities
+- **Module Testing Utilities**:
+  - `tests/phpunit/includes/ModulesHelperTrait.php` - Module registration and testing helpers
+  - `tests/phpunit/includes/RestTestTrait.php` - REST API testing utilities
+- **Mock and Fake Utilities**:
+  - `tests/phpunit/includes/FakeHttp.php` - HTTP request mocking
+  - `tests/phpunit/includes/FakeInstalledPlugins.php` - Plugin installation state mocking
+  - `tests/phpunit/includes/MethodSpy.php` - Method call spying utilities
 
 **Commands**:
 - `composer run test` - Run all PHP tests
@@ -276,9 +288,14 @@ The project has a comprehensive test suite with multiple types of testing at dif
 #### JavaScript Testing (Jest)
 
 **Configuration**:
-- **Main Config**: `tests/js/jest.config.js`
-- **Preset**: `@wordpress/jest-preset-default`
-- **Setup Files**: Global setup and custom matchers
+- **Main Config**: `tests/js/jest.config.js` - Jest configuration extending WordPress preset with Site Kit specific settings
+- **Preset**: `@wordpress/jest-preset-default` - WordPress-specific Jest configuration base
+- **Setup Files (before environment)**: 
+  - `tests/js/setup-globals.js` - Global environment setup including React, Site Kit data objects, gtag, and Intl polyfills
+  - `jest-localstorage-mock` - Local and session storage mocking
+- **Setup Files (after environment)**:
+  - `tests/js/jest-matchers.js` - Extends Jest with testing-library/jest-dom and custom Site Kit matchers
+  - `tests/js/setup-before-after.js` - Global beforeEach/afterEach hooks for test cleanup, timer management, and feature flags
 - **Test Environment**: jsdom for DOM testing
 
 **Test Organization**:
@@ -289,33 +306,57 @@ The project has a comprehensive test suite with multiple types of testing at dif
 
 **Testing Libraries**:
 - **React Testing Library**: `@testing-library/react` for component testing
-- **Jest**: Unit testing framework
-- **Custom Matchers**: Site Kit specific test assertions
-- **Mock Utils**: Extensive mocking utilities for WordPress and Google APIs
+- **Jest**: Unit testing framework with fetch-mock-jest for HTTP request mocking
+- **Custom Matchers**: Site Kit specific test assertions including URL parameter matching
+- **Mock Utils**: Comprehensive mocking utilities covering WordPress hooks, Google APIs, browser APIs, and asset imports
 
 **Key Test Utilities**:
-- **`tests/js/test-utils.js`**: Core testing utilities
-- **Registry Setup**: WordPress data store testing setup
-- **Mock Browser Utils**: Browser API mocking
-- **Component Utils**: React component testing helpers
-- **Viewport Utils**: Responsive testing utilities
+- **Core Testing Framework**: `tests/js/test-utils.js` - Main testing utilities including render functions with registry and feature flag setup
+- **Registry Testing**: 
+  - `tests/js/WithRegistrySetup.js` - WordPress data store registry testing setup
+  - `tests/js/utils.js` - Registry creation and waiting utilities (`createTestRegistry`, `createWaitForRegistry`)
+- **Mock Utilities**:
+  - `tests/js/mock-browser-utils.js` - Browser API mocking (location, history navigation)
+  - `tests/js/mock-component-utils.js` - React component mocking utilities (`mockCreateComponent` for test doubles)
+  - `tests/js/viewport-width-utils.js` - Responsive testing utilities (`getViewportWidth`, `setViewportWidth` for testing breakpoint-dependent components and hooks)
+  - `tests/js/mock-use-instance-id.js` - WordPress `useInstanceId` hook mocking with stable test IDs
+  - `tests/js/mock-accountChooserURL-utils.js` - Google account chooser URL decoding utilities
+  - **API Endpoint Mocking**:
+    - `tests/js/mock-survey-endpoints.js` - User survey API endpoints (`survey-trigger`, `survey-event`, `survey-timeouts`)
+    - `tests/js/mock-dismiss-item-endpoints.js` - Item dismissal API endpoint (`dismiss-item`)
+    - `tests/js/mock-dismiss-prompt-endpoints.js` - Prompt dismissal API endpoints (`dismiss-prompt`, `dismissed-prompts`)
+  - **Asset Mocking**:
+    - `tests/js/fileMock.js` - Generic file asset mock (images, fonts, media files)
+    - `tests/js/svgrMock.js` - SVG component mocking for SVGR imports
+    - `tests/js/svgStringMock.js` - SVG string mocking for URL imports (data URI)
+- **Setup and Configuration**:
+  - `tests/js/setup-globals.js` - Global environment setup including React, Site Kit data objects (`_googlesitekitLegacyData`, `_googlesitekitUserData`, `_googlesitekitBaseData`), gtag function, and Intl polyfills
+  - `tests/js/jest-matchers.js` - Extends Jest with testing-library/jest-dom and custom URL matchers (`tests/js/matchers/url.js`)
+  - `tests/js/setup-before-after.js` - Global beforeEach/afterEach hooks for storage cleanup, timer management, feature flag reset, and fetchMock setup
 
 **Commands**:
 - `npm run test:js` - Run Jest tests once
 - `npm run test:js:watch` - Run Jest tests in watch mode
 - `npm run test` - Run Jest tests with coverage
 
-#### End-to-End Testing (Playwright)
+#### End-to-End Testing (Puppeteer)
 
 **Configuration**:
 - **Location**: `tests/e2e/`
-- **Framework**: Playwright for browser automation
+- **Framework**: Puppeteer for browser automation
 - **Environment**: Docker-based WordPress setup
 
 **Test Structure**:
-- **Specs**: Test specifications for user workflows
-- **Utilities**: Helper functions for common actions
-- **Setup**: WordPress and plugin setup utilities
+- **Specs**: `tests/e2e/specs/` - Test specifications for user workflows (plugin activation, module setup, user input)
+- **Utilities**: `tests/e2e/utils/` - Comprehensive helper functions for common E2E actions:
+  - **Setup Utilities**: `setup-site-kit.js`, `setup-analytics.js`, `setup-adsense.js`, `setup-ads.js` - Module-specific setup helpers
+  - **Authentication**: `safe-login-user.js`, `logout-user.js`, `set-auth-token.js` - User authentication management
+  - **WordPress Integration**: `wp-api-fetch.js`, `activate-plugins.js`, `get-wp-version.js` - WordPress environment utilities
+  - **Site Configuration**: `set-site-verification.js`, `set-search-console-property.js`, `set-client-config.js` - Site and module configuration
+  - **Test Support**: `reset.js`, `page-wait.js`, `step-and-screenshot.js`, `use-request-interception.js` - Test execution helpers
+- **Configuration**: 
+  - `tests/e2e/config/bootstrap.js` - E2E test environment setup with Puppeteer configuration and WordPress utilities
+  - `tests/e2e/config/screenshots.js` - Screenshot capture configuration for test documentation
 
 **Commands**:
 - `npm run test:e2e` - Run E2E tests
@@ -398,7 +439,6 @@ The project has a comprehensive test suite with multiple types of testing at dif
 
 ### Feature Flags
 - **Location**: `feature-flags.json` - Master list of feature flags
-- **Current Flags**: adsPax, googleTagGateway, gtagUserData, privacySandboxModule, proactiveUserEngagement, setupFlowRefresh
 - **Usage**: PHP via `Feature_Flags` class, JS via feature detection utilities
 - **Purpose**: Gradual feature rollout and A/B testing capabilities
 
@@ -445,9 +485,19 @@ The project has a comprehensive test suite with multiple types of testing at dif
    - `register()` - Register module with WordPress
    - `get_data()` - Return module configuration data
    - `get_datapoints()` - Define available data endpoints
-3. **Use Appropriate Traits**: Add functionality via module traits
-4. **Settings Management**: Extend settings classes if needed
-5. **Service Integration**: Implement Google API service classes
+3. **Implement Module Interfaces**: Choose appropriate interfaces based on functionality:
+   - `Module_With_Scopes` - For modules requiring Google OAuth scopes (`get_scopes()`)
+   - `Module_With_Settings` - For modules with configuration settings (`get_settings()`)
+   - `Module_With_Assets` - For modules that register JavaScript/CSS assets (`get_assets()`)
+   - `Module_With_Tag` - For modules that output frontend tags (Analytics, AdSense, etc.)
+   - `Module_With_Activation` / `Module_With_Deactivation` - For modules with activation/deactivation hooks
+   - `Module_With_Owner` - For modules with ownership verification
+   - `Module_With_Service_Entity` - For modules representing Google service entities
+   - `Module_With_Debug_Fields` - For modules providing debug information
+   - `Module_With_Data_Available_State` - For modules with data availability status
+4. **Use Appropriate Traits**: Add functionality via module traits (legacy pattern, prefer interfaces)
+5. **Settings Management**: Extend settings classes if needed
+6. **Service Integration**: Implement Google API service classes
 
 #### JavaScript Module Structure
 1. **Datastore**: Create complete data store with actions, selectors, reducers
@@ -474,11 +524,152 @@ The project has a comprehensive test suite with multiple types of testing at dif
 - **Asset Manifests**: Generated manifests for WordPress asset enqueuing
 
 ### SCSS Architecture
-- **Base Styles**: `assets/sass/base/` - Core styling foundations
-- **Components**: `assets/sass/components/` - Reusable component styles
-- **Utilities**: `assets/sass/utilities/` - Utility classes
-- **Variables**: Material UI 3 design system variables
-- **Mixins**: Reusable SCSS mixins for common patterns
+
+#### Directory Structure
+- **Main Entry Files**: 
+  - `assets/sass/admin.scss` - Primary admin stylesheet (Site Kit screens)
+  - `assets/sass/adminbar.scss` - WordPress admin bar styles
+  - `assets/sass/wpdashboard.scss` - WordPress dashboard widget styles
+  - `assets/sass/authorize-application.scss` - Authorization screen styles
+
+#### Core Architecture Folders
+- **`assets/sass/base/`** - Core styling foundations
+  - `_defaults.scss` - Global defaults and reset styles within `.googlesitekit-plugin` scope
+- **`assets/sass/config/`** - Configuration and design system
+  - `_variables.scss` - Main variable definitions and color palette
+  - `_variables-mui3.scss` - Material UI 3 design system tokens
+  - `_mixins.scss` - Reusable SCSS mixins for common patterns
+- **`assets/sass/components/`** - Component-specific styles organized by feature area
+- **`assets/sass/utilities/`** - Utility classes for common CSS properties
+- **`assets/sass/vendor/`** - Third-party library modifications
+- **`assets/sass/widgets/`** - WordPress dashboard widget styles
+
+#### Component Organization
+Components are organized by feature area within `assets/sass/components/`:
+
+**Core Areas:**
+- **`activation/`** - Plugin activation flow styles
+- **`global/`** - Shared UI components (70+ component files)
+- **`dashboard/`** - Dashboard-specific components and wizard
+- **`settings/`** - Settings page components
+- **`setup/`** - Module setup flows
+- **`key-metrics/`** - Key metrics widget system
+- **`user-input/`** - User input collection flows
+
+**Module-Specific:**
+- **`ads/`** - Google Ads module styles
+- **`adsense/`** - AdSense module styles  
+- **`analytics-4/`** - GA4 module and audience segmentation styles
+- **`reader-revenue-manager/`** - RRM module styles
+- **`sign-in-with-google/`** - Sign in with Google styles
+
+**UI Components:**
+- **`banner/`**, **`notice/`**, **`overlay-card/`** - Notification systems
+- **`surveys/`** - User feedback survey components
+- **`tour-tooltip/`** - Feature tour system
+
+#### Design System & Variables
+
+**Color System:**
+- Material UI 3 design tokens in `_variables-mui3.scss`
+- Extended color palette including Google brand colors
+- WordPress core color palette for outside-Site-Kit usage
+- Semantic color assignments (primary, secondary, error, warning, etc.)
+- Context-specific colors (chart colors, notice backgrounds, etc.)
+
+**Typography:**
+- Google Sans font family (Display and Text variants)
+- Standardized font weights, sizes, and line heights
+- Typography utility classes
+
+**Layout & Spacing:**
+- Responsive breakpoint system
+- Grid gap variables for phone/desktop
+- Z-index management with WordPress compatibility
+- Maximum width constraints for different contexts
+
+**Component Tokens:**
+- Button, form, and input styling variables
+- Module-specific color schemes
+- Animation/transition timing variables
+
+### Styling Development Conventions
+
+#### Build System Integration
+
+**Webpack Configuration:**
+- **Entry Points**: Separate CSS builds for admin, adminbar, wp-dashboard, and authorization screens
+- **Processing Pipeline**: SCSS → PostCSS → CSS with autoprefixer and production minification
+- **Asset Management**: Content hashing for cache busting in production builds
+- **Source Maps**: Available in development mode for debugging
+
+**PostCSS Configuration (`assets/postcss.config.js`):**
+- **postcss-preset-env**: Modern CSS feature compilation
+- **postcss-import-url**: URL resolution for external resources
+- **autoprefixer**: Automatic vendor prefixing with grid support
+- **cssnano**: Production minification and optimization
+
+#### Code Quality & Linting
+
+**Stylelint Configuration (`.stylelintrc`):**
+- **Base Configs**: Extends WordPress and standard SCSS configurations
+- **Plugins**: Declaration strict values, property ordering, SCSS-specific rules
+- **Key Rules**:
+  - Tab indentation enforced
+  - Double quotes for strings
+  - Alphabetical property ordering
+  - Function URL quotes always required
+  - Nested selector pattern restrictions to prevent BEM violations
+
+#### SCSS Coding Conventions
+
+**File Organization:**
+- **Naming**: Prefix all Site Kit component files with `_googlesitekit-` 
+- **Structure**: Each component gets its own SCSS file
+- **Imports**: Organized by category (global, dashboard, modules, etc.) in main entry files
+- **Index Files**: Module-specific `_index.scss` files import all related styles
+
+**Variable Usage:**
+- **Colors**: Use semantic color variables, not hardcoded values
+- **Typography**: Use standardized font size, weight, and line height variables
+- **Spacing**: Use grid gap and breakpoint variables for consistency
+- **Z-Index**: Use predefined z-index variables for WordPress compatibility
+
+**BEM-Like Methodology:**
+- **Scope**: All styles scoped within `.googlesitekit-plugin` wrapper
+- **Component Classes**: Use `googlesitekit-` prefix for component classes
+- **Modifiers**: Follow consistent modifier patterns
+- **Nesting**: Avoid deep nesting; prefer flat selector structure
+
+**Responsive Design:**
+- **Mobile-First**: Design for mobile first, enhance for larger screens
+- **Breakpoints**: Use predefined breakpoint variables
+- **WordPress Compatibility**: Account for WordPress admin bar at different screen sizes
+
+**Material Design Integration:**
+- **MDC Imports**: Import Material Design Components as needed
+- **Overrides**: Customize Material components through vendor override files
+- **Theme Integration**: Use MDC theme variables for consistency
+
+#### Utility Classes
+
+**Available Utilities** (`assets/sass/utilities/`):**
+- **`_alignment.scss`** - Text and element alignment classes
+- **`_border-radius.scss`** - Border radius utilities
+- **`_color.scss`** - Text and background color utilities
+- **`_display.scss`** - Display property utilities
+- **`_font-weight.scss`** - Font weight utilities
+- **`_margin.scss`** - Margin spacing utilities
+- **`_overflow.scss`** - Overflow control utilities
+- **`_overflow-wrap.scss`** - Text wrapping utilities
+- **`_padding.scss`** - Padding spacing utilities
+- **`_text-align.scss`** - Text alignment utilities
+- **`_width.scss`** - Width and max-width utilities
+
+**Usage Guidelines:**
+- Prefer utility classes for simple, single-property styling
+- Use component-specific styles for complex styling patterns
+- Combine utilities with component styles when appropriate
 
 ### JavaScript Module System
 - **Custom Modules**: Internal module system for Site Kit JavaScript packages
@@ -514,7 +705,8 @@ The project has a comprehensive test suite with multiple types of testing at dif
 - **No Secrets in Frontend**: API keys and secrets kept server-side only
 
 ### Browser Support
-- **Modern Browsers**: Chrome, Firefox, Safari, Edge (recent versions)
+- **Modern Browsers**: Defined by `@wordpress/browserslist-config` npm dependency (Chrome 112+, Firefox 139+, Safari 18.4+, Edge 137+, mobile browsers)
+- **Configuration**: `browserslist` field in `package.json` extends `@wordpress/browserslist-config`
 - **Polyfills**: Automatic polyfill injection for required features
 - **Progressive Enhancement**: Graceful degradation for older browsers
 - **Mobile Responsive**: Mobile-first responsive design approach
