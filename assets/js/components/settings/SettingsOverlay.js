@@ -30,8 +30,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import LockIcon from '../../../svg/icons/lock.svg';
-import Typography from '../Typography';
+import LockIcon from '@/svg/icons/lock.svg';
+import Typography from '@/js/components/Typography';
 
 function SettingsOverlay( { compress } ) {
 	return (

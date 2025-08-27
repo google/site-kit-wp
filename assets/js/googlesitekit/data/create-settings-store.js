@@ -39,7 +39,7 @@ import {
 	camelCaseToConstantCase,
 } from './transform-case';
 import { createFetchStore } from './create-fetch-store';
-import { actions as errorStoreActions } from '../data/create-error-store';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,

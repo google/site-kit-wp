@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import { combineStores, commonStore } from 'googlesitekit-data';
-import { createErrorStore } from '../../data/create-error-store';
-import { createSnapshotStore } from '../../data/create-snapshot-store';
+import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
+import { createSnapshotStore } from '@/js/googlesitekit/data/create-snapshot-store';
 import forms from './forms';
 import { CORE_FORMS } from './constants';
 

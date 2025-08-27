@@ -29,12 +29,8 @@ import { map, reduce, take, toArray, mergeMap } from 'rxjs/operators';
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS_4 } from '../datastore/constants';
-import {
-	isValidDateString,
-	stringifyObject,
-	stringToDate,
-} from '../../../util';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { isValidDateString, stringifyObject, stringToDate } from '@/js/util';
 import { isValidDimensionFilters } from './report-validation';
 import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '../../../../../tests/js/utils/zeroReports';
 

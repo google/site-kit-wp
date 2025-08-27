@@ -29,9 +29,9 @@ import {
 	ACCOUNT_CREATE,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
-} from '../datastore/constants';
-import { isValidNumericID } from '../../../util';
-import { isValidDateRange } from '../../../util/report-validation';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { isValidNumericID } from '@/js/util';
+import { isValidDateRange } from '@/js/util/report-validation';
 import { normalizeReportOptions } from './report-normalization';
 import {
 	isValidDimensionFilters,

@@ -27,10 +27,10 @@ import { __ } from '@wordpress/i18n';
  */
 import { Option, Select } from 'googlesitekit-components';
 import { useDispatch } from 'googlesitekit-data';
-import { timeZonesByCountryCode } from '../../../utils/countries-timezones';
-import { FORM_ACCOUNT_CREATE } from '../../../datastore/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import useFormValue from '../../../../../hooks/useFormValue';
+import { timeZonesByCountryCode } from '@/js/modules/analytics-4/utils/countries-timezones';
+import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function TimezoneSelect() {
 	const countryCode = useFormValue( FORM_ACCOUNT_CREATE, 'countryCode' );

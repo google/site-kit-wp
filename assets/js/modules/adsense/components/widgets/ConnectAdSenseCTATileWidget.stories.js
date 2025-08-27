@@ -24,10 +24,10 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
-import { KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT } from '../../../../googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { MODULE_SLUG_ADSENSE } from '../../constants';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
+import { KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(

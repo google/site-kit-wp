@@ -23,8 +23,8 @@ import WidgetRenderer from './WidgetRenderer';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../googlesitekit/constants';
-import { CORE_WIDGETS } from '../datastore/constants';
+} from '@/js/googlesitekit/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
 	createTestRegistry,
 	provideModules,

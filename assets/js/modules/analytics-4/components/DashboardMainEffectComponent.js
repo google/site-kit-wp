@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import useCreateCustomDimensionForAudienceEffect from '../hooks/useCreateCustomDimensionForAudienceEffect';
-import useCreateCustomDimensionsEffect from '../hooks/useCreateCustomDimensionsEffect';
-import useSyncGoogleTagEffect from '../hooks/useSyncGoogleTagEffect';
+import useCreateCustomDimensionForAudienceEffect from '@/js/modules/analytics-4/hooks/useCreateCustomDimensionForAudienceEffect';
+import useCreateCustomDimensionsEffect from '@/js/modules/analytics-4/hooks/useCreateCustomDimensionsEffect';
+import useSyncGoogleTagEffect from '@/js/modules/analytics-4/hooks/useSyncGoogleTagEffect';
 
 export default function DashboardMainEffectComponent() {
 	useCreateCustomDimensionForAudienceEffect();

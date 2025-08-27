@@ -28,11 +28,11 @@ import {
 	act,
 	waitFor,
 } from '../../../../tests/js/test-utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { NOTIFICATION_GROUPS } from '../../googlesitekit/notifications/constants';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 
 describe( 'CoreSiteBannerNotifications', () => {

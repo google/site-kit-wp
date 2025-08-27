@@ -27,7 +27,7 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
-import { createFetchStore } from '../../data/create-fetch-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 
 const fetchGetConnectionStore = createFetchStore( {
 	baseName: 'getConnection',

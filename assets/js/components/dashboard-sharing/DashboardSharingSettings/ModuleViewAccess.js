@@ -26,9 +26,9 @@ import { createInterpolateElement, forwardRef } from '@wordpress/element';
  * Internal dependencies
  */
 import PropTypes from 'prop-types';
-import UserRoleSelect from '../UserRoleSelect';
-import Notice from '../../Notice';
-import Link from '../../Link';
+import UserRoleSelect from '@/js/components/dashboard-sharing/UserRoleSelect';
+import Notice from '@/js/components/Notice';
+import Link from '@/js/components/Link';
 
 const ModuleViewAccess = forwardRef(
 	(

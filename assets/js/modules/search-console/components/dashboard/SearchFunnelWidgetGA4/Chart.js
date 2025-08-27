@@ -32,15 +32,15 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { numFmt } from '../../../../../util';
+import { numFmt } from '@/js/util';
 import SearchConsoleStats from './SearchConsoleStats';
-import { ActivateAnalyticsCTA, AnalyticsStats } from '../../common';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { Grid, Row, Cell } from '../../../../../material-components';
 import {
-	BREAKPOINT_SMALL,
-	useBreakpoint,
-} from '../../../../../hooks/useBreakpoint';
+	ActivateAnalyticsCTA,
+	AnalyticsStats,
+} from '@/js/modules/search-console/components/common';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { Grid, Row, Cell } from '@/js/material-components';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 export default function Chart( {

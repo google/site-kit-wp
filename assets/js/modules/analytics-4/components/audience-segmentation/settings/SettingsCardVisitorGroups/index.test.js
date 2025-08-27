@@ -24,11 +24,11 @@ import {
 	createTestRegistry,
 	provideUserAuthentication,
 } from '../../../../../../../../tests/js/utils';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_SETTINGS } from '../../../../../../googlesitekit/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
-import * as tracking from '../../../../../../util/tracking';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import * as tracking from '@/js/util/tracking';
 import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
 import SettingsCardVisitorGroups from './';
 

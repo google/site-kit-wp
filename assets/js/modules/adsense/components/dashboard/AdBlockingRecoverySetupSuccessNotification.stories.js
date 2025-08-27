@@ -22,15 +22,15 @@
 import {
 	MODULES_ADSENSE,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
-} from '../../datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../constants';
+} from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import AdBlockingRecoverySetupSuccessNotification from './AdBlockingRecoverySetupSuccessNotification';
 import {
 	provideModules,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'adsense-abr-success-notification'

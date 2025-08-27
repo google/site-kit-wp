@@ -30,10 +30,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SurveyQuestionRating from '../SurveyQuestionRating';
-import SurveyQuestionOpenText from '../SurveyQuestionOpenText';
-import SurveyQuestionMultiSelect from '../SurveyQuestionMultiSelect';
-import SurveyQuestionSingleSelect from '../SurveyQuestionSingleSelect';
+import SurveyQuestionRating from '@/js/components/surveys/SurveyQuestionRating';
+import SurveyQuestionOpenText from '@/js/components/surveys/SurveyQuestionOpenText';
+import SurveyQuestionMultiSelect from '@/js/components/surveys/SurveyQuestionMultiSelect';
+import SurveyQuestionSingleSelect from '@/js/components/surveys/SurveyQuestionSingleSelect';
 import { SURVEY_QUESTION_TYPE } from './constants';
 
 export default function SurveyQuestion( {

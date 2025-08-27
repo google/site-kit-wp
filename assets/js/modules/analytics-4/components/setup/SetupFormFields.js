@@ -31,14 +31,14 @@ import {
 	ENHANCED_MEASUREMENT_FORM,
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
-} from '../../datastore/constants';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	AccountSelect,
 	PropertySelect,
 	WebDataStreamSelect,
 	WebDataStreamNameInput,
-} from '../common';
+} from '@/js/modules/analytics-4/components/common';
 import SetupEnhancedMeasurementSwitch from './SetupEnhancedMeasurementSwitch';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
 

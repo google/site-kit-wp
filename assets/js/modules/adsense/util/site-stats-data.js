@@ -35,7 +35,7 @@ import {
 	getChartDifferenceArrow,
 	stringToDate,
 	calculateDifferenceBetweenChartValues,
-} from '../../../util';
+} from '@/js/util';
 import { adsenseDateToInstance } from './date';
 
 /**

@@ -30,14 +30,14 @@ import { __, sprintf, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getLocale } from '../../../util/i18n';
+import { getLocale } from '@/js/util/i18n';
 import {
 	convertSecondsToArray,
 	numFmt,
 	getChartDifferenceArrow,
 	calculateDifferenceBetweenChartValues,
 	stringToDate,
-} from '../../../util';
+} from '@/js/util';
 import { partitionAnalytics4Report } from './partition-report';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
 

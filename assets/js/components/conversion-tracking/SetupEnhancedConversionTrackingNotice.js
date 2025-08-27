@@ -23,7 +23,7 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export default function SetupEnhancedConversionTrackingNotice( {
 	className,

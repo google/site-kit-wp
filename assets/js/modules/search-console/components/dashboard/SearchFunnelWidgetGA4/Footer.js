@@ -33,19 +33,19 @@ import { _x } from '@wordpress/i18n';
 import {
 	MODULES_SEARCH_CONSOLE,
 	DATE_RANGE_OFFSET,
-} from '../../../datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { generateDateRangeArgs } from '../../../util';
-import { getURLPath, untrailingslashit } from '../../../../../util';
+} from '@/js/modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { generateDateRangeArgs } from '@/js/modules/search-console/util';
+import { getURLPath, untrailingslashit } from '@/js/util';
 import {
 	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
 	MODULES_ANALYTICS_4,
-} from '../../../../analytics-4/datastore/constants';
-import SourceLink from '../../../../../components/SourceLink';
+} from '@/js/modules/analytics-4/datastore/constants';
+import SourceLink from '@/js/components/SourceLink';
 import { useSelect } from 'googlesitekit-data';
-import useViewOnly from '../../../../../hooks/useViewOnly';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 function SourceLinkAnalytics4() {
 	const viewOnlyDashboard = useViewOnly();

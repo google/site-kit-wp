@@ -24,13 +24,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { useSelect } from 'googlesitekit-data';
-import Layout from '../layout/Layout';
+import Layout from '@/js/components/layout/Layout';
 import SetupModule from './SetupModule';
-import { Cell, Grid, Row } from '../../material-components';
-import Notice from '../Notice';
-import { TYPES } from '../Notice/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
+import Notice from '@/js/components/Notice';
+import { TYPES } from '@/js/components/Notice/constants';
 
 export default function SettingsInactiveModules() {
 	const modules = useSelect( ( select ) =>

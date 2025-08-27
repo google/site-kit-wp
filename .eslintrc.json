@@ -59,6 +59,14 @@
     "react/jsx-curly-brace-presence": "error",
     "no-invalid-regexp": "error",
     "no-useless-escape": "error",
+    "no-relative-import-paths/no-relative-import-paths": [
+      "error",
+      {
+        "allowSameFolder": true,
+        "rootDir": "assets",
+        "prefix": "@"
+      }
+    ],
     "complexity": [
       "error",
       15
@@ -205,6 +213,7 @@
     "jsdoc",
     "react",
     "react-hooks",
-    "lodash"
+    "lodash",
+    "no-relative-import-paths"
   ]
 }

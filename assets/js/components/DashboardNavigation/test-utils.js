@@ -19,12 +19,12 @@
 /**
  * Internal dependencies
  */
-import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
-} from '../../googlesitekit/widgets/default-contexts';
+} from '@/js/googlesitekit/widgets/default-contexts';
 
 /**
  * Dispatches required actions to registry to make sure widget contexts for Traffic, Content & Speed are active.

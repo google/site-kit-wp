@@ -25,12 +25,12 @@ import { useIntersection as mockUseIntersection } from 'react-use';
  * Internal dependencies
  */
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	render,
 	createTestRegistry,

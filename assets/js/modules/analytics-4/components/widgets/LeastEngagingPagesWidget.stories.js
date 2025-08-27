@@ -17,29 +17,29 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	STRATEGY_ZIP,
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
-} from '../../utils/data-mock';
+} from '@/js/modules/analytics-4/utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import LeastEngagingPagesWidget from './LeastEngagingPagesWidget';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 
 const pageViewsReportOptions = {
 	startDate: '2020-08-11',

@@ -25,8 +25,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { DAY_IN_SECONDS } from '../../util';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
 import BannerNotification, {
 	TYPES,
 } from '@/js/googlesitekit/notifications/components/layout/BannerNotification';

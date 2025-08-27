@@ -22,7 +22,7 @@
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
 	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
 } from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION

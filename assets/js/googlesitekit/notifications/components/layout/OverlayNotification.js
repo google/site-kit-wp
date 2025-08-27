@@ -25,9 +25,9 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../../datastore/constants';
-import useNotificationEvents from '../../hooks/useNotificationEvents';
-import OverlayCard from '../../../../components/OverlayCard';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import OverlayCard from '@/js/components/OverlayCard';
 
 export default function OverlayNotification( {
 	notificationID,

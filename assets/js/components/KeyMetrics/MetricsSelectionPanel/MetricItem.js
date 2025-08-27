@@ -31,16 +31,16 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_WIDGETS } from '../../../googlesitekit/widgets/datastore/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
 	UNSTAGED_SELECTION,
-} from '../constants';
-import { SelectionPanelItem } from '../../SelectionPanel';
-import useFormValue from '../../../hooks/useFormValue';
+} from '@/js/components/KeyMetrics/constants';
+import { SelectionPanelItem } from '@/js/components/SelectionPanel';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function MetricItem( {
 	slug,

@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
-import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
-import { CONTEXT_MAIN_DASHBOARD_KEY_METRICS } from '../../googlesitekit/widgets/default-contexts';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
+import { CONTEXT_MAIN_DASHBOARD_KEY_METRICS } from '@/js/googlesitekit/widgets/default-contexts';
 
 /**
  * Provides key metric widgets registration data to the given registry.

@@ -21,7 +21,7 @@
  */
 import DataBlock from './index';
 import { render, fireEvent } from '../../../../tests/js/test-utils';
-import { NOTICE_STYLE } from '../GatheringDataNotice';
+import { NOTICE_STYLE } from '@/js/components/GatheringDataNotice';
 
 describe( 'DataBlock', () => {
 	it( 'should render with title', () => {

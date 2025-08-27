@@ -30,23 +30,23 @@ import { useCallback, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../../datastore/constants';
-import { isInvalidCustomDimensionError } from '../../../../../utils/custom-dimensions';
-import { reportRowsWithSetValues } from '../../../../../utils/report-rows-with-set-values';
-import useAudienceTilesReports from '../../../../../hooks/useAudienceTilesReports';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { isInvalidCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import { reportRowsWithSetValues } from '@/js/modules/analytics-4/utils/report-rows-with-set-values';
+import useAudienceTilesReports from '@/js/modules/analytics-4/hooks/useAudienceTilesReports';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../../../../../../hooks/useBreakpoint';
-import useViewOnly from '../../../../../../../hooks/useViewOnly';
-import AudienceSegmentationErrorWidget from '../../AudienceSegmentationErrorWidget';
-import AudienceTileLoading from '../AudienceTile/AudienceTileLoading';
-import AudienceTileError from '../AudienceTile/AudienceTileError';
-import AudienceTile from '../AudienceTile';
-import AudienceTooltipMessage from '../AudienceTooltipMessage';
-import MaybePlaceholderTile from '../MaybePlaceholderTile';
+} from '@/js/hooks/useBreakpoint';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import AudienceSegmentationErrorWidget from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationErrorWidget';
+import AudienceTileLoading from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile/AudienceTileLoading';
+import AudienceTileError from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile/AudienceTileError';
+import AudienceTile from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile';
+import AudienceTooltipMessage from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTooltipMessage';
+import MaybePlaceholderTile from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/MaybePlaceholderTile';
 
 function hasZeroDataForAudience( report, dimensionName ) {
 	const audienceData = report?.rows?.find(

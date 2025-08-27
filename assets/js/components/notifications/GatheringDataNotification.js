@@ -31,12 +31,12 @@ import { useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { DAY_IN_SECONDS } from '../../../js/util';
-import useModuleGatheringZeroData from '../../hooks/useModuleGatheringZeroData';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
+import useModuleGatheringZeroData from '@/js/hooks/useModuleGatheringZeroData';
 import BannerNotification, {
 	TYPES,
-} from '../../googlesitekit/notifications/components/layout/BannerNotification';
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import SVGGraphic from '@/svg/graphics/banner-gathering-data.svg?url';
 
 export default function GatheringDataNotification( { id, Notification } ) {

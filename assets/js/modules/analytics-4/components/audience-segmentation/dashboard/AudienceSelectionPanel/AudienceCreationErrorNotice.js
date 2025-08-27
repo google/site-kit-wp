@@ -31,15 +31,15 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import useViewContext from '../../../../../../hooks/useViewContext';
-import { isInsufficientPermissionsError } from '../../../../../../util/errors';
-import { trackEvent } from '../../../../../../util';
+import useViewContext from '@/js/hooks/useViewContext';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
+import { trackEvent } from '@/js/util';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
-import Link from '../../../../../../components/Link';
-import Notice from '../../../../../../components/Notice';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import Link from '@/js/components/Link';
+import Notice from '@/js/components/Notice';
 
 export default function AudienceCreationErrorNotice( {
 	apiErrors,

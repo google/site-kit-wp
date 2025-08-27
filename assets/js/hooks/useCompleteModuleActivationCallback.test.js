@@ -33,9 +33,9 @@ import { mockLocation } from '../../../tests/js/mock-browser-utils';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
-} from '../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import useCompleteModuleActivationCallback from './useCompleteModuleActivationCallback';
 
 describe( 'useCompleteModuleActivationCallback', () => {

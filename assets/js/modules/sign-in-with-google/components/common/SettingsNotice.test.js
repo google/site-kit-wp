@@ -25,8 +25,8 @@ import {
 	provideSiteInfo,
 	provideUserCapabilities,
 } from '../../../../../../tests/js/utils';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 import SettingsNotice from './SettingsNotice';
 
 describe( 'SettingsNotice', () => {

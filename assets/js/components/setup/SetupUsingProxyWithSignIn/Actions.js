@@ -27,14 +27,14 @@ import { __, _x } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import OptIn from '../../OptIn';
-import ResetButton from '../../ResetButton';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from '../constants';
-import useViewContext from '../../../hooks/useViewContext';
-import { trackEvent } from '../../../util';
+import OptIn from '@/js/components/OptIn';
+import ResetButton from '@/js/components/ResetButton';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from '@/js/components/setup/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 export default function Actions( {
 	proxySetupURL,

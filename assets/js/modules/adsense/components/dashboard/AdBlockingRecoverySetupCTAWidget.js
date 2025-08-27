@@ -31,30 +31,33 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { useShowTooltip } from '../../../../components/AdminMenuTooltip';
-import Link from '../../../../components/Link';
-import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { useInView } from '../../../../hooks/useInView';
-import useViewContext from '../../../../hooks/useViewContext';
-import useViewOnly from '../../../../hooks/useViewOnly';
+import { useShowTooltip } from '@/js/components/AdminMenuTooltip';
+import Link from '@/js/components/Link';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useInView } from '@/js/hooks/useInView';
+import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	DAY_IN_SECONDS,
 	WEEK_IN_SECONDS,
 	stringToDate,
 	trackEvent,
-} from '../../../../util';
-import whenActive from '../../../../util/when-active';
+} from '@/js/util';
+import whenActive from '@/js/util/when-active';
 import {
 	AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
 	MODULES_ADSENSE,
-} from '../../datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../constants';
-import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
-import SurveyViewTrigger from '../../../../components/surveys/SurveyViewTrigger';
-import Banner from '../../../../components/Banner';
-import P from '../../../../components/Typography/P';
+} from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import {
+	ACCOUNT_STATUS_READY,
+	SITE_STATUS_READY,
+} from '@/js/modules/adsense/util';
+import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
+import Banner from '@/js/components/Banner';
+import P from '@/js/components/Typography/P';
 import BannerSVGDesktop from '@/svg/graphics/banner-ad-blocking-recovery-setup-cta-mobile.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-ad-blocking-recovery-setup-cta.svg?url';
 

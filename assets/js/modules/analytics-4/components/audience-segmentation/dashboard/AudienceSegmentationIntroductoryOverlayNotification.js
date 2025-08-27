@@ -30,13 +30,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import AudienceIntroductoryGraphicDesktop from '../../../../../../svg/graphics/audience-segmentation-introductory-graphic-desktop.svg';
-import AudienceIntroductoryGraphicMobile from '../../../../../../svg/graphics/audience-segmentation-introductory-graphic-mobile.svg';
-import OverlayNotification from '../../../../../googlesitekit/notifications/components/layout/OverlayNotification';
-import { getNavigationalScrollTop } from '../../../../../util/scroll';
-import { useBreakpoint } from '../../../../../hooks/useBreakpoint';
-import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
-import useViewContext from '../../../../../hooks/useViewContext';
+import AudienceIntroductoryGraphicDesktop from '@/svg/graphics/audience-segmentation-introductory-graphic-desktop.svg';
+import AudienceIntroductoryGraphicMobile from '@/svg/graphics/audience-segmentation-introductory-graphic-mobile.svg';
+import OverlayNotification from '@/js/googlesitekit/notifications/components/layout/OverlayNotification';
+import { getNavigationalScrollTop } from '@/js/util/scroll';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export const AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION =
 	'audienceSegmentationIntroductoryOverlayNotification';

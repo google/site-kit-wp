@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import ChipTabGroup from '../ChipTabGroup';
+import ChipTabGroup from '@/js/components/KeyMetrics/ChipTabGroup';
 
 export default function SelectionPanelItems( {
 	savedItemSlugs = [],
