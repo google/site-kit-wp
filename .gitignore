@@ -1,3 +1,26 @@
+# Config files
+.*
+!.gemini/
+.gemini/*
+!.gemini/settings.json
+!.github
+!.vscode
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.editorconfig
+!.eslintignore
+!.eslintrc.json
+!.eslintrc.staged.json
+!.geminiignore
+!.gitignore
+!.nvmrc
+!.prettierignore
+!.prettierrc.js
+!.stylelintrc
+!.svgo.yml
+
+# Other paths
 node_modules
 bower_components
 vendor
@@ -24,34 +47,6 @@ tmtags
 *.un~
 Session.vim
 *.swp
-
-# Config files
-.*
-!.gemini/
-.gemini/*
-!.gemini/settings.json
-!.github
-!.vscode
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-!.editorconfig
-!.eslintignore
-!.eslintrc.json
-!.eslintrc.staged.json
-!.geminiignore
-!.gitignore
-!.nvmrc
-!.prettierignore
-!.prettierrc.js
-!.stylelintrc
-!.svgo.yml
-
-# Mac OSX
-.DS_Store
-._*
-.Spotlight-V100
-.Trashes
 
 # Windows
 Thumbs.db
