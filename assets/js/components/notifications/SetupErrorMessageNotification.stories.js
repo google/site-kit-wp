@@ -103,7 +103,7 @@ AdditionalScopeError.args = {
 AdditionalScopeError.scenario = {};
 
 export default {
-	title: 'Components/ErrorNotifications',
+	title: 'Components/Notifications/Errors/SetupErrorMessageNotification',
 	decorators: [
 		( Story, { args } ) => {
 			function setupRegistry( registry ) {
