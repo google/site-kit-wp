@@ -67,12 +67,15 @@ export default function UserInputEditModeContent( {
 	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigating()
 	);
-	const isSavingSettings = useSelect( ( select ) => {
-		const userInputSettings = select( CORE_USER ).getUserInputSettings();
-		return select( CORE_USER ).isSavingUserInputSettings(
-			userInputSettings
-		);
-	} );
+	const userInputSettings = useSelect( ( select ) =>
+		select( CORE_USER ).getUserInputSettings()
+	);
+	const isSavingSettings = useSelect( ( select ) =>
+		select( CORE_USER ).isSavingUserInputSettings( userInputSettings )
+	);
+	const userInputValuesHaveErrors = hasErrorForAnswer(
+		userInputSettings?.[ slug ]?.values || []
+	);
 	const isScreenLoading = isSavingSettings || isNavigating;
 	const saveSettingsError = useSelect( ( select ) =>
 		select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] )
@@ -145,7 +148,9 @@ export default function UserInputEditModeContent( {
 					) }
 					<div className="googlesitekit-user-input__preview-actions">
 						<SpinnerButton
-							disabled={ answerHasError }
+							disabled={
+								answerHasError || userInputValuesHaveErrors
+							}
 							onClick={
 								hasSettingChanged
 									? submitChanges
