@@ -1,4 +1,4 @@
-# Gemini Code Assistant Context
+# Code Assistant Context
 
 ## Project Overview
 

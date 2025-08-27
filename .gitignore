@@ -27,13 +27,19 @@ Session.vim
 
 # Config files
 .*
+!.gemini/
+.gemini/*
+!.gemini/settings.json
 !.github
+!.vscode
+.vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
 !.editorconfig
 !.eslintignore
 !.eslintrc.json
 !.eslintrc.staged.json
+!.geminiignore
 !.gitignore
 !.nvmrc
 !.prettierignore
