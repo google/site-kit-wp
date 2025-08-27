@@ -80,6 +80,31 @@ export function normalizeValue( value ) {
 }
 
 /**
+ * Normalizes a label by removing common form suffixes and prefixes.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} label The label to normalize.
+ * @return {string} The normalized label.
+ */
+export function normalizeLabel( label ) {
+	if ( ! label || typeof label !== 'string' ) {
+		return '';
+	}
+
+	return (
+		label
+			.trim()
+			.toLowerCase()
+			// Remove common required field indicators
+			.replace( /\s*\*+\s*$/, '' ) // "Name *" → "Name"
+			.replace( /\s*\(required\)\s*$/i, '' ) // "Name (Required)" → "Name"
+			.replace( /\s*:\s*$/, '' ) // "Name:" → "Name"
+			.trim()
+	);
+}
+
+/**
  * Normalizes an email address for conversion tracking.
  *
  * @since n.e.x.t
@@ -188,7 +213,7 @@ export function classifyPII( fieldMeta ) {
 	type = normalizeValue( type );
 	name = normalizeValue( name );
 	value = normalizeValue( value );
-	label = normalizeValue( label );
+	label = normalizeLabel( label );
 
 	switch ( type ) {
 		case 'email':
