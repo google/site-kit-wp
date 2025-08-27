@@ -28,19 +28,14 @@ import { classifyPII, normalizeValue, PII_TYPE } from './utils';
 	jQuery( global.document.body ).on(
 		'wpformsAjaxSubmitSuccess',
 		( event ) => {
-			if ( isFeatureEnabled( 'gtagUserData' ) ) {
-				const form = event.target;
-				const userData = getUserData( form );
+			const userData = isFeatureEnabled( 'gtagUserData' )
+				? getUserData( event.target )
+				: null;
 
-				global._googlesitekit?.gtagEvent?.(
-					'submit_lead_form',
-					userData ? { user_data: userData } : undefined
-				);
-
-				return;
-			}
-
-			global._googlesitekit?.gtagEvent?.( 'submit_lead_form' );
+			global._googlesitekit?.gtagEvent?.(
+				'submit_lead_form',
+				userData ? { user_data: userData } : undefined
+			);
 		}
 	);
 } )( global.jQuery );
@@ -106,6 +101,11 @@ function getPhoneNumber( fields ) {
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
  */
 function getUserData( form ) {
+	// eslint-disable-next-line sitekit/acronym-case
+	if ( ! form || ! ( form instanceof HTMLFormElement ) ) {
+		return undefined;
+	}
+
 	const formData = new FormData( form );
 	const detectedFields = Array.from( formData.entries() )
 		.map( ( [ name, value ] ) => {
