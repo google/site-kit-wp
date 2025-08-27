@@ -29,9 +29,9 @@ import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotificati
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-} from '../../datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-rrm'

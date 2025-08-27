@@ -26,11 +26,11 @@ import fetchMock from 'fetch-mock';
  */
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { WEEK_IN_SECONDS } from '../../../../util';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { WEEK_IN_SECONDS } from '@/js/util';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'rrm-setup-notification'

@@ -25,7 +25,10 @@ import faker from 'faker';
 /**
  * Internal dependencies
  */
-import { CONTEXT_WEB, CONTEXT_AMP } from '../constants';
+import {
+	CONTEXT_WEB,
+	CONTEXT_AMP,
+} from '@/js/modules/tagmanager/datastore/constants';
 
 /**
  * Creates an account object in the format returned by the list endpoint.

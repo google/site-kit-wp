@@ -25,8 +25,8 @@ import {
 	provideSiteInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import * as fixtures from '../../datastore/__fixtures__';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
 
 const accountID = fixtures.accountSummaries.accountSummaries[ 1 ]._id;

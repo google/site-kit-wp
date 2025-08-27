@@ -30,7 +30,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import P from '../../Typography/P';
+import P from '@/js/components/Typography/P';
 
 export default function Errors( { recoveryErrors } ) {
 	return (

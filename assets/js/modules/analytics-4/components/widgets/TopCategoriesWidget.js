@@ -33,22 +33,22 @@ import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CATEGORIES,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
-import { listFormat, numFmt } from '../../../../util';
-import { ZeroDataMessage } from '../common';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { listFormat, numFmt } from '@/js/util';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
-} from '../../../../components/KeyMetrics';
-import whenActive from '../../../../util/when-active';
-import withCustomDimensions from '../../utils/withCustomDimensions';
+} from '@/js/components/KeyMetrics';
+import whenActive from '@/js/util/when-active';
+import withCustomDimensions from '@/js/modules/analytics-4/utils/withCustomDimensions';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import { splitCategories } from '../../utils';
+import { splitCategories } from '@/js/modules/analytics-4/utils';
 
 /**
  * Gets the report options for the Top Categories widget.

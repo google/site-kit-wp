@@ -27,15 +27,15 @@ import { Fragment, useCallback } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import ShareIcon from '../../../svg/icons/share.svg';
-import useViewContext from '../../hooks/useViewContext';
-import { trackEvent } from '../../util';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '../../modules/analytics-4/datastore/constants';
+import ShareIcon from '@/svg/icons/share.svg';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '@/js/modules/analytics-4/datastore/constants';
 import { SETTINGS_DIALOG } from './DashboardSharingSettings/constants';
 import DashboardSharingDialog from './DashboardSharingDialog';
-import useFormValue from '../../hooks/useFormValue';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function DashboardSharingSettingsButton() {
 	const viewContext = useViewContext();

@@ -32,24 +32,24 @@ import {
 	provideUserInfo,
 	render,
 } from '../../../../../../../tests/js/test-utils';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import AudienceSegmentationIntroductoryOverlayNotification, {
 	AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from './AudienceSegmentationIntroductoryOverlayNotification';
-import * as scrollUtils from '../../../../../util/scroll';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
+import * as scrollUtils from '@/js/util/scroll';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import {
 	getViewportWidth,
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
-import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
-import { ANALYTICS_4_NOTIFICATIONS } from '../../..';
-import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 const getNavigationalScrollTopSpy = jest.spyOn(
 	scrollUtils,

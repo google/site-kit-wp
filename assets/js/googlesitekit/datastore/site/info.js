@@ -38,8 +38,8 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
-import { normalizeURL, untrailingslashit } from '../../../util';
-import { negateDefined } from '../../../util/negate';
+import { normalizeURL, untrailingslashit } from '@/js/util';
+import { negateDefined } from '@/js/util/negate';
 
 function getSiteInfoProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {

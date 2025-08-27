@@ -36,7 +36,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 import * as fixtures from './__fixtures__';
-import { populateAccountSummaries } from '../utils/account';
+import { populateAccountSummaries } from '@/js/modules/analytics-4/utils/account';
 
 describe( 'modules/analytics-4 webdatastreams', () => {
 	let registry;

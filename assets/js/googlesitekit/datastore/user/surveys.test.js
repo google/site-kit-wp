@@ -32,7 +32,7 @@ import {
 	surveyTimeoutsEndpoint,
 	surveyTriggerEndpoint,
 } from '../../../../../tests/js/mock-survey-endpoints';
-import { CORE_SITE } from '../site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 describe( 'core/user surveys', () => {
 	let registry;

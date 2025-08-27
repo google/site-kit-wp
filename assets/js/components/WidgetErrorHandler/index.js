@@ -31,11 +31,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import CTA from '../notifications/CTA';
-import GenericErrorHandlerActions from '../GenericErrorHandlerActions';
-import ViewContextContext from '../Root/ViewContextContext';
-import { trackEvent } from '../../util';
-import P from '../Typography/P';
+import CTA from '@/js/components/notifications/CTA';
+import GenericErrorHandlerActions from '@/js/components/GenericErrorHandlerActions';
+import ViewContextContext from '@/js/components/Root/ViewContextContext';
+import { trackEvent } from '@/js/util';
+import P from '@/js/components/Typography/P';
 
 class WidgetErrorHandler extends Component {
 	constructor( props ) {

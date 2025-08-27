@@ -32,15 +32,15 @@ import {
 	combineStores,
 	createReducer,
 } from 'googlesitekit-data';
-import { createValidatedAction } from '../../../googlesitekit/data/utils';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import {
 	isValidPropertyID,
 	isValidWebDataStreamName,
-} from '../utils/validation';
+} from '@/js/modules/analytics-4/utils/validation';
 
 const fetchGetWebDataStreamsStore = createFetchStore( {
 	baseName: 'getWebDataStreams',

@@ -29,7 +29,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import Title from './Title';
 import Description from './Description';
 import DismissButton, { buttonProps } from './DismissButton';

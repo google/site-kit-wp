@@ -27,18 +27,18 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { Grid, Row, Cell } from '../../material-components';
-import Header from '../Header';
-import HelpMenu from '../help/HelpMenu';
-import PageHeader from '../PageHeader';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Grid, Row, Cell } from '@/js/material-components';
+import Header from '@/js/components/Header';
+import HelpMenu from '@/js/components/help/HelpMenu';
+import PageHeader from '@/js/components/PageHeader';
 import UserInputQuestionnaire from './UserInputQuestionnaire';
-import Layout from '../layout/Layout';
+import Layout from '@/js/components/layout/Layout';
 import {
 	FORM_USER_INPUT_QUESTION_NUMBER,
 	getUserInputQuestions,
 } from './util/constants';
-import useFormValue from '../../hooks/useFormValue';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function UserInputApp() {
 	const questionNumber =

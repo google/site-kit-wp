@@ -22,8 +22,8 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Link from '../../../../components/Link';
-import useNotificationEvents from '../../hooks/useNotificationEvents';
+import Link from '@/js/components/Link';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 
 export default function LearnMoreLink( {
 	id,

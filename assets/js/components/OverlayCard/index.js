@@ -26,7 +26,7 @@ import classnames from 'classnames';
 /**
  * Internal dependencies
  */
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import Body from './Body';
 import { buttonProps } from './DismissButton';
 

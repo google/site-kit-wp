@@ -31,9 +31,9 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
-import Notice from '../../../../components/Notice';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import Notice from '@/js/components/Notice';
 
 export default function AnalyticsSettingsNotice( { hasModuleAccess } ) {
 	const module = useSelect( ( select ) =>

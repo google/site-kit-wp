@@ -29,7 +29,7 @@ import {
 	REPORT_ARGS_DATA_FILTERS_KEY,
 	REPORT_ARGS_SELECTED_DIMENSION_KEY,
 	REPORT_ARGS_SELECTED_METRIC_KEY,
-} from '../constants';
+} from '@/js/modules/analytics-4/constants';
 
 /**
  * Generates a set of report detail arguments for a Google Analytics 4 report.

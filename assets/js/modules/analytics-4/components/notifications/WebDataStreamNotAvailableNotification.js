@@ -27,12 +27,12 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import BannerNotification, {
 	TYPES,
-} from '../../../../googlesitekit/notifications/components/layout/BannerNotification';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MINUTE_IN_SECONDS } from '../../../../util';
-import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MINUTE_IN_SECONDS } from '@/js/util';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 
 export default function WebDataStreamNotAvailableNotification( {
 	id,

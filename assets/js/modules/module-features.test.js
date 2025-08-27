@@ -25,7 +25,7 @@ import {
 	provideUserInfo,
 	provideModuleRegistrations,
 } from '../../../tests/js/utils';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from './pagespeed-insights/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from './reader-revenue-manager/constants';
 import { MODULE_SLUG_ADS } from './ads/constants';

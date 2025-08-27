@@ -23,8 +23,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Notice from '../../../../components/Notice';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import Notice from '@/js/components/Notice';
 
 export default function RegistrationDisabledNotice() {
 	const isMultisite = useSelect( ( select ) =>

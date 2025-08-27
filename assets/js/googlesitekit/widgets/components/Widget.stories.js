@@ -24,7 +24,7 @@ import {
 	provideUserCapabilities,
 } from '../../../../../tests/js/utils';
 import Widget from './Widget';
-import { Cell, Grid, Row } from '../../../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 
 function BoxesWidgets( { children } ) {

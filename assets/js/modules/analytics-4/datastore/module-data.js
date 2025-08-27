@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import { createReducer, createRegistrySelector } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4, RESOURCE_TYPES } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 function getModuleDataProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {

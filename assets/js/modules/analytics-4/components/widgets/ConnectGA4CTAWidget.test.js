@@ -28,12 +28,12 @@ import {
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 	CORE_USER,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import {
 	KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY,
 	MODULE_SLUG_ANALYTICS_4,
-} from '../../constants';
+} from '@/js/modules/analytics-4/constants';
 import {
 	render,
 	createTestRegistry,
@@ -42,8 +42,8 @@ import {
 	provideUserCapabilities,
 	provideModules,
 } from '../../../../../../tests/js/test-utils';
-import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 describe( 'ConnectGA4CTAWidget', () => {

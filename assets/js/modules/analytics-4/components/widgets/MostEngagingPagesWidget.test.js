@@ -30,23 +30,23 @@ import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 	STRATEGY_ZIP,
-} from '../../../analytics-4/utils/data-mock';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	CORE_USER,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import MostEngagingPagesWidget from './MostEngagingPagesWidget';
-import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../../../../util/errors';
+} from '@/js/util/errors';
 
 describe( 'MostEngagingPagesWidget', () => {
 	let registry;

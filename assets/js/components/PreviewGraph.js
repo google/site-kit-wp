@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import UpArrow from '../../svg/icons/arrow-up.svg';
+import UpArrow from '@/svg/icons/arrow-up.svg';
 import Typography from './Typography';
 
 export default function PreviewGraph( { title, GraphSVG, showIcons } ) {

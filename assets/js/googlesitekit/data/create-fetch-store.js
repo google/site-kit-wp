@@ -30,7 +30,7 @@ import {
 	camelCaseToPascalCase,
 	camelCaseToConstantCase,
 } from './transform-case';
-import { stringifyObject } from '../../util';
+import { stringifyObject } from '@/js/util';
 import { createReducer } from 'googlesitekit-data';
 
 function defaultReducerCallback( state ) {

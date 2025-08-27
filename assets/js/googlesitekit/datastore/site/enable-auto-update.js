@@ -30,9 +30,9 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
-import { createFetchStore } from '../../data/create-fetch-store';
-import { actions as errorStoreActions } from '../../data/create-error-store';
-import { CORE_USER } from '../user/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 const { receiveError, clearError } = errorStoreActions;
 

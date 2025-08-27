@@ -33,20 +33,20 @@ import { isURL } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
-} from '../../datastore/constants';
-import AccessibleWarningIcon from '../../../../components/AccessibleWarningIcon';
+} from '@/js/modules/analytics-4/datastore/constants';
+import AccessibleWarningIcon from '@/js/components/AccessibleWarningIcon';
 import { TextField } from 'googlesitekit-components';
 import {
 	isValidPropertyID,
 	isValidWebDataStreamName,
-} from '../../utils/validation';
-import useFormValue from '../../../../hooks/useFormValue';
+} from '@/js/modules/analytics-4/utils/validation';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function WebDataStreamNameInput() {
 	const propertyID = useSelect( ( select ) =>

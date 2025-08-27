@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { HOUR_IN_SECONDS } from '../../util';
+import { HOUR_IN_SECONDS } from '@/js/util';
 
 /**
  * Prefix used for all Site Kit keys.
