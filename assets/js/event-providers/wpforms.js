@@ -62,12 +62,14 @@ function getAddress( fields ) {
 		return undefined;
 	}
 
-	const [ firstName, lastName ] =
-		names.length === 1 ? names[ 0 ].split( ' ', 2 ) : names;
+	const [ firstName, ...lastNames ] =
+		names.length === 1 ? names[ 0 ].split( ' ' ) : names;
 
 	return {
 		first_name: normalizeValue( firstName ),
-		...( lastName ? { last_name: normalizeValue( lastName ) } : {} ),
+		...( lastNames?.length > 0
+			? { last_name: normalizeValue( lastNames.join( ' ' ) ) }
+			: {} ),
 	};
 }
 
