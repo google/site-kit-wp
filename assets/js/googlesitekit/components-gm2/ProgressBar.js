@@ -27,7 +27,7 @@ import {
 	BREAKPOINT_TABLET,
 	BREAKPOINT_XLARGE,
 	useBreakpoint,
-} from '../../hooks/useBreakpoint';
+} from '@/js/hooks/useBreakpoint';
 
 export default function ProgressBar( {
 	className,

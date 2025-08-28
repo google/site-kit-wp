@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import useViewContext from '../../../../../../../hooks/useViewContext';
-import withIntersectionObserver from '../../../../../../../util/withIntersectionObserver';
-import { trackEvent } from '../../../../../../../util';
+import useViewContext from '@/js/hooks/useViewContext';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import { trackEvent } from '@/js/util';
 import SetupSuccessContent, {
 	SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION,
 } from './SetupSuccessContent';

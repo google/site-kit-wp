@@ -20,9 +20,9 @@
  * Internal dependencies
  */
 import { MODULES_TAGMANAGER } from './constants';
-import { isValidContainerID } from '../util/validation';
-import { createExistingTagStore } from '../../../googlesitekit/data/create-existing-tag-store';
-import tagMatchers from '../util/tag-matchers';
+import { isValidContainerID } from '@/js/modules/tagmanager/util/validation';
+import { createExistingTagStore } from '@/js/googlesitekit/data/create-existing-tag-store';
+import tagMatchers from '@/js/modules/tagmanager/util/tag-matchers';
 
 const store = createExistingTagStore( {
 	storeName: MODULES_TAGMANAGER,

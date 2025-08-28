@@ -26,10 +26,10 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import DisplaySetting from '../../../../components/DisplaySetting';
-import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
-import Typography from '../../../../components/Typography';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import DisplaySetting from '@/js/components/DisplaySetting';
+import { trackingExclusionLabels } from '@/js/modules/analytics-4/components/common/TrackingExclusionSwitches';
+import Typography from '@/js/components/Typography';
 
 export default function OptionalSettingsView() {
 	const useSnippet = useSelect( ( select ) =>

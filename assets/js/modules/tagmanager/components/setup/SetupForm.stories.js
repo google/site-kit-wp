@@ -25,21 +25,21 @@ import {
 	provideSiteInfo,
 	freezeFetch,
 } from '../../../../../../tests/js/utils';
-import ModuleSetup from '../../../../components/setup/ModuleSetup';
+import ModuleSetup from '@/js/components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	CONTAINER_CREATE,
 	FORM_SETUP,
 	MODULES_TAGMANAGER,
-} from '../../datastore/constants';
-import * as fixtures from '../../../../modules/tagmanager/datastore/__fixtures__';
+} from '@/js/modules/tagmanager/datastore/constants';
+import * as fixtures from '@/js/modules/tagmanager/datastore/__fixtures__';
 import {
 	AMP_MODE_PRIMARY,
 	AMP_MODE_SECONDARY,
-} from '../../../../googlesitekit/datastore/site/constants';
-import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+} from '@/js/googlesitekit/datastore/site/constants';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 
 function selectFirstWebContainer( registry, accountID ) {
 	const [ webContainer ] = registry

@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import TextField from './TextField';
-import WarningIcon from '../../../svg/icons/warning-v2.svg';
+import WarningIcon from '@/svg/icons/warning-v2.svg';
 
 function Template() {
 	return (

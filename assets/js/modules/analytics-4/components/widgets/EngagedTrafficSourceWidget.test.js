@@ -26,19 +26,19 @@ import {
 	provideKeyMetrics,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { provideAnalytics4MockReport } from '../../utils/data-mock';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-} from '../../../../googlesitekit/datastore/user/constants';
-import { DATE_RANGE_OFFSET } from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { DATE_RANGE_OFFSET } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../../../../util/errors';
+} from '@/js/util/errors';
 import EngagedTrafficSourceWidget from './EngagedTrafficSourceWidget';
 
 describe( 'EngagedTrafficSourceWidget', () => {

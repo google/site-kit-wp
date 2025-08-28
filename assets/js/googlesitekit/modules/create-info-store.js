@@ -35,8 +35,8 @@ import {
 	createRegistryControl,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { CORE_SITE } from '../datastore/site/constants';
-import { CORE_USER } from '../datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 // Actions
 const WAIT_FOR_REAUTH_RESOLVERS = 'WAIT_FOR_REAUTH_RESOLVERS';

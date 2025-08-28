@@ -31,13 +31,13 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../../datastore/constants';
-import useNotificationEvents from '../../hooks/useNotificationEvents';
-import Banner from '../../../../components/Banner';
-import LearnMoreLink from '../../../../components/Banner/LearnMoreLink';
-import CTAButton from '../../../../components/Banner/CTAButton';
-import DismissButton from '../../../../components/Banner/DismissButton';
-import { Cell, Grid, Row } from '../../../../material-components';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import Banner from '@/js/components/Banner';
+import LearnMoreLink from '@/js/components/Banner/LearnMoreLink';
+import CTAButton from '@/js/components/Banner/CTAButton';
+import DismissButton from '@/js/components/Banner/DismissButton';
+import { Cell, Grid, Row } from '@/js/material-components';
 import { ProgressBar } from 'googlesitekit-components';
 
 export default function SetupCTA( {

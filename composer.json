@@ -53,6 +53,16 @@
     }
   },
   "extra": {
+    "google/apiclient-services": [
+      "Adsense",
+      "AnalyticsData",
+      "GoogleAnalyticsAdmin",
+      "PagespeedInsights",
+      "PeopleService",
+      "SearchConsole",
+      "SiteVerification",
+      "TagManager"
+    ],
     "wordpress-install-dir": "vendor/roots/wordpress",
     "patches": {
       "google/apiclient-services": {
@@ -85,11 +95,14 @@
   ],
   "scripts": {
     "post-install-cmd": [
+      "@purge-unused-services",
       "@prefix-dependencies"
     ],
     "post-update-cmd": [
+      "@purge-unused-services",
       "@prefix-dependencies"
     ],
+    "purge-unused-services": "Google\\Task\\Composer::cleanup",
     "prefix-dependencies": [
       "@composer --working-dir=php-scoper install",
       "@php -dxdebug.mode=off php-scoper/vendor/bin/php-scoper add --output-dir=./third-party --force --quiet",

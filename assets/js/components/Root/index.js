@@ -38,15 +38,15 @@ import { StrictMode, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data, { RegistryProvider } from 'googlesitekit-data';
-import ErrorHandler from '../ErrorHandler';
-import FeaturesProvider from '../FeaturesProvider';
-import { enabledFeatures } from '../../features';
-import PermissionsModal from '../PermissionsModal';
-import RestoreSnapshots from '../RestoreSnapshots';
-import FeatureTours from '../FeatureTours';
+import ErrorHandler from '@/js/components/ErrorHandler';
+import FeaturesProvider from '@/js/components/FeaturesProvider';
+import { enabledFeatures } from '@/js/features';
+import PermissionsModal from '@/js/components/PermissionsModal';
+import RestoreSnapshots from '@/js/components/RestoreSnapshots';
+import FeatureTours from '@/js/components/FeatureTours';
 import { Provider as ViewContextProvider } from './ViewContextContext';
-import InViewProvider from '../InViewProvider';
-import { isSiteKitScreen } from '../../util/is-site-kit-screen';
+import InViewProvider from '@/js/components/InViewProvider';
+import { isSiteKitScreen } from '@/js/util/is-site-kit-screen';
 
 export default function Root( { children, registry, viewContext = null } ) {
 	const theme =

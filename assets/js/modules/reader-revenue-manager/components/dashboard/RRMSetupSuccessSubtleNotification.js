@@ -30,22 +30,22 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import useQueryArg from '../../../../hooks/useQueryArg';
-import { useRefocus } from '../../../../hooks/useRefocus';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import { useRefocus } from '@/js/hooks/useRefocus';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 	READER_REVENUE_MANAGER_NOTICES_FORM,
 	SYNC_PUBLICATION,
-} from '../../datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
-import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
-import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '../../../../components/Notice/constants';
-import useFormValue from '../../../../hooks/useFormValue';
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '@/js/components/Notice/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 
 const {
 	ONBOARDING_COMPLETE,

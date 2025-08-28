@@ -26,11 +26,11 @@ import {
 	provideUserAuthentication,
 	render,
 } from '../../../../tests/js/test-utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import UnsatisfiedScopesAlertGTE from './UnsatisfiedScopesAlertGTE';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'authentication-error'

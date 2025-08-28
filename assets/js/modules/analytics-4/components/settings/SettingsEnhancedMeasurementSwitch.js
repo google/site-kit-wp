@@ -30,22 +30,22 @@ import { useEffect, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
-} from '../../datastore/constants';
-import EnhancedMeasurementSwitch from '../common/EnhancedMeasurementSwitch';
+} from '@/js/modules/analytics-4/datastore/constants';
+import EnhancedMeasurementSwitch from '@/js/modules/analytics-4/components/common/EnhancedMeasurementSwitch';
 import {
 	isValidPropertyID,
 	isValidPropertySelection,
 	isValidWebDataStreamID,
 	isValidWebDataStreamSelection,
-} from '../../utils/validation';
-import useFormValue from '../../../../hooks/useFormValue';
+} from '@/js/modules/analytics-4/utils/validation';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function SettingsEnhancedMeasurementSwitch( {
 	hasModuleAccess,

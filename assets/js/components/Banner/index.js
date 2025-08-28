@@ -32,7 +32,7 @@ import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../hooks/useBreakpoint';
+} from '@/js/hooks/useBreakpoint';
 import TitleIcon from './TitleIcon';
 import Title from './Title';
 import Description from './Description';
@@ -41,7 +41,7 @@ import LearnMoreLink from './LearnMoreLink';
 import CTAButton from './CTAButton';
 import DismissButton from './DismissButton';
 import Footer from './Footer';
-import Notice from '../Notice';
+import Notice from '@/js/components/Notice';
 
 const Banner = forwardRef(
 	(

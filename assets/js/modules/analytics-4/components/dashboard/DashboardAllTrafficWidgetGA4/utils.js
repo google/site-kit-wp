@@ -24,8 +24,8 @@ import { renderToString } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Link from '../../../../../components/Link';
-import Typography from '../../../../../components/Typography';
+import Link from '@/js/components/Link';
+import Typography from '@/js/components/Typography';
 
 /**
  * Creates a GA4 report row for the given date, with a zero for the metric value.

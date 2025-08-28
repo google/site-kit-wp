@@ -31,13 +31,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
-import { useShowTooltip } from '../../../../components/AdminMenuTooltip';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import { WEEK_IN_SECONDS } from '../../../../util';
-import SetupCTA from '../../../../googlesitekit/notifications/components/layout/SetupCTA';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { useShowTooltip } from '@/js/components/AdminMenuTooltip';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { WEEK_IN_SECONDS } from '@/js/util';
+import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
 import BannerSVGDesktop from '@/svg/graphics/banner-rrm-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-rrm-setup-cta-mobile.svg?url';
 

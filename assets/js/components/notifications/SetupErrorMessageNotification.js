@@ -29,14 +29,14 @@ import { useSelect, useRegistry } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-} from '../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import useViewContext from '../../hooks/useViewContext';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import BannerNotification, {
 	TYPES,
-} from '../../googlesitekit/notifications/components/layout/BannerNotification';
-import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
-import useFormValue from '../../hooks/useFormValue';
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function SetupErrorMessageNotification( { Notification } ) {
 	const id = 'setup_error';

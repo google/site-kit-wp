@@ -31,12 +31,12 @@ import { Fragment } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
-import { ErrorNotices } from '../../common';
-import SetupUseSnippetSwitch from '../SetupUseSnippetSwitch';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
-import Typography from '../../../../../components/Typography';
-import P from '../../../../../components/Typography/P';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { ErrorNotices } from '@/js/modules/adsense/components/common';
+import SetupUseSnippetSwitch from '@/js/modules/adsense/components/setup/SetupUseSnippetSwitch';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 export default function SetupAccountSiteUI( {
 	heading,
 	description,

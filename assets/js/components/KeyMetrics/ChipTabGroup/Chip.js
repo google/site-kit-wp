@@ -29,10 +29,10 @@ import { Button } from 'googlesitekit-components';
 import {
 	KEY_METRICS_GROUP_CURRENT,
 	KEY_METRICS_GROUP_SUGGESTED,
-} from '../constants';
-import CheckMark from '../../../../svg/icons/check-2.svg';
-import StarFill from '../../../../svg/icons/star-fill.svg';
-import Null from '../../../components/Null';
+} from '@/js/components/KeyMetrics/constants';
+import CheckMark from '@/svg/icons/check-2.svg';
+import StarFill from '@/svg/icons/star-fill.svg';
+import Null from '@/js/components/Null';
 
 const icons = {
 	[ KEY_METRICS_GROUP_CURRENT.SLUG ]: CheckMark,

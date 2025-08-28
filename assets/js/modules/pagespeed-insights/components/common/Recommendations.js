@@ -30,10 +30,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
-import ZeroRecommendations from '../../../../../svg/graphics/zero-state-yellow.svg';
+import {
+	STRATEGY_MOBILE,
+	STRATEGY_DESKTOP,
+} from '@/js/modules/pagespeed-insights/datastore/constants';
+import ZeroRecommendations from '@/svg/graphics/zero-state-yellow.svg';
 import Recommendation from './Recommendation';
-import { Cell, Grid, Row } from '../../../../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 
 export default function Recommendations( {
 	className,

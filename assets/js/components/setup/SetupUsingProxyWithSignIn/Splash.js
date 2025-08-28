@@ -32,21 +32,21 @@ import { getQueryArg } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import WelcomeSVG from '../../../../svg/graphics/welcome.svg';
-import WelcomeAnalyticsSVG from '../../../../svg/graphics/welcome-analytics.svg';
-import Link from '../../Link';
-import ActivateAnalyticsNotice from '../ActivateAnalyticsNotice';
-import CompatibilityChecks from '../CompatibilityChecks';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import WelcomeSVG from '@/svg/graphics/welcome.svg';
+import WelcomeAnalyticsSVG from '@/svg/graphics/welcome-analytics.svg';
+import Link from '@/js/components/Link';
+import ActivateAnalyticsNotice from '@/js/components/setup/ActivateAnalyticsNotice';
+import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
-} from '../../../googlesitekit/datastore/user/constants';
-import { Cell, Grid, Row } from '../../../material-components';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import Typography from '../../Typography';
-import P from '../../Typography/P';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function Splash( { children } ) {
 	const analyticsModuleAvailable = useSelect( ( select ) =>

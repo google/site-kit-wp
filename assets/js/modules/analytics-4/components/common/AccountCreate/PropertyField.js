@@ -27,9 +27,9 @@ import { __ } from '@wordpress/i18n';
  */
 import CreateAccountField from './CreateAccountField';
 import { useDispatch } from 'googlesitekit-data';
-import { FORM_ACCOUNT_CREATE } from '../../../datastore/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import useFormValue from '../../../../../hooks/useFormValue';
+import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function PropertyField() {
 	const value = useFormValue( FORM_ACCOUNT_CREATE, 'propertyName' );

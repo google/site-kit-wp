@@ -26,15 +26,15 @@ import { useEffect, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
-import RefocusableModalDialog from '../RefocusableModalDialog';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import RefocusableModalDialog from '@/js/components/RefocusableModalDialog';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-} from '../../googlesitekit/datastore/user/constants';
-import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
-import Portal from '../Portal';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
+import Portal from '@/js/components/Portal';
 
 function AuthenticatedPermissionsModal() {
 	const registry = useRegistry();

@@ -27,14 +27,14 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from '../../../../../../tests/js/utils';
-import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
 import {
 	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
-} from '../../../../googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'keyMetricsConnectAdSenseCTATile'

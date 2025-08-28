@@ -26,10 +26,10 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_PAGESPEED_INSIGHTS } from '../../datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Link from '../../../../components/Link';
-import P from '../../../../components/Typography/P';
+import { MODULES_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import Link from '@/js/components/Link';
+import P from '@/js/components/Typography/P';
 
 export default function ReportDetailsLink() {
 	const referenceURL = useSelect( ( select ) =>

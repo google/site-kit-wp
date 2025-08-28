@@ -27,8 +27,8 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
-import useViewContext from '../../../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../../../util';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import {
 	AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG,
 	AUDIENCE_CREATION_FORM,
@@ -36,25 +36,25 @@ import {
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
-import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
-} from '../../../../datastore/constants';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../../util/errors';
-import Link from '../../../../../../components/Link';
-import CloseIcon from '../../../../../../../svg/icons/close.svg';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
+import Link from '@/js/components/Link';
+import CloseIcon from '@/svg/icons/close.svg';
 import SpinnerButton, {
 	SPINNER_POSITION,
-} from '../../../../../../googlesitekit/components-gm2/SpinnerButton';
+} from '@/js/googlesitekit/components-gm2/SpinnerButton';
 import AudienceCreationErrorNotice from './AudienceCreationErrorNotice';
-import Notice from '../../../../../../components/Notice';
-import Typography from '../../../../../../components/Typography';
-import useFormValue from '../../../../../../hooks/useFormValue';
+import Notice from '@/js/components/Notice';
+import Typography from '@/js/components/Typography';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function AudienceCreationNotice() {
 	const viewContext = useViewContext();

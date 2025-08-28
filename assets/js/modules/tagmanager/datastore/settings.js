@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import { invalidateCache } from 'googlesitekit-api';
 import { createRegistrySelector } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	isValidAccountID,
 	isValidContainerID,
@@ -35,7 +35,7 @@ import {
 	isValidContainerName,
 	isUniqueContainerName,
 	getNormalizedContainerName,
-} from '../util';
+} from '@/js/modules/tagmanager/util';
 import {
 	MODULES_TAGMANAGER,
 	CONTAINER_CREATE,
@@ -43,16 +43,16 @@ import {
 	CONTEXT_AMP,
 	FORM_SETUP,
 } from './constants';
-import { MODULE_SLUG_TAGMANAGER } from '../constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
-} from '../../../googlesitekit/data/create-settings-store';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { createStrictSelect } from '../../../googlesitekit/data/utils';
-import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../analytics-4/constants';
+} from '@/js/googlesitekit/data/create-settings-store';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { createStrictSelect } from '@/js/googlesitekit/data/utils';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID =

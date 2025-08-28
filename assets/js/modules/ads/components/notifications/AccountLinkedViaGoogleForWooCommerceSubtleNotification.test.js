@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { ADS_NOTIFICATIONS } from '../..';
+import { ADS_NOTIFICATIONS } from '@/js/modules/ads';
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import { fireEvent, render } from '../../../../../../tests/js/test-utils';
 import {
@@ -29,13 +29,13 @@ import {
 	provideSiteInfo,
 	provideUserCapabilities,
 } from '../../../../../../tests/js/utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import { MODULE_SLUG_ADS } from '../../constants';
-import { MODULES_ADS, PLUGINS } from '../../datastore/constants';
-import { enabledFeatures } from '../../../../features';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
+import { enabledFeatures } from '@/js/features';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import AccountLinkedViaGoogleForWooCommerceSubtleNotification from './AccountLinkedViaGoogleForWooCommerceSubtleNotification';
 
 const NOTIFICATION_ID = 'account-linked-via-google-for-woocommerce';

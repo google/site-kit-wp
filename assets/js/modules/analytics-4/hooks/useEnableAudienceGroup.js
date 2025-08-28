@@ -32,15 +32,15 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 import {
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
-} from '../datastore/constants';
-import useFormValue from '../../../hooks/useFormValue';
+} from '@/js/modules/analytics-4/datastore/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function useEnableAudienceGroup( {
 	redirectURL,

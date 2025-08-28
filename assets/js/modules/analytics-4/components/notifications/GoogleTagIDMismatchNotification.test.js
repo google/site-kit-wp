@@ -23,12 +23,15 @@ import {
 	provideUserAuthentication,
 } from '../../../../../../tests/js/test-utils';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
-import { GTM_SCOPE, MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
-import { ANALYTICS_4_NOTIFICATIONS } from '../..';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
-import * as fixtures from '../../datastore/__fixtures__';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import {
+	GTM_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 
 describe( 'GoogleTagIDMismatchNotification', () => {
 	let registry;

@@ -32,11 +32,11 @@ import { __, _x } from '@wordpress/i18n';
  */
 import ReportMetric from './ReportMetric';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
-import { getScoreCategory } from '../../util';
-import { getReportErrorMessage } from '../../../../util/errors';
-import ReportErrorActions from '../../../../components/ReportErrorActions';
-import ErrorNotice from '../../../../components/ErrorNotice';
-import P from '../../../../components/Typography/P';
+import { getScoreCategory } from '@/js/modules/pagespeed-insights/util';
+import { getReportErrorMessage } from '@/js/util/errors';
+import ReportErrorActions from '@/js/components/ReportErrorActions';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import P from '@/js/components/Typography/P';
 
 export default function LabReportMetrics( { data, error } ) {
 	const largestContentfulPaint =

@@ -33,15 +33,15 @@ import {
 	provideUserAuthentication,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '@/js/modules/tagmanager/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as fixtures from './__fixtures__';
-import { getItem, setItem } from '../../../googlesitekit/api/cache';
+import { getItem, setItem } from '@/js/googlesitekit/api/cache';
 
 describe( 'modules/analytics-4 properties', () => {
 	let registry;

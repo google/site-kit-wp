@@ -25,9 +25,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { AccountSelect, ErrorNotices } from '../common';
-import Typography from '../../../../components/Typography';
-import P from '../../../../components/Typography/P';
+import {
+	AccountSelect,
+	ErrorNotices,
+} from '@/js/modules/adsense/components/common';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function SetupSelectAccount() {
 	return (

@@ -29,15 +29,15 @@ import {
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_SPLASH,
-} from '../../googlesitekit/constants';
-import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
+} from '@/js/googlesitekit/constants';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import SetupErrorMessageNotification from './SetupErrorMessageNotification';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '../../googlesitekit/datastore/user/constants';
-import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '@/js/googlesitekit/datastore/user/constants';
+import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
 
 jest.mock( '../../googlesitekit/data/create-snapshot-store', () => ( {
 	...jest.requireActual( '../../googlesitekit/data/create-snapshot-store' ),

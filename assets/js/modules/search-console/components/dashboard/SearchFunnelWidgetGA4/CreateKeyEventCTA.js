@@ -32,11 +32,11 @@ import { useCallback } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import PreviewGraph from '../../../../../components/PreviewGraph';
-import KeyEventsGraphIcon from '../../../../../../svg/graphics/cta-graph-goals.svg';
-import { trackEvent } from '../../../../../util';
-import useViewContext from '../../../../../hooks/useViewContext';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import PreviewGraph from '@/js/components/PreviewGraph';
+import KeyEventsGraphIcon from '@/svg/graphics/cta-graph-goals.svg';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export default function CreateKeyEventCTA() {
 	const viewContext = useViewContext();

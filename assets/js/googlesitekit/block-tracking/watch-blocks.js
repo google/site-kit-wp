@@ -21,7 +21,7 @@
  */
 import { trackEvent } from '@/js/util';
 import { subscribe, select } from 'googlesitekit-data';
-import { VIEW_CONTEXT_WP_BLOCK_EDITOR } from '../constants';
+import { VIEW_CONTEXT_WP_BLOCK_EDITOR } from '@/js/googlesitekit/constants';
 import { createGetBlockTitle } from './create-get-blocks-titles';
 
 /**

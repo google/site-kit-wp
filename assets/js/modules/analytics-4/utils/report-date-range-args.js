@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { isValidDateString } from '../../../util';
+import { isValidDateString } from '@/js/util';
 
 /**
  * Generates an object with the appropriate structure to pass to report selectors.

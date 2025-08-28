@@ -27,9 +27,9 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import Typography from '../../../../components/Typography';
-import P from '../../../../components/Typography/P';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
 export const TRACKING_CONTENT_CREATORS = 'contentCreators';

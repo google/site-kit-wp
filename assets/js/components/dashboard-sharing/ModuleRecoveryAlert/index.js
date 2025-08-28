@@ -32,15 +32,15 @@ import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
-import { DAY_IN_SECONDS } from '../../../util';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
 import Description from './Description';
 import BannerNotification, {
 	TYPES,
-} from '../../../googlesitekit/notifications/components/layout/BannerNotification';
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import AdditionalDescription from './AdditionalDescription';
-import PreviewBlock from '../../PreviewBlock';
+import PreviewBlock from '@/js/components/PreviewBlock';
 import { computeAriaLabel } from './utils';
 
 export default function ModuleRecoveryAlert( { id, Notification } ) {

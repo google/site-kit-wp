@@ -26,9 +26,9 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import P from '../../../../components/Typography/P';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import UseSnippetSwitch from '../common/UseSnippetSwitch';
+import P from '@/js/components/Typography/P';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
+import UseSnippetSwitch from '@/js/modules/tagmanager/components/common/UseSnippetSwitch';
 
 export default function SetupUseSnippetSwitch() {
 	const primaryContainerID = useSelect( ( select ) =>

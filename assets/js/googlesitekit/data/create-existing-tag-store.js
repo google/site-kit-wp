@@ -30,8 +30,8 @@ import {
 	createRegistrySelector,
 	createReducer,
 } from 'googlesitekit-data';
-import { CORE_SITE } from '../datastore/site/constants';
-import { getExistingTagURLs, extractExistingTag } from '../../util/tag';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { getExistingTagURLs, extractExistingTag } from '@/js/util/tag';
 
 // Actions
 const FETCH_GET_EXISTING_TAG = 'FETCH_GET_EXISTING_TAG';

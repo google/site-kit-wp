@@ -35,8 +35,8 @@ import { useSelect } from 'googlesitekit-data';
 import {
 	MODULES_TAGMANAGER,
 	CONTAINER_CREATE,
-} from '../../datastore/constants';
-import { isValidAccountID } from '../../util';
+} from '@/js/modules/tagmanager/datastore/constants';
+import { isValidAccountID } from '@/js/modules/tagmanager/util';
 
 export default function ContainerSelect( {
 	containers,

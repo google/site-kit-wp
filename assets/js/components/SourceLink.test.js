@@ -23,7 +23,7 @@ import { render } from '../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import SourceLink from './SourceLink';
 
 describe( 'SourceLink', () => {

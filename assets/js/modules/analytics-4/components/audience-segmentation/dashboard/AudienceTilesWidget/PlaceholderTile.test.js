@@ -16,17 +16,17 @@
  * limitations under the License.
  */
 
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
-import { availableAudiences } from '../../../../datastore/__fixtures__';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	createTestRegistry,
 	fireEvent,
 	render,
 } from '../../../../../../../../tests/js/test-utils';
-import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
-import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '../AudienceSelectionPanel/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
 import PlaceholderTile from './PlaceholderTile';
 
 describe( 'PlaceholderTile', () => {

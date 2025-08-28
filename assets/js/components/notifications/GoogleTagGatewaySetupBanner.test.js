@@ -31,20 +31,20 @@ import {
 	render,
 	waitFor,
 } from '../../../../tests/js/test-utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import {
 	GTG_SETUP_CTA_BANNER_NOTIFICATION,
 	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/constants';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
-import * as tracking from '../../util/tracking';
-import { enabledFeatures } from '../../features';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import * as tracking from '@/js/util/tracking';
+import { enabledFeatures } from '@/js/features';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
