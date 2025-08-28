@@ -33,6 +33,7 @@ import { MODULE_SLUG_ADSENSE } from '../modules/adsense/constants';
 import { NOTIFICATION_AREAS } from '../googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '../googlesitekit/notifications/datastore/constants';
 import NotificationFromServer from '../components/NotificationFromServer';
+import AdSenseCircularIcon from '../../svg/graphics/adsense-circular.svg';
 
 export default function useAdSenseNotifications() {
 	const viewContext = useViewContext();
@@ -122,6 +123,7 @@ export default function useAdSenseNotifications() {
 						>
 							<NotificationFromServer
 								{ ...notificationProps }
+								titleIcon={ <AdSenseCircularIcon /> }
 								gaTrackingEventArgs={ gaTrackingEventArgs }
 							/>
 						</Notification>
