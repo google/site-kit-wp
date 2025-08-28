@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import { isFeatureEnabled } from '../features';
-
 ( ( jQuery ) => {
 	if ( ! jQuery ) {
 		return;
@@ -55,7 +50,7 @@ import { isFeatureEnabled } from '../features';
 		);
 
 		// User data is already normalized from WooCommerce.php.
-		if ( isFeatureEnabled( 'gtagUserData' ) && userData ) {
+		if ( global._googlesitekit?.gtagUserData && userData ) {
 			eventData.user_data = userData;
 		}
 
