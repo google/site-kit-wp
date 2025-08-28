@@ -37,7 +37,7 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
-import { escapeURI } from '../../../util/escape-uri';
+import { escapeURI } from '@/js/util/escape-uri';
 
 const RECEIVE_CONNECT_URL = 'RECEIVE_CONNECT_URL';
 const RECEIVE_USER_INFO = 'RECEIVE_USER_INFO';

@@ -37,7 +37,7 @@ import {
 	calculateDifferenceBetweenChartValues,
 	getPreviousDate,
 	stringToDate,
-} from '../../../util';
+} from '@/js/util';
 
 /**
  * Gets data for a Google chart from a Search Console report.

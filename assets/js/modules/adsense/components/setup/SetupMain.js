@@ -33,28 +33,28 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import AdSenseIcon from '../../../../../svg/graphics/adsense.svg';
+import AdSenseIcon from '@/svg/graphics/adsense.svg';
 import SetupAccount from './SetupAccount';
 import SetupCreateAccount from './SetupCreateAccount';
 import SetupSelectAccount from './SetupSelectAccount';
-import { trackEvent } from '../../../../util';
-import { ErrorNotices } from '../common';
-import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
+import { trackEvent } from '@/js/util';
+import { ErrorNotices } from '@/js/modules/adsense/components/common';
+import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
 import {
 	BACKGROUND_SUBMIT_SUSPENDED,
 	MODULES_ADSENSE,
-} from '../../datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+} from '@/js/modules/adsense/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	ACCOUNT_STATUS_READY,
 	ACCOUNT_STATUS_NONE,
 	ACCOUNT_STATUS_MULTIPLE,
-} from '../../util/status';
-import useViewContext from '../../../../hooks/useViewContext';
-import { useRefocus } from '../../../../hooks/useRefocus';
-import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
-import Typography from '../../../../components/Typography';
+} from '@/js/modules/adsense/util/status';
+import useViewContext from '@/js/hooks/useViewContext';
+import { useRefocus } from '@/js/hooks/useRefocus';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import Typography from '@/js/components/Typography';
 
 export default function SetupMain( { finishSetup } ) {
 	const viewContext = useViewContext();

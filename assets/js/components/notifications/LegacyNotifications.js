@@ -25,12 +25,12 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
-import useViewOnly from '../../hooks/useViewOnly';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
-} from '../../hooks/useDashboardType';
+} from '@/js/hooks/useDashboardType';
 import InternalServerError from './InternalServerError';
 
 export default function LegacyNotifications() {

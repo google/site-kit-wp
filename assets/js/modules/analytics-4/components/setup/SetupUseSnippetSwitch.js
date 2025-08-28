@@ -26,9 +26,9 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import P from '../../../../components/Typography/P';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import UseSnippetSwitch from '../common/UseSnippetSwitch';
+import P from '@/js/components/Typography/P';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import UseSnippetSwitch from '@/js/modules/analytics-4/components/common/UseSnippetSwitch';
 
 export default function SetupUseSnippetSwitch() {
 	const existingTag = useSelect( ( select ) =>

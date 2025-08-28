@@ -26,14 +26,23 @@ import {
 	provideUserAuthentication,
 	render,
 } from '../../../../tests/js/test-utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_SPLASH,
+} from '@/js/googlesitekit/constants';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import SetupErrorMessageNotification from './SetupErrorMessageNotification';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '../../googlesitekit/datastore/user/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '@/js/googlesitekit/datastore/user/constants';
+import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
+
+jest.mock( '../../googlesitekit/data/create-snapshot-store', () => ( {
+	...jest.requireActual( '../../googlesitekit/data/create-snapshot-store' ),
+	snapshotAllStores: jest.fn(),
+} ) );
 
 const SETUP_ERROR_NOTIFICATION = 'setup_plugin_error';
 
@@ -146,8 +155,57 @@ describe( 'SetupErrorMessageNotification', () => {
 		expect( container ).toHaveTextContent( 'Grant permission' );
 	} );
 
+	it( 'calls snapshotAllStores when CTA button is clicked with persisted permissions error', async () => {
+		snapshotAllStores.mockClear();
+
+		provideUserAuthentication( registry );
+		provideSiteInfo( registry, {
+			setupErrorCode: 'access_denied',
+			setupErrorMessage:
+				'Setup was interrupted because you did not grant the necessary permissions',
+			setupErrorRedoURL: '#',
+		} );
+
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_TEMPORARY_PERSIST_PERMISSION_ERROR, {
+				permissionsError: {
+					status: 403,
+					message: 'Generic scope',
+					data: {
+						scopes: [
+							'https://www.googleapis.com/auth/analytics.edit',
+						],
+					},
+				},
+			} );
+
+		const { getByRole, waitForRegistry } = render(
+			<NotificationWithComponentProps />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+		await waitForRegistry();
+
+		const ctaButton = getByRole( 'button', { name: /grant permission/i } );
+		expect( ctaButton ).toBeInTheDocument();
+
+		// Prevent navigation by intercepting the click.
+		// This is to prevent the leaking after the test cleanup.
+		const handleClick = jest.fn( ( event ) => {
+			event.preventDefault();
+		} );
+		ctaButton.addEventListener( 'click', handleClick );
+
+		ctaButton.click();
+
+		expect( snapshotAllStores ).toHaveBeenCalledWith( registry );
+	} );
+
 	describe( 'checkRequirements', () => {
-		it( 'is active', async () => {
+		it( 'is active on the splash screen when permissions are not granted', async () => {
 			provideSiteInfo( registry, {
 				setupErrorRedoURL: '#',
 				setupErrorCode: 'access_denied',
@@ -157,7 +215,7 @@ describe( 'SetupErrorMessageNotification', () => {
 
 			const isActive = await notification.checkRequirements(
 				registry,
-				VIEW_CONTEXT_MAIN_DASHBOARD
+				VIEW_CONTEXT_SPLASH
 			);
 
 			expect( isActive ).toBe( true );
@@ -168,7 +226,7 @@ describe( 'SetupErrorMessageNotification', () => {
 
 			const isActive = await notification.checkRequirements(
 				registry,
-				VIEW_CONTEXT_MAIN_DASHBOARD
+				VIEW_CONTEXT_SPLASH
 			);
 
 			expect( isActive ).toBe( false );

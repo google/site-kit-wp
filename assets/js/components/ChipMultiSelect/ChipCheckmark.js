@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import CheckMark from '../../../svg/icons/check-2.svg';
+import CheckMark from '@/svg/icons/check-2.svg';
 
 export function ChipCheckmark() {
 	return (

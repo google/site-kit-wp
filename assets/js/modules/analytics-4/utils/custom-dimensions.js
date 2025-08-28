@@ -20,7 +20,7 @@
 import {
 	CUSTOM_DIMENSION_DEFINITIONS,
 	MODULES_ANALYTICS_4,
-} from '../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 
 /**
  * Provides custom dimension error data to the given registry.

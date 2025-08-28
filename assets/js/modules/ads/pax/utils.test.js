@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { INVALID_DATE_STRING_ERROR } from '../../../util';
+import { INVALID_DATE_STRING_ERROR } from '@/js/util';
 import { formatPaxDate } from './utils';
 
 describe( 'formatPaxDate', () => {

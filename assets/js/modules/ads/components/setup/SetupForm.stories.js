@@ -19,19 +19,19 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ADS } from '../../datastore/constants';
-import { MODULE_SLUG_ADS } from '../../constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
 	provideSiteInfo,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import ModuleSetup from '../../../../components/setup/ModuleSetup';
+import ModuleSetup from '@/js/components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 function Template( { setupRegistry = () => {} } ) {
 	return (

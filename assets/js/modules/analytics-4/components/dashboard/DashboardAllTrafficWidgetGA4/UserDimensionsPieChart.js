@@ -34,29 +34,32 @@ import { ESCAPE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import { extractAnalyticsDataForPieChart, isSingleSlice } from '../../../utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import {
+	extractAnalyticsDataForPieChart,
+	isSingleSlice,
+} from '@/js/modules/analytics-4/utils';
 import {
 	MODULES_ANALYTICS_4,
 	UI_DIMENSION_COLOR,
 	UI_DIMENSION_VALUE,
 	UI_ACTIVE_ROW_INDEX,
-} from '../../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	numberFormat,
 	sanitizeHTML,
 	trackEvent,
 	getChartDifferenceArrow,
-} from '../../../../../util';
-import GoogleChart from '../../../../../components/GoogleChart';
-import Link from '../../../../../components/Link';
-import PreviewBlock from '../../../../../components/PreviewBlock';
-import PieChartZeroData from '../../../../../../svg/icons/pie-chart-zero-data.svg';
+} from '@/js/util';
+import GoogleChart from '@/js/components/GoogleChart';
+import Link from '@/js/components/Link';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import PieChartZeroData from '@/svg/icons/pie-chart-zero-data.svg';
 import GatheringDataNotice, {
 	NOTICE_STYLE,
-} from '../../../../../components/GatheringDataNotice';
-import useViewContext from '../../../../../hooks/useViewContext';
+} from '@/js/components/GatheringDataNotice';
+import useViewContext from '@/js/hooks/useViewContext';
 import { getTooltipHelp } from './utils';
 
 export default function UserDimensionsPieChart( props ) {

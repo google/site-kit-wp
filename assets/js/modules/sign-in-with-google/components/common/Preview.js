@@ -26,8 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
-import { getLocale } from '../../../../util';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
+import { getLocale } from '@/js/util';
 
 export default function Preview() {
 	const [ scriptLoaded, setScriptLoaded ] = useState( false );

@@ -26,18 +26,18 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 	READER_REVENUE_MANAGER_NOTICES_FORM,
 	SYNC_PUBLICATION,
-} from '../../datastore/constants';
-import { trackEvent } from '../../../../util';
-import useViewContext from '../../../../hooks/useViewContext';
-import { useRefocus } from '../../../../hooks/useRefocus';
-import Notice from '../../../../components/Notice';
-import useFormValue from '../../../../hooks/useFormValue';
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import { useRefocus } from '@/js/hooks/useRefocus';
+import Notice from '@/js/components/Notice';
+import useFormValue from '@/js/hooks/useFormValue';
 
 const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
 	PUBLICATION_ONBOARDING_STATES;

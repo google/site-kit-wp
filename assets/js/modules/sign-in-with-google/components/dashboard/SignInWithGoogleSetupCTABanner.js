@@ -32,11 +32,11 @@ import { useCallback, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '../../constants';
-import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
-import SetupCTA from '../../../../googlesitekit/notifications/components/layout/SetupCTA';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
 import BannerSVGDesktop from '@/svg/graphics/banner-sign-in-with-google-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-sign-in-with-google-setup-cta-mobile.svg?url';
 

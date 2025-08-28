@@ -27,7 +27,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { availableAudiences as availableAudiencesFixture } from './__fixtures__';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 describe( 'modules/analytics-4 audience settings', () => {
 	let registry;

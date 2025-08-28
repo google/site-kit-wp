@@ -32,9 +32,9 @@ import {
 	act,
 	waitForDefaultTimeouts,
 } from '../../../../tests/js/test-utils';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import * as tracking from '../../util/tracking';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import * as tracking from '@/js/util/tracking';
 import GoogleTagGatewayToggle from './GoogleTagGatewayToggle';
 
 jest.mock( 'react-use', () => ( {

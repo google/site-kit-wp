@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { SpinnerButton } from 'googlesitekit-components';
-import P from '../../../../../../../components/Typography/P';
+import P from '@/js/components/Typography/P';
 
 const CreateCustomDimensionCTA = forwardRef( ( { onClick, isSaving }, ref ) => {
 	return (

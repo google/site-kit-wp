@@ -26,17 +26,17 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_ADS } from '../../datastore/constants';
-import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { ConversionIDTextField } from '../common';
-import { useFeature } from '../../../../hooks/useFeature';
-import DisplaySetting from '../../../../components/DisplaySetting';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Link from '../../../../components/Link';
-import SettingsGroup from '../../../../components/settings/SettingsGroup';
-import GoogleTagGatewayToggle from '../../../../components/google-tag-gateway/GoogleTagGatewayToggle';
-import Typography from '../../../../components/Typography';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import ConversionTrackingToggle from '@/js/components/conversion-tracking/ConversionTrackingToggle';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { ConversionIDTextField } from '@/js/modules/ads/components/common';
+import { useFeature } from '@/js/hooks/useFeature';
+import DisplaySetting from '@/js/components/DisplaySetting';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import Link from '@/js/components/Link';
+import SettingsGroup from '@/js/components/settings/SettingsGroup';
+import GoogleTagGatewayToggle from '@/js/components/google-tag-gateway/GoogleTagGatewayToggle';
+import Typography from '@/js/components/Typography';
 
 export default function SettingsForm() {
 	const paxEnabled = useFeature( 'adsPax' );

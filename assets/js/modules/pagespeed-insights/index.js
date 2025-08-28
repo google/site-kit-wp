@@ -28,14 +28,14 @@ import { getQueryArg } from '@wordpress/url';
 import {
 	AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
 	AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
-} from '../../googlesitekit/widgets/default-areas';
+} from '@/js/googlesitekit/widgets/default-areas';
 import { SettingsView } from './components/settings';
 import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedWidget';
-import PageSpeedInsightsIcon from '../../../svg/graphics/pagespeed-insights.svg';
+import PageSpeedInsightsIcon from '@/svg/graphics/pagespeed-insights.svg';
 import { MODULES_PAGESPEED_INSIGHTS } from './datastore/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from './constants';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import SetupSuccessNotification from './components/notifications/SetupSuccessNotification';
 
 export { registerStore } from './datastore';

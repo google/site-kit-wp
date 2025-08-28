@@ -26,8 +26,8 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 
 const fetchGetKeyEventsStore = createFetchStore( {
 	baseName: 'getKeyEvents',

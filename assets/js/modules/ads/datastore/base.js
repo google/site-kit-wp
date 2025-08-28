@@ -21,7 +21,7 @@
  */
 import Modules from 'googlesitekit-modules';
 import { MODULES_ADS } from './constants';
-import { MODULE_SLUG_ADS } from '../constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import {
 	submitChanges,
 	rollbackChanges,

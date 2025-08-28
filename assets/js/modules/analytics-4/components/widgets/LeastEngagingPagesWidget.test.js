@@ -30,22 +30,22 @@ import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 	STRATEGY_ZIP,
-} from '../../utils/data-mock';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import {
 	CORE_USER,
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../../../../util/errors';
+} from '@/js/util/errors';
 import LeastEngagingPagesWidget from './LeastEngagingPagesWidget';
 
 describe( 'LeastEngagingPagesWidget', () => {

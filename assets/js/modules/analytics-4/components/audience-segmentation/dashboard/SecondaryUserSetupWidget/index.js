@@ -31,10 +31,10 @@ import { useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import AudienceTileLoading from '../AudienceTilesWidget/AudienceTile/AudienceTileLoading';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
-import AudienceSegmentationErrorWidget from '../AudienceSegmentationErrorWidget';
-import { isInsufficientPermissionsError } from '../../../../../../util/errors';
+import AudienceTileLoading from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile/AudienceTileLoading';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import AudienceSegmentationErrorWidget from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationErrorWidget';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
 
 export default function SecondaryUserSetupWidget( { Widget } ) {
 	const [ setupError, setSetupError ] = useState( null );

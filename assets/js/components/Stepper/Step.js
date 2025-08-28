@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { STEP_STATUS } from './constants';
-import Typography from '../Typography';
+import Typography from '@/js/components/Typography';
 
 export default function Step( { children, title, stepStatus } ) {
 	return (

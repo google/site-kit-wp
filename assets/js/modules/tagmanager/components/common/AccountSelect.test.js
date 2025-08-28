@@ -21,9 +21,12 @@
  */
 import AccountSelect from './AccountSelect';
 import { fireEvent, render } from '../../../../../../tests/js/test-utils';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
-import * as fixtures from '../../datastore/__fixtures__';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	MODULES_TAGMANAGER,
+	ACCOUNT_CREATE,
+} from '@/js/modules/tagmanager/datastore/constants';
+import * as fixtures from '@/js/modules/tagmanager/datastore/__fixtures__';
 import {
 	freezeFetch,
 	createTestRegistry,

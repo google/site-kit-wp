@@ -31,13 +31,13 @@ import { Component } from '@wordpress/element';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { Cell, Grid, Row } from '../../material-components';
-import OptIn from '../OptIn';
-import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
-import { setItem } from '../../googlesitekit/api/cache';
-import { trackEvent } from '../../util';
-import Typography from '../Typography';
-import P from '../Typography/P';
+import { Cell, Grid, Row } from '@/js/material-components';
+import OptIn from '@/js/components/OptIn';
+import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import { trackEvent } from '@/js/util';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 class WizardStepAuthentication extends Component {
 	constructor( props ) {

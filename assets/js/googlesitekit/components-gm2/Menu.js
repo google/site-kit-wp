@@ -37,7 +37,7 @@ import {
 /**
  * Internal dependencies
  */
-import { MDCMenu } from '../../material-components';
+import { MDCMenu } from '@/js/material-components';
 
 const Menu = forwardRef(
 	(

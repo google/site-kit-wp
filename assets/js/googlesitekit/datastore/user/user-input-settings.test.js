@@ -23,6 +23,7 @@ import { setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
+	provideSiteInfo,
 	provideUserAuthentication,
 	subscribeUntil,
 	untilResolved,
@@ -66,6 +67,7 @@ describe( 'core/user user-input-settings', () => {
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_USER ].store;
 		registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( true );
+		provideSiteInfo( registry );
 	} );
 
 	afterAll( () => {

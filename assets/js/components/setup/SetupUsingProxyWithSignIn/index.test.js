@@ -25,11 +25,11 @@ import {
 	provideUserCapabilities,
 	muteFetch,
 } from '../../../../../tests/js/test-utils';
-import coreModulesFixture from '../../../googlesitekit/modules/datastore/__fixtures__';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import SetupUsingProxyWithSignIn from '../SetupUsingProxyWithSignIn';
-import { VIEW_CONTEXT_SPLASH } from '../../../googlesitekit/constants';
+import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWithSignIn';
+import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 jest.mock(

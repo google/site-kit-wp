@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Analytics_4;
 
 use Google\Site_Kit\Context;
@@ -139,7 +137,7 @@ class Synchronize_PropertyTest extends TestCase {
 
 		$this->synchronize_property->register();
 
-		$this->assertTrue( has_action( Synchronize_Property::CRON_SYNCHRONIZE_PROPERTY ) );
+		$this->assertTrue( has_action( Synchronize_Property::CRON_SYNCHRONIZE_PROPERTY ), 'Cron action for synchronizing property should be registered.' );
 	}
 
 	public function test_maybe_schedule_synchronize_property() {
@@ -148,7 +146,8 @@ class Synchronize_PropertyTest extends TestCase {
 		$this->synchronize_property->maybe_schedule_synchronize_property();
 
 		$this->assertTrue(
-			(bool) wp_next_scheduled( Synchronize_Property::CRON_SYNCHRONIZE_PROPERTY )
+			(bool) wp_next_scheduled( Synchronize_Property::CRON_SYNCHRONIZE_PROPERTY ),
+			'Cron event should be scheduled for property synchronization.'
 		);
 	}
 
@@ -160,14 +159,14 @@ class Synchronize_PropertyTest extends TestCase {
 		$this->fake_analytics_4_property_response( $property_id, $create_time );
 
 		// Confirm that module is connected, as it will be needed in the cron callback.
-		$this->assertTrue( $this->analytics_4->is_connected() );
+		$this->assertTrue( $this->analytics_4->is_connected(), 'Analytics 4 module should be connected before running cron.' );
 
 		$this->synchronize_property->register();
 
 		$settings             = $this->analytics_4->get_settings()->get();
 		$property_create_time = $settings['propertyCreateTime'];
 
-		$this->assertNotEquals( $create_time_ms, $property_create_time );
+		$this->assertNotEquals( $create_time_ms, $property_create_time, 'Create time should differ before synchronization.' );
 
 		// Invoke cron callback function.
 		do_action( Synchronize_Property::CRON_SYNCHRONIZE_PROPERTY );
@@ -176,7 +175,7 @@ class Synchronize_PropertyTest extends TestCase {
 		$property_create_time = $settings['propertyCreateTime'];
 
 		// Property create time should be synced from the retrieved property object.
-		$this->assertEquals( $create_time_ms, $property_create_time );
+		$this->assertEquals( $create_time_ms, $property_create_time, 'Create time should match fetched property create time after synchronization.' );
 	}
 
 	/**
@@ -185,7 +184,7 @@ class Synchronize_PropertyTest extends TestCase {
 	public function test_convert_time_to_unix_ms( $iso_string, $expected_timestamp_ms ) {
 		$create_time_ms = Synchronize_Property::convert_time_to_unix_ms( $iso_string );
 
-		$this->assertEquals( $expected_timestamp_ms, $create_time_ms );
+		$this->assertEquals( $expected_timestamp_ms, $create_time_ms, 'Converted time should match expected Unix ms timestamp.' );
 	}
 
 	public function data_time_strings_to_unix_timestamps_in_ms() {

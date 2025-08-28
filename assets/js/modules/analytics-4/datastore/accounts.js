@@ -32,7 +32,7 @@ import {
 	combineStores,
 	createReducer,
 } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	ACCOUNT_CREATE,
 	PROPERTY_CREATE,
@@ -40,13 +40,13 @@ import {
 	FORM_ACCOUNT_CREATE,
 	MODULES_ANALYTICS_4,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
-import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { isValidAccountSelection } from '../utils/validation';
-import { caseInsensitiveListSort } from '../../../util/case-insensitive-sort';
-import { populateAccountSummaries } from '../utils/account';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { isValidAccountSelection } from '@/js/modules/analytics-4/utils/validation';
+import { caseInsensitiveListSort } from '@/js/util/case-insensitive-sort';
+import { populateAccountSummaries } from '@/js/modules/analytics-4/utils/account';
 
 const { receiveError, clearError, clearErrors } = errorStoreActions;
 

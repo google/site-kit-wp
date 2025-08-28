@@ -25,26 +25,26 @@ import {
 	provideUserAuthentication,
 } from '../../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../../../googlesitekit/constants';
-import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
-import { getPreviousDate } from '../../../../../../util';
+} from '@/js/googlesitekit/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { getPreviousDate } from '@/js/util';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 	provideAnalyticsReportWithoutDateRangeData,
 	STRATEGY_ZIP,
-} from '../../../../utils/data-mock';
-import { availableAudiences } from '../../../../datastore/__fixtures__';
-import { Provider as ViewContextProvider } from '../../../../../../components/Root/ViewContextContext';
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import AudienceTilesWidget from './';
 
 function excludeAudienceFromReport( report, audienceResourceName ) {

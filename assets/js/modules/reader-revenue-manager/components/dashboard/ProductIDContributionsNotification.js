@@ -30,9 +30,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 
 export default function ProductIDContributionsNotification( {
 	id,

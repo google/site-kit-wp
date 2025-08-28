@@ -31,11 +31,11 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
-import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '../../googlesitekit/widgets/default-areas';
-import useActivateModuleCallback from '../../hooks/useActivateModuleCallback';
-import Link from '../Link';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import Link from '@/js/components/Link';
 import GhostCardGreenSVG from './GhostCardGreenSVG';
 import GhostCardRedSVG from './GhostCardRedSVG';
 import MetricTileHeader from './MetricTileHeader';
