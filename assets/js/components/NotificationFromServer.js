@@ -45,6 +45,7 @@ import { HOUR_IN_SECONDS } from '../util';
  *
  * @param {Object}     props                     Component props.
  * @param {string}     props.id                  Notification ID/slug.
+ * @param {?ReactNode} props.titleIcon           Icon to display above the title.
  * @param {string}     props.title               Notification title/heading.
  * @param {?ReactNode} props.content             Description for notification.
  * @param {string}     props.ctaLabel            Label for the call-to-action button.
@@ -61,6 +62,7 @@ import { HOUR_IN_SECONDS } from '../util';
  */
 function NotificationFromServer( {
 	id,
+	titleIcon,
 	title,
 	content,
 	ctaLabel,
@@ -88,6 +90,7 @@ function NotificationFromServer( {
 		<BannerNotification
 			notificationID={ id }
 			type={ TYPES.WARNING }
+			titleIcon={ titleIcon ? titleIcon : undefined }
 			title={ title }
 			description={ content }
 			learnMoreLink={
