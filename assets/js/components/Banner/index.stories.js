@@ -34,6 +34,7 @@ import signInWithGoogleDesktopSVG from '@/svg/graphics/banner-sign-in-with-googl
 import signInWithGoogleMobileSVG from '@/svg/graphics/banner-sign-in-with-google-setup-cta-mobile.svg?url';
 import gatheringDataSVG from '@/svg/graphics/banner-gathering-data.svg?url';
 import warningDesktopSVG from '@/svg/graphics/banner-warning.svg?url';
+import AdSenseCircularIcon from '../../../svg/graphics/adsense-circular.svg';
 import Link from '../Link';
 
 function Template() {
@@ -213,6 +214,29 @@ function Template() {
 							} }
 						/>
 					</div>
+					<br />
+
+					<em>Warning Banner with Title Icon</em>
+					<div className="googlesitekit-banner-notification googlesitekit-banner-notification--warning">
+						<Banner
+							titleIcon={ <AdSenseCircularIcon /> }
+							title="Notice about your AdSense account"
+							description="Earnings at risk – You need to fix some ads.txt file issues to avoid severe impact to your revenue."
+							ctaButton={ {
+								label: 'Go to AdSense',
+								onClick: () => {},
+							} }
+							dismissButton={ {
+								label: 'Maybe later',
+								onClick: () => {},
+							} }
+							svg={ {
+								desktop: warningDesktopSVG,
+								verticalPosition: 'center',
+							} }
+						/>
+					</div>
+					<br />
 				</Cell>
 			</Row>
 		</Grid>
