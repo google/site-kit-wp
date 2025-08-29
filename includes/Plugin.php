@@ -69,18 +69,18 @@ final class Plugin {
 				'network_admin_notices',
 				function () {
 					?>
-					<div class="notice notice-warning">
-						<p>
-							<?php
+<div class="notice notice-warning">
+	<p>
+					<?php
 							echo wp_kses(
 								__( 'The Site Kit by Google plugin does <strong>not yet offer</strong> a network mode, but we&#8217;re actively working on that.', 'google-site-kit' ),
 								array(
 									'strong' => array(),
 								)
 							);
-							?>
-						</p>
-					</div>
+					?>
+	</p>
+</div>
 					<?php
 				}
 			);
@@ -239,6 +239,15 @@ final class Plugin {
 					},
 					-999,
 					2
+				);
+
+				add_filter(
+					'language_attributes',
+					function ( $output ) {
+						$theme   = get_option( 'googlesitekit_theme__experimental', 'light' );
+						$output .= ' data-theme="' . esc_attr( $theme ) . '"';
+						return $output;
+					}
 				);
 
 				/**
