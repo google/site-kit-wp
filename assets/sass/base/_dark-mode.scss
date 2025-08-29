@@ -1,0 +1,22 @@
+/**
+ * Dark mode CSS variable overrides.
+ *
+ * Defines complementary colors for dark theme when `[data-theme="dark"]` is present.
+ */
+
+[data-theme="dark"] {
+	--c-base: #000;
+	--c-surfaces-on-background: #{$c-neutral-n-50};
+	--c-surfaces-on-background-variant: #{$c-neutral-n-300};
+	--c-surfaces-background: #{$c-neutral-n-900};
+	--c-surfaces-surface: #{$c-neutral-n-800};
+	--c-surfaces-on-surface: #{$c-neutral-n-50};
+	--c-surfaces-on-surface-variant: #{$c-neutral-n-300};
+	--c-primary: var(--c-surfaces-on-surface);
+	--c-border-light: #{$c-neutral-n-700};
+
+	body {
+		background-color: var(--c-surfaces-background);
+		color: var(--c-surfaces-on-background);
+	}
+}

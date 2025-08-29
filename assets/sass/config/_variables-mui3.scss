@@ -203,6 +203,30 @@ $c-interactive-callout-new-focus: $c-violet-v-200;
 $c-content-primary-hover: #2e5f41;
 $c-grey-g-900: #202124;
 
+// Default CSS variable values for color tokens (light theme)
+:root {
+	--c-surfaces-on-background: #{$c-neutral-n-900};
+	--c-surfaces-on-background-variant: #{$c-neutral-n-500};
+	--c-surfaces-background: #{$c-neutral-n-10};
+	--c-surfaces-on-surface: #{$c-neutral-n-900};
+	--c-surfaces-on-surface-variant: #{$c-neutral-n-500}; /* @TODO finish replacing this token */
+	--c-surfaces-inverse-on-surface: #{$c-neutral-n-50}; /* @TODO finish replacing this token */
+	--c-border-light: var(--c-surfaces-inverse-on-surface); /* @TODO finish replacing this token */
+
+	// Primary color maps to on-surface by default
+	--c-primary: var(--c-surfaces-on-surface);
+
+	// Base surface (light)
+	--c-base: #fff;
+
+	// Additional tokens
+	--c-surfaces-surface: #{$c-neutral-n-0};
+	--c-content-on-primary: #{$c-site-kit-sk-0};
+	--c-content-primary: #{$c-site-kit-sk-500};
+	--c-content-on-primary-container: #{$c-site-kit-sk-600};
+	--c-content-primary-container: #{$c-site-kit-sk-100};
+}
+
 // Font sizes
 $fs-display-lg: 58px;
 $fs-display-md: 46px;

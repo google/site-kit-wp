@@ -58,7 +58,7 @@
 
 .googlesitekit-pagespeed-report-metric__title {
 	align-items: center;
-	color: $c-surfaces-on-surface;
+	color: var(--c-surfaces-on-surface);
 	column-gap: $grid-gap-phone / 2;
 	display: flex;
 	font-family: $f-secondary;

@@ -15,7 +15,7 @@
 			border-radius: 0;
 			box-shadow: none;
 			clear: none;
-			color: $c-primary;
+			color: var(--c-primary);
 			cursor: inherit;
 			display: block;
 			height: 100%;
@@ -41,7 +41,7 @@
 	}
 
 	.mdc-radio__description {
-		color: $c-surfaces-on-surface-variant;
+		color: var(--c-surfaces-on-surface-variant);
 		font-size: $fs-body-sm;
 		line-height: $lh-body-sm;
 	}

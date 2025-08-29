@@ -126,7 +126,7 @@
 		padding-top: 0;
 
 		button.googlesitekit-cta-link {
-			color: $c-surfaces-on-surface-variant;
+			color: var(--c-surfaces-on-surface-variant);
 		}
 	}
 
@@ -145,7 +145,7 @@
 		}
 
 		p {
-			color: $c-surfaces-on-surface-variant;
+			color: var(--c-surfaces-on-surface-variant);
 			letter-spacing: 0.25px;
 		}
 	}

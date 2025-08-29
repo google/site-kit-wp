@@ -17,7 +17,7 @@
  */
 
 .googlesitekit-signin-box {
-	background-color: $c-base;
+	background-color: var(--c-base);
 	border-color: $c-border-medium;
 	display: block;
 	margin: 20px auto;

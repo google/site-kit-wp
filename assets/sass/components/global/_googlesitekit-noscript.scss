@@ -20,7 +20,7 @@
 
 	@include googlesitekit-inner-padding;
 
-	background-color: $c-base;
+	background-color: var(--c-base);
 	margin: 5px 20px 5px 0;
 }
 

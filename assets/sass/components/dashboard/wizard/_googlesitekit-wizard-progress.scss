@@ -1,10 +1,10 @@
 .googlesitekit-wizard-progress {
 
 	@include googlesitekit-inner-padding;
-	background-color: $c-base;
+	background-color: var(--c-base);
 
 	@media (min-width: $bp-tablet) {
-		border-bottom: 1px solid $c-border-light;
+		border-bottom: 1px solid var(--c-border-light);
 	}
 
 	.googlesitekit-wizard-progress__subtitle {

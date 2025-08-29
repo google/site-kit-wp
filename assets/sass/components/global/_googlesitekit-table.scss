@@ -43,7 +43,7 @@
 	}
 
 	.googlesitekit-table__head-row {
-		border-bottom: 1px solid $c-border-light;
+		border-bottom: 1px solid var(--c-border-light);
 	}
 
 	.googlesitekit-table__head-item {
@@ -92,7 +92,7 @@
 			@media (min-width: $bp-desktop) {
 				background: rgba(0, 0, 0, 0.7);
 				border-radius: 3px;
-				color: $c-base;
+				color: var(--c-base);
 				content: attr(data-tooltip);
 				display: none; // TODO Temp until we get updated verbiage.
 				font-size: $fs-body-sm;
@@ -132,7 +132,7 @@
 	}
 
 	.googlesitekit-table__body-row {
-		border-bottom: 1px solid $c-border-light;
+		border-bottom: 1px solid var(--c-border-light);
 	}
 
 	.googlesitekit-table__body-row--no-data {

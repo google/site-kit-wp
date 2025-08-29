@@ -19,7 +19,7 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-navigation {
-		background-color: $c-base;
+		background-color: var(--c-base);
 		border-bottom: 1px solid $c-utility-divider;
 		justify-content: center;
 		left: 0;
@@ -62,10 +62,10 @@
 		}
 
 		.mdc-chip {
-			background-color: $c-base;
-			border: 1px solid $c-surfaces-inverse-on-surface;
+			background-color: var(--c-base);
+			border: 1px solid var(--c-surfaces-inverse-on-surface);
 			border-radius: $br-lg;
-			color: $c-surfaces-on-surface;
+			color: var(--c-surfaces-on-surface);
 			font-size: $fs-title-sm;
 			letter-spacing: $ls-xs;
 			line-height: 1;

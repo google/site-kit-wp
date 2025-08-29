@@ -23,7 +23,7 @@
 	width: 100%;
 
 	.googlesitekit-post-searcher__label {
-		background-color: $c-base;
+		background-color: var(--c-base);
 		color: $c-tertiary;
 		font-size: $fs-body-sm;
 		left: 12px;

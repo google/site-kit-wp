@@ -27,7 +27,7 @@
 		}
 
 		p {
-			color: $c-primary;
+			color: var(--c-primary);
 			font-size: $fs-body-md;
 			letter-spacing: $ls-s;
 		}
@@ -106,7 +106,7 @@
 		}
 
 		.googlesitekit-view-only-menu__service--owner {
-			color: $c-primary;
+			color: var(--c-primary);
 			flex: 1;
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;

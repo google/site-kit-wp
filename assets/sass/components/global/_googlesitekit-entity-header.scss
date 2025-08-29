@@ -20,7 +20,7 @@
 
 	.googlesitekit-entity-header {
 		align-items: center;
-		background-color: $c-surfaces-surface;
+		background-color: var(--c-surfaces-surface);
 		border-bottom: 1px solid transparent;
 		color: $c-surfaces-on-surface-variant;
 		display: flex;

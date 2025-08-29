@@ -41,7 +41,7 @@
 	}
 
 	.googlesitekit-wp-dashboard &--error {
-		background-color: $c-base;
+		background-color: var(--c-base);
 	}
 
 	.googlesitekit-adminbar-modules & {

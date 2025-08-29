@@ -19,7 +19,7 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-settings-connect-module {
-		border: 1px solid $c-border-light;
+		border: 1px solid var(--c-border-light);
 		border-radius: $br-xs;
 		height: 100%;
 		padding: $grid-gap-phone;

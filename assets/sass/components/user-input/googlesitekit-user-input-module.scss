@@ -32,7 +32,7 @@
 	}
 
 	.googlesitekit-user-input__heading {
-		color: $c-surfaces-on-surface;
+		color: var(--c-surfaces-on-surface);
 		font-family: $f-secondary;
 		font-size: $fs-headline-md;
 		font-weight: $fw-normal;
@@ -40,7 +40,7 @@
 	}
 
 	.googlesitekit-user-input__subtitle {
-		color: $c-surfaces-on-surface-variant;
+		color: var(--c-surfaces-on-surface-variant);
 		font-size: $fs-title-sm;
 		line-height: $lh-title-sm;
 	}
@@ -148,14 +148,14 @@
 	}
 
 	p.googlesitekit-user-input__select-instruction {
-		color: $c-surfaces-on-surface;
+		color: var(--c-surfaces-on-surface);
 		font-size: $fs-body-sm;
 		line-height: $lh-body-sm;
 		margin: 0;
 		padding-bottom: 15px;
 
 		@media (min-width: $bp-tablet) {
-			color: $c-surfaces-on-surface-variant;
+			color: var(--c-surfaces-on-surface-variant);
 			font-size: $fs-title-lg;
 			font-weight: $fw-medium;
 		}
@@ -164,7 +164,7 @@
 	.googlesitekit-user-input__author {
 
 		p {
-			color: $c-surfaces-on-surface-variant;
+			color: var(--c-surfaces-on-surface-variant);
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-s;
 			line-height: $lh-body-sm;

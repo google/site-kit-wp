@@ -34,7 +34,7 @@
 
 		.googlesitekit-wizard-progress-step__number {
 			background-color: $c-background;
-			border: 15px solid $c-base;
+			border: 15px solid var(--c-base);
 			border-radius: 50%;
 			color: $c-secondary;
 			font-size: $fs-body-md;
@@ -49,12 +49,12 @@
 
 		.googlesitekit-wizard-progress-step__number--inprogress {
 			background-color: $c-background-brand;
-			color: $c-base;
+			color: var(--c-base);
 		}
 
 		.googlesitekit-wizard-progress-step__number--warning {
 			background-color: $c-warning;
-			color: $c-base;
+			color: var(--c-base);
 
 			svg {
 				color: $c-white;
@@ -63,7 +63,7 @@
 
 		.googlesitekit-wizard-progress-step__number--error {
 			background-color: $c-error;
-			color: $c-base;
+			color: var(--c-base);
 
 			svg {
 				color: $c-white;
@@ -72,7 +72,7 @@
 
 		.googlesitekit-wizard-progress-step__number--completed {
 			background-color: $c-success;
-			color: $c-base;
+			color: var(--c-base);
 
 			svg {
 				color: $c-white;
@@ -119,7 +119,7 @@
 		@media (min-width: $bp-tablet) {
 
 			@include vertical-align;
-			background-color: $c-base;
+			background-color: var(--c-base);
 			content: "";
 			display: block;
 			height: 4px;

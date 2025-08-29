@@ -2,7 +2,7 @@
 .googlesitekit-plugin {
 	.mdc-checkbox {
 
-		@include mdc-checkbox-container-colors($c-surfaces-on-surface, $c-base, $c-surfaces-on-surface, $c-black, true);
+		@include mdc-checkbox-container-colors($c-surfaces-on-surface, var(--c-base), $c-surfaces-on-surface, $c-black, true);
 		@include mdc-checkbox-ink-color($c-white);
 		@include mdc-checkbox-focus-indicator-color($c-content-on-primary-container);
 
@@ -67,7 +67,7 @@
 			border-radius: 0;
 			box-shadow: none;
 			clear: none;
-			color: $c-primary;
+			color: var(--c-primary);
 			cursor: inherit;
 			display: block;
 			height: 100%;

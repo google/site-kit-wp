@@ -17,7 +17,7 @@
  */
 
 .googlesitekit-banner {
-	background-color: $c-surfaces-surface;
+	background-color: var(--c-surfaces-surface);
 	display: grid;
 	grid-template-columns: 1fr;
 
@@ -110,7 +110,7 @@
 	}
 
 	p.googlesitekit-banner__help-text {
-		color: $c-surfaces-on-surface-variant;
+		color: var(--c-surfaces-on-surface-variant);
 		font-family: $f-primary;
 		font-size: $fs-body-sm;
 		letter-spacing: $ls-xs;

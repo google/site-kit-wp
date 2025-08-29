@@ -29,7 +29,7 @@
 		}
 
 		.googlesitekit-setup__step {
-			border-bottom: 1px solid $c-border-light;
+			border-bottom: 1px solid var(--c-border-light);
 			margin-bottom: $grid-gap-phone;
 			padding-bottom: $grid-gap-phone;
 
@@ -65,11 +65,11 @@
 		}
 
 		.googlesitekit-setup__footer {
-			border-top: 1px solid $c-border-light;
+			border-top: 1px solid var(--c-border-light);
 		}
 
 		.googlesitekit-setup__splash {
-			border-bottom: 1px solid $c-border-light;
+			border-bottom: 1px solid var(--c-border-light);
 			padding-left: 10px;
 			padding-right: 10px;
 		}
@@ -92,11 +92,11 @@
 	}
 
 	.googlesitekit-setup__wrapper {
-		background-color: $c-base;
+		background-color: var(--c-base);
 		border-radius: $br-sm;
 
 		.googlesitekit-setup__intro-title {
-			color: $c-primary;
+			color: var(--c-primary);
 			font-family: $f-secondary;
 			font-size: $fs-title-sm;
 			font-weight: $fw-bold;

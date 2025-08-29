@@ -70,8 +70,8 @@
 	&:not(.mobile) .quicklinks .ab-top-menu > .googlesitekit-wp-adminbar:hover > .ab-item,
 	&:not(.mobile) .quicklinks .ab-top-menu > .googlesitekit-wp-adminbar > .ab-item:focus,
 	&.nojq .quicklinks .ab-top-menu > .googlesitekit-wp-adminbar > .ab-item:focus {
-		background-color: $c-base;
-		color: $c-primary;
+		background-color: var(--c-base);
+		color: var(--c-primary);
 		position: relative;
 		z-index: 10000;
 	}

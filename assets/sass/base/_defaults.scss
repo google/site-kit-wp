@@ -25,7 +25,7 @@
  */
 
 .googlesitekit-plugin {
-	color: $c-primary;
+	color: var(--c-primary);
 	font-family: $f-primary;
 	font-size: $fs-body-md;
 	line-height: $lh-body-md;
@@ -47,7 +47,7 @@
 
 	h3,
 	h6 {
-		color: $c-surfaces-on-surface;
+		color: var(--c-surfaces-on-surface);
 		font-family: $f-secondary;
 		line-height: 1.16;
 	}

@@ -23,7 +23,7 @@
 
 		.googlesitekit-user-input__question-instructions--notice {
 			background-color: $c-surfaces-surface-2;
-			color: $c-surfaces-on-surface;
+			color: var(--c-surfaces-on-surface);
 			display: block;
 			font-size: $fs-body-md;
 			letter-spacing: $ls-s;
@@ -83,7 +83,7 @@
 		align-items: center;
 		background-color: $c-content-primary-container;
 		border-radius: $br-md;
-		color: $c-surfaces-on-surface;
+		color: var(--c-surfaces-on-surface);
 		display: flex;
 		font-family: $f-secondary;
 		font-size: $fs-body-md;

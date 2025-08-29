@@ -29,7 +29,7 @@ $circle-width: 0.1em;
 
 	// Background
 	&::after {
-		background-color: $c-base;
+		background-color: var(--c-base);
 		border-radius: 50%;
 		box-sizing: content-box;
 		content: "";

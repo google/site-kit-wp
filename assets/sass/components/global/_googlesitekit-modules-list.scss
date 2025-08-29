@@ -28,7 +28,7 @@
 		}
 
 		.googlesitekit-modules-list__module {
-			border: 1px solid $c-border-light;
+			border: 1px solid var(--c-border-light);
 			border-radius: $br-xs;
 			flex: 0 0 auto;
 			margin-bottom: 10px;

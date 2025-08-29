@@ -18,7 +18,7 @@
 
 .googlesitekit-plugin {
 	.googlesitekit-widget {
-		background: $c-base;
+		background: var(--c-base);
 		border-radius: $br-sm;
 		display: flex;
 		flex-direction: column;
@@ -60,7 +60,7 @@
 	 * Widget header styles.
 	 */
 	.googlesitekit-widget__header {
-		border-bottom: 1px solid $c-border-light;
+		border-bottom: 1px solid var(--c-border-light);
 
 		@media (min-width: $bp-tablet) {
 			display: flex;
@@ -89,7 +89,7 @@
 	 * Widget footer styles.
 	 */
 	.googlesitekit-widget__footer {
-		border-top: 1px solid $c-border-light;
+		border-top: 1px solid var(--c-border-light);
 	}
 
 	.googlesitekit-widget--hidden-footer .googlesitekit-widget__footer {

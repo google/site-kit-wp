@@ -45,8 +45,8 @@
 
 				.mdc-image-radio__content {
 					align-items: center;
-					background-color: $c-surfaces-surface;
-					border: 0.375rem solid $c-surfaces-surface;
+					background-color: var(--c-surfaces-surface);
+					border: 0.375rem solid var(--c-surfaces-surface);
 					border-radius: 0.5625rem;
 					color: $c-surfaces-on-background;
 					display: flex;

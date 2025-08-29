@@ -17,10 +17,10 @@
  */
 
 .googlesitekit-layout {
-	background: $c-base;
+	background: var(--c-base);
 
 	.googlesitekit-layout__header {
-		border-bottom: 1px solid $c-border-light;
+		border-bottom: 1px solid var(--c-border-light);
 		font-size: $fs-body-lg;
 		letter-spacing: $ls-m;
 	}
@@ -33,7 +33,7 @@
 	}
 
 	.googlesitekit-layout__footer {
-		border-top: 1px solid $c-border-light;
+		border-top: 1px solid var(--c-border-light);
 		font-size: $fs-body-sm;
 		letter-spacing: $ls-xs;
 	}

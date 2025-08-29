@@ -7,7 +7,7 @@
 	}
 
 	.mdc-list.mdc-list--underlined .mdc-list-item {
-		border-bottom: 1px solid $c-border-light;
+		border-bottom: 1px solid var(--c-border-light);
 		padding-left: 0;
 		padding-right: 0;
 	}

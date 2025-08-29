@@ -19,7 +19,7 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-settings-module {
-		border-bottom: 1px solid $c-border-light;
+		border-bottom: 1px solid var(--c-border-light);
 		position: relative;
 
 		.googlesitekit-settings-module__status {
@@ -174,7 +174,7 @@
 			}
 
 			.googlesitekit-settings-module__meta-item-type {
-				color: $c-primary;
+				color: var(--c-primary);
 				margin: 0 0 8px;
 			}
 
@@ -253,7 +253,7 @@
 
 		.googlesitekit-settings-module__error {
 			background-color: $c-error;
-			color: $c-base;
+			color: var(--c-base);
 			font-weight: $fw-bold;
 		}
 

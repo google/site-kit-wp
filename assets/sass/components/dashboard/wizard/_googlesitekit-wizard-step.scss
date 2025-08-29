@@ -1,7 +1,7 @@
 .googlesitekit-wizard-step {
 
 	@include googlesitekit-inner-padding;
-	background-color: $c-base;
+	background-color: var(--c-base);
 	overflow: hidden;
 	padding-bottom: $grid-gap-phone;
 	padding-top: $grid-gap-phone;

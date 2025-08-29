@@ -19,7 +19,7 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-subheader {
-		background-color: $c-base;
+		background-color: var(--c-base);
 		position: relative;
 		z-index: 11;
 
@@ -35,7 +35,7 @@
 	.googlesitekit-header {
 
 		@include googlesitekit-inner-padding;
-		background-color: $c-base;
+		background-color: var(--c-base);
 		left: 0;
 		position: sticky;
 		right: 0;
@@ -90,7 +90,7 @@
 
 			&:hover {
 				background-color: $c-background-brand;
-				color: $c-base;
+				color: var(--c-base);
 				text-decoration: none;
 			}
 

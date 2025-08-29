@@ -33,7 +33,7 @@
 	.autocomplete__input {
 		border-color: $c-border-medium;
 		border-radius: 4px;
-		color: $c-primary;
+		color: var(--c-primary);
 		font-size: $fs-body-md;
 		font-weight: 400;
 		height: 48px;
@@ -93,7 +93,7 @@
 }
 
 .autocomplete__option {
-	color: $c-base;
+	color: var(--c-base);
 	font-weight: 400;
 	margin-bottom: 0;
 	overflow: hidden;
