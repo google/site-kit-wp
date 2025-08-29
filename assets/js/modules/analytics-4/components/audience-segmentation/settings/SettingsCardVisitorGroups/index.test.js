@@ -236,6 +236,8 @@ describe( 'SettingsCardVisitorGroups', () => {
 
 			switchControl.click();
 
+			await waitForRegistry();
+
 			await waitFor( () => {
 				expect( switchControl ).not.toBeChecked();
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
