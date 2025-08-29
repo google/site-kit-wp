@@ -49,6 +49,8 @@ const DISMISS_NOTIFICATION = 'DISMISS_NOTIFICATION';
 const QUEUE_NOTIFICATION = 'QUEUE_NOTIFICATION';
 const RESET_QUEUE = 'RESET_QUEUE';
 const MARK_NOTIFICATION_SEEN = 'MARK_NOTIFICATION_SEEN';
+const PIN_NOTIFICATION = 'PIN_NOTIFICATION';
+const UNPIN_NOTIFICATION = 'UNPIN_NOTIFICATION';
 // Controls.
 const POPULATE_QUEUE = 'POPULATE_QUEUE';
 const PERSIST_SEEN_NOTIFICATIONS = 'PERSIST_SEEN_NOTIFICATIONS';
@@ -67,6 +69,7 @@ export const initialState = {
 	seenNotifications: JSON.parse(
 		storage.getItem( NOTIFICATION_SEEN_STORAGE_KEY ) || '{}'
 	),
+	pinnedNotification: {},
 };
 
 export const actions = {
@@ -416,6 +419,15 @@ export const actions = {
 				.select( CORE_NOTIFICATIONS )
 				.getNotification( id );
 
+			// Check if the notification is pinned; if so, unpin it.
+			const pinnedNotificationID = registry
+				.select( CORE_NOTIFICATIONS )
+				.getPinnedNotificationID( notification?.groupID );
+
+			if ( pinnedNotificationID === id ) {
+				yield actions.unpinNotification( id, notification.groupID );
+			}
+
 			// Skip persisting notification dismissal in database if the notification is not dismissible.
 			if ( notification.isDismissible !== true ) {
 				return;
@@ -445,6 +457,64 @@ export const actions = {
 					.dispatch( CORE_USER )
 					.dismissItem( id, { expiresInSeconds } )
 			);
+		}
+	),
+
+	/**
+	 * Pins a notification to the top of its respective queue.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} id      Notification ID to pin.
+	 * @param {string} groupID Group ID the notification belongs to.
+	 * @return {Object} Redux-style action.
+	 */
+	pinNotification: createValidatedAction(
+		( id, groupID ) => {
+			invariant(
+				id,
+				'A notification id is required to pin a notification.'
+			);
+
+			invariant(
+				groupID,
+				'A groupID is required to pin a notification to a specific group.'
+			);
+		},
+		( id, groupID ) => {
+			return {
+				type: PIN_NOTIFICATION,
+				payload: { id, groupID },
+			};
+		}
+	),
+
+	/**
+	 * Unpins a notification from the top of its respective queue.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} id      Notification ID to unpin.
+	 * @param {string} groupID Group ID the notification belongs to.
+	 * @return {Object} Redux-style action.
+	 */
+	unpinNotification: createValidatedAction(
+		( id, groupID ) => {
+			invariant(
+				id,
+				'A notification id is required to unpin a notification.'
+			);
+
+			invariant(
+				groupID,
+				'A groupID is required to unpin notification from a specific group.'
+			);
+		},
+		( id, groupID ) => {
+			return {
+				type: UNPIN_NOTIFICATION,
+				payload: { id, groupID },
+			};
 		}
 	),
 };
@@ -509,6 +579,39 @@ export const controls = {
 				const { queueNotification } =
 					registry.dispatch( CORE_NOTIFICATIONS );
 
+				// Get the pinned notification ID for this group, if any.
+				const pinnedNotificationID = registry
+					.select( CORE_NOTIFICATIONS )
+					.getPinnedNotificationID( groupID );
+
+				if ( pinnedNotificationID ) {
+					// Check if a pinned notification exists within the potential notifications.
+					const potentialPinnedNotification =
+						potentialNotifications.find(
+							( notification ) =>
+								notification.id === pinnedNotificationID
+						);
+
+					// If the pinned notification exists within the potential notifications,
+					// check its requirements and add it to the queue first if they pass.
+					if ( potentialPinnedNotification ) {
+						const meetsRequirements =
+							await potentialPinnedNotification.check();
+
+						if ( meetsRequirements ) {
+							queueNotification( potentialPinnedNotification );
+
+							// Remove the pinned notification from the potential notifications.
+							potentialNotifications =
+								potentialNotifications.filter(
+									( notification ) =>
+										notification.id !==
+										potentialPinnedNotification.id
+								);
+						}
+					}
+				}
+
 				let nextNotification;
 				do {
 					nextNotification = await racePrioritizedAsyncTasks(
@@ -542,11 +645,13 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case INSERT_NOTIFICATION_INTO_RESOLVED_QUEUE: {
 			const { id } = payload;
+			const { notifications, pinnedNotification, queuedNotifications } =
+				state;
 
 			/**
 			 * The notification we want to add to the already-resolved queue.
 			 */
-			const notification = state.notifications?.[ id ];
+			const notification = notifications?.[ id ];
 
 			// Don't try to add a notification that is not registered.
 			if ( notification === undefined ) {
@@ -557,22 +662,48 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 				break;
 			}
 
+			const { groupID, priority } = notification;
+
 			// If the queue hasn't resolved yet, the queued notifications for this
 			// group will be undefined. In this case we return early because this
 			// notification will be added to the queue once it resolves.
-			if (
-				state.queuedNotifications[ notification.groupID ] === undefined
-			) {
+			if ( queuedNotifications[ groupID ] === undefined ) {
 				break;
 			}
 
-			// If the notification is already in the queue, we don't need to add it
-			// again.
+			// Check if the notification is already in the queue.
 			if (
-				state.queuedNotifications[ notification.groupID ].some(
+				queuedNotifications[ groupID ].some(
 					( notificationInQueue ) => notificationInQueue.id === id
 				)
 			) {
+				// Check if it is pinned.
+				if ( pinnedNotification[ groupID ] === id ) {
+					const existingIndex = queuedNotifications[
+						groupID
+					].findIndex(
+						( notificationInQueue ) => notificationInQueue.id === id
+					);
+
+					// Remove it from its current position.
+					const [ existingNotification ] = queuedNotifications[
+						groupID
+					].splice( existingIndex, 1 );
+
+					// Add it to the front of the queue.
+					queuedNotifications[ groupID ].unshift(
+						existingNotification
+					);
+				}
+
+				// We don't need to add it again.
+				break;
+			}
+
+			// Check if the notification is pinned.
+			if ( pinnedNotification[ groupID ] === id ) {
+				// If it is, we add it to the front of the queue.
+				queuedNotifications[ groupID ].unshift( notification );
 				break;
 			}
 
@@ -587,18 +718,18 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 			// If we do find a notification with a lower priority (or the same
 			// priority), `findIndex` will return its index, which we can use to
 			// insert the new notification after that notification.
-			const positionForNewNotification = state.queuedNotifications[
-				notification.groupID
+			const positionForNewNotification = queuedNotifications[
+				groupID
 			].findIndex( ( notificationInQueue ) => {
-				return notificationInQueue.priority >= notification.priority;
+				return notificationInQueue.priority >= priority;
 			} );
 
 			// Insert the new notification at the position we found, or at the end of
 			// the queue if we didn't find any notification with a lower priority.
-			state.queuedNotifications[ notification.groupID ].splice(
+			queuedNotifications[ groupID ].splice(
 				positionForNewNotification !== -1
 					? positionForNewNotification
-					: state.queuedNotifications[ notification.groupID ].length,
+					: state.queuedNotifications[ groupID ].length,
 				0,
 				notification
 			);
@@ -685,6 +816,24 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 					1
 				);
 			}
+			break;
+		}
+
+		case PIN_NOTIFICATION: {
+			const { id, groupID } = payload;
+
+			state.pinnedNotification[ groupID ] = id;
+
+			break;
+		}
+
+		case UNPIN_NOTIFICATION: {
+			const { id, groupID } = payload;
+
+			if ( state.pinnedNotification[ groupID ] === id ) {
+				delete state.pinnedNotification[ groupID ];
+			}
+
 			break;
 		}
 
@@ -843,6 +992,19 @@ export const selectors = {
 			return false;
 		}
 	),
+
+	/**
+	 * Gets the ID of the pinned notification for a specific group, if any.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state   Data store's state.
+	 * @param {string} groupID The group ID to get the pinned notification ID for.
+	 * @return {(string|undefined)} The ID of the pinned notification, or undefined if none is pinned.
+	 */
+	getPinnedNotificationID: ( state, groupID ) => {
+		return state.pinnedNotification[ groupID ];
+	},
 };
 
 export default {
