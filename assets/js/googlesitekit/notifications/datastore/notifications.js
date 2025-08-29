@@ -49,6 +49,7 @@ const DISMISS_NOTIFICATION = 'DISMISS_NOTIFICATION';
 const QUEUE_NOTIFICATION = 'QUEUE_NOTIFICATION';
 const RESET_QUEUE = 'RESET_QUEUE';
 const MARK_NOTIFICATION_SEEN = 'MARK_NOTIFICATION_SEEN';
+const PIN_NOTIFICATION = 'PIN_NOTIFICATION';
 // Controls.
 const POPULATE_QUEUE = 'POPULATE_QUEUE';
 const PERSIST_SEEN_NOTIFICATIONS = 'PERSIST_SEEN_NOTIFICATIONS';
@@ -67,6 +68,7 @@ export const initialState = {
 	seenNotifications: JSON.parse(
 		storage.getItem( NOTIFICATION_SEEN_STORAGE_KEY ) || '{}'
 	),
+	pinnedNotification: {},
 };
 
 export const actions = {
@@ -447,6 +449,35 @@ export const actions = {
 			);
 		}
 	),
+
+	/**
+	 * Pins a notification to the top of its respective queue.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} id      Notification ID to pin.
+	 * @param {string} groupID Group ID the notification belongs to.
+	 * @return {Object} Redux-style action.
+	 */
+	pinNotification: createValidatedAction(
+		( id, groupID ) => {
+			invariant(
+				id,
+				'A notification id is required to pin a notification.'
+			);
+
+			invariant(
+				groupID,
+				'A groupID is required to pin a notification to a specific group.'
+			);
+		},
+		( id, groupID ) => {
+			return {
+				type: PIN_NOTIFICATION,
+				payload: { id, groupID },
+			};
+		}
+	),
 };
 
 export const controls = {
@@ -685,6 +716,14 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 					1
 				);
 			}
+			break;
+		}
+
+		case PIN_NOTIFICATION: {
+			const { id, groupID } = payload;
+
+			state.pinnedNotification[ groupID ] = id;
+
 			break;
 		}
 
