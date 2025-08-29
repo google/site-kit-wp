@@ -419,6 +419,15 @@ export const actions = {
 				.select( CORE_NOTIFICATIONS )
 				.getNotification( id );
 
+			// Check if the notification is pinned; if so, unpin it.
+			const pinnedNotificationID = registry
+				.select( CORE_NOTIFICATIONS )
+				.getPinnedNotificationID( notification?.groupID );
+
+			if ( pinnedNotificationID === id ) {
+				yield actions.unpinNotification( id, notification.groupID );
+			}
+
 			// Skip persisting notification dismissal in database if the notification is not dismissible.
 			if ( notification.isDismissible !== true ) {
 				return;
