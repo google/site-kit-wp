@@ -1,3 +1,26 @@
+# Config files
+.*
+!.gemini/
+.gemini/*
+!.gemini/settings.json
+!.github
+!.vscode
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.editorconfig
+!.eslintignore
+!.eslintrc.json
+!.eslintrc.staged.json
+!.geminiignore
+!.gitignore
+!.nvmrc
+!.prettierignore
+!.prettierrc.js
+!.stylelintrc
+!.svgo.yml
+
+# Other paths
 node_modules
 bower_components
 vendor
@@ -21,19 +44,9 @@ google-site-kit*.zip
 *.tmproj
 *.tmproject
 tmtags
-.*.sw[a-z]
 *.un~
 Session.vim
 *.swp
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-
-# Mac OSX
-.DS_Store
-._*
-.Spotlight-V100
-.Trashes
 
 # Windows
 Thumbs.db
