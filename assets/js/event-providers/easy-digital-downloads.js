@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { isFeatureEnabled } from '../features';
+
 ( ( jQuery ) => {
 	// eslint-disable-next-line no-undef
 	if ( ! jQuery ) {
@@ -37,6 +42,30 @@
 			],
 		} );
 	} );
+
+	const edddata = global._googlesitekit?.edddata;
+
+	// Handle Enhanced Conversions user data (only when purchase data available)
+	const { purchase } = edddata || {};
+
+	if ( purchase && isFeatureEnabled( 'gtagUserData' ) ) {
+		const { user_data: userData } = purchase;
+
+		if ( userData ) {
+			// Send purchase event with Enhanced Conversions user data.
+			global._googlesitekit?.gtagEvent?.( 'purchase', {
+				user_data: userData,
+			} );
+
+			global.console.log(
+				'✅ EDD Enhanced Conversions Purchase Event Sent:',
+				{
+					userData,
+					note: 'Sent purchase event with user data for Enhanced Conversions',
+				}
+			);
+		}
+	}
 } )( global.jQuery );
 
 /**
