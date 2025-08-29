@@ -636,11 +636,13 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case INSERT_NOTIFICATION_INTO_RESOLVED_QUEUE: {
 			const { id } = payload;
+			const { notifications, pinnedNotification, queuedNotifications } =
+				state;
 
 			/**
 			 * The notification we want to add to the already-resolved queue.
 			 */
-			const notification = state.notifications?.[ id ];
+			const notification = notifications?.[ id ];
 
 			// Don't try to add a notification that is not registered.
 			if ( notification === undefined ) {
@@ -651,22 +653,48 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 				break;
 			}
 
+			const { groupID, priority } = notification;
+
 			// If the queue hasn't resolved yet, the queued notifications for this
 			// group will be undefined. In this case we return early because this
 			// notification will be added to the queue once it resolves.
-			if (
-				state.queuedNotifications[ notification.groupID ] === undefined
-			) {
+			if ( queuedNotifications[ groupID ] === undefined ) {
 				break;
 			}
 
-			// If the notification is already in the queue, we don't need to add it
-			// again.
+			// Check if the notification is already in the queue.
 			if (
-				state.queuedNotifications[ notification.groupID ].some(
+				queuedNotifications[ groupID ].some(
 					( notificationInQueue ) => notificationInQueue.id === id
 				)
 			) {
+				// Check if it is pinned.
+				if ( pinnedNotification[ groupID ] === id ) {
+					const existingIndex = queuedNotifications[
+						groupID
+					].findIndex(
+						( notificationInQueue ) => notificationInQueue.id === id
+					);
+
+					// Remove it from its current position.
+					const [ existingNotification ] = queuedNotifications[
+						groupID
+					].splice( existingIndex, 1 );
+
+					// Add it to the front of the queue.
+					queuedNotifications[ groupID ].unshift(
+						existingNotification
+					);
+				}
+
+				// We don't need to add it again.
+				break;
+			}
+
+			// Check if the notification is pinned.
+			if ( pinnedNotification[ groupID ] === id ) {
+				// If it is, we add it to the front of the queue.
+				queuedNotifications[ groupID ].unshift( notification );
 				break;
 			}
 
@@ -681,18 +709,18 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 			// If we do find a notification with a lower priority (or the same
 			// priority), `findIndex` will return its index, which we can use to
 			// insert the new notification after that notification.
-			const positionForNewNotification = state.queuedNotifications[
-				notification.groupID
+			const positionForNewNotification = queuedNotifications[
+				groupID
 			].findIndex( ( notificationInQueue ) => {
-				return notificationInQueue.priority >= notification.priority;
+				return notificationInQueue.priority >= priority;
 			} );
 
 			// Insert the new notification at the position we found, or at the end of
 			// the queue if we didn't find any notification with a lower priority.
-			state.queuedNotifications[ notification.groupID ].splice(
+			queuedNotifications[ groupID ].splice(
 				positionForNewNotification !== -1
 					? positionForNewNotification
-					: state.queuedNotifications[ notification.groupID ].length,
+					: state.queuedNotifications[ groupID ].length,
 				0,
 				notification
 			);
