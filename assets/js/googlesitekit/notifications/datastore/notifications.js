@@ -922,6 +922,19 @@ export const selectors = {
 			return false;
 		}
 	),
+
+	/**
+	 * Gets the ID of the pinned notification for a specific group, if any.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state   Data store's state.
+	 * @param {string} groupID The group ID to get the pinned notification ID for.
+	 * @return {(string|undefined)} The ID of the pinned notification, or undefined if none is pinned.
+	 */
+	getPinnedNotificationID: ( state, groupID ) => {
+		return state.pinnedNotification[ groupID ];
+	},
 };
 
 export default {
