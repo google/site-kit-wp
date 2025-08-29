@@ -50,6 +50,7 @@ const QUEUE_NOTIFICATION = 'QUEUE_NOTIFICATION';
 const RESET_QUEUE = 'RESET_QUEUE';
 const MARK_NOTIFICATION_SEEN = 'MARK_NOTIFICATION_SEEN';
 const PIN_NOTIFICATION = 'PIN_NOTIFICATION';
+const UNPIN_NOTIFICATION = 'UNPIN_NOTIFICATION';
 // Controls.
 const POPULATE_QUEUE = 'POPULATE_QUEUE';
 const PERSIST_SEEN_NOTIFICATIONS = 'PERSIST_SEEN_NOTIFICATIONS';
@@ -478,6 +479,35 @@ export const actions = {
 			};
 		}
 	),
+
+	/**
+	 * Unpins a notification from the top of its respective queue.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} id      Notification ID to unpin.
+	 * @param {string} groupID Group ID the notification belongs to.
+	 * @return {Object} Redux-style action.
+	 */
+	unpinNotification: createValidatedAction(
+		( id, groupID ) => {
+			invariant(
+				id,
+				'A notification id is required to unpin a notification.'
+			);
+
+			invariant(
+				groupID,
+				'A groupID is required to unpin notification from a specific group.'
+			);
+		},
+		( id, groupID ) => {
+			return {
+				type: UNPIN_NOTIFICATION,
+				payload: { id, groupID },
+			};
+		}
+	),
 };
 
 export const controls = {
@@ -723,6 +753,16 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 			const { id, groupID } = payload;
 
 			state.pinnedNotification[ groupID ] = id;
+
+			break;
+		}
+
+		case UNPIN_NOTIFICATION: {
+			const { id, groupID } = payload;
+
+			if ( state.pinnedNotification[ groupID ] === id ) {
+				delete state.pinnedNotification[ groupID ];
+			}
 
 			break;
 		}
