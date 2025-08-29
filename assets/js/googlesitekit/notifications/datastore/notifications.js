@@ -570,6 +570,39 @@ export const controls = {
 				const { queueNotification } =
 					registry.dispatch( CORE_NOTIFICATIONS );
 
+				// Get the pinned notification ID for this group, if any.
+				const pinnedNotificationID = registry
+					.select( CORE_NOTIFICATIONS )
+					.getPinnedNotificationID( groupID );
+
+				if ( pinnedNotificationID ) {
+					// Check if a pinned notification exists within the potential notifications.
+					const potentialPinnedNotification =
+						potentialNotifications.find(
+							( notification ) =>
+								notification.id === pinnedNotificationID
+						);
+
+					// If the pinned notification exists within the potential notifications,
+					// check its requirements and add it to the queue first if they pass.
+					if ( potentialPinnedNotification ) {
+						const meetsRequirements =
+							await potentialPinnedNotification.check();
+
+						if ( meetsRequirements ) {
+							queueNotification( potentialPinnedNotification );
+
+							// Remove the pinned notification from the potential notifications.
+							potentialNotifications =
+								potentialNotifications.filter(
+									( notification ) =>
+										notification.id !==
+										potentialPinnedNotification.id
+								);
+						}
+					}
+				}
+
 				let nextNotification;
 				do {
 					nextNotification = await racePrioritizedAsyncTasks(
