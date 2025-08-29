@@ -184,3 +184,17 @@
 		padding: 0 16px;
 	}
 }
+
+// Fix AdminMenuTooltip jumping on scroll by using fixed positioning.
+#react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) > div.__floater {
+
+	left: 10px !important;
+	position: fixed !important;
+	top: 175px !important;
+	transform: none !important;
+
+	@media (min-width: 1145px) {
+		left: 170px !important;
+		top: 65px !important;
+	}
+}
