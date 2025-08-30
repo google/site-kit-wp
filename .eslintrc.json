@@ -133,6 +133,12 @@
       "@wordpress/i18n__non-shim",
       "@wordpress/api-fetch__non-shim"
     ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx"
+      ]
+    },
     "import/resolver": {
       "alias": {
         "map": [
@@ -149,10 +155,41 @@
             "@wordpress"
           ]
         ]
+      },
+      "node": {
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx"
+        ]
+      },
+      "typescript": {
+        "alwaysTryTypes": true
       }
     }
   },
   "overrides": [
+    {
+      "files": [
+        "**/*.ts",
+        "**/*.tsx"
+      ],
+      "extends": [
+        "plugin:@typescript-eslint/recommended"
+      ],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaVersion": 2024
+      },
+      "env": {
+        "browser": true
+      },
+      "globals": {
+        "browser": true,
+        "page": true
+      }
+    },
     {
       "files": [
         "tests/e2e/**/*.js"

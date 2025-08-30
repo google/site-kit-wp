@@ -25,15 +25,24 @@
 import { useThrottle } from '@react-hook/throttle';
 import useEvent from '@react-hook/event';
 
-const emptyObj = {};
-
 const win = typeof global === 'undefined' ? null : global;
 function getSize() {
 	return [ global.innerWidth, global.innerHeight ];
 }
 
-export function useWindowSize( options = emptyObj ) {
-	const { fps, leading, initialWidth = 0, initialHeight = 0 } = options;
+type UseWindowSizeOptions = {
+	fps?: number;
+	leading?: boolean;
+	initialWidth?: number;
+	initialHeight?: number;
+};
+
+export function useWindowSize( {
+	fps = 60,
+	leading = false,
+	initialWidth = 0,
+	initialHeight = 0,
+}: UseWindowSizeOptions = {} ) {
 	const [ size, setThrottledSize ] = useThrottle(
 		/* istanbul ignore next */
 		typeof document === 'undefined'
@@ -42,20 +51,21 @@ export function useWindowSize( options = emptyObj ) {
 		fps,
 		leading
 	);
+
 	function setSize() {
 		return setThrottledSize( getSize );
 	}
 
-	useEvent( win, 'resize', setSize );
-	useEvent( win, 'orientationchange', setSize );
+	useEvent( win as unknown as Window, 'resize', setSize );
+	useEvent( win as unknown as Window, 'orientationchange', setSize );
 
 	return size;
 }
 
-export function useWindowHeight( options ) {
+export function useWindowHeight( options: UseWindowSizeOptions = {} ): number {
 	return useWindowSize( options )[ 1 ];
 }
 
-export function useWindowWidth( options ) {
+export function useWindowWidth( options: UseWindowSizeOptions = {} ): number {
 	return useWindowSize( options )[ 0 ];
 }
