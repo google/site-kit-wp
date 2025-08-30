@@ -88,7 +88,7 @@ import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
 		Component: UnsatisfiedScopesAlert,
-		priority: PRIORITY.ERROR_LOW,
+		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -142,7 +142,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'authentication-error-gte': {
 		Component: UnsatisfiedScopesAlertGTE,
-		priority: PRIORITY.ERROR_LOW,
+		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -190,7 +190,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	setup_plugin_error: {
 		Component: SetupErrorMessageNotification,
-		priority: PRIORITY.ERROR_HIGH,
+		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
