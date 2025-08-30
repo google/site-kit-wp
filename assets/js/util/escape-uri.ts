@@ -26,11 +26,18 @@
  *
  * @since 1.11.0
  *
- * @param {string[]} strings The array of static strings in the template.
- * @param {...*}     values  The array of expressions used in the template.
  * @return {string} Escaped URI string.
  */
-export function escapeURI( strings, ...values ) {
+export function escapeURI(
+	/**
+	 * The array of static strings in the template.
+	 */
+	strings: TemplateStringsArray,
+	/**
+	 * The array of expressions used in the template.
+	 */
+	...values: string[]
+): string {
 	return strings.reduce( ( acc, string, idx ) => {
 		return acc + string + encodeURIComponent( values[ idx ] || '' );
 	}, '' );
