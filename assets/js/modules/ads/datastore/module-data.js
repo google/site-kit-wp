@@ -31,8 +31,8 @@ import {
 } from 'googlesitekit-data';
 import { AVAILABLE_PLUGINS, MODULES_ADS, PLUGINS } from './constants';
 import { controls } from '@/js/googlesitekit/datastore/site/info';
-import { MODULE_SLUG_ADS } from '../constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 function getModuleDataProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {

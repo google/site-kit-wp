@@ -30,7 +30,7 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4, RESOURCE_TYPES } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 function getModuleDataProperty( propName ) {
