@@ -17,7 +17,6 @@
 /**
  * Internal dependencies
  */
-import { isFeatureEnabled } from '../features';
 import { classifyPII, normalizeValue, PII_TYPE } from './utils';
 
 ( ( jQuery ) => {
@@ -28,7 +27,9 @@ import { classifyPII, normalizeValue, PII_TYPE } from './utils';
 	jQuery( global.document.body ).on(
 		'wpformsAjaxSubmitSuccess',
 		( event ) => {
-			const userData = isFeatureEnabled( 'gtagUserData' )
+			const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
+
+			const userData = gtagUserDataEnabled
 				? getUserData( event.target )
 				: null;
 
