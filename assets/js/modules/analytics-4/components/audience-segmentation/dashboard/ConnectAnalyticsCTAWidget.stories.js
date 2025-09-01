@@ -21,7 +21,7 @@
  */
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { provideModuleRegistrations } from '../../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import ConnectAnalyticsCTAWidget from './ConnectAnalyticsCTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(

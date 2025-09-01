@@ -24,7 +24,7 @@ import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
-} from '../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import useViewContext from './useViewContext';
 
 export const DASHBOARD_TYPE_MAIN = VIEW_CONTEXT_MAIN_DASHBOARD;

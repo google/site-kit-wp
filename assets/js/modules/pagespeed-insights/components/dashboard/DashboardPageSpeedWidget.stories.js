@@ -24,16 +24,16 @@ import {
 	provideModules,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	MODULES_PAGESPEED_INSIGHTS,
 	STRATEGY_MOBILE,
 	STRATEGY_DESKTOP,
-} from '../../datastore/constants';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../../constants';
+} from '@/js/modules/pagespeed-insights/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import DashboardPageSpeedWidget from './DashboardPageSpeedWidget';
-import * as fixtures from '../../datastore/__fixtures__';
+import * as fixtures from '@/js/modules/pagespeed-insights/datastore/__fixtures__';
 
 const url = fixtures.pagespeedMobile.loadingExperience.id;
 

@@ -25,9 +25,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
-import DisplaySetting from '../../../../components/DisplaySetting';
-import Typography from '../../../../components/Typography';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import DisplaySetting from '@/js/components/DisplaySetting';
+import Typography from '@/js/components/Typography';
 
 export default function SettingsView() {
 	const propertyID = useSelect( ( select ) =>

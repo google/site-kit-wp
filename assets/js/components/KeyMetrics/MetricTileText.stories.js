@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import MetricTileText from './MetricTileText';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 
 const WidgetWithComponentProps =
 	withWidgetComponentProps( 'test' )( MetricTileText );

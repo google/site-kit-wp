@@ -30,8 +30,8 @@ import { sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { numFmt } from '../../util';
-import ChangeArrow from '../ChangeArrow';
+import { numFmt } from '@/js/util';
+import ChangeArrow from '@/js/components/ChangeArrow';
 
 function Change( { change, changeDataUnit, period, invertChangeColor } ) {
 	let changeFormatted = change;

@@ -30,11 +30,11 @@ import {
 	ACCOUNT_CREATE,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
-} from '../../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import * as fixtures from '../../../../analytics-4/datastore/__fixtures__';
-import { Cell, Grid, Row } from '../../../../../material-components';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { Cell, Grid, Row } from '@/js/material-components';
 
 const { accountSummaries } = fixtures;
 

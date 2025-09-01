@@ -27,19 +27,19 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../../datastore/constants';
-import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
-import Link from '../../../../../../components/Link';
-import P from '../../../../../../components/Typography/P';
-import { AudienceErrorModal } from '../../dashboard';
-import useEnableAudienceGroup from '../../../../hooks/useEnableAudienceGroup';
-import useViewContext from '../../../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../../../util';
-import useFormValue from '../../../../../../hooks/useFormValue';
+import Link from '@/js/components/Link';
+import P from '@/js/components/Typography/P';
+import { AudienceErrorModal } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
+import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudienceGroup';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function SetupCTA() {
 	const viewContext = useViewContext();

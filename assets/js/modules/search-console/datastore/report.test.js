@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 import {
 	createTestRegistry,

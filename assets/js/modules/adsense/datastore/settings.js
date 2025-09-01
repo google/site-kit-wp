@@ -33,10 +33,10 @@ import {
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
-} from '../../../googlesitekit/data/create-settings-store';
-import { isValidAccountID, isValidClientID } from '../util';
+} from '@/js/googlesitekit/data/create-settings-store';
+import { isValidAccountID, isValidClientID } from '@/js/modules/adsense/util';
 import { MODULES_ADSENSE } from './constants';
-import { createStrictSelect } from '../../../googlesitekit/data/utils';
+import { createStrictSelect } from '@/js/googlesitekit/data/utils';
 
 // Invariant error messages.
 export const INVARIANT_MISSING_ACCOUNT_STATUS =

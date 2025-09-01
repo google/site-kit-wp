@@ -28,17 +28,17 @@ import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import BackspaceIcon from '../../svg/icons/keyboard-backspace.svg';
-import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import BackspaceIcon from '@/svg/icons/keyboard-backspace.svg';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import Link from './Link';
 import P from './Typography/P';
-import { shortenURL } from '../util/urls';
-import { trackEvent } from '../util';
+import { shortenURL } from '@/js/util/urls';
+import { trackEvent } from '@/js/util';
 import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
-} from '../hooks/useDashboardType';
-import useViewContext from '../hooks/useViewContext';
+} from '@/js/hooks/useDashboardType';
+import useViewContext from '@/js/hooks/useViewContext';
 
 function EntityHeader() {
 	const viewContext = useViewContext();

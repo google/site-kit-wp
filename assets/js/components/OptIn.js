@@ -38,11 +38,11 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Checkbox } from 'googlesitekit-components';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import { toggleTracking, trackEvent } from '../util/tracking';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { toggleTracking, trackEvent } from '@/js/util/tracking';
 import Link from './Link';
-import useViewContext from '../hooks/useViewContext';
-import { useDebounce } from '../hooks/useDebounce';
+import useViewContext from '@/js/hooks/useViewContext';
+import { useDebounce } from '@/js/hooks/useDebounce';
 
 export default function OptIn( {
 	id = 'googlesitekit-opt-in',
@@ -66,9 +66,9 @@ export default function OptIn( {
 	const viewContext = useViewContext();
 
 	const handleOptIn = useCallback(
-		async ( e ) => {
+		async ( isChecked ) => {
 			const { response, error: responseError } = await setTrackingEnabled(
-				!! e.target.checked
+				isChecked
 			);
 
 			if ( ! responseError ) {
@@ -96,8 +96,9 @@ export default function OptIn( {
 
 	const handleCheck = useCallback(
 		( e ) => {
-			setChecked( e.target.checked );
-			debouncedHandleOptIn( e );
+			const isChecked = e.target.checked;
+			setChecked( isChecked );
+			debouncedHandleOptIn( isChecked );
 		},
 		[ debouncedHandleOptIn ]
 	);
@@ -108,7 +109,7 @@ export default function OptIn( {
 				id={ id }
 				name={ name }
 				value="1"
-				checked={ enabled }
+				checked={ checked }
 				onChange={ handleCheck }
 				loading={ enabled === undefined }
 				alignLeft={ alignLeftCheckbox }

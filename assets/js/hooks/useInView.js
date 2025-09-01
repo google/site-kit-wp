@@ -32,8 +32,8 @@ import { useContext, useEffect, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import InViewContext from '../components/InViewProvider/InViewContext';
-import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
+import InViewContext from '@/js/components/InViewProvider/InViewContext';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
 /**
  * Returns whether the nearest parent component tracking viewport detection is in-view.

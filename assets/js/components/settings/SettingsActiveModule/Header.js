@@ -35,24 +35,28 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { NEW_MODULES, BETA_MODULES, EXPERIMENTAL_MODULES } from '../constants';
-import { Grid, Row, Cell } from '../../../material-components';
-import { useKeyCodesInside } from '../../../hooks/useKeyCodesInside';
-import ModuleIcon from '../../ModuleIcon';
-import Badge from '../../Badge';
-import NewBadge from '../../NewBadge';
-import { trackEvent } from '../../../util';
-import useViewContext from '../../../hooks/useViewContext';
-import ConnectedIcon from '../../../../svg/icons/connected.svg';
-import WarningIcon from '../../../../svg/icons/warning-v2.svg';
-import ChevronDown from '../../../../svg/icons/chevron-down-v2.svg';
-import IconWrapper from '../../IconWrapper';
-import { useDispatch } from '../../../googlesitekit-data';
-import Typography from '../../Typography';
-import P from '../../Typography/P';
-import { SIZE_MEDIUM } from '../../Typography/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	NEW_MODULES,
+	BETA_MODULES,
+	EXPERIMENTAL_MODULES,
+} from '@/js/components/settings/constants';
+import { Grid, Row, Cell } from '@/js/material-components';
+import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
+import ModuleIcon from '@/js/components/ModuleIcon';
+import Badge from '@/js/components/Badge';
+import NewBadge from '@/js/components/NewBadge';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import ConnectedIcon from '@/svg/icons/connected.svg';
+import WarningIcon from '@/svg/icons/warning-v2.svg';
+import ChevronDown from '@/svg/icons/chevron-down-v2.svg';
+import IconWrapper from '@/js/components/IconWrapper';
+import { useDispatch } from '@/js/googlesitekit-data';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 
 export default function Header( { slug } ) {
 	const viewContext = useViewContext();

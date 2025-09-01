@@ -20,7 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import Typography from '../Typography';
+import Typography from '@/js/components/Typography';
 
 export default function SettingsGroup( { title, children } ) {
 	return (

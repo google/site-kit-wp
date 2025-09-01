@@ -32,13 +32,13 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import {
 	combineStores,
 	createValidatedAction,
-} from '../../../googlesitekit/data/utils';
-import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+} from '@/js/googlesitekit/data/utils';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 
 const { receiveError, clearError } = errorStoreActions;
 

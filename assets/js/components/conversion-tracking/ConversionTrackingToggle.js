@@ -25,13 +25,13 @@ import { __ } from '@wordpress/i18n';
  */
 import { Switch } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import LoadingWrapper from '../LoadingWrapper';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import LoadingWrapper from '@/js/components/LoadingWrapper';
 import ConfirmDisableConversionTrackingDialog from './ConfirmDisableConversionTrackingDialog';
-import useViewContext from '../../hooks/useViewContext';
-import { trackEvent } from '../../util';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import PropTypes from 'prop-types';
-import ErrorNotice from '../../components/ErrorNotice';
+import ErrorNotice from '@/js/components/ErrorNotice';
 
 export default function ConversionTrackingToggle( { children, loading } ) {
 	const viewContext = useViewContext();

@@ -31,7 +31,7 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { MDCRipple } from '../../../material-components';
+import { MDCRipple } from '@/js/material-components';
 import SemanticButton from './SemanticButton';
 import MaybeTooltip from './MaybeTooltip';
 

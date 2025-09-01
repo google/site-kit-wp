@@ -28,17 +28,17 @@ import {
 	CONTEXT_AMP,
 	FORM_SETUP,
 } from './constants';
-import { MODULE_SLUG_TAGMANAGER } from '../constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 import {
 	CORE_SITE,
 	AMP_MODE_SECONDARY,
 	AMP_MODE_PRIMARY,
-} from '../../../googlesitekit/datastore/site/constants';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../analytics-4/constants';
-import defaultModules from '../../../googlesitekit/modules/datastore/__fixtures__';
+} from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import defaultModules from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import * as fixtures from './__fixtures__';
 import {
 	accountBuilder,
@@ -50,11 +50,11 @@ import {
 	muteFetch,
 	provideModules,
 } from '../../../../../tests/js/utils';
-import { getItem, setItem } from '../../../googlesitekit/api/cache';
-import { createCacheKey } from '../../../googlesitekit/api';
+import { getItem, setItem } from '@/js/googlesitekit/api/cache';
+import { createCacheKey } from '@/js/googlesitekit/api';
 import fetchMock from 'fetch-mock';
 import { createBuildAndReceivers } from './__factories__/utils';
-import { getNormalizedContainerName } from '../util';
+import { getNormalizedContainerName } from '@/js/modules/tagmanager/util';
 import {
 	INVARIANT_INVALID_ACCOUNT_ID,
 	INVARIANT_INVALID_AMP_CONTAINER_SELECTION,

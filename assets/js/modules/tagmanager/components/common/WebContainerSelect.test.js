@@ -26,18 +26,18 @@ import {
 	CONTEXT_WEB,
 	CONTEXT_AMP,
 	CONTAINER_CREATE,
-} from '../../datastore/constants';
+} from '@/js/modules/tagmanager/datastore/constants';
 import {
 	AMP_MODE_PRIMARY,
 	AMP_MODE_SECONDARY,
-} from '../../../../googlesitekit/datastore/site/constants';
+} from '@/js/googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideSiteInfo,
 	untilResolved,
 } from '../../../../../../tests/js/utils';
-import * as factories from '../../datastore/__factories__';
+import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
 
 describe( 'WebContainerSelect', () => {
 	let registry;

@@ -25,9 +25,9 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import sharedKeyMetrics from '../../../feature-tours/shared-key-metrics';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
 
 /**
  * Triggers on demand tour for shared key metrics if all conditions are met.

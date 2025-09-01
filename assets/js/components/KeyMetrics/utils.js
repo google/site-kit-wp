@@ -24,7 +24,7 @@ import propTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { trackEvent } from '../../util';
+import { trackEvent } from '@/js/util';
 
 export function conversionReportingDetectedEventsTracking(
 	{

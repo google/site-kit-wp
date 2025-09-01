@@ -26,17 +26,17 @@ import { isEqual, pick } from 'lodash';
  * Internal dependencies
  */
 import { invalidateCache } from 'googlesitekit-api';
-import { createStrictSelect } from '../../../googlesitekit/data/utils';
+import { createStrictSelect } from '@/js/googlesitekit/data/utils';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
-} from '../../../googlesitekit/data/create-settings-store';
-import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+} from '@/js/googlesitekit/data/create-settings-store';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from './constants';
-import { MODULE_SLUG_ADS } from '../constants';
-import { isValidConversionID } from '../utils/validation';
-import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { isValidConversionID } from '@/js/modules/ads/utils/validation';
+import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_CONVERSION_ID =

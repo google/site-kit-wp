@@ -30,10 +30,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import GenericErrorHandlerActions from '../GenericErrorHandlerActions';
-import ViewContextContext from '../Root/ViewContextContext';
-import BannerNotification from '../../googlesitekit/notifications/components/layout/BannerNotification';
-import { trackEvent } from '../../util';
+import GenericErrorHandlerActions from '@/js/components/GenericErrorHandlerActions';
+import ViewContextContext from '@/js/components/Root/ViewContextContext';
+import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import { trackEvent } from '@/js/util';
 
 class ErrorHandler extends Component {
 	constructor( props ) {

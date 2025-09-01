@@ -20,7 +20,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_SPLASH,
-} from '../../constants';
+} from '@/js/googlesitekit/constants';
 
 export const CORE_NOTIFICATIONS = 'core/notifications';
 

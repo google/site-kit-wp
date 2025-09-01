@@ -34,16 +34,16 @@ import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
-import { MetricTileNumeric } from '../../../../components/KeyMetrics';
-import whenActive from '../../../../util/when-active';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MetricTileNumeric } from '@/js/components/KeyMetrics';
+import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import { numFmt } from '../../../../util';
+import { numFmt } from '@/js/util';
 
 function VisitsPerVisitorWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>

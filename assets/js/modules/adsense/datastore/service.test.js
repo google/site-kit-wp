@@ -21,10 +21,13 @@
  * Internal dependencies
  */
 import { createTestRegistry } from '../../../../../tests/js/utils';
-import { ACCOUNT_STATUS_APPROVED, SITE_STATUS_ADDED } from '../util/status';
+import {
+	ACCOUNT_STATUS_APPROVED,
+	SITE_STATUS_ADDED,
+} from '@/js/modules/adsense/util/status';
 import { MODULES_ADSENSE } from './constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
 
 describe( 'module/adsense service store', () => {

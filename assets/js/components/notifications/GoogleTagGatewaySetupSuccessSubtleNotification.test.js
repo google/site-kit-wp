@@ -21,7 +21,7 @@
  */
 import { createTestRegistry, render } from '../../../../tests/js/test-utils';
 import GoogleTagGatewaySetupSuccessSubtleNotification from './GoogleTagGatewaySetupSuccessSubtleNotification';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-gtg'

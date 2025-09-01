@@ -32,8 +32,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { createIncrementalArrayBySize } from '../util/create-incremental-array-by-size';
-import CloseIcon from '../../svg/icons/close.svg';
+import { createIncrementalArrayBySize } from '@/js/util/create-incremental-array-by-size';
+import CloseIcon from '@/svg/icons/close.svg';
 import Typography from './Typography';
 
 export default function TourTooltip( {

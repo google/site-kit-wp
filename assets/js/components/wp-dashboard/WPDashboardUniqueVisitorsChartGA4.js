@@ -28,17 +28,17 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
-import GoogleChart from '../GoogleChart';
+} from '@/js/modules/analytics-4/datastore/constants';
+import GoogleChart from '@/js/components/GoogleChart';
 import { UNIQUE_VISITORS_CHART_OPTIONS } from './chart-options';
-import { extractAnalytics4DashboardData } from '../../modules/analytics-4/utils/extract-dashboard-data';
-import { stringToDate } from '../../util';
-import Typography from '../Typography';
+import { extractAnalytics4DashboardData } from '@/js/modules/analytics-4/utils/extract-dashboard-data';
+import { stringToDate } from '@/js/util';
+import Typography from '@/js/components/Typography';
 
 export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 	const { WPDashboardReportError } = props;

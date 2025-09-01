@@ -33,16 +33,16 @@ import {
 	combineStores,
 	createReducer,
 } from 'googlesitekit-data';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { isValidPropertyID } from '../utils/validation';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { isValidPropertyID } from '@/js/modules/analytics-4/utils/validation';
 import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
-} from '../../../googlesitekit/datastore/user/constants';
-import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 const customDimensionFields = [
 	'parameterName',
