@@ -45,11 +45,13 @@
 		overflow: hidden;
 	}
 
+	h1,
+	h2,
 	h3,
+	h4,
+	h5,
 	h6 {
-		color: $c-surfaces-on-surface;
-		font-family: $f-secondary;
-		line-height: 1.16;
+		color: $c-primary;
 	}
 
 	.googlesitekit-subheading-1 {
