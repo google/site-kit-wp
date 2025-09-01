@@ -21,8 +21,8 @@
  */
 import { createTestRegistry } from '../../../../tests/js/utils';
 import { render } from '../../../../tests/js/test-utils';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_QUESTIONS_PURPOSE,
