@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
-const mockShowTooltip = jest.fn();
-jest.mock( '../../../../../components/AdminMenuTooltip', () => ( {
+const mockShowTooltip = vi.fn();
+vi.mock( '../../../../../components/AdminMenuTooltip', () => ( {
 	__esModule: true,
-	default: jest.fn(),
-	useShowTooltip: jest.fn( () => mockShowTooltip ),
+	default: vi.fn(),
+	useShowTooltip: vi.fn( () => mockShowTooltip ),
 } ) );
 
 import fetchMock from 'fetch-mock';
@@ -74,12 +74,12 @@ import {
 } from '../../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 import { dismissItemEndpoint } from '../../../../../../../tests/js/mock-dismiss-item-endpoints';
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
+vi.mock( 'react-use', () => ( {
+	...vi.requireActual( 'react-use' ),
+	useIntersection: vi.fn(),
 } ) );
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceSegmentationSetupCTABanner', () => {
@@ -197,7 +197,7 @@ describe( 'AudienceSegmentationSetupCTABanner', () => {
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	} );
 
 	describe( 'checkRequirements', () => {

@@ -223,7 +223,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				return;
 			}
 
-			jest.resetModules();
+			vi.resetModules();
 
 			global._googlesitekitModulesData = {
 				[ MODULE_SLUG_ANALYTICS_4 ]: {

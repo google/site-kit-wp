@@ -35,7 +35,7 @@ describe( 'modules/ads woocommerce data store', () => {
 	let store;
 
 	beforeEach( () => {
-		jest.resetModules();
+		vi.resetModules();
 
 		registry = createTestRegistry();
 		store = registry.stores[ MODULES_ADS ].store;

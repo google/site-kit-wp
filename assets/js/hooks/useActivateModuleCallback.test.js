@@ -41,7 +41,7 @@ import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants'
 import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/constants';
 import useActivateModuleCallback from './useActivateModuleCallback';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'useActivateModuleCallback', () => {

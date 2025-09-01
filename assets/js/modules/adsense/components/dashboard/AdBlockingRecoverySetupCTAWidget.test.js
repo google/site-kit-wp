@@ -63,14 +63,14 @@ import {
 	dismissPromptEndpoint,
 } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-const mockShowTooltip = jest.fn();
-jest.mock( '../../../../components/AdminMenuTooltip', () => ( {
+const mockShowTooltip = vi.fn();
+vi.mock( '../../../../components/AdminMenuTooltip', () => ( {
 	__esModule: true,
-	default: jest.fn(),
-	useShowTooltip: jest.fn( () => mockShowTooltip ),
+	default: vi.fn(),
+	useShowTooltip: vi.fn( () => mockShowTooltip ),
 } ) );
 
 describe( 'AdBlockingRecoverySetupCTAWidget', () => {

@@ -38,7 +38,7 @@ import {
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
 
-jest.mock(
+vi.mock(
 	'../../../../../components/GoogleChart',
 	() =>
 		// Here we provide a mock for the GoogleChart component in order to be able to assert that the chart is rendered

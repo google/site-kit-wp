@@ -64,10 +64,7 @@ describe( 'core/user feature-tours', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		setItemSpy = jest.spyOn(
-			registry.dispatch( CORE_SITE ),
-			'setCacheItem'
-		);
+		setItemSpy = vi.spyOn( registry.dispatch( CORE_SITE ), 'setCacheItem' );
 		store = registry.stores[ CORE_USER ].store;
 		registry.dispatch( CORE_USER ).receiveInitialSiteKitVersion( '1.0.0' );
 	} );
@@ -342,7 +339,7 @@ describe( 'core/user feature-tours', () => {
 			} );
 
 			it( 'will not trigger a given tour with a checkRequirements function that returns false', async () => {
-				const checkRequirements = jest.fn( () => false );
+				const checkRequirements = vi.fn( () => false );
 				const tour = { ...testTourA, checkRequirements };
 				expect( store.getState().currentTour ).toBeUndefined();
 				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
@@ -356,7 +353,7 @@ describe( 'core/user feature-tours', () => {
 			} );
 
 			it( 'will trigger a given tour with a checkRequirements function that returns true', async () => {
-				const checkRequirements = jest.fn( () => true );
+				const checkRequirements = vi.fn( () => true );
 				const tour = { ...testTourA, checkRequirements };
 				expect( store.getState().currentTour ).toBeUndefined();
 				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );

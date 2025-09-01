@@ -33,7 +33,7 @@ describe( 'all data stores', () => {
 	describe.each( Object.keys( firstPartyStores ) )( '%s', ( storeName ) => {
 		describe( 'reducers', () => {
 			it( 'does not invoke subscribed listeners for unmatched actions', () => {
-				const listener = jest.fn();
+				const listener = vi.fn();
 				registry.subscribe( listener );
 
 				registry.stores[ storeName ].store.dispatch( {

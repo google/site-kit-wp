@@ -26,12 +26,12 @@ import { CORE_EDITOR } from '../common/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { VIEW_CONTEXT_WP_BLOCK_EDITOR } from '@/js/googlesitekit/constants';
 
-jest.mock( 'googlesitekit-data', () => ( {
-	select: jest.fn(),
-	subscribe: jest.fn(),
+vi.mock( 'googlesitekit-data', () => ( {
+	select: vi.fn(),
+	subscribe: vi.fn(),
 } ) );
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'initializeTracking', () => {
@@ -41,7 +41,7 @@ describe( 'initializeTracking', () => {
 	const metaKey = `googlesitekit_rrm_${ publicationID }:productID`;
 
 	beforeEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 
 		// Mock subscribe to capture the callback function.
 		subscribe.mockImplementation( ( callback ) => {
@@ -60,13 +60,13 @@ describe( 'initializeTracking', () => {
 
 			if ( store === CORE_EDITOR ) {
 				return {
-					getCurrentPost: jest.fn().mockReturnValue( {
+					getCurrentPost: vi.fn().mockReturnValue( {
 						meta: {
 							[ metaKey ]: 'none',
 						},
 					} ),
-					isSavingPost: jest.fn().mockReturnValue( false ),
-					isAutosavingPost: jest.fn().mockReturnValue( false ),
+					isSavingPost: vi.fn().mockReturnValue( false ),
+					isAutosavingPost: vi.fn().mockReturnValue( false ),
 				};
 			}
 
@@ -95,7 +95,7 @@ describe( 'initializeTracking', () => {
 
 			if ( store === CORE_EDITOR ) {
 				return {
-					getCurrentPost: jest.fn().mockReturnValue( {
+					getCurrentPost: vi.fn().mockReturnValue( {
 						meta: {
 							[ metaKey ]: productID,
 						},
@@ -137,7 +137,7 @@ describe( 'initializeTracking', () => {
 		select.mockImplementation( ( store ) => {
 			if ( store === MODULES_READER_REVENUE_MANAGER ) {
 				return {
-					getPublicationID: jest.fn().mockReturnValue( undefined ),
+					getPublicationID: vi.fn().mockReturnValue( undefined ),
 				};
 			}
 
@@ -171,7 +171,7 @@ describe( 'initializeTracking', () => {
 
 			if ( store === CORE_EDITOR ) {
 				return {
-					getCurrentPost: jest.fn().mockReturnValue( {
+					getCurrentPost: vi.fn().mockReturnValue( {
 						meta: {
 							[ metaKey ]: productID,
 						},

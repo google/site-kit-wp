@@ -1,4 +1,63 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`TopDeviceDrivingPurchasesWidget > should render correctly with the expected metrics 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopDeviceDrivingPurchases googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--text"
+      >
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
+        >
+          <h3
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
+          >
+            Top device driving purchases
+          </h3>
+          <span
+            class="googlesitekit-info-tooltip"
+            title="Top device driving the most purchases"
+          >
+            <svg />
+          </span>
+        </div>
+        <div
+          class="googlesitekit-km-widget-tile__body"
+        >
+          <div
+            class="googlesitekit-km-widget-tile__metric-container"
+          >
+            <div
+              class="googlesitekit-km-widget-tile__metric"
+            >
+              Desktop
+            </div>
+            <p
+              class="googlesitekit-km-widget-tile__subtext"
+            >
+              100% of total purchases
+            </p>
+          </div>
+          <div
+            class="googlesitekit-km-widget-tile__metric-change-container"
+          >
+            <div
+              class="googlesitekit-change-badge googlesitekit-change-badge--zero"
+            >
+              0%
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
 
 exports[`TopDeviceDrivingPurchasesWidget should render correctly with the expected metrics 1`] = `
 <div>

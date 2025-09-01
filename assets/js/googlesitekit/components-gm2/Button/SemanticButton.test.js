@@ -84,7 +84,7 @@ describe( 'SemanticButton', () => {
 	} );
 
 	it( 'should pass through additional props', () => {
-		const onClick = jest.fn();
+		const onClick = vi.fn();
 		const { getByRole } = render(
 			<SemanticButton onClick={ onClick } data-test="test-value">
 				Test

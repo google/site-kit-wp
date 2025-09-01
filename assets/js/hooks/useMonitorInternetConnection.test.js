@@ -127,7 +127,7 @@ describe( 'useMonitorInternetConnection', () => {
 	} );
 
 	it( 'should check online status in correct interval when online', () => {
-		jest.useFakeTimers();
+		vi.useFakeTimers();
 
 		fetchMock.get( connectionCheckEndpoint, {
 			body: connectionCheckResponse,
@@ -137,18 +137,18 @@ describe( 'useMonitorInternetConnection', () => {
 
 		expect( store.getState().isOnline ).toBe( true );
 
-		jest.advanceTimersByTime( 119999 );
+		vi.advanceTimersByTime( 119999 );
 
 		expect( fetchMock ).toHaveFetchedTimes( 0 );
 
-		jest.advanceTimersByTime( 1 );
+		vi.advanceTimersByTime( 1 );
 
 		// The first fetch will happen after 120000ms.
 		expect( fetchMock ).toHaveFetchedTimes( 1 );
 	} );
 
 	it( 'should check online status in correct interval when offline', async () => {
-		jest.useFakeTimers();
+		vi.useFakeTimers();
 
 		fetchMock.get( connectionCheckEndpoint, {
 			body: connectionCheckResponse,
@@ -161,7 +161,7 @@ describe( 'useMonitorInternetConnection', () => {
 		renderHook( () => useMonitorInternetConnection(), { registry } );
 
 		// The interval should be 15000ms when offline.
-		jest.advanceTimersByTime( 14999 );
+		vi.advanceTimersByTime( 14999 );
 
 		// Enable online status so we can verify the interval via the fetch.
 		setNavigatorOnlineStatus( true );
@@ -170,7 +170,7 @@ describe( 'useMonitorInternetConnection', () => {
 		expect( fetchMock ).toHaveBeenCalledTimes( 0 );
 
 		await act( async () => {
-			jest.advanceTimersByTime( 1 );
+			vi.advanceTimersByTime( 1 );
 			await new Promise( ( resolve ) => resolve() );
 		} );
 
