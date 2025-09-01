@@ -53,7 +53,7 @@ import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/data
 import { NOTIFICATIONS } from '../..';
 import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
-jest.mock( '../../../../hooks/useActivateModuleCallback' );
+vi.mock( '../../../../hooks/useActivateModuleCallback' );
 
 describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	let registry;

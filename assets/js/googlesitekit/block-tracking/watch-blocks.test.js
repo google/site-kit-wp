@@ -28,14 +28,14 @@ import {
 	SUBSCRIBE_WITH_GOOGLE_BLOCK,
 } from '@/blocks/reader-revenue-manager/common/constants';
 
-jest.mock( 'googlesitekit-data', () => ( {
-	select: jest.fn(),
-	subscribe: jest.fn(),
+vi.mock( 'googlesitekit-data', () => ( {
+	select: vi.fn(),
+	subscribe: vi.fn(),
 } ) );
 
-jest.mock( './get-blocks-titles', () => ( {
-	getBlocksTitles: jest.fn( () =>
-		jest.fn( ( name ) => {
+vi.mock( './get-blocks-titles', () => ( {
+	getBlocksTitles: vi.fn( () =>
+		vi.fn( ( name ) => {
 			const titles = {
 				SUBSCRIBE_WITH_GOOGLE_BLOCK: 'Subscribe with Google',
 				CONTRIBUTE_WITH_GOOGLE_BLOCK: 'Contribute with Google',
@@ -45,7 +45,7 @@ jest.mock( './get-blocks-titles', () => ( {
 	),
 } ) );
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'watchBlocks', () => {
@@ -53,12 +53,12 @@ describe( 'watchBlocks', () => {
 	let subscribeCallback;
 
 	beforeEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 		mockTrackEvent.mockClear();
 
 		mockSelectReturnValue = {
-			getBlocks: jest.fn(),
-			isBlockSelected: jest.fn(),
+			getBlocks: vi.fn(),
+			isBlockSelected: vi.fn(),
 		};
 
 		select.mockImplementation( ( store ) => {
@@ -70,7 +70,7 @@ describe( 'watchBlocks', () => {
 
 		subscribe.mockImplementation( ( callback ) => {
 			subscribeCallback = callback;
-			return jest.fn();
+			return vi.fn();
 		} );
 	} );
 

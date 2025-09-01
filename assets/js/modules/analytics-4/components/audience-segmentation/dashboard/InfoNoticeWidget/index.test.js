@@ -43,12 +43,12 @@ import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { AUDIENCE_INFO_NOTICES, AUDIENCE_INFO_NOTICE_SLUG } from './constants';
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
+vi.mock( 'react-use', () => ( {
+	...vi.requireActual( 'react-use' ),
 	useIntersection: vi.fn(),
 } ) );
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'InfoNoticeWidget', () => {
@@ -71,7 +71,7 @@ describe( 'InfoNoticeWidget', () => {
 			},
 		] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-		dismissPromptSpy = jest.spyOn(
+		dismissPromptSpy = vi.spyOn(
 			registry.dispatch( CORE_USER ),
 			'dismissPrompt'
 		);

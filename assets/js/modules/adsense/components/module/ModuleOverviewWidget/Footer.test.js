@@ -28,7 +28,7 @@ import Footer from './Footer';
 
 describe( 'Footer', () => {
 	beforeEach( () => {
-		jest.useFakeTimers();
+		vi.useFakeTimers();
 	} );
 
 	it( 'should not make a adsense settings requests when the view context is "view only"', () => {
@@ -36,7 +36,7 @@ describe( 'Footer', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		} );
 
-		jest.runAllTimers();
+		vi.runAllTimers();
 
 		expect( fetchMock ).not.toHaveFetched(
 			new RegExp( '^/google-site-kit/v1/modules/adsense/data/settings' )
@@ -55,7 +55,7 @@ describe( 'Footer', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		jest.runAllTimers();
+		vi.runAllTimers();
 
 		expect( fetchMock ).toHaveFetched(
 			new RegExp( '^/google-site-kit/v1/modules/adsense/data/settings' )

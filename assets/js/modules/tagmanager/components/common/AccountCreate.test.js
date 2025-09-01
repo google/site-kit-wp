@@ -107,7 +107,7 @@ describe( 'AccountCreate', () => {
 	describe( '"Create an account" button', () => {
 		let openSpy;
 		beforeEach( () => {
-			openSpy = jest.spyOn( global, 'open' );
+			openSpy = vi.spyOn( global, 'open' );
 			// Need to set a placeholder implementation here to prevent JSDOM from raising a "Error: Not implemented" error.
 			openSpy.mockImplementation( () => {} );
 		} );

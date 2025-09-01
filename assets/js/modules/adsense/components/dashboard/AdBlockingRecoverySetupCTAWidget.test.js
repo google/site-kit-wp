@@ -63,11 +63,11 @@ import {
 	dismissPromptEndpoint,
 } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 const mockShowTooltip = vi.fn();
-jest.mock( '../../../../components/AdminMenuTooltip', () => ( {
+vi.mock( '../../../../components/AdminMenuTooltip', () => ( {
 	__esModule: true,
 	default: vi.fn(),
 	useShowTooltip: vi.fn( () => mockShowTooltip ),

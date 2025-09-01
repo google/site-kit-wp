@@ -28,7 +28,7 @@ import { render } from '../../../../tests/js/test-utils';
 import ReportErrorButton from './';
 import copyToClipboard from 'clipboard-copy';
 
-jest.mock( 'clipboard-copy', () => vi.fn() );
+vi.mock( 'clipboard-copy', () => vi.fn() );
 
 describe( 'ReportErrorButton', () => {
 	afterEach( () => {

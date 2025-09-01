@@ -51,11 +51,11 @@ import { withNotificationComponentProps } from '../../../../../googlesitekit/not
 import { ANALYTICS_4_NOTIFICATIONS } from '../../..';
 import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
 
-const getNavigationalScrollTopSpy = jest.spyOn(
+const getNavigationalScrollTopSpy = vi.spyOn(
 	scrollUtils,
 	'getNavigationalScrollTop'
 );
-const scrollToSpy = jest.spyOn( global, 'scrollTo' );
+const scrollToSpy = vi.spyOn( global, 'scrollTo' );
 
 describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 	const AudienceSegmentationIntroductoryOverlayNotificationComponent =

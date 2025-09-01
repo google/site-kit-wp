@@ -69,7 +69,7 @@ describe( 'ProductIDContributionsNotification', () => {
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	} );
 
 	it( 'should render correctly', () => {

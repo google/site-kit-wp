@@ -45,8 +45,8 @@ import useQueryArg from '../../../../hooks/useQueryArg';
 import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
 import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 
-jest.mock( '../../../../hooks/useQueryArg' );
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+vi.mock( '../../../../hooks/useQueryArg' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 const {
@@ -226,7 +226,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	);
 
 	it( 'should sync onboarding state when the window is refocused 15 seconds after clicking the CTA', async () => {
-		jest.useFakeTimers( 'modern' );
+		vi.useFakeTimers( 'modern' );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -284,7 +284,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		} );
 
 		act( () => {
-			jest.advanceTimersByTime( 15000 );
+			vi.advanceTimersByTime( 15000 );
 		} );
 
 		act( () => {
@@ -293,7 +293,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 		// Allow microtasks to flush after triggering the focus event
 		await act( async () => {
-			await jest.runAllTimersAsync();
+			await vi.runAllTimersAsync();
 		} );
 
 		await waitFor( () => {

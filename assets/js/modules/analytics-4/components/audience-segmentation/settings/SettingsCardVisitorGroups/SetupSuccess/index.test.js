@@ -48,12 +48,12 @@ import SetupSuccess, {
 	SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION,
 } from '.';
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
+vi.mock( 'react-use', () => ( {
+	...vi.requireActual( 'react-use' ),
 	useIntersection: vi.fn(),
 } ) );
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
@@ -74,7 +74,7 @@ describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-		dismissItemSpy = jest.spyOn(
+		dismissItemSpy = vi.spyOn(
 			registry.dispatch( CORE_USER ),
 			'dismissItem'
 		);

@@ -33,7 +33,7 @@ import {
 import { MODULES_ADSENSE } from '../../datastore/constants';
 
 // Mock apiFetch so we know if it's called.
-jest.mock( '@wordpress/api-fetch' );
+vi.mock( '@wordpress/api-fetch' );
 apiFetchMock.mockImplementation( ( ...args ) => {
 	// eslint-disable-next-line no-console
 	console.warn( 'apiFetch', ...args );

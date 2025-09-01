@@ -1,4 +1,62 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`GoogleTagGatewaySetupSuccessSubtleNotification > should render correctly 1`] = `
+<div>
+  <section
+    id="setup-success-notification-gtg"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
+        >
+          <div
+            class="googlesitekit-notice googlesitekit-notice--success"
+          >
+            <div
+              class="googlesitekit-notice__icon"
+            >
+              <svg />
+            </div>
+            <div
+              class="googlesitekit-notice__content"
+            >
+              <p
+                class="googlesitekit-notice__title"
+              >
+                You successfully enabled Google tag gateway for advertisers!
+              </p>
+              <p
+                class="googlesitekit-notice__description"
+              >
+                You can always disable it in Analytics or Ads settings
+              </p>
+            </div>
+            <div
+              class="googlesitekit-notice__action"
+            >
+              <button
+                class="mdc-button mdc-button--tertiary"
+                target="_self"
+              >
+                <span
+                  class="mdc-button__label"
+                >
+                  Got it
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;
 
 exports[`GoogleTagGatewaySetupSuccessSubtleNotification should render correctly 1`] = `
 <div>

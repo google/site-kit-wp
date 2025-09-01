@@ -1,4 +1,128 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PopularKeywordsWidget > should render correctly with the expected metrics 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--kmSearchConsolePopularKeywords googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--table"
+      >
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
+        >
+          <h3
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
+          >
+            Top performing keywords
+          </h3>
+          <span
+            class="googlesitekit-info-tooltip"
+            title="The top search queries for your site by highest clickthrough rate"
+          >
+            <svg />
+          </span>
+        </div>
+        <div
+          class="googlesitekit-km-widget-tile__body"
+        >
+          <div
+            class="googlesitekit-km-widget-tile__table"
+          >
+            <div
+              class="googlesitekit-table__body-row"
+            >
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <a
+                  aria-label="Reiciendis (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href=""
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Reiciendis
+                  </span>
+                </a>
+              </div>
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <strong>
+                  100% CTR
+                </strong>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-table__body-row"
+            >
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <a
+                  aria-label="Voluptas impedit (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href=""
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Voluptas impedit
+                  </span>
+                </a>
+              </div>
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <strong>
+                  96% CTR
+                </strong>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-table__body-row"
+            >
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <a
+                  aria-label="Mollitia (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href=""
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Mollitia
+                  </span>
+                </a>
+              </div>
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <strong>
+                  95% CTR
+                </strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
 
 exports[`PopularKeywordsWidget should render correctly with the expected metrics 1`] = `
 <div>

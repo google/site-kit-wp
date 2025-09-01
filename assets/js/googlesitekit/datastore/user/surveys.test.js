@@ -203,13 +203,13 @@ describe( 'core/user surveys', () => {
 
 				await registry.resolveSelect( CORE_USER ).getSurveyTimeouts();
 
-				jest.useFakeTimers();
+				vi.useFakeTimers();
 
 				await registry
 					.dispatch( CORE_USER )
 					.triggerSurvey( triggerID, { ttl: 500 } );
 
-				jest.advanceTimersByTime( 45000 );
+				vi.advanceTimersByTime( 45000 );
 
 				// Wait one tick for async storage functions.
 				await new Promise( ( resolve ) => resolve() );

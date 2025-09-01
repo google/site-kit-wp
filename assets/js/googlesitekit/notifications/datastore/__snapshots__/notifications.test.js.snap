@@ -1,4 +1,12 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`core/notifications Notifications > actions > registerNotification > should register the notification with the given settings and component 1`] = `
+<div>
+  Hello 
+  world
+  !
+</div>
+`;
 
 exports[`core/notifications Notifications actions registerNotification should register the notification with the given settings and component 1`] = `
 <div>

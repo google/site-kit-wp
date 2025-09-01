@@ -112,9 +112,7 @@ describe( 'core/user date-range', () => {
 
 			describe( 'with date range and w/o offset', () => {
 				beforeAll( () => {
-					jest.spyOn( console, 'warn' ).mockImplementation(
-						() => {}
-					);
+					vi.spyOn( console, 'warn' ).mockImplementation( () => {} );
 				} );
 
 				afterAll( () => {

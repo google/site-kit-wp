@@ -38,7 +38,7 @@ describe( 'CoreSiteBannerNotifications', () => {
 	let registry;
 
 	beforeEach( () => {
-		jest.useFakeTimers();
+		vi.useFakeTimers();
 
 		registry = createTestRegistry();
 
@@ -78,14 +78,14 @@ describe( 'CoreSiteBannerNotifications', () => {
 		} );
 
 		act( () => {
-			jest.runAllTimers();
+			vi.runAllTimers();
 		} );
 
 		// This component does not render anything directly,
 		expect( container.childElementCount ).toBe( undefined );
 
 		// Switch to real timers for the async resolver.
-		jest.useRealTimers();
+		vi.useRealTimers();
 
 		const queuedNotifications = await registry
 			.resolveSelect( CORE_NOTIFICATIONS )
@@ -108,7 +108,7 @@ describe( 'CoreSiteBannerNotifications', () => {
 		} );
 
 		act( () => {
-			jest.runAllTimers();
+			vi.runAllTimers();
 		} );
 
 		expect( container.childElementCount ).toBe( 0 );

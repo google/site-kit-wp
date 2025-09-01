@@ -36,7 +36,7 @@ import {
 } from '../../datastore/constants';
 import PublicationOnboardingStateNotice from './PublicationOnboardingStateNotice';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'PublicationOnboardingStateNotice', () => {
@@ -153,7 +153,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 		const mockNow = new Date( '2020-01-01 12:30:00' ).getTime();
 		Date.now = vi.fn( () => mockNow );
 
-		jest.useFakeTimers( 'modern' );
+		vi.useFakeTimers( 'modern' );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -190,7 +190,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 		} );
 
 		act( () => {
-			jest.advanceTimersByTime( 15000 );
+			vi.advanceTimersByTime( 15000 );
 		} );
 
 		act( () => {
@@ -199,7 +199,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 
 		// Allow microtasks to flush after triggering the focus event.
 		await act( async () => {
-			await jest.runAllTimersAsync();
+			await vi.runAllTimersAsync();
 		} );
 
 		await waitFor( () => {

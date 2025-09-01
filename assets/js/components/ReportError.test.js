@@ -85,7 +85,7 @@ describe( 'ReportError', () => {
 		provideModules( registry );
 		provideModuleRegistrations( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-		invalidateResolutionSpy = jest.spyOn(
+		invalidateResolutionSpy = vi.spyOn(
 			registry.dispatch( MODULES_ANALYTICS_4 ),
 			'invalidateResolution'
 		);

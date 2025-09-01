@@ -240,7 +240,7 @@ describe( 'core/widgets Widget areas', () => {
 					.registerWidgetArea( slug, settings );
 
 				// Expect console warning about duplicate slug.
-				const consoleWarnSpy = jest.spyOn( global.console, 'warn' );
+				const consoleWarnSpy = vi.spyOn( global.console, 'warn' );
 				registry
 					.dispatch( CORE_WIDGETS )
 					.registerWidgetArea( slug, differentSettings );

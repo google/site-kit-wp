@@ -58,7 +58,7 @@ import {
 } from '../../../../../../../../tests/js/viewport-width-utils';
 import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '../../../../../../util/zero-reports';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 /**
@@ -341,7 +341,7 @@ describe( 'AudienceTilesWidget', () => {
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 		setViewportWidth( originalViewportWidth );
 	} );
 

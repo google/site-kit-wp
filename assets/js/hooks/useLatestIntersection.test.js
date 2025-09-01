@@ -39,7 +39,7 @@ describe( 'useLatestIntersection', () => {
 	beforeEach( () => {
 		intersectionObserver.mock();
 		const IO = global.IntersectionObserver;
-		jest.spyOn( IO.prototype, 'disconnect' );
+		vi.spyOn( IO.prototype, 'disconnect' );
 		global.IntersectionObserver = vi.fn( ( ...args ) => new IO( ...args ) );
 		global.IntersectionObserver.prototype = IO.prototype;
 	} );

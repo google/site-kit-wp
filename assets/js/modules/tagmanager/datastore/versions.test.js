@@ -393,7 +393,7 @@ describe( 'modules/tagmanager versions', () => {
 
 		describe( 'isDoingGetLiveContainerVersion', () => {
 			it( 'returns true while the live container version fetch is in progress', async () => {
-				jest.useFakeTimers();
+				vi.useFakeTimers();
 
 				const accountID = '100';
 				const internalContainerID = '200';
@@ -416,7 +416,7 @@ describe( 'modules/tagmanager versions', () => {
 					.select( MODULES_TAGMANAGER )
 					.getLiveContainerVersion( accountID, internalContainerID );
 
-				jest.runAllTimers();
+				vi.runAllTimers();
 
 				expect(
 					registry

@@ -37,7 +37,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
 describe( 'Footer', () => {
 	let registry;
 	beforeEach( () => {
-		jest.useFakeTimers();
+		vi.useFakeTimers();
 
 		registry = createTestRegistry();
 
@@ -62,7 +62,7 @@ describe( 'Footer', () => {
 		} );
 
 		act( () => {
-			jest.runAllTimers();
+			vi.runAllTimers();
 		} );
 
 		expect( fetchMock ).not.toHaveFetched(
@@ -88,7 +88,7 @@ describe( 'Footer', () => {
 		} );
 
 		act( () => {
-			jest.runAllTimers();
+			vi.runAllTimers();
 		} );
 
 		expect( fetchMock ).toHaveFetched(

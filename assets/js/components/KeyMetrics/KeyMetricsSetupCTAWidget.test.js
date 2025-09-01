@@ -46,7 +46,7 @@ import {
 	surveyTriggerEndpoint,
 } from '../../../../tests/js/mock-survey-endpoints';
 
-jest.mock( 'react-use' );
+vi.mock( 'react-use' );
 mockUseIntersection.mockImplementation( () => ( {
 	intersectionRatio: 1,
 } ) );

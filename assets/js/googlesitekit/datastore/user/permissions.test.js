@@ -246,7 +246,7 @@ describe( 'core/user authentication', () => {
 					.dispatch( CORE_USER )
 					.receiveGetCapabilities( capabilities.permissions );
 
-				const stringifySpy = jest.spyOn( JSON, 'stringify' );
+				const stringifySpy = vi.spyOn( JSON, 'stringify' );
 
 				const hasCapability = registry
 					.select( CORE_USER )
@@ -266,7 +266,7 @@ describe( 'core/user authentication', () => {
 					.dispatch( CORE_USER )
 					.receiveGetCapabilities( capabilities.permissions );
 
-				const stringifySpy = jest.spyOn( JSON, 'stringify' );
+				const stringifySpy = vi.spyOn( JSON, 'stringify' );
 
 				const hasCapability = registry
 					.select( CORE_USER )

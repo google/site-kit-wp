@@ -25,7 +25,7 @@ import { useChecks } from './useChecks';
 
 describe( 'useChecks', () => {
 	beforeEach( () => {
-		jest.useFakeTimers();
+		vi.useFakeTimers();
 	} );
 
 	it( 'should return { complete:true, error: undefined } successful check runs.', async () => {

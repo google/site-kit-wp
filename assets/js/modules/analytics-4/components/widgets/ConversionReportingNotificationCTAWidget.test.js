@@ -63,7 +63,7 @@ import ConversionReportingNotificationCTAWidget from './ConversionReportingNotif
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'ConversionReportingNotificationCTAWidget', () => {
@@ -119,7 +119,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	} );
 
 	describe( 'Existing users with tailored metrics', () => {

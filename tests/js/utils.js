@@ -684,15 +684,12 @@ export function waitForTimeouts( timeout ) {
  */
 export function isUsingFakeTimers() {
 	// Check if `setTimeout()` is mocked (works in all Jest versions).
-	let fakeTimersActive = jest.isMockFunction( setTimeout );
+	let fakeTimersActive = vi.isMockFunction( setTimeout );
 
 	// Additional check for Jest 29+ - check if advance functions exist.
 	// These functions only exist when fake timers are enabled, and check
 	// the global `setTimeout()` properties without calling warning-generating functions.
-	if (
-		! fakeTimersActive &&
-		typeof jest.advanceTimersByTime === 'function'
-	) {
+	if ( ! fakeTimersActive && typeof vi.advanceTimersByTime === 'function' ) {
 		// In fake timer mode, `setTimeout()` has additional properties.
 		try {
 			fakeTimersActive =

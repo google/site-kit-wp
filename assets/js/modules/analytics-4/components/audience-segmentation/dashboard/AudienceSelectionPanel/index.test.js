@@ -73,7 +73,7 @@ import { availableAudiences } from './../../../../datastore/__fixtures__';
 import * as tracking from '../../../../../../util/tracking';
 import AudienceSelectionPanel from '.';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceSelectionPanel', () => {

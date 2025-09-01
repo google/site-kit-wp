@@ -42,7 +42,7 @@ describe( 'ErrorNotice', () => {
 		provideModules( registry, [
 			{ slug: moduleName, name: 'Test Module' },
 		] );
-		invalidateResolutionSpy = jest.spyOn(
+		invalidateResolutionSpy = vi.spyOn(
 			registry.dispatch( MODULES_TAGMANAGER ),
 			'invalidateResolution'
 		);

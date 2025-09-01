@@ -64,10 +64,7 @@ describe( 'core/user feature-tours', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		setItemSpy = jest.spyOn(
-			registry.dispatch( CORE_SITE ),
-			'setCacheItem'
-		);
+		setItemSpy = vi.spyOn( registry.dispatch( CORE_SITE ), 'setCacheItem' );
 		store = registry.stores[ CORE_USER ].store;
 		registry.dispatch( CORE_USER ).receiveInitialSiteKitVersion( '1.0.0' );
 	} );

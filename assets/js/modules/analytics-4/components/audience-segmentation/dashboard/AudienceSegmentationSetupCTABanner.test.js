@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 const mockShowTooltip = vi.fn();
-jest.mock( '../../../../../components/AdminMenuTooltip', () => ( {
+vi.mock( '../../../../../components/AdminMenuTooltip', () => ( {
 	__esModule: true,
 	default: vi.fn(),
 	useShowTooltip: vi.fn( () => mockShowTooltip ),
@@ -74,12 +74,12 @@ import {
 } from '../../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 import { dismissItemEndpoint } from '../../../../../../../tests/js/mock-dismiss-item-endpoints';
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
+vi.mock( 'react-use', () => ( {
+	...vi.requireActual( 'react-use' ),
 	useIntersection: vi.fn(),
 } ) );
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceSegmentationSetupCTABanner', () => {
@@ -197,7 +197,7 @@ describe( 'AudienceSegmentationSetupCTABanner', () => {
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	} );
 
 	describe( 'checkRequirements', () => {

@@ -11,14 +11,16 @@
     "es6": true
   },
   "globals": {
-    "fetchMock": false
+    "fetchMock": false,
+    "vi": false
   },
   "rules": {
     "import/no-unresolved": [
       "error",
       {
         "ignore": [
-          "^@wordpress-core\/?.*"
+          "^@wordpress-core\/?.*",
+          "^fetch-mock\/?.*"
         ]
       }
     ],

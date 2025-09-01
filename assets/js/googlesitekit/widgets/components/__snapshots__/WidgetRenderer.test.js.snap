@@ -1,4 +1,34 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`WidgetRenderer > should output children directly  1`] = `
+<div>
+  Test
+</div>
+`;
+
+exports[`WidgetRenderer > should wrap children when wrapWidget is true 1`] = `
+<div
+  class="googlesitekit-widget googlesitekit-widget--TestWidget"
+>
+  <div
+    class="googlesitekit-widget__body"
+  >
+    <div>
+      Test
+    </div>
+  </div>
+</div>
+`;
+
+exports[`WidgetRenderer > should wrap the widget in a hidden container when the widget is preloaded 1`] = `
+<div
+  class="googlesitekit-hidden"
+>
+  <div>
+    Test
+  </div>
+</div>
+`;
 
 exports[`WidgetRenderer should output children directly  1`] = `
 <div>

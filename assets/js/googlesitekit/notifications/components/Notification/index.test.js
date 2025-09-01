@@ -37,15 +37,15 @@ function NotificationWrapper() {
 }
 
 // Mock the useLatestIntersection hook to control intersection state.
-jest.mock( '../../../../hooks/useLatestIntersection', () => {
+vi.mock( '../../../../hooks/useLatestIntersection', () => {
 	return vi.fn().mockImplementation( () => ( {
 		isIntersecting: true,
 	} ) );
 } );
 
 // Mock the useHasBeenViewed hook to control viewed state.
-jest.mock( '../../hooks/useHasBeenViewed', () => {
-	const originalModule = jest.requireActual( '../../hooks/useHasBeenViewed' );
+vi.mock( '../../hooks/useHasBeenViewed', () => {
+	const originalModule = vi.requireActual( '../../hooks/useHasBeenViewed' );
 	const mockUseHasBeenViewed = vi.fn().mockReturnValue( false );
 	mockUseHasBeenViewed.getKey = originalModule.useHasBeenViewed.getKey;
 
@@ -56,7 +56,7 @@ jest.mock( '../../hooks/useHasBeenViewed', () => {
 } );
 
 // Export the mock for direct access in tests.
-export const mockUseHasBeenViewed = jest.requireMock(
+export const mockUseHasBeenViewed = vi.requireMock(
 	'../../hooks/useHasBeenViewed'
 ).useHasBeenViewed;
 
@@ -67,7 +67,7 @@ describe( 'Notification', () => {
 	let mockDismissNotification;
 
 	beforeEach( () => {
-		jest.useFakeTimers();
+		vi.useFakeTimers();
 
 		registry = createTestRegistry();
 
@@ -89,8 +89,8 @@ describe( 'Notification', () => {
 	} );
 
 	afterEach( () => {
-		jest.useRealTimers();
-		jest.clearAllMocks();
+		vi.useRealTimers();
+		vi.clearAllMocks();
 	} );
 
 	it( 'renders the notification content', () => {
@@ -129,7 +129,7 @@ describe( 'Notification', () => {
 		expect( mockMarkNotificationSeen ).not.toHaveBeenCalled();
 
 		act( () => {
-			jest.advanceTimersByTime( 2000 );
+			vi.advanceTimersByTime( 2000 );
 		} );
 
 		// Verify markNotificationSeen is still not called.
@@ -137,7 +137,7 @@ describe( 'Notification', () => {
 
 		// Advance time to complete the timeout.
 		act( () => {
-			jest.advanceTimersByTime( 1000 );
+			vi.advanceTimersByTime( 1000 );
 		} );
 
 		expect( mockMarkNotificationSeen ).toHaveBeenCalledWith(
@@ -154,7 +154,7 @@ describe( 'Notification', () => {
 		const { rerender } = render( <NotificationWrapper />, { registry } );
 
 		act( () => {
-			jest.advanceTimersByTime( 2000 );
+			vi.advanceTimersByTime( 2000 );
 		} );
 
 		// Change to not in view.
@@ -164,7 +164,7 @@ describe( 'Notification', () => {
 
 		// Advance time to complete the timeout.
 		act( () => {
-			jest.advanceTimersByTime( 1000 );
+			vi.advanceTimersByTime( 1000 );
 		} );
 
 		// Verify markNotificationSeen was not called.
@@ -181,7 +181,7 @@ describe( 'Notification', () => {
 		render( <NotificationWrapper />, { registry } );
 
 		act( () => {
-			jest.advanceTimersByTime( 5000 );
+			vi.advanceTimersByTime( 5000 );
 		} );
 
 		expect( mockMarkNotificationSeen ).not.toHaveBeenCalled();

@@ -46,7 +46,7 @@ import WooCommerceRedirectModal from './WooCommerceRedirectModal';
 import * as tracking from '../../../../util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'WooCommerceRedirectModal', () => {
@@ -358,7 +358,7 @@ describe( 'WooCommerceRedirectModal', () => {
 
 	it( 'should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active and "Use Google for WooCommerce" is clicked', async () => {
 		fetchMock.postOnce( dismissItemEndpoint, {} );
-		const dismissNotificationSpy = jest.spyOn(
+		const dismissNotificationSpy = vi.spyOn(
 			registry.dispatch( CORE_NOTIFICATIONS ),
 			'dismissNotification'
 		);
@@ -419,7 +419,7 @@ describe( 'WooCommerceRedirectModal', () => {
 
 	it( 'should link to the google dashboard of the Google for WooCommerce when Google for WooCommerce is active and has Ads account connected when "View current Ads account" is clicked', async () => {
 		fetchMock.postOnce( dismissItemEndpoint, {} );
-		const dismissNotificationSpy = jest.spyOn(
+		const dismissNotificationSpy = vi.spyOn(
 			registry.dispatch( CORE_NOTIFICATIONS ),
 			'dismissNotification'
 		);

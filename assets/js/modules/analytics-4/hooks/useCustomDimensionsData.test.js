@@ -250,7 +250,7 @@ describe( 'useCustomDimensionsData', () => {
 	} );
 
 	it( 'should handle the report options as a function', () => {
-		const reportOptionsFunc = jest.fn( () => mockReportOptions );
+		const reportOptionsFunc = vi.fn( () => mockReportOptions );
 
 		const { result } = renderHook(
 			() =>

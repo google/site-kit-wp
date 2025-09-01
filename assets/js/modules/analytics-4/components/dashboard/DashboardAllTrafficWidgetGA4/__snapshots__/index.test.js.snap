@@ -1,4 +1,470 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DashboardAllTrafficWidgetGA4 > should render an error state if there is a report error 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--analyticsAllTrafficGA4"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-cta googlesitekit-cta--error"
+      >
+        
+        <div
+          class="googlesitekit-cta__body"
+        >
+          <h3
+            class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
+          >
+            Data error in Analytics
+          </h3>
+          <div
+            class="googlesitekit-cta__description"
+          >
+            <p>
+              Request parameter is empty: metrics.
+            </p>
+          </div>
+          
+          
+          <div
+            class="googlesitekit-report-error-actions"
+          >
+            <div>
+              <a
+                aria-label="Get help (opens in a new tab)"
+                class="googlesitekit-cta-link"
+                href="undefined?error_id=missing_required_param"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span
+                  class="googlesitekit-cta-link__contents"
+                >
+                  Get help
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`DashboardAllTrafficWidgetGA4 > should render the widget 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--analyticsAllTrafficGA4 googlesitekit-widget--no-padding googlesitekit-widget--footer-v2 googlesitekit-widget__analytics--all-traffic"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="mdc-layout-grid"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="googlesitekit-widget--analyticsAllTraffic__totals mdc-layout-grid__cell mdc-layout-grid__cell--span-7-desktop mdc-layout-grid__cell--span-8-tablet"
+          >
+            <div
+              class="googlesitekit-widget--analyticsAllTraffic__totalcount googlesitekit-data-block"
+            >
+              <h3
+                class="googlesitekit-typography googlesitekit-subheading-1 googlesitekit-data-block__title"
+              >
+                <span>
+                  All Visitors
+                   
+                </span>
+              </h3>
+              <div
+                class="googlesitekit-data-block__datapoint"
+              >
+                55
+              </div>
+              <div
+                class="googlesitekit-data-block__change"
+              >
+                <span
+                  class="googlesitekit-data-block__arrow"
+                >
+                  <svg
+                    class="googlesitekit-change-arrow googlesitekit-change-arrow--up"
+                    fill="none"
+                    height="9"
+                    viewBox="0 0 10 10"
+                    width="9"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5.625 10L5.625 2.375L9.125 5.875L10 5L5 -1.76555e-07L-2.7055e-07 5L0.875 5.875L4.375 2.375L4.375 10L5.625 10Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="googlesitekit-data-block__value googlesitekit-data-block__value--up"
+                >
+                  292.9%
+                </span>
+                <span
+                  class="googlesitekit-data-block__suffix"
+                >
+                  compared to the previous 28 days
+                </span>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-widget--analyticsAllTraffic__user-count-chart"
+            >
+              <div
+                class="googlesitekit-chart googlesitekit-chart--LineChart"
+                id="googlesitekit-chart-0"
+                tabindex="-1"
+              >
+                <div
+                  class="googlesitekit-chart-loading"
+                >
+                  <div
+                    class="googlesitekit-preview-block googlesitekit-chart-loading__wrapper"
+                    style="width: 100%; height: 340px;"
+                  >
+                    <div
+                      class="googlesitekit-preview-block__wrapper"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-widget--analyticsAllTraffic__dimensions mdc-layout-grid__cell mdc-layout-grid__cell--span-5-desktop mdc-layout-grid__cell--span-8-tablet"
+          >
+            <div
+              class="googlesitekit-widget--analyticsAllTraffic__tabs hidden-on-mobile"
+            >
+              <div
+                class="mdc-tab-bar"
+                dir="ltr"
+                role="tablist"
+              >
+                <div
+                  class="mdc-tab-scroller"
+                >
+                  <div
+                    class="mdc-tab-scroller__scroll-area mdc-tab-scroller__scroll-area--scroll"
+                    style="margin-bottom: 0px;"
+                  >
+                    <div
+                      class="mdc-tab-scroller__scroll-content"
+                    >
+                      <button
+                        aria-selected="true"
+                        class="mdc-tab mdc-tab--active mdc-tab--min-width"
+                        role="tab"
+                        tabindex="0"
+                      >
+                        <span
+                          class="mdc-tab__content"
+                        >
+                          <span
+                            class="mdc-tab__text-label"
+                          >
+                            Channels
+                          </span>
+                        </span>
+                        <span
+                          class="mdc-tab-indicator mdc-tab-indicator--active"
+                        >
+                          <span
+                            class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"
+                            style=""
+                          />
+                        </span>
+                        <div
+                          class="mdc-tab__ripple"
+                        />
+                      </button>
+                      <button
+                        aria-selected="false"
+                        class="mdc-tab mdc-tab--min-width"
+                        role="tab"
+                        tabindex="-1"
+                      >
+                        <span
+                          class="mdc-tab__content"
+                        >
+                          <span
+                            class="mdc-tab__text-label"
+                          >
+                            Locations
+                          </span>
+                        </span>
+                        <span
+                          class="mdc-tab-indicator"
+                        >
+                          <span
+                            class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"
+                          />
+                        </span>
+                        <div
+                          class="mdc-tab__ripple"
+                        />
+                      </button>
+                      <button
+                        aria-selected="false"
+                        class="mdc-tab mdc-tab--min-width"
+                        role="tab"
+                        tabindex="-1"
+                      >
+                        <span
+                          class="mdc-tab__content"
+                        >
+                          <span
+                            class="mdc-tab__text-label"
+                          >
+                            Devices
+                          </span>
+                        </span>
+                        <span
+                          class="mdc-tab-indicator"
+                        >
+                          <span
+                            class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"
+                          />
+                        </span>
+                        <div
+                          class="mdc-tab__ripple"
+                        />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-widget--analyticsAllTraffic__tabs--small"
+            >
+              <div
+                class="mdc-select mdc-select--outlined"
+              >
+                <i
+                  class="mdc-select__dropdown-icon"
+                />
+                <input
+                  name="enhanced-select"
+                  type="hidden"
+                  value="dimension-name-0"
+                />
+                <div
+                  aria-disabled="false"
+                  class="mdc-select__selected-text"
+                  tabindex="0"
+                >
+                  Channels
+                </div>
+                <div
+                  class="mdc-notched-outline mdc-notched-outline--notched mdc-notched-outline--no-label"
+                >
+                  <div
+                    class="mdc-notched-outline__leading"
+                  />
+                  <div
+                    class="mdc-notched-outline__trailing"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-widget--analyticsAllTraffic__dimensions-container"
+            >
+              <div
+                class="googlesitekit-widget--analyticsAllTraffic__dimensions-chart"
+              >
+                <div
+                  class="googlesitekit-chart googlesitekit-chart--PieChart"
+                  id="googlesitekit-chart-1"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-chart-loading"
+                  >
+                    <div
+                      class="googlesitekit-preview-block googlesitekit-chart-loading__wrapper"
+                      style="width: 300px; height: 300px;"
+                    >
+                      <div
+                        class="googlesitekit-preview-block__wrapper googlesitekit-preview-block__wrapper--circle"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title"
+                  >
+                    <span>
+                      By
+                    </span>
+                     channels
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-widget--analyticsAllTraffic__legend"
+                  role="region"
+                >
+                  <button
+                    class="googlesitekit-cta-link googlesitekit-widget--analyticsAllTraffic__legend-slice"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      <span
+                        class="googlesitekit-widget--analyticsAllTraffic__dot"
+                        style="background-color: rgb(254, 206, 114);"
+                      />
+                      <span
+                        class="googlesitekit-widget--analyticsAllTraffic__label"
+                        data-label="Affiliates"
+                      >
+                        Affiliates
+                      </span>
+                      <span
+                        class="googlesitekit-widget--analyticsAllTraffic__underlay"
+                        style="background-color: rgb(254, 206, 114);"
+                      />
+                    </span>
+                  </button>
+                  <button
+                    class="googlesitekit-cta-link googlesitekit-widget--analyticsAllTraffic__legend-slice"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      <span
+                        class="googlesitekit-widget--analyticsAllTraffic__dot"
+                        style="background-color: rgb(169, 131, 230);"
+                      />
+                      <span
+                        class="googlesitekit-widget--analyticsAllTraffic__label"
+                        data-label="Email"
+                      >
+                        Email
+                      </span>
+                      <span
+                        class="googlesitekit-widget--analyticsAllTraffic__underlay"
+                        style="background-color: rgb(169, 131, 230);"
+                      />
+                    </span>
+                  </button>
+                  <button
+                    class="googlesitekit-cta-link googlesitekit-widget--analyticsAllTraffic__legend-slice"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      <span
+                        class="googlesitekit-widget--analyticsAllTraffic__dot"
+                        style="background-color: rgb(190, 212, 255);"
+                      />
+                      <span
+                        class="googlesitekit-widget--analyticsAllTraffic__label"
+                        data-label="Paid Search"
+                      >
+                        Paid Search
+                      </span>
+                      <span
+                        class="googlesitekit-widget--analyticsAllTraffic__underlay"
+                        style="background-color: rgb(190, 212, 255);"
+                      />
+                    </span>
+                  </button>
+                  <button
+                    class="googlesitekit-cta-link googlesitekit-widget--analyticsAllTraffic__legend-slice"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      <span
+                        class="googlesitekit-widget--analyticsAllTraffic__dot"
+                        style="background-color: rgb(238, 146, 218);"
+                      />
+                      <span
+                        class="googlesitekit-widget--analyticsAllTraffic__label"
+                        data-label="Direct"
+                      >
+                        Direct
+                      </span>
+                      <span
+                        class="googlesitekit-widget--analyticsAllTraffic__underlay"
+                        style="background-color: rgb(238, 146, 218);"
+                      />
+                    </span>
+                  </button>
+                  <button
+                    class="googlesitekit-cta-link googlesitekit-widget--analyticsAllTraffic__legend-slice googlesitekit-widget--analyticsAllTraffic__legend-others"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      <span
+                        class="googlesitekit-widget--analyticsAllTraffic__dot"
+                        style="background-color: rgb(255, 155, 122);"
+                      />
+                      <span
+                        class="googlesitekit-widget--analyticsAllTraffic__label"
+                        data-label="Others"
+                      >
+                        Others
+                      </span>
+                      <span
+                        class="googlesitekit-widget--analyticsAllTraffic__underlay"
+                        style="background-color: rgb(255, 155, 122);"
+                      />
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="googlesitekit-widget__footer"
+    >
+      <div
+        class="googlesitekit-source-link googlesitekit-data-block__source"
+      >
+        Source: 
+        <a
+          aria-label="Analytics (opens in a new tab)"
+          class="googlesitekit-cta-link"
+          href=""
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            Analytics
+          </span>
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 5px;"
+          >
+            <svg />
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;
 
 exports[`DashboardAllTrafficWidgetGA4 should render an error state if there is a report error 1`] = `
 <div>

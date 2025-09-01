@@ -24,7 +24,7 @@ import { useDebouncedState } from './useDebouncedState';
 
 describe( 'useDebouncedState', () => {
 	beforeEach( () => {
-		jest.useFakeTimers();
+		vi.useFakeTimers();
 	} );
 
 	it( 'should return initial value by default and should not change it after delay is expired', () => {
@@ -34,7 +34,7 @@ describe( 'useDebouncedState', () => {
 		);
 
 		expect( result.current ).toBe( 'initial-data' );
-		act( () => jest.advanceTimersByTime( 510 ) );
+		act( () => vi.advanceTimersByTime( 510 ) );
 		expect( result.current ).toBe( 'initial-data' );
 	} );
 
@@ -46,9 +46,9 @@ describe( 'useDebouncedState', () => {
 
 		rerender( { value: 'search query', delay: 500 } );
 
-		act( () => jest.advanceTimersByTime( 498 ) );
+		act( () => vi.advanceTimersByTime( 498 ) );
 		expect( result.current ).toBe( '' );
-		act( () => jest.advanceTimersByTime( 3 ) );
+		act( () => vi.advanceTimersByTime( 3 ) );
 		expect( result.current ).toBe( 'search query' );
 	} );
 } );

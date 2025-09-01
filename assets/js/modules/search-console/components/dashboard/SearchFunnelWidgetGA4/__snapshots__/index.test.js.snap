@@ -1,4 +1,188 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SearchFunnelWidgetGA4 > should not render the Activate Analytics CTA when the Analytics module is not available 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--searchFunnel googlesitekit-widget--with-header"
+  >
+    <div
+      class="googlesitekit-widget__header"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-widget__header-title googlesitekit-typography--title googlesitekit-typography--small"
+      >
+        Search traffic over the last 28 days
+      </h3>
+    </div>
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-cta googlesitekit-cta--error"
+      >
+        
+        <div
+          class="googlesitekit-cta__body"
+        >
+          <h3
+            class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
+          >
+            Data error in Search Console
+          </h3>
+          <div
+            class="googlesitekit-cta__description"
+          >
+            <p>
+              You are probably offline.
+            </p>
+          </div>
+          
+          
+          <div
+            class="googlesitekit-report-error-actions"
+          >
+            <div>
+              <a
+                aria-label="Get help (opens in a new tab)"
+                class="googlesitekit-cta-link"
+                href="https://sitekit.withgoogle.com/support/?error_id=fetch_error"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span
+                  class="googlesitekit-cta-link__contents"
+                >
+                  Get help
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="googlesitekit-widget__footer"
+    >
+      <div
+        class="googlesitekit-source-link"
+      >
+        Source: 
+        <a
+          aria-label="Search Console (opens in a new tab)"
+          class="googlesitekit-cta-link"
+          href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fsearch.google.com%2Fsearch-console%2Fperformance%2Fsearch-analytics%3Fresource_id%3Dhttp%253A%252F%252Fexample.com%252F%26metrics%3Dimpressions%26start_date%3D20201231%26end_date%3D20210127&Email=wapuu.wordpress%40gmail.com"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            Search Console
+          </span>
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 5px;"
+          >
+            <svg />
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SearchFunnelWidgetGA4 > should render the Search Funnel Widget, including the Activate Analytics CTA 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--searchFunnel googlesitekit-widget--with-header"
+  >
+    <div
+      class="googlesitekit-widget__header"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-widget__header-title googlesitekit-typography--title googlesitekit-typography--small"
+      >
+        Search traffic over the last 28 days
+      </h3>
+    </div>
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-cta googlesitekit-cta--error"
+      >
+        
+        <div
+          class="googlesitekit-cta__body"
+        >
+          <h3
+            class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
+          >
+            Data error in Search Console
+          </h3>
+          <div
+            class="googlesitekit-cta__description"
+          >
+            <p>
+              You are probably offline.
+            </p>
+          </div>
+          
+          
+          <div
+            class="googlesitekit-report-error-actions"
+          >
+            <div>
+              <a
+                aria-label="Get help (opens in a new tab)"
+                class="googlesitekit-cta-link"
+                href="https://sitekit.withgoogle.com/support/?error_id=fetch_error"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span
+                  class="googlesitekit-cta-link__contents"
+                >
+                  Get help
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="googlesitekit-widget__footer"
+    >
+      <div
+        class="googlesitekit-source-link"
+      >
+        Source: 
+        <a
+          aria-label="Search Console (opens in a new tab)"
+          class="googlesitekit-cta-link"
+          href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fsearch.google.com%2Fsearch-console%2Fperformance%2Fsearch-analytics%3Fresource_id%3Dhttp%253A%252F%252Fexample.com%252F%26metrics%3Dimpressions%26start_date%3D20201231%26end_date%3D20210127&Email=wapuu.wordpress%40gmail.com"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            Search Console
+          </span>
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 5px;"
+          >
+            <svg />
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;
 
 exports[`SearchFunnelWidgetGA4 should not render the Activate Analytics CTA when the Analytics module is not available 1`] = `
 <div>

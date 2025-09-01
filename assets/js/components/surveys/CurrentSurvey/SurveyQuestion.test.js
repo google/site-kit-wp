@@ -30,8 +30,8 @@ import {
 
 describe( 'SurveyQuestion', () => {
 	const defaultProps = {
-		answerQuestion: jest.fn(),
-		dismissSurvey: jest.fn(),
+		answerQuestion: vi.fn(),
+		dismissSurvey: vi.fn(),
 		isLastQuestion: true,
 	};
 

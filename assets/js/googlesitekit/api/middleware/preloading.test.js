@@ -37,7 +37,7 @@ const preloadedData = {
 
 describe( 'Preloading Middleware', () => {
 	beforeEach( () => {
-		jest.useFakeTimers();
+		vi.useFakeTimers();
 	} );
 
 	it( 'returns a preloaded response when present', async () => {
@@ -160,7 +160,7 @@ describe( 'Preloading Middleware', () => {
 		);
 		expect( next ).not.toHaveBeenCalled();
 
-		jest.runAllTimers();
+		vi.runAllTimers();
 		// Confirm that invocations after the timeout ignore preloaded response cache.
 		const secondResponse = await preloadingMiddleware(
 			{ method: 'GET', path: secondRequestURI },

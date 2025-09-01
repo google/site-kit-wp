@@ -29,8 +29,8 @@ import { mockCreateComponent } from '../../../tests/js/mock-component-utils';
 import DashboardEntryPoint from './DashboardEntryPoint';
 import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
 
-jest.mock( './setup/ModuleSetup', () => mockCreateComponent( 'ModuleSetup' ) );
-jest.mock( './DashboardMainApp', () =>
+vi.mock( './setup/ModuleSetup', () => mockCreateComponent( 'ModuleSetup' ) );
+vi.mock( './DashboardMainApp', () =>
 	mockCreateComponent( 'DashboardMainApp' )
 );
 

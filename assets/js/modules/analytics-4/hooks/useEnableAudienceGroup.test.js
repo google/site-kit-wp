@@ -67,7 +67,7 @@ describe( 'useEnableAudienceGroup', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
-		enableAudienceGroupSpy = jest.spyOn(
+		enableAudienceGroupSpy = vi.spyOn(
 			registry.dispatch( MODULES_ANALYTICS_4 ),
 			'enableAudienceGroup'
 		);

@@ -30,13 +30,15 @@ import {
 } from '../../../../../tests/js/utils';
 
 import { detectAnyAdblocker as mockDetectAnyAdblocker } from 'just-detect-adblock';
-jest.mock( 'just-detect-adblock' );
+vi.mock( 'just-detect-adblock', () => ( { detectAnyAdblocker: vi.fn() } ) );
 
 describe( 'modules/ads adblocker', () => {
 	let registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		// Default adblocker detection to false to avoid calling the real implementation.
+		mockDetectAnyAdblocker.mockResolvedValue( false );
 	} );
 
 	afterEach( () => {

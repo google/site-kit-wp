@@ -15,7 +15,7 @@
  */
 
 export const dismissPromptEndpoint = new RegExp(
-	'^/google-site-kit/v1/core/user/data/dismiss-prompt'
+	'^(?:https?://[^/]+)?(?:(?:/+wp-json)?/+google-site-kit/+v1|/+index\\.php\\?rest_route=/+google-site-kit/+v1)/+core/+user/+data/+dismiss-prompt'
 );
 
 export const dismissedPromptsEndpoint = new RegExp(

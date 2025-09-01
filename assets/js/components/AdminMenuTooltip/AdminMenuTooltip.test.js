@@ -31,11 +31,11 @@ import { AdminMenuTooltip } from './AdminMenuTooltip';
 import * as tracking from '../../util/tracking';
 import useViewContext from '../../hooks/useViewContext';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 // Mock useViewContext to return a consistent value
-jest.mock( '../../hooks/useViewContext', () => vi.fn() );
+vi.mock( '../../hooks/useViewContext', () => vi.fn() );
 useViewContext.mockImplementation( () => 'test-context' );
 
 describe( 'AdminMenuTooltip', () => {
@@ -44,7 +44,7 @@ describe( 'AdminMenuTooltip', () => {
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
-		jest.useFakeTimers();
+		vi.useFakeTimers();
 	} );
 
 	it( 'should not render when isTooltipVisible is false', async () => {
@@ -95,7 +95,7 @@ describe( 'AdminMenuTooltip', () => {
 
 		// Wait for Joyride tooltip's useInterval to render.
 		act( () => {
-			jest.advanceTimersByTime( 1000 );
+			vi.advanceTimersByTime( 1000 );
 		} );
 
 		await waitFor( () => {
@@ -140,7 +140,7 @@ describe( 'AdminMenuTooltip', () => {
 
 		// Wait for Joyride tooltip's useInterval to render.
 		act( () => {
-			jest.advanceTimersByTime( 1000 );
+			vi.advanceTimersByTime( 1000 );
 		} );
 
 		let closeButton;
@@ -198,7 +198,7 @@ describe( 'AdminMenuTooltip', () => {
 
 		// Wait for Joyride tooltip's useInterval to render.
 		act( () => {
-			jest.advanceTimersByTime( 1000 );
+			vi.advanceTimersByTime( 1000 );
 		} );
 
 		let gotItButton;

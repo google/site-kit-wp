@@ -37,12 +37,12 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
 import * as tracking from '../../util/tracking';
 import GoogleTagGatewayToggle from './GoogleTagGatewayToggle';
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
+vi.mock( 'react-use', () => ( {
+	...vi.requireActual( 'react-use' ),
 	useIntersection: vi.fn(),
 } ) );
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'GoogleTagGatewayToggle', () => {
@@ -68,7 +68,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	} );
 
 	it( 'should make a request to fetch the server requirement status', async () => {
