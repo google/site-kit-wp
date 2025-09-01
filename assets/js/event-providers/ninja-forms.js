@@ -17,7 +17,6 @@
 /**
  * Internal dependencies
  */
-import { isFeatureEnabled } from '../features';
 import { classifyPII, normalizeValue, PII_TYPE } from './utils';
 
 ( ( jQuery, Marionette, Backbone ) => {
@@ -38,18 +37,16 @@ import { classifyPII, normalizeValue, PII_TYPE } from './utils';
 		},
 
 		actionSubmit( event ) {
-			if ( isFeatureEnabled( 'gtagUserData' ) ) {
-				const userData = getUserData( event.data.fields );
+			const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
 
-				global._googlesitekit?.gtagEvent?.(
-					'submit_lead_form',
-					userData ? { user_data: userData } : undefined
-				);
+			const userData = gtagUserDataEnabled
+				? getUserData( event.data.fields )
+				: undefined;
 
-				return;
-			}
-
-			global._googlesitekit?.gtagEvent?.( 'submit_lead_form' );
+			global._googlesitekit?.gtagEvent?.(
+				'submit_lead_form',
+				userData ? { user_data: userData } : undefined
+			);
 		},
 	} );
 
