@@ -25,11 +25,11 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import LabReportMetrics from '../../common/LabReportMetrics';
-import FieldReportMetrics from '../../common/FieldReportMetrics';
-import Recommendations from '../../common/Recommendations';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import LabReportMetrics from '@/js/modules/pagespeed-insights/components/common/LabReportMetrics';
+import FieldReportMetrics from '@/js/modules/pagespeed-insights/components/common/FieldReportMetrics';
+import Recommendations from '@/js/modules/pagespeed-insights/components/common/Recommendations';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	STRATEGY_MOBILE,
 	DATA_SRC_FIELD,
@@ -37,7 +37,7 @@ import {
 	DATA_SRC_RECOMMENDATIONS,
 	UI_STRATEGY,
 	UI_DATA_SOURCE,
-} from '../../../datastore/constants';
+} from '@/js/modules/pagespeed-insights/datastore/constants';
 
 export default function Content( {
 	isFetching,

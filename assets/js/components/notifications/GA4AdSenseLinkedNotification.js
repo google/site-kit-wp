@@ -29,8 +29,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import NoticeNotification from '../../googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '../Notice/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '@/js/components/Notice/constants';
 
 export default function GA4AdSenseLinkedNotification( { id, Notification } ) {
 	return (

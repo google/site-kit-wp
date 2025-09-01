@@ -24,9 +24,12 @@ import { createTestRegistry } from '../../../../../tests/js/utils';
 import {
 	AMP_MODE_SECONDARY,
 	CORE_SITE,
-} from '../../../googlesitekit/datastore/site/constants';
-import { MODULES_TAGMANAGER, CONTEXT_WEB } from '../datastore/constants';
-import * as factories from '../datastore/__factories__';
+} from '@/js/googlesitekit/datastore/site/constants';
+import {
+	MODULES_TAGMANAGER,
+	CONTEXT_WEB,
+} from '@/js/modules/tagmanager/datastore/constants';
+import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
 import useExistingTagEffect from './useExistingTagEffect';
 
 describe( 'useExistingTagEffect', () => {

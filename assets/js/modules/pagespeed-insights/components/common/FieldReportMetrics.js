@@ -34,12 +34,12 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import ReportMetric from './ReportMetric';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import INPLearnMoreLink from './INPLearnMoreLink';
-import ReportErrorActions from '../../../../components/ReportErrorActions';
-import { getReportErrorMessage } from '../../../../util/errors';
-import { CATEGORY_AVERAGE } from '../../util/constants';
-import ErrorNotice from '../../../../components/ErrorNotice';
-import Typography from '../../../../components/Typography';
-import P from '../../../../components/Typography/P';
+import ReportErrorActions from '@/js/components/ReportErrorActions';
+import { getReportErrorMessage } from '@/js/util/errors';
+import { CATEGORY_AVERAGE } from '@/js/modules/pagespeed-insights/util/constants';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function FieldReportMetrics( { data, error } ) {
 	const {

@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import WidgetContextRenderer from './WidgetContextRenderer';
-import { CORE_WIDGETS } from '../datastore/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
 	createTestRegistry,
 	muteFetch,

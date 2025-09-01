@@ -22,9 +22,9 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import CheckFill from '../../../svg/icons/check-fill.svg';
-import WarningSVG from '../../../svg/icons/warning-notice.svg';
-import StarFill from '../../../svg/icons/star-fill.svg';
+import CheckFill from '@/svg/icons/check-fill.svg';
+import WarningSVG from '@/svg/icons/warning-notice.svg';
+import StarFill from '@/svg/icons/star-fill.svg';
 import { TYPES } from './constants';
 
 const typeIconMap = {

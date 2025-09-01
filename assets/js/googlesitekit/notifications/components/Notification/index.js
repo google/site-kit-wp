@@ -29,9 +29,9 @@ import { useEffect, useRef, useState } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import ViewedStateObserver from './ViewedStateObserver';
-import { useHasBeenViewed } from '../../hooks/useHasBeenViewed';
-import useNotificationEvents from '../../hooks/useNotificationEvents';
-import { CORE_NOTIFICATIONS } from '../../datastore/constants';
+import { useHasBeenViewed } from '@/js/googlesitekit/notifications/hooks/useHasBeenViewed';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 export default function Notification( {
 	id,

@@ -31,27 +31,37 @@ import { useEffect, useRef, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { getWidgetLayout, combineWidgets, HIDDEN_CLASS } from '../util';
-import { getStickyHeaderHeight } from '../../../util/scroll';
-import { CORE_WIDGETS, WIDGET_AREA_STYLES } from '../datastore/constants';
-import { CORE_UI, ACTIVE_CONTEXT_ID } from '../../datastore/ui/constants';
-import { Cell, Grid, Row } from '../../../material-components';
+import {
+	getWidgetLayout,
+	combineWidgets,
+	HIDDEN_CLASS,
+} from '@/js/googlesitekit/widgets/util';
+import { getStickyHeaderHeight } from '@/js/util/scroll';
+import {
+	CORE_WIDGETS,
+	WIDGET_AREA_STYLES,
+} from '@/js/googlesitekit/widgets/datastore/constants';
+import {
+	CORE_UI,
+	ACTIVE_CONTEXT_ID,
+} from '@/js/googlesitekit/datastore/ui/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
 import {
 	useBreakpoint,
 	BREAKPOINT_XLARGE,
 	BREAKPOINT_DESKTOP,
 	BREAKPOINT_TABLET,
 	BREAKPOINT_SMALL,
-} from '../../../hooks/useBreakpoint';
-import InViewProvider from '../../../components/InViewProvider';
+} from '@/js/hooks/useBreakpoint';
+import InViewProvider from '@/js/components/InViewProvider';
 import WidgetRenderer from './WidgetRenderer';
 import WidgetCellWrapper from './WidgetCellWrapper';
-import WidgetErrorHandler from '../../../components/WidgetErrorHandler';
-import useViewOnly from '../../../hooks/useViewOnly';
-import { CORE_USER } from '../../datastore/user/constants';
-import useLatestIntersection from '../../../hooks/useLatestIntersection';
+import WidgetErrorHandler from '@/js/components/WidgetErrorHandler';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useLatestIntersection from '@/js/hooks/useLatestIntersection';
 import WidgetAreaHeader from './WidgetAreaHeader';
-import { useWindowWidth } from '../../../hooks/useWindowSize';
+import { useWindowWidth } from '@/js/hooks/useWindowSize';
 
 /**
  * Gets root margin value for the intersection hook.

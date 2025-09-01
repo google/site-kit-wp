@@ -31,11 +31,11 @@ import PropTypes from 'prop-types';
  */
 import { useRegistry } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import Warning from '../../../../svg/icons/warning.svg';
-import { Grid } from '../../../material-components';
-import { useChecks } from '../../../hooks/useChecks';
+import Warning from '@/svg/icons/warning.svg';
+import { Grid } from '@/js/material-components';
+import { useChecks } from '@/js/hooks/useChecks';
 import CompatibilityErrorNotice from './CompatibilityErrorNotice';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	checkAMPConnectivity,
 	checkHealthChecks,

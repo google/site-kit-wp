@@ -27,9 +27,12 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
-} from '../../datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../constants';
-import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
+} from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import {
+	ACCOUNT_STATUS_READY,
+	SITE_STATUS_READY,
+} from '@/js/modules/adsense/util';
 import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
 
 function Template() {

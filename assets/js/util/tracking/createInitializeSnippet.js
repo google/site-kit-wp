@@ -3,7 +3,7 @@
  */
 import createDataLayerPush from './createDataLayerPush';
 import { SCRIPT_IDENTIFIER, DATA_LAYER } from './constants';
-import { enabledFeatures } from '../../features/index';
+import { enabledFeatures } from '@/js/features/index';
 
 /**
  * Returns a function which, when invoked injects the gtag script if necessary.

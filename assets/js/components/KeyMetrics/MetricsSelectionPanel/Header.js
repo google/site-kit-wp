@@ -31,14 +31,14 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { MAX_SELECTED_METRICS_COUNT } from '../constants';
-import Link from '../../Link';
-import { SelectionPanelHeader } from '../../SelectionPanel';
-import useViewOnly from '../../../hooks/useViewOnly';
-import P from '../../Typography/P';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MAX_SELECTED_METRICS_COUNT } from '@/js/components/KeyMetrics/constants';
+import Link from '@/js/components/Link';
+import { SelectionPanelHeader } from '@/js/components/SelectionPanel';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import P from '@/js/components/Typography/P';
 
 export default function Header( { closePanel } ) {
 	const isViewOnly = useViewOnly();

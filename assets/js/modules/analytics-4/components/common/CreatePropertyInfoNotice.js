@@ -26,10 +26,10 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import Link from '../../../../components/Link';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Notice from '../../../../components/Notice/index';
-import { TYPES } from '../../../../components/Notice/constants';
+import Link from '@/js/components/Link';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import Notice from '@/js/components/Notice/index';
+import { TYPES } from '@/js/components/Notice/constants';
 
 export default function CreatePropertyInfoNotice() {
 	const documentationURL = useSelect( ( select ) => {

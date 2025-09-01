@@ -32,15 +32,18 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
-import { MODULE_SLUG_ADSENSE } from '../constants';
-import { stringifyObject } from '../../../util';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { stringifyObject } from '@/js/util';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import {
 	isValidDateRange,
 	isValidOrders,
 	isValidStringularItems,
-} from '../../../util/report-validation';
-import { validateDimensions, validateMetrics } from '../util/report-validation';
+} from '@/js/util/report-validation';
+import {
+	validateDimensions,
+	validateMetrics,
+} from '@/js/modules/adsense/util/report-validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',

@@ -34,8 +34,8 @@ import { ReactNode } from '@wordpress/element';
  */
 import BannerNotification, {
 	TYPES,
-} from '../googlesitekit/notifications/components/layout/BannerNotification';
-import { HOUR_IN_SECONDS } from '../util';
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import { HOUR_IN_SECONDS } from '@/js/util';
 
 /**
  * Maps props received from the server (e.g. from a `select( CORE_SITE ).getNotifications()`

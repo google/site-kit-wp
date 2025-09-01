@@ -35,7 +35,7 @@ import settings from './settings';
 import urls from './urls';
 import developerPlugin from './developer-plugin';
 import notifications from './notifications';
-import { createErrorStore } from '../../data/create-error-store';
+import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 
 const store = combineStores(
 	commonStore,

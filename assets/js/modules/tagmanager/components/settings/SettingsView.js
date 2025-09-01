@@ -26,15 +26,15 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import DisplaySetting from '../../../../components/DisplaySetting';
-import Link from '../../../../components/Link';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import VisuallyHidden from '../../../../components/VisuallyHidden';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import { escapeURI } from '../../../../util/escape-uri';
-import Typography from '../../../../components/Typography';
-import P from '../../../../components/Typography/P';
+import DisplaySetting from '@/js/components/DisplaySetting';
+import Link from '@/js/components/Link';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
+import { escapeURI } from '@/js/util/escape-uri';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>

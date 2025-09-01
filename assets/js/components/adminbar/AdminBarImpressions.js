@@ -25,18 +25,18 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import DataBlock from '../DataBlock';
-import PreviewBlock from '../PreviewBlock';
-import { NOTICE_STYLE } from '../GatheringDataNotice';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import DataBlock from '@/js/components/DataBlock';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import { NOTICE_STYLE } from '@/js/components/GatheringDataNotice';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	MODULES_SEARCH_CONSOLE,
 	DATE_RANGE_OFFSET,
-} from '../../modules/search-console/datastore/constants';
-import { calculateChange } from '../../util';
-import sumObjectListValue from '../../util/sum-object-list-value';
-import { partitionReport } from '../../util/partition-report';
+} from '@/js/modules/search-console/datastore/constants';
+import { calculateChange } from '@/js/util';
+import sumObjectListValue from '@/js/util/sum-object-list-value';
+import { partitionReport } from '@/js/util/partition-report';
 
 function AdminBarImpressions( { WidgetReportError } ) {
 	const isGatheringData = useSelect( ( select ) =>

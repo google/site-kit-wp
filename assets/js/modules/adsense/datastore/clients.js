@@ -32,10 +32,10 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
-import { MODULE_SLUG_ADSENSE } from '../constants';
-import { isValidAccountID } from '../util';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { isValidAccountID } from '@/js/modules/adsense/util';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 
 // Actions
 const RESET_CLIENTS = 'RESET_CLIENTS';

@@ -29,11 +29,11 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
 	MODULES_SIGN_IN_WITH_GOOGLE,
 	SIGN_IN_WITH_GOOGLE_TEXTS,
-} from '../../datastore/constants';
+} from '@/js/modules/sign-in-with-google/datastore/constants';
 import { Option, Select } from 'googlesitekit-components';
-import useViewContext from '../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../util';
-import { useDebounce } from '../../../../hooks/useDebounce';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import { useDebounce } from '@/js/hooks/useDebounce';
 
 export default function ButtonTextSelect() {
 	const viewContext = useViewContext();

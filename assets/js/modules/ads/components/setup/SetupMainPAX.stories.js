@@ -19,8 +19,11 @@
 /**
  * Internal dependencies
  */
-import { ADWORDS_SCOPE, MODULES_ADS } from '../../datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import {
+	ADWORDS_SCOPE,
+	MODULES_ADS,
+} from '@/js/modules/ads/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
 	provideSiteInfo,
@@ -28,7 +31,7 @@ import {
 } from '../../../../../../tests/js/utils';
 import SetupMainPAX from './SetupMainPAX';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { Cell, Grid, Row } from '../../../../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 
 function Template() {
 	return (

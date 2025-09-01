@@ -24,9 +24,9 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { Cell, Row } from '../material-components';
-import ConnectedIcon from '../../svg/icons/connected.svg';
-import ExclamationIcon from '../../svg/icons/exclamation.svg';
+import { Cell, Row } from '@/js/material-components';
+import ConnectedIcon from '@/svg/icons/connected.svg';
+import ExclamationIcon from '@/svg/icons/exclamation.svg';
 import IconWrapper from './IconWrapper';
 import Typography from './Typography';
 

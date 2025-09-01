@@ -26,10 +26,10 @@ import {
 	render,
 	waitFor,
 } from '../../../../tests/js/test-utils';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { AdminMenuTooltip } from './AdminMenuTooltip';
-import * as tracking from '../../util/tracking';
-import useViewContext from '../../hooks/useViewContext';
+import * as tracking from '@/js/util/tracking';
+import useViewContext from '@/js/hooks/useViewContext';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

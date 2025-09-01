@@ -25,8 +25,8 @@ import { withQuery } from '@storybook/addon-queryparams';
  * Internal dependencies
  */
 import PAXSetupSuccessSubtleNotification from './PAXSetupSuccessSubtleNotification';
-import { PAX_SETUP_SUCCESS_NOTIFICATION } from '../../pax/constants';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { PAX_SETUP_SUCCESS_NOTIFICATION } from '@/js/modules/ads/pax/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-pax'

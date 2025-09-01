@@ -32,7 +32,7 @@ import { useInstanceId } from '@wordpress/compose';
  */
 import { Button, TextField } from 'googlesitekit-components';
 import SurveyHeader from './SurveyHeader';
-import VisuallyHidden from '../VisuallyHidden';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
 
 function SurveyQuestionOpenText( {

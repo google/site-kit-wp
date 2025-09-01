@@ -21,7 +21,7 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 import SettingsForm from './SettingsForm';
 
 export default function SettingsEdit() {

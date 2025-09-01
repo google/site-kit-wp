@@ -29,8 +29,8 @@ import { useEffect, useRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { elementsOverlap } from '../../util/geometry';
-import ErrorNotice from '../ErrorNotice';
+import { elementsOverlap } from '@/js/util/geometry';
+import ErrorNotice from '@/js/components/ErrorNotice';
 
 export default function SelectionPanelError( {
 	error,

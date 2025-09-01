@@ -21,7 +21,7 @@
  */
 import { Fragment } from 'react';
 import Banner from '.';
-import { Cell, Grid, Row } from '../../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 import adSenseDesktopSVG from '@/svg/graphics/banner-adsense-setup-cta.svg?url';
 import adSenseMobileSVG from '@/svg/graphics/banner-adsense-setup-cta-mobile.svg?url';
 import adBlockingRecoveryDesktopSVG from '@/svg/graphics/banner-ad-blocking-recovery-setup-cta.svg?url';
@@ -34,7 +34,7 @@ import signInWithGoogleDesktopSVG from '@/svg/graphics/banner-sign-in-with-googl
 import signInWithGoogleMobileSVG from '@/svg/graphics/banner-sign-in-with-google-setup-cta-mobile.svg?url';
 import gatheringDataSVG from '@/svg/graphics/banner-gathering-data.svg?url';
 import warningDesktopSVG from '@/svg/graphics/banner-warning.svg?url';
-import Link from '../Link';
+import Link from '@/js/components/Link';
 
 function Template() {
 	return (

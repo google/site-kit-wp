@@ -30,8 +30,8 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import WidgetNewBadge from './WidgetNewBadge';
-import { useWindowWidth } from '../../../hooks/useWindowSize';
-import Typography from '../../../components/Typography';
+import { useWindowWidth } from '@/js/hooks/useWindowSize';
+import Typography from '@/js/components/Typography';
 
 export default function WidgetAreaHeader( {
 	slug,

@@ -31,10 +31,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import Link from '../Link';
+import Link from '@/js/components/Link';
 import WPDashboardWidgets from './WPDashboardWidgets';
-import InViewProvider from '../../components/InViewProvider';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import InViewProvider from '@/js/components/InViewProvider';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 function WPDashboardApp() {
 	const trackingRef = useRef();

@@ -35,24 +35,24 @@ import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../../../../../../hooks/useBreakpoint';
-import useViewOnly from '../../../../../../../hooks/useViewOnly';
-import { MODULES_ANALYTICS_4 } from '../../../../../datastore/constants';
-import AudienceMetricIconVisitors from '../../../../../../../../svg/icons/audience-metric-icon-visitors.svg';
-import AudienceMetricIconVisitsPerVisitor from '../../../../../../../../svg/icons/audience-metric-icon-visits-per-visitor.svg';
-import AudienceMetricIconPagesPerVisit from '../../../../../../../../svg/icons/audience-metric-icon-pages-per-visit.svg';
-import AudienceMetricIconPageviews from '../../../../../../../../svg/icons/audience-metric-icon-pageviews.svg';
-import AudienceMetricIconCities from '../../../../../../../../svg/icons/audience-metric-icon-cities.svg';
-import AudienceMetricIconTopContent from '../../../../../../../../svg/icons/audience-metric-icon-top-content.svg';
+} from '@/js/hooks/useBreakpoint';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import AudienceMetricIconVisitors from '@/svg/icons/audience-metric-icon-visitors.svg';
+import AudienceMetricIconVisitsPerVisitor from '@/svg/icons/audience-metric-icon-visits-per-visitor.svg';
+import AudienceMetricIconPagesPerVisit from '@/svg/icons/audience-metric-icon-pages-per-visit.svg';
+import AudienceMetricIconPageviews from '@/svg/icons/audience-metric-icon-pageviews.svg';
+import AudienceMetricIconCities from '@/svg/icons/audience-metric-icon-cities.svg';
+import AudienceMetricIconTopContent from '@/svg/icons/audience-metric-icon-top-content.svg';
 import AudienceTileMetric from './AudienceTileMetric';
 import AudienceTileCitiesMetric from './AudienceTileCitiesMetric';
 import AudienceTilePagesMetric from './AudienceTilePagesMetric';
-import ChangeBadge from '../../../../../../../components/ChangeBadge';
-import InfoTooltip from '../../../../../../../components/InfoTooltip';
+import ChangeBadge from '@/js/components/ChangeBadge';
+import InfoTooltip from '@/js/components/InfoTooltip';
 import PartialDataNotice from './PartialDataNotice';
-import { numFmt, trackEvent } from '../../../../../../../util';
-import BadgeWithTooltip from '../../../../../../../components/BadgeWithTooltip';
-import useViewContext from '../../../../../../../hooks/useViewContext';
+import { numFmt, trackEvent } from '@/js/util';
+import BadgeWithTooltip from '@/js/components/BadgeWithTooltip';
+import useViewContext from '@/js/hooks/useViewContext';
 import AudienceTileZeroData from './AudienceTileZeroData';
 export default function AudienceTile( {
 	// TODO: The prop `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once

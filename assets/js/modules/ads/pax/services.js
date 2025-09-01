@@ -31,10 +31,13 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import { set } from 'googlesitekit-api';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { DATE_RANGE_OFFSET, MODULES_ADS } from '../datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ADS,
+} from '@/js/modules/ads/datastore/constants';
 import { formatPaxDate } from './utils';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 async function restFetchWpPages() {
 	try {

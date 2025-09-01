@@ -26,13 +26,13 @@ import {
 	provideUserInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-} from '../../datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
-import { publications } from '../../datastore/__fixtures__';
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import SettingsView from './SettingsView';
 
 describe( 'SettingsView', () => {

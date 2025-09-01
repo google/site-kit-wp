@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { sortByProperty } from '../sort-by-property';
+import { sortByProperty } from '@/js/util/sort-by-property';
 
 const sortMe = [
 	{ slug: 'objectOne', name: 'First', order: 1 },

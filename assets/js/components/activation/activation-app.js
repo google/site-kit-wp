@@ -27,17 +27,17 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import Logo from '../Logo';
-import { Grid, Row, Cell } from '../../material-components';
-import { trackEvent } from '../../util';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import Logo from '@/js/components/Logo';
+import { Grid, Row, Cell } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	PERMISSION_VIEW_DASHBOARD,
-} from '../../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import useViewContext from '../../hooks/useViewContext';
-import Typography from '../Typography';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import Typography from '@/js/components/Typography';
 
 export function ActivationApp() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );

@@ -33,8 +33,8 @@ import { useSelect } from '@wordpress-core/data';
 import { select, resolveSelect } from 'googlesitekit-data';
 import EditorButton from './EditorButton';
 import { CORE_EDITOR } from './constants';
-import { CORE_MODULES } from '../../../js/googlesitekit/modules/datastore/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '../../../js/modules/reader-revenue-manager/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { getNoticeAndDisabled } from './button-edit-utils';
 

@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { combineStores, commonStore } from 'googlesitekit-data';
-import { createErrorStore } from '../../data/create-error-store';
+import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 import adblocker from './adblocker';
 import audienceSettings from './audience-settings';
 import authentication from './authentication';

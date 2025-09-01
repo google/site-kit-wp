@@ -37,12 +37,12 @@ import {
 	AUDIENCE_SELECTION_FORM,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import InfoIcon from '../../../../../../../svg/icons/info-circle.svg';
-import InfoNotice from '../InfoNotice';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
-import useFormValue from '../../../../../../hooks/useFormValue';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import InfoIcon from '@/svg/icons/info-circle.svg';
+import InfoNotice from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/InfoNotice';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function AddGroupNotice() {
 	const [ twoOrMoreAudiencesSelected, setTwoOrMoreAudiencesSelected ] =
