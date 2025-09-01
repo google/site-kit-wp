@@ -27,7 +27,7 @@ import path from 'path';
 import initStoryshots from '@storybook/addon-storyshots';
 import { puppeteerTest } from '@storybook/addon-storyshots-puppeteer';
 
-const customizePage = ( page ) => {
+function customizePage( page ) {
 	page.on( 'pageerror', ( error ) => {
 		throw new Error(
 			`Page error detected during story rendering:\n${ error.message }`
@@ -43,7 +43,7 @@ const customizePage = ( page ) => {
 	} );
 
 	return page;
-};
+}
 
 initStoryshots( {
 	suite: 'Puppeteer storyshots',
