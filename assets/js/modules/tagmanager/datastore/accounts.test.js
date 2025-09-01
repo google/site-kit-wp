@@ -24,7 +24,7 @@ import {
 	CORE_SITE,
 	AMP_MODE_PRIMARY,
 	AMP_MODE_SECONDARY,
-} from '../../../googlesitekit/datastore/site/constants';
+} from '@/js/googlesitekit/datastore/site/constants';
 import {
 	MODULES_TAGMANAGER,
 	ACCOUNT_CREATE,

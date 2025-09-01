@@ -26,8 +26,8 @@ import {
 	freezeFetch,
 	createTestRegistry,
 } from '../../../../../../tests/js/test-utils';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import * as fixtures from '../../datastore/__fixtures__';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import * as fixtures from '@/js/modules/adsense/datastore/__fixtures__';
 
 const TEST_ACCOUNT_ID = '123';
 const TEST_CLIENT_ID = '456';

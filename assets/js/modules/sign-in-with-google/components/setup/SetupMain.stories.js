@@ -24,11 +24,11 @@ import {
 	provideSiteInfo,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import ModuleSetup from '../../../../components/setup/ModuleSetup';
+import ModuleSetup from '@/js/components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '../../constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 
 function Template( { setupRegistry = () => {} } ) {
 	return (
@@ -56,7 +56,7 @@ export default {
 	title: 'Modules/SignInWithGoogle/Setup/SetupMain',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
@@ -69,7 +69,7 @@ export default {
 					homeURL: 'https://example.com',
 				} );
 				provideModuleRegistrations( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

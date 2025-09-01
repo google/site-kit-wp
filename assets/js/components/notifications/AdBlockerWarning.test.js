@@ -21,9 +21,9 @@
  */
 import AdBlockerWarning from './AdBlockerWarning';
 import { render } from '../../../../tests/js/test-utils';
-import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,

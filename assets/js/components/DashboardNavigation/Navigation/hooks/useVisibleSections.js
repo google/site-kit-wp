@@ -26,7 +26,7 @@ import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_MONETIZATION,
-} from '../../../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import {
 	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
@@ -37,14 +37,14 @@ import {
 	CONTEXT_ENTITY_DASHBOARD_CONTENT,
 	CONTEXT_ENTITY_DASHBOARD_SPEED,
 	CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
-} from '../../../../googlesitekit/widgets/default-contexts';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_WIDGETS } from '../../../../googlesitekit/widgets/datastore/constants';
+} from '@/js/googlesitekit/widgets/default-contexts';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 	DASHBOARD_TYPE_MAIN,
-} from '../../../../hooks/useDashboardType';
-import useViewOnly from '../../../../hooks/useViewOnly';
+} from '@/js/hooks/useDashboardType';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 export const contexts = {
 	[ DASHBOARD_TYPE_MAIN ]: {
@@ -65,7 +65,7 @@ export const contexts = {
 /**
  * Returns the visible sections for the dashboard navigation.
  *
- * @since n.e.x.t
+ * @since 1.159.0
  *
  * @return {Array<string>} The visible sections.
  */

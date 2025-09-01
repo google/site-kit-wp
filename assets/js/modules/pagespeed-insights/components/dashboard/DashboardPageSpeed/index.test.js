@@ -35,9 +35,9 @@ import {
 	MODULES_PAGESPEED_INSIGHTS,
 	STRATEGY_MOBILE,
 	STRATEGY_DESKTOP,
-} from '../../../datastore/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import * as fixtures from '../../../datastore/__fixtures__';
+} from '@/js/modules/pagespeed-insights/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import * as fixtures from '@/js/modules/pagespeed-insights/datastore/__fixtures__';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -84,7 +84,7 @@ describe( 'DashboardPageSpeed', () => {
 
 	afterEach( fetchMock.mockClear );
 
-	const setupRegistryNoFieldDataDesktop = () => {
+	function setupRegistryNoFieldDataDesktop() {
 		registry = createTestRegistry();
 
 		const { dispatch } = registry;
@@ -115,7 +115,7 @@ describe( 'DashboardPageSpeed', () => {
 			referenceSiteURL: url,
 			currentEntityURL: null,
 		} );
-	};
+	}
 
 	it( 'renders preview blocks while reports are requested', async () => {
 		registry = createTestRegistry();

@@ -42,6 +42,5 @@ class Report extends ReportParsers {
 	}
 
 	// NOTE: The majority of this classes logic has been abstracted to
-	// ReportParsers which contains the shared methods for both
-	// Report and PivotReport classes.
+	// ReportParsers which contains the methods for the Report class.
 }

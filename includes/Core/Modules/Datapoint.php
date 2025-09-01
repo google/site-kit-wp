@@ -23,7 +23,8 @@ class Datapoint {
 	 * Service identifier.
 	 *
 	 * @since 1.77.0
-	 * @var string
+	 * @since 1.160.0 Updated to allow a function to return the service identifier.
+	 * @var string|callable
 	 */
 	private $service = '';
 
@@ -61,7 +62,13 @@ class Datapoint {
 	public function __construct( array $definition ) {
 		$this->shareable = ! empty( $definition['shareable'] );
 
-		if ( isset( $definition['service'] ) && is_string( $definition['service'] ) ) {
+		if (
+			isset( $definition['service'] ) &&
+			(
+				is_string( $definition['service'] ) ||
+				is_callable( $definition['service'] )
+			)
+		) {
 			$this->service = $definition['service'];
 		}
 
@@ -92,8 +99,14 @@ class Datapoint {
 	 *
 	 * @return string
 	 */
-	public function get_service() {
-		return $this->service;
+	protected function get_service() {
+		$service = $this->service;
+
+		if ( is_callable( $this->service ) ) {
+			$service = call_user_func( $this->service );
+		}
+
+		return $service;
 	}
 
 	/**

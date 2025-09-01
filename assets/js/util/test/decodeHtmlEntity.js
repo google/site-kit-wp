@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { decodeHTMLEntity } from '../';
+import { decodeHTMLEntity } from '@/js/util';
 
 const valuesToTest = [
 	[

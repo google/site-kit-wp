@@ -25,14 +25,11 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import { provideModules } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import AdSenseConnectCTAWidget from './AdSenseConnectCTAWidget';
-import {
-	useBreakpoint,
-	BREAKPOINT_SMALL,
-} from '../../../../hooks/useBreakpoint';
-import { MODULE_SLUG_ADSENSE } from '../../constants';
+import { useBreakpoint, BREAKPOINT_SMALL } from '@/js/hooks/useBreakpoint';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'adSenseConnectCTA'
@@ -49,7 +46,7 @@ Ready.scenario = {};
 export const ReadyNotConnected = Template.bind( {} );
 ReadyNotConnected.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			provideModules( registry, [
 				{
 					active: true,
@@ -57,7 +54,7 @@ ReadyNotConnected.decorators = [
 					slug: MODULE_SLUG_ADSENSE,
 				},
 			] );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -72,7 +69,7 @@ export default {
 	title: 'Modules/AdSense/Widgets/AdSenseConnectCTA',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: false,
@@ -80,7 +77,7 @@ export default {
 						slug: MODULE_SLUG_ADSENSE,
 					},
 				] );
-			};
+			}
 
 			const breakpoint = useBreakpoint();
 

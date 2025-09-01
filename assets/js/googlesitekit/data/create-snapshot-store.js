@@ -25,8 +25,8 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data, { createRegistryControl } from 'googlesitekit-data';
-import { deleteItem, getItem, setItem } from '../api/cache';
-import { HOUR_IN_SECONDS } from '../../util';
+import { deleteItem, getItem, setItem } from '@/js/googlesitekit/api/cache';
+import { HOUR_IN_SECONDS } from '@/js/util';
 
 // Actions
 const CREATE_SNAPSHOT = 'CREATE_SNAPSHOT';
@@ -43,7 +43,7 @@ const SET_STATE_FROM_SNAPSHOT = 'SET_STATE_FROM_SNAPSHOT';
  * @param {string} storeName The name of the store to snapshot in the cache.
  * @return {Object} The snapshot store object.
  */
-export const createSnapshotStore = ( storeName ) => {
+export function createSnapshotStore( storeName ) {
 	invariant( storeName, 'storeName is required to create a snapshot store.' );
 
 	const initialState = {};
@@ -137,7 +137,7 @@ export const createSnapshotStore = ( storeName ) => {
 		},
 	};
 
-	const reducer = ( state = initialState, { type, payload } ) => {
+	function reducer( state = initialState, { type, payload } ) {
 		// eslint-disable-line no-shadow
 		switch ( type ) {
 			case SET_STATE_FROM_SNAPSHOT: {
@@ -153,10 +153,10 @@ export const createSnapshotStore = ( storeName ) => {
 				return state;
 			}
 		}
-	};
+	}
 
 	return { initialState, actions, controls, reducer };
-};
+}
 
 /**
  * Inspects a registry to find all stores that support our snapshot features.
@@ -167,11 +167,11 @@ export const createSnapshotStore = ( storeName ) => {
  * @param {wp.data.registry} registry Optional. Registry object to inspect for stores that support state restoration. Defaults to `googlesitekit.data`.
  * @return {Object} The snapshot store object.
  */
-export const getStoresWithSnapshots = ( registry = Data ) => {
+export function getStoresWithSnapshots( registry = Data ) {
 	return Object.values( registry.stores ).filter( ( store ) => {
 		return Object.keys( store.getActions() ).includes( 'restoreSnapshot' );
 	} );
-};
+}
 
 /**
  * Creates snapshots of all supporting stores.
@@ -182,13 +182,13 @@ export const getStoresWithSnapshots = ( registry = Data ) => {
  * @param {wp.data.registry} [registry] Optional. Registry object to inspect for stores that support state restoration. Defaults to `googlesitekit.data`.
  * @return {Promise} Promise resolves once all snapshots have been taken.
  */
-export const snapshotAllStores = ( registry = Data ) => {
+export function snapshotAllStores( registry = Data ) {
 	return Promise.all(
 		getStoresWithSnapshots( registry ).map( ( store ) => {
 			return store.getActions().createSnapshot();
 		} )
 	);
-};
+}
 
 /**
  * Restores state for all snapshots that support it.
@@ -203,10 +203,10 @@ export const snapshotAllStores = ( registry = Data ) => {
  * @param {wp.data.registry} [registry] Optional. Registry object to inspect for stores that support state restoration. Defaults to `googlesitekit.data`.
  * @return {Promise} Promise resolves once all snapshots have been restored.
  */
-export const restoreAllSnapshots = ( registry = Data ) => {
+export function restoreAllSnapshots( registry = Data ) {
 	return Promise.all(
 		getStoresWithSnapshots( registry ).map( ( store ) => {
 			return store.getActions().restoreSnapshot();
 		} )
 	);
-};
+}

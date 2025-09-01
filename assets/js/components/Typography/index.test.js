@@ -1,6 +1,4 @@
 /**
- * Typography tests.
- *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +17,8 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../tests/js/test-utils';
-import Typography from './Typography';
+import { render } from '../../../../tests/js/test-utils';
+import Typography from './index';
 
 describe( 'Typography', () => {
 	it( 'renders children correctly', () => {

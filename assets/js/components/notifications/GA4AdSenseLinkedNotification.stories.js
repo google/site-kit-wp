@@ -19,19 +19,19 @@
 /**
  * Internal dependencies
  */
-import { Provider as ViewContextProvider } from '../../components/Root/ViewContextContext';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import {
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { getDateString } from '../../util';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { getDateString } from '@/js/util';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 // Generate referenced dates.
 const today = new Date();
@@ -106,10 +106,10 @@ export default {
 	title: 'Components/Notifications/Subtle/GA4AdSenseLinkedNotification',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

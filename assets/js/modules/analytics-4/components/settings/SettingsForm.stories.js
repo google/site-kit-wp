@@ -25,13 +25,13 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import SettingsForm from './SettingsForm';
-import { Cell, Grid, Row } from '../../../../material-components';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import * as fixtures from '../../datastore/__fixtures__';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 
 const {
 	accountSummaries,
@@ -76,7 +76,7 @@ export const EnhancedMeasurementSwitch = Template.bind( null );
 EnhancedMeasurementSwitch.storyName = 'With enhanced measurement switch';
 EnhancedMeasurementSwitch.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetEnhancedMeasurementSettings(
@@ -86,7 +86,7 @@ EnhancedMeasurementSwitch.decorators = [
 						webDataStreamID,
 					}
 				);
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -103,7 +103,7 @@ WithGoogleTagGatewayAvailable.parameters = {
 };
 WithGoogleTagGatewayAvailable.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			const gtgServerRequirementsEndpoint = new RegExp(
 				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
@@ -121,7 +121,7 @@ WithGoogleTagGatewayAvailable.decorators = [
 			registry
 				.dispatch( CORE_SITE )
 				.receiveGetGoogleTagGatewaySettings( gtgSettings );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -140,7 +140,7 @@ WithGoogleTagGatewayUnavailable.parameters = {
 };
 WithGoogleTagGatewayUnavailable.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			const gtgServerRequirementsEndpoint = new RegExp(
 				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
@@ -158,7 +158,7 @@ WithGoogleTagGatewayUnavailable.decorators = [
 			registry
 				.dispatch( CORE_SITE )
 				.receiveGetGoogleTagGatewaySettings( gtgSettings );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -188,14 +188,14 @@ export const WebDataStreamNotAvailable = Template.bind( null );
 WebDataStreamNotAvailable.storyName = 'Web data stream not available';
 WebDataStreamNotAvailable.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams(
 				{},
 				{
 					propertyID,
 				}
 			);
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -210,11 +210,11 @@ WithExistingTagMatch.storyName =
 	'With existing tag matching the measurement ID';
 WithExistingTagMatch.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetExistingTag( measurementID );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -229,11 +229,11 @@ WithExistingTagNoMatch.storyName =
 	'With existing tag not matching the measurement ID';
 WithExistingTagNoMatch.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetExistingTag( 'G-123456789' );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -248,7 +248,7 @@ IceEnabled.storyName = 'With ICE Enabled';
 IceEnabled.scenario = {};
 IceEnabled.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			global._googlesitekitDashboardSharingData = {
 				settings: {},
 				roles: [],
@@ -294,7 +294,7 @@ IceEnabled.decorators = [
 						webDataStreamID,
 					}
 				);
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -308,7 +308,7 @@ export default {
 	title: 'Modules/Analytics4/Settings/SettingsEdit',
 	decorators: [
 		( Story, { parameters } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				global._googlesitekitDashboardSharingData = {
 					settings: {},
 					roles: [],
@@ -356,7 +356,7 @@ export default {
 							webDataStreamID,
 						}
 					);
-			};
+			}
 
 			return (
 				<WithRegistrySetup

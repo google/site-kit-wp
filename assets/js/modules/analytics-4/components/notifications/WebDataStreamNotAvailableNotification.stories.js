@@ -19,10 +19,10 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'web-data-stream-not-available-notification'
@@ -39,7 +39,7 @@ export default {
 	title: 'Components/Notifications/Banners',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				const currentAnalyticsSettingsMock = {
 					ownerID: 0,
 					propertyID: '1000',
@@ -52,7 +52,7 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setSettings( currentAnalyticsSettingsMock );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

@@ -20,13 +20,13 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { throttle } from 'lodash';
 import { useMount } from 'react-use';
 import { Chip } from '@material/react-chips';
 
 /**
  * WordPress dependencies
  */
+import { useThrottle } from '@wordpress/compose';
 import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -40,21 +40,21 @@ import {
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_KEY_METRICS,
 	ANCHOR_ID_TRAFFIC,
-} from '../../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import {
 	CORE_UI,
 	ACTIVE_CONTEXT_ID,
-} from '../../../googlesitekit/datastore/ui/constants';
-import { trackEvent } from '../../../util';
-import useDashboardType from '../../../hooks/useDashboardType';
+} from '@/js/googlesitekit/datastore/ui/constants';
+import { trackEvent } from '@/js/util';
+import useDashboardType from '@/js/hooks/useDashboardType';
 import useNavChipHelpers from './hooks/useNavChipHelpers';
-import useViewContext from '../../../hooks/useViewContext';
+import useViewContext from '@/js/hooks/useViewContext';
 import useVisibleSections from './hooks/useVisibleSections';
-import NavContentIcon from '../../../../svg/icons/nav-content-icon.svg';
-import NavKeyMetricsIcon from '../../../../svg/icons/nav-key-metrics-icon.svg';
-import NavMonetizationIcon from '../../../../svg/icons/nav-monetization-icon.svg';
-import NavSpeedIcon from '../../../../svg/icons/nav-speed-icon.svg';
-import NavTrafficIcon from '../../../../svg/icons/nav-traffic-icon.svg';
+import NavContentIcon from '@/svg/icons/nav-content-icon.svg';
+import NavKeyMetricsIcon from '@/svg/icons/nav-key-metrics-icon.svg';
+import NavMonetizationIcon from '@/svg/icons/nav-monetization-icon.svg';
+import NavSpeedIcon from '@/svg/icons/nav-speed-icon.svg';
+import NavTrafficIcon from '@/svg/icons/nav-traffic-icon.svg';
 
 export default function Navigation() {
 	const dashboardType = useDashboardType();
@@ -84,7 +84,7 @@ export default function Navigation() {
 	/**
 	 * Handles the selection of a chip.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @param {Object} event The click event.
 	 * @return {void}
@@ -115,11 +115,15 @@ export default function Navigation() {
 	/**
 	 * Determines the sticky state of navigation based on scroll position.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @return {void}
 	 */
 	const handleSticky = useCallback( () => {
+		if ( ! elementRef?.current ) {
+			return;
+		}
+
 		const { top } = elementRef?.current?.getBoundingClientRect();
 
 		if ( global.scrollY === 0 ) {
@@ -127,7 +131,7 @@ export default function Navigation() {
 		} else {
 			const headerBottom = document
 				.querySelector( '.googlesitekit-header' )
-				?.getBoundingClientRect().bottom;
+				?.getBoundingClientRect?.()?.bottom;
 
 			setIsSticky( top === headerBottom );
 		}
@@ -136,18 +140,18 @@ export default function Navigation() {
 	/**
 	 * Determines the selected state of a chip based on scroll position.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @param {Event} event The scroll event.
 	 * @return {void}
 	 */
 	const handleSelectedChip = useCallback(
 		( event ) => {
-			const changeSelectedChip = ( chipID ) => {
+			function changeSelectedChip( chipID ) {
 				setValue( ACTIVE_CONTEXT_ID, undefined );
 				setSelectedID( chipID );
 				setIsJumpingTo( undefined );
-			};
+			}
 
 			const closestID = findClosestSection( elementRef );
 
@@ -212,20 +216,24 @@ export default function Navigation() {
 		}, 50 );
 	} );
 
-	// Handle scroll events to update sticky state and selected chip.
-	useEffect( () => {
-		const onScroll = ( event ) => {
+	const onScroll = useCallback(
+		( event ) => {
 			handleSticky();
 			handleSelectedChip( event );
-		};
+		},
+		[ handleSelectedChip, handleSticky ]
+	);
 
-		const throttledOnScroll = throttle( onScroll, 150 );
+	const throttledOnScroll = useThrottle( onScroll, 150 );
+
+	// Handle scroll events to update sticky state and selected chip.
+	useEffect( () => {
 		global.addEventListener( 'scroll', throttledOnScroll );
 
 		return () => {
 			global.removeEventListener( 'scroll', throttledOnScroll );
 		};
-	}, [ handleSelectedChip, handleSticky ] );
+	}, [ throttledOnScroll ] );
 
 	const chips = {
 		[ ANCHOR_ID_KEY_METRICS ]: {

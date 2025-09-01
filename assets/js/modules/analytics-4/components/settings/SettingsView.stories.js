@@ -20,13 +20,13 @@
  * Internal dependencies
  */
 import SettingsView from './SettingsView';
-import { Cell, Grid, Row } from '../../../../material-components';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import * as fixtures from '../../datastore/__fixtures__';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 
 const { accountSummaries, webDataStreamsBatch, googleTagSettings } = fixtures;
 const accounts = accountSummaries.accountSummaries;
@@ -95,7 +95,7 @@ export default {
 	title: 'Modules/Analytics4/Settings/SettingsView',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ANALYTICS_4,
@@ -136,7 +136,7 @@ export default {
 						isGTGHealthy: args.googleTagGateway || false,
 						isScriptAccessEnabled: args.googleTagGateway || false,
 					} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

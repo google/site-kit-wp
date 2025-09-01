@@ -22,7 +22,7 @@
 import ConfirmDisconnect from './ConfirmDisconnect';
 import { provideModules } from '../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 function Template( args ) {
@@ -37,7 +37,7 @@ ConfirmDisconnectWithFeatures.args = {
 };
 ConfirmDisconnectWithFeatures.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			provideModules( registry, [
 				{
 					slug: MODULE_SLUG_ANALYTICS_4,
@@ -54,7 +54,7 @@ ConfirmDisconnectWithFeatures.decorators = [
 			registry
 				.dispatch( CORE_UI )
 				.setValue( 'module-analytics-4-dialogActive', true );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -73,7 +73,7 @@ ConfirmDisconnectWithFeaturesAndLongText.args = {
 };
 ConfirmDisconnectWithFeaturesAndLongText.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			provideModules( registry, [
 				{
 					slug: 'third-party-module',
@@ -90,7 +90,7 @@ ConfirmDisconnectWithFeaturesAndLongText.decorators = [
 			registry
 				.dispatch( CORE_UI )
 				.setValue( 'module-third-party-module-dialogActive', true );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -108,7 +108,7 @@ ConfirmDisconnectWithoutFeatures.args = {
 };
 ConfirmDisconnectWithoutFeatures.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			provideModules( registry, [
 				{
 					slug: 'third-party-module',
@@ -120,7 +120,7 @@ ConfirmDisconnectWithoutFeatures.decorators = [
 			registry
 				.dispatch( CORE_UI )
 				.setValue( 'module-third-party-module-dialogActive', true );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>

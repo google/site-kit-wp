@@ -29,12 +29,12 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '../../../../components/Notice/constants';
-import useQueryArg from '../../../../hooks/useQueryArg';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '@/js/components/Notice/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '../../constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 
 export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 	const [ , setNotification ] = useQueryArg( 'notification' );
@@ -46,10 +46,10 @@ export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 		)
 	);
 
-	const onDismiss = () => {
+	function onDismiss() {
 		setNotification( undefined );
 		setSlug( undefined );
-	};
+	}
 
 	return (
 		<Notification>

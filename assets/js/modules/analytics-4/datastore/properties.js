@@ -38,26 +38,26 @@ import {
 	combineStores,
 	createReducer,
 } from 'googlesitekit-data';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '@/js/modules/tagmanager/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	MAX_WEBDATASTREAMS_PER_BATCH,
 	WEBDATASTREAM_CREATE,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
-import { HOUR_IN_SECONDS, normalizeURL } from '../../../util';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { HOUR_IN_SECONDS, normalizeURL } from '@/js/util';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import {
 	isValidAccountID,
 	isValidPropertyID,
 	isValidPropertySelection,
-} from '../utils/validation';
-import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { getItem, setItem } from '../../../googlesitekit/api/cache';
+} from '@/js/modules/analytics-4/utils/validation';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { getItem, setItem } from '@/js/googlesitekit/api/cache';
 
 const fetchGetPropertyStore = createFetchStore( {
 	baseName: 'getProperty',
@@ -193,34 +193,29 @@ const fetchSetGoogleTagIDMismatch = createFetchStore( {
 	},
 } );
 
-const fetchSetIsWebDataStreamAvailable = createFetchStore( {
-	baseName: 'setIsWebDataStreamAvailable',
-	controlCallback( { isWebDataStreamAvailable } ) {
+const fetchSetIsWebDataStreamUnavailable = createFetchStore( {
+	baseName: 'setIsWebDataStreamUnavailable',
+	controlCallback( { isWebDataStreamUnavailable } ) {
 		return set(
 			'modules',
 			MODULE_SLUG_ANALYTICS_4,
-			'set-is-web-data-stream-available',
+			'set-is-web-data-stream-unavailable',
 			{
-				isWebDataStreamAvailable,
+				isWebDataStreamUnavailable,
 			}
 		);
 	},
-	reducerCallback( state, isWebDataStreamAvailable ) {
-		return {
-			...state,
-			moduleData: {
-				...state.moduleData,
-				isWebDataStreamAvailable: !! isWebDataStreamAvailable,
-			},
-		};
+	reducerCallback: createReducer( ( state, isWebDataStreamUnavailable ) => {
+		state.moduleData.isWebDataStreamUnavailable =
+			!! isWebDataStreamUnavailable;
+	} ),
+	argsToParams( isWebDataStreamUnavailable ) {
+		return { isWebDataStreamUnavailable };
 	},
-	argsToParams( isWebDataStreamAvailable ) {
-		return { isWebDataStreamAvailable };
-	},
-	validateParams( { isWebDataStreamAvailable } = {} ) {
+	validateParams( { isWebDataStreamUnavailable } = {} ) {
 		invariant(
-			isBoolean( isWebDataStreamAvailable ),
-			'isWebDataStreamAvailable must be boolean.'
+			isBoolean( isWebDataStreamUnavailable ),
+			'isWebDataStreamUnavailable must be boolean.'
 		);
 	},
 } );
@@ -623,17 +618,17 @@ const baseActions = {
 	},
 
 	/**
-	 * Sets whether the Web Data Stream is available.
+	 * Sets whether the Web Data Stream is unavailable.
 	 *
 	 * @since 1.99.0
-	 * @since n.e.x.t Updated to use the fetch store.
+	 * @since 1.159.0 Updated to use the fetch store.
 	 *
-	 * @param {boolean} isWebDataStreamAvailable Whether the Web Data Stream is available.
+	 * @param {boolean} isWebDataStreamUnavailable Whether the Web Data Stream is unavailable.
 	 * @return {Object} Generator function.
 	 */
-	*setIsWebDataStreamAvailable( isWebDataStreamAvailable ) {
-		return yield fetchSetIsWebDataStreamAvailable.actions.fetchSetIsWebDataStreamAvailable(
-			isWebDataStreamAvailable
+	*setIsWebDataStreamUnavailable( isWebDataStreamUnavailable ) {
+		return yield fetchSetIsWebDataStreamUnavailable.actions.fetchSetIsWebDataStreamUnavailable(
+			isWebDataStreamUnavailable
 		);
 	},
 
@@ -658,7 +653,6 @@ const baseActions = {
 		yield commonActions.await( resolveSelect( CORE_MODULES ).getModules() );
 
 		const { isModuleConnected } = select( CORE_MODULES );
-
 		if ( ! isModuleConnected( MODULE_SLUG_ANALYTICS_4 ) ) {
 			return;
 		}
@@ -677,7 +671,6 @@ const baseActions = {
 		} = select( MODULES_ANALYTICS_4 );
 
 		const measurementID = getMeasurementID();
-
 		if ( ! measurementID ) {
 			return;
 		}
@@ -706,9 +699,14 @@ const baseActions = {
 				)
 			);
 
-			if ( ! googleTagContainer ) {
-				yield baseActions.setIsWebDataStreamAvailable( false );
-			} else if ( ! googleTagContainer.tagIds.includes( googleTagID ) ) {
+			yield baseActions.setIsWebDataStreamUnavailable(
+				! googleTagContainer
+			);
+
+			if (
+				googleTagContainer &&
+				! googleTagContainer.tagIds.includes( googleTagID )
+			) {
 				yield baseActions.setHasMismatchedGoogleTagID( true );
 			}
 		} else {
@@ -977,7 +975,7 @@ const store = combineStores(
 	fetchGetPropertyStore,
 	fetchGetGoogleTagSettingsStore,
 	fetchSetGoogleTagIDMismatch,
-	fetchSetIsWebDataStreamAvailable,
+	fetchSetIsWebDataStreamUnavailable,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

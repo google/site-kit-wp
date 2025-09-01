@@ -27,19 +27,19 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { Cell, Grid, Row } from '../../material-components';
-import Header from '../Header';
-import HelpMenu from '../help/HelpMenu';
-import Layout from '../layout/Layout';
-import PageHeader from '../PageHeader';
-import PanelContent from '../KeyMetrics/MetricsSelectionPanel/PanelContent';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
+import Header from '@/js/components/Header';
+import HelpMenu from '@/js/components/help/HelpMenu';
+import Layout from '@/js/components/layout/Layout';
+import PageHeader from '@/js/components/PageHeader';
+import PanelContent from '@/js/components/KeyMetrics/MetricsSelectionPanel/PanelContent';
 import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
-} from '../KeyMetrics/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+} from '@/js/components/KeyMetrics/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 
 export default function FullScreenMetricSelectionApp() {
 	const { setValues } = useDispatch( CORE_FORMS );

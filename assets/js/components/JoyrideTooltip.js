@@ -38,7 +38,7 @@ import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../hooks/useBreakpoint';
+} from '@/js/hooks/useBreakpoint';
 
 export default function JoyrideTooltip( props ) {
 	const {
@@ -58,8 +58,9 @@ export default function JoyrideTooltip( props ) {
 		onTourEnd = () => {},
 	} = props;
 
-	const checkIfTargetExists = () =>
-		!! global.document.querySelector( target );
+	function checkIfTargetExists() {
+		return !! global.document.querySelector( target );
+	}
 
 	const [ targetExists, setTargetExists ] = useState( checkIfTargetExists );
 
@@ -135,7 +136,7 @@ export default function JoyrideTooltip( props ) {
 		last: dismissLabel,
 	};
 
-	const callback = ( { type } ) => {
+	function callback( { type } ) {
 		switch ( type ) {
 			case EVENTS.TOUR_START:
 				onTourStart();
@@ -159,7 +160,7 @@ export default function JoyrideTooltip( props ) {
 				onView();
 				break;
 		}
-	};
+	}
 
 	return (
 		<Portal slug={ slug }>

@@ -52,31 +52,35 @@ import {
 	KEY_METRICS_SELECTION_FORM,
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 	UNSTAGED_SELECTION,
-} from '../constants';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+} from '@/js/components/KeyMetrics/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
 	CONVERSION_REPORTING_LEAD_EVENTS,
 	MODULES_ANALYTICS_4,
-} from '../../../modules/analytics-4/datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import Chip from './Chip';
-import MetricItem from '../MetricsSelectionPanel/MetricItem';
-import NoSelectedItemsSVG from '../../../../svg/graphics/key-metrics-no-selected-items.svg';
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
-import { useDebounce } from '../../../hooks/useDebounce';
-import CheckMark from '../../../../svg/icons/check-2.svg';
-import StarFill from '../../../../svg/icons/star-fill.svg';
-import Null from '../../../components/Null';
+import MetricItem from '@/js/components/KeyMetrics/MetricsSelectionPanel/MetricItem';
+import NoSelectedItemsSVG from '@/svg/graphics/key-metrics-no-selected-items.svg';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { useDebounce } from '@/js/hooks/useDebounce';
+import CheckMark from '@/svg/icons/check-2.svg';
+import StarFill from '@/svg/icons/star-fill.svg';
+import Null from '@/js/components/Null';
+import useFormValue from '@/js/hooks/useFormValue';
+import P from '@/js/components/Typography/P';
 
 const icons = {
 	[ KEY_METRICS_GROUP_CURRENT.SLUG ]: CheckMark,
 	[ KEY_METRICS_GROUP_SUGGESTED.SLUG ]: StarFill,
 };
+const emptyArray = Object.freeze( [] );
 
+/* eslint complexity: [ "error", 17 ] */
 export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	const containerRef = useRef();
 	const [ isActive, setIsActive ] = useState(
@@ -89,27 +93,17 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 
-	const selectedMetrics = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			KEY_METRICS_SELECTION_FORM,
-			KEY_METRICS_SELECTED
-		)
+	const selectedMetrics = useFormValue(
+		KEY_METRICS_SELECTION_FORM,
+		KEY_METRICS_SELECTED
 	);
-	const effectiveSelection = useSelect(
-		( select ) =>
-			select( CORE_FORMS ).getValue(
-				KEY_METRICS_SELECTION_FORM,
-				EFFECTIVE_SELECTION
-			) || []
-	);
+	const effectiveSelection =
+		useFormValue( KEY_METRICS_SELECTION_FORM, EFFECTIVE_SELECTION ) ||
+		emptyArray;
+	const unstagedSelection =
+		useFormValue( KEY_METRICS_SELECTION_FORM, UNSTAGED_SELECTION ) ||
+		emptyArray;
 
-	const unstagedSelection = useSelect(
-		( select ) =>
-			select( CORE_FORMS ).getValue(
-				KEY_METRICS_SELECTION_FORM,
-				UNSTAGED_SELECTION
-			) || []
-	);
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()
 	);
@@ -540,12 +534,12 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 				{ ! Object.keys( activeMetricItems ).length && (
 					<div className="googlesitekit-chip-tab-group__graphic">
 						<NoSelectedItemsSVG height={ 250 } />
-						<p>
+						<P>
 							{ __(
 								'No metrics were selected yet',
 								'google-site-kit'
 							) }
-						</p>
+						</P>
 					</div>
 				) }
 			</div>

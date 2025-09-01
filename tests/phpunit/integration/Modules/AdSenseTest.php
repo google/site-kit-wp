@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
@@ -58,11 +56,11 @@ class AdSenseTest extends TestCase {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 
-		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
+		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ), 'Auth scopes should be empty before AdSense module registration.' );
 
 		$adsense->register();
 
-		$this->assertNotEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
+		$this->assertNotEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ), 'Auth scopes should not be empty after AdSense module registration.' );
 	}
 
 	public function test_register_template_redirect_amp() {
@@ -77,9 +75,9 @@ class AdSenseTest extends TestCase {
 		remove_all_filters( 'amp_post_template_data' );
 
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'wp_body_open' ) );
-		$this->assertFalse( has_filter( 'the_content' ) );
-		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+		$this->assertFalse( has_action( 'wp_body_open' ), 'WP body open action should not be hooked when module is not connected.' );
+		$this->assertFalse( has_filter( 'the_content' ), 'The content filter should not be hooked when module is not connected.' );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should not be hooked when module is not connected.' );
 
 		$adsense->get_settings()->merge(
 			array(
@@ -89,9 +87,9 @@ class AdSenseTest extends TestCase {
 		);
 
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'wp_body_open' ) );
-		$this->assertTrue( has_filter( 'the_content' ) );
-		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+		$this->assertTrue( has_action( 'wp_body_open' ), 'WP body open action should be hooked when module is connected.' );
+		$this->assertTrue( has_filter( 'the_content' ), 'The content filter should be hooked when module is connected.' );
+		$this->assertTrue( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should be hooked when module is connected.' );
 
 		// Tag not hooked when blocked.
 		remove_all_actions( 'wp_body_open' );
@@ -100,17 +98,17 @@ class AdSenseTest extends TestCase {
 		add_filter( 'googlesitekit_adsense_tag_amp_blocked', '__return_true' );
 
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'wp_body_open' ) );
-		$this->assertFalse( has_filter( 'the_content' ) );
-		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+		$this->assertFalse( has_action( 'wp_body_open' ), 'WP body open action should not be hooked when tag is blocked.' );
+		$this->assertFalse( has_filter( 'the_content' ), 'The content filter should not be hooked when tag is blocked.' );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should not be hooked when tag is blocked.' );
 
 		// Tag hooked when AMP specifically not blocked.
 		add_filter( 'googlesitekit_adsense_tag_amp_blocked', '__return_false' );
 
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'wp_body_open' ) );
-		$this->assertTrue( has_filter( 'the_content' ) );
-		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+		$this->assertTrue( has_action( 'wp_body_open' ), 'WP body open action should be hooked when AMP is not blocked.' );
+		$this->assertTrue( has_filter( 'the_content' ), 'The content filter should be hooked when AMP is not blocked.' );
+		$this->assertTrue( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should be hooked when AMP is not blocked.' );
 	}
 
 	public function test_register_template_redirect_non_amp() {
@@ -123,7 +121,7 @@ class AdSenseTest extends TestCase {
 		remove_all_actions( 'wp_head' );
 
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'wp_head' ) );
+		$this->assertFalse( has_action( 'wp_head' ), 'wp_head should not be hooked when module is not connected.' );
 
 		$adsense->get_settings()->merge(
 			array(
@@ -133,14 +131,14 @@ class AdSenseTest extends TestCase {
 		);
 
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'wp_head' ) );
+		$this->assertTrue( has_action( 'wp_head' ), 'wp_head should be hooked when module is connected.' );
 
 		// Tag not hooked when blocked.
 		remove_all_actions( 'wp_head' );
 		add_filter( 'googlesitekit_adsense_tag_blocked', '__return_true' );
 
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'wp_head' ) );
+		$this->assertFalse( has_action( 'wp_head' ), 'WP head action should not be hooked when tag is blocked.' );
 
 		// Tag hooked when only AMP blocked.
 		remove_all_actions( 'wp_head' );
@@ -148,7 +146,7 @@ class AdSenseTest extends TestCase {
 		add_filter( 'googlesitekit_adsense_tag_amp_blocked', '__return_true' );
 
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'wp_head' ) );
+		$this->assertTrue( has_action( 'wp_head' ), 'WP head action should be hooked when only AMP is blocked.' );
 	}
 
 	public function test_register__reset_analytics_adsense_link_settings() {
@@ -181,8 +179,8 @@ class AdSenseTest extends TestCase {
 
 		$analytics_settings = $analytics->get_settings()->get();
 
-		$this->assertFalse( $analytics_settings['adSenseLinked'] );
-		$this->assertEquals( $analytics_settings['adSenseLinkedLastSyncedAt'], 0 );
+		$this->assertFalse( $analytics_settings['adSenseLinked'], 'AdSense linked setting should be reset when AdSense account ID changes.' );
+		$this->assertEquals( $analytics_settings['adSenseLinkedLastSyncedAt'], 0, 'AdSense linked last synced timestamp should be reset when AdSense account ID changes.' );
 	}
 
 	public function test_register__if_analytics_is_active_sync_adsense_link_settings() {
@@ -206,7 +204,8 @@ class AdSenseTest extends TestCase {
 
 		$this->assertEquals(
 			did_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED ),
-			1
+			1,
+			'AdSense linked synchronization cron action should be triggered once.'
 		);
 	}
 
@@ -235,14 +234,14 @@ class AdSenseTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_head' );
 
-		$this->assertStringContainsString( 'Google AdSense snippet added by Site Kit', $output );
+		$this->assertStringContainsString( 'Google AdSense snippet added by Site Kit', $output, 'Output should contain the Google AdSense snippet.' );
 
-		$this->assertStringContainsString( 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-12345678&amp;host=ca-host-pub-2644536267352236', $output );
+		$this->assertStringContainsString( 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-12345678&amp;host=ca-host-pub-2644536267352236', $output, 'Output should contain the correct AdSense script URL with client ID.' );
 
 		if ( $enabled ) {
-			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output, 'Non-AMP output should include data-block-on-consent when enabled.' );
 		} else {
-			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output, 'Non-AMP output should not include data-block-on-consent when disabled.' );
 		}
 	}
 
@@ -258,11 +257,11 @@ class AdSenseTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_head' );
 
-		$this->assertStringContainsString( 'google-adsense-platform-account', $output );
-		$this->assertStringContainsString( 'ca-host-pub-2644536267352236', $output );
+		$this->assertStringContainsString( 'google-adsense-platform-account', $output, 'Output should contain AdSense platform account meta tag.' );
+		$this->assertStringContainsString( 'ca-host-pub-2644536267352236', $output, 'Output should contain the correct AdSense host ID.' );
 
-		$this->assertStringContainsString( 'google-adsense-platform-domain', $output );
-		$this->assertStringContainsString( 'sitekit.withgoogle.com', $output );
+		$this->assertStringContainsString( 'google-adsense-platform-domain', $output, 'Output should contain AdSense platform domain meta tag.' );
+		$this->assertStringContainsString( 'sitekit.withgoogle.com', $output, 'Output should contain the correct AdSense domain.' );
 	}
 
 	/**
@@ -290,14 +289,14 @@ class AdSenseTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_body_open' );
 
-		$this->assertStringContainsString( 'Google AdSense AMP snippet added by Site Kit', $output );
+		$this->assertStringContainsString( 'Google AdSense AMP snippet added by Site Kit', $output, 'AMP output should include AdSense snippet marker.' );
 
-		$this->assertStringContainsString( 'data-ad-client="ca-pub-12345678"', $output );
+		$this->assertStringContainsString( 'data-ad-client="ca-pub-12345678"', $output, 'AMP output should include data-ad-client attribute.' );
 
 		if ( $enabled ) {
-			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output, 'AMP output should include data-block-on-consent when enabled.' );
 		} else {
-			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output, 'AMP output should not include data-block-on-consent when disabled.' );
 		}
 	}
 
@@ -330,14 +329,14 @@ class AdSenseTest extends TestCase {
 
 		$output = apply_filters( 'the_content', 'test content' );
 
-		$this->assertStringContainsString( 'Google AdSense AMP snippet added by Site Kit', $output );
+		$this->assertStringContainsString( 'Google AdSense AMP snippet added by Site Kit', $output, 'AMP content output should include AdSense snippet marker.' );
 
-		$this->assertStringContainsString( 'data-ad-client="ca-pub-12345678"', $output );
+		$this->assertStringContainsString( 'data-ad-client="ca-pub-12345678"', $output, 'AMP content output should include data-ad-client attribute.' );
 
 		if ( $enabled ) {
-			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output, 'AMP content output should include data-block-on-consent when enabled.' );
 		} else {
-			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output, 'AMP content output should not include data-block-on-consent when disabled.' );
 		}
 	}
 
@@ -373,7 +372,7 @@ class AdSenseTest extends TestCase {
 
 		// Confirm that the tag is not added if we're not in the loop.
 		$output = apply_filters( 'the_content', 'test content' );
-		$this->assertStringNotContainsString( 'data-ad-client="ca-pub-12345678"', $output );
+		$this->assertStringNotContainsString( 'data-ad-client="ca-pub-12345678"', $output, 'Content should not include data-ad-client when not in the loop.' );
 
 		// We need to fake the global to allow the hook to add the tag.
 		global $wp_query;
@@ -381,7 +380,7 @@ class AdSenseTest extends TestCase {
 
 		// Confirm that the tag is added when in the loop.
 		$output = apply_filters( 'the_content', 'test content' );
-		$this->assertStringContainsString( 'data-ad-client="ca-pub-12345678"', $output );
+		$this->assertStringContainsString( 'data-ad-client="ca-pub-12345678"', $output, 'Content should include data-ad-client when in the loop.' );
 	}
 
 	public function data_amp_auto_ads_tag_in_the_loop() {
@@ -400,7 +399,8 @@ class AdSenseTest extends TestCase {
 
 		$this->assertContains(
 			'https://www.googleapis.com/auth/adsense.readonly',
-			$adsense->get_scopes()
+			$adsense->get_scopes(),
+			'Scopes should include AdSense readonly scope.'
 		);
 	}
 
@@ -433,16 +433,16 @@ class AdSenseTest extends TestCase {
 		);
 
 		// Assert that the tags are not available in database before fetching.
-		$this->assertOptionNotExists( Ad_Blocking_Recovery_Tag::OPTION );
+		$this->assertOptionNotExists( Ad_Blocking_Recovery_Tag::OPTION, 'Recovery tag option should not exist before sync.' );
 
 		$response = $adsense->set_data( 'sync-ad-blocking-recovery-tags', array() );
 
 		// Assert API response.
-		$this->assertNotWPError( $response );
-		$this->assertEqualSetsWithIndex( array( 'success' => true ), $response->get_data() );
+		$this->assertNotWPError( $response, 'Sync tags response should not be a WP_Error.' );
+		$this->assertEqualSetsWithIndex( array( 'success' => true ), $response->get_data(), 'Sync tags response data should indicate success.' );
 
 		// Assert that the tags are available in database after fetching.
-		$this->assertOptionExists( Ad_Blocking_Recovery_Tag::OPTION );
+		$this->assertOptionExists( Ad_Blocking_Recovery_Tag::OPTION, 'Recovery tag option should exist after sync.' );
 	}
 
 	public function test_get_data__notifications() {
@@ -478,14 +478,14 @@ class AdSenseTest extends TestCase {
 
 		// Should return empty array when account ID is not available in settings.
 		$response = $adsense->get_data( 'notifications' );
-		$this->assertCount( 0, $response );
+		$this->assertCount( 0, $response, 'Notifications should be empty without account ID.' );
 
 		// Should return an array of `adsense-notification` with `SEVERE` severity when account ID is available.
 		$adsense->get_settings()->merge( array( 'accountID' => 'pub-1234567890' ) );
 
 		$response = $adsense->get_data( 'notifications' );
-		$this->assertNotWPError( $response );
-		$this->assertCount( 1, $response );
+		$this->assertNotWPError( $response, 'Notifications response should not be a WP_Error.' );
+		$this->assertCount( 1, $response, 'Notifications should include one severe alert when account ID is set.' );
 	}
 
 	public function test_get_data__alerts() {
@@ -521,14 +521,14 @@ class AdSenseTest extends TestCase {
 
 		// Should return WP Error when account ID is not provided.
 		$response = $adsense->get_data( 'alerts' );
-		$this->assertWPError( $response );
+		$this->assertWPError( $response, 'Alerts request without account ID should return WP_Error.' );
 
 		// Should return an array of alerts when account ID is provided.
 		$response = $adsense->get_data( 'alerts', array( 'accountID' => 'pub-1234567890' ) );
-		$this->assertNotWPError( $response );
-		$this->assertCount( 2, $response );
-		$this->assertInstanceOf( 'Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert', $response[0] );
-		$this->assertInstanceOf( 'Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert', $response[1] );
+		$this->assertNotWPError( $response, 'Alerts response should not be a WP_Error when account ID is provided.' );
+		$this->assertCount( 2, $response, 'Alerts response should contain two alerts.' );
+		$this->assertInstanceOf( 'Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert', $response[0], 'First alert should be an instance of Alert.' );
+		$this->assertInstanceOf( 'Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert', $response[1], 'Second alert should be an instance of Alert.' );
 	}
 
 	public function test_is_connected() {
@@ -536,9 +536,9 @@ class AdSenseTest extends TestCase {
 		$options  = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$settings = $options->get( Settings::OPTION );
 
-		$this->assertFalse( $settings['accountSetupComplete'] );
-		$this->assertFalse( $settings['siteSetupComplete'] );
-		$this->assertFalse( $adsense->is_connected() );
+		$this->assertFalse( $settings['accountSetupComplete'], 'Account setup should be incomplete by default.' );
+		$this->assertFalse( $settings['siteSetupComplete'], 'Site setup should be incomplete by default.' );
+		$this->assertFalse( $adsense->is_connected(), 'Module should not be connected with incomplete setup.' );
 
 		$options->set(
 			Settings::OPTION,
@@ -547,7 +547,7 @@ class AdSenseTest extends TestCase {
 				'siteSetupComplete'    => true,
 			)
 		);
-		$this->assertTrue( $adsense->is_connected() );
+		$this->assertTrue( $adsense->is_connected(), 'Module should be connected when account and site setup are complete.' );
 	}
 
 	public function test_on_deactivation() {
@@ -557,13 +557,13 @@ class AdSenseTest extends TestCase {
 
 		$options->set( Settings::OPTION, 'test-value-settings' );
 		$options->set( Ad_Blocking_Recovery_Tag::OPTION, 'test-value-ad-blocking-recovery-tag' );
-		$this->assertOptionExists( Settings::OPTION );
-		$this->assertOptionExists( Ad_Blocking_Recovery_Tag::OPTION );
+		$this->assertOptionExists( Settings::OPTION, 'Settings option should exist before deactivation.' );
+		$this->assertOptionExists( Ad_Blocking_Recovery_Tag::OPTION, 'Recovery tag option should exist before deactivation.' );
 
 		$adsense->on_deactivation();
 
-		$this->assertOptionNotExists( Settings::OPTION );
-		$this->assertOptionNotExists( Ad_Blocking_Recovery_Tag::OPTION );
+		$this->assertOptionNotExists( Settings::OPTION, 'Settings option should be deleted on deactivation.' );
+		$this->assertOptionNotExists( Ad_Blocking_Recovery_Tag::OPTION, 'Recovery tag option should be deleted on deactivation.' );
 
 		$analytics = new Analytics_4( $context );
 		$analytics->register();
@@ -578,8 +578,8 @@ class AdSenseTest extends TestCase {
 
 		$analytics_settings = $analytics->get_settings()->get();
 
-		$this->assertFalse( $analytics_settings['adSenseLinked'] );
-		$this->assertEquals( $analytics_settings['adSenseLinkedLastSyncedAt'], 0 );
+		$this->assertFalse( $analytics_settings['adSenseLinked'], 'AdSense linked flag should be reset on deactivation.' );
+		$this->assertEquals( $analytics_settings['adSenseLinkedLastSyncedAt'], 0, 'AdSense linked last synced timestamp should be reset on deactivation.' );
 	}
 
 	public function test_get_datapoints() {
@@ -596,7 +596,8 @@ class AdSenseTest extends TestCase {
 				'sites',
 				'sync-ad-blocking-recovery-tags',
 			),
-			$adsense->get_datapoints()
+			$adsense->get_datapoints(),
+			'Datapoints list should match expected AdSense datapoints.'
 		);
 	}
 
@@ -644,8 +645,8 @@ class AdSenseTest extends TestCase {
 
 		// When there is no orderby in the request.
 		$result = $reflected_parse_earnings_orderby_method->invoke( $adsense, array() );
-		$this->assertTrue( is_array( $result ) );
-		$this->assertEmpty( $result );
+		$this->assertTrue( is_array( $result ), 'Result should be an array when no orderby provided.' );
+		$this->assertEmpty( $result, 'Result should be empty when no orderby provided.' );
 
 		// When a single order object is used.
 		$order  = array(
@@ -653,9 +654,9 @@ class AdSenseTest extends TestCase {
 			'sortOrder' => 'ASCENDING',
 		);
 		$result = $reflected_parse_earnings_orderby_method->invoke( $adsense, $order );
-		$this->assertTrue( is_array( $result ) );
-		$this->assertEquals( 1, count( $result ) );
-		$this->assertEquals( '+views', $result[0] );
+		$this->assertTrue( is_array( $result ), 'Result should be an array for single order.' );
+		$this->assertEquals( 1, count( $result ), 'Single order should produce one parsed order string.' );
+		$this->assertEquals( '+views', $result[0], 'Ascending order should be prefixed with +.' );
 
 		// When multiple orders are passed.
 		$orders = array(
@@ -669,10 +670,10 @@ class AdSenseTest extends TestCase {
 			),
 		);
 		$result = $reflected_parse_earnings_orderby_method->invoke( $adsense, $orders );
-		$this->assertTrue( is_array( $result ) );
-		$this->assertEquals( 2, count( $result ) );
-		$this->assertEquals( '-pages', $result[0] );
-		$this->assertEquals( '+sessions', $result[1] );
+		$this->assertTrue( is_array( $result ), 'Result should be an array for multiple orders.' );
+		$this->assertEquals( 2, count( $result ), 'Two orders should produce two parsed order strings.' );
+		$this->assertEquals( '-pages', $result[0], 'Descending order should be prefixed with -.' );
+		$this->assertEquals( '+sessions', $result[1], 'Ascending order should be prefixed with +.' );
 
 		// Check that it skips invalid orders.
 		$orders = array(
@@ -694,10 +695,10 @@ class AdSenseTest extends TestCase {
 			),
 		);
 		$result = $reflected_parse_earnings_orderby_method->invoke( $adsense, $orders );
-		$this->assertTrue( is_array( $result ) );
-		$this->assertEquals( 2, count( $result ) );
-		$this->assertEquals( '-pages', $result[0] );
-		$this->assertEquals( '+sessions', $result[1] );
+		$this->assertTrue( is_array( $result ), 'Result should be an array when skipping invalid orders.' );
+		$this->assertEquals( 2, count( $result ), 'Invalid orders should be skipped leaving two valid orders.' );
+		$this->assertEquals( '-pages', $result[0], 'Valid descending order should be retained.' );
+		$this->assertEquals( '+sessions', $result[1], 'Valid ascending order should be retained.' );
 	}
 
 	public function test_get_sites_no_account_id_from_rest_api() {
@@ -721,7 +722,7 @@ class AdSenseTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		// Confirm the request returns 400 status code.
-		$this->assertEquals( 400, $response->get_status() );
+		$this->assertEquals( 400, $response->get_status(), 'Sites endpoint should return 400 without account ID.' );
 	}
 
 	public function test_get_debug_fields() {
@@ -740,7 +741,8 @@ class AdSenseTest extends TestCase {
 				'adsense_abr_use_error_protection_snippet',
 				'adsense_abr_setup_status',
 			),
-			array_keys( $adsense->get_debug_fields() )
+			array_keys( $adsense->get_debug_fields() ),
+			'Debug fields keys should match expected list.'
 		);
 	}
 }

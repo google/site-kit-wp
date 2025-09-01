@@ -19,14 +19,11 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	provideSiteInfo,
-	WithTestRegistry,
-} from '../../../../tests/js/utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_METRIC_SELECTION } from '../../googlesitekit/constants';
-import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
+import { provideSiteInfo } from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_METRIC_SELECTION } from '@/js/googlesitekit/constants';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import FullScreenMetricsSelectionApp from './FullScreenMetricSelectionApp';
 
 function Template() {
@@ -49,19 +46,22 @@ export default {
 	component: FullScreenMetricsSelectionApp,
 	decorators: [
 		( Story, { args } ) => {
-			const registry = createTestRegistry();
+			function setupRegistry( registry ) {
+				registry
+					.dispatch( CORE_USER )
+					.receiveIsUserInputCompleted( false );
 
-			registry.dispatch( CORE_USER ).receiveIsUserInputCompleted( false );
+				provideSiteInfo( registry );
 
-			provideSiteInfo( registry );
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			}
 
 			return (
-				<WithTestRegistry
-					registry={ registry }
-					features={ args.features || [] }
-				>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

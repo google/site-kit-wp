@@ -20,10 +20,10 @@
  * Internal dependencies
  */
 import SettingsView from './SettingsView';
-import { Cell, Grid, Row } from '../../../../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import { MODULE_SLUG_TAGMANAGER } from '../../constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -95,7 +95,7 @@ export default {
 	component: SettingsView,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetSettings( {} );
@@ -113,7 +113,7 @@ export default {
 				provideModuleRegistrations( registry );
 
 				args?.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

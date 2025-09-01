@@ -34,16 +34,16 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
 import VisuallyHidden from './VisuallyHidden';
-import MagnifyingGlass from '../../svg/icons/magnifying-glass.svg';
-import CloseDark from '../../svg/icons/close-dark.svg';
+import MagnifyingGlass from '@/svg/icons/magnifying-glass.svg';
+import CloseDark from '@/svg/icons/close-dark.svg';
 import PostSearcherAutoSuggest from './PostSearcherAutoSuggest';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
-import { trackEvent } from '../util';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { trackEvent } from '@/js/util';
 import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
-} from '../hooks/useDashboardType';
-import useViewContext from '../hooks/useViewContext';
+} from '@/js/hooks/useDashboardType';
+import useViewContext from '@/js/hooks/useViewContext';
 
 function EntitySearchInput() {
 	const instanceID = useInstanceId( EntitySearchInput, 'EntitySearchInput' );

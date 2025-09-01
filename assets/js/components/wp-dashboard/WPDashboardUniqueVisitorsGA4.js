@@ -33,12 +33,12 @@ import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import PreviewBlock from '../PreviewBlock';
-import { calculateChange } from '../../util';
-import DataBlock from '../DataBlock';
-import { NOTICE_STYLE } from '../GatheringDataNotice';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import { calculateChange } from '@/js/util';
+import DataBlock from '@/js/components/DataBlock';
+import { NOTICE_STYLE } from '@/js/components/GatheringDataNotice';
 
 function WPDashboardUniqueVisitorsGA4( { WPDashboardReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>

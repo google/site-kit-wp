@@ -31,10 +31,11 @@ import { forwardRef, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Row, Cell } from '../../../../../material-components';
+import { Row, Cell } from '@/js/material-components';
 import ContentSVG from './ContentSVG';
-import AdSenseIcon from '../../../../../../svg/graphics/adsense.svg';
-import Typography from '../../../../../components/Typography';
+import AdSenseIcon from '@/svg/graphics/adsense.svg';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 	const stageContent = [
@@ -124,7 +125,7 @@ const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 										>
 											{ title }
 										</Typography>
-										<p>{ description }</p>
+										<P>{ description }</P>
 									</div>
 								</li>
 							)

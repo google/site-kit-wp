@@ -27,25 +27,25 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { trackEvent } from '../../../util';
-import Layout from '../../layout/Layout';
-import { Grid, Row, Cell } from '../../../material-components';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
+import { trackEvent } from '@/js/util';
+import Layout from '@/js/components/layout/Layout';
+import { Grid, Row, Cell } from '@/js/material-components';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import {
 	ANALYTICS_NOTICE_FORM_NAME,
 	ANALYTICS_NOTICE_CHECKBOX,
-} from '../constants';
+} from '@/js/components/setup/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { setItem } from '../../../googlesitekit/api/cache';
-import useViewContext from '../../../hooks/useViewContext';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import useViewContext from '@/js/hooks/useViewContext';
 import Header from './Header';
 import Splash from './Splash';
 import Actions from './Actions';
-import Notice from '../../Notice';
-import { TYPES } from '../../Notice/constants';
+import Notice from '@/js/components/Notice';
+import { TYPES } from '@/js/components/Notice/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
@@ -58,11 +58,9 @@ export default function SetupUsingProxyWithSignIn() {
 	const isConnected = useSelect( ( select ) =>
 		select( CORE_SITE ).isConnected()
 	);
-	const connectAnalytics = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			ANALYTICS_NOTICE_FORM_NAME,
-			ANALYTICS_NOTICE_CHECKBOX
-		)
+	const connectAnalytics = useFormValue(
+		ANALYTICS_NOTICE_FORM_NAME,
+		ANALYTICS_NOTICE_CHECKBOX
 	);
 
 	const onButtonClick = useCallback(

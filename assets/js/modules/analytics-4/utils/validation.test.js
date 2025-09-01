@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { WEBDATASTREAM_CREATE } from '../datastore/constants';
+import { WEBDATASTREAM_CREATE } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	isValidGoogleTagAccountID,
 	isValidGoogleTagContainerID,

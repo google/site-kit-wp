@@ -24,9 +24,9 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Link from '../Link';
-import CloseIcon from '../../../svg/icons/close.svg';
-import Typography from '../Typography';
+import Link from '@/js/components/Link';
+import CloseIcon from '@/svg/icons/close.svg';
+import Typography from '@/js/components/Typography';
 
 export default function SelectionPanelHeader( {
 	children,

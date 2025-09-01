@@ -33,17 +33,17 @@ import { sprintf, _n } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Checkbox, Radio } from 'googlesitekit-components';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { Cell } from '../../material-components';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { Cell } from '@/js/material-components';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 	USER_INPUT_QUESTION_POST_FREQUENCY,
 	USER_INPUT_QUESTIONS_PURPOSE,
 } from './util/constants';
-import { trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function UserInputSelectOptions( {
 	slug,
@@ -73,13 +73,13 @@ export default function UserInputSelectOptions( {
 			return;
 		}
 
-		const focusOption = ( element ) => {
+		function focusOption( element ) {
 			if ( element ) {
 				setTimeout( () => {
 					element.focus();
 				}, 50 );
 			}
-		};
+		}
 
 		const optionType = max === 1 ? 'radio' : 'checkbox';
 		const checkedEl = optionsRef.current.querySelector(

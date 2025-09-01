@@ -32,7 +32,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_SETTINGS,
 	VIEW_CONTEXT_SPLASH,
-} from '../constants';
+} from '@/js/googlesitekit/constants';
 import { CORE_NOTIFICATIONS } from './datastore/constants';
 import {
 	NOTIFICATION_GROUPS,
@@ -41,50 +41,49 @@ import {
 	GTG_SETUP_CTA_BANNER_NOTIFICATION,
 	PRIORITY,
 } from './constants';
-import { CORE_FORMS } from '../datastore/forms/constants';
-import { CORE_SITE } from '../datastore/site/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 	PERMISSION_UPDATE_PLUGINS,
-} from '../datastore/user/constants';
-import { CORE_MODULES } from '../modules/datastore/constants';
-import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
-import { isZeroReport } from '../../modules/analytics-4/utils';
-import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../../modules/search-console/constants';
-import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
-import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
-import AuthError from '../../components/notifications/AuthError';
-import UnsatisfiedScopesAlert from '../../components/notifications/UnsatisfiedScopesAlert';
-import UnsatisfiedScopesAlertGTE from '../../components/notifications/UnsatisfiedScopesAlertGTE';
-import GatheringDataNotification from '../../components/notifications/GatheringDataNotification';
-import ZeroDataNotification from '../../components/notifications/ZeroDataNotification';
-import GA4AdSenseLinkedNotification from '../../components/notifications/GA4AdSenseLinkedNotification';
-import SetupErrorNotification from '../../components/notifications/SetupErrorNotification';
-import SetupErrorMessageNotification from '../../components/notifications/SetupErrorMessageNotification';
-import GoogleTagGatewayWarningNotification from '../../components/notifications/GoogleTagGatewayWarningNotification';
-import GoogleTagGatewaySetupBanner from '../../components/notifications/GoogleTagGatewaySetupBanner';
-import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '../../components/consent-mode/constants';
-import ConsentModeSetupCTABanner from '../../components/consent-mode/ConsentModeSetupCTABanner';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { isZeroReport } from '@/js/modules/analytics-4/utils';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '@/js/modules/tagmanager/datastore/constants';
+import AuthError from '@/js/components/notifications/AuthError';
+import UnsatisfiedScopesAlert from '@/js/components/notifications/UnsatisfiedScopesAlert';
+import UnsatisfiedScopesAlertGTE from '@/js/components/notifications/UnsatisfiedScopesAlertGTE';
+import GatheringDataNotification from '@/js/components/notifications/GatheringDataNotification';
+import ZeroDataNotification from '@/js/components/notifications/ZeroDataNotification';
+import GA4AdSenseLinkedNotification from '@/js/components/notifications/GA4AdSenseLinkedNotification';
+import SetupErrorMessageNotification from '@/js/components/notifications/SetupErrorMessageNotification';
+import GoogleTagGatewayWarningNotification from '@/js/components/notifications/GoogleTagGatewayWarningNotification';
+import GoogleTagGatewaySetupBanner from '@/js/components/notifications/GoogleTagGatewaySetupBanner';
+import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '@/js/components/consent-mode/constants';
+import ConsentModeSetupCTABanner from '@/js/components/consent-mode/ConsentModeSetupCTABanner';
 import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
-} from '../../components/notifications/EnableAutoUpdateBannerNotification';
-import { MINUTE_IN_SECONDS } from '../../util';
-import ModuleRecoveryAlert from '../../components/dashboard-sharing/ModuleRecoveryAlert';
-import SiteKitSetupSuccessNotification from '../../components/notifications/SiteKitSetupSuccessNotification';
-import ModuleSetupSuccessNotification from '../../components/notifications/ModuleSetupSuccessNotification';
+} from '@/js/components/notifications/EnableAutoUpdateBannerNotification';
+import { MINUTE_IN_SECONDS } from '@/js/util';
+import ModuleRecoveryAlert from '@/js/components/dashboard-sharing/ModuleRecoveryAlert';
+import SiteKitSetupSuccessNotification from '@/js/components/notifications/SiteKitSetupSuccessNotification';
+import ModuleSetupSuccessNotification from '@/js/components/notifications/ModuleSetupSuccessNotification';
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
 	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
-} from '../../components/OverlayNotification/AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
+} from '@/js/components/OverlayNotification/AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
 	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
-} from '../../components/OverlayNotification/LinkAnalyticsAndAdSenseAccountsOverlayNotification';
+} from '@/js/components/OverlayNotification/LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -189,37 +188,6 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		isDismissible: false,
 	},
-	setup_error: {
-		Component: SetupErrorNotification,
-		priority: PRIORITY.ERROR_HIGH,
-		areaSlug: NOTIFICATION_AREAS.HEADER,
-		viewContexts: [ VIEW_CONTEXT_SPLASH ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			// The getSetupErrorMessage selector relies on the resolution
-			// of the getSiteInfo() resolver.
-			await resolveSelect( CORE_SITE ).getSiteInfo();
-
-			const setupErrorMessage =
-				select( CORE_SITE ).getSetupErrorMessage();
-
-			const { data: permissionsErrorData } =
-				select( CORE_FORMS ).getValue(
-					FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-					'permissionsError'
-				) || {};
-
-			// If there's no setup error message or the temporary persisted permissions error has skipDefaultErrorNotifications flag set, return false.
-			if (
-				! setupErrorMessage ||
-				permissionsErrorData?.skipDefaultErrorNotifications
-			) {
-				return false;
-			}
-
-			return true;
-		},
-		isDismissible: false,
-	},
 	setup_plugin_error: {
 		Component: SetupErrorMessageNotification,
 		priority: PRIORITY.ERROR_HIGH,
@@ -230,6 +198,7 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
+			VIEW_CONTEXT_SPLASH,
 		],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			await resolveSelect( CORE_SITE ).getSiteInfo();
@@ -554,7 +523,7 @@ export const DEFAULT_NOTIFICATIONS = {
 					: Promise.resolve( [] ),
 			] );
 
-			const getModuleState = async ( moduleSlug, datastoreSlug ) => {
+			async function getModuleState( moduleSlug, datastoreSlug ) {
 				// Check if the module connected and return early if not.
 				const isConnected =
 					select( CORE_MODULES ).isModuleConnected( moduleSlug );
@@ -597,7 +566,7 @@ export const DEFAULT_NOTIFICATIONS = {
 				}
 
 				return 'connected';
-			};
+			}
 
 			// Get Analytics-4 and Search Console states.
 			const analyticsState = await getModuleState(

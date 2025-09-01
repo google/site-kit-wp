@@ -25,17 +25,17 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useViewContext from './useViewContext';
-import { deleteItem, getItem } from '../googlesitekit/api/cache';
-import { trackEvent } from '../util';
+import { deleteItem, getItem } from '@/js/googlesitekit/api/cache';
+import { trackEvent } from '@/js/util';
 
 /**
  * Tracks the successful user and site setup.
  *
  * @since 1.132.0
  */
-export const useGlobalTrackingEffect = () => {
+export function useGlobalTrackingEffect() {
 	const viewContext = useViewContext();
 
 	const isUsingProxy = useSelect( ( select ) =>
@@ -47,7 +47,7 @@ export const useGlobalTrackingEffect = () => {
 	);
 
 	useEffect( () => {
-		const trackEvents = async () => {
+		async function trackEvents() {
 			const startUserSetup = await getItem( 'start_user_setup' );
 			const startSiteSetup = await getItem( 'start_site_setup' );
 
@@ -68,10 +68,10 @@ export const useGlobalTrackingEffect = () => {
 					isUsingProxy ? 'proxy' : 'custom-oauth'
 				);
 			}
-		};
+		}
 
 		if ( ! setupErrorMessage && isUsingProxy !== undefined ) {
 			trackEvents();
 		}
 	}, [ viewContext, isUsingProxy, setupErrorMessage ] );
-};
+}

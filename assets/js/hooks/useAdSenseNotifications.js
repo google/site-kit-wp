@@ -26,14 +26,18 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { MODULES_ADSENSE } from '../modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../modules/adsense/constants';
-import { NOTIFICATION_AREAS } from '../googlesitekit/notifications/constants';
-import { CORE_NOTIFICATIONS } from '../googlesitekit/notifications/datastore/constants';
-import NotificationFromServer from '../components/NotificationFromServer';
+import useViewContext from './useViewContext';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import NotificationFromServer from '@/js/components/NotificationFromServer';
+import AdSenseCircularIcon from '@/svg/graphics/adsense-circular.svg';
 
 export default function useAdSenseNotifications() {
+	const viewContext = useViewContext();
+
 	const adSenseModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE )
 	);
@@ -90,11 +94,38 @@ export default function useAdSenseNotifications() {
 				delete notificationProps.description;
 			}
 
+			// This always shows the `dismissButton` in the `<NotificationFromServer>`
+			// layout component. AdSense alerts are always dismissible, but these
+			// will persist only for an hour in `<NotificationFromServer>`, allowing
+			// the alerts to resurface if the issue still persists.
+			if (
+				notificationProps.dismissible === undefined &&
+				notificationProps.isDismissible !== undefined
+			) {
+				notificationProps.dismissible = notificationProps.isDismissible;
+				delete notificationProps.isDismissible;
+			}
+
+			// Before refactoring Banner Notifications, `CoreSiteBannerNotification`
+			// added a constant GA event category but the notification ID from the
+			// server was passed as the event label to differentiate multiple notifications
+			// from the server. So we follow the same pattern here.
+			const gaTrackingEventArgs = {
+				category: `${ viewContext }_adsense-alerts-banner-notification`,
+				label: notification.id,
+			};
+
 			registerNotification( notification.id, {
 				Component( { Notification } ) {
 					return (
-						<Notification>
-							<NotificationFromServer { ...notificationProps } />
+						<Notification
+							gaTrackingEventArgs={ gaTrackingEventArgs }
+						>
+							<NotificationFromServer
+								{ ...notificationProps }
+								titleIcon={ <AdSenseCircularIcon /> }
+								gaTrackingEventArgs={ gaTrackingEventArgs }
+							/>
 						</Notification>
 					);
 				},
@@ -108,6 +139,7 @@ export default function useAdSenseNotifications() {
 			} );
 		} );
 	}, [
+		viewContext,
 		accountID,
 		adSenseModuleConnected,
 		notifications,

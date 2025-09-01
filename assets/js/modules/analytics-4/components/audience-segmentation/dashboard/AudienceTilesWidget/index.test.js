@@ -36,22 +36,22 @@ import {
 	waitForDefaultTimeouts,
 	waitForTimeouts,
 } from '../../../../../../../../tests/js/utils';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../googlesitekit/constants';
-import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
-import { getPreviousDate } from '../../../../../../util';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { getPreviousDate } from '@/js/util';
 import {
 	ERROR_REASON_BAD_REQUEST,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../../../../../../util/errors';
-import { availableAudiences } from '../../../../datastore/__fixtures__';
+} from '@/js/util/errors';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import * as tracking from '../../../../../../util/tracking';
-import { getAnalytics4MockResponse } from '../../../../utils/data-mock';
+import * as tracking from '@/js/util/tracking';
+import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
 import {
 	getViewportWidth,
 	setViewportWidth,
@@ -315,9 +315,8 @@ describe( 'AudienceTilesWidget', () => {
 			},
 			{ propertyID: '12345' }
 		);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 					return acc;
@@ -328,7 +327,8 @@ describe( 'AudienceTilesWidget', () => {
 				property: {
 					12345: 20201220,
 				},
-			} );
+			},
+		} );
 
 		muteFetch(
 			new RegExp(

@@ -31,8 +31,8 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import NotificationFromServer from '../NotificationFromServer';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import NotificationFromServer from '@/js/components/NotificationFromServer';
 
 function CoreSiteBannerNotification( { id, ...props } ) {
 	const { dismissNotification, acceptNotification } =
@@ -63,6 +63,7 @@ CoreSiteBannerNotification.propTypes = {
 	ctaURL: PropTypes.string,
 	dismissLabel: PropTypes.string,
 	dismissible: PropTypes.bool,
+	gaTrackingEventArgs: PropTypes.object,
 	id: PropTypes.string.isRequired,
 	learnMoreLabel: PropTypes.string,
 	learnMoreURL: PropTypes.string,

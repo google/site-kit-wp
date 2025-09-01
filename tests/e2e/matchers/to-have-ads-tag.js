@@ -41,8 +41,9 @@ export async function toHaveAdsTag( path ) {
 	// Search for the tag in the returned page HTML content.
 	const hasAdsTag = adsTagRegex.test( html );
 
-	const message = () =>
-		hasAdsTag ? 'Ads tag detected' : 'Ads tag not detected';
+	function message() {
+		return hasAdsTag ? 'Ads tag detected' : 'Ads tag not detected';
+	}
 
 	return { pass: hasAdsTag, message };
 }

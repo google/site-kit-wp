@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -29,15 +29,15 @@ import {
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 	provideAnalyticsReportWithoutDateRangeData,
-} from '../../utils/data-mock';
-import { properties } from '../../datastore/__fixtures__';
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { properties } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { DAY_IN_SECONDS } from '../../../../util';
+import { DAY_IN_SECONDS } from '@/js/util';
 import DashboardOverallPageMetricsWidgetGA4 from './DashboardOverallPageMetricsWidgetGA4';
 
 const gatheringReportOptions = {
@@ -422,7 +422,7 @@ export default {
 	title: 'Modules/Analytics4/Widgets/DashboardOverallPageMetricsWidgetGA4',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ANALYTICS_4,
@@ -441,7 +441,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

@@ -26,13 +26,16 @@ import {
 	render,
 	waitFor,
 } from '../../../../../../tests/js/test-utils';
-import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	ACCOUNT_CREATE,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 import {
 	createTestRegistry,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
-import * as fixtures from '../../datastore/__fixtures__';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 
 describe( 'AccountSelect', () => {
 	let registry;

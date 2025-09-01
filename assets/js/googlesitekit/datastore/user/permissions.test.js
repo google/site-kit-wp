@@ -26,8 +26,8 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from './constants';
-import FIXTURES from '../../modules/datastore/__fixtures__';
-import { CORE_MODULES } from '../../modules/datastore/constants';
+import FIXTURES from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import fetchMock from 'fetch-mock';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';

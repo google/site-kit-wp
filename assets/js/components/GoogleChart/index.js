@@ -18,7 +18,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 /* Ensures `google` global is undefined before loading `react-google-charts` library */
-import '../../util/initialize-google-global';
+import '@/js/util/initialize-google-global';
 
 /**
  * External dependencies
@@ -43,23 +43,25 @@ import {
 /**
  * Internal dependencies
  */
-import PreviewBlock from '../PreviewBlock';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import GatheringDataNotice, {
+	NOTICE_STYLE,
+} from '@/js/components/GatheringDataNotice';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import GoogleChartErrorHandler from '../GoogleChartErrorHandler';
+import GoogleChartErrorHandler from '@/js/components/GoogleChartErrorHandler';
 import DateMarker from './DateMarker';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import useViewContext from '../../hooks/useViewContext';
-import { isSiteKitScreen } from '../../util/is-site-kit-screen';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { isSiteKitScreen } from '@/js/util/is-site-kit-screen';
 import {
 	getFilteredChartData,
 	getLoadingDimensions,
 	getCombinedChartEvents,
 	getChartOptions,
 } from './utils';
-import { stringToDate, getDateString, getLocale } from '../../util';
-import { useBreakpoint } from '../../hooks/useBreakpoint';
+import { stringToDate, getDateString, getLocale } from '@/js/util';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 
 export default function GoogleChart( props ) {
 	const {
@@ -212,7 +214,7 @@ export default function GoogleChart( props ) {
 	}, [ onMouseOver, onMouseOut ] );
 
 	// Checks to see if the date is within the date range.
-	const isDateWithinRange = ( date ) => {
+	function isDateWithinRange( date ) {
 		// If any of the dates are not set, return false.
 		if ( ! date || ! startDate || ! endDate ) {
 			return false;
@@ -230,7 +232,7 @@ export default function GoogleChart( props ) {
 		}
 
 		return true;
-	};
+	}
 
 	// Only use markers if the date is within the current date range.
 	const dateMarkersInRange = dateMarkers.filter( ( dateMarker ) => {
@@ -242,7 +244,7 @@ export default function GoogleChart( props ) {
 	/**
 	 * Adds any "key date" vertical lines/tooltips to the charts.
 	 */
-	const addKeyDateLinesToChart = () => {
+	function addKeyDateLinesToChart() {
 		if ( ! chartWrapperRef.current ) {
 			return;
 		}
@@ -337,7 +339,7 @@ export default function GoogleChart( props ) {
 			// and without things feeling cramped or being cut off.
 			legendElement.style.transform = 'translateY(-10px)';
 		}
-	};
+	}
 
 	if ( googleChartsCollisionError ) {
 		return null;
@@ -375,14 +377,13 @@ export default function GoogleChart( props ) {
 		onSelect
 	);
 
-	const chartOptions = getChartOptions(
-		options,
+	const chartOptions = getChartOptions( options, {
 		gatheringData,
 		chartType,
 		startDate,
 		endDate,
-		breakpoint
-	);
+		breakpoint,
+	} );
 
 	return (
 		<GoogleChartErrorHandler>

@@ -30,13 +30,16 @@ import {
 	createRegistrySelector,
 	createReducer,
 } from 'googlesitekit-data';
-import { getStorage } from '../../../util/storage';
+import { getStorage } from '@/js/util/storage';
 import { CORE_NOTIFICATIONS, NOTIFICATION_VIEW_CONTEXTS } from './constants';
-import { CORE_USER } from '../../datastore/user/constants';
-import { createValidatedAction } from '../../data/utils';
-import { racePrioritizedAsyncTasks } from '../../../util/async';
-import { shouldNotificationBeAddedToQueue } from '../util/shouldNotificationBeAddedToQueue';
-import { NOTIFICATION_AREAS, NOTIFICATION_GROUPS } from '../constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { racePrioritizedAsyncTasks } from '@/js/util/async';
+import { shouldNotificationBeAddedToQueue } from '@/js/googlesitekit/notifications/util/shouldNotificationBeAddedToQueue';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
 
 const INSERT_NOTIFICATION_INTO_RESOLVED_QUEUE =
 	'INSERT_NOTIFICATION_INTO_RESOLVED_QUEUE';
@@ -54,8 +57,9 @@ const NOTIFICATION_SEEN_STORAGE_KEY = 'googlesitekit_notification_seen';
 
 const storage = getStorage();
 
-const isValidNotificationID = ( notificationID ) =>
-	'string' === typeof notificationID;
+function isValidNotificationID( notificationID ) {
+	return 'string' === typeof notificationID;
+}
 
 export const initialState = {
 	notifications: {},

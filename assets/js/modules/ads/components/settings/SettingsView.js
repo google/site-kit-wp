@@ -30,14 +30,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_ADS } from '../../datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import DisplaySetting from '../../../../components/DisplaySetting';
-import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import DisplaySetting from '@/js/components/DisplaySetting';
+import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
 import { useFeature } from './../../../../hooks/useFeature';
-import SettingsStatuses from '../../../../components/settings/SettingsStatuses';
-import Typography from '../../../../components/Typography';
+import SettingsStatuses from '@/js/components/settings/SettingsStatuses';
+import Typography from '@/js/components/Typography';
 
 export default function SettingsView() {
 	const paxEnabled = useFeature( 'adsPax' );
@@ -144,7 +144,7 @@ export default function SettingsView() {
 						? [
 								{
 									label: __(
-										'Enhanced Conversion Tracking',
+										'Plugin conversion tracking',
 										'google-site-kit'
 									),
 									status: isConversionTrackingEnabled,

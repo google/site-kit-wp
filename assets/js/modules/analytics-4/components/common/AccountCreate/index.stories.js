@@ -30,11 +30,11 @@ import {
 	ACCOUNT_CREATE,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
-} from '../../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import * as fixtures from '../../../../analytics-4/datastore/__fixtures__';
-import { Cell, Grid, Row } from '../../../../../material-components';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { Cell, Grid, Row } from '@/js/material-components';
 
 const { accountSummaries } = fixtures;
 
@@ -66,7 +66,7 @@ export default {
 	title: 'Modules/Analytics4/Components/AccountCreate',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ANALYTICS_4,
@@ -89,7 +89,7 @@ export default {
 					accountID: ACCOUNT_CREATE,
 					useSnippet: true,
 				} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

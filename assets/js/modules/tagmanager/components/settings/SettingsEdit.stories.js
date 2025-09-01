@@ -19,15 +19,15 @@
 /**
  * Internal dependencies
  */
-import * as fixtures from '../../datastore/__fixtures__';
+import * as fixtures from '@/js/modules/tagmanager/datastore/__fixtures__';
 import SettingsEdit from './SettingsEdit';
-import { Cell, Grid, Row } from '../../../../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 import {
 	CONTAINER_CREATE,
 	FORM_SETUP,
 	MODULES_TAGMANAGER,
-} from '../../datastore/constants';
-import { MODULE_SLUG_TAGMANAGER } from '../../constants';
+} from '@/js/modules/tagmanager/datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -35,12 +35,12 @@ import {
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	AMP_MODE_PRIMARY,
 	AMP_MODE_SECONDARY,
-} from '../../../../googlesitekit/datastore/site/constants';
+} from '@/js/googlesitekit/datastore/site/constants';
 
 const defaultSettings = {
 	accountID: '',
@@ -413,7 +413,7 @@ export default {
 	component: SettingsEdit,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetSettings( {} );
@@ -438,7 +438,7 @@ export default {
 				provideModuleRegistrations( registry );
 
 				args?.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

@@ -32,13 +32,13 @@ import { __ } from '@wordpress/i18n';
  */
 import { SpinnerButton } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/constants';
-import { CORE_LOCATION } from '../../js/googlesitekit/datastore/location/constants';
-import useActivateModuleCallback from '../hooks/useActivateModuleCallback';
-import useCompleteModuleActivationCallback from '../hooks/useCompleteModuleActivationCallback';
-import { useDebounce } from '../hooks/useDebounce';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import useCompleteModuleActivationCallback from '@/js/hooks/useCompleteModuleActivationCallback';
+import { useDebounce } from '@/js/hooks/useDebounce';
 
 export default function ActivateAnalyticsCTA( { children } ) {
 	const activateModuleCallback = useActivateModuleCallback(

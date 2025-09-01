@@ -24,10 +24,10 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from '../../Link';
-import TrashIcon from '../../../../svg/icons/trash.svg';
+import Link from '@/js/components/Link';
+import TrashIcon from '@/svg/icons/trash.svg';
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 export default function FooterSecondaryAction( {
 	slug,

@@ -25,14 +25,11 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import SettingsEdit from './SettingsEdit';
-import { Cell, Grid, Row } from '../../../../material-components';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_ADS } from '../../datastore/constants';
-import { MODULE_SLUG_ADS } from '../../constants';
-import {
-	provideModules,
-	WithTestRegistry,
-} from '../../../../../../tests/js/utils';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
 function Template( args ) {
@@ -60,11 +57,11 @@ Default.storyName = 'Default';
 Default.scenario = {};
 Default.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
 				conversionID: 'AW-123456789',
 			} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -78,7 +75,7 @@ export default {
 	title: 'Modules/Ads/Settings/SettingsEdit',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ADS,
@@ -86,7 +83,7 @@ export default {
 						connected: true,
 					},
 				] );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
@@ -105,7 +102,7 @@ PaxConnected.parameters = {
 };
 PaxConnected.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			// Unset the value set in the prrevious scenario.
 			registry.dispatch( MODULES_ADS ).setConversionID( null );
 
@@ -113,7 +110,7 @@ PaxConnected.decorators = [
 				paxConversionID: 'AW-54321',
 				extCustomerID: 'C-872756827HGFSD',
 			} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -128,7 +125,7 @@ IceEnabled.storyName = 'With ICE Enabled';
 IceEnabled.scenario = {};
 IceEnabled.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			// Unset the value set in the previous scenario.
 			registry.dispatch( MODULES_ADS ).setConversionID( null );
 
@@ -137,7 +134,7 @@ IceEnabled.decorators = [
 				paxConversionID: '',
 				extCustomerID: '',
 			} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -155,13 +152,13 @@ IcePaxEnabled.parameters = {
 };
 IcePaxEnabled.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
 				conversionID: '',
 				paxConversionID: 'AW-54321',
 				extCustomerID: 'C-23482345986',
 			} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -173,9 +170,12 @@ IcePaxEnabled.decorators = [
 
 export const GTGEnabled = Template.bind( null );
 GTGEnabled.storyName = 'With Google tag gateway enabled';
+GTGEnabled.parameters = {
+	features: [ 'googleTagGateway' ],
+};
 GTGEnabled.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			const gtgServerRequirementsEndpoint = new RegExp(
 				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
@@ -193,15 +193,12 @@ GTGEnabled.decorators = [
 			registry
 				.dispatch( CORE_SITE )
 				.receiveGetGoogleTagGatewaySettings( gtgSettings );
-		};
+		}
 
 		return (
-			<WithTestRegistry
-				callback={ setupRegistry }
-				features={ [ 'googleTagGateway' ] }
-			>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
-			</WithTestRegistry>
+			</WithRegistrySetup>
 		);
 	},
 ];
@@ -211,7 +208,7 @@ GTGDisabledWithWarning.storyName =
 	'With Google tag gateway disabled with warning';
 GTGDisabledWithWarning.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			const gtgServerRequirementsEndpoint = new RegExp(
 				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
@@ -229,15 +226,12 @@ GTGDisabledWithWarning.decorators = [
 			registry
 				.dispatch( CORE_SITE )
 				.receiveGetGoogleTagGatewaySettings( gtgSettings );
-		};
+		}
 
 		return (
-			<WithTestRegistry
-				callback={ setupRegistry }
-				features={ [ 'googleTagGateway' ] }
-			>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
-			</WithTestRegistry>
+			</WithRegistrySetup>
 		);
 	},
 ];

@@ -17,3 +17,4 @@
  */
 
 export { default as GoogleTagIDMismatchNotification } from './GoogleTagIDMismatchNotification';
+export { default as WebDataStreamNotAvailableNotification } from './WebDataStreamNotAvailableNotification';

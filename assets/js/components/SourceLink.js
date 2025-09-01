@@ -32,7 +32,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Link from './Link';
-import useViewOnly from '../hooks/useViewOnly';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 function SourceLink( { name, href, className, external } ) {
 	const viewOnlyDashboard = useViewOnly();

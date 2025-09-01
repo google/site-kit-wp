@@ -31,7 +31,7 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { MDCRipple } from '../../../material-components';
+import { MDCRipple } from '@/js/material-components';
 import SemanticButton from './SemanticButton';
 import MaybeTooltip from './MaybeTooltip';
 
@@ -68,7 +68,7 @@ const Button = forwardRef(
 		}, [] );
 		const mergedRefs = useMergedRef( ref, buttonRef );
 
-		const getAriaLabel = () => {
+		function getAriaLabel() {
 			let label = ariaLabel;
 
 			if ( target !== '_blank' ) {
@@ -90,7 +90,7 @@ const Button = forwardRef(
 			}
 
 			return newTabText;
-		};
+		}
 
 		const tooltipTitle = ! hideTooltipTitle
 			? title || customizedTooltip || ariaLabel

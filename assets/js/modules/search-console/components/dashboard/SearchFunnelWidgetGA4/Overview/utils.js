@@ -21,7 +21,7 @@
 /**
  * Internal dependencies
  */
-import { calculateChange } from '../../../../../../util';
+import { calculateChange } from '@/js/util';
 
 /**
  * Gets the cell props for responsive grid layout.

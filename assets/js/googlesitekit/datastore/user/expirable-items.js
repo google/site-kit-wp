@@ -32,8 +32,8 @@ import {
 	combineStores,
 } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
-import { createFetchStore } from '../../data/create-fetch-store';
-import { createValidatedAction } from '../../data/utils';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 
 const { getRegistry } = commonActions;
 
@@ -94,7 +94,7 @@ const baseActions = {
 				);
 			} );
 		},
-		function ( items ) {
+		( items ) => {
 			return fetchSetExpirableItemTimersStore.actions.fetchSetExpirableItemTimers(
 				items
 			);

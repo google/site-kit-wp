@@ -22,7 +22,7 @@
 import AuthenticatedPermissionsModal from './AuthenticatedPermissionsModal';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { provideUserAuthentication } from '../../../../tests/js/utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 function Template() {
 	return <AuthenticatedPermissionsModal />;
@@ -32,7 +32,7 @@ export const Default = Template.bind( {} );
 Default.storyName = 'AuthenticatedPermissionsModal';
 Default.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 			registry.dispatch( CORE_USER ).setPermissionScopeError( {
 				status: 500,
@@ -45,7 +45,7 @@ Default.decorators = [
 				},
 			} );
 			provideUserAuthentication( registry );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>

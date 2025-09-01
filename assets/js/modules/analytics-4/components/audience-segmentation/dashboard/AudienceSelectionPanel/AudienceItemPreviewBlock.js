@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import PreviewBlock from '../../../../../../components/PreviewBlock';
+import PreviewBlock from '@/js/components/PreviewBlock';
 
 export default function AudienceItemPreviewBlock() {
 	return (

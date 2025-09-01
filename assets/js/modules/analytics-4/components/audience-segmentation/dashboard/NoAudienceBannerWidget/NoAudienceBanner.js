@@ -26,18 +26,19 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import NoAudienceBannerGraphic from '../../../../../../../svg/graphics/no-audience-banner-graphic.svg';
-import Link from '../../../../../../components/Link';
-import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
-import LeanCTABanner from '../../../../../../components/LeanCTABanner';
-import { CORE_LOCATION } from '../../../../../../googlesitekit/datastore/location/constants';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '.././../../../../../googlesitekit/datastore/user/constants';
-import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '../AudienceSelectionPanel/constants';
-import useViewContext from '../../../../../../hooks/useViewContext';
-import useViewOnly from '../../../../../../hooks/useViewOnly';
-import { trackEvent } from '../../../../../../util';
+import NoAudienceBannerGraphic from '@/svg/graphics/no-audience-banner-graphic.svg';
+import Link from '@/js/components/Link';
+import P from '@/js/components/Typography/P';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import LeanCTABanner from '@/js/components/LeanCTABanner';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { trackEvent } from '@/js/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const NoAudienceBanner = forwardRef( ( props, ref ) => {
@@ -52,7 +53,9 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 		select( CORE_MODULES ).getModuleIcon( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const adminSettingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getSiteKitAdminSettingsURL()
+		select( CORE_SITE ).getSiteKitAdminSettingsURL( {
+			scrollTo: 'visitor-groups',
+		} )
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
@@ -79,7 +82,7 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 			Icon={ Icon }
 			SVGGraphic={ NoAudienceBannerGraphic }
 		>
-			<p>
+			<P>
 				{ didSetAudiences &&
 					createInterpolateElement(
 						__(
@@ -110,9 +113,9 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 							),
 						}
 					) }
-			</p>
+			</P>
 			{ ! isViewOnly && (
-				<p>
+				<P>
 					{ createInterpolateElement(
 						__(
 							'You can deactivate this widget in <a>Settings</a>.',
@@ -135,7 +138,7 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 							),
 						}
 					) }
-				</p>
+				</P>
 			) }
 		</LeanCTABanner>
 	);

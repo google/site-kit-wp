@@ -22,13 +22,13 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { Cell, Grid, Row } from '../../../../../material-components';
-import AdBlockingSetupSVG from '../../../../../../svg/graphics/ad-blocking-recovery-setup.svg';
+import { Cell, Grid, Row } from '@/js/material-components';
+import AdBlockingSetupSVG from '@/svg/graphics/ad-blocking-recovery-setup.svg';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../../../../hooks/useBreakpoint';
+} from '@/js/hooks/useBreakpoint';
 
 export default function Content( { children } ) {
 	const breakpoint = useBreakpoint();

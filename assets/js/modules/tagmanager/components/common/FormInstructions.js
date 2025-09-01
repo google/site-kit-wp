@@ -30,10 +30,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import P from '@/js/components/Typography/P';
 
 export default function FormInstructions( { isSetup } ) {
 	const isSecondaryAMP = useSelect( ( select ) =>
@@ -57,18 +58,18 @@ export default function FormInstructions( { isSetup } ) {
 		currentGTMGoogleTagID
 	) {
 		return (
-			<p>
+			<P>
 				{ __(
 					'Looks like you may be using Google Analytics within your Google Tag Manager configuration. Activate the Google Analytics module in Site Kit to see relevant insights in your dashboard.',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 		);
 	}
 
 	if ( isSecondaryAMP ) {
 		return (
-			<p>
+			<P>
 				{ isSetup
 					? __(
 							'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below. You can change these later in your settings.',
@@ -78,12 +79,12 @@ export default function FormInstructions( { isSetup } ) {
 							'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below.',
 							'google-site-kit'
 					  ) }
-			</p>
+			</P>
 		);
 	}
 
 	return (
-		<p>
+		<P>
 			{ isSetup
 				? __(
 						'Please select your Tag Manager account and container below. You can change these later in your settings.',
@@ -93,7 +94,7 @@ export default function FormInstructions( { isSetup } ) {
 						'Please select your Tag Manager account and container below',
 						'google-site-kit'
 				  ) }
-		</p>
+		</P>
 	);
 }
 

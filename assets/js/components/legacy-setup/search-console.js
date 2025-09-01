@@ -40,8 +40,9 @@ import {
 	TextField,
 } from 'googlesitekit-components';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { trackEvent } from '../../util';
-import Typography from '../Typography';
+import { trackEvent } from '@/js/util';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 class SearchConsole extends Component {
 	constructor( props ) {
@@ -293,12 +294,12 @@ class SearchConsole extends Component {
 		if ( loading ) {
 			return (
 				<Fragment>
-					<p>
+					<P>
 						{ __(
 							'We’re locating your Search Console account.',
 							'google-site-kit'
 						) }
-					</p>
+					</P>
 					<ProgressBar />
 				</Fragment>
 			);

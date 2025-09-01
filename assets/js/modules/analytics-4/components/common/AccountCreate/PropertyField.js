@@ -26,14 +26,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import CreateAccountField from './CreateAccountField';
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { FORM_ACCOUNT_CREATE } from '../../../datastore/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
+import { useDispatch } from 'googlesitekit-data';
+import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function PropertyField() {
-	const value = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'propertyName' )
-	);
+	const value = useFormValue( FORM_ACCOUNT_CREATE, 'propertyName' );
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const setValue = useCallback(

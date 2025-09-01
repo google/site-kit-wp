@@ -1,6 +1,4 @@
 /**
- * Typography component.
- *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,37 +18,39 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 
-const VALID_TYPES = [ 'display', 'headline', 'title', 'body', 'label' ];
-const VALID_SIZES = [ 'small', 'medium', 'large' ];
+/**
+ * Internal dependencies
+ */
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import Typography from '.';
+import {
+	SIZE_SMALL,
+	SIZE_MEDIUM,
+	TYPE_BODY,
+	VALID_TYPES,
+	VALID_SIZES,
+} from './constants';
 
-function Typography( {
-	className,
-	type,
-	size,
-	as: Component = 'span',
-	children,
-} ) {
+export default function P( { type = TYPE_BODY, size, children, ...props } ) {
+	const breakpoint = useBreakpoint();
+
 	return (
-		<Component
-			className={ classnames( 'googlesitekit-typography', className, {
-				[ `googlesitekit-typography--${ type }` ]:
-					type && VALID_TYPES.includes( type ),
-				[ `googlesitekit-typography--${ size }` ]:
-					size && VALID_SIZES.includes( size ),
-			} ) }
+		<Typography
+			as="p"
+			type={ type }
+			size={
+				size ||
+				( breakpoint === BREAKPOINT_SMALL ? SIZE_SMALL : SIZE_MEDIUM )
+			}
+			{ ...props }
 		>
 			{ children }
-		</Component>
+		</Typography>
 	);
 }
 
-Typography.propTypes = {
-	className: PropTypes.string,
+P.propTypes = {
 	type: PropTypes.oneOf( VALID_TYPES ),
 	size: PropTypes.oneOf( VALID_SIZES ),
-	as: PropTypes.oneOfType( [ PropTypes.string, PropTypes.elementType ] ),
 };
-
-export default Typography;

@@ -24,18 +24,18 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { getNavigationalScrollTop } from '../../../../util/scroll';
-import { useBreakpoint } from '../../../../hooks/useBreakpoint';
-import useViewOnly from '../../../../hooks/useViewOnly';
+import { getNavigationalScrollTop } from '@/js/util/scroll';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	ANCHOR_ID_KEY_METRICS,
 	ANCHOR_ID_TRAFFIC,
-} from '../../../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 
 /**
  * Returns helper data and functions for navigation chips.
  *
- * @since n.e.x.t
+ * @since 1.159.0
  *
  * @param {Object}        params                 Parameters for the hook.
  * @param {Array<string>} params.visibleSections The sections that are currently visible.
@@ -48,7 +48,7 @@ export default function useNavChipHelpers( { visibleSections } ) {
 	/**
 	 * Gets the default chip ID based on the visibility of various sections.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @return {string} The default chip ID.
 	 */
@@ -69,7 +69,7 @@ export default function useNavChipHelpers( { visibleSections } ) {
 	/**
 	 * Checks if a chip ID is valid based on the visible sections.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @param {string} chipID The chip ID to validate.
 	 * @return {boolean} True if the chip ID is valid, false otherwise.
@@ -82,7 +82,7 @@ export default function useNavChipHelpers( { visibleSections } ) {
 	/**
 	 * Updates the URL hash to reflect the selected chip ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @param {string} chipID The chip ID to update in the URL hash.
 	 * @return {void}
@@ -94,7 +94,7 @@ export default function useNavChipHelpers( { visibleSections } ) {
 	/**
 	 * Calculates the scroll position for a given chip ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @param {string} chipID The chip ID for which to calculate the scroll position.
 	 * @return {number} The calculated scroll position.
@@ -111,7 +111,7 @@ export default function useNavChipHelpers( { visibleSections } ) {
 	/**
 	 * Scrolls to the position of a given chip ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @param {string} chipID The chip ID to scroll to.
 	 * @return {void}
@@ -133,7 +133,7 @@ export default function useNavChipHelpers( { visibleSections } ) {
 	/**
 	 * Finds the closest section ID based on the current scroll position.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.159.0
 	 *
 	 * @param {Object} ref The reference to the navigation element.
 	 * @return {string} The ID of the closest section.
@@ -142,9 +142,9 @@ export default function useNavChipHelpers( { visibleSections } ) {
 		( ref ) => {
 			const entityHeader = document
 				.querySelector( '.googlesitekit-entity-header' )
-				?.getBoundingClientRect()?.bottom;
+				?.getBoundingClientRect?.()?.bottom;
 
-			const { bottom } = ref?.current?.getBoundingClientRect();
+			const { bottom } = ref?.current?.getBoundingClientRect?.() ?? {};
 
 			const margin = 20;
 

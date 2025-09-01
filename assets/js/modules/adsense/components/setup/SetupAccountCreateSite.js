@@ -27,11 +27,12 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { ErrorNotices } from '../common';
-import { trackEvent } from '../../../../util';
-import useViewContext from '../../../../hooks/useViewContext';
-import Typography from '../../../../components/Typography';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { ErrorNotices } from '@/js/modules/adsense/components/common';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function SetupAccountCreateSite() {
 	const viewContext = useViewContext();
@@ -65,12 +66,12 @@ export default function SetupAccountCreateSite() {
 
 			<ErrorNotices />
 
-			<p>
+			<P>
 				{ __(
 					'We’ve detected that you haven’t added this site to your AdSense account yet',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 
 			<div className="googlesitekit-setup-module__action">
 				<Button onClick={ addSiteHandler } href={ addSiteURL }>

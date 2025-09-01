@@ -1,7 +1,5 @@
 /**
- * Surveys Component Stories.
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +14,22 @@
  * limitations under the License.
  */
 
-export * from './SurveyCompletion.stories';
-export * from './SurveyQuestionMultiSelect.stories';
-export * from './SurveyQuestionOpenText.stories';
-export * from './SurveyQuestionRating.stories';
-export * from './SurveyQuestionSingleSelect.stories';
-export default {
-	title: 'Components/Surveys',
-};
+export const TYPE_DISPLAY = 'display';
+export const TYPE_HEADLINE = 'headline';
+export const TYPE_TITLE = 'title';
+export const TYPE_BODY = 'body';
+export const TYPE_LABEL = 'label';
+
+export const VALID_TYPES = [
+	TYPE_BODY,
+	TYPE_DISPLAY,
+	TYPE_HEADLINE,
+	TYPE_LABEL,
+	TYPE_TITLE,
+];
+
+export const SIZE_SMALL = 'small';
+export const SIZE_MEDIUM = 'medium';
+export const SIZE_LARGE = 'large';
+
+export const VALID_SIZES = [ SIZE_SMALL, SIZE_MEDIUM, SIZE_LARGE ];
