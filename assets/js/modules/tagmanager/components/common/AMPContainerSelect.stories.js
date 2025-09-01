@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
-import * as fixtures from '../../datastore/__fixtures__';
+import * as fixtures from '@/js/modules/tagmanager/datastore/__fixtures__';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 import AMPContainerSelect from './AMPContainerSelect';
 import {
 	AMP_MODE_PRIMARY,
 	CORE_SITE,
-} from '../../../../googlesitekit/datastore/site/constants';
+} from '@/js/googlesitekit/datastore/site/constants';
 
 function Template( args ) {
 	return (

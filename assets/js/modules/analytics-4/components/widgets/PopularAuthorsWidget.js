@@ -33,21 +33,21 @@ import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_POPULAR_AUTHORS,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
-} from '../../../../components/KeyMetrics';
-import { ZeroDataMessage } from '../common';
-import withCustomDimensions from '../../utils/withCustomDimensions';
-import whenActive from '../../../../util/when-active';
+} from '@/js/components/KeyMetrics';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import withCustomDimensions from '@/js/modules/analytics-4/utils/withCustomDimensions';
+import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import { numFmt } from '../../../../util';
+import { numFmt } from '@/js/util';
 
 /**
  * Gets the report options for the Popular Authors widget.

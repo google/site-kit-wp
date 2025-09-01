@@ -31,7 +31,7 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Radio, TextField } from 'googlesitekit-components';
-import VisuallyHidden from '../VisuallyHidden';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
 
 function SurveyQuestionSingleSelectChoice( {

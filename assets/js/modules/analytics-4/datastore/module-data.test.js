@@ -29,7 +29,7 @@ import {
 	MODULES_ANALYTICS_4,
 	RESOURCE_TYPE_AUDIENCE,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 describe( 'modules/analytics-4 module data', () => {
 	const baseModulesGlobalName = '_googlesitekitModulesData';

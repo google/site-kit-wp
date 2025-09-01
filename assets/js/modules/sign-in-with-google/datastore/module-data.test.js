@@ -25,7 +25,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { initialState } from './index';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '../constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 
 describe( 'modules/sign-in-with-google inline module data', () => {
 	const baseModulesGlobalName = '_googlesitekitModulesData';

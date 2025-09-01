@@ -38,7 +38,7 @@ import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../hooks/useBreakpoint';
+} from '@/js/hooks/useBreakpoint';
 
 export default function JoyrideTooltip( props ) {
 	const {

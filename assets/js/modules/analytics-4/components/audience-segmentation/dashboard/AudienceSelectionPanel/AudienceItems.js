@@ -33,19 +33,19 @@ import { useState, useEffect, Fragment } from '@wordpress/element';
  */
 import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../../../datastore/constants';
-import { WEEK_IN_SECONDS } from '../../../../../../util';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { WEEK_IN_SECONDS } from '@/js/util';
 import AudienceItem from './AudienceItem';
-import { SelectionPanelItems } from '../../../../../../components/SelectionPanel';
+import { SelectionPanelItems } from '@/js/components/SelectionPanel';
 import AudienceItemPreviewBlock from './AudienceItemPreviewBlock';
 import AddGroupNotice from './AddGroupNotice';
-import useViewOnly from '../../../../../../hooks/useViewOnly';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import AudienceCreationNotice from './AudienceCreationNotice';
 
 export default function AudienceItems( { savedItemSlugs = [] } ) {

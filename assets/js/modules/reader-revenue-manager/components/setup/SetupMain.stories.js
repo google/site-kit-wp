@@ -23,18 +23,18 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
-} from '../../datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
-import ModuleSetup from '../../../../components/setup/ModuleSetup';
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import ModuleSetup from '@/js/components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { publications } from '../../datastore/__fixtures__';
-import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 
 function Template() {
 	return (

@@ -25,7 +25,7 @@ import { useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { Checkbox } from 'googlesitekit-components';
-import NewBadge from '../../components/NewBadge';
+import NewBadge from '@/js/components/NewBadge';
 
 function Container( { children } ) {
 	return (

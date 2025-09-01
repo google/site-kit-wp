@@ -20,9 +20,9 @@
  * Internal dependencies
  */
 import OverlayCard from '.';
-import GraphicDesktop from '../../../svg/graphics/reader-revenue-manager-monetize-graphic-desktop.svg';
-import GraphicMobile from '../../../svg/graphics/reader-revenue-manager-monetize-graphic-mobile.svg';
-import ExternalIcon from '../../../svg/icons/external.svg';
+import GraphicDesktop from '@/svg/graphics/reader-revenue-manager-monetize-graphic-desktop.svg';
+import GraphicMobile from '@/svg/graphics/reader-revenue-manager-monetize-graphic-mobile.svg';
+import ExternalIcon from '@/svg/icons/external.svg';
 
 function Template( args ) {
 	return <OverlayCard { ...args } />;

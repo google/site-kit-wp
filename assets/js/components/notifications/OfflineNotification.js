@@ -26,8 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import Notice from '../Notice';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import Notice from '@/js/components/Notice';
 
 function OfflineNotification() {
 	const [ dismissed, setDismissed ] = useState( false );

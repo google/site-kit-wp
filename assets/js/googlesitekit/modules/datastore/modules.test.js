@@ -33,20 +33,20 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
-import { sortByProperty } from '../../../util/sort-by-property';
-import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
+import { sortByProperty } from '@/js/util/sort-by-property';
+import { convertArrayListToKeyedObjectMap } from '@/js/util/convert-array-to-keyed-object-map';
 import {
 	CORE_MODULES,
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
 } from './constants';
 import FIXTURES, { withActive } from './__fixtures__';
-import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { CORE_USER } from '../../datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import * as analytics4fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
+import * as analytics4fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 
 describe( 'core/modules modules', () => {

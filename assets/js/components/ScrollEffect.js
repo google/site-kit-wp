@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { useHasScrolledEffect } from '../hooks/useHasScrolledEffect';
+import { useHasScrolledEffect } from '@/js/hooks/useHasScrolledEffect';
 
 export default function ScrollEffect() {
 	useHasScrolledEffect();

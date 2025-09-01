@@ -25,7 +25,7 @@ import { useMount, useUnmount } from 'react-use';
  * WordPress dependencies
  */
 import { useRef } from '@wordpress/element';
-import { useDebounce } from '../hooks/useDebounce';
+import { useDebounce } from '@/js/hooks/useDebounce';
 
 export default function DataBlockGroup( { className, children } ) {
 	const ref = useRef();

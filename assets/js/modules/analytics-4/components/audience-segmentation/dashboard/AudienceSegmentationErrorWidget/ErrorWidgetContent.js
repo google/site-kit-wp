@@ -31,17 +31,17 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { Cell, Grid, Row } from '../../../../../../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../../../../../hooks/useBreakpoint';
-import AudienceSegmentationErrorSVG from '../../../../../../../svg/graphics/audience-segmentation-error-full-width.svg';
-import { isInsufficientPermissionsError } from '../../../../../../util/errors';
-import ReportErrorActions from '../../../../../../components/ReportErrorActions';
-import GetHelpLink from '../GetHelpLink';
-import Typography from '../../../../../../components/Typography';
+} from '@/js/hooks/useBreakpoint';
+import AudienceSegmentationErrorSVG from '@/svg/graphics/audience-segmentation-error-full-width.svg';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
+import ReportErrorActions from '@/js/components/ReportErrorActions';
+import GetHelpLink from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/GetHelpLink';
+import Typography from '@/js/components/Typography';
 
 const ErrorWidgetContent = forwardRef(
 	( { Widget, errors, onRetry, onRequestAccess, showRetryButton }, ref ) => {

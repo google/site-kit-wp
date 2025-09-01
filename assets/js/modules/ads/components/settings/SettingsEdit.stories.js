@@ -25,10 +25,10 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import SettingsEdit from './SettingsEdit';
-import { Cell, Grid, Row } from '../../../../material-components';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_ADS } from '../../datastore/constants';
-import { MODULE_SLUG_ADS } from '../../constants';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 

@@ -24,9 +24,9 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import SettingsCardVisitorGroups from './';

@@ -30,8 +30,8 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import useViewContext from '../hooks/useViewContext';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import TourTooltips from './TourTooltips';
 
 export default function FeatureTours() {

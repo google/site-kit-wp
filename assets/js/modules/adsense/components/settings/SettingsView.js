@@ -26,12 +26,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import DisplaySetting from '../../../../components/DisplaySetting';
+import DisplaySetting from '@/js/components/DisplaySetting';
 import { ProgressBar } from 'googlesitekit-components';
-import Link from '../../../../components/Link';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { ErrorNotices } from '../common';
+import Link from '@/js/components/Link';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { ErrorNotices } from '@/js/modules/adsense/components/common';
 import {
 	getAccountStatusLabel,
 	getSiteStatusLabel,
@@ -39,8 +39,8 @@ import {
 	getAutoAdsDisabledMessage,
 } from './utils';
 import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
-import VisuallyHidden from '../../../../components/VisuallyHidden';
-import Typography from '../../../../components/Typography';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
+import Typography from '@/js/components/Typography';
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>

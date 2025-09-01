@@ -19,19 +19,19 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
-import ModuleSetup from '../../../../components/setup/ModuleSetup';
+import ModuleSetup from '@/js/components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import * as fixtures from '../../datastore/__fixtures__';
-import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 const { accountSummaries, webDataStreamsBatch } = fixtures;
 const accounts = accountSummaries.accountSummaries;

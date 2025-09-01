@@ -23,10 +23,10 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import RegistrationDisabledNotice from './RegistrationDisabledNotice';
 import AnyoneCanRegisterDisabledNotice from './AnyoneCanRegisterDisabledNotice';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 
 export default function SettingsNotice() {
 	const anyoneCanRegister = useSelect( ( select ) =>

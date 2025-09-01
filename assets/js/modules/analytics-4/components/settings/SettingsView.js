@@ -29,23 +29,21 @@ import { useSelect } from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
-} from '../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import OptionalSettingsView from './OptionalSettingsView';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import DisplaySetting, {
-	BLANK_SPACE,
-} from '../../../../components/DisplaySetting';
-import Link from '../../../../components/Link';
-import VisuallyHidden from '../../../../components/VisuallyHidden';
-import { escapeURI } from '../../../../util/escape-uri';
-import { useFeature } from '../../../../hooks/useFeature';
-import SettingsStatuses from '../../../../components/settings/SettingsStatuses';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import DisplaySetting, { BLANK_SPACE } from '@/js/components/DisplaySetting';
+import Link from '@/js/components/Link';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
+import { escapeURI } from '@/js/util/escape-uri';
+import { useFeature } from '@/js/hooks/useFeature';
+import SettingsStatuses from '@/js/components/settings/SettingsStatuses';
 import {
 	isValidPropertyID,
 	isValidWebDataStreamID,
-} from '../../utils/validation';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Typography from '../../../../components/Typography';
+} from '@/js/modules/analytics-4/utils/validation';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import Typography from '@/js/components/Typography';
 
 export default function SettingsView() {
 	const gtgEnabled = useFeature( 'googleTagGateway' );

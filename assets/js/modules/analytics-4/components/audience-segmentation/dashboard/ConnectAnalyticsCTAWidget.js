@@ -31,18 +31,15 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import AudienceConnectAnalyticsCTAGraphic from '../../../../../../svg/graphics/audience-connect-analytics-cta-graphic.svg';
-import AudienceConnectAnalyticsCTAGraphicTablet from '../../../../../../svg/graphics/audience-connect-analytics-cta-graphic-tablet.svg';
-import Link from '../../../../../components/Link';
-import P from '../../../../../components/Typography/P';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
-import useActivateModuleCallback from '../../../../../hooks/useActivateModuleCallback';
-import {
-	BREAKPOINT_TABLET,
-	useBreakpoint,
-} from '../../../../../hooks/useBreakpoint';
-import LeanCTABanner from '../../../../../components/LeanCTABanner';
+import AudienceConnectAnalyticsCTAGraphic from '@/svg/graphics/audience-connect-analytics-cta-graphic.svg';
+import AudienceConnectAnalyticsCTAGraphicTablet from '@/svg/graphics/audience-connect-analytics-cta-graphic-tablet.svg';
+import Link from '@/js/components/Link';
+import P from '@/js/components/Typography/P';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import { BREAKPOINT_TABLET, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import LeanCTABanner from '@/js/components/LeanCTABanner';
 
 export default function ConnectAnalyticsCTAWidget( { Widget } ) {
 	const breakpoint = useBreakpoint();

@@ -33,21 +33,24 @@ import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-} from '../../../../googlesitekit/datastore/user/constants';
-import { DATE_RANGE_OFFSET, MODULES_ADSENSE } from '../../datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../constants';
+} from '@/js/googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ADSENSE,
+} from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
-} from '../../../../components/KeyMetrics';
-import Link from '../../../../components/Link';
-import { ZeroDataMessage } from '../../../analytics-4/components/common';
-import { numFmt } from '../../../../util';
-import whenActive from '../../../../util/when-active';
-import ConnectGA4CTATileWidget from '../../../analytics-4/components/widgets/ConnectGA4CTATileWidget';
-import useViewOnly from '../../../../hooks/useViewOnly';
-import { AdSenseLinkCTA } from '../common';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+} from '@/js/components/KeyMetrics';
+import Link from '@/js/components/Link';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { numFmt } from '@/js/util';
+import whenActive from '@/js/util/when-active';
+import ConnectGA4CTATileWidget from '@/js/modules/analytics-4/components/widgets/ConnectGA4CTATileWidget';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { AdSenseLinkCTA } from '@/js/modules/adsense/components/common';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 

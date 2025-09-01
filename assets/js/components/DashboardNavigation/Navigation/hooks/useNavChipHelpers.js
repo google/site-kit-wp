@@ -24,13 +24,13 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { getNavigationalScrollTop } from '../../../../util/scroll';
-import { useBreakpoint } from '../../../../hooks/useBreakpoint';
-import useViewOnly from '../../../../hooks/useViewOnly';
+import { getNavigationalScrollTop } from '@/js/util/scroll';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	ANCHOR_ID_KEY_METRICS,
 	ANCHOR_ID_TRAFFIC,
-} from '../../../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 
 /**
  * Returns helper data and functions for navigation chips.

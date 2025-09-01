@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
 import {
 	createTestRegistry,
@@ -31,8 +31,8 @@ import {
 	createWaitForRegistry,
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
-import { DAY_IN_SECONDS } from '../../../util';
-import { isZeroReport } from '../utils';
+import { DAY_IN_SECONDS } from '@/js/util';
+import { isZeroReport } from '@/js/modules/analytics-4/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 report', () => {

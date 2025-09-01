@@ -3,5 +3,6 @@
 	"googleTagGateway",
 	"gtagUserData",
 	"privacySandboxModule",
-	"proactiveUserEngagement"
+	"proactiveUserEngagement",
+	"setupFlowRefresh"
 ]

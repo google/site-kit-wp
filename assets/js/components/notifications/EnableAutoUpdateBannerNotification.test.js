@@ -31,11 +31,11 @@ import {
 import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
 } from './EnableAutoUpdateBannerNotification';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import fetchMock from 'fetch-mock';
-import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 
 const EnableAutoUpdateBannerNotificationComponent =

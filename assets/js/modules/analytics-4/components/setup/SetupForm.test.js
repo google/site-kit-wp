@@ -26,19 +26,19 @@ import {
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/utils';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 import {
 	EDIT_SCOPE,
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
-import * as fixtures from '../../datastore/__fixtures__';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import SetupForm from './SetupForm';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 const {
 	accountSummaries,

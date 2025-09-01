@@ -24,12 +24,12 @@ import memize from 'memize';
 /**
  * Internal dependencies
  */
-import Widget from '../components/Widget';
-import WidgetReportZero from '../components/WidgetReportZero';
-import WidgetReportError from '../components/WidgetReportError';
-import WidgetNull from '../components/WidgetNull';
-import WidgetRecoverableModules from '../components/WidgetRecoverableModules';
-import WPDashboardReportError from '../components/WPDashboardReportError';
+import Widget from '@/js/googlesitekit/widgets/components/Widget';
+import WidgetReportZero from '@/js/googlesitekit/widgets/components/WidgetReportZero';
+import WidgetReportError from '@/js/googlesitekit/widgets/components/WidgetReportError';
+import WidgetNull from '@/js/googlesitekit/widgets/components/WidgetNull';
+import WidgetRecoverableModules from '@/js/googlesitekit/widgets/components/WidgetRecoverableModules';
+import WPDashboardReportError from '@/js/googlesitekit/widgets/components/WPDashboardReportError';
 
 /**
  * WordPress dependencies

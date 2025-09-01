@@ -25,11 +25,11 @@ import {
 	provideUserCapabilities,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import { MODULE_SLUG_ADSENSE } from '../../constants';
-import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
-import { KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT } from '../../../../googlesitekit/datastore/user/constants';
-import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT } from '@/js/googlesitekit/datastore/user/constants';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
 describe( 'ConnectAdSenseCTATileWidget', () => {

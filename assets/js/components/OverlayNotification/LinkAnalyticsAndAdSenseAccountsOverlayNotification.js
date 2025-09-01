@@ -30,12 +30,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
-import AnalyticsAdsenseConnectGraphicDesktop from '../../../svg/graphics/analytics-adsense-connect-desktop.svg';
-import AnalyticsAdsenseConnectGraphicMobile from '../../../svg/graphics/analytics-adsense-connect-mobile.svg';
-import OverlayNotification from '../../googlesitekit/notifications/components/layout/OverlayNotification';
-import ExternalIcon from '../../../svg/icons/external.svg';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import AnalyticsAdsenseConnectGraphicDesktop from '@/svg/graphics/analytics-adsense-connect-desktop.svg';
+import AnalyticsAdsenseConnectGraphicMobile from '@/svg/graphics/analytics-adsense-connect-mobile.svg';
+import OverlayNotification from '@/js/googlesitekit/notifications/components/layout/OverlayNotification';
+import ExternalIcon from '@/svg/icons/external.svg';
 
 export const LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION =
 	'LinkAnalyticsAndAdSenseAccountsOverlayNotification';

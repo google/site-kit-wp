@@ -26,15 +26,15 @@ import {
 	provideUserCapabilities,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
-import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-} from '../../../../googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 describe( 'ConnectGA4CTATileWidget', () => {

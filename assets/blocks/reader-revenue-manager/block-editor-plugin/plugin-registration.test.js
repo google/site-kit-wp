@@ -42,11 +42,11 @@ jest.mock( './tracking', () => ( {
 
 import Data from 'googlesitekit-data';
 import SettingPanel from './SettingPanel';
-import { MODULES_READER_REVENUE_MANAGER } from '../../../js/modules/reader-revenue-manager/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { registerStore as registerCoreModulesStore } from '../../../js/googlesitekit/modules';
-import { registerStore as registerCoreUserStore } from '../../../js/googlesitekit/datastore/user';
-import { registerStore as registerReaderRevenueManagerStore } from '../../../js/modules/reader-revenue-manager/datastore';
+import { registerStore as registerCoreModulesStore } from '@/js/googlesitekit/modules';
+import { registerStore as registerCoreUserStore } from '@/js/googlesitekit/datastore/user';
+import { registerStore as registerReaderRevenueManagerStore } from '@/js/modules/reader-revenue-manager/datastore';
 import { provideModules, provideUserInfo } from '../../../../tests/js/utils';
 import { registerPlugin } from '@wordpress-core/plugins';
 import { registerReaderRevenueManagerPlugin } from './plugin-registration';

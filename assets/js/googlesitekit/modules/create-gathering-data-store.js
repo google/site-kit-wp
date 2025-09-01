@@ -33,7 +33,7 @@ import {
 	createReducer,
 	createRegistryControl,
 } from 'googlesitekit-data';
-import { createFetchStore } from '../data/create-fetch-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 
 const RECEIVE_GATHERING_DATA = 'RECEIVE_GATHERING_DATA';
 const RECEIVE_DATA_AVAILABLE_ON_LOAD = 'RECEIVE_DATA_AVAILABLE_ON_LOAD';
