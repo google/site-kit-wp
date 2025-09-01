@@ -31,13 +31,13 @@ import { createInterpolateElement, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import useViewContext from '../../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../../util';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
-import useNotificationEvents from '../../../../../googlesitekit/notifications/hooks/useNotificationEvents';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 
 export default function SuccessBanner( { id, Notification } ) {
 	const viewContext = useViewContext();

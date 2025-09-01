@@ -37,8 +37,8 @@ import {
 } from 'googlesitekit-data';
 import { set } from 'googlesitekit-api';
 import { CORE_SITE } from './constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { extractExistingTag } from '../../../util/tag';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { extractExistingTag } from '@/js/util/tag';
 
 const fetchHTMLForURLStore = createFetchStore( {
 	baseName: 'getHTMLForURL',

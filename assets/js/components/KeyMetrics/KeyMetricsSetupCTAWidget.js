@@ -32,18 +32,18 @@ import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../../../js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import whenActive from '../../util/when-active';
-import { useShowTooltip } from '../AdminMenuTooltip';
-import { trackEvent, WEEK_IN_SECONDS } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
+import whenActive from '@/js/util/when-active';
+import { useShowTooltip } from '@/js/components/AdminMenuTooltip';
+import { trackEvent, WEEK_IN_SECONDS } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 import useDisplayCTAWidget from './hooks/useDisplayCTAWidget';
-import Banner from '../Banner';
-import Link from '../Link';
+import Banner from '@/js/components/Banner';
+import Link from '@/js/components/Link';
 import BannerSVGDesktop from '@/svg/graphics/banner-conversions-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-conversions-setup-cta-mobile.svg?url';
 

@@ -28,7 +28,7 @@ import { isValidElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { sanitizeHTML } from '../../util';
+import { sanitizeHTML } from '@/js/util';
 import LearnMoreLink from './LearnMoreLink';
 
 export default function Description( {

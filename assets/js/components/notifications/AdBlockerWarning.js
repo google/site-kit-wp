@@ -25,8 +25,8 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import AdBlockerWarningMessage from './AdBlockerWarningMessage';
 
 export default function AdBlockerWarning( { moduleSlug, className } ) {

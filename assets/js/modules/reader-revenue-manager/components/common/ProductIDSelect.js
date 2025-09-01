@@ -30,11 +30,11 @@ import { createInterpolateElement, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Link from '../../../../components/Link';
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import Link from '@/js/components/Link';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Option, Select } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { getProductIDLabel } from '../../utils/settings';
+import { getProductIDLabel } from '@/js/modules/reader-revenue-manager/utils/settings';
 
 export default function ProductIDSelect( props ) {
 	const {

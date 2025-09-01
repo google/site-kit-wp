@@ -24,7 +24,7 @@ import { each, round } from 'lodash';
 /**
  * Internal dependencies
  */
-import { calculateChange, partitionReport, stringToDate } from '../../../util';
+import { calculateChange, partitionReport, stringToDate } from '@/js/util';
 
 export * from './is-zero-report';
 export * from './site-stats-data';

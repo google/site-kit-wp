@@ -1,6 +1,9 @@
 [
-  "adsPax",
-  "gtagUserData",
-  "googleTagGateway",
-  "privacySandboxModule"
+	"adsPax",
+	"googleTagGateway",
+	"googleTagGatewayPhase2",
+	"gtagUserData",
+	"privacySandboxModule",
+	"proactiveUserEngagement",
+	"setupFlowRefresh"
 ]

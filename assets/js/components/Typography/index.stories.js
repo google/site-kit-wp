@@ -17,8 +17,8 @@
 /**
  * Internal dependencies
  */
-import { Cell, Grid, Row } from '../../material-components';
-import Widget from '../../googlesitekit/widgets/components/Widget';
+import { Cell, Grid, Row } from '@/js/material-components';
+import Widget from '@/js/googlesitekit/widgets/components/Widget';
 import Typography from './index';
 
 function GroupWrapper( { size = 6, header, children } ) {

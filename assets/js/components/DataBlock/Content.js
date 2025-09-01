@@ -29,12 +29,12 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { numFmt } from '../../util';
+import { numFmt } from '@/js/util';
 import Sparkline from './Sparkline';
-import Badge from '../Badge';
+import Badge from '@/js/components/Badge';
 import Change from './Change';
-import SourceLink from '../SourceLink';
-import Typography from '../Typography';
+import SourceLink from '@/js/components/SourceLink';
+import Typography from '@/js/components/Typography';
 
 export default function Content( {
 	title = '',

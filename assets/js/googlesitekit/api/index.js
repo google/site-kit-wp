@@ -39,12 +39,12 @@ import {
 	setItem,
 	STORAGE_KEY_PREFIX_ROOT,
 } from './cache';
-import { stringifyObject, HOUR_IN_SECONDS } from '../../util';
-import { isAuthError, isPermissionScopeError } from '../../util/errors';
-import { trackAPIError } from '../../util/api';
+import { stringifyObject, HOUR_IN_SECONDS } from '@/js/util';
+import { isAuthError, isPermissionScopeError } from '@/js/util/errors';
+import { trackAPIError } from '@/js/util/api';
 
 // Specific error to handle here, see below.
-import { CORE_USER } from '../datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 // Caching is enabled by default.
 let cachingEnabled = true;

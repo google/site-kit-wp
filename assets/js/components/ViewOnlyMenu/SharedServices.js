@@ -25,9 +25,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import Service from './Service';
-import Typography from '../Typography';
+import Typography from '@/js/components/Typography';
 
 export default function SharedServices() {
 	const viewableModules = useSelect( ( select ) =>

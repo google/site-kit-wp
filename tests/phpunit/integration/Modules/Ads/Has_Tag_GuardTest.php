@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Ads;
 
 use Google\Site_Kit\Context;
@@ -53,7 +51,7 @@ class Has_Tag_GuardTest extends TestCase {
 		$ads_conversion_id = $this->settings->get()['conversionID'];
 		$this->guard       = new Has_Tag_Guard( $ads_conversion_id );
 
-		$this->assertTrue( $this->guard->can_activate() );
+		$this->assertTrue( $this->guard->can_activate(), 'Guard should allow activation when conversionID is set.' );
 	}
 
 	public function test_can_activate_pax() {
@@ -67,7 +65,7 @@ class Has_Tag_GuardTest extends TestCase {
 		$pax_conversion_id = $this->settings->get()['paxConversionID'];
 		$this->guard       = new Has_Tag_Guard( $pax_conversion_id );
 
-		$this->assertTrue( $this->guard->can_activate() );
+		$this->assertTrue( $this->guard->can_activate(), 'Guard should allow activation when paxConversionID is set.' );
 	}
 
 	public function test_can_activate__with_no_ads_conversion_id() {

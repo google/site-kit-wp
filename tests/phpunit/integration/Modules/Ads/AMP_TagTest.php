@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Ads;
 
 use Google\Site_Kit\Context;
@@ -97,7 +95,7 @@ class AMP_TagTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_footer' );
 
-		$this->assertStringContainsString( '<amp-analytics', $output );
+		$this->assertStringContainsString( '<amp-analytics', $output, 'AMP analytics tag should be present in footer output.' );
 	}
 
 	public function test_amp_ads_tag_contains_expected_tag_id() {
@@ -112,7 +110,7 @@ class AMP_TagTest extends TestCase {
 
 		$parsed_config = $this->parse_amp_config_from_html( $output );
 
-		$this->assertEquals( $parsed_config['vars']['gtag_id'], static::CONVERSION_ID );
+		$this->assertEquals( $parsed_config['vars']['gtag_id'], static::CONVERSION_ID, 'gtag_id in AMP config should match conversion ID.' );
 	}
 
 	public function test_amp_ads_tag_contains_linker_domain() {
@@ -129,7 +127,8 @@ class AMP_TagTest extends TestCase {
 
 		$this->assertEquals(
 			$parsed_config['vars']['config']['linker']['domains'],
-			array( 'example.org' )
+			array( 'example.org' ),
+			'AMP config should contain example.org as linker domain.'
 		);
 	}
 }

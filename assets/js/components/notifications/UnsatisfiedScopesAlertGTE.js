@@ -26,15 +26,15 @@ import { useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-} from '../../googlesitekit/datastore/user/constants';
-import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../modules/tagmanager/datastore/constants';
-import BannerNotification from '../../googlesitekit/notifications/components/layout/BannerNotification';
-import { TYPES } from '../Notice/constants';
-import useFormValue from '../../hooks/useFormValue';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '@/js/modules/tagmanager/datastore/constants';
+import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import { TYPES } from '@/js/components/Notice/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function UnsatisfiedScopesAlertGTE( { id, Notification } ) {
 	const [ isSaving, setIsSaving ] = useState( false );

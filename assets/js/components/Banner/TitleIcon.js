@@ -1,7 +1,5 @@
 /**
- * Surveys Component Stories.
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +14,26 @@
  * limitations under the License.
  */
 
-export * from './SurveyCompletion.stories';
-export * from './SurveyQuestionMultiSelect.stories';
-export * from './SurveyQuestionOpenText.stories';
-export * from './SurveyQuestionRating.stories';
-export * from './SurveyQuestionSingleSelect.stories';
-export default {
-	title: 'Components/Surveys',
+/**
+ * External dependencies
+ */
+import classnames from 'classnames';
+import PropTypes from 'prop-types';
+
+export default function TitleIcon( { className, children } ) {
+	return (
+		<div
+			className={ classnames(
+				'googlesitekit-banner__title-icon',
+				className
+			) }
+		>
+			{ children }
+		</div>
+	);
+}
+
+TitleIcon.propTypes = {
+	className: PropTypes.string,
+	children: PropTypes.node,
 };

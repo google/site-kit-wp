@@ -29,7 +29,7 @@ import {
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import NewBadge from './NewBadge';
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 function Template( args ) {
 	const modules = useSelect( ( select ) =>

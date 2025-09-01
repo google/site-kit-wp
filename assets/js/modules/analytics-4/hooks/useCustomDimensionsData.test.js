@@ -26,15 +26,15 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from '../../../../../tests/js/utils';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
-} from '../datastore/constants';
-import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import useCustomDimensionsData from './useCustomDimensionsData';
-import { provideCustomDimensionError } from '../utils/custom-dimensions';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 
 describe( 'useCustomDimensionsData', () => {
 	let registry;

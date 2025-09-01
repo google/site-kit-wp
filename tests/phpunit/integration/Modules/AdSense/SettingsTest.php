@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\AdSense;
 
 use Google\Site_Kit\Context;
@@ -31,9 +29,9 @@ class SettingsTest extends SettingsTestCase {
 		$settings->register();
 
 		update_option( Settings::OPTION, array( 'accountID' => 'saved-account-id' ) );
-		$this->assertArrayIntersection( array( 'accountID' => 'saved-account-id' ), get_option( Settings::OPTION ) );
+		$this->assertArrayIntersection( array( 'accountID' => 'saved-account-id' ), get_option( Settings::OPTION ), 'Saved accountID should be present in option.' );
 		add_filter( 'googlesitekit_adsense_account_id', '__return_empty_string' );
-		$this->assertArrayIntersection( array( 'accountID' => 'saved-account-id' ), get_option( Settings::OPTION ) );
+		$this->assertArrayIntersection( array( 'accountID' => 'saved-account-id' ), get_option( Settings::OPTION ), 'Filter returning empty should not override saved accountID.' );
 		remove_filter( 'googlesitekit_adsense_account_id', '__return_empty_string' );
 
 		add_filter(
@@ -42,13 +40,13 @@ class SettingsTest extends SettingsTestCase {
 				return 'filtered-adsense-account-id';
 			}
 		);
-		$this->assertArrayIntersection( array( 'accountID' => 'filtered-adsense-account-id' ), get_option( Settings::OPTION ) );
+		$this->assertArrayIntersection( array( 'accountID' => 'filtered-adsense-account-id' ), get_option( Settings::OPTION ), 'Filter should override accountID value.' );
 
 		// Default value filtered into saved value.
-		$this->assertArrayIntersection( array( 'useSnippet' => true ), get_option( Settings::OPTION ) );
+		$this->assertArrayIntersection( array( 'useSnippet' => true ), get_option( Settings::OPTION ), 'Default filtered useSnippet should be true.' );
 		update_option( Settings::OPTION, array( 'useSnippet' => false ) );
 		// Default respects saved value.
-		$this->assertArrayIntersection( array( 'useSnippet' => false ), get_option( Settings::OPTION ) );
+		$this->assertArrayIntersection( array( 'useSnippet' => false ), get_option( Settings::OPTION ), 'Saved useSnippet should be respected over default.' );
 	}
 
 	public function test_get_default() {
@@ -72,7 +70,8 @@ class SettingsTest extends SettingsTestCase {
 				'useAdBlockingRecoveryErrorSnippet' => false,
 				'adBlockingRecoverySetupStatus'     => '',
 			),
-			get_option( Settings::OPTION )
+			get_option( Settings::OPTION ),
+			'Default AdSense settings should match expected structure and values.'
 		);
 	}
 
@@ -98,11 +97,12 @@ class SettingsTest extends SettingsTestCase {
 				'accountSetupComplete' => 'test-setup-complete',
 				'siteSetupComplete'    => 'test-setup-complete',
 			),
-			$option
+			$option,
+			'Legacy options should be mapped to current keys.'
 		);
 
 		foreach ( array_keys( $legacy_option ) as $legacy_key ) {
-			$this->assertArrayNotHasKey( $legacy_key, $option );
+			$this->assertArrayNotHasKey( $legacy_key, $option, 'Legacy key should not be present in current option.' );
 		}
 
 		// Ensure valid/current keys are not overridden by legacy.
@@ -114,15 +114,15 @@ class SettingsTest extends SettingsTestCase {
 			)
 		);
 		$option = $settings->get();
-		$this->assertEquals( 'test-current-account-id', $option['accountID'] );
-		$this->assertArrayNotHasKey( 'account_id', $option );
+		$this->assertEquals( 'test-current-account-id', $option['accountID'], 'Current accountID should override legacy key.' );
+		$this->assertArrayNotHasKey( 'account_id', $option, 'Legacy account_id should not be present when current key is set.' );
 	}
 
 	public function test_setup_completed_timestamp__new_setup() {
 		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 		$settings->register();
 
-		$this->assertNull( $settings->get()['setupCompletedTimestamp'] );
+		$this->assertNull( $settings->get()['setupCompletedTimestamp'], 'setupCompletedTimestamp should be null initially.' );
 
 		// Change only account status.
 		$settings->merge(
@@ -131,7 +131,7 @@ class SettingsTest extends SettingsTestCase {
 			)
 		);
 
-		$this->assertNull( $settings->get()['setupCompletedTimestamp'] );
+		$this->assertNull( $settings->get()['setupCompletedTimestamp'], 'Changing only account status should not set setupCompletedTimestamp.' );
 
 		// Change only site status.
 		$settings->merge(
@@ -141,7 +141,7 @@ class SettingsTest extends SettingsTestCase {
 			)
 		);
 
-		$this->assertNull( $settings->get()['setupCompletedTimestamp'] );
+		$this->assertNull( $settings->get()['setupCompletedTimestamp'], 'Changing only site status should not set setupCompletedTimestamp.' );
 
 		// Change both account and site status.
 		$settings->merge(
@@ -151,7 +151,7 @@ class SettingsTest extends SettingsTestCase {
 			)
 		);
 
-		$this->assertTrue( gmdate( 'Ymd' ) === gmdate( 'Ymd', $settings->get()['setupCompletedTimestamp'] ) );
+		$this->assertTrue( gmdate( 'Ymd' ) === gmdate( 'Ymd', $settings->get()['setupCompletedTimestamp'] ), 'Changing both statuses should set today as setupCompletedTimestamp.' );
 	}
 
 	public function test_setup_completed_timestamp__existing_setup() {
@@ -169,7 +169,7 @@ class SettingsTest extends SettingsTestCase {
 		);
 		$settings->register();
 
-		$this->assertNull( $settings->get()['setupCompletedTimestamp'] );
+		$this->assertNull( $settings->get()['setupCompletedTimestamp'], 'Existing setup should not have setupCompletedTimestamp by default upon re-register.' );
 
 		// Change any AdSense setting.
 		$settings->merge(
@@ -182,7 +182,7 @@ class SettingsTest extends SettingsTestCase {
 		$setup_completed_date = (int) gmdate( 'Ymd', $settings->get()['setupCompletedTimestamp'] );
 
 		// Test date can be greater than setup completed date if the `setupCompletedTimestamp` was saved on midnight.
-		$this->assertTrue( $test_date >= $setup_completed_date );
+		$this->assertTrue( $test_date >= $setup_completed_date, 'setupCompletedTimestamp should be in the past after change.' );
 	}
 
 	protected function get_testcase() {

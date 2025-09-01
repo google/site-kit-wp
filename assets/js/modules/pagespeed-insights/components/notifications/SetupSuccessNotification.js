@@ -30,13 +30,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '../../../../components/Notice/constants';
-import useQueryArg from '../../../../hooks/useQueryArg';
-import { useBreakpoint } from '../../../../hooks/useBreakpoint';
-import { getNavigationalScrollTop } from '../../../../util/scroll';
-import { ANCHOR_ID_SPEED } from '../../../../googlesitekit/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '@/js/components/Notice/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { getNavigationalScrollTop } from '@/js/util/scroll';
+import { ANCHOR_ID_SPEED } from '@/js/googlesitekit/constants';
 
 export default function SetupSuccessNotification( { id, Notification } ) {
 	const breakpoint = useBreakpoint();

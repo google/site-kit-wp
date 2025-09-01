@@ -23,7 +23,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { isValidDateString } from '../../../util';
+import { isValidDateString } from '@/js/util';
 
 /**
  * Generates a date range object with the appropriate structure to pass to report selectors.

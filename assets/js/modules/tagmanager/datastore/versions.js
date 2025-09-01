@@ -32,13 +32,13 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_TAGMANAGER } from './constants';
-import { MODULE_SLUG_TAGMANAGER } from '../constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 import {
 	isValidAccountID,
 	isValidInternalContainerID,
-} from '../util/validation';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { isValidGoogleTagID } from '../../analytics-4/utils/validation';
+} from '@/js/modules/tagmanager/util/validation';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { isValidGoogleTagID } from '@/js/modules/analytics-4/utils/validation';
 
 const fetchGetLiveContainerVersionStore = createFetchStore( {
 	baseName: 'getLiveContainerVersion',

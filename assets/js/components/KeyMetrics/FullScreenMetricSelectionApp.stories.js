@@ -21,9 +21,9 @@
  */
 import { provideSiteInfo } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_METRIC_SELECTION } from '../../googlesitekit/constants';
-import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_METRIC_SELECTION } from '@/js/googlesitekit/constants';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import FullScreenMetricsSelectionApp from './FullScreenMetricSelectionApp';
 
 function Template() {

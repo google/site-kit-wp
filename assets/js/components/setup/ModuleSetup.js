@@ -33,14 +33,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { deleteItem } from '../../googlesitekit/api/cache';
-import { trackEvent } from '../../util';
-import HelpMenu from '../help/HelpMenu';
-import { Cell, Grid, Row } from '../../material-components';
-import Header from '../Header';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { deleteItem } from '@/js/googlesitekit/api/cache';
+import { trackEvent } from '@/js/util';
+import HelpMenu from '@/js/components/help/HelpMenu';
+import { Cell, Grid, Row } from '@/js/material-components';
+import Header from '@/js/components/Header';
 import ModuleSetupFooter from './ModuleSetupFooter';
 
 export default function ModuleSetup( { moduleSlug } ) {

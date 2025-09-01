@@ -34,13 +34,12 @@ import enhancedMeasurement from './enhanced-measurement';
 import partialData from './partial-data';
 import properties from './properties';
 import report from './report';
-import pivotReport from './pivot-report';
 import service from './service';
 import settings from './settings';
 import tags from './tags';
 import webdatastreams from './webdatastreams';
 import moduleData from './module-data';
-import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
+import { createSnapshotStore } from '@/js/googlesitekit/data/create-snapshot-store';
 
 const store = combineStores(
 	accounts,
@@ -56,7 +55,6 @@ const store = combineStores(
 	customDimensionsGatheringData,
 	enhancedMeasurement,
 	partialData,
-	pivotReport,
 	properties,
 	report,
 	settings,

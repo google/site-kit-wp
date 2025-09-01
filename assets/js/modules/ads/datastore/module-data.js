@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import { createReducer, createRegistrySelector } from 'googlesitekit-data';
 import { AVAILABLE_PLUGINS, MODULES_ADS, PLUGINS } from './constants';
-import { controls } from '../../../googlesitekit/datastore/site/info';
+import { controls } from '@/js/googlesitekit/datastore/site/info';
 
 function getModuleDataProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {

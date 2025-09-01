@@ -38,13 +38,13 @@ import {
 	FormInstructions,
 	TagCheckProgress,
 	WebContainerSelect,
-} from '../common';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import { MODULE_SLUG_TAGMANAGER } from '../../constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+} from '@/js/modules/tagmanager/components/common';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
-import Notice from '../../../../components/Notice';
+import Notice from '@/js/components/Notice';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const module = useSelect( ( select ) =>

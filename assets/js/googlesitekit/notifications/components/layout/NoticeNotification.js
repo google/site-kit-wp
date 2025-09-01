@@ -17,11 +17,11 @@
 /**
  * Internal dependencies
  */
-import Notice from '../../../../components/Notice';
-import useNotificationEvents from '../../hooks/useNotificationEvents';
+import Notice from '@/js/components/Notice';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../../datastore/constants';
-import { Grid, Cell, Row } from '../../../../material-components';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { Grid, Cell, Row } from '@/js/material-components';
 import propTypes from 'prop-types';
 
 export default function NoticeNotification( {

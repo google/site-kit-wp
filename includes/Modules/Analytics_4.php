@@ -72,7 +72,6 @@ use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedM
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
-use Google\Site_Kit\Modules\Analytics_4\Report\PivotRequest as Analytics_4_PivotReport_Request;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdsLinked;
@@ -711,10 +710,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'shareable' => true,
 			),
 			'GET:non-shareable-report'                  => array( 'service' => 'analyticsdata' ),
-			'GET:pivot-report'                          => array(
-				'service'   => 'analyticsdata',
-				'shareable' => true,
-			),
+
 			'GET:webdatastreams'                        => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'                  => array( 'service' => 'analyticsadmin' ),
 			'GET:enhanced-measurement-settings'         => array( 'service' => 'analyticsenhancedmeasurement' ),
@@ -1309,44 +1305,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				$request->setProperty( $property_id );
 
 				return $this->get_analyticsdata_service()->properties->runReport( $property_id, $request );
-			case 'GET:pivot-report':
-				if ( empty( $data['metrics'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'metrics' ),
-						array( 'status' => 400 )
-					);
-				}
 
-				if ( empty( $data['pivots'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'pivots' ),
-						array( 'status' => 400 )
-					);
-				}
-
-				$settings = $this->get_settings()->get();
-				if ( empty( $settings['propertyID'] ) ) {
-					return new WP_Error(
-						'missing_required_setting',
-						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
-						array( 'status' => 500 )
-					);
-				}
-
-				$report  = new Analytics_4_PivotReport_Request( $this->context );
-				$request = $report->create_request( $data, $this->is_shared_data_request( $data ) );
-				if ( is_wp_error( $request ) ) {
-					return $request;
-				}
-
-				$property_id = self::normalize_property_id( $settings['propertyID'] );
-				$request->setProperty( $property_id );
-
-				return $this->get_analyticsdata_service()->properties->runPivotReport( $property_id, $request );
 			case 'GET:enhanced-measurement-settings':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
@@ -1861,7 +1820,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				return (array) $response->getKeyEvents();
 			case 'GET:report':
 			case 'GET:non-shareable-report':
-			case 'GET:pivot-report':
 				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );
 			case 'POST:sync-audiences':

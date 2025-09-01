@@ -28,7 +28,7 @@ import {
 	singleQuestionSurvey,
 	multiQuestionSurvey,
 	multiQuestionConditionalSurvey,
-} from '../__fixtures__';
+} from '@/js/components/surveys/__fixtures__';
 
 describe( 'CurrentSurvey utils', () => {
 	describe( 'getCurrentQuestionAndOrdinal', () => {

@@ -30,12 +30,12 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import P from '../Typography/P';
-import IconSurveyUnhappy from '../../../svg/icons/survey-unhappy.svg';
-import IconSurveyDissatisfied from '../../../svg/icons/survey-dissatisfied.svg';
-import IconSurveyNeutral from '../../../svg/icons/survey-neutral.svg';
-import IconSurveySatisfied from '../../../svg/icons/survey-satisfied.svg';
-import IconSurveyDelighted from '../../../svg/icons/survey-delighted.svg';
+import P from '@/js/components/Typography/P';
+import IconSurveyUnhappy from '@/svg/icons/survey-unhappy.svg';
+import IconSurveyDissatisfied from '@/svg/icons/survey-dissatisfied.svg';
+import IconSurveyNeutral from '@/svg/icons/survey-neutral.svg';
+import IconSurveySatisfied from '@/svg/icons/survey-satisfied.svg';
+import IconSurveyDelighted from '@/svg/icons/survey-delighted.svg';
 
 const ordinalIconMap = {
 	1: IconSurveyUnhappy,

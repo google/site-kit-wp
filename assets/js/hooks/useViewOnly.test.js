@@ -26,7 +26,7 @@ import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY,
-} from '../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import useViewOnly from './useViewOnly';
 
 describe( 'useViewOnly', () => {

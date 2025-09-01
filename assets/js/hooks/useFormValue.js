@@ -24,7 +24,7 @@ import { useSelect } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 
 /**
  * Returns the value of a form field.
