@@ -125,7 +125,7 @@ function hasPhoneLikePattern( value ) {
 		return false;
 	}
 
-	// Make sure the string only digits and phone-like separators, such as  spaces, dashes, parentheses, plus signs and dots.
+	// Ensure the string only contains digits and phone-like separators, such as spaces, dashes, parentheses, plus signs, and dots.
 	return /^[\s\-()+.\d]*$/.test( value );
 }
 
