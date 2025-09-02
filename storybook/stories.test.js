@@ -68,24 +68,6 @@ function customizePage( page ) {
 	return page;
 }
 
-function customizePage( page ) {
-	page.on( 'pageerror', ( error ) => {
-		throw new Error(
-			`Page error detected during story rendering:\n${ error.message }`
-		);
-	} );
-
-	page.on( 'console', ( message ) => {
-		if ( message.type() === 'error' ) {
-			throw new Error(
-				`Console error detected during story rendering:\n${ message.text() }`
-			);
-		}
-	} );
-
-	return page;
-}
-
 initStoryshots( {
 	suite: 'Puppeteer storyshots',
 	configPath: path.resolve( __dirname, '../storybook' ),
