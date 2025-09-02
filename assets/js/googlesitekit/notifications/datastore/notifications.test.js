@@ -843,6 +843,112 @@ describe( 'core/notifications Notifications', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 		} );
+
+		describe( 'pinNotification', () => {
+			it( 'should require a notification ID to be provided', () => {
+				const { pinNotification } =
+					registry.dispatch( CORE_NOTIFICATIONS );
+
+				expect( () => pinNotification() ).toThrow(
+					'A notification id is required to pin a notification.'
+				);
+			} );
+
+			it( 'should require a group ID to be provided', () => {
+				const { pinNotification } =
+					registry.dispatch( CORE_NOTIFICATIONS );
+
+				expect( () => pinNotification( 'some-notification' ) ).toThrow(
+					'A groupID is required to pin a notification to a specific group.'
+				);
+			} );
+
+			it( 'should pin a notification to the front of the queue for its group', async () => {
+				function TestNotificationComponent() {
+					return <div>Test notification!</div>;
+				}
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+				registerNotification( 'low-priority', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 20,
+					groupID: 'test-group',
+					isDismissible: true,
+				} );
+
+				registerNotification( 'high-priority', {
+					Component: TestNotificationComponent,
+					areaSlug: NOTIFICATION_AREAS.HEADER,
+					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+					priority: 1,
+					groupID: 'test-group',
+					isDismissible: true,
+				} );
+
+				const { getQueuedNotifications } =
+					registry.select( CORE_NOTIFICATIONS );
+
+				getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					'test-group'
+				);
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					'test-group'
+				);
+
+				let queuedNotifications = getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					'test-group'
+				);
+
+				expect( queuedNotifications.map( ( { id } ) => id ) ).toEqual( [
+					'high-priority',
+					'low-priority',
+				] );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.pinNotification( 'low-priority', 'test-group' );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.invalidateResolution( 'getQueuedNotifications', [
+						VIEW_CONTEXT_MAIN_DASHBOARD,
+						'test-group',
+					] );
+
+				getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					'test-group'
+				);
+
+				await untilResolved(
+					registry,
+					CORE_NOTIFICATIONS
+				).getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					'test-group'
+				);
+
+				queuedNotifications = getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					'test-group'
+				);
+
+				expect( queuedNotifications.map( ( { id } ) => id ) ).toEqual( [
+					'low-priority',
+					'high-priority',
+				] );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
