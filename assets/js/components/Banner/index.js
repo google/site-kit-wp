@@ -33,6 +33,7 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
+import TitleIcon from './TitleIcon';
 import Title from './Title';
 import Description from './Description';
 import HelpText from './HelpText';
@@ -46,6 +47,7 @@ const Banner = forwardRef(
 	(
 		{
 			className,
+			titleIcon,
 			title,
 			description,
 			additionalDescription,
@@ -78,6 +80,8 @@ const Banner = forwardRef(
 				className={ classnames( 'googlesitekit-banner', className ) }
 			>
 				<div className="googlesitekit-banner__content">
+					{ titleIcon && <TitleIcon>{ titleIcon }</TitleIcon> }
+
 					<Title>{ title }</Title>
 
 					<Description
@@ -120,6 +124,7 @@ const Banner = forwardRef(
 );
 
 Banner.propTypes = {
+	titleIcon: PropTypes.node,
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
 	additionalDescription: PropTypes.oneOfType( [
