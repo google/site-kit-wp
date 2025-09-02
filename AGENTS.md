@@ -1,4 +1,4 @@
-# Code Assistant Context - Site Kit by Google
+# **Code Assistant Context - Site Kit by Google**
 
 ## Project Overview
 WordPress plugin providing Google services integration. PHP backend (`includes/`) + React frontend (`assets/js/`) with modular architecture for each Google service (Analytics, AdSense, Search Console, etc.).
@@ -15,17 +15,6 @@ WordPress plugin providing Google services integration. PHP backend (`includes/`
 - **Data**: WordPress data stores in `assets/js/googlesitekit/data/`
 - **Modules**: `assets/js/modules/{module}/` with `components/`, `datastore/`, `utils/`
 - **Build**: Webpack multi-entry with code splitting
-
-### Module Pattern
-Each module follows consistent structure:
-```
-includes/Modules/ModuleName.php           # Main PHP class
-includes/Modules/ModuleName/              # PHP subclasses
-assets/js/modules/module-slug/            # JS implementation
-  ├── components/                         # React components
-  ├── datastore/                          # WordPress data store
-  └── utils/                              # Utilities
-```
 
 ## Development Commands
 
@@ -69,17 +58,49 @@ assets/js/modules/module-slug/            # JS implementation
 
 **Study existing modules** in `includes/Modules/` and `assets/js/modules/` for patterns.
 
+### Module Pattern
+Each module follows consistent structure:
+```
+includes/Modules/ModuleName.php           # Main PHP class
+includes/Modules/ModuleName/              # PHP subclasses
+assets/js/modules/module-slug/            # JS implementation
+  ├── components/                         # React components
+  ├── datastore/                          # WordPress data store
+  └── utils/                              # Utilities
+```
+
 ## Important Patterns
 - **Feature Flags**: `feature-flags.json` + `Core\Util\Feature_Flags`
 - **Assets**: Module-based registration via traits/interfaces
 - **Data Flow**: WordPress data stores → React components
 - **Authentication**: Google OAuth via proxy service
 
-## Find More Details
-This document previously contained comprehensive information. For detailed specifics:
-- **Testing**: Complete framework details and utilities
-- **Styling**: SCSS architecture and Material Design integration  
-- **Build System**: Webpack configuration and asset management
-- **Security**: WordPress-specific security practices
+## Visual Regression Testing & Storybook
+
+### Storybook Stories
+**Component documentation and testing via interactive stories:**
+- **Stories**: `**/*.stories.js` - React component stories for UI development
+- **Config**: `storybook/main.js` - Storybook configuration and build setup
+- **Commands**: `npm run storybook` (dev), `npm run build:storybook` (build)
+
+**Story structure follows CSF (Component Story Format):**
+```
+ComponentName.stories.js
+├── export default { title, component }     # Story metadata
+├── export const StoryName = () => <...>   # Individual stories
+└── StoryName.parameters = { ... }         # Story-specific config
+```
+
+### Visual Regression Testing (VRT)
+**Automated visual testing via BackstopJS + Storybook:**
+- **Reference Images**: `tests/backstop/reference/` - Golden master screenshots
+- **Config**: `tests/backstop/config.js` + `scenarios.js` - BackstopJS setup
+- **VRT Styles**: `storybook/preview-head-vrt.html` - Animation/transition disabling
+
+**VRT workflow:**
+- `npm run test:visualtest` - Run VRT tests (compare vs reference)
+- `npm run test:visualapprove` - Accept new screenshots as reference
+- **Auto-generated**: Scenarios created from all `*.stories.js` files
+- **Special classes**: `.googlesitekit-vrt-animation-none`, `.googlesitekit-vrt-animation-paused`
 
 **When in doubt**: Check existing similar modules, refer to config files, or search the codebase for patterns.
