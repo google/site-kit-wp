@@ -1632,5 +1632,50 @@ describe( 'core/notifications Notifications', () => {
 				).toBe( false );
 			} );
 		} );
+
+		describe( 'getPinnedNotificationID', () => {
+			it( 'should require a group ID', () => {
+				const { getPinnedNotificationID } =
+					registry.select( CORE_NOTIFICATIONS );
+
+				expect( () => getPinnedNotificationID() ).toThrow(
+					'groupID is required.'
+				);
+			} );
+
+			it( 'should return undefined if no notification is pinned for the given group', () => {
+				const { getPinnedNotificationID } =
+					registry.select( CORE_NOTIFICATIONS );
+
+				const pinnedNotificationID =
+					getPinnedNotificationID( 'test-group' );
+
+				expect( pinnedNotificationID ).toBeUndefined();
+			} );
+
+			it( 'should return the ID of the pinned notification for the given group', async () => {
+				const { pinNotification } =
+					registry.dispatch( CORE_NOTIFICATIONS );
+
+				const { getPinnedNotificationID } =
+					registry.select( CORE_NOTIFICATIONS );
+
+				expect(
+					getPinnedNotificationID( 'test-group' )
+				).toBeUndefined();
+
+				await pinNotification( 'low-priority', 'test-group' );
+
+				expect( getPinnedNotificationID( 'test-group' ) ).toBe(
+					'low-priority'
+				);
+
+				await pinNotification( 'high-priority', 'test-group' );
+
+				expect( getPinnedNotificationID( 'test-group' ) ).toBe(
+					'high-priority'
+				);
+			} );
+		} );
 	} );
 } );
