@@ -46,6 +46,7 @@ export default function useEnableAudienceGroup( {
 	redirectURL,
 	onSuccess,
 	onError,
+	onOAuthNavigation,
 } = {} ) {
 	const isMounted = useMountedState();
 
@@ -129,6 +130,8 @@ export default function useEnableAudienceGroup( {
 			setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
 				autoSubmit: true,
 			} );
+
+			await onOAuthNavigation?.();
 
 			setPermissionScopeError( {
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
