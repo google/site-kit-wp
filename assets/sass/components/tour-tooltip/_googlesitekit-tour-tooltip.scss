@@ -188,13 +188,21 @@
 // Fix AdminMenuTooltip jumping on scroll by using fixed positioning.
 #react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) > div.__floater {
 
-	left: 10px !important;
+	left: 170px !important;
 	position: fixed !important;
-	top: 175px !important;
+	top: 113px !important;
 	transform: none !important;
+}
+.folded {
+	#react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) > div.__floater {
 
-	@media (min-width: 1145px) {
-		left: 170px !important;
-		top: 65px !important;
+		left: 46px !important;
+		top: 46px !important;
 	}
+}
+
+// Fix the arrow alignment to make it consistent to allow fixed positioning to align reliably.
+#react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) div.__floater__arrow > span {
+	margin-top: 42px !important;
+	top: 0 !important;
 }

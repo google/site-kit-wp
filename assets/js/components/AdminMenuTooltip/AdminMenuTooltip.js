@@ -80,7 +80,7 @@ export function AdminMenuTooltip() {
 	return (
 		<JoyrideTooltip
 			target={ isMobileTablet ? 'body' : defaultTarget }
-			placement={ isMobileTablet ? 'center' : 'auto' }
+			placement={ isMobileTablet ? 'center' : 'right' }
 			className={
 				isMobileTablet
 					? 'googlesitekit-tour-tooltip__modal_step'
