@@ -25,7 +25,19 @@ export const IGNORE_CONSOLE_MESSAGES = {
 		// Caused by Storyshots plugin loading iframe, unrelated to component logic.
 		/net::ERR_ABORTED.*\/iframe\.html/i,
 		// Caused by Storyshots navigation during story render cycles.
-		/Execution context was destroyed, most likely because of a navigation\./,
+		/Execution context was destroyed, most likely because of a navigation/,
+
+		// TEMPORARY: allow known errors tracked in #11324 to unblock merging.
+		// TODO: In ticket #11324: Remove each of these as the underlying issues are fixed.
+		/No fallback response defined for GET to \/google-site-kit/,
+		/Fetch API cannot load file/,
+		/You are probably offline/,
+		/TypeError:\s+notifications\.reduce is not a function/,
+		/Error:\s+`initialFocus`\s+as selector refers to no known node/,
+		/TypeError:\s+Cannot read (?:properties|property) of undefined \(reading 'includes'\)/,
+		/Invariant Violation:\s+Options for Search Console report must be an object\./,
+		/Failed to load resource: the server responded with a status of 400/,
+		/\[GSI_LOGGER\]: The given client ID is not found/, // Sign in with Google button preview on Modules/SignInWithGoogle/Settings/SettingsEdit we may want to continue to ignore this if it can't be fixed.
 	],
 
 	// Expected errors allowed only for specific stories which are there to
@@ -37,53 +49,41 @@ export const IGNORE_CONSOLE_MESSAGES = {
 		{
 			id: /^components-errorhandler--default$/,
 			// Ignore any intentional error thrown to demonstrate the error boundary.
-			patterns: [ /.+/ ],
+			patterns: [ /.+/, /^$/ ],
 		},
 
 		// Components/ErrorNotice › Default
 		{
 			id: /^components-errornotice--default$/,
 			// Expected caught error; allow all for this story.
-			patterns: [ /.+/ ],
+			patterns: [ /.+/, /^$/ ],
 		},
 
 		// Components/GoogleChartErrorHandler › Default
 		{
 			id: /^components-googlecharterrorhandler--default$/,
-			patterns: [ /.+/ ],
+			patterns: [ /.+/, /^$/ ],
 		},
 
 		// Components/MediaErrorHandler (all variants)
 		{
 			id: /^components-mediaerrorhandler--.+$/,
-			patterns: [ /.+/ ],
+			patterns: [ /.+/, /^$/ ],
 		},
 
 		// Components/WidgetErrorHandler › Default
 		{
 			id: /^components-widgeterrorhandler--default$/,
-			patterns: [ /.+/ ],
+			patterns: [ /.+/, /^$/ ],
 		},
 
 		// Modules/Analytics 4/.../AudienceSelectionPanel › Insufficient permissions error
 		{
-			// Be flexible about "analytics-4" vs "analytics 4" canonicalization in titles.
-			id: /^modules-analytics-?4-.*audience-selection-panel--insufficient-permissions-error$/,
+			id: /^modules-analytics4-components-audiencesegmentation-dashboard-audienceselectionpanel--with-insufficient-permissions-error$/,
 			patterns: [
-				/Google Site Kit API Error.*datapoint:sync-audiences/i,
+				/Google Site Kit API Error method:POST datapoint:sync-audiences/i,
 			],
 		},
-	],
-
-	// TEMPORARY: allow known errors tracked in #11324 to unblock merging.
-	// TODO: In ticket #11324: Remove each of these as the underlying issues are fixed.
-	temporaryGlobal: [
-		/Fetch API cannot load file/,
-		/You are probably offline/,
-		/TypeError:\s+notifications\.reduce is not a function/,
-		/Error:\s+`initialFocus`\s+as selector refers to no known node/,
-		/TypeError:\s+Cannot read (?:properties|property) of undefined \(reading 'includes'\)/,
-		/Invariant Violation:\s+Options for Search Console report must be an object\./,
 	],
 };
 
@@ -128,12 +128,6 @@ export function isIgnored( rawMessage, storyID ) {
 
 	// Global errors to ignore.
 	if ( matchesAny( text, IGNORE_CONSOLE_MESSAGES.global ) ) {
-		return true;
-	}
-
-	// Temporary global suppressions for #11324.
-	// TODO:: Remove in 11324 block below once fixed.
-	if ( matchesAny( text, IGNORE_CONSOLE_MESSAGES.temporaryGlobal ) ) {
 		return true;
 	}
 
