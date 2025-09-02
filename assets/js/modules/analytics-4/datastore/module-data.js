@@ -119,15 +119,19 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 			} = payload;
 
 			// Replace empty array value with empty object in resourceAvailabilityDates object.
-			Object.keys( resourceAvailabilityDates || {} ).forEach( ( key ) => {
-				if ( Array.isArray( resourceAvailabilityDates[ key ] ) ) {
-					resourceAvailabilityDates[ key ] = {};
-				}
-			} );
+			const replacedResourceAvailabilityDates = Object.entries(
+				resourceAvailabilityDates || {}
+			).reduce(
+				( acc, [ key, value ] ) => ( {
+					...acc,
+					[ key ]: Array.isArray( value ) ? {} : value,
+				} ),
+				{}
+			);
 
 			const moduleData = {
 				hasMismatchedTag: !! tagIDMismatch,
-				resourceAvailabilityDates,
+				resourceAvailabilityDates: replacedResourceAvailabilityDates,
 				customDimensionsDataAvailable,
 				newEvents,
 				lostEvents,
