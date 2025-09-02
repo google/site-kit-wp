@@ -1,4 +1,4 @@
-# **Code Assistant Context - Site Kit by Google**
+# Code Assistant Context - Site Kit by Google
 
 ## Project Overview
 WordPress plugin providing Google services integration. PHP backend (`includes/`) + React frontend (`assets/js/`) with modular architecture for each Google service (Analytics, AdSense, Search Console, etc.).
