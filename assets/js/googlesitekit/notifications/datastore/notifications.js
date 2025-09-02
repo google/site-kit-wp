@@ -1003,6 +1003,8 @@ export const selectors = {
 	 * @return {(string|undefined)} The ID of the pinned notification, or undefined if none is pinned.
 	 */
 	getPinnedNotificationID: ( state, groupID ) => {
+		invariant( groupID, 'groupID is required.' );
+
 		return state.pinnedNotification[ groupID ];
 	},
 };
