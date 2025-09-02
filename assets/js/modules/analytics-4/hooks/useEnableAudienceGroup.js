@@ -183,6 +183,7 @@ export default function useEnableAudienceGroup( {
 		maybeEnableAudienceGroup,
 		isMounted,
 		setValues,
+		onOAuthNavigation,
 		setPermissionScopeError,
 		redirectURL,
 		onError,
