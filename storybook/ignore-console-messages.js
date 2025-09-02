@@ -37,7 +37,7 @@ export const IGNORE_CONSOLE_MESSAGES = {
 		/TypeError:\s+Cannot read (?:properties|property) of undefined \(reading 'includes'\)/,
 		/Invariant Violation:\s+Options for Search Console report must be an object\./,
 		/Failed to load resource: the server responded with a status of 400/,
-		/\[GSI_LOGGER\]: The given client ID is not found/, // Sign in with Google button preview on Modules/SignInWithGoogle/Settings/SettingsEdit we may want to continue to ignore this if it can't be fixed.
+		/\[GSI_LOGGER\]: The given origin is not allowed for the given client ID/, // Sign in with Google button preview on Modules/SignInWithGoogle/Settings/SettingsEdit we may want to continue to ignore this if it can't be fixed.
 	],
 
 	// Expected errors allowed only for specific stories which are there to
