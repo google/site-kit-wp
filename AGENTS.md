@@ -80,7 +80,8 @@ assets/js/modules/module-slug/            # JS implementation
 ### Storybook Stories
 **Component documentation and testing via interactive stories:**
 - **Stories**: `**/*.stories.js` - React component stories for UI development
-- **Config**: `storybook/main.js` - Storybook configuration and build setup
+- **Config**: `storybook/main.js` - Storybook configuration
+- **Setup**: `storybook/{package.json,webpack.config.js}` - Storybook build setup
 - **Commands**: `npm run storybook` (dev), `npm run build:storybook` (build)
 
 **Story structure follows CSF (Component Story Format):**
