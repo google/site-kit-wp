@@ -115,7 +115,7 @@ export function normalizeEmail( email ) {
  * @param {string} value The string to validate.
  * @return {boolean} Whether the string passed has a phone-like pattern or not.
  */
-function hasPhoneLikePattern( value ) {
+export function hasPhoneLikePattern( value ) {
 	const digits = value.replace( /\D/g, '' );
 
 	if (

@@ -21,6 +21,7 @@
  */
 import {
 	classifyPII,
+	hasPhoneLikePattern,
 	isLikelyEmail,
 	isLikelyPhone,
 	normalizeEmail,
@@ -237,6 +238,45 @@ describe( 'Event Providers Utilities', () => {
 					name: 'quantity',
 				} )
 			).toBe( null );
+		} );
+	} );
+
+	describe( 'hasPhoneLikePattern', () => {
+		it.each( [
+			'123-456-7890',
+			'(123) 456-7890',
+			'+1 (123) 456-7890',
+			'123.456.7890',
+			'+44 20 7946 0958',
+			'9876543210',
+			'+919876543210',
+		] )( 'should detect "%s" as having a phone like pattern', ( input ) => {
+			expect( hasPhoneLikePattern( input ) ).toBe( true );
+		} );
+
+		it.each( [
+			'f1bc311ae4',
+			'123456',
+			'12-34',
+			'++ + + + 1234567',
+			'(xx) 123-4567',
+			'123-abc-4567',
+			'phone: 1234567890',
+			'',
+		] )(
+			'should detect "%s" as not having a phone like pattern',
+			( input ) => {
+				expect( hasPhoneLikePattern( input ) ).toBe( false );
+			}
+		);
+
+		it( 'should allow multiple plus/parentheses/dots/spaces if digits are sufficient', () => {
+			expect( hasPhoneLikePattern( '++(123).456.7890' ) ).toBe( true );
+		} );
+
+		it( 'should reject when non-allowed characters appear even with enough digits', () => {
+			expect( hasPhoneLikePattern( '1234567#' ) ).toBe( false );
+			expect( hasPhoneLikePattern( '1234567x' ) ).toBe( false );
 		} );
 	} );
 } );
