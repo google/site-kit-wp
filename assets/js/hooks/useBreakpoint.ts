@@ -18,9 +18,21 @@
 
 import { useWindowWidth } from './useWindowSize';
 
+/**
+ * Breakpoint for an extra large screen (over `1280px` wide).
+ */
 export const BREAKPOINT_XLARGE = 'xlarge';
+/**
+ * Breakpoint for a desktop screen (over `960px` wide).
+ */
 export const BREAKPOINT_DESKTOP = 'desktop';
+/**
+ * Breakpoint for a tablet screen (over `600px` wide).
+ */
 export const BREAKPOINT_TABLET = 'tablet';
+/**
+ * Breakpoint for a mobile phone screen (any screen `600px` wide or less).
+ */
 export const BREAKPOINT_SMALL = 'small';
 
 /**
@@ -31,17 +43,17 @@ export const BREAKPOINT_SMALL = 'small';
  * @return {string} The current breakpoint according to the window size.
  */
 export function useBreakpoint() {
-	const onlyWidth = useWindowWidth();
+	const windowWidth = useWindowWidth();
 
-	if ( onlyWidth > 1280 ) {
+	if ( windowWidth > 1280 ) {
 		return BREAKPOINT_XLARGE;
 	}
 
-	if ( onlyWidth > 960 ) {
+	if ( windowWidth > 960 ) {
 		return BREAKPOINT_DESKTOP;
 	}
 
-	if ( onlyWidth > 600 ) {
+	if ( windowWidth > 600 ) {
 		return BREAKPOINT_TABLET;
 	}
 
