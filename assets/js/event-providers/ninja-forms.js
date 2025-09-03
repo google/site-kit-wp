@@ -65,7 +65,7 @@ const NINJA_FORMS_TYPES = {
  *
  * @since n.e.x.t
  *
- * @param {Array<Object>} fields The submitted NF form' fields.
+ * @param {Object<string, Object>} fields The submitted Ninja Form fields.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
  */
 function getUserData( fields ) {
@@ -73,7 +73,7 @@ function getUserData( fields ) {
 		.map( ( field ) => {
 			const { label, type: nfType, value, key: name } = field;
 
-			// Ninja Forms types are not standard HTML input types, so we map them before giving calling classifyPII which relies on standard HTML types
+			// Ninja Forms types are not standard HTML input types, so we map them before calling classifyPII, which relies on standard HTML types.
 			const type = NINJA_FORMS_TYPES[ nfType ] ?? nfType;
 
 			return classifyPII( {
