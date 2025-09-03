@@ -79,10 +79,11 @@ export const IGNORE_CONSOLE_MESSAGES = {
 
 		// Modules/Analytics4/Components/AudienceSegmentation/Dashboard error stories
 		// - AudienceSelectionPanel › Audience sync error
+		// - AudienceSelectionPanel › Insufficient permissions error
 		// - SecondaryUserSetupWidget › Insufficient permission error
 		// - SecondaryUserSetupWidget › Setup error
 		{
-			id: /^modules-analytics4-components-audiencesegmentation-dashboard-(audienceselectionpanel--audience-sync-error|secondaryusersetupwidget--insufficient-permission-error|secondaryusersetupwidget--setup-error)$/,
+			id: /^modules-analytics4-components-audiencesegmentation-dashboard-(audienceselectionpanel--audience-sync-error|audienceselectionpanel--with-insufficient-permissions-error|secondaryusersetupwidget--insufficient-permission-error|secondaryusersetupwidget--setup-error)$/,
 			patterns: [
 				/^Google Site Kit API Error method:POST datapoint:sync-audiences/,
 			],
