@@ -81,7 +81,7 @@ export default function JoyrideTooltip( props ) {
 	);
 
 	useEffect( () => {
-		//eslint-disable-next-line sitekit/function-declaration-consistency
+		// eslint-disable-next-line sitekit/function-declaration-consistency
 		let disconnect = () => {};
 
 		if ( typeof global.ResizeObserver === 'function' ) {
