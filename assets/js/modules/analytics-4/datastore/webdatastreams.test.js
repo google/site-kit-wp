@@ -36,7 +36,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 import * as fixtures from './__fixtures__';
-import { populateAccountSummaries } from '../utils/account';
+import { populateAccountSummaries } from '@/js/modules/analytics-4/utils/account';
 
 describe( 'modules/analytics-4 webdatastreams', () => {
 	let registry;
@@ -757,14 +757,14 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					{
 						_id: '110',
 						webStreamData: {
-							defaultUri: 'http://example-1.test',
+							defaultUri: 'http://example-1.test', // eslint-disable-line sitekit/acronym-case
 							measurementId: 'G-1101', // eslint-disable-line sitekit/acronym-case
 						},
 					},
 					{
 						_id: '111',
 						webStreamData: {
-							defaultUri: 'http://example-2.test',
+							defaultUri: 'http://example-2.test', // eslint-disable-line sitekit/acronym-case
 							measurementId: 'G-1102', // eslint-disable-line sitekit/acronym-case
 						},
 					},
@@ -773,14 +773,14 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					{
 						_id: '112',
 						webStreamData: {
-							defaultUri: 'http://example-3.test',
+							defaultUri: 'http://example-3.test', // eslint-disable-line sitekit/acronym-case
 							measurementId: 'G-1103', // eslint-disable-line sitekit/acronym-case
 						},
 					},
 					{
 						_id: '113',
 						webStreamData: {
-							defaultUri: 'http://example-4.test',
+							defaultUri: 'http://example-4.test', // eslint-disable-line sitekit/acronym-case
 							measurementId: 'G-1104', // eslint-disable-line sitekit/acronym-case
 						},
 					},
@@ -789,21 +789,21 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					{
 						_id: '114',
 						webStreamData: {
-							defaultUri: 'http://example-5.test',
+							defaultUri: 'http://example-5.test', // eslint-disable-line sitekit/acronym-case
 							measurementId: 'G-1105', // eslint-disable-line sitekit/acronym-case
 						},
 					},
 					{
 						_id: '115',
 						webStreamData: {
-							defaultUri: 'http://example.com',
+							defaultUri: 'http://example.com', // eslint-disable-line sitekit/acronym-case
 							measurementId: 'G-1106', // eslint-disable-line sitekit/acronym-case
 						},
 					},
 					{
 						_id: '116',
 						webStreamData: {
-							defaultUri: 'http://example-7.test',
+							defaultUri: 'http://example-7.test', // eslint-disable-line sitekit/acronym-case
 							measurementId: 'G-1107', // eslint-disable-line sitekit/acronym-case
 						},
 					},

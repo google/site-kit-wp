@@ -33,24 +33,21 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import {
-	numFmt,
-	calculateChange,
-	getAvailableDateRanges,
-} from '../../../../../util';
-import ChangeArrow from '../../../../../components/ChangeArrow';
-import PreviewBlock from '../../../../../components/PreviewBlock';
-import ReportError from '../../../../../components/ReportError';
-import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { numFmt, calculateChange, getAvailableDateRanges } from '@/js/util';
+import ChangeArrow from '@/js/components/ChangeArrow';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import ReportError from '@/js/components/ReportError';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	UI_DIMENSION_COLOR,
 	UI_DIMENSION_VALUE,
-} from '../../../datastore/constants';
-import Link from '../../../../../components/Link';
+} from '@/js/modules/analytics-4/datastore/constants';
+import Link from '@/js/components/Link';
 import GatheringDataNotice, {
 	NOTICE_STYLE,
-} from '../../../../../components/GatheringDataNotice';
+} from '@/js/components/GatheringDataNotice';
+import Typography from '@/js/components/Typography';
 
 export default function TotalUserCount( props ) {
 	const { loaded, error, report, dimensionValue, gatheringData } = props;
@@ -60,12 +57,12 @@ export default function TotalUserCount( props ) {
 	);
 
 	const { setValues } = useDispatch( CORE_UI );
-	const showAllUsers = () => {
+	function showAllUsers() {
 		setValues( {
 			[ UI_DIMENSION_VALUE ]: '',
 			[ UI_DIMENSION_COLOR ]: '',
 		} );
-	};
+	}
 
 	if ( ! loaded ) {
 		return (
@@ -105,7 +102,10 @@ export default function TotalUserCount( props ) {
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__totalcount googlesitekit-data-block">
-			<h3 className="googlesitekit-subheading-1 googlesitekit-data-block__title">
+			<Typography
+				as="h3"
+				className="googlesitekit-subheading-1 googlesitekit-data-block__title"
+			>
 				{ ! dimensionValue && (
 					<span>{ __( 'All Visitors', 'google-site-kit' ) } </span>
 				) }
@@ -129,7 +129,7 @@ export default function TotalUserCount( props ) {
 						<span>{ dimensionValue }</span>
 					</Fragment>
 				) }
-			</h3>
+			</Typography>
 
 			{ gatheringData && (
 				<GatheringDataNotice style={ NOTICE_STYLE.LARGE } />

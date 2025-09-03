@@ -25,7 +25,7 @@ import {
 	renderHook,
 	waitForTimeouts,
 } from '../../../tests/js/test-utils';
-import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { useMonitorInternetConnection } from './useMonitorInternetConnection';
 
 describe( 'useMonitorInternetConnection', () => {
@@ -33,12 +33,12 @@ describe( 'useMonitorInternetConnection', () => {
 	let store;
 	let originalNavigatorOnline;
 
-	const mockOnlineStatus = ( status = true ) => {
+	function mockOnlineStatus( status = true ) {
 		Object.defineProperty( navigator, 'onLine', {
 			value: status,
 			writable: true,
 		} );
-	};
+	}
 
 	const connectionCheckEndpoint = '/google-site-kit/v1/?_locale=user';
 
@@ -84,6 +84,7 @@ describe( 'useMonitorInternetConnection', () => {
 			mockOnlineStatus( false );
 			global.window.dispatchEvent( new Event( 'offline' ) );
 			// Wait for fetch to complete.
+			// waitForRegistry() is not suitable to use here as no state changes occur.
 			await waitForTimeouts( 100 );
 		} );
 
@@ -100,6 +101,7 @@ describe( 'useMonitorInternetConnection', () => {
 		} );
 
 		// Wait for fetch to complete.
+		// waitForRegistry() is not suitable to use here as no state changes occur.
 		await waitForTimeouts( 100 );
 
 		// Initial status should be online.
@@ -110,6 +112,7 @@ describe( 'useMonitorInternetConnection', () => {
 			mockOnlineStatus( false );
 			global.window.dispatchEvent( new Event( 'offline' ) );
 			// Wait for fetch to complete.
+			// waitForRegistry() is not suitable to use here as no state changes occur.
 			await waitForTimeouts( 100 );
 		} );
 
@@ -120,6 +123,7 @@ describe( 'useMonitorInternetConnection', () => {
 			mockOnlineStatus();
 			global.window.dispatchEvent( new Event( 'online' ) );
 			// Wait for fetch to complete.
+			// waitForRegistry() is not suitable to use here as no state changes occur.
 			await waitForTimeouts( 100 );
 		} );
 
@@ -188,6 +192,7 @@ describe( 'useMonitorInternetConnection', () => {
 
 		await act( async () => {
 			global.window.dispatchEvent( new Event( 'online' ) );
+			// waitForRegistry() is not suitable to use here as no state changes occur.
 			await waitForTimeouts( 100 );
 		} );
 

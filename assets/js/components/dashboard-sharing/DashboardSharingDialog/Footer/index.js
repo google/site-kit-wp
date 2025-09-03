@@ -32,18 +32,18 @@ import { useCallback, useState } from '@wordpress/element';
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	EDITING_USER_ROLE_SELECT_SLUG_KEY,
 	RESET_SETTINGS_DIALOG,
 	SETTINGS_DIALOG,
-} from '../../DashboardSharingSettings/constants';
-import useViewContext from '../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../util';
-import Link from '../../../Link';
+} from '@/js/components/dashboard-sharing/DashboardSharingSettings/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import Link from '@/js/components/Link';
 import Notice from './Notice';
-import ErrorNotice from '../../../ErrorNotice';
+import ErrorNotice from '@/js/components/ErrorNotice';
 
 export default function Footer( { closeDialog, openResetDialog } ) {
 	const viewContext = useViewContext();
@@ -147,7 +147,7 @@ export default function Footer( { closeDialog, openResetDialog } ) {
 					) }
 
 				<div className="googlesitekit-dashboard-sharing-settings__footer-actions-right">
-					<Button tertiary onClick={ onCancel }>
+					<Button onClick={ onCancel } tertiary>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Button>
 

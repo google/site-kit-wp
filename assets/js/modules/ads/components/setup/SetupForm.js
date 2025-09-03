@@ -32,11 +32,11 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
-import { MODULES_ADS } from '../../datastore/constants';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { ConversionIDTextField } from '../common';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import SetupEnhancedConversionTrackingNotice from '../../../../components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { ConversionIDTextField } from '@/js/modules/ads/components/common';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import SetupEnhancedConversionTrackingNotice from '@/js/components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
 
 export default function SetupForm( {
 	finishSetup,
@@ -93,7 +93,7 @@ export default function SetupForm( {
 			<SetupEnhancedConversionTrackingNotice
 				className="googlesitekit-margin-top-1"
 				message={ __(
-					'To track the performance of your campaigns, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
+					'To track the performance of your campaigns, Site Kit will enable plugin conversion tracking. You can always disable it in settings.',
 					'google-site-kit'
 				) }
 			/>

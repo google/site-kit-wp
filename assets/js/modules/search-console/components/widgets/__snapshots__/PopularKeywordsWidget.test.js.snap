@@ -15,7 +15,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Top performing keywords
           </h3>
@@ -39,7 +39,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
                 class="googlesitekit-table__body-item"
               >
                 <a
-                  aria-label="Perspiciatis quibusdam (opens in a new tab)"
+                  aria-label="Reiciendis (opens in a new tab)"
                   class="googlesitekit-cta-link"
                   href=""
                   rel="noopener noreferrer"
@@ -48,7 +48,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
                   <span
                     class="googlesitekit-cta-link__contents"
                   >
-                    Perspiciatis quibusdam
+                    Reiciendis
                   </span>
                 </a>
               </div>
@@ -56,7 +56,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  93% CTR
+                  100% CTR
                 </strong>
               </div>
             </div>
@@ -67,7 +67,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
                 class="googlesitekit-table__body-item"
               >
                 <a
-                  aria-label="Aperiam (opens in a new tab)"
+                  aria-label="Voluptas impedit (opens in a new tab)"
                   class="googlesitekit-cta-link"
                   href=""
                   rel="noopener noreferrer"
@@ -76,7 +76,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
                   <span
                     class="googlesitekit-cta-link__contents"
                   >
-                    Aperiam
+                    Voluptas impedit
                   </span>
                 </a>
               </div>
@@ -84,7 +84,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  92% CTR
+                  96% CTR
                 </strong>
               </div>
             </div>
@@ -95,7 +95,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
                 class="googlesitekit-table__body-item"
               >
                 <a
-                  aria-label="Accusantium (opens in a new tab)"
+                  aria-label="Mollitia (opens in a new tab)"
                   class="googlesitekit-cta-link"
                   href=""
                   rel="noopener noreferrer"
@@ -104,7 +104,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
                   <span
                     class="googlesitekit-cta-link__contents"
                   >
-                    Accusantium
+                    Mollitia
                   </span>
                 </a>
               </div>
@@ -112,7 +112,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  80% CTR
+                  95% CTR
                 </strong>
               </div>
             </div>
@@ -136,7 +136,7 @@ exports[`PopularKeywordsWidget should render the generic error variant when the 
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top performing keywords
         </h2>
@@ -151,7 +151,7 @@ exports[`PopularKeywordsWidget should render the generic error variant when the 
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Data loading failed
         </h3>
@@ -198,7 +198,7 @@ exports[`PopularKeywordsWidget should render the insufficient permissions error 
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top performing keywords
         </h2>
@@ -213,7 +213,7 @@ exports[`PopularKeywordsWidget should render the insufficient permissions error 
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Insufficient permissions
         </h3>
@@ -264,7 +264,7 @@ exports[`PopularKeywordsWidget should render the loading state while resolving t
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Top performing keywords
           </h3>

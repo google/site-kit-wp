@@ -11,7 +11,8 @@
 namespace Google\Site_Kit\Core\Tags;
 
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Tags\First_Party_Mode\First_Party_Mode_Settings;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
@@ -62,12 +63,13 @@ class GTag {
 	 * Register method called after class instantiation.
 	 *
 	 * @since 1.124.0
-	 * @access public
-	 *
-	 * @return void
 	 */
 	public function register() {
-		add_action( 'wp_enqueue_scripts', $this->get_method_proxy( 'enqueue_gtag_script' ), 20 );
+		add_action( 'wp_enqueue_scripts', fn() => $this->enqueue_gtag_script(), 20 );
+		// The wp_enqueue_scripts action is hooked on wp_head @ 1;
+		// The hat script needs to be hooked in after for tag state to be available.
+		// This also avoids printing from within the "enqueue" action.
+		add_action( 'wp_head', fn() => $this->maybe_print_hat_script(), 2 );
 
 		add_filter(
 			'wp_resource_hints',
@@ -80,6 +82,31 @@ class GTag {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Prints the first party tag hat script if GTG is enabled.
+	 */
+	private function maybe_print_hat_script() {
+		if ( ! $this->is_google_tag_gateway_active() ) {
+			return;
+		}
+
+		$tag_ids = wp_list_pluck( $this->tags, 'tag_id' );
+
+		if ( ! $tag_ids ) {
+			return;
+		}
+
+		$js = <<<'JS'
+(function(w,i,g){w[g]=w[g]||[];if(typeof w[g].push=='function')w[g].push.apply(w[g],i)})
+(window,%s,'google_tags_first_party');
+JS;
+
+		printf( "\n<!-- %s -->\n", esc_html__( 'Google tag gateway for advertisers snippet added by Site Kit', 'google-site-kit' ) );
+		BC_Functions::wp_print_inline_script_tag(
+			sprintf( $js, wp_json_encode( $tag_ids ) )
 		);
 	}
 
@@ -138,11 +165,12 @@ class GTag {
 			return;
 		}
 
-		$gtag_src = $this->get_gtag_src();
+		$gtag_src  = $this->get_gtag_src();
+		$gtag_deps = $this->get_gtag_deps();
 
-		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-		wp_enqueue_script( self::HANDLE, $gtag_src, false, null, false );
+		wp_register_script( self::HANDLE, $gtag_src, $gtag_deps, null, false ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 		wp_script_add_data( self::HANDLE, 'script_execution', 'async' );
+		wp_enqueue_script( self::HANDLE );
 
 		// Note that `gtag()` may already be defined via the `Consent_Mode` output, but this is safe to call multiple times.
 		wp_add_inline_script( self::HANDLE, 'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}' );
@@ -154,19 +182,23 @@ class GTag {
 		wp_add_inline_script( self::HANDLE, 'gtag("js", new Date());' );
 		wp_add_inline_script( self::HANDLE, 'gtag("set", "developer_id.dZTNiMT", true);' ); // Site Kit developer ID.
 
+		if ( $this->is_google_tag_gateway_active() ) {
+			wp_add_inline_script( self::HANDLE, 'gtag("set", "developer_id.dZmZmYj", true);' );
+		}
+
 		foreach ( $this->tags as $tag ) {
 			wp_add_inline_script( self::HANDLE, $this->get_gtag_call_for_tag( $tag ) );
 		}
 
-		$filter_google_gtagjs = function ( $tag, $handle ) {
-			if ( self::HANDLE !== $handle ) {
+		$first_handle         = $gtag_deps[0] ?? self::HANDLE;
+		$filter_google_gtagjs = function ( $tag, $handle ) use ( $first_handle ) {
+			if ( $first_handle !== $handle ) {
 				return $tag;
 			}
 
 			$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google tag (gtag.js) snippet added by Site Kit', 'google-site-kit' ) );
-			$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google tag (gtag.js) snippet added by Site Kit', 'google-site-kit' ) );
 
-			return $snippet_comment_begin . $tag . $snippet_comment_end;
+			return $snippet_comment_begin . $tag;
 		};
 
 		add_filter( 'script_loader_tag', $filter_google_gtagjs, 20, 2 );
@@ -214,7 +246,7 @@ class GTag {
 	 * Returns the gtag source URL.
 	 *
 	 * @since 1.124.0
-	 * @since 1.142.0 Provides support for First-party mode.
+	 * @since 1.142.0 Provides support for Google tag gateway.
 	 *
 	 * @return string|false The gtag source URL. False if no tags are added.
 	 */
@@ -223,38 +255,83 @@ class GTag {
 			return false;
 		}
 
+		// If Google tag gateway is active, each tag will get its own script as a dependency.
+		if ( $this->is_google_tag_gateway_active() ) {
+			return false;
+		}
+
 		// Load the GTag scripts using the first tag ID - it doesn't matter which is used,
 		// all registered tags will be set up with a config command regardless
 		// of which is used to load the source.
 		$tag_id = rawurlencode( $this->tags[0]['tag_id'] );
 
-		// If First-party mode is active, use the proxy URL to load the GTag script.
-		if ( Feature_Flags::enabled( 'firstPartyMode' ) && $this->is_first_party_mode_active() ) {
-			return add_query_arg(
-				array(
-					'id' => $tag_id,
-					's'  => '/gtag/js',
-				),
-				plugins_url( 'fpm/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE )
-			);
-		}
-
 		return 'https://www.googletagmanager.com/gtag/js?id=' . $tag_id;
 	}
 
 	/**
-	 * Checks if First-party mode is active.
+	 * Gets the list of tag script handles that GTag should load first.
+	 *
+	 * @return array
+	 */
+	private function get_gtag_deps() {
+		if ( ! $this->is_google_tag_gateway_active() ) {
+			return array();
+		}
+
+		$deps    = array();
+		$tag_ids = wp_list_pluck( $this->tags, 'tag_id' );
+
+		foreach ( $tag_ids as $tag_id ) {
+			$handle = $this->get_handle_for_tag( $tag_id );
+			$deps[] = $handle;
+
+			wp_register_script(
+				$handle,
+				esc_url( $this->get_gtg_src( $tag_id ) ),
+				array(),
+				null, // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+				false
+			);
+
+			wp_script_add_data( $handle, 'script_execution', 'async' );
+		}
+
+		return $deps;
+	}
+
+	/**
+	 * Gets the script tag src for a given tag using GTG.
+	 *
+	 * @param string $tag_id Tag ID.
+	 * @return string
+	 */
+	protected function get_gtg_src( $tag_id ) {
+		return add_query_arg(
+			array(
+				'id' => $tag_id,
+				's'  => '/gtag/js',
+			),
+			plugins_url( 'gtg/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE )
+		);
+	}
+
+	/**
+	 * Checks if Google tag gateway is active.
 	 *
 	 * @since 1.142.0
 	 *
-	 * @return bool True if First-party mode is active, false otherwise.
+	 * @return bool True if Google tag gateway is active, false otherwise.
 	 */
-	protected function is_first_party_mode_active() {
-		$first_party_mode_settings = new First_Party_Mode_Settings( $this->options );
+	protected function is_google_tag_gateway_active() {
+		if ( ! Feature_Flags::enabled( 'googleTagGateway' ) ) {
+			return false;
+		}
 
-		$settings = $first_party_mode_settings->get();
+		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
 
-		$required_settings = array( 'isEnabled', 'isFPMHealthy', 'isScriptAccessEnabled' );
+		$settings = $google_tag_gateway_settings->get();
+
+		$required_settings = array( 'isEnabled', 'isGTGHealthy', 'isScriptAccessEnabled' );
 
 		foreach ( $required_settings as $setting ) {
 			if ( ! isset( $settings[ $setting ] ) || ! $settings[ $setting ] ) {
@@ -263,5 +340,17 @@ class GTag {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Gets the script tag handle for a given tag ID.
+	 *
+	 * @since 1.158.0
+	 *
+	 * @param string $tag_id Tag ID.
+	 * @return string
+	 */
+	public static function get_handle_for_tag( $tag_id ): string {
+		return self::HANDLE . "-$tag_id";
 	}
 }

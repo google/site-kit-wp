@@ -32,26 +32,27 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../../datastore/constants';
-import { numFmt } from '../../../../../util';
-import whenActive from '../../../../../util/when-active';
-import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
-import DetailsPermaLinks from '../../../../../components/DetailsPermaLinks';
-import ReportTable from '../../../../../components/ReportTable';
-import PreviewTable from '../../../../../components/PreviewTable';
-import { ZeroDataMessage } from '../../common';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { numFmt } from '@/js/util';
+import whenActive from '@/js/util/when-active';
+import TableOverflowContainer from '@/js/components/TableOverflowContainer';
+import DetailsPermaLinks from '@/js/components/DetailsPermaLinks';
+import ReportTable from '@/js/components/ReportTable';
+import PreviewTable from '@/js/components/PreviewTable';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import Header from './Header';
 import Footer from './Footer';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../../../../hooks/useBreakpoint';
-import useViewOnly from '../../../../../hooks/useViewOnly';
+} from '@/js/hooks/useBreakpoint';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 function ModulePopularPagesWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;
@@ -96,6 +97,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			},
 		],
 		limit: 10,
+		reportID: 'analytics-4_module-popular-pages-widget-ga4_widget_args',
 	};
 
 	const error = useSelect( ( select ) =>
@@ -257,6 +259,6 @@ ModulePopularPagesWidgetGA4.propTypes = {
 	WidgetReportZero: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( { moduleName: 'analytics-4' } )(
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
 	ModulePopularPagesWidgetGA4
 );

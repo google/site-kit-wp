@@ -29,24 +29,27 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '../../../../components/Notice/constants';
-import useQueryArg from '../../../../hooks/useQueryArg';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '@/js/components/Notice/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 
 export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 	const [ , setNotification ] = useQueryArg( 'notification' );
 	const [ , setSlug ] = useQueryArg( 'slug' );
 
-	const settingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	const siwgSettingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getModuleSettingsURL(
+			MODULE_SLUG_SIGN_IN_WITH_GOOGLE
+		)
 	);
 
-	const onDismiss = () => {
+	function onDismiss() {
 		setNotification( undefined );
 		setSlug( undefined );
-	};
+	}
 
 	return (
 		<Notification>
@@ -80,7 +83,7 @@ export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 				} }
 				ctaButton={ {
 					label: __( 'Customize settings', 'google-site-kit' ),
-					href: `${ settingsURL }#connected-services/sign-in-with-google`,
+					href: siwgSettingsURL,
 				} }
 			/>
 		</Notification>

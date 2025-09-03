@@ -26,14 +26,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
-import Link from '../Link';
-import PencilIcon from '../../../svg/icons/pencil-alt.svg';
+import Link from '@/js/components/Link';
+import PencilIcon from '@/svg/icons/pencil-alt.svg';
 import SetupCompletedSurveyTrigger from './SetupCompletedSurveyTrigger';
-import { trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 import { useChangeMetricsFeatureTourEffect } from './hooks/useChangeMetricsFeatureTourEffect';
 
 export default function ChangeMetricsLink() {
@@ -52,7 +52,7 @@ export default function ChangeMetricsLink() {
 	const renderChangeMetricLink =
 		Array.isArray( keyMetrics ) && keyMetrics?.length > 0;
 
-	useChangeMetricsFeatureTourEffect( renderChangeMetricLink );
+	useChangeMetricsFeatureTourEffect( { renderChangeMetricLink } );
 
 	if ( ! renderChangeMetricLink ) {
 		return null;
@@ -61,11 +61,11 @@ export default function ChangeMetricsLink() {
 	return (
 		<Fragment>
 			<Link
-				secondary
-				linkButton
 				className="googlesitekit-widget-area__cta-link googlesitekit-km-change-metrics-cta"
 				onClick={ openMetricsSelectionPanel }
 				leadingIcon={ <PencilIcon width={ 22 } height={ 22 } /> }
+				secondary
+				linkButton
 			>
 				{ __( 'Change metrics', 'google-site-kit' ) }
 			</Link>

@@ -24,9 +24,9 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { createRegistrySelector } from 'googlesitekit-data';
+import { createReducer, createRegistrySelector } from 'googlesitekit-data';
 import { AVAILABLE_PLUGINS, MODULES_ADS, PLUGINS } from './constants';
-import { controls } from '../../../googlesitekit/datastore/site/info';
+import { controls } from '@/js/googlesitekit/datastore/site/info';
 
 function getModuleDataProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -83,23 +83,20 @@ export const actions = {
 	},
 };
 
-export const reducer = ( state, { payload, type } ) => {
+export const reducer = createReducer( ( state, { payload, type } ) => {
 	switch ( type ) {
 		case RECEIVE_MODULE_DATA: {
 			const { supportedConversionEvents, plugins } = payload;
 			const moduleData = { supportedConversionEvents, plugins };
 
-			return {
-				...state,
-				moduleData,
-			};
+			state.moduleData = moduleData;
+			break;
 		}
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 export const resolvers = {
 	*getModuleData() {

@@ -24,17 +24,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from '../../../../components/Link';
+import Link from '@/js/components/Link';
 
 export default function INPLearnMoreLink() {
 	return (
 		<Link
 			href="https://web.dev/inp-cwv/"
-			external
 			aria-label={ __(
 				'Learn more about INP replacing FID.',
 				'google-site-kit'
 			) }
+			external
 		>
 			{ __( 'Learn more', 'google-site-kit' ) }
 		</Link>

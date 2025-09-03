@@ -21,6 +21,7 @@
  */
 import Modules from 'googlesitekit-modules';
 import { MODULES_ADS } from './constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import {
 	submitChanges,
 	rollbackChanges,
@@ -28,7 +29,7 @@ import {
 	validateHaveSettingsChanged,
 } from './settings';
 
-const baseModuleStore = Modules.createModuleStore( 'ads', {
+const baseModuleStore = Modules.createModuleStore( MODULE_SLUG_ADS, {
 	ownedSettingsSlugs: [
 		'conversionID',
 		'paxConversionID',

@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { isURL } from '@wordpress/url';
 
@@ -32,9 +32,9 @@ import { isURL } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { isPermissionScopeError, isErrorRetryable } from '../util/errors';
+import { isPermissionScopeError, isErrorRetryable } from '@/js/util/errors';
 import Notice from './Notice';
-import Link from './Link';
+import { sanitizeHTML } from '@/js/util';
 
 export default function ErrorNotice( {
 	className,
@@ -63,9 +63,9 @@ export default function ErrorNotice( {
 		);
 	}, [ dispatch, selectorData ] );
 
-	// Do not display if there is no error, or if the error is for missing scopes.
-	// This only applies when no message prop is directly passed.
-	if ( ! message && ( ! error || isPermissionScopeError( error ) ) ) {
+	// Do not display if there is no error and no direct message text is passed as a direct prop.
+	// Also do not display if the error is for missing scopes as these are handled by a popup modal.
+	if ( ! message || isPermissionScopeError( error ) ) {
 		return null;
 	}
 
@@ -98,26 +98,50 @@ export default function ErrorNotice( {
 	const reconnectURL = error?.data?.reconnectURL;
 
 	if ( reconnectURL && isURL( reconnectURL ) ) {
-		errorMessageWithModifications = createInterpolateElement(
-			sprintf(
-				/* translators: %1$s: Original error message */
-				__(
-					'%1$s To fix this, <a>redo the plugin setup</a>.',
-					'google-site-kit'
-				),
-				errorMessageWithModifications
+		/**
+		 * This error message uses HTML tags without using
+		 * `createInterpolateElement` because the error messages
+		 * that come from the server/API can also contain HTML (eg. links)
+		 * we want to render.
+		 *
+		 * Instead of creating a React node using `createInterpolateElement`,
+		 * we use `dangerouslySetInnerHTML` to allow the HTML we create and from
+		 * the server/API to be rendered as-intended.
+		 */
+		errorMessageWithModifications = sprintf(
+			/* translators: 1: Original error message 2: Reconnect URL */
+			__(
+				'%1$s To fix this, <a href="%2$s">redo the plugin setup</a>.',
+				'google-site-kit'
 			),
-			{
-				a: <Link href={ reconnectURL } />,
-			}
+			errorMessageWithModifications,
+			reconnectURL
 		);
 	}
+
+	const sanitizeArgs = {
+		ALLOWED_TAGS: [ 'a' ],
+		ALLOWED_ATTR: [ 'href' ],
+	};
 
 	return (
 		<Notice
 			className={ className }
 			type={ Notice.TYPES.ERROR }
-			description={ errorMessageWithModifications }
+			description={
+				// The error messages that come from the server/API can contain
+				// HTML (eg. links), so we use `dangerouslySetInnerHTML` and sanitize
+				// the HTML to render these links.
+				//
+				// We tried to use `createInterpolateElement` but it does not work
+				// with HTML tags that come from the server/API.
+				<span
+					dangerouslySetInnerHTML={ sanitizeHTML(
+						errorMessageWithModifications,
+						sanitizeArgs
+					) }
+				/>
+			}
 			ctaButton={
 				shouldDisplayRetry
 					? {

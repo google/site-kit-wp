@@ -45,7 +45,12 @@ import getMultiDimensionalObjectFromParams from '../utils/get-multi-dimensional-
 
 describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
-		await page.waitForSelector( '.googlesitekit-user-input__question' );
+		// The UserInputApp needs more time to load to pass consistently.
+		const extendedTimeout = 15_000;
+
+		await page.waitForSelector( '.googlesitekit-user-input__question', {
+			timeout: extendedTimeout,
+		} );
 
 		await step( 'select purpose', async () => {
 			await expect( page ).toClick( '#purpose-publish_blog' );
@@ -82,11 +87,11 @@ describe( 'User Input Settings', () => {
 					'.googlesitekit-user-input__question .googlesitekit-user-input__buttons--complete',
 					{ text: /complete setup/i }
 				),
-				page.waitForNavigation(),
+				// Navigation and network idle needs more time to complete to consistently pass.
+				page.waitForNavigation( { timeout: extendedTimeout } ),
+				page.waitForNetworkIdle( { timeout: extendedTimeout } ),
 			] )
 		);
-
-		await pageWait( 600 );
 
 		await step(
 			'wait for a Key Metric tile to successfully appear',
@@ -192,6 +197,14 @@ describe( 'User Input Settings', () => {
 	} );
 
 	afterEach( async () => {
+		// Wait for network idle to allow outstanding requests to resolve
+		// and prevent Invalid JSON Response error.
+		try {
+			await page.waitForNetworkIdle( { timeout: 15_000 } );
+		} catch ( error ) {
+			// Allow to fail silently if timeout is reached which can occur mostly running locally.
+		}
+
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
@@ -242,13 +255,13 @@ describe( 'User Input Settings', () => {
 
 		await step( 'click on CTA button and wait for navigation', async () => {
 			await page.waitForSelector(
-				'.googlesitekit-setup__wrapper--key-metrics-setup-cta'
+				'.googlesitekit-widget--keyMetricsSetupCTA'
 			);
 			await Promise.all( [
 				expect( page ).toClick(
-					'.googlesitekit-widget-key-metrics-actions__wrapper .googlesitekit-key-metrics-cta-button'
+					'.googlesitekit-widget--keyMetricsSetupCTA .googlesitekit-banner__cta'
 				),
-				page.waitForNavigation(),
+				page.waitForNavigation( { timeout: 10_000 } ),
 			] );
 		} );
 
@@ -263,8 +276,10 @@ describe( 'User Input Settings', () => {
 		await setSearchConsoleProperty();
 
 		await step( 'visit admin settings', async () => {
-			await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
-			await pageWait();
+			await Promise.all( [
+				visitAdminPage( 'admin.php', 'page=googlesitekit-settings' ),
+				page.waitForNetworkIdle(),
+			] );
 			await page.waitForSelector( '.mdc-tab-bar a.mdc-tab' );
 			await expect( page ).toClick( 'a.mdc-tab', {
 				text: /admin settings/i,
@@ -281,7 +296,7 @@ describe( 'User Input Settings', () => {
 			] );
 		} );
 
-		await pageWait();
+		await page.waitForNetworkIdle();
 
 		await fillInInputSettings();
 	} );

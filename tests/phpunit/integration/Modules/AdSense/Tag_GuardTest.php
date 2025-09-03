@@ -52,7 +52,7 @@ class Tag_GuardTest extends TestCase {
 	}
 
 	public function test_can_activate() {
-		$this->assertTrue( $this->guard->can_activate() );
+		$this->assertTrue( $this->guard->can_activate(), 'Guard should allow activation when clientID set and useSnippet true.' );
 	}
 
 	public function test_cant_activate_when_usesnippet_is_falsy() {

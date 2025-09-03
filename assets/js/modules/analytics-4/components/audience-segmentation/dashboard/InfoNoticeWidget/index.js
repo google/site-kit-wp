@@ -31,19 +31,20 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { trackEvent, WEEK_IN_SECONDS } from '../../../../../../util';
-import whenActive from '../../../../../../util/when-active';
-import InfoNotice from '../InfoNotice';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { trackEvent, WEEK_IN_SECONDS } from '@/js/util';
+import whenActive from '@/js/util/when-active';
+import InfoNotice from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/InfoNotice';
 import {
 	AUDIENCE_INFO_NOTICES,
 	AUDIENCE_INFO_NOTICE_HIDE_UI,
 	AUDIENCE_INFO_NOTICE_SLUG,
 } from './constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import withIntersectionObserver from '../../../../../../util/withIntersectionObserver';
-import useViewContext from '../../../../../../hooks/useViewContext';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import useViewContext from '@/js/hooks/useViewContext';
 
 const InfoNoticeWithIntersectionObserver =
 	withIntersectionObserver( InfoNotice );
@@ -143,4 +144,6 @@ InfoNoticeWidget.propTypes = {
 	WidgetNull: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( { moduleName: 'analytics-4' } )( InfoNoticeWidget );
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
+	InfoNoticeWidget
+);

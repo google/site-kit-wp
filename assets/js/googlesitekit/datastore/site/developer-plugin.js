@@ -20,9 +20,13 @@
  * Internal dependencies
  */
 import { get } from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
-import { createFetchStore } from '../../data/create-fetch-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 
 const fetchGetDeveloperPluginState = createFetchStore( {
 	baseName: 'getDeveloperPluginState',
@@ -31,12 +35,9 @@ const fetchGetDeveloperPluginState = createFetchStore( {
 			useCache: false,
 		} );
 	},
-	reducerCallback: ( state, developerPluginState ) => {
-		return {
-			...state,
-			developerPluginState,
-		};
-	},
+	reducerCallback: createReducer( ( state, developerPluginState ) => {
+		state.developerPluginState = developerPluginState;
+	} ),
 } );
 
 const baseInitialState = {

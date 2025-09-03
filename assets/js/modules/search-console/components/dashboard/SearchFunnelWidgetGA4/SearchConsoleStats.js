@@ -29,10 +29,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getSiteStatsDataForGoogleChart } from '../../../util';
-import { Grid, Row, Cell } from '../../../../../material-components';
-import { partitionReport } from '../../../../../util/partition-report';
-import GoogleChart from '../../../../../components/GoogleChart';
+import { getSiteStatsDataForGoogleChart } from '@/js/modules/search-console/util';
+import { Grid, Row, Cell } from '@/js/material-components';
+import { partitionReport } from '@/js/util/partition-report';
+import GoogleChart from '@/js/components/GoogleChart';
 
 export default function SearchConsoleStats( props ) {
 	const { data, metrics, selectedStats, dateRangeLength, gatheringData } =

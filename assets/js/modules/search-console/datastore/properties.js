@@ -20,21 +20,28 @@
  * Internal dependencies
  */
 import { get } from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import {
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { MODULES_SEARCH_CONSOLE } from './constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 const fetchGetMatchedPropertiesStore = createFetchStore( {
 	baseName: 'getMatchedProperties',
 	controlCallback: () =>
 		get(
 			'modules',
-			'search-console',
+			MODULE_SLUG_SEARCH_CONSOLE,
 			'matched-sites',
 			{},
 			{ useCache: true }
 		),
-	reducerCallback: ( state, properties ) => ( { ...state, properties } ),
+	reducerCallback: createReducer( ( state, properties ) => {
+		state.properties = properties;
+	} ),
 } );
 
 const baseInitialState = {
@@ -44,13 +51,6 @@ const baseInitialState = {
 const baseActions = {};
 
 const baseControls = {};
-
-const baseReducer = ( state, { type } ) => {
-	switch ( type ) {
-		default:
-			return state;
-	}
-};
 
 const baseResolvers = {
 	*getMatchedProperties() {
@@ -83,7 +83,6 @@ const store = combineStores( fetchGetMatchedPropertiesStore, {
 	initialState: baseInitialState,
 	actions: baseActions,
 	controls: baseControls,
-	reducer: baseReducer,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,
 } );

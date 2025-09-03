@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { availableAudiences as audiencesFixture } from '../../../../datastore/__fixtures__';
+import { availableAudiences as audiencesFixture } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	act,
 	createTestRegistry,
@@ -34,15 +34,16 @@ import {
 	waitFor,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
-} from '../../../../datastore/constants';
-import { VIEW_CONTEXT_SETTINGS } from '../../../../../../googlesitekit/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
-import * as tracking from '../../../../../../util/tracking';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import * as tracking from '@/js/util/tracking';
 import SetupCTA from './SetupCTA';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -73,7 +74,7 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},

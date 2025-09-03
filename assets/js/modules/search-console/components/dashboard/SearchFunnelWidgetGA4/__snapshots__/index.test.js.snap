@@ -9,7 +9,7 @@ exports[`SearchFunnelWidgetGA4 should not render the Activate Analytics CTA when
       class="googlesitekit-widget__header"
     >
       <h3
-        class="googlesitekit-subheading-1 googlesitekit-widget__header-title"
+        class="googlesitekit-typography googlesitekit-widget__header-title googlesitekit-typography--title googlesitekit-typography--small"
       >
         Search traffic over the last 28 days
       </h3>
@@ -43,7 +43,7 @@ exports[`SearchFunnelWidgetGA4 should not render the Activate Analytics CTA when
                     class="googlesitekit-data-block__title-datapoint-wrapper"
                   >
                     <h3
-                      class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
+                      class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
                     >
                       <span
                         class="googlesitekit-data-block__title-inner"
@@ -54,7 +54,11 @@ exports[`SearchFunnelWidgetGA4 should not render the Activate Analytics CTA when
                     <div
                       class="googlesitekit-data-block__datapoint"
                     >
-                      7.9K
+                      <span
+                        class="googlesitekit-data-block__datapoint--resize"
+                      >
+                        7.9K
+                      </span>
                     </div>
                   </div>
                   <div
@@ -86,7 +90,7 @@ exports[`SearchFunnelWidgetGA4 should not render the Activate Analytics CTA when
                     class="googlesitekit-data-block__title-datapoint-wrapper"
                   >
                     <h3
-                      class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
+                      class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
                     >
                       <span
                         class="googlesitekit-data-block__title-inner"
@@ -97,7 +101,11 @@ exports[`SearchFunnelWidgetGA4 should not render the Activate Analytics CTA when
                     <div
                       class="googlesitekit-data-block__datapoint"
                     >
-                      123
+                      <span
+                        class="googlesitekit-data-block__datapoint--resize"
+                      >
+                        123
+                      </span>
                     </div>
                   </div>
                   <div
@@ -191,7 +199,7 @@ exports[`SearchFunnelWidgetGA4 should render the Search Funnel Widget, including
       class="googlesitekit-widget__header"
     >
       <h3
-        class="googlesitekit-subheading-1 googlesitekit-widget__header-title"
+        class="googlesitekit-typography googlesitekit-widget__header-title googlesitekit-typography--title googlesitekit-typography--small"
       >
         Search traffic over the last 28 days
       </h3>
@@ -225,7 +233,7 @@ exports[`SearchFunnelWidgetGA4 should render the Search Funnel Widget, including
                     class="googlesitekit-data-block__title-datapoint-wrapper"
                   >
                     <h3
-                      class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
+                      class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
                     >
                       <span
                         class="googlesitekit-data-block__title-inner"
@@ -236,7 +244,11 @@ exports[`SearchFunnelWidgetGA4 should render the Search Funnel Widget, including
                     <div
                       class="googlesitekit-data-block__datapoint"
                     >
-                      7.9K
+                      <span
+                        class="googlesitekit-data-block__datapoint--resize"
+                      >
+                        7.9K
+                      </span>
                     </div>
                   </div>
                   <div
@@ -268,7 +280,7 @@ exports[`SearchFunnelWidgetGA4 should render the Search Funnel Widget, including
                     class="googlesitekit-data-block__title-datapoint-wrapper"
                   >
                     <h3
-                      class=" googlesitekit-subheading-1 googlesitekit-data-block__title "
+                      class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
                     >
                       <span
                         class="googlesitekit-data-block__title-inner"
@@ -279,7 +291,11 @@ exports[`SearchFunnelWidgetGA4 should render the Search Funnel Widget, including
                     <div
                       class="googlesitekit-data-block__datapoint"
                     >
-                      123
+                      <span
+                        class="googlesitekit-data-block__datapoint--resize"
+                      >
+                        123
+                      </span>
                     </div>
                   </div>
                   <div
@@ -353,7 +369,7 @@ exports[`SearchFunnelWidgetGA4 should render the Search Funnel Widget, including
                   class="googlesitekit-analytics-cta__preview-graph"
                 >
                   <h3
-                    class="googlesitekit-analytics-cta__preview-graph--title"
+                    class="googlesitekit-typography googlesitekit-analytics-cta__preview-graph--title googlesitekit-typography--body googlesitekit-typography--small"
                   >
                     Unique visitors from Search
                   </h3>
@@ -373,9 +389,9 @@ exports[`SearchFunnelWidgetGA4 should render the Search Funnel Widget, including
                   class="googlesitekit-analytics-cta__preview-graph"
                 >
                   <h3
-                    class="googlesitekit-analytics-cta__preview-graph--title"
+                    class="googlesitekit-typography googlesitekit-analytics-cta__preview-graph--title googlesitekit-typography--body googlesitekit-typography--small"
                   >
-                    Conversions completed
+                    Key Events completed
                   </h3>
                   <div>
                     <svg />

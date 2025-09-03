@@ -31,27 +31,25 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
-import useViewContext from '../../../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../../../util';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import {
 	AUDIENCE_SELECTED,
 	AUDIENCE_SELECTION_FORM,
 	MAX_SELECTED_AUDIENCES_COUNT,
 	MIN_SELECTED_AUDIENCES_COUNT,
 } from './constants';
-import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
-import { SelectionPanelFooter } from '../../../../../../components/SelectionPanel';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { SelectionPanelFooter } from '@/js/components/SelectionPanel';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 	const viewContext = useViewContext();
 
-	const selectedItems = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_SELECTION_FORM,
-			AUDIENCE_SELECTED
-		)
+	const selectedItems = useFormValue(
+		AUDIENCE_SELECTION_FORM,
+		AUDIENCE_SELECTED
 	);
 	const audienceSettings = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getUserAudienceSettings()

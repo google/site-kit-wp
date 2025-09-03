@@ -30,18 +30,18 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
-import useViewContext from '../../../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../../../util';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
-import { isInsufficientPermissionsError } from '../../../../../../util/errors';
-import Link from '../../../../../../components/Link';
-import ReportErrorActions from '../../../../../../components/ReportErrorActions';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
+import Link from '@/js/components/Link';
+import ReportErrorActions from '@/js/components/ReportErrorActions';
 import RequestAccessButton from './RequestAccessButton';
 import RetryButton from './RetryButton';
-import Notice from '../../../../../../components/Notice';
+import Notice from '@/js/components/Notice';
 
 export default function ErrorNotice() {
 	const viewContext = useViewContext();
@@ -147,10 +147,10 @@ export default function ErrorNotice() {
 				<ReportErrorActions
 					moduleSlug="analytics-4"
 					error={ errors }
-					hideGetHelpLink
 					buttonVariant="danger"
 					RequestAccessButton={ RequestAccessButton }
 					RetryButton={ RetryButton }
+					hideGetHelpLink
 				/>
 			) : (
 				<RetryButton handleRetry={ retrySyncAvailableAudiences } />

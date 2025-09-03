@@ -29,9 +29,9 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Link from '../Link';
-import { trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
+import Link from '@/js/components/Link';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 
 function HelpMenuLink( { children, href, gaEventLabel } ) {
 	const viewContext = useViewContext();
@@ -51,10 +51,10 @@ function HelpMenuLink( { children, href, gaEventLabel } ) {
 			<Link
 				className="mdc-list-item__text"
 				href={ href }
-				external
-				hideExternalIndicator
 				role="menuitem"
 				onClick={ onClick }
+				external
+				hideExternalIndicator
 			>
 				{ children }
 			</Link>

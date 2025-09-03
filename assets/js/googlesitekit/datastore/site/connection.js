@@ -23,10 +23,11 @@ import { get } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
+	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
-import { createFetchStore } from '../../data/create-fetch-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 
 const fetchGetConnectionStore = createFetchStore( {
 	baseName: 'getConnection',
@@ -35,12 +36,9 @@ const fetchGetConnectionStore = createFetchStore( {
 			useCache: false,
 		} );
 	},
-	reducerCallback: ( state, connection ) => {
-		return {
-			...state,
-			connection,
-		};
-	},
+	reducerCallback: createReducer( ( state, connection ) => {
+		state.connection = connection;
+	} ),
 } );
 
 const baseInitialState = {

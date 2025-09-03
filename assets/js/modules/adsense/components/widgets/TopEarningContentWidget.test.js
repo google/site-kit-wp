@@ -30,20 +30,25 @@ import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 	STRATEGY_ZIP,
-} from '../../../analytics-4/utils/data-mock';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import TopEarningContentWidget from './TopEarningContentWidget';
-import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
-import { DATE_RANGE_OFFSET, MODULES_ADSENSE } from '../../datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ADSENSE,
+} from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../../../../util/errors';
+} from '@/js/util/errors';
 
 describe( 'TopEarningContentWidget', () => {
 	const adSenseAccountID = 'pub-1234567890';
@@ -60,7 +65,10 @@ describe( 'TopEarningContentWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4', 'adsense' ) );
+		provideModules(
+			registry,
+			withConnected( MODULE_SLUG_ANALYTICS_4, MODULE_SLUG_ADSENSE )
+		);
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( true );
 		registry.dispatch( MODULES_ADSENSE ).setAccountID( adSenseAccountID );
 	} );
@@ -82,6 +90,7 @@ describe( 'TopEarningContentWidget', () => {
 				{ metric: { metricName: 'screenPageViews' }, desc: true },
 			],
 			limit: 15,
+			reportID: 'analytics-4_get-page-titles_store:selector_options',
 		};
 
 		const pageTitlesReport = getAnalytics4MockResponse(
@@ -114,6 +123,7 @@ describe( 'TopEarningContentWidget', () => {
 				},
 			],
 			limit: 3,
+			reportID: 'adsense_top-earning-content-widget_widget_reportOptions',
 		} );
 
 		const { container, waitForRegistry } = render(

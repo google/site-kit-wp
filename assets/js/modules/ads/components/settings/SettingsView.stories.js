@@ -20,9 +20,10 @@
  * Internal dependencies
  */
 import SettingsView from './SettingsView';
-import { Cell, Grid, Row } from '../../../../material-components';
-import { MODULES_ADS } from '../../datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
@@ -48,7 +49,7 @@ export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.scenario = {};
 Default.parameters = {
-	features: [ 'firstPartyMode' ],
+	features: [ 'googleTagGateway' ],
 };
 
 export const IceEnabled = Template.bind( null );
@@ -57,26 +58,26 @@ IceEnabled.args = {
 	enhancedConversionTracking: true,
 };
 IceEnabled.parameters = {
-	features: [ 'firstPartyMode' ],
+	features: [ 'googleTagGateway' ],
 };
 
-export const FPMEnabled = Template.bind( null );
-FPMEnabled.storyName = 'With First-party mode Enabled';
-FPMEnabled.args = {
-	firstPartyMode: true,
+export const GTGEnabled = Template.bind( null );
+GTGEnabled.storyName = 'With Google tag gateway enabled';
+GTGEnabled.args = {
+	googleTagGateway: true,
 };
-FPMEnabled.parameters = {
-	features: [ 'firstPartyMode' ],
+GTGEnabled.parameters = {
+	features: [ 'googleTagGateway' ],
 };
 
 export default {
 	title: 'Modules/Ads/Settings/SettingsView',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'ads',
+						slug: MODULE_SLUG_ADS,
 						active: true,
 						connected: true,
 					},
@@ -94,12 +95,12 @@ export default {
 
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetFirstPartyModeSettings( {
-						isEnabled: args.firstPartyMode || false,
-						isFPMHealthy: args.firstPartyMode || false,
-						isScriptAccessEnabled: args.firstPartyMode || false,
+					.receiveGetGoogleTagGatewaySettings( {
+						isEnabled: args.googleTagGateway || false,
+						isGTGHealthy: args.googleTagGateway || false,
+						isScriptAccessEnabled: args.googleTagGateway || false,
 					} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
@@ -114,11 +115,11 @@ export const PaxConnected = Template.bind( null );
 PaxConnected.storyName = 'With PAX onboarding';
 PaxConnected.scenario = {};
 PaxConnected.parameters = {
-	features: [ 'adsPax', 'firstPartyMode' ],
+	features: [ 'adsPax', 'googleTagGateway' ],
 };
 PaxConnected.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			// Unset the value set in the previous scenario.
 			registry.dispatch( MODULES_ADS ).setConversionID( null );
 
@@ -126,7 +127,7 @@ PaxConnected.decorators = [
 				paxConversionID: 'AW-54321',
 				extCustomerID: 'C-872756827HGFSD',
 			} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>

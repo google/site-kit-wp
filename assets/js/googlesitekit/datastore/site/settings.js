@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
+
 /**
  * External dependencies
  */
@@ -27,11 +29,12 @@ import invariant from 'invariant';
 import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
+	createReducer,
 	createRegistrySelector,
 	combineStores,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
-import { createFetchStore } from '../../data/create-fetch-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 
 const fetchGetAdminBarSettingsStore = createFetchStore( {
 	baseName: 'getAdminBarSettings',
@@ -39,30 +42,24 @@ const fetchGetAdminBarSettingsStore = createFetchStore( {
 		get( 'core', 'site', 'admin-bar-settings', undefined, {
 			useCache: false,
 		} ),
-	reducerCallback: ( state, adminBarSettings ) => {
-		return {
-			...state,
-			adminBarSettings: {
-				...( state.adminBarSettings || {} ),
-				...adminBarSettings,
-			},
+	reducerCallback: createReducer( ( state, adminBarSettings ) => {
+		state.adminBarSettings = {
+			...( state.adminBarSettings || {} ),
+			...adminBarSettings,
 		};
-	},
+	} ),
 } );
 
 const fetchSetAdminBarSettingsStore = createFetchStore( {
 	baseName: 'setAdminBarSettings',
 	controlCallback: ( { enabled } ) =>
 		set( 'core', 'site', 'admin-bar-settings', { enabled } ),
-	reducerCallback: ( state, adminBarSettings ) => {
-		return {
-			...state,
-			adminBarSettings: {
-				...( state.adminBarSettings || {} ),
-				...adminBarSettings,
-			},
+	reducerCallback: createReducer( ( state, adminBarSettings ) => {
+		state.adminBarSettings = {
+			...( state.adminBarSettings || {} ),
+			...adminBarSettings,
 		};
-	},
+	} ),
 	argsToParams( { enabled } ) {
 		return { enabled };
 	},
@@ -140,6 +137,86 @@ const baseSelectors = {
 	getShowAdminBar: createRegistrySelector( ( select ) => () => {
 		return select( CORE_SITE ).getAdminBarSettings()?.enabled;
 	} ),
+
+	/**
+	 * Gets the URL for the module settings page.
+	 *
+	 * @since 1.157.0
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} moduleSlug The slug of the module.
+	 * @return {string} The URL for the module settings page.
+	 */
+	getModuleSettingsURL: createRegistrySelector(
+		( select ) => ( state, moduleSlug ) => {
+			invariant(
+				moduleSlug,
+				'moduleSlug is required to get module settings URL'
+			);
+
+			const baseURL = select( CORE_SITE ).getAdminURL(
+				'googlesitekit-settings'
+			);
+			return `${ baseURL }#connected-services/${ moduleSlug }`;
+		}
+	),
+
+	/**
+	 * Gets the URL for the module settings edit page.
+	 *
+	 * @since 1.157.0
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} moduleSlug The slug of the module.
+	 * @return {string} The URL for the module settings edit page.
+	 */
+	getModuleSettingsEditURL: createRegistrySelector(
+		( select ) => ( state, moduleSlug ) => {
+			invariant(
+				moduleSlug,
+				'moduleSlug is required to get module settings edit URL'
+			);
+
+			const settingsURL =
+				select( CORE_SITE ).getModuleSettingsURL( moduleSlug );
+
+			return `${ settingsURL }/edit`;
+		}
+	),
+
+	/**
+	 * Gets the URL for the "Connect More Services" page.
+	 *
+	 * @since 1.157.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string} The URL for the "Connect More Services" page.
+	 */
+	getConnectMoreServicesURL: createRegistrySelector( ( select ) => () => {
+		const baseURL = select( CORE_SITE ).getAdminURL(
+			'googlesitekit-settings'
+		);
+		return `${ baseURL }#connect-more-services`;
+	} ),
+
+	/**
+	 * Gets the URL for the admin settings page.
+	 *
+	 * @since 1.157.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {Object} args  Optional additional query arguments to add to admin URL.
+	 * @return {string} The URL for the admin settings page.
+	 */
+	getSiteKitAdminSettingsURL: createRegistrySelector(
+		( select ) => ( state, args ) => {
+			const baseURL = select( CORE_SITE ).getAdminURL(
+				'googlesitekit-settings',
+				args
+			);
+			return `${ baseURL }#/admin-settings`;
+		}
+	),
 };
 
 const store = combineStores(

@@ -35,22 +35,23 @@ import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '../../../
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
-} from '../../utils/data-mock';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import TopTrafficSourceWidget from './TopTrafficSourceWidget';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
-import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../../../../util/errors';
+} from '@/js/util/errors';
 
 describe( 'TopTrafficSourceWidget', () => {
 	const widgetProps = getWidgetComponentProps(
@@ -70,10 +71,20 @@ describe( 'TopTrafficSourceWidget', () => {
 			compare: true,
 		} );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 	} );
 
 	it( 'should render correctly with the expected metrics', async () => {
+		provideAnalytics4MockReport( registry, {
+			...dateRangeDates,
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+			],
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_totalUsersReportOptions',
+		} );
 		provideAnalytics4MockReport( registry, {
 			...dateRangeDates,
 			dimensions: [ 'sessionDefaultChannelGroup' ],
@@ -84,15 +95,10 @@ describe( 'TopTrafficSourceWidget', () => {
 			],
 			limit: 1,
 			orderBy: 'totalUsers',
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_trafficSourceReportOptions',
 		} );
-		provideAnalytics4MockReport( registry, {
-			...dateRangeDates,
-			metrics: [
-				{
-					name: 'totalUsers',
-				},
-			],
-		} );
+
 		const { container, waitForRegistry } = render(
 			<TopTrafficSourceWidget { ...widgetProps } />,
 			{
@@ -115,6 +121,8 @@ describe( 'TopTrafficSourceWidget', () => {
 			],
 			limit: 1,
 			orderBy: 'totalUsers',
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_trafficSourceReportOptions',
 		};
 		const channelGroupReport = getAnalytics4MockResponse(
 			channelGroupReportOptions
@@ -144,6 +152,8 @@ describe( 'TopTrafficSourceWidget', () => {
 					name: 'totalUsers',
 				},
 			],
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_totalUsersReportOptions',
 		};
 		const totalUsersReport = getAnalytics4MockResponse(
 			totalUsersReportOptions

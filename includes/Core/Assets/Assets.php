@@ -521,6 +521,7 @@ final class Assets {
 						'googlesitekit-data',
 						'googlesitekit-api',
 						'googlesitekit-user-data',
+						'googlesitekit-datastore-site',
 					),
 				)
 			),
@@ -641,6 +642,17 @@ final class Assets {
 				array(
 					'src'          => $base_url . 'js/googlesitekit-ad-blocking-recovery.js',
 					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
+				)
+			),
+			new Script(
+				'googlesitekit-block-tracking',
+				array(
+					'src'           => $base_url . 'js/googlesitekit-block-tracking.js',
+					'dependencies'  => array(
+						'googlesitekit-tracking-data',
+						'googlesitekit-data',
+					),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
 			),
 			new Stylesheet(
@@ -1014,9 +1026,9 @@ final class Assets {
 			return $tag;
 		}
 
-		// Abort adding async/defer for scripts that have this script as a dependency.
+		// Abort adding async/defer for scripts that have this script as a dependency, unless it is an alias.
 		foreach ( wp_scripts()->registered as $script ) {
-			if ( in_array( $handle, $script->deps, true ) ) {
+			if ( $script->src && in_array( $handle, $script->deps, true ) ) {
 				return $tag;
 			}
 		}

@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { withWPDashboardWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardPopularPagesGA4 from './WPDashboardPopularPagesGA4';
 import {
@@ -30,6 +30,7 @@ import {
 	setupAnalytics4Loading,
 	setupAnalytics4Error,
 	widgetDecorators,
+	setupAnalytics4GatheringData,
 } from './common-GA4.stories';
 
 const WidgetWithComponentProps = withWPDashboardWidgetComponentProps(
@@ -50,21 +51,27 @@ Ready.args = {
 	setupRegistry: ( registry ) => {
 		provideAnalytics4ReportTitles( registry );
 		setupAnalytics4MockReports( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
 	},
 };
 
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
-	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
-	},
+	setupRegistry: setupAnalytics4GatheringData,
 };
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: setupAnalytics4ZeroData,
+	setupRegistry: ( registry ) => {
+		setupAnalytics4ZeroData( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+	},
 };
 
 export const Loading = Template.bind( {} );
@@ -76,7 +83,12 @@ Loading.args = {
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
 Error.args = {
-	setupRegistry: setupAnalytics4Error,
+	setupRegistry: ( registry ) => {
+		setupAnalytics4Error( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+	},
 };
 
 export default {

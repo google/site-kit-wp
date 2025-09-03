@@ -26,8 +26,9 @@ import { capitalize } from 'lodash';
 import {
 	CORE_USER,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
-} from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
@@ -35,19 +36,22 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { STRATEGY_ZIP, getAnalytics4MockResponse } from '../../utils/data-mock';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import {
+	STRATEGY_ZIP,
+	getAnalytics4MockResponse,
+} from '@/js/modules/analytics-4/utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import PopularProductsWidget from './PopularProductsWidget';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
-import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
-import { provideCustomDimensionError } from '../../utils/custom-dimensions';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 
 const accountID = '12345';
 const propertyID = '34567';
@@ -73,6 +77,7 @@ const reportOptions = {
 	],
 	limit: 3,
 	keepEmptyRows: false,
+	reportID: 'analytics-4_popular-products-widget_widget_reportOptions',
 };
 
 const pageTitlesReportOptions = {
@@ -88,6 +93,7 @@ const pageTitlesReportOptions = {
 	metrics: [ { name: 'screenPageViews' } ],
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 15,
+	reportID: 'analytics-4_get-page-titles_store:selector_options',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -331,13 +337,13 @@ export default {
 	title: 'Key Metrics/PopularProductsWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry );
 				provideSiteInfo( registry );
 				provideKeyMetrics( registry );
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -374,7 +380,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

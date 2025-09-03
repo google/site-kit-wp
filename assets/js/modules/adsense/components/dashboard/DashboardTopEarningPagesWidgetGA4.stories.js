@@ -24,22 +24,24 @@ import {
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import DashboardTopEarningPagesWidgetGA4 from './DashboardTopEarningPagesWidgetGA4';
 import {
 	STRATEGY_ZIP,
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
-} from '../../../analytics-4/utils/data-mock';
-import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 
 const adSenseAccountID = 'pub-1234567890';
 
@@ -53,6 +55,7 @@ const reportOptions = {
 	},
 	orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
 	limit: 5,
+	reportID: 'adsense_top-earning-pages-widget-ga4_widget_args',
 };
 
 const pageTitlesReportOptions = {
@@ -68,6 +71,7 @@ const pageTitlesReportOptions = {
 	metrics: [ { name: 'screenPageViews' } ],
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 25,
+	reportID: 'analytics-4_get-page-titles_store:selector_options',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -221,17 +225,17 @@ export default {
 	title: 'Modules/AdSense/Widgets/DashboardTopEarningPagesWidgetGA4',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
 						connected: true,
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 					},
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 					},
 				] );
 
@@ -252,7 +256,7 @@ export default {
 					.setAccountID( adSenseAccountID );
 
 				args?.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<ViewContextProvider

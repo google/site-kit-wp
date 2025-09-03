@@ -33,11 +33,13 @@ import {
 	setupAnalytics4Loading,
 	setupAnalytics4MockReports,
 } from './common-GA4.stories';
-import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '../../googlesitekit/constants';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 	return (
@@ -67,7 +69,7 @@ AnalyticsInactive.args = {
 		provideUserAuthentication( registry );
 		provideModules( registry, [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				active: true,
 				connected: true,
 			},
@@ -87,7 +89,7 @@ AnalyticsInactiveNewCompleteActivation.args = {
 		// Set up the analytics module store but provide no data.
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: false,
 			},
@@ -105,7 +107,7 @@ Analytics4WidgetsLoading.args = {
 		// Set up the analytics module store but provide no data.
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -124,7 +126,7 @@ ViewOnlyAnalyticsAndSearchConsole.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -147,7 +149,7 @@ ViewOnlyAnalytics.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -169,7 +171,7 @@ ViewOnlySearchConsole.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},

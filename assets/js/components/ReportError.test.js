@@ -28,16 +28,17 @@ import {
 import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../util/errors';
+} from '@/js/util/errors';
 import { fireEvent, render } from '../../../tests/js/test-utils';
 import ReportError from './ReportError';
-import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../googlesitekit/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 
 describe( 'ReportError', () => {
 	let registry;
 	let invalidateResolutionSpy;
-	const moduleName = 'analytics-4';
+	const moduleName = MODULE_SLUG_ANALYTICS_4;
 
 	const newErrors = [
 		{
@@ -171,7 +172,7 @@ describe( 'ReportError', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideUserInfo( registry, userData );
@@ -276,7 +277,7 @@ describe( 'ReportError', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideUserInfo( registry, userData );

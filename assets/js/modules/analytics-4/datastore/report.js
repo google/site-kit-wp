@@ -34,42 +34,41 @@ import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createGatheringDataStore } from '@/js/googlesitekit/modules/create-gathering-data-store';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4, DATE_RANGE_OFFSET } from './constants';
-import { DAY_IN_SECONDS, dateSub, stringifyObject } from '../../../util';
-import { normalizeReportOptions, isZeroReport } from '../utils';
-import { validateReport } from '../utils/validation';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { DAY_IN_SECONDS, dateSub, stringifyObject } from '@/js/util';
+import {
+	normalizeReportOptions,
+	isZeroReport,
+} from '@/js/modules/analytics-4/utils';
+import { validateReport } from '@/js/modules/analytics-4/utils/validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { options } ) => {
 		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'report',
 			normalizeReportOptions( options )
 		);
 	},
-	reducerCallback: ( state, report, { options } ) => {
-		return {
-			...state,
-			reports: {
-				...state.reports,
-				[ stringifyObject( options ) ]: report,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, report, { options } ) => {
+		state.reports[ stringifyObject( options ) ] = report;
+	} ),
 	argsToParams: ( options ) => {
 		return { options };
 	},
 	validateParams: ( { options } = {} ) => validateReport( options ),
 } );
 
-const gatheringDataStore = createGatheringDataStore( 'analytics-4', {
+const gatheringDataStore = createGatheringDataStore( MODULE_SLUG_ANALYTICS_4, {
 	storeName: MODULES_ANALYTICS_4,
 	dataAvailable:
 		global._googlesitekitModulesData?.[ 'data_available_analytics-4' ],
@@ -247,6 +246,8 @@ const baseSelectors = {
 						},
 					],
 					limit: REQUEST_MULTIPLIER * pagePaths.length,
+					reportID:
+						'analytics-4_get-page-titles_store:selector_options',
 				};
 
 				const pageTitlesReport =
@@ -355,8 +356,6 @@ const baseSelectors = {
 
 	/**
 	 * Gets a given report for each of the provided audiences.
-	 *
-	 * TODO: This will be refactored to use pivot reports in #8484.
 	 *
 	 * @since 1.126.0
 	 *

@@ -27,16 +27,17 @@ import { __, _x } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import P from '@/js/components/Typography/P';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	PERMISSION_AUTHENTICATE,
-} from '../../googlesitekit/datastore/user/constants';
-import { trackEvent } from '../../util';
-import Link from '../../components/Link';
-import useViewContext from '../../hooks/useViewContext';
-import { setItem } from '../../googlesitekit/api/cache';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { trackEvent } from '@/js/util';
+import Link from '@/js/components/Link';
+import useViewContext from '@/js/hooks/useViewContext';
+import { setItem } from '@/js/googlesitekit/api/cache';
 
 export default function Description() {
 	const viewContext = useViewContext();
@@ -103,12 +104,12 @@ export default function Description() {
 					a: (
 						<Link
 							href={ documentationURL }
-							external
 							onClick={ onLinkClick }
 							aria-label={ __(
 								'Learn more about dashboard sharing',
 								'google-site-kit'
 							) }
+							external
 						/>
 					),
 				}
@@ -116,7 +117,7 @@ export default function Description() {
 
 	return (
 		<li className="googlesitekit-view-only-menu__list-item googlesitekit-view-only-menu__description">
-			<p>{ description }</p>
+			<P>{ description }</P>
 			{ canAuthenticate && (
 				<Button onClick={ onButtonClick }>
 					{ _x(

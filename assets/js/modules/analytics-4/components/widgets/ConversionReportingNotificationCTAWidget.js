@@ -40,22 +40,23 @@ import { compose, usePrevious } from '@wordpress/compose';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../../components/KeyMetrics/constants';
-import { conversionReportingDetectedEventsTracking } from '../../../../components/KeyMetrics/utils';
-import ConversionReportingDashboardSubtleNotification from '../../../../components/KeyMetrics/ConversionReportingDashboardSubtleNotification';
-import LostEventsSubtleNotification from '../../../../components/KeyMetrics/LostEventsSubtleNotification';
-import whenActive from '../../../../util/when-active';
-import useViewContext from '../../../../hooks/useViewContext';
-import useDisplayNewEventsCalloutForTailoredMetrics from '../../../../components/KeyMetrics/hooks/useDisplayNewEventsCalloutForTailoredMetrics';
-import useDisplayNewEventsCalloutForUserPickedMetrics from '../../../../components/KeyMetrics/hooks/useDisplayNewEventsCalloutForUserPickedMetrics';
-import useDisplayNewEventsCalloutAfterInitialDetection from '../../../../components/KeyMetrics/hooks/useDisplayNewEventsCalloutAfterInitialDetection';
-import { trackEvent } from '../../../../util';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Link from '../../../../components/Link';
-import whenHasChangedConversionEvents from '../util/whenHasChangedConversionEvents';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/KeyMetrics/constants';
+import { conversionReportingDetectedEventsTracking } from '@/js/components/KeyMetrics/utils';
+import ConversionReportingDashboardSubtleNotification from '@/js/components/KeyMetrics/ConversionReportingDashboardSubtleNotification';
+import LostEventsSubtleNotification from '@/js/components/KeyMetrics/LostEventsSubtleNotification';
+import whenActive from '@/js/util/when-active';
+import useViewContext from '@/js/hooks/useViewContext';
+import useDisplayNewEventsCalloutForTailoredMetrics from '@/js/components/KeyMetrics/hooks/useDisplayNewEventsCalloutForTailoredMetrics';
+import useDisplayNewEventsCalloutForUserPickedMetrics from '@/js/components/KeyMetrics/hooks/useDisplayNewEventsCalloutForUserPickedMetrics';
+import useDisplayNewEventsCalloutAfterInitialDetection from '@/js/components/KeyMetrics/hooks/useDisplayNewEventsCalloutAfterInitialDetection';
+import { trackEvent } from '@/js/util';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import Link from '@/js/components/Link';
+import whenHasChangedConversionEvents from '@/js/modules/analytics-4/components/util/whenHasChangedConversionEvents';
 
 function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const viewContext = useViewContext();
@@ -380,11 +381,11 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 			a: (
 				<Link
 					href={ documentationURL }
-					external
 					aria-label={ __(
 						'Learn more about advanced conversion reporting',
 						'google-site-kit'
 					) }
+					external
 				/>
 			),
 		}
@@ -405,7 +406,7 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	}
 
 	return (
-		<Widget noPadding fullWidth ref={ conversionReportingNotificationRef }>
+		<Widget ref={ conversionReportingNotificationRef } noPadding fullWidth>
 			{ shouldShowCalloutForLostEvents && (
 				<LostEventsSubtleNotification
 					onSelectMetricsCallback={ () => {
@@ -440,6 +441,6 @@ ConversionReportingNotificationCTAWidget.propTypes = {
 };
 
 export default compose(
-	whenActive( { moduleName: 'analytics-4' } ),
+	whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } ),
 	whenHasChangedConversionEvents()
 )( ConversionReportingNotificationCTAWidget );

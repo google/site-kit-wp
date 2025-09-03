@@ -39,11 +39,11 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import ErrorNotice from '../ErrorNotice';
-import { safelySort } from '../../util';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import PreviewBlock from '../PreviewBlock';
-import Notice from '../Notice';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import { safelySort } from '@/js/util';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import Notice from '@/js/components/Notice';
 
 export default function SelectionPanelFooter( {
 	savedItemSlugs = [],
@@ -163,9 +163,9 @@ export default function SelectionPanelFooter( {
 				) }
 				<div className="googlesitekit-selection-panel-footer__actions">
 					<Button
-						tertiary
 						onClick={ onCancelClick }
 						disabled={ isBusy }
+						tertiary
 					>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Button>

@@ -30,12 +30,12 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import NoticeNotification from '../../googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '../Notice/constants';
-import useQueryArg from '../../hooks/useQueryArg';
-import useViewContext from '../../hooks/useViewContext';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '@/js/components/Notice/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function ModuleSetupSuccessNotification( { id, Notification } ) {
 	const [ , setNotification ] = useQueryArg( 'notification' );
@@ -45,14 +45,14 @@ export default function ModuleSetupSuccessNotification( { id, Notification } ) {
 		select( CORE_MODULES ).getModule( slug )
 	);
 
-	const settingsAdminURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	const connectMoreServicesURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getConnectMoreServicesURL()
 	);
 
-	const onDismiss = () => {
+	function onDismiss() {
 		setNotification( undefined );
 		setSlug( undefined );
-	};
+	}
 
 	// Since the notification ID here is generic (`setup-success-notification-module`),
 	// it will be helpful to track individual module notifications uniquely as we do for
@@ -85,7 +85,7 @@ export default function ModuleSetupSuccessNotification( { id, Notification } ) {
 				} }
 				ctaButton={ {
 					label: __( 'Go to Settings', 'google-site-kit' ),
-					href: `${ settingsAdminURL }#/connect-more-services`,
+					href: connectMoreServicesURL,
 				} }
 			/>
 		</Notification>

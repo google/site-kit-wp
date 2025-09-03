@@ -59,6 +59,9 @@
 		</properties>
 	</rule>
 
+	<!-- Custom Site Kit rules -->
+	<rule ref="SiteKit.PHPUnit.RequireAssertionMessage"/>
+
 	<!-- Show details about violated sniffs -->
 	<arg value="s"/>
 
@@ -107,7 +110,7 @@
 	<exclude-pattern>packages/apiclient-services-subscribewithgoogle/*</exclude-pattern>
 	<exclude-pattern>third-party/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
-	<exclude-pattern>fpm/measurement.php</exclude-pattern>
+	<exclude-pattern>gtg/measurement.php</exclude-pattern>
 
 	<!-- Check for cross-version support for PHP 7.4 and higher. -->
 	<config name="testVersion" value="7.4-"/>

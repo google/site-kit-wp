@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
+
 /**
  * External dependencies
  */
@@ -40,17 +42,18 @@ import {
 	createRegistryControl,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import {
 	CORE_MODULES,
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
 } from './constants';
-import { CORE_SITE } from '../../datastore/site/constants';
-import { CORE_USER } from '../../datastore/user/constants';
-import { createFetchStore } from '../../data/create-fetch-store';
-import { listFormat } from '../../../util';
-import DefaultSettingsSetupIncomplete from '../../../components/settings/DefaultSettingsSetupIncomplete';
-import { createValidatedAction } from '../../data/utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { listFormat } from '@/js/util';
+import DefaultSettingsSetupIncomplete from '@/js/components/settings/DefaultSettingsSetupIncomplete';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
@@ -137,15 +140,12 @@ const fetchGetModulesStore = createFetchStore( {
 			useCache: false,
 		} );
 	},
-	reducerCallback: ( state, modules ) => {
-		return {
-			...state,
-			isAwaitingModulesRefresh: false,
-			serverDefinitions: modules.reduce( ( acc, module ) => {
-				return { ...acc, [ module.slug ]: module };
-			}, {} ),
-		};
-	},
+	reducerCallback: createReducer( ( state, modules ) => {
+		state.isAwaitingModulesRefresh = false;
+		state.serverDefinitions = modules.reduce( ( acc, module ) => {
+			return { ...acc, [ module.slug ]: module };
+		}, {} );
+	} ),
 } );
 
 const fetchSetModuleActivationStore = createFetchStore( {
@@ -156,14 +156,11 @@ const fetchSetModuleActivationStore = createFetchStore( {
 			active,
 		} );
 	},
-	reducerCallback: ( state ) => {
+	reducerCallback: createReducer( ( state ) => {
 		// Updated module activation state is handled by re-fetching module
 		// data instead, so this reducer just sets the below flag.
-		return {
-			...state,
-			isAwaitingModulesRefresh: true,
-		};
-	},
+		state.isAwaitingModulesRefresh = true;
+	} ),
 	argsToParams: ( slug, active ) => {
 		return {
 			slug,
@@ -181,15 +178,9 @@ const fetchCheckModuleAccessStore = createFetchStore( {
 	controlCallback: ( { slug } ) => {
 		return set( 'core', 'modules', 'check-access', { slug } );
 	},
-	reducerCallback: ( state, { access }, { slug } ) => {
-		return {
-			...state,
-			moduleAccess: {
-				...state.moduleAccess,
-				[ slug ]: access,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, { access }, { slug } ) => {
+		state.moduleAccess[ slug ] = access;
+	} ),
 	argsToParams: ( slug ) => {
 		return { slug };
 	},
@@ -203,12 +194,9 @@ const fetchRecoverModulesStore = createFetchStore( {
 	controlCallback: ( { slugs } ) => {
 		return set( 'core', 'modules', 'recover-modules', { slugs } );
 	},
-	reducerCallback: ( state, recoveredModules ) => {
-		return {
-			...state,
-			recoveredModules,
-		};
-	},
+	reducerCallback: createReducer( ( state, recoveredModules ) => {
+		state.recoveredModules = recoveredModules;
+	} ),
 	argsToParams: ( slugs ) => {
 		return { slugs };
 	},
@@ -604,7 +592,7 @@ export const baseControls = {
 	),
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case REGISTER_MODULE: {
 			const { slug, settings } = payload;
@@ -613,69 +601,50 @@ const baseReducer = ( state, { type, payload } ) => {
 				global.console.warn(
 					`Could not register module with slug "${ slug }". Module "${ slug }" is already registered.`
 				);
-				return state;
+				return;
 			}
 
-			return {
-				...state,
-				clientDefinitions: {
-					...state.clientDefinitions,
-					[ slug ]: settings,
-				},
-			};
+			state.clientDefinitions[ slug ] = settings;
+			break;
 		}
 
 		case RECEIVE_CHECK_REQUIREMENTS_ERROR: {
 			const { slug, error } = payload;
 
-			return {
-				...state,
-				checkRequirementsResults: {
-					...state.checkRequirementsResults,
-					[ slug ]: error,
-				},
-			};
+			state.checkRequirementsResults[ slug ] = error;
+			break;
 		}
 
 		case RECEIVE_CHECK_REQUIREMENTS_SUCCESS: {
 			const { slug } = payload;
-			return {
-				...state,
-				checkRequirementsResults: {
-					...state.checkRequirementsResults,
-					[ slug ]: true,
-				},
-			};
+
+			state.checkRequirementsResults[ slug ] = true;
+			break;
 		}
 
 		case RECEIVE_RECOVERABLE_MODULES: {
 			const { recoverableModules } = payload;
-			return {
-				...state,
-				recoverableModules,
-			};
+
+			state.recoverableModules = recoverableModules;
+			break;
 		}
 
 		case RECEIVE_SHARED_OWNERSHIP_MODULES: {
 			const { sharedOwnershipModules } = payload;
-			return {
-				...state,
-				sharedOwnershipModules,
-			};
+
+			state.sharedOwnershipModules = sharedOwnershipModules;
+			break;
 		}
 
 		case CLEAR_RECOVERED_MODULES: {
-			return {
-				...state,
-				recoveredModules: undefined,
-			};
+			state.recoveredModules = undefined;
+			break;
 		}
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 function* waitForModules() {
 	const { resolveSelect } = yield commonActions.getRegistry();
@@ -1446,6 +1415,91 @@ const baseSelectors = {
 
 			return acc;
 		}, {} );
+	} ),
+
+	/**
+	 * Gets recovery errors for recoverable modules.
+	 *
+	 * Returns an object keyed by module slug, containing error details and module name,
+	 * for all recoverable modules that have a corresponding recovery error.
+	 *
+	 * @since 1.157.0
+	 *
+	 * @param {Object} state Data store's state (unused in this selector).
+	 * @return {(Object|undefined)} Object of recovery errors keyed by module slug,
+	 *                              or `undefined` if recoverable modules are not yet available.
+	 */
+	getRecoveryErrors: createRegistrySelector( ( select ) => () => {
+		const recoverableModules =
+			select( CORE_MODULES ).getRecoverableModules();
+
+		if ( ! recoverableModules ) {
+			return undefined;
+		}
+
+		const recoveredModules = select( CORE_MODULES ).getRecoveredModules();
+
+		if ( ! recoveredModules ) {
+			return {};
+		}
+
+		const modules = Object.keys( recoverableModules );
+
+		function getRecoveryError( module ) {
+			return recoveredModules?.error?.[ module ];
+		}
+
+		return modules
+			.filter( ( module ) => !! getRecoveryError( module ) )
+			.reduce(
+				( acc, module ) => ( {
+					...acc,
+					[ module ]: {
+						name: recoverableModules[ module ].name,
+						...getRecoveryError( module ),
+					},
+				} ),
+				{}
+			);
+	} ),
+
+	/**
+	 * Gets the list of recoverable module slugs the current user has access to.
+	 *
+	 * Returns an array of module slugs from `getRecoverableModules` that the user
+	 * has access to based on `hasModuleAccess`.
+	 *
+	 * @since 1.157.0
+	 *
+	 * @param {Object} state Data store's state (unused in this selector).
+	 * @return {(Array<string>|undefined)} Array of accessible recoverable module slugs,
+	 *                                     or `undefined` if data is not ready.
+	 */
+	getUserRecoverableModuleSlugs: createRegistrySelector( ( select ) => () => {
+		const { getRecoverableModules, hasModuleAccess } =
+			select( CORE_MODULES );
+		const modules = getRecoverableModules();
+
+		if ( modules === undefined ) {
+			return undefined;
+		}
+
+		const slugAccessEntries = Object.keys( modules ).map( ( slug ) => [
+			slug,
+			hasModuleAccess( slug ),
+		] );
+
+		if (
+			slugAccessEntries.some(
+				( [ , hasAccess ] ) => hasAccess === undefined
+			)
+		) {
+			return undefined;
+		}
+
+		return slugAccessEntries
+			.filter( ( [ , hasAccess ] ) => hasAccess )
+			.map( ( [ slug ] ) => slug );
 	} ),
 
 	getRecoveredModules( state ) {

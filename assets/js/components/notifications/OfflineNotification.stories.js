@@ -19,12 +19,9 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	WithTestRegistry,
-} from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import OfflineNotification from './OfflineNotification';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
 function Template() {
 	return <OfflineNotification />;
@@ -39,14 +36,14 @@ export default {
 	component: OfflineNotification,
 	decorators: [
 		( Story ) => {
-			const registry = createTestRegistry();
-
-			registry.dispatch( CORE_UI ).setIsOnline( false );
+			function setupRegistry( registry ) {
+				registry.dispatch( CORE_UI ).setIsOnline( false );
+			}
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

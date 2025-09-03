@@ -21,24 +21,41 @@
  */
 import { provideModules, provideSiteInfo } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import {
 	STRATEGY_ZIP,
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
-} from '../../modules/analytics-4/utils/data-mock';
+	provideAnalyticsReportWithoutDateRangeData,
+} from '@/js/modules/analytics-4/utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../tests/js/utils/zeroReports';
-import { DAY_IN_SECONDS } from '../../util';
-import * as __fixtures__ from '../../modules/analytics-4/datastore/__fixtures__';
-import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
+import { DAY_IN_SECONDS } from '@/js/util';
+import * as __fixtures__ from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { provideSearchConsoleMockReport } from '@/js/modules/search-console/util/data-mock';
 
-const wpDashboardSearchConsoleOptions = {
-	startDate: '2020-12-03',
-	endDate: '2021-01-27',
-	dimensions: 'date',
-};
+const wpDashboardSearchConsoleOptions = [
+	{
+		startDate: '2020-12-03',
+		endDate: '2021-01-27',
+		dimensions: 'date',
+	},
+	{
+		startDate: '2020-12-03',
+		endDate: '2021-01-27',
+		dimensions: 'date',
+		reportID: 'dashboard_wp-dashboard-impressions_component_reportArgs',
+	},
+	{
+		startDate: '2020-12-03',
+		endDate: '2021-01-27',
+		dimensions: 'date',
+		reportID: 'dashboard_wp-dashboard-clicks_component_reportArgs',
+	},
+];
 
 export const wpDashboardAnalytics4OptionSets = [
 	// Mock options for mocking isGatheringData selector's response.
@@ -60,6 +77,8 @@ export const wpDashboardAnalytics4OptionSets = [
 				name: 'totalUsers',
 			},
 		],
+		reportID:
+			'dashboard_wp-dashboard-unique-visitors-ga4_component_reportArgs',
 	},
 
 	// Mock options for mocking "Sessions" report's response.
@@ -79,6 +98,27 @@ export const wpDashboardAnalytics4OptionSets = [
 				name: 'averageSessionDuration',
 			},
 		],
+		reportID:
+			'dashboard_wp-dashboard-session-duration-ga4_component_reportArgs',
+	},
+	{
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
+		dimensions: [
+			{
+				name: 'date',
+			},
+		],
+		limit: 10,
+		metrics: [
+			{
+				name: 'averageSessionDuration',
+			},
+		],
+		reportID:
+			'dashboard_wp-dashboard-session-duration-ga4_component_reportArgs',
 	},
 
 	// Mock options for mocking "Total Users" chart widget response.
@@ -96,6 +136,8 @@ export const wpDashboardAnalytics4OptionSets = [
 				},
 			},
 		],
+		reportID:
+			'dashboard_wp-dashboard-unique-visitors-ga4_component_reportArgs',
 	},
 
 	// Mock options for mocking "Popular pages" report's response.
@@ -117,6 +159,8 @@ export const wpDashboardAnalytics4OptionSets = [
 			},
 		],
 		limit: 5,
+		reportID:
+			'dashboard_wp-dashboard-popular-pages-ga4_component_reportArgs',
 	},
 ];
 
@@ -138,12 +182,13 @@ const pageTitlesReportOptions = {
 		},
 	],
 	limit: 25,
+	reportID: 'analytics-4_get-page-titles_store:selector_options',
 };
 
-export const provideAnalytics4ReportTitles = (
+export function provideAnalytics4ReportTitles(
 	registry,
 	options = pageTitlesReportOptions
-) => {
+) {
 	const pageTitlesReport = getAnalytics4MockResponse(
 		options,
 		// Use the zip combination strategy to ensure a one-to-one mapping of page paths to page titles.
@@ -157,12 +202,12 @@ export const provideAnalytics4ReportTitles = (
 		.receiveGetReport( pageTitlesReport, {
 			options: pageTitlesReportOptions,
 		} );
-};
+}
 
-export const setupAnalytics4MockReports = (
+export function setupAnalytics4MockReports(
 	registry,
 	mockOptions = wpDashboardAnalytics4OptionSets
-) => {
+) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
 	mockOptions.forEach( ( options ) => {
@@ -172,35 +217,62 @@ export const setupAnalytics4MockReports = (
 				options,
 			} );
 	} );
-};
+}
 
-export const setupSearchConsoleMockReports = ( registry, data ) => {
+export function setupAnalytics4MockReportsWithNoDataInComparisonDateRange(
+	registry,
+	mockOptions = wpDashboardAnalytics4OptionSets
+) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
-	if ( data ) {
-		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( data, {
-			options: wpDashboardSearchConsoleOptions,
-		} );
-	} else {
-		provideSearchConsoleMockReport(
-			registry,
-			wpDashboardSearchConsoleOptions
-		);
-	}
-};
+	mockOptions.forEach( ( options ) =>
+		provideAnalyticsReportWithoutDateRangeData( registry, options )
+	);
+}
 
-export const setupSearchConsoleGatheringData = ( registry ) => {
+export function setupSearchConsoleMockReports( registry, data ) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
-		options: wpDashboardSearchConsoleOptions,
+
+	wpDashboardSearchConsoleOptions.forEach( ( options ) => {
+		if ( data ) {
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.receiveGetReport( data, {
+					options,
+				} );
+		} else {
+			provideSearchConsoleMockReport( registry, options );
+		}
 	} );
-};
+}
 
-export const setupAnalytics4GatheringData = ( registry ) => {
+export function setupSearchConsoleGatheringData( registry ) {
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+
+	wpDashboardSearchConsoleOptions.forEach( ( options ) => {
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
+			options,
+		} );
+	} );
+}
+
+export function setupAnalytics4GatheringData(
+	registry,
+	mockOptionSets = wpDashboardAnalytics4OptionSets
+) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
-};
+
+	mockOptionSets.forEach( ( options ) => {
+		const report = getAnalytics4MockResponse( options );
+		const zeroReport =
+			replaceValuesInAnalytics4ReportWithZeroData( report );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
+			options,
+		} );
+	} );
+}
 
 export function setupAnalytics4ZeroData(
 	registry,
@@ -274,33 +346,35 @@ export function setupAnalytics4Property( registry, createdDayBefore = 10 ) {
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 }
 
-export const setupSearchConsoleZeroData = ( registry ) => {
-	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
-		[
+export function setupSearchConsoleZeroData( registry ) {
+	wpDashboardSearchConsoleOptions.forEach( ( options ) => {
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
+			[
+				{
+					clicks: 0,
+					ctr: 0,
+					impressions: 0,
+					keys: [ '2021-08-18' ],
+					position: 0,
+				},
+			],
 			{
-				clicks: 0,
-				ctr: 0,
-				impressions: 0,
-				keys: [ '2021-08-18' ],
-				position: 0,
-			},
-		],
-		{
-			options: wpDashboardSearchConsoleOptions,
-		}
-	);
-};
+				options,
+			}
+		);
+	} );
+}
 
-export const setupBaseRegistry = ( registry, args ) => {
+export function setupBaseRegistry( registry, args ) {
 	// Set up the search console and analytics modules stores but provide no data.
 	provideModules( registry, [
 		{
-			slug: 'search-console',
+			slug: MODULE_SLUG_SEARCH_CONSOLE,
 			active: true,
 			connected: true,
 		},
 		{
-			slug: 'analytics-4',
+			slug: MODULE_SLUG_ANALYTICS_4,
 			active: true,
 			connected: true,
 		},
@@ -313,17 +387,17 @@ export const setupBaseRegistry = ( registry, args ) => {
 	if ( typeof args?.setupRegistry === 'function' ) {
 		args.setupRegistry( registry );
 	}
-};
+}
 
-export const setupSearchConsoleAnalytics4GatheringData = ( registry ) => {
+export function setupSearchConsoleAnalytics4GatheringData( registry ) {
 	setupSearchConsoleGatheringData( registry );
 	setupAnalytics4GatheringData( registry );
-};
+}
 
-export const setupSearchConsoleAnalytics4ZeroData = ( registry ) => {
+export function setupSearchConsoleAnalytics4ZeroData( registry ) {
 	setupSearchConsoleZeroData( registry );
 	setupAnalytics4ZeroData( registry );
-};
+}
 
 export const widgetDecorators = [
 	( Story ) => (
@@ -342,9 +416,9 @@ export const widgetDecorators = [
 		</div>
 	),
 	( Story, { args } ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			setupBaseRegistry( registry, args );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>

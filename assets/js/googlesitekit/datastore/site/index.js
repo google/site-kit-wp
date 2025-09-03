@@ -26,7 +26,7 @@ import connection from './connection';
 import consentMode from './consent-mode';
 import conversionTracking from './conversion-tracking';
 import errors from './errors';
-import firstPartyMode from './first-party-mode';
+import googleTagGateway from './google-tag-gateway';
 import html from './html';
 import info from './info';
 import reset from './reset';
@@ -35,7 +35,7 @@ import settings from './settings';
 import urls from './urls';
 import developerPlugin from './developer-plugin';
 import notifications from './notifications';
-import { createErrorStore } from '../../data/create-error-store';
+import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 
 const store = combineStores(
 	commonStore,
@@ -43,7 +43,7 @@ const store = combineStores(
 	consentMode,
 	conversionTracking,
 	errors,
-	firstPartyMode,
+	googleTagGateway,
 	html,
 	info,
 	developerPlugin,
@@ -63,8 +63,8 @@ export const reducer = store.reducer;
 export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
-export const registerStore = ( registry ) => {
+export function registerStore( registry ) {
 	registry.registerStore( CORE_SITE, store );
-};
+}
 
 export default store;

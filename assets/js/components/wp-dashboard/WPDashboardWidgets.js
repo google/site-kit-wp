@@ -30,9 +30,11 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { withWPDashboardWidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
 import WPDashboardImpressions from './WPDashboardImpressions';
 import WPDashboardClicks from './WPDashboardClicks';
 import WPDashboardUniqueVisitorsGA4 from './WPDashboardUniqueVisitorsGA4';
@@ -40,7 +42,7 @@ import WPDashboardSessionDurationGA4 from './WPDashboardSessionDurationGA4';
 import WPDashboardPopularPagesGA4 from './WPDashboardPopularPagesGA4';
 import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
-import DataBlockGroup from '../DataBlockGroup';
+import DataBlockGroup from '@/js/components/DataBlockGroup';
 
 // Widget slugs.
 const WIDGET_IMPRESSIONS = 'wpDashboardImpressions';
@@ -74,14 +76,18 @@ const WPDashboardUniqueVisitorsChartGA4Widget =
 
 export default function WPDashboardWidgets() {
 	const analyticsModule = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( 'analytics-4' )
+		select( CORE_MODULES ).getModule( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const canViewSharedAnalytics = useSelect( ( select ) =>
-		select( CORE_USER ).hasAccessToShareableModule( 'analytics-4' )
+		select( CORE_USER ).hasAccessToShareableModule(
+			MODULE_SLUG_ANALYTICS_4
+		)
 	);
 	const canViewSharedSearchConsole = useSelect( ( select ) =>
-		select( CORE_USER ).hasAccessToShareableModule( 'search-console' )
+		select( CORE_USER ).hasAccessToShareableModule(
+			MODULE_SLUG_SEARCH_CONSOLE
+		)
 	);
 
 	if ( analyticsModule === undefined ) {

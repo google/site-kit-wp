@@ -22,10 +22,10 @@
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-} from '../../datastore/constants';
-import { RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID } from '../../constants';
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID } from '@/js/modules/reader-revenue-manager/constants';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import ProductIDSubscriptionsNotification from './ProductIDSubscriptionsNotification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -45,7 +45,7 @@ export default {
 	component: ProductIDSubscriptionsNotification,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = async ( registry ) => {
+			async function setupRegistry( registry ) {
 				await registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( {
@@ -55,7 +55,7 @@ export default {
 						publicationOnboardingState:
 							PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 					} );
-			};
+			}
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
 					<Story />

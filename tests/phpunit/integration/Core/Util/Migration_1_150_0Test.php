@@ -64,7 +64,7 @@ class Migration_1_150_0Test extends TestCase {
 
 		$migration->register();
 
-		$this->assertTrue( has_action( 'admin_init' ) );
+		$this->assertTrue( has_action( 'admin_init' ), 'Migration should register admin_init action.' );
 	}
 
 	public function test_migrate_audience_settings() {
@@ -84,14 +84,14 @@ class Migration_1_150_0Test extends TestCase {
 		$analytics_settings_after = $this->analytics_settings->get();
 		$audience_settings_after  = $this->audience_settings->get();
 
-		$this->assertArrayNotHasKey( 'availableAudiences', $analytics_settings_after );
-		$this->assertArrayNotHasKey( 'availableAudiencesLastSyncedAt', $analytics_settings_after );
-		$this->assertArrayNotHasKey( 'audienceSegmentationSetupCompletedBy', $analytics_settings_after );
-		$this->assertArrayHasKey( 'other_analytics_setting', $analytics_settings_after );
+		$this->assertArrayNotHasKey( 'availableAudiences', $analytics_settings_after, 'Available audiences should be removed from analytics settings.' );
+		$this->assertArrayNotHasKey( 'availableAudiencesLastSyncedAt', $analytics_settings_after, 'Available audiences last synced at should be removed from analytics settings.' );
+		$this->assertArrayNotHasKey( 'audienceSegmentationSetupCompletedBy', $analytics_settings_after, 'Audience segmentation setup completed by should be removed from analytics settings.' );
+		$this->assertArrayHasKey( 'other_analytics_setting', $analytics_settings_after, 'Other analytics settings should remain in analytics settings.' );
 
-		$this->assertEquals( array( 'audience1', 'audience2' ), $audience_settings_after['availableAudiences'] );
-		$this->assertEquals( 1678886400, $audience_settings_after['availableAudiencesLastSyncedAt'] );
-		$this->assertEquals( 123, $audience_settings_after['audienceSegmentationSetupCompletedBy'] );
+		$this->assertEquals( array( 'audience1', 'audience2' ), $audience_settings_after['availableAudiences'], 'Available audiences should be migrated to audience settings.' );
+		$this->assertEquals( 1678886400, $audience_settings_after['availableAudiencesLastSyncedAt'], 'Available audiences last synced at should be migrated to audience settings.' );
+		$this->assertEquals( 123, $audience_settings_after['audienceSegmentationSetupCompletedBy'], 'Audience segmentation setup completed by should be migrated to audience settings.' );
 	}
 
 	public function test_migrate_audience_settings_no_analytics_settings() {
@@ -101,7 +101,7 @@ class Migration_1_150_0Test extends TestCase {
 
 		$audience_settings_after = $this->audience_settings->get();
 
-		$this->assertEquals( $audience_settings_after, $this->audience_settings->get_default() );
+		$this->assertEquals( $audience_settings_after, $this->audience_settings->get_default(), 'Audience settings should be set to default when no analytics settings exist.' );
 	}
 
 	public function test_migrate_audience_settings_default_analytics_settings() {
@@ -113,7 +113,7 @@ class Migration_1_150_0Test extends TestCase {
 
 		$audience_settings_after = $this->audience_settings->get();
 
-		$this->assertEquals( $audience_settings_after, $this->audience_settings->get_default() );
+		$this->assertEquals( $audience_settings_after, $this->audience_settings->get_default(), 'Audience settings should be set to default when analytics settings are empty.' );
 	}
 
 	protected function get_db_version() {

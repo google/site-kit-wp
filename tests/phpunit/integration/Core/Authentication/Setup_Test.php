@@ -19,6 +19,7 @@ use WPDieException;
  * @group Authentication
  * @group Setup
  */
+
 class Setup_Test extends TestCase {
 
 	use Fake_Site_Connection_Trait;
@@ -48,7 +49,8 @@ class Setup_Test extends TestCase {
 		} catch ( WPDieException $exception ) {
 			$this->assertStringStartsWith(
 				'The link you followed has expired',
-				$exception->getMessage()
+				$exception->getMessage(),
+				'Should show appropriate error message for invalid nonce.'
 			);
 
 			return;
@@ -80,7 +82,8 @@ class Setup_Test extends TestCase {
 		} catch ( WPDieException $exception ) {
 			$this->assertStringStartsWith(
 				'You have insufficient permissions to connect Site Kit',
-				$exception->getMessage()
+				$exception->getMessage(),
+				'Should show appropriate error message for insufficient permissions.'
 			);
 
 			return;
@@ -105,7 +108,8 @@ class Setup_Test extends TestCase {
 		} catch ( WPDieException $exception ) {
 			$this->assertStringStartsWith(
 				'Site Kit is not configured to use the authentication proxy',
-				$exception->getMessage()
+				$exception->getMessage(),
+				'Should show appropriate error message when not using proxy.'
 			);
 
 			return;
@@ -153,12 +157,13 @@ class Setup_Test extends TestCase {
 			$this->fail( 'Expected redirection to proxy setup URL!' );
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
-			$this->assertStringStartsWith( $redirect_url, $location );
+			$this->assertStringStartsWith( $redirect_url, $location, 'Redirect location should start with the expected URL.' );
 		}
 
 		$this->assertContains(
 			( new Google_Proxy( $context ) )->url( Google_Proxy::OAUTH2_SITE_URI ),
-			$http_requests
+			$http_requests,
+			'HTTP requests should contain the OAuth2 site URI.'
 		);
 	}
 
@@ -215,11 +220,12 @@ class Setup_Test extends TestCase {
 					'The request to the authentication proxy has failed with an error: %s <a href="https://sitekit.withgoogle.com/support?error_id=request_to_auth_proxy_failed" target="_blank">Get help</a>.',
 					$error
 				),
-				$exception->getMessage()
+				$exception->getMessage(),
+				'Should show appropriate error message for proxy request failure.'
 			);
 		}
 
-		$this->assertCount( 1, $proxy_server_requests );
+		$this->assertCount( 1, $proxy_server_requests, 'Should have exactly one proxy server request.' );
 	}
 
 	/**
@@ -274,11 +280,12 @@ class Setup_Test extends TestCase {
 		} catch ( WPDieException $exception ) {
 			$this->assertStringContainsString(
 				'The request to the authentication proxy has failed. Please, try again later. <a href="https://sitekit.withgoogle.com/support?error_id=request_to_auth_proxy_failed" target="_blank">Get help</a>.',
-				$exception->getMessage()
+				$exception->getMessage(),
+				'Should show appropriate error message for invalid redirect URL.'
 			);
 		}
 
-		$this->assertCount( 1, $proxy_server_requests );
+		$this->assertCount( 1, $proxy_server_requests, 'Should have exactly one proxy server request.' );
 	}
 
 	public function data_conditionally_syncs_site_fields() {
@@ -315,22 +322,23 @@ class Setup_Test extends TestCase {
 			$this->fail( 'Expected redirection to proxy setup URL!' );
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
-			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v2/site-management/setup/', $location );
-			$this->assertStringContainsString( '?step=test-step', $location );
-			$this->assertStringContainsString( '&verify=true', $location );
-			$this->assertStringContainsString( '&verification_method=FILE', $location );
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v2/site-management/setup/', $location, 'Redirect location should start with proxy setup URL.' );
+			$this->assertStringContainsString( '?step=test-step', $location, 'Redirect location should contain step parameter.' );
+			$this->assertStringContainsString( '&verify=true', $location, 'Redirect location should contain verify parameter.' );
+			$this->assertStringContainsString( '&verification_method=FILE', $location, 'Redirect location should contain verification method parameter.' );
 		} catch ( WPDieException $exception ) {
 			$this->assertStringContainsString(
 				'Verifying site ownership requires a token and verification method',
-				$exception->getMessage()
+				$exception->getMessage(),
+				'Should show appropriate error message when token is missing.'
 			);
-			$this->assertEmpty( $token );
+			$this->assertEmpty( $token, 'Token should be empty when showing error message.' );
 		}
 
 		if ( $token ) {
-			$this->assertSame( 1, did_action( 'googlesitekit_verify_site_ownership' ) );
+			$this->assertSame( 1, did_action( 'googlesitekit_verify_site_ownership' ), 'Site ownership verification action should be triggered once when token is provided.' );
 		} else {
-			$this->assertSame( 0, did_action( 'googlesitekit_verify_site_ownership' ) );
+			$this->assertSame( 0, did_action( 'googlesitekit_verify_site_ownership' ), 'Site ownership verification action should not be triggered when token is missing.' );
 		}
 	}
 
@@ -355,7 +363,7 @@ class Setup_Test extends TestCase {
 		$_GET['googlesitekit_verification_token']      = 'test-token';
 		$_GET['googlesitekit_verification_token_type'] = Site_Verification::VERIFICATION_TYPE_FILE;
 
-		$this->assertFalse( $authentication->credentials()->has() );
+		$this->assertFalse( $authentication->credentials()->has(), 'Credentials should not exist initially.' );
 
 		// Stub the response to the proxy oauth API.
 		$this->stub_oauth2_site_request( $_GET['googlesitekit_code'], $_GET['googlesitekit_site_code'] );
@@ -365,11 +373,11 @@ class Setup_Test extends TestCase {
 			$this->fail( 'Expected redirection to proxy setup URL!' );
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
-			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v2/site-management/setup/', $location );
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v2/site-management/setup/', $location, 'Redirect location should start with proxy setup URL.' );
 		}
 
-		$this->assertSame( 1, did_action( 'googlesitekit_verify_site_ownership' ) );
-		$this->assertTrue( $authentication->credentials()->has() );
+		$this->assertSame( 1, did_action( 'googlesitekit_verify_site_ownership' ), 'Site ownership verification action should be triggered once.' );
+		$this->assertTrue( $authentication->credentials()->has(), 'Credentials should exist after successful verification.' );
 	}
 
 	/**
@@ -401,7 +409,7 @@ class Setup_Test extends TestCase {
 		// Stub the response to the proxy oauth API.
 		$this->stub_oauth2_site_request( $code, $site_code );
 
-		$this->assertFalse( $authentication->credentials()->has() );
+		$this->assertFalse( $authentication->credentials()->has(), 'Credentials should not exist initially.' );
 
 		try {
 			do_action( 'admin_action_' . Google_Proxy::ACTION_EXCHANGE_SITE_CODE );
@@ -409,21 +417,22 @@ class Setup_Test extends TestCase {
 		} catch ( WPDieException $exception ) {
 			$this->assertStringContainsString(
 				'Invalid request',
-				$exception->getMessage()
+				$exception->getMessage(),
+				'Should show appropriate error message for invalid request.'
 			);
 			$no_code      = empty( $code );
 			$no_site_code = empty( $site_code );
 			// Ensure one or both were missing.
-			$this->assertTrue( $no_code ?: $no_site_code );
+			$this->assertTrue( $no_code ?: $no_site_code, 'At least one of code or site_code should be missing for invalid request.' );
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
-			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v2/site-management/setup/', $location );
-			$this->assertStringContainsString( '&step=test-step', $location );
-			$this->assertArrayHasKey( $sync_url, $http_requests );
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v2/site-management/setup/', $location, 'Redirect location should start with proxy setup URL.' );
+			$this->assertStringContainsString( '&step=test-step', $location, 'Redirect location should contain step parameter.' );
+			$this->assertArrayHasKey( $sync_url, $http_requests, 'HTTP requests should contain sync URL.' );
 			$sync_request = $http_requests[ $sync_url ];
-			$this->assertEquals( $code, $sync_request['body']['code'] );
-			$this->assertEquals( $site_code, $sync_request['body']['site_code'] );
-			$this->assertTrue( $authentication->credentials()->has() );
+			$this->assertEquals( $code, $sync_request['body']['code'], 'Sync request should contain the provided code.' );
+			$this->assertEquals( $site_code, $sync_request['body']['site_code'], 'Sync request should contain the provided site code.' );
+			$this->assertTrue( $authentication->credentials()->has(), 'Credentials should exist after successful exchange.' );
 		}
 	}
 

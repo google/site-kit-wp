@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { prepareForReadableLargeNumber } from '../';
+import { prepareForReadableLargeNumber } from '@/js/util';
 
 describe( 'prepareForReadableLargeNumber', () => {
 	describe( 'Numbers below 1000 output the same value that was passed.', () => {

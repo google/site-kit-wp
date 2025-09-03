@@ -29,15 +29,18 @@ import {
 	provideSiteInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import { RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID } from '../../constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import {
+	RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
+} from '@/js/modules/reader-revenue-manager/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-} from '../../datastore/constants';
-import { NOTIFICATIONS } from '../..';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import ProductIDSubscriptionsNotification from './ProductIDSubscriptionsNotification';
 
 describe( 'ProductIDSubscriptionsNotification', () => {
@@ -56,7 +59,7 @@ describe( 'ProductIDSubscriptionsNotification', () => {
 		provideSiteInfo( registry );
 		provideModules( registry, [
 			{
-				slug: 'reader-revenue-manager',
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 				active: true,
 				connected: true,
 			},

@@ -26,27 +26,28 @@ import {
 	provideKeyMetrics,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import TopPagesDrivingLeadsWidget from './TopPagesDrivingLeadsWidget';
-import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import {
 	DATE_RANGE_OFFSET,
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../../../../util/errors';
+} from '@/js/util/errors';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 	STRATEGY_ZIP,
-} from '../../../analytics-4/utils/data-mock';
+} from '@/js/modules/analytics-4/utils/data-mock';
 
 describe( 'TopPagesDrivingLeadsWidget', () => {
 	let registry;
@@ -61,7 +62,7 @@ describe( 'TopPagesDrivingLeadsWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ] );
@@ -90,6 +91,8 @@ describe( 'TopPagesDrivingLeadsWidget', () => {
 			],
 			limit: 3,
 			keepEmptyRows: false,
+			reportID:
+				'analytics-4_top-pages-driving-leads-widget_widget_reportOptions',
 		};
 
 		const pageTitlesReportOptions = {
@@ -106,6 +109,7 @@ describe( 'TopPagesDrivingLeadsWidget', () => {
 				{ metric: { metricName: 'screenPageViews' }, desc: true },
 			],
 			limit: 15,
+			reportID: 'analytics-4_get-page-titles_store:selector_options',
 		};
 
 		const pageTitlesReport = getAnalytics4MockResponse(

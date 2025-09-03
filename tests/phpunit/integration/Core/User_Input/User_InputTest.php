@@ -62,19 +62,19 @@ class User_InputTest extends TestCase {
 		$data = array(
 			'setting1' => array( 'values' => null ),
 		);
-		$this->assertTrue( $this->user_input->are_settings_empty( $data ) );
+		$this->assertTrue( $this->user_input->are_settings_empty( $data ), 'Settings should be considered empty when all values are null.' );
 
 		$data = array(
 			'setting1' => array( 'values' => null ),
 			'setting2' => array( 'values' => array( '1', '2', '3' ) ),
 		);
-		$this->assertTrue( $this->user_input->are_settings_empty( $data ) );
+		$this->assertTrue( $this->user_input->are_settings_empty( $data ), 'Settings should be considered empty when at least one values entry is null.' );
 
 		$data = array(
 			'setting1' => array( 'values' => array( 'a', 'b', 'c' ) ),
 			'setting2' => array( 'values' => array( '1', '2', '3' ) ),
 		);
-		$this->assertFalse( $this->user_input->are_settings_empty( $data ) );
+		$this->assertFalse( $this->user_input->are_settings_empty( $data ), 'Settings should not be empty when values are present for any key.' );
 	}
 
 	public function test_get_answers() {
@@ -99,7 +99,8 @@ class User_InputTest extends TestCase {
 					'values' => array(),
 				),
 			),
-			$this->user_input->get_answers()
+			$this->user_input->get_answers(),
+			'Unanswered settings should return empty defaults with correct scopes.'
 		);
 
 		// If settings are partially set, it returns empty default values for unanswered questions.
@@ -137,7 +138,8 @@ class User_InputTest extends TestCase {
 					'values' => array(),
 				),
 			),
-			$this->user_input->get_answers()
+			$this->user_input->get_answers(),
+			'Partial settings should include defaults for unanswered questions.'
 		);
 
 		// If all settings are set, it returns all set settings as expected.
@@ -191,7 +193,8 @@ class User_InputTest extends TestCase {
 					'answeredBy' => $this->user_id,
 				),
 			),
-			$this->user_input->get_answers()
+			$this->user_input->get_answers(),
+			'All settings set should be returned with correct scopes and answeredBy.'
 		);
 	}
 
@@ -225,7 +228,8 @@ class User_InputTest extends TestCase {
 					'values' => array(),
 				),
 			),
-			$response
+			$response,
+			'Set answers should return normalized structure including answeredBy where applicable.'
 		);
 	}
 
@@ -242,7 +246,7 @@ class User_InputTest extends TestCase {
 
 		$existing_answers = $this->user_input->get_answers();
 
-		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $this->user_id );
+		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $this->user_id, 'Purpose answeredBy should remain original admin when not changed.' );
 
 		$this->user_options->switch_user( $second_admin_id );
 
@@ -255,7 +259,7 @@ class User_InputTest extends TestCase {
 
 		$existing_answers = $this->user_input->get_answers();
 		// Since the "purpose" answer didn't change, it should still be attributed to admin 1.
-		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $this->user_id );
+		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $this->user_id, 'Purpose answeredBy should remain original admin when not changed.' );
 	}
 
 	public function test_set_answers__assigns_correct_user_attribution_on_purpose_answer_change() {
@@ -270,7 +274,7 @@ class User_InputTest extends TestCase {
 
 		$existing_answers = $this->user_input->get_answers();
 
-		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $this->user_id );
+		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $this->user_id, 'Purpose answeredBy should remain original admin when not changed.' );
 
 		$this->user_options->switch_user( $second_admin_id );
 
@@ -283,16 +287,16 @@ class User_InputTest extends TestCase {
 
 		$existing_answers = $this->user_input->get_answers();
 		// Since the "purpose" answer changed, it should be attributed to admin 2.
-		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $second_admin_id );
+		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $second_admin_id, 'Purpose answeredBy should update to second admin when changed.' );
 		// User specific answers should be properly added for admin 2.
-		$this->assertEquals( $existing_answers['postFrequency']['values'], $admin_2_answers['postFrequency'] );
-		$this->assertEquals( $existing_answers['goals']['values'], $admin_2_answers['goals'] );
+		$this->assertEquals( $existing_answers['postFrequency']['values'], $admin_2_answers['postFrequency'], 'User-specific postFrequency should reflect second admin answers.' );
+		$this->assertEquals( $existing_answers['goals']['values'], $admin_2_answers['goals'], 'User-specific goals should reflect second admin answers.' );
 
 		$this->user_options->switch_user( $this->user_id );
 		$admin_1_answers = $this->user_input->get_answers();
 		// Original answers done by admin 1 should remain unchanged.
-		$this->assertNotEquals( $admin_1_answers['postFrequency']['values'], $admin_2_answers['postFrequency'] );
-		$this->assertNotEquals( $admin_1_answers['goals']['values'], $admin_2_answers['goals'] );
+		$this->assertNotEquals( $admin_1_answers['postFrequency']['values'], $admin_2_answers['postFrequency'], 'Admin 1 postFrequency should remain unchanged.' );
+		$this->assertNotEquals( $admin_1_answers['goals']['values'], $admin_2_answers['goals'], 'Admin 1 goals should remain unchanged.' );
 	}
 
 	public function test_set_answers__keep_original_attribution_when_no_answers_change() {
@@ -311,6 +315,6 @@ class User_InputTest extends TestCase {
 
 		$existing_answers = $this->user_input->get_answers();
 		// Since no answer changed, the "purpose" answer should still be attributed to admin 1.
-		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $this->user_id );
+		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $this->user_id, 'Purpose answeredBy should remain original when no answers changed.' );
 	}
 }

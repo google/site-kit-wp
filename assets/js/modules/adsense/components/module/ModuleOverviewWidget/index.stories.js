@@ -26,14 +26,16 @@ import {
 	provideModules,
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import {
 	getAdSenseMockResponse,
 	provideAdSenseMockReports,
-} from '../../../util/data-mock';
+} from '@/js/modules/adsense/util/data-mock';
 
 const adSenseAccountID = 'pub-1234567890';
 
@@ -47,6 +49,7 @@ const storyReportOptions = [
 		],
 		startDate: '2021-10-28',
 		endDate: '2021-11-24',
+		reportID: 'adsense_module-overview-widget_widget_currentRangeArgs',
 	},
 	{
 		dimensions: [ 'DATE' ],
@@ -58,6 +61,7 @@ const storyReportOptions = [
 		],
 		startDate: '2021-10-28',
 		endDate: '2021-11-24',
+		reportID: 'adsense_module-overview-widget_widget_currentRangeChartArgs',
 	},
 	{
 		metrics: [
@@ -68,6 +72,7 @@ const storyReportOptions = [
 		],
 		startDate: '2021-09-30',
 		endDate: '2021-10-27',
+		reportID: 'adsense_module-overview-widget_widget_previousRangeArgs',
 	},
 	{
 		dimensions: [ 'DATE' ],
@@ -79,6 +84,8 @@ const storyReportOptions = [
 		],
 		startDate: '2021-09-30',
 		endDate: '2021-10-27',
+		reportID:
+			'adsense_module-overview-widget_widget_previousRangeChartArgs',
 	},
 ];
 
@@ -157,17 +164,17 @@ export default {
 	title: 'Modules/AdSense/Widgets/ModuleOverviewWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
 						connected: true,
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 					},
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 					},
 				] );
 
@@ -188,7 +195,7 @@ export default {
 					.setAccountID( adSenseAccountID );
 
 				args?.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

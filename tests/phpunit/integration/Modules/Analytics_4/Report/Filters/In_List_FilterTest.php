@@ -38,7 +38,8 @@ class In_List_FilterTest extends TestCase {
 					),
 				),
 			),
-			json_decode( wp_json_encode( $expression ), true )
+			json_decode( wp_json_encode( $expression ), true ),
+			'In-list filter should be parsed into expected GA4 expression.'
 		);
 	}
 }

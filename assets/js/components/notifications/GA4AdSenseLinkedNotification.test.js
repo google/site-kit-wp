@@ -23,13 +23,15 @@ import {
 	createTestRegistry,
 	provideModules,
 } from '../../../../tests/js/test-utils';
-import { getAnalytics4MockResponse } from '../../modules/analytics-4/utils/data-mock';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import getMultiDimensionalObjectFromParams from '../../../../tests/e2e/utils/get-multi-dimensional-object-from-params';
-import { withConnected } from '../../googlesitekit/modules/datastore/__fixtures__';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 
 const GA4_ADSENSE_LINKED_NOTIFICATION =
 	'top-earning-pages-success-notification';
@@ -53,7 +55,10 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		// All the below conditions will trigger a successful notification.
 		// So each individual failing test case further below will overwrite one
 		// of the success criteria.
-		provideModules( registry, withConnected( 'analytics-4', 'adsense' ) );
+		provideModules(
+			registry,
+			withConnected( MODULE_SLUG_ANALYTICS_4, MODULE_SLUG_ADSENSE )
+		);
 		registry
 			.dispatch( CORE_NOTIFICATIONS )
 			.registerNotification(
@@ -84,11 +89,15 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 
 		it( 'is not active if AdSense module is not connected', async () => {
 			provideModules( registry, [
-				{ active: true, connected: true, slug: 'analytics-4' },
+				{
+					active: true,
+					connected: true,
+					slug: MODULE_SLUG_ANALYTICS_4,
+				},
 				{
 					active: true,
 					connected: false,
-					slug: 'adsense',
+					slug: MODULE_SLUG_ADSENSE,
 				},
 			] );
 
@@ -115,7 +124,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 
 		it( 'is not active if report has data', async () => {
 			fetchMock.reset();
-			fetchMock.getOnce( analyticsReport, function ( req ) {
+			fetchMock.getOnce( analyticsReport, ( req ) => {
 				const paramsObject = Object.fromEntries(
 					new URL( req, 'http://example.com' ).searchParams.entries()
 				);

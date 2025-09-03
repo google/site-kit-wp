@@ -16,7 +16,7 @@
 
 import { render } from '../../../../../../tests/js/test-utils';
 import { createTestRegistry } from '../../../../../../tests/js/utils';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import whenHasChangedConversionEvents from './whenHasChangedConversionEvents';
 
 function TestComponent() {

@@ -24,7 +24,7 @@ class NoticeTest extends TestCase {
 	public function test_get_slug() {
 		$notice = new Notice( 'test-slug', array() );
 
-		$this->assertEquals( 'test-slug', $notice->get_slug() );
+		$this->assertEquals( 'test-slug', $notice->get_slug(), 'Notice slug should match the provided value.' );
 	}
 
 	/**
@@ -36,9 +36,9 @@ class NoticeTest extends TestCase {
 	public function test_is_active( array $args, $expected ) {
 		$notice = new Notice( 'test-slug', $args );
 		if ( $expected ) {
-			$this->assertTrue( $notice->is_active( self::TEST_HOOK_SUFFIX ) );
+			$this->assertTrue( $notice->is_active( self::TEST_HOOK_SUFFIX ), 'Notice should be active for the given hook suffix.' );
 		} else {
-			$this->assertFalse( $notice->is_active( self::TEST_HOOK_SUFFIX ) );
+			$this->assertFalse( $notice->is_active( self::TEST_HOOK_SUFFIX ), 'Notice should not be active for the given hook suffix.' );
 		}
 	}
 
@@ -96,8 +96,8 @@ class NoticeTest extends TestCase {
 		$notice->render();
 		$output = ob_get_clean();
 
-		$this->assertStringContainsString( '<div id="googlesitekit-notice-test-slug" class="notice notice-success">', $output );
-		$this->assertStringContainsString( '<p>Successfully saved.</p>', $output );
+		$this->assertStringContainsString( '<div id="googlesitekit-notice-test-slug" class="notice notice-success">', $output, 'Notice output should contain the correct success div.' );
+		$this->assertStringContainsString( '<p>Successfully saved.</p>', $output, 'Notice output should contain the correct success message.' );
 	}
 
 	public function test_render_with_callable() {
@@ -116,7 +116,7 @@ class NoticeTest extends TestCase {
 		$notice->render();
 		$output = ob_get_clean();
 
-		$this->assertStringContainsString( '<div id="googlesitekit-notice-test-slug" class="notice notice-warning is-dismissible">', $output );
-		$this->assertStringContainsString( '<p>Successfully saved<script>document.write(" just now");</script>.</p>', $output );
+		$this->assertStringContainsString( '<div id="googlesitekit-notice-test-slug" class="notice notice-warning is-dismissible">', $output, 'Notice output should contain the correct warning div.' );
+		$this->assertStringContainsString( '<p>Successfully saved<script>document.write(" just now");</script>.</p>', $output, 'Notice output should contain the correct warning message.' );
 	}
 }

@@ -30,34 +30,35 @@ import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { DATE_RANGE_OFFSET, MODULES_SEARCH_CONSOLE } from './constants';
-import { stringifyObject } from '../../../util';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { stringifyObject } from '@/js/util';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import {
 	isValidDateRange,
 	isValidStringularItems,
-} from '../../../util/report-validation';
-import { isZeroReport } from '../util';
-import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
+} from '@/js/util/report-validation';
+import { isZeroReport } from '@/js/modules/search-console/util';
+import { createGatheringDataStore } from '@/js/googlesitekit/modules/create-gathering-data-store';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	storeName: MODULES_SEARCH_CONSOLE,
 	controlCallback: ( { options } ) => {
-		return get( 'modules', 'search-console', 'searchanalytics', options );
+		return get(
+			'modules',
+			MODULE_SLUG_SEARCH_CONSOLE,
+			'searchanalytics',
+			options
+		);
 	},
-	reducerCallback: ( state, report, { options } ) => {
-		return {
-			...state,
-			reports: {
-				...state.reports,
-				[ stringifyObject( options ) ]: report,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, report, { options } ) => {
+		state.reports[ stringifyObject( options ) ] = report;
+	} ),
 	argsToParams: ( options ) => {
 		return { options };
 	},
@@ -81,39 +82,44 @@ const fetchGetReportStore = createFetchStore( {
 	},
 } );
 
-const gatheringDataStore = createGatheringDataStore( 'search-console', {
-	storeName: MODULES_SEARCH_CONSOLE,
-	dataAvailable:
-		global._googlesitekitModulesData?.[ 'data_available_search-console' ],
-	selectDataAvailability: createRegistrySelector( ( select ) => () => {
-		const args = select( MODULES_SEARCH_CONSOLE ).getSampleReportArgs();
-		// Disable reason: select needs to be called here or it will never run.
-		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-		const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
-		const hasResolvedReport = select(
-			MODULES_SEARCH_CONSOLE
-		).hasFinishedResolution( 'getReport', [ args ] );
+const gatheringDataStore = createGatheringDataStore(
+	MODULE_SLUG_SEARCH_CONSOLE,
+	{
+		storeName: MODULES_SEARCH_CONSOLE,
+		dataAvailable:
+			global._googlesitekitModulesData?.[
+				'data_available_search-console'
+			],
+		selectDataAvailability: createRegistrySelector( ( select ) => () => {
+			const args = select( MODULES_SEARCH_CONSOLE ).getSampleReportArgs();
+			// Disable reason: select needs to be called here or it will never run.
+			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+			const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
+			const hasResolvedReport = select(
+				MODULES_SEARCH_CONSOLE
+			).hasFinishedResolution( 'getReport', [ args ] );
 
-		if ( ! hasResolvedReport ) {
-			return undefined;
-		}
+			if ( ! hasResolvedReport ) {
+				return undefined;
+			}
 
-		const hasReportError = select(
-			MODULES_SEARCH_CONSOLE
-		).getErrorForSelector( 'getReport', [ args ] );
+			const hasReportError = select(
+				MODULES_SEARCH_CONSOLE
+			).getErrorForSelector( 'getReport', [ args ] );
 
-		// If there is an error, return `null` since we don't know if there is data or not.
-		if ( hasReportError || ! Array.isArray( report ) ) {
-			return null;
-		}
+			// If there is an error, return `null` since we don't know if there is data or not.
+			if ( hasReportError || ! Array.isArray( report ) ) {
+				return null;
+			}
 
-		if ( report.length ) {
-			return true;
-		}
+			if ( report.length ) {
+				return true;
+			}
 
-		return false;
-	} ),
-} );
+			return false;
+		} ),
+	}
+);
 
 const baseInitialState = {
 	reports: {},

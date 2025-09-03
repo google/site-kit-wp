@@ -34,12 +34,9 @@ import Header from './Header';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import HelpMenuLink from './help/HelpMenuLink';
-import BannerNotification from './notifications/BannerNotification';
 import Null from './Null';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import {
-	createTestRegistry,
-	WithTestRegistry,
 	provideUserAuthentication,
 	provideSiteInfo,
 	provideModules,
@@ -53,39 +50,19 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	CORE_USER,
 	PERMISSION_VIEW_SHARED_DASHBOARD,
-} from '../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import { Provider as ViewContextProvider } from './Root/ViewContextContext';
-import { getMetaCapabilityPropertyName } from '../googlesitekit/datastore/util/permissions';
+import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import {
-	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 
-function SubHeaderBannerNotification() {
-	return (
-		<BannerNotification
-			title={ __( 'This is a banner notification', 'google-site-kit' ) }
-			description={ __(
-				'This is a description of the banner notification',
-				'google-site-kit'
-			) }
-			ctaLabel={ __( 'OK, Got it!', 'google-site-kit' ) }
-			ctaLink="#"
-		/>
-	);
-}
-
-function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
-	return (
-		<WithRegistrySetup func={ setupRegistry }>
-			<ViewContextProvider
-				value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
-			>
-				<Header { ...args } />
-			</ViewContextProvider>
-		</WithRegistrySetup>
-	);
+function Template( args ) {
+	return <Header { ...args } />;
 }
 
 export const PluginHeader = Template.bind( {} );
@@ -155,31 +132,6 @@ HeaderWithCustomHelpMenuLinks.args = {
 	},
 };
 
-export const HeaderWithSubHeader = Template.bind( {} );
-HeaderWithSubHeader.storyName = 'Plugin Header with Sub Header';
-HeaderWithSubHeader.args = {
-	subHeader: <SubHeaderBannerNotification />,
-	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry );
-	},
-};
-
-export const HeaderWithSubHeaderEntityBanner = Template.bind( {} );
-HeaderWithSubHeaderEntityBanner.storyName =
-	'Plugin Header with Sub Header and Entity Header Banner';
-HeaderWithSubHeaderEntityBanner.args = {
-	subHeader: <SubHeaderBannerNotification />,
-	viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
-	setupRegistry: ( registry ) => {
-		provideSiteInfo( registry, {
-			currentEntityTitle:
-				'Everything you need to know about driving in Ireland',
-			currentEntityURL: 'http://example.com/driving-ireland/',
-		} );
-		provideUserAuthentication( registry );
-	},
-};
-
 export const HeaderWithNullSubHeader = Template.bind( {} );
 HeaderWithNullSubHeader.storyName = 'Plugin Header with Null Sub Header';
 HeaderWithNullSubHeader.args = {
@@ -228,21 +180,21 @@ HeaderViewOnly.args = {
 		provideSiteConnection( registry );
 		provideModules( registry, [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				owner: {
 					id: '1',
 					login: 'Admin 1',
 				},
 			},
 			{
-				slug: 'pagespeed-insights',
+				slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 				owner: {
 					id: '2',
 					login: 'Admin 2',
 				},
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				owner: {
 					id: '3',
 					login: 'Admin 3',
@@ -255,15 +207,15 @@ HeaderViewOnly.args = {
 			[ PERMISSION_VIEW_SHARED_DASHBOARD ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'search-console'
+				MODULE_SLUG_SEARCH_CONSOLE
 			) ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'pagespeed-insights'
+				MODULE_SLUG_PAGESPEED_INSIGHTS
 			) ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'analytics-4'
+				MODULE_SLUG_ANALYTICS_4
 			) ]: true,
 		} );
 
@@ -285,14 +237,25 @@ export default {
 	title: 'Components/Header',
 	component: Header,
 	decorators: [
-		( Story ) => {
-			const registry = createTestRegistry();
-			provideSiteInfo( registry );
+		( Story, { args } ) => {
+			const { viewContext, ...rest } = args;
+
+			function setupRegistry( registry ) {
+				provideSiteInfo( registry );
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			}
 
 			return (
-				<WithTestRegistry registry={ registry }>
-					<Story />
-				</WithTestRegistry>
+				<WithRegistrySetup func={ setupRegistry }>
+					<ViewContextProvider
+						value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+					>
+						<Story { ...rest } />
+					</ViewContextProvider>
+				</WithRegistrySetup>
 			);
 		},
 	],

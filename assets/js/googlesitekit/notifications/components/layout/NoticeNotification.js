@@ -17,11 +17,11 @@
 /**
  * Internal dependencies
  */
-import Notice from '../../../../components/Notice';
-import useNotificationEvents from '../../hooks/useNotificationEvents';
+import Notice from '@/js/components/Notice';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../../datastore/constants';
-import { Grid, Cell, Row } from '../../../../material-components';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { Grid, Cell, Row } from '@/js/material-components';
 import propTypes from 'prop-types';
 
 export default function NoticeNotification( {
@@ -36,29 +36,29 @@ export default function NoticeNotification( {
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const handleDismissWithTrackEvent = async ( event ) => {
+	async function handleDismissWithTrackEvent( event ) {
 		await dismissButton?.onClick?.( event );
 		trackEvents.dismiss(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
 		dismissNotification( notificationID, {
-			...dismissButton.dismissOptions,
+			...( dismissButton?.dismissOptions || {} ),
 		} );
-	};
+	}
 
-	const handleCTAClickWithTrackEvent = async ( event ) => {
+	async function handleCTAClickWithTrackEvent( event ) {
 		await ctaButton?.onClick?.( event );
 		trackEvents.confirm(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
-	};
+	}
 
 	return (
 		<Grid>
 			<Row>
-				<Cell alignMiddle size={ 12 }>
+				<Cell size={ 12 } alignMiddle>
 					<Notice
 						dismissButton={ {
 							...dismissButton,

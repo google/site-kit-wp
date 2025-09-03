@@ -37,28 +37,30 @@ import {
 	useInViewSelect,
 	useRegistry,
 } from 'googlesitekit-data';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
 	MIN_SELECTED_METRICS_COUNT,
 	MAX_SELECTED_METRICS_COUNT,
-} from '../constants';
+} from '@/js/components/KeyMetrics/constants';
 import {
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
-} from '../../../modules/analytics-4/datastore/constants';
-import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
-import useViewContext from '../../../hooks/useViewContext';
-import { snapshotAllStores } from '../../../googlesitekit/data/create-snapshot-store';
-import { trackEvent } from '../../../util';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
+import useViewContext from '@/js/hooks/useViewContext';
+import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
+import { trackEvent } from '@/js/util';
 import SelectionPanelFooter from './SelectionPanelFooter';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function Footer( {
 	isOpen,
@@ -70,11 +72,9 @@ export default function Footer( {
 	const registry = useRegistry();
 	const viewContext = useViewContext();
 
-	const selectedMetrics = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			KEY_METRICS_SELECTION_FORM,
-			KEY_METRICS_SELECTED
-		)
+	const selectedMetrics = useFormValue(
+		KEY_METRICS_SELECTION_FORM,
+		KEY_METRICS_SELECTED
 	);
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingKeyMetricsSettings()
@@ -106,7 +106,7 @@ export default function Footer( {
 	);
 
 	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	// The `custom_dimensions` query value is arbitrary and serves two purposes:
@@ -134,6 +134,13 @@ export default function Footer( {
 	const mainDashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
+
+	const isNavigatingToMainDashboard = useSelect( ( select ) => {
+		return (
+			!! mainDashboardURL &&
+			select( CORE_LOCATION ).isNavigatingTo( mainDashboardURL )
+		);
+	} );
 
 	const { saveKeyMetricsSettings, setPermissionScopeError } =
 		useDispatch( CORE_USER );
@@ -254,7 +261,11 @@ export default function Footer( {
 			saveSettings={ saveSettings }
 			minSelectedItemCount={ MIN_SELECTED_METRICS_COUNT }
 			maxSelectedItemCount={ MAX_SELECTED_METRICS_COUNT }
-			isBusy={ isSavingSettings || isNavigatingToOAuthURL }
+			isBusy={
+				isSavingSettings ||
+				isNavigatingToOAuthURL ||
+				( isNavigatingToMainDashboard && isFullScreen )
+			}
 			onSaveSuccess={ () => {
 				onSaveSuccess( selectedMetrics );
 			} }

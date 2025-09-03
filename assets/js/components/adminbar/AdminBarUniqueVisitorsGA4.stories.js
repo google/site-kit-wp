@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	setupAnalytics4GatheringData,
 	setupAnalytics4MockReports,
@@ -27,6 +27,7 @@ import {
 	setupAnalytics4Loading,
 	setupAnalytics4Error,
 	widgetDecorators,
+	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
 } from './common-GA4.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarUniqueVisitorsGA4 from './AdminBarUniqueVisitorsGA4';
@@ -72,6 +73,13 @@ Error.storyName = 'Error';
 Error.args = {
 	setupRegistry: setupAnalytics4Error,
 };
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
+};
+NoDataInComparisonDateRange.scenario = {};
 
 export default {
 	title: 'Views/AdminBarApp/AdminBarUniqueVisitorsGA4',

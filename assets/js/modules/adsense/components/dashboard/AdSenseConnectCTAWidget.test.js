@@ -35,12 +35,15 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/test-utils';
-import { ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { withActive } from '../../../../googlesitekit/modules/datastore/__fixtures__';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import {
+	ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY,
+	MODULE_SLUG_ADSENSE,
+} from '@/js/modules/adsense/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { withActive } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 
 describe( 'AdSenseConnectCTA', () => {
 	let registry;
@@ -56,7 +59,7 @@ describe( 'AdSenseConnectCTA', () => {
 		provideUserAuthentication( registry );
 		registry
 			.dispatch( CORE_MODULES )
-			.receiveGetModules( withActive( 'adsense' ) );
+			.receiveGetModules( withActive( MODULE_SLUG_ADSENSE ) );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 

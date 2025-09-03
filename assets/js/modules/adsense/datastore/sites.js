@@ -32,11 +32,12 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
-import { isValidAccountID } from '../util';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
-import { determineSiteFromDomain } from '../util/site';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { isValidAccountID } from '@/js/modules/adsense/util';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { determineSiteFromDomain } from '@/js/modules/adsense/util/site';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 // Actions
 const RESET_SITES = 'RESET_SITES';
@@ -46,7 +47,7 @@ const fetchGetSitesStore = createFetchStore( {
 	controlCallback: ( { accountID } ) => {
 		return get(
 			'modules',
-			'adsense',
+			MODULE_SLUG_ADSENSE,
 			'sites',
 			{ accountID },
 			{

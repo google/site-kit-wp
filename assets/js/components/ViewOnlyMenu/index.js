@@ -33,10 +33,10 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import { Button, Menu } from 'googlesitekit-components';
-import useViewContext from '../../hooks/useViewContext';
-import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
-import { trackEvent } from '../../util';
-import ViewIcon from '../../../svg/icons/view.svg';
+import useViewContext from '@/js/hooks/useViewContext';
+import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
+import { trackEvent } from '@/js/util';
+import ViewIcon from '@/svg/icons/view.svg';
 import Description from './Description';
 import SharedServices from './SharedServices';
 import Tracking from './Tracking';
@@ -44,7 +44,7 @@ import { useSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	PERMISSION_AUTHENTICATE,
-} from '../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 
 export default function ViewOnlyMenu() {
 	const [ menuOpen, setMenuOpen ] = useState( false );
@@ -84,7 +84,6 @@ export default function ViewOnlyMenu() {
 		>
 			<Button
 				className="googlesitekit-header__dropdown mdc-button--dropdown googlesitekit-border-radius-round--phone googlesitekit-button-icon"
-				text
 				onClick={ toggleMenu }
 				icon={
 					<span className="mdc-button__icon" aria-hidden="true">
@@ -95,16 +94,17 @@ export default function ViewOnlyMenu() {
 				aria-expanded={ menuOpen }
 				aria-controls="view-only-menu"
 				aria-label={ __( 'View only', 'google-site-kit' ) }
-				tooltip
 				tooltipEnterDelayInMS={ 500 }
+				text
+				tooltip
 			>
 				{ __( 'View only', 'google-site-kit' ) }
 			</Button>
 			<Menu
 				menuOpen={ menuOpen }
-				nonInteractive
 				onSelected={ toggleMenu }
 				id="view-only-menu"
+				nonInteractive
 			>
 				<Description />
 				<SharedServices />

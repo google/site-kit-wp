@@ -6,7 +6,7 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
- */
+ * */
 
 namespace Google\Site_Kit\Tests\Core\Authentication;
 
@@ -66,10 +66,10 @@ class VerificationTest extends TestCase {
 	public function test_get() {
 		$verification = new Verification( $this->user_options );
 
-		$this->assertEquals( false, $verification->get() );
+		$this->assertEquals( false, $verification->get(), 'Verification should be false by default.' );
 
 		$verification->set( true );
-		$this->assertEquals( true, $verification->get() );
+		$this->assertEquals( true, $verification->get(), 'Verification should return the set value.' );
 	}
 
 	/**
@@ -79,12 +79,12 @@ class VerificationTest extends TestCase {
 		$verification = new Verification( $this->user_options );
 
 		$return_data = $verification->set( true );
-		$this->assertTrue( $return_data );
-		$this->assertEquals( true, $verification->get() );
+		$this->assertTrue( $return_data, 'Setting verification to true should return true.' );
+		$this->assertEquals( true, $verification->get(), 'Verification should be set to true.' );
 
 		$return_data = $verification->set( false );
-		$this->assertTrue( $return_data );
-		$this->assertEquals( false, $verification->get() );
+		$this->assertTrue( $return_data, 'Setting verification to false should return true.' );
+		$this->assertEquals( false, $verification->get(), 'Verification should be set to false.' );
 	}
 
 	/**
@@ -94,6 +94,6 @@ class VerificationTest extends TestCase {
 		$verification = new Verification( $this->user_options );
 
 		$verification->set( true );
-		$this->assertEquals( true, $verification->has() );
+		$this->assertEquals( true, $verification->has(), 'Verification should exist when set to true.' );
 	}
 }

@@ -27,13 +27,14 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from '../../../../../../tests/js/utils';
-import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
 import {
 	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
-} from '../../../../googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'keyMetricsConnectAdSenseCTATile'
@@ -48,10 +49,10 @@ Default.storyName = 'ConnectGA4CTATileWidget';
 Default.args = {
 	keyMetricsWidgets: {
 		[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 		},
 		[ KM_ANALYTICS_POPULAR_AUTHORS ]: {
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 		},
 	},
 };
@@ -61,7 +62,7 @@ WithSingleWidget.storyName = 'ConnectGA4CTATileWidget (for single widget)';
 WithSingleWidget.args = {
 	keyMetricsWidgets: {
 		[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]: {
-			modules: [ 'analytics-4' ],
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 		},
 	},
 };
@@ -70,12 +71,12 @@ export default {
 	title: 'Key Metrics/ConnectGA4CTATileWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry );
 				provideUserCapabilities( registry );
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: false,
 						connected: false,
 					},
@@ -88,7 +89,7 @@ export default {
 					registry,
 					args?.keyMetricsWidgets
 				);
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

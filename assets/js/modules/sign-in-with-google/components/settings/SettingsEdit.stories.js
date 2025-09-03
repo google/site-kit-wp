@@ -16,8 +16,9 @@
  * limitations under the License.
  */
 
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
-import { Cell, Grid, Row } from '../../../../material-components';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
 import {
 	provideModules,
 	provideSiteInfo,
@@ -57,7 +58,7 @@ NewUserAccountsEnabled.args = {
 
 Default.decorators = [
 	( Story, { args } ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			const { anyoneCanRegister = false } = args;
 			provideSiteInfo( registry, { anyoneCanRegister } );
 
@@ -76,7 +77,7 @@ Default.decorators = [
 			if ( args.setupRegistry ) {
 				args.setupRegistry( registry );
 			}
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -90,7 +91,7 @@ export const InvalidClientID = Template.bind( null );
 InvalidClientID.storyName = 'Invalid Client ID';
 InvalidClientID.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			provideSiteInfo( registry, { anyoneCanRegister: true } );
 
 			registry
@@ -102,7 +103,7 @@ InvalidClientID.decorators = [
 					shape: 'rectangular',
 					OneTapEnabled: true,
 				} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -119,16 +120,16 @@ export default {
 	title: 'Modules/SignInWithGoogle/Settings/SettingsEdit',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry, { anyoneCanRegister: true } );
 				provideModules( registry, [
 					{
-						slug: 'sign-in-with-google',
+						slug: MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
 						active: true,
 						connected: true,
 					},
 				] );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

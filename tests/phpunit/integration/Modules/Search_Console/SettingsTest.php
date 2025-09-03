@@ -30,7 +30,8 @@ class SettingsTest extends SettingsTestCase {
 				'propertyID' => '',
 				'ownerID'    => '',
 			),
-			get_option( Settings::OPTION )
+			get_option( Settings::OPTION ),
+			'Vetted default options should be present for Search Console settings.'
 		);
 	}
 
@@ -40,13 +41,13 @@ class SettingsTest extends SettingsTestCase {
 		$legacy_property_id_option = 'googlesitekit_search_console_property';
 
 		// Default uses legacy option as a fallback for property ID.
-		$this->assertEquals( '', $settings->get()['propertyID'] );
+		$this->assertEquals( '', $settings->get()['propertyID'], 'Default propertyID should be empty.' );
 		update_option( $legacy_property_id_option, 'http://example.com/' );
-		$this->assertEquals( 'http://example.com/', $settings->get()['propertyID'] );
+		$this->assertEquals( 'http://example.com/', $settings->get()['propertyID'], 'Fallback propertyID should be used when legacy option is set.' );
 
 		// If propertyID is set, fallback is not used.
 		$settings->set( array( 'propertyID' => 'http://sitekit.withgoogle.com/' ) );
-		$this->assertEquals( 'http://sitekit.withgoogle.com/', $settings->get()['propertyID'] );
+		$this->assertEquals( 'http://sitekit.withgoogle.com/', $settings->get()['propertyID'], 'Explicitly set propertyID should override legacy fallback.' );
 	}
 
 	/**

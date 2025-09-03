@@ -26,7 +26,7 @@ import audiences from './audiences';
 import audienceSettings from './audience-settings';
 import baseModuleStore from './base';
 import containers from './containers';
-import conversionEvents from './conversion-events';
+import keyEvents from './key-events';
 import conversionReporting from './conversion-reporting';
 import customDimensions from './custom-dimensions';
 import customDimensionsGatheringData from './custom-dimensions-gathering-data';
@@ -34,13 +34,12 @@ import enhancedMeasurement from './enhanced-measurement';
 import partialData from './partial-data';
 import properties from './properties';
 import report from './report';
-import pivotReport from './pivot-report';
 import service from './service';
 import settings from './settings';
 import tags from './tags';
 import webdatastreams from './webdatastreams';
 import moduleData from './module-data';
-import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
+import { createSnapshotStore } from '@/js/googlesitekit/data/create-snapshot-store';
 
 const store = combineStores(
 	accounts,
@@ -49,14 +48,13 @@ const store = combineStores(
 	baseModuleStore,
 	moduleData,
 	containers,
-	conversionEvents,
+	keyEvents,
 	conversionReporting,
 	createSnapshotStore( MODULES_ANALYTICS_4 ),
 	customDimensions,
 	customDimensionsGatheringData,
 	enhancedMeasurement,
 	partialData,
-	pivotReport,
 	properties,
 	report,
 	settings,
@@ -72,8 +70,8 @@ export const reducer = store.reducer;
 export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
-export const registerStore = ( registry ) => {
+export function registerStore( registry ) {
 	registry.registerStore( MODULES_ANALYTICS_4, store );
-};
+}
 
 export default store;

@@ -25,11 +25,12 @@ import {
 } from '../../../../../tests/js/utils';
 import { initialState } from './index';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 
 describe( 'modules/sign-in-with-google inline module data', () => {
 	const baseModulesGlobalName = '_googlesitekitModulesData';
 	const baseData = {
-		'sign-in-with-google': {
+		[ MODULE_SLUG_SIGN_IN_WITH_GOOGLE ]: {
 			isWooCommerceActive: false,
 			isWooCommerceRegistrationEnabled: false,
 		},
@@ -61,10 +62,12 @@ describe( 'modules/sign-in-with-google inline module data', () => {
 			it( 'receives module data', async () => {
 				await registry
 					.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
-					.receiveModuleData( baseData[ 'sign-in-with-google' ] );
+					.receiveModuleData(
+						baseData[ MODULE_SLUG_SIGN_IN_WITH_GOOGLE ]
+					);
 
 				expect( store.getState().moduleData ).toMatchObject(
-					baseData[ 'sign-in-with-google' ]
+					baseData[ MODULE_SLUG_SIGN_IN_WITH_GOOGLE ]
 				);
 			} );
 		} );
@@ -89,7 +92,7 @@ describe( 'modules/sign-in-with-google inline module data', () => {
 					.getModuleData();
 
 				expect( moduleData ).toMatchObject(
-					baseData[ 'sign-in-with-google' ]
+					baseData[ MODULE_SLUG_SIGN_IN_WITH_GOOGLE ]
 				);
 
 				// Data must not be wiped after retrieving, as it could be used by other dependants.
@@ -138,14 +141,16 @@ describe( 'modules/sign-in-with-google inline module data', () => {
 
 				expect( moduleData ).toHaveProperty( moduleDataKey );
 				expect( moduleData[ moduleDataKey ] ).toEqual(
-					baseData[ 'sign-in-with-google' ][ moduleDataKey ]
+					baseData[ MODULE_SLUG_SIGN_IN_WITH_GOOGLE ][ moduleDataKey ]
 				);
 			} );
 
 			it( 'returns correct data when module data is available', async () => {
 				await registry
 					.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
-					.receiveModuleData( baseData[ 'sign-in-with-google' ] );
+					.receiveModuleData(
+						baseData[ MODULE_SLUG_SIGN_IN_WITH_GOOGLE ]
+					);
 
 				registry.select( MODULES_SIGN_IN_WITH_GOOGLE )[ selector ]();
 
@@ -154,7 +159,7 @@ describe( 'modules/sign-in-with-google inline module data', () => {
 					[ selector ]();
 
 				expect( selectorValue ).toEqual(
-					baseData[ 'sign-in-with-google' ][ moduleDataKey ]
+					baseData[ MODULE_SLUG_SIGN_IN_WITH_GOOGLE ][ moduleDataKey ]
 				);
 			} );
 

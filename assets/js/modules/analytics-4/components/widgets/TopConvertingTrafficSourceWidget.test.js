@@ -27,25 +27,26 @@ import {
 	freezeFetch,
 } from '../../../../../../tests/js/utils';
 import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '../../../../../../tests/js/utils/zeroReports';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import TopConvertingTrafficSourceWidget from './TopConvertingTrafficSourceWidget';
-import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../../../../util/errors';
+} from '@/js/util/errors';
 import {
 	provideAnalytics4MockReport,
 	getAnalytics4MockResponse,
-} from '../../../analytics-4/utils/data-mock';
+} from '@/js/modules/analytics-4/utils/data-mock';
 
 describe( 'TopConvertingTrafficSourceWidget', () => {
 	let registry;
@@ -60,7 +61,7 @@ describe( 'TopConvertingTrafficSourceWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 	} );
 
 	it( 'should render correctly with the expected metrics', async () => {
@@ -72,11 +73,13 @@ describe( 'TopConvertingTrafficSourceWidget', () => {
 			dimensions: [ 'sessionDefaultChannelGroup' ],
 			metrics: [
 				{
-					name: 'sessionConversionRate',
+					name: 'sessionKeyEventRate',
 				},
 			],
 			limit: 1,
-			orderBy: 'sessionConversionRate',
+			orderBy: 'sessionKeyEventRate',
+			reportID:
+				'analytics-4_top-converting-traffic-source-widget_widget_reportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );
@@ -99,11 +102,13 @@ describe( 'TopConvertingTrafficSourceWidget', () => {
 			dimensions: [ 'sessionDefaultChannelGroup' ],
 			metrics: [
 				{
-					name: 'sessionConversionRate',
+					name: 'sessionKeyEventRate',
 				},
 			],
 			limit: 1,
-			orderBy: 'sessionConversionRate',
+			orderBy: 'sessionKeyEventRate',
+			reportID:
+				'analytics-4_top-converting-traffic-source-widget_widget_reportOptions',
 		};
 
 		const report = getAnalytics4MockResponse( reportOptions );

@@ -7,6 +7,57 @@
 		@include mdc-checkbox-focus-indicator-color($c-content-on-primary-container);
 
 		box-sizing: content-box;
+		flex: 0 0 14px;
+		height: 14px;
+		padding: 13px;
+		width: 14px;
+
+		&::before,
+		&::after {
+			background-color: $c-site-kit-sk-900;
+		}
+
+		&:hover {
+			&::before {
+				background-color: $c-interactive-primary-press;
+				height: 36px; // 40px - 4px (border).
+				left: 2px;
+				opacity: 1;
+				top: 2px;
+				width: 36px; // 40px - 4px (border).
+				z-index: 0;
+			}
+		}
+
+		&:not(.mdc-ripple-upgraded):active::after {
+			opacity: 0.08;
+		}
+
+		.mdc-checkbox__background {
+			background-color: transparent;
+			left: 11px;
+			top: 11px;
+
+			.mdc-checkbox__checkmark {
+				height: 9px;
+				left: 1px;
+				top: 2px;
+				width: 12px;
+			}
+			.mdc-checkbox__checkmark-path {
+				stroke-width: 2px;
+			}
+
+			&::before {
+				background-color: transparent;
+				border: 2px solid $c-black;
+				height: 36px; // 40px - 4px (border).
+				left: -11px;
+				top: -11px;
+				transform: scale(1);
+				width: 36px; // 40px - 4px (border).
+			}
+		}
 
 		// Overriding WordPress load-styles.php
 		.mdc-checkbox__native-control {
@@ -31,6 +82,46 @@
 			vertical-align: middle;
 			width: 100%;
 			z-index: 1;
+
+			&:focus {
+				~ .mdc-checkbox__background::before {
+					opacity: 1;
+				}
+			}
+
+			&:enabled:not(:checked),
+			&:checked:enabled {
+				~ .mdc-checkbox__background {
+					border-color: $c-black;
+				}
+			}
+
+			&[disabled]:not(:checked) {
+				~ .mdc-checkbox__background {
+					border-color: $c-interactive-on-disable-container;
+				}
+			}
+
+			&[disabled]:checked {
+				~ .mdc-checkbox__background {
+					background-color: $c-interactive-disable-container;
+					border-color: transparent;
+
+					.mdc-checkbox__checkmark-path {
+						stroke: $c-interactive-on-disable-container;
+					}
+				}
+			}
+
+			/* stylelint-disable selector-not-notation --
+			* The complex notation (not(:checked, :indeterminate))
+			* doesn't override the styles because a selector with two separate `:not()` clauses
+			* is more specific than a single combined `:not()`. */
+			&:enabled:not(:checked):not(:indeterminate) {
+				~ .mdc-checkbox__background {
+					background-color: transparent;
+				}
+			}
 		}
 
 		// The Checkbox component has an essential padding of 11 pixels to accommodate

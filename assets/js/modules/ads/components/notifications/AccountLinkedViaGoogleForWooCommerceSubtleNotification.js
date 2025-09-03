@@ -31,19 +31,20 @@ import { useCallback, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY } from '../../datastore/constants';
-import { MINUTE_IN_SECONDS } from '../../../../util';
-import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
-import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY } from '@/js/modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MINUTE_IN_SECONDS } from '@/js/util';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 
 export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( {
 	id,
 	Notification,
 } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
-	const onSetupCallback = useActivateModuleCallback( 'ads' );
+	const onSetupCallback = useActivateModuleCallback( MODULE_SLUG_ADS );
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 

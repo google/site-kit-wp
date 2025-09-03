@@ -21,7 +21,7 @@
  */
 import { Fragment } from 'react';
 import Banner from '.';
-import { Cell, Grid, Row } from '../../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 import adSenseDesktopSVG from '@/svg/graphics/banner-adsense-setup-cta.svg?url';
 import adSenseMobileSVG from '@/svg/graphics/banner-adsense-setup-cta-mobile.svg?url';
 import adBlockingRecoveryDesktopSVG from '@/svg/graphics/banner-ad-blocking-recovery-setup-cta.svg?url';
@@ -32,7 +32,10 @@ import enhancedMeasurementDesktopSVG from '@/svg/graphics/banner-enhanced-measur
 import enhancedMeasurementMobileSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta-mobile.svg?url';
 import signInWithGoogleDesktopSVG from '@/svg/graphics/banner-sign-in-with-google-setup-cta.svg?url';
 import signInWithGoogleMobileSVG from '@/svg/graphics/banner-sign-in-with-google-setup-cta-mobile.svg?url';
-import Link from '../Link';
+import gatheringDataSVG from '@/svg/graphics/banner-gathering-data.svg?url';
+import warningDesktopSVG from '@/svg/graphics/banner-warning.svg?url';
+import AdSenseCircularIcon from '@/svg/graphics/adsense-circular.svg';
+import Link from '@/js/components/Link';
 
 function Template() {
 	return (
@@ -170,6 +173,70 @@ function Template() {
 							verticalPosition: 'bottom',
 						} }
 					/>
+
+					<h3>Info Banners</h3>
+
+					<div className="googlesitekit-banner-notification googlesitekit-banner-notification--info">
+						<Banner
+							title="Analytics is gathering data"
+							description="It can take up to 72 hours before stats show up for your site. While you’re waiting, connect more services to get more stats."
+							ctaButton={ {
+								label: 'Connect more services',
+								onClick: () => {},
+							} }
+							dismissButton={ {
+								label: 'Got it',
+								onClick: () => {},
+							} }
+							svg={ {
+								desktop: gatheringDataSVG,
+								verticalPosition: 'center',
+							} }
+						/>
+					</div>
+
+					<h3>Warning Banners</h3>
+
+					<div className="googlesitekit-banner-notification googlesitekit-banner-notification--warning">
+						<Banner
+							title="Not enough traffic yet to display stats"
+							description="Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors."
+							learnMoreLink={ {
+								href: 'https://example.com',
+							} }
+							ctaButton={ {
+								label: 'Ok, got it',
+								onClick: () => {},
+							} }
+							svg={ {
+								desktop: warningDesktopSVG,
+								verticalPosition: 'center',
+							} }
+						/>
+					</div>
+					<br />
+
+					<em>Warning Banner with Title Icon</em>
+					<div className="googlesitekit-banner-notification googlesitekit-banner-notification--warning">
+						<Banner
+							titleIcon={ <AdSenseCircularIcon /> }
+							title="Notice about your AdSense account"
+							description="Earnings at risk – You need to fix some ads.txt file issues to avoid severe impact to your revenue."
+							ctaButton={ {
+								label: 'Go to AdSense',
+								onClick: () => {},
+							} }
+							dismissButton={ {
+								label: 'Maybe later',
+								onClick: () => {},
+							} }
+							svg={ {
+								desktop: warningDesktopSVG,
+								verticalPosition: 'center',
+							} }
+						/>
+					</div>
+					<br />
 				</Cell>
 			</Row>
 		</Grid>

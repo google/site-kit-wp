@@ -22,8 +22,9 @@
  */
 import { createTestRegistry } from '../../../../../tests/js/utils';
 import { MODULES_ADS } from './constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 describe( 'modules/ads service store', () => {
 	const userData = {
@@ -44,7 +45,7 @@ describe( 'modules/ads service store', () => {
 			registry.dispatch( CORE_USER ).receiveUserInfo( userData );
 			registry.dispatch( CORE_MODULES ).receiveGetModules( [
 				{
-					slug: 'ads',
+					slug: MODULE_SLUG_ADS,
 					name: 'Ads',
 					homepage: 'https://example.com',
 				},
@@ -63,7 +64,7 @@ describe( 'modules/ads service store', () => {
 
 				const module = registry
 					.select( CORE_MODULES )
-					.getModule( 'ads' );
+					.getModule( MODULE_SLUG_ADS );
 
 				const expectedURL = registry
 					.select( CORE_USER )

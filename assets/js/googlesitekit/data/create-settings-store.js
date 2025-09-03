@@ -31,6 +31,7 @@ import {
 	createRegistrySelector,
 	commonStore,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { createStrictSelect, createValidationSelector } from './utils';
 import {
@@ -38,7 +39,7 @@ import {
 	camelCaseToConstantCase,
 } from './transform-case';
 import { createFetchStore } from './create-fetch-store';
-import { actions as errorStoreActions } from '../data/create-error-store';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
@@ -67,7 +68,7 @@ const ROLLBACK_SETTING = 'ROLLBACK_SETTING';
  * @private
  *
  * @param {string}        type                                  The data to access. One of 'core' or 'modules'.
- * @param {string}        identifier                            The data identifier, eg. a module slug like 'search-console'.
+ * @param {string}        identifier                            The data identifier, eg. a module slug like `search-console`.
  * @param {string}        datapoint                             The endpoint to request data from, e.g. 'settings'.
  * @param {Object}        options                               Optional. Options to consider for the store.
  * @param {Array}         [options.ownedSettingsSlugs]          Optional. List of "owned settings" for this module, if they exist.
@@ -78,7 +79,7 @@ const ROLLBACK_SETTING = 'ROLLBACK_SETTING';
  * @return {Object} The settings store object, with additional `STORE_NAME` and
  *                  `initialState` properties.
  */
-export const createSettingsStore = (
+export function createSettingsStore(
 	type,
 	identifier,
 	datapoint,
@@ -89,7 +90,7 @@ export const createSettingsStore = (
 		initialSettings = undefined,
 		validateHaveSettingsChanged = makeDefaultHaveSettingsChanged(),
 	} = {}
-) => {
+) {
 	invariant( type, 'type is required.' );
 	invariant( identifier, 'identifier is required.' );
 	invariant( datapoint, 'datapoint is required.' );
@@ -115,19 +116,14 @@ export const createSettingsStore = (
 				}
 			);
 		},
-		reducerCallback: ( state, values ) => {
-			return {
-				...state,
-				savedSettings: {
-					...values,
-				},
-				settings: {
-					...values,
-					// In case settings were already changed, they should take precedence.
-					...( state.settings || {} ),
-				},
+		reducerCallback: createReducer( ( state, values ) => {
+			state.savedSettings = { ...values };
+			state.settings = {
+				...values,
+				// In case settings were already changed, they should take precedence.
+				...( state.settings || {} ),
 			};
-		},
+		} ),
 	} );
 
 	const fetchSaveSettingsStore = createFetchStore( {
@@ -136,18 +132,11 @@ export const createSettingsStore = (
 			const { values } = params;
 			return set( type, identifier, datapoint, values );
 		},
-		reducerCallback: ( state, values ) => {
-			return {
-				...state,
-				savedSettings: {
-					...values,
-				},
-				settings: {
-					// Ensure client settings are refreshed from server.
-					...values,
-				},
-			};
-		},
+		reducerCallback: createReducer( ( state, values ) => {
+			state.savedSettings = { ...values };
+			// Ensure client settings are refreshed from server.
+			state.settings = { ...values };
+		} ),
 		argsToParams: ( values ) => {
 			return {
 				values,
@@ -242,55 +231,44 @@ export const createSettingsStore = (
 	const controls = {};
 
 	// eslint-disable-next-line no-shadow
-	const reducer = ( state = initialState, { type, payload } ) => {
+	const reducer = createReducer( ( state, { type, payload } ) => {
 		switch ( type ) {
 			case SET_SETTINGS: {
 				const { values } = payload;
 
-				return {
-					...state,
-					settings: {
-						...( state.settings || {} ),
-						...values,
-					},
+				state.settings = {
+					...( state.settings || {} ),
+					...values,
 				};
+				break;
 			}
 
 			case ROLLBACK_SETTINGS: {
-				return {
-					...state,
-					settings: state.savedSettings,
-				};
+				state.settings = state.savedSettings;
+				break;
 			}
 
 			case ROLLBACK_SETTING: {
 				const { setting } = payload;
 
-				if ( ! state.savedSettings[ setting ] ) {
-					return {
-						...state,
-					};
-				}
-
-				return {
-					...state,
-					settings: {
+				if ( state.savedSettings[ setting ] ) {
+					state.settings = {
 						...( state.settings || {} ),
 						[ setting ]: state.savedSettings[ setting ],
-					},
-				};
+					};
+				}
+				break;
 			}
 
 			default: {
 				// Check if this action is for a reducer for an individual setting.
 				if ( 'undefined' !== typeof settingReducers[ type ] ) {
-					return settingReducers[ type ]( state, { type, payload } );
+					settingReducers[ type ]( state, { type, payload } );
 				}
-
-				return state;
+				break;
 			}
 		}
-	};
+	} );
 
 	const resolvers = {
 		*getSettings() {
@@ -437,12 +415,9 @@ export const createSettingsStore = (
 		settingReducers[ `SET_${ constantSlug }` ] = ( state, { payload } ) => {
 			const { value } = payload;
 
-			return {
-				...state,
-				settings: {
-					...( state.settings || {} ),
-					[ slug ]: value,
-				},
+			state.settings = {
+				...( state.settings || {} ),
+				[ slug ]: value,
 			};
 		};
 
@@ -479,7 +454,7 @@ export const createSettingsStore = (
 		...store,
 		STORE_NAME,
 	};
-};
+}
 
 /**
  * Creates a default submitChanges control function.

@@ -22,11 +22,12 @@
 import { get } from 'googlesitekit-api';
 import {
 	commonActions,
+	createReducer,
 	createRegistrySelector,
 	combineStores,
 } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
-import { createFetchStore } from '../../data/create-fetch-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 
 function createGetAuthenticationSelector( property ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -42,12 +43,9 @@ const fetchGetAuthenticationStore = createFetchStore( {
 			useCache: false,
 		} );
 	},
-	reducerCallback: ( state, authentication ) => {
-		return {
-			...state,
-			authentication,
-		};
-	},
+	reducerCallback: createReducer( ( state, authentication ) => {
+		state.authentication = authentication;
+	} ),
 } );
 
 // Actions
@@ -90,27 +88,20 @@ const baseActions = {
 	},
 };
 
-export const baseReducer = ( state, { type, payload } ) => {
+export const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_AUTH_ERROR: {
-			return {
-				...state,
-				authError: payload.error,
-			};
-		}
+		case SET_AUTH_ERROR:
+			state.authError = payload.error;
+			break;
 
-		case CLEAR_AUTH_ERROR: {
-			return {
-				...state,
-				authError: null,
-			};
-		}
+		case CLEAR_AUTH_ERROR:
+			state.authError = null;
+			break;
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getAuthentication() {

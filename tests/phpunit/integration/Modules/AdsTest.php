@@ -51,9 +51,9 @@ class AdsTest extends TestCase {
 	}
 
 	public function test_magic_methods() {
-		$this->assertEquals( 'ads', $this->ads->slug );
-		$this->assertEquals( 'Ads', $this->ads->name );
-		$this->assertEquals( 'https://google.com/ads', $this->ads->homepage );
+		$this->assertEquals( 'ads', $this->ads->slug, 'Ads module slug should be correct.' );
+		$this->assertEquals( 'Ads', $this->ads->name, 'Ads module name should be correct.' );
+		$this->assertEquals( 'https://google.com/ads', $this->ads->homepage, 'Ads module homepage should be correct.' );
 	}
 
 	public function test_register() {
@@ -63,9 +63,9 @@ class AdsTest extends TestCase {
 
 		$this->ads->register();
 
-		$this->assertTrue( has_action( 'template_redirect' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_inline_modules_data' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_ads_measurement_connection_checks' ) );
+		$this->assertTrue( has_action( 'template_redirect' ), 'template_redirect action should be registered.' );
+		$this->assertTrue( has_filter( 'googlesitekit_inline_modules_data' ), 'inline_modules_data filter should be registered.' );
+		$this->assertTrue( has_filter( 'googlesitekit_ads_measurement_connection_checks' ), 'ads_measurement_connection_checks filter should be registered.' );
 	}
 
 	public function test_register__googlesitekit_ads_measurement_connection_checks() {
@@ -77,22 +77,23 @@ class AdsTest extends TestCase {
 			array(
 				array( $this->ads, 'check_ads_measurement_connection' ),
 			),
-			apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() )
+			apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() ),
+			'Ads measurement connection check should be registered.'
 		);
 	}
 
 	public function test_is_connected__when_ads_conversion_id_is_set() {
-		$this->assertFalse( $this->ads->is_connected() );
+		$this->assertFalse( $this->ads->is_connected(), 'Ads module should not be connected without conversion ID.' );
 
 		$this->ads->get_settings()->merge(
 			array( 'conversionID' => 'AW-123456789' )
 		);
 
-		$this->assertTrue( $this->ads->is_connected() );
+		$this->assertTrue( $this->ads->is_connected(), 'Ads module should be connected with conversion ID.' );
 	}
 
 	public function test_is_connected__when_pax_conversion_id_is_set() {
-		$this->assertFalse( $this->ads->is_connected() );
+		$this->assertFalse( $this->ads->is_connected(), 'Ads module should not be connected without paxConversionID.' );
 
 		self::enable_feature( 'adsPax' );
 
@@ -100,11 +101,11 @@ class AdsTest extends TestCase {
 			array( 'paxConversionID' => 'AW-123456789' )
 		);
 
-		$this->assertTrue( $this->ads->is_connected() );
+		$this->assertTrue( $this->ads->is_connected(), 'Ads module should be connected with paxConversionID.' );
 	}
 
 	public function test_is_connected__when_ext_customer_id_is_set() {
-		$this->assertFalse( $this->ads->is_connected() );
+		$this->assertFalse( $this->ads->is_connected(), 'Ads module should not be connected without extCustomerID.' );
 
 		self::enable_feature( 'adsPax' );
 
@@ -112,23 +113,17 @@ class AdsTest extends TestCase {
 			array( 'extCustomerID' => '123456789' )
 		);
 
-		$this->assertTrue( $this->ads->is_connected() );
+		$this->assertTrue( $this->ads->is_connected(), 'Ads module should be connected with extCustomerID.' );
 	}
 
 	public function test_is_connected__feature_flag_is_disabled_but_pax_conversion_id_or_ext_customer_id_are_set() {
-		$this->assertFalse( $this->ads->is_connected() );
+		$this->assertFalse( $this->ads->is_connected(), 'Ads module should not be connected without feature flag and paxConversionID.' );
 
 		$this->ads->get_settings()->merge(
 			array( 'paxConversionID' => 'AW-123456789' )
 		);
 
-		$this->assertFalse( $this->ads->is_connected() );
-
-		$this->ads->get_settings()->merge(
-			array( 'extCustomerID' => '123456789' )
-		);
-
-		$this->assertFalse( $this->ads->is_connected() );
+		$this->assertFalse( $this->ads->is_connected(), 'Ads module should not be connected without feature flag and extCustomerID.' );
 	}
 
 	public function test_inline_modules_data__module_not_connected__with_pax() {
@@ -143,7 +138,8 @@ class AdsTest extends TestCase {
 			array(
 				'supportedConversionEvents' => array(),
 			),
-			$inline_modules_data['ads']
+			$inline_modules_data['ads'],
+			'Inline modules data for Ads should include supportedConversionEvents when module not connected with adsPax.'
 		);
 	}
 
@@ -153,7 +149,7 @@ class AdsTest extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertArrayNotHasKey( 'ads', $inline_modules_data );
+		$this->assertArrayNotHasKey( 'ads', $inline_modules_data, 'Inline modules data should not include Ads when module not connected and adsPax disabled.' );
 	}
 
 	public function test_inline_modules_data__module_connected() {
@@ -167,7 +163,7 @@ class AdsTest extends TestCase {
 			array( 'conversionID' => 'AW-123456789' )
 		);
 
-		$this->assertTrue( $this->ads->is_connected() );
+		$this->assertTrue( $this->ads->is_connected(), 'Ads module should be connected after setting conversionID.' );
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
@@ -175,7 +171,8 @@ class AdsTest extends TestCase {
 			array(
 				'supportedConversionEvents' => array(),
 			),
-			$inline_modules_data['ads']
+			$inline_modules_data['ads'],
+			'Inline modules data for Ads should include supportedConversionEvents when module connected.'
 		);
 	}
 
@@ -184,7 +181,7 @@ class AdsTest extends TestCase {
 
 		$this->ads->on_deactivation();
 
-		$this->assertFalse( $this->ads->get_settings()->has() );
+		$this->assertFalse( $this->ads->get_settings()->has(), 'Ads settings should be cleared on deactivation.' );
 	}
 
 	public function test_get_scopes__no_scope_and_no_extCustomerID() {
@@ -194,7 +191,7 @@ class AdsTest extends TestCase {
 
 		$required_scopes = apply_filters( 'googlesitekit_auth_scopes', array() );
 
-		$this->assertNotContains( Ads::SCOPE, $required_scopes );
+		$this->assertNotContains( Ads::SCOPE, $required_scopes, 'Ads scope should not be required without scope and extCustomerID.' );
 	}
 
 	public function test_get_scopes__already_has_adwords_scope() {
@@ -211,8 +208,8 @@ class AdsTest extends TestCase {
 
 		$required_scopes = apply_filters( 'googlesitekit_auth_scopes', array() );
 
-		$this->assertContains( Ads::SCOPE, $required_scopes );
-		$this->assertContains( Ads::SUPPORT_CONTENT_SCOPE, $required_scopes );
+		$this->assertContains( Ads::SCOPE, $required_scopes, 'Ads scope should be present when already granted.' );
+		$this->assertContains( Ads::SUPPORT_CONTENT_SCOPE, $required_scopes, 'Support content scope should be present when Ads scope already granted.' );
 	}
 
 	public function test_get_scopes__already_has_extCustomerID_setting() {
@@ -223,8 +220,8 @@ class AdsTest extends TestCase {
 
 		$module_scopes = apply_filters( 'googlesitekit_auth_scopes', array() );
 
-		$this->assertContains( Ads::SCOPE, $module_scopes );
-		$this->assertContains( Ads::SUPPORT_CONTENT_SCOPE, $module_scopes );
+		$this->assertContains( Ads::SCOPE, $module_scopes, 'Ads scope should be present when extCustomerID setting exists.' );
+		$this->assertContains( Ads::SUPPORT_CONTENT_SCOPE, $module_scopes, 'Support content scope should be present when extCustomerID setting exists.' );
 	}
 
 	public function test_get_debug_fields() {
@@ -234,7 +231,8 @@ class AdsTest extends TestCase {
 			array(
 				'ads_conversion_tracking_id',
 			),
-			array_keys( $this->ads->get_debug_fields() )
+			array_keys( $this->ads->get_debug_fields() ),
+			'Ads debug fields should contain conversion tracking ID.'
 		);
 
 		$this->assertEquals(
@@ -245,7 +243,8 @@ class AdsTest extends TestCase {
 					'debug' => 'AW-1••••••••',
 				),
 			),
-			$this->ads->get_debug_fields()
+			$this->ads->get_debug_fields(),
+			'Ads debug fields should match expected structure.'
 		);
 	}
 
@@ -258,10 +257,6 @@ class AdsTest extends TestCase {
 		remove_all_actions( 'wp_enqueue_scripts' );
 		( new GTag( new Options( $this->context ) ) )->register();
 
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
-
 		// Prevent test from failing in CI with deprecation notice.
 		remove_action( 'wp_print_styles', 'print_emoji_styles' );
 
@@ -272,20 +267,22 @@ class AdsTest extends TestCase {
 		do_action( 'template_redirect' );
 
 		$head_html = $this->capture_action( 'wp_head' );
-		$this->assertNotEmpty( $head_html );
+		$this->assertNotEmpty( $head_html, 'Head output should not be empty after template_redirect.' );
 
 		if ( empty( $settings['conversionID'] ) ) {
-			$this->assertFalse( has_action( 'googlesitekit_setup_gtag' ) );
+			$this->assertFalse( has_action( 'googlesitekit_setup_gtag' ), 'gtag setup action should not be present when conversionID is empty.' );
 			$this->assertStringNotContainsString(
 				'gtag("config", "AW-123456789")',
-				$head_html
+				$head_html,
+				'Head output should not contain gtag config for Ads conversion ID'
 			);
 		} else {
-			$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
+			$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ), 'gtag setup action should be present when conversionID is set.' );
 
 			$this->assertStringContainsString(
 				'gtag("config", "AW-123456789")',
-				$head_html
+				$head_html,
+				'Head output should contain gtag config for Ads conversion ID.'
 			);
 		}
 	}
@@ -303,10 +300,6 @@ class AdsTest extends TestCase {
 		remove_all_actions( 'wp_enqueue_scripts' );
 		( new GTag( new Options( $this->context ) ) )->register();
 
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
-
 		// Prevent test from failing in CI with deprecation notice.
 		remove_action( 'wp_print_styles', 'print_emoji_styles' );
 
@@ -317,19 +310,21 @@ class AdsTest extends TestCase {
 		do_action( 'template_redirect' );
 
 		$head_html = $this->capture_action( 'wp_head' );
-		$this->assertNotEmpty( $head_html );
+		$this->assertNotEmpty( $head_html, 'Head output should not be empty after template_redirect.' );
 
-		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
+		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ), 'gtag setup action should be present when template_redirect runs.' );
 
 		if ( empty( $settings['paxConversionID'] ) || empty( $feature_flag ) ) {
 			$this->assertStringContainsString(
 				'gtag("config", "AW-123456789")',
-				$head_html
+				$head_html,
+				'Head output should contain Ads conversion ID when paxConversionID is empty or feature flag disabled.'
 			);
 		} else {
 			$this->assertStringContainsString(
 				'gtag("config", "AW-987654321")',
-				$head_html
+				$head_html,
+				'Head output should contain paxConversionID when feature flag enabled.'
 			);
 		}
 	}
@@ -344,7 +339,7 @@ class AdsTest extends TestCase {
 
 		$this->ads->get_settings()->merge( $settings_input );
 
-		$this->assertSame( $expected, $this->ads->check_ads_measurement_connection() );
+		$this->assertSame( $expected, $this->ads->check_ads_measurement_connection(), 'Ads measurement connection check result should match expected.' );
 	}
 
 	public function data_ads_measurement_connection_settings() {

@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Modules\Analytics_4;
 
 use Google\Site_Kit\Core\Modules\Tags\Module_Web_Tag;
 use Google\Site_Kit\Core\Tags\GTag;
-use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
 use Google\Site_Kit\Core\Tags\Tag_With_Linker_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Tags\Tag_With_Linker_Interface;
@@ -27,7 +26,6 @@ use Google\Site_Kit\Core\Tags\Tag_With_Linker_Interface;
 class Web_Tag extends Module_Web_Tag implements Tag_Interface, Tag_With_Linker_Interface {
 
 	use Method_Proxy_Trait;
-	use Tag_With_DNS_Prefetch_Trait;
 	use Tag_With_Linker_Trait;
 
 	/**
@@ -37,14 +35,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface, Tag_With_Linker_I
 	 * @var array
 	 */
 	private $custom_dimensions;
-
-	/**
-	 * Ads conversion ID.
-	 *
-	 * @since 1.32.0
-	 * @var string
-	 */
-	private $ads_conversion_id;
 
 	/**
 	 * Sets custom dimensions data.
@@ -69,17 +59,6 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface, Tag_With_Linker_I
 	}
 
 	/**
-	 * Sets the ads conversion ID.
-	 *
-	 * @since 1.32.0
-	 *
-	 * @param string $ads_conversion_id Ads ID.
-	 */
-	public function set_ads_conversion_id( $ads_conversion_id ) {
-		$this->ads_conversion_id = $ads_conversion_id;
-	}
-
-	/**
 	 * Gets args to use if blocked_on_consent is deprecated.
 	 *
 	 * @since 1.122.0
@@ -101,6 +80,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface, Tag_With_Linker_I
 	 */
 	public function register() {
 		add_action( 'googlesitekit_setup_gtag', $this->get_method_proxy( 'setup_gtag' ) );
+		add_filter( 'script_loader_tag', $this->get_method_proxy( 'filter_tag_output' ), 10, 2 );
 
 		$this->do_init_tag_action();
 	}
@@ -145,32 +125,31 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface, Tag_With_Linker_I
 		}
 
 		$gtag->add_tag( $this->tag_id, $gtag_opt );
+	}
 
-		// TODO: Lift this out to the Ads module when it's ready.
-		if ( $this->ads_conversion_id ) {
-			$gtag->add_tag( $this->ads_conversion_id );
+	/**
+	 * Filters output of tag HTML.
+	 *
+	 * @param string $tag Tag HTML.
+	 * @param string $handle WP script handle of given tag.
+	 * @return string
+	 */
+	protected function filter_tag_output( $tag, $handle ) {
+		// The tag will either have its own handle or use the common GTag handle, not both.
+		if ( GTag::get_handle_for_tag( $this->tag_id ) !== $handle && GTag::HANDLE !== $handle ) {
+			return $tag;
 		}
 
-		$filter_google_gtagjs = function ( $tag, $handle ) use ( $gtag ) {
-			if ( GTag::HANDLE !== $handle ) {
-				return $tag;
-			}
+		// Retain this comment for detection of Site Kit placed tag.
+		$snippet_comment = sprintf( "<!-- %s -->\n", esc_html__( 'Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
 
-			// Retain this comment for detection of Site Kit placed tag.
-			$snippet_comment = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
+		$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
 
-			$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
+		if ( $block_on_consent_attrs ) {
+			$tag = $this->add_legacy_block_on_consent_attributes( $tag, $block_on_consent_attrs );
+		}
 
-			if ( $block_on_consent_attrs ) {
-				$gtag_src = $gtag->get_gtag_src();
-
-				$tag = $this->add_legacy_block_on_consent_attributes( $tag, $gtag_src, $block_on_consent_attrs );
-			}
-
-			return $snippet_comment . $tag;
-		};
-
-		add_filter( 'script_loader_tag', $filter_google_gtagjs, 10, 2 );
+		return $snippet_comment . $tag;
 	}
 
 	/**
@@ -196,26 +175,22 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface, Tag_With_Linker_I
 	 * This mechanism for blocking the tag is deprecated and the Consent Mode feature should be used instead.
 	 *
 	 * @since 1.122.0
+	 * @since 1.158.0 Remove src from signature & replacement.
 	 *
-	 * @param string $tag     The script tag.
-	 * @param string $gtag_src The gtag script source URL.
+	 * @param string $tag                    The script tag.
 	 * @param string $block_on_consent_attrs The attributes to add to the script tag to block it until user consent is granted.
+	 *
 	 * @return string The script tag with the added attributes.
 	 */
-	protected function add_legacy_block_on_consent_attributes( $tag, $gtag_src, $block_on_consent_attrs ) {
+	protected function add_legacy_block_on_consent_attributes( $tag, $block_on_consent_attrs ) {
 		return str_replace(
 			array(
-				"<script src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-					"<script src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-					"<script type='text/javascript' src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-					"<script type=\"text/javascript\" src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+				'<script src=', // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					"<script type='text/javascript' src=", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+					'<script type="text/javascript" src=', // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 			),
-			array( // `type` attribute intentionally excluded in replacements.
-				"<script{$block_on_consent_attrs} src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-					"<script{$block_on_consent_attrs} src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-					"<script{$block_on_consent_attrs} src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-					"<script{$block_on_consent_attrs} src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-			),
+			// `type` attribute intentionally excluded in replacements.
+			"<script{$block_on_consent_attrs} src=", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 			$tag
 		);
 	}

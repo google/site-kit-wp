@@ -26,23 +26,24 @@ import {
 	provideModules,
 	freezeFetch,
 } from '../../../../../../tests/js/utils';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import TopCitiesDrivingAddToCartWidget from './TopCitiesDrivingAddToCartWidget';
-import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import {
 	DATE_RANGE_OFFSET,
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../../../../util/errors';
-import { provideAnalytics4MockReport } from '../../../analytics-4/utils/data-mock';
+} from '@/js/util/errors';
+import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 
 describe( 'TopCitiesDrivingAddToCartWidget', () => {
 	let registry;
@@ -57,7 +58,7 @@ describe( 'TopCitiesDrivingAddToCartWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
@@ -86,6 +87,8 @@ describe( 'TopCitiesDrivingAddToCartWidget', () => {
 			],
 			limit: 3,
 			keepEmptyRows: false,
+			reportID:
+				'analytics-4_top-cities-driving-add-to-cart-widget_widget_topCitiesReportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );

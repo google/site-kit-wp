@@ -26,13 +26,15 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import DisplaySetting from '../../../../components/DisplaySetting';
-import Link from '../../../../components/Link';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import VisuallyHidden from '../../../../components/VisuallyHidden';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import { escapeURI } from '../../../../util/escape-uri';
+import DisplaySetting from '@/js/components/DisplaySetting';
+import Link from '@/js/components/Link';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
+import { escapeURI } from '@/js/util/escape-uri';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>
@@ -80,9 +82,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Account', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ accountID } />
 					</p>
@@ -91,7 +98,12 @@ export default function SettingsView() {
 				{ ( ! isAMP || isSecondaryAMP ) && (
 					<Fragment>
 						<div className="googlesitekit-settings-module__meta-item">
-							<h5 className="googlesitekit-settings-module__meta-item-type">
+							<Typography
+								as="h5"
+								size="medium"
+								type="label"
+								className="googlesitekit-settings-module__meta-item-type"
+							>
 								{ isSecondaryAMP && (
 									<span>
 										{ __(
@@ -108,7 +120,7 @@ export default function SettingsView() {
 										) }
 									</span>
 								) }
-							</h5>
+							</Typography>
 							<p className="googlesitekit-settings-module__meta-item-data">
 								<DisplaySetting value={ containerID } />
 							</p>
@@ -150,7 +162,12 @@ export default function SettingsView() {
 				{ isAMP && (
 					<Fragment>
 						<div className="googlesitekit-settings-module__meta-item">
-							<h5 className="googlesitekit-settings-module__meta-item-type">
+							<Typography
+								as="h5"
+								size="medium"
+								type="label"
+								className="googlesitekit-settings-module__meta-item-type"
+							>
 								{ isSecondaryAMP && (
 									<span>
 										{ __(
@@ -167,7 +184,7 @@ export default function SettingsView() {
 										) }
 									</span>
 								) }
-							</h5>
+							</Typography>
 							<p className="googlesitekit-settings-module__meta-item-data">
 								<DisplaySetting value={ ampContainerID } />
 							</p>
@@ -209,9 +226,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Tag Manager Code Snippet', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ useSnippet && (
@@ -233,12 +255,12 @@ export default function SettingsView() {
 					</p>
 
 					{ hasExistingTag && (
-						<p>
+						<P>
 							{ __(
 								'Placing two tags at the same time is not recommended.',
 								'google-site-kit'
 							) }
-						</p>
+						</P>
 					) }
 				</div>
 			</div>

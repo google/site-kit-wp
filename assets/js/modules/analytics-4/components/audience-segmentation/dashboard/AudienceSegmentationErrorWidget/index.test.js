@@ -34,12 +34,13 @@ import {
 	waitForDefaultTimeouts,
 	act,
 } from '../../../../../../../../tests/js/test-utils';
-import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../googlesitekit/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import AudienceSegmentationErrorWidget from '.';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
-import * as tracking from '../../../../../../util/tracking';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import * as tracking from '@/js/util/tracking';
 import {
 	getViewportWidth,
 	setViewportWidth,
@@ -68,7 +69,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideModuleRegistrations( registry );

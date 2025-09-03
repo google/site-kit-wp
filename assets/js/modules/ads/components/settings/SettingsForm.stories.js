@@ -25,15 +25,14 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import SettingsForm from './SettingsForm';
-import { Cell, Grid, Row } from '../../../../material-components';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_ADS } from '../../datastore/constants';
-import {
-	provideModules,
-	WithTestRegistry,
-} from '../../../../../../tests/js/utils';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { provideModules } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-function Template( args ) {
+function Template() {
 	return (
 		<div className="googlesitekit-layout">
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--ads">
@@ -42,7 +41,7 @@ function Template( args ) {
 						<Grid>
 							<Row>
 								<Cell size={ 12 }>
-									<SettingsForm { ...args } />
+									<SettingsForm />
 								</Cell>
 							</Row>
 						</Grid>
@@ -68,56 +67,60 @@ export const Empty = Template.bind( null );
 Empty.storyName = 'Empty';
 Empty.scenario = {};
 
-export const FirstPartyModeEnabled = Template.bind( null );
-FirstPartyModeEnabled.storyName = 'FirstPartyModeEnabled';
-FirstPartyModeEnabled.scenario = {};
-FirstPartyModeEnabled.args = {
-	features: [ 'firstPartyMode' ],
+export const GoogleTagGatewayEnabled = Template.bind( null );
+GoogleTagGatewayEnabled.storyName = 'GoogleTagGatewayEnabled';
+GoogleTagGatewayEnabled.scenario = {};
+GoogleTagGatewayEnabled.parameters = {
+	features: [ 'googleTagGateway' ],
+};
+GoogleTagGatewayEnabled.args = {
 	setupRegistry: ( registry ) => {
-		const fpmServerRequirementsEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+		const gtgServerRequirementsEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 		);
 
-		const fpmSettings = {
+		const gtgSettings = {
 			isEnabled: true,
-			isFPMHealthy: true,
+			isGTGHealthy: true,
 			isScriptAccessEnabled: true,
 		};
 
-		fetchMock.getOnce( fpmServerRequirementsEndpoint, {
-			body: fpmSettings,
+		fetchMock.getOnce( gtgServerRequirementsEndpoint, {
+			body: gtgSettings,
 		} );
 
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetFirstPartyModeSettings( fpmSettings );
+			.receiveGetGoogleTagGatewaySettings( gtgSettings );
 	},
 };
 
-export const FirstPartyModeDisabledWithWarning = Template.bind( null );
-FirstPartyModeDisabledWithWarning.storyName =
-	'FirstPartyModeDisabledWithWarning';
-FirstPartyModeDisabledWithWarning.scenario = {};
-FirstPartyModeDisabledWithWarning.args = {
-	features: [ 'firstPartyMode' ],
+export const GoogleTagGatewayDisabledWithWarning = Template.bind( null );
+GoogleTagGatewayDisabledWithWarning.storyName =
+	'GoogleTagGatewayDisabledWithWarning';
+GoogleTagGatewayDisabledWithWarning.scenario = {};
+GoogleTagGatewayDisabledWithWarning.parameters = {
+	features: [ 'googleTagGateway' ],
+};
+GoogleTagGatewayDisabledWithWarning.args = {
 	setupRegistry: ( registry ) => {
-		const fpmServerRequirementsEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+		const gtgServerRequirementsEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 		);
 
-		const fpmSettings = {
+		const gtgSettings = {
 			isEnabled: true,
-			isFPMHealthy: false,
+			isGTGHealthy: false,
 			isScriptAccessEnabled: false,
 		};
 
-		fetchMock.getOnce( fpmServerRequirementsEndpoint, {
-			body: fpmSettings,
+		fetchMock.getOnce( gtgServerRequirementsEndpoint, {
+			body: gtgSettings,
 		} );
 
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetFirstPartyModeSettings( fpmSettings );
+			.receiveGetGoogleTagGatewaySettings( gtgSettings );
 	},
 };
 
@@ -125,24 +128,24 @@ export default {
 	title: 'Modules/Ads/Settings/SettingsForm',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'ads',
+						slug: MODULE_SLUG_ADS,
 						active: true,
 						connected: true,
 					},
 				] );
-				args.setupRegistry?.( registry );
-			};
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			}
 
 			return (
-				<WithTestRegistry
-					callback={ setupRegistry }
-					features={ args?.features || [] }
-				>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

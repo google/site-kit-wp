@@ -33,14 +33,14 @@ import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_SEARCH_CONSOLE,
-} from '../../modules/search-console/datastore/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import DataBlock from '../DataBlock';
-import PreviewBlock from '../PreviewBlock';
-import { NOTICE_STYLE } from '../GatheringDataNotice';
-import { calculateChange } from '../../util';
-import sumObjectListValue from '../../util/sum-object-list-value';
-import { partitionReport } from '../../util/partition-report';
+} from '@/js/modules/search-console/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import DataBlock from '@/js/components/DataBlock';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import { NOTICE_STYLE } from '@/js/components/GatheringDataNotice';
+import { calculateChange } from '@/js/util';
+import sumObjectListValue from '@/js/util/sum-object-list-value';
+import { partitionReport } from '@/js/util/partition-report';
 
 function WPDashboardImpressions( { WPDashboardReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
@@ -60,6 +60,7 @@ function WPDashboardImpressions( { WPDashboardReportError } ) {
 		startDate: compareStartDate,
 		endDate,
 		dimensions: 'date',
+		reportID: 'dashboard_wp-dashboard-impressions_component_reportArgs',
 	};
 
 	const data = useInViewSelect(

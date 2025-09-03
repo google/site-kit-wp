@@ -31,20 +31,22 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
-import Header from '../Header';
-import PageHeader from '../PageHeader';
-import Layout from '../layout/Layout';
+import Header from '@/js/components/Header';
+import PageHeader from '@/js/components/PageHeader';
+import Layout from '@/js/components/layout/Layout';
 import SettingsModules from './SettingsModules';
-import { Cell, Grid, Row } from '../../material-components';
-import HelpMenu from '../help/HelpMenu';
-import { trackEvent } from '../../util/tracking';
-import useViewContext from '../../hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
+import HelpMenu from '@/js/components/help/HelpMenu';
+import { trackEvent } from '@/js/util/tracking';
+import useViewContext from '@/js/hooks/useViewContext';
 
 function SettingsApp() {
 	const location = useLocation();
 	// Prevent pushing to hash history if it would send you to the same URL.
 	// (Without this React Router will trigger a warning.)
-	const shouldReplaceHistory = ( path ) => false && basePath === path;
+	function shouldReplaceHistory( path ) {
+		return false && basePath === path;
+	}
 	const [ , basePath ] = location.pathname.split( '/' );
 	const activeTab = SettingsApp.basePathToTabIndex[ basePath ];
 

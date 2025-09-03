@@ -32,12 +32,12 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import { MODULES_ADS } from '../../datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '../../../../components/Notice/constants';
-import useQueryArg from '../../../../hooks/useQueryArg';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '@/js/components/Notice/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
 
 export default function PAXSetupSuccessSubtleNotification( {
 	id,

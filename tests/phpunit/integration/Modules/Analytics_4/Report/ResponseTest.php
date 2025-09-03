@@ -202,22 +202,22 @@ class ResponseTest extends TestCase {
 	 */
 	public function test_parse_response( $args ) {
 		$response = $this->get_parsed_response_for_args( $args['report_args'], $args['initial_data'] );
-		$this->assertEquals( count( $args['expected_dates_ranges_and_values'] ), $response->getRowCount() );
+		$this->assertEquals( count( $args['expected_dates_ranges_and_values'] ), $response->getRowCount(), 'Row count should match expected from filled date ranges.' );
 
 		foreach ( $response->getRows() as $i => $row ) {
 			// Verify that dimension values are set correctly.
 			$dimension_values = $row->getDimensionValues();
-			$this->assertCount( $args['expected_dimension_values'], $dimension_values );
-			$this->assertEquals( $args['expected_dates_ranges_and_values'][ $i ][0], $dimension_values[0]->getValue() );
+			$this->assertCount( $args['expected_dimension_values'], $dimension_values, 'Dimension values count should match expected.' );
+			$this->assertEquals( $args['expected_dates_ranges_and_values'][ $i ][0], $dimension_values[0]->getValue(), 'Primary dimension value should match expected date.' );
 			$expected_value_index = 1;
 			if ( $args['expected_dimension_values'] > 1 ) {
-				$this->assertEquals( $args['expected_dates_ranges_and_values'][ $i ][1], $dimension_values[1]->getValue() );
+				$this->assertEquals( $args['expected_dates_ranges_and_values'][ $i ][1], $dimension_values[1]->getValue(), 'Secondary dimension value should match expected range key.' );
 				++$expected_value_index;
 			}
 
 			// Verify that metric values are set correctly.
-			$this->assertEquals( $args['expected_dates_ranges_and_values'][ $i ][ $expected_value_index ], $row->getMetricValues()[0]->getValue() );
-			$this->assertEquals( $args['expected_dates_ranges_and_values'][ $i ][ $expected_value_index ], $row->getMetricValues()[1]->getValue() );
+			$this->assertEquals( $args['expected_dates_ranges_and_values'][ $i ][ $expected_value_index ], $row->getMetricValues()[0]->getValue(), 'First metric value should match expected.' );
+			$this->assertEquals( $args['expected_dates_ranges_and_values'][ $i ][ $expected_value_index ], $row->getMetricValues()[1]->getValue(), 'Second metric value should match expected.' );
 		}
 	}
 }

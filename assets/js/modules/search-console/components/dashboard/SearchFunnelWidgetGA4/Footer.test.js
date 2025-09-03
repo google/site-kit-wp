@@ -26,14 +26,16 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../../../tests/js/test-utils';
-import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import Footer from './Footer';
-import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
-import * as analytics4fixtures from '../../../../analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as analytics4fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 
 describe( 'Footer', () => {
 	let registry;
@@ -44,13 +46,13 @@ describe( 'Footer', () => {
 			color: '#4285f4',
 			label: 'Impressions',
 			metric: 'impressions',
-			service: 'search-console',
+			service: MODULE_SLUG_SEARCH_CONSOLE,
 		},
 		{
 			id: 'users',
 			color: '#5c9271',
 			label: 'Users',
-			service: 'analytics-4',
+			service: MODULE_SLUG_ANALYTICS_4,
 		},
 	];
 

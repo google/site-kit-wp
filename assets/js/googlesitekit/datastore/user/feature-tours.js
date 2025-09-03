@@ -29,16 +29,17 @@ import { isPlainObject, isNull } from 'lodash';
 import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
+	createReducer,
 	createRegistrySelector,
 	combineStores,
 	createRegistryControl,
 } from 'googlesitekit-data';
-import { createFetchStore } from '../../data/create-fetch-store';
-import { CORE_SITE } from '../../datastore/site/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from './constants';
-import featureTours from '../../../feature-tours';
-import { getItem } from '../../../googlesitekit/api/cache';
-import { createValidatedAction } from '../../data/utils';
+import featureTours from '@/js/feature-tours';
+import { getItem } from '@/js/googlesitekit/api/cache';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 
 const { getRegistry } = commonActions;
 
@@ -60,9 +61,8 @@ const fetchGetDismissedToursStore = createFetchStore( {
 	baseName: 'getDismissedTours',
 	controlCallback: () =>
 		get( 'core', 'user', 'dismissed-tours', {}, { useCache: false } ),
-	reducerCallback: ( state, dismissedTourSlugs ) => ( {
-		...state,
-		dismissedTourSlugs,
+	reducerCallback: createReducer( ( state, dismissedTourSlugs ) => {
+		state.dismissedTourSlugs = dismissedTourSlugs;
 	} ),
 } );
 
@@ -70,9 +70,8 @@ const fetchDismissTourStore = createFetchStore( {
 	baseName: 'dismissTour',
 	controlCallback: ( { slug } ) =>
 		set( 'core', 'user', 'dismiss-tour', { slug } ),
-	reducerCallback: ( state, dismissedTourSlugs ) => ( {
-		...state,
-		dismissedTourSlugs,
+	reducerCallback: createReducer( ( state, dismissedTourSlugs ) => {
+		state.dismissedTourSlugs = dismissedTourSlugs;
 	} ),
 	argsToParams: ( slug ) => ( { slug } ),
 	validateParams: ( { slug } = {} ) => {
@@ -305,60 +304,46 @@ const baseControls = {
 	),
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case DISMISS_TOUR: {
+		case DISMISS_TOUR:
 			const { slug } = payload;
 			const { dismissedTourSlugs = [] } = state;
 			if ( dismissedTourSlugs.includes( slug ) ) {
-				return state;
+				break;
 			}
-			return {
-				...state,
-				currentTour:
-					state.currentTour?.slug === slug ? null : state.currentTour,
-				dismissedTourSlugs: dismissedTourSlugs.concat( slug ),
-			};
-		}
 
-		case RECEIVE_CURRENT_TOUR: {
-			return {
-				...state,
-				currentTour: payload.tour,
-				shownTour: payload.tour,
-			};
-		}
+			state.currentTour =
+				state.currentTour?.slug === slug ? null : state.currentTour;
+			state.dismissedTourSlugs = dismissedTourSlugs.concat( slug );
+			break;
 
-		case RECEIVE_READY_TOURS: {
+		case RECEIVE_CURRENT_TOUR:
+			state.currentTour = payload.tour;
+			state.shownTour = payload.tour;
+			break;
+
+		case RECEIVE_READY_TOURS:
 			const { viewContext, viewTours } = payload;
-			return {
-				...state,
-				viewTours: {
-					...state.viewTours,
-					[ viewContext ]: viewTours,
-				},
-			};
-		}
 
-		case RECEIVE_TOURS: {
-			return {
-				...state,
-				tours: payload.tours,
+			state.viewTours = {
+				...state.viewTours,
+				[ viewContext ]: viewTours,
 			};
-		}
+			break;
 
-		case RECEIVE_LAST_DISMISSED_AT: {
-			return {
-				...state,
-				lastDismissedAt: payload.timestamp,
-			};
-		}
+		case RECEIVE_TOURS:
+			state.tours = payload.tours;
+			break;
 
-		default: {
-			return state;
-		}
+		case RECEIVE_LAST_DISMISSED_AT:
+			state.lastDismissedAt = payload.timestamp;
+			break;
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getDismissedFeatureTourSlugs() {

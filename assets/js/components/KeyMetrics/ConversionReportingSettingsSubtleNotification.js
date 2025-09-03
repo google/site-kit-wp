@@ -31,11 +31,11 @@ import { useState, useCallback, useRef, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
-import Notice from '../../components/Notice';
-import { Grid, Cell, Row } from '../../material-components';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import Notice from '@/js/components/Notice';
+import { Grid, Cell, Row } from '@/js/material-components';
 
 export default function ConversionReportingSettingsSubtleNotification() {
 	const viewContext = useViewContext();
@@ -80,7 +80,7 @@ export default function ConversionReportingSettingsSubtleNotification() {
 	return (
 		<Grid ref={ notificationRef }>
 			<Row>
-				<Cell alignMiddle size={ 12 }>
+				<Cell size={ 12 } alignMiddle>
 					<Notice
 						type="new"
 						title={ __(

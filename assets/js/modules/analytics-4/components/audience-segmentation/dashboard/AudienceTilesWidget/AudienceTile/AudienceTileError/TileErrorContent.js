@@ -30,10 +30,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { isInsufficientPermissionsError } from '../../../../../../../../util/errors';
-import AudienceTileErrorImage from '../../../../../../../../../svg/graphics/analytics-audience-segmentation-tile-error.svg';
-import ReportErrorActions from '../../../../../../../../components/ReportErrorActions';
-import GetHelpLink from '../../../GetHelpLink';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
+import AudienceTileErrorImage from '@/svg/graphics/analytics-audience-segmentation-tile-error.svg';
+import ReportErrorActions from '@/js/components/ReportErrorActions';
+import GetHelpLink from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/GetHelpLink';
+import Typography from '@/js/components/Typography';
 
 const TileErrorContent = forwardRef(
 	( { errors, onRetry, onRequestAccess }, ref ) => {
@@ -50,7 +51,12 @@ const TileErrorContent = forwardRef(
 					<AudienceTileErrorImage className="googlesitekit-audience-segmentation-tile-error__image" />
 					<div className="googlesitekit-audience-segmentation-tile-error__body">
 						<div className="googlesitekit-audience-segmentation-tile-error__message">
-							<h3 className="googlesitekit-audience-segmentation-tile-error__title">
+							<Typography
+								as="h3"
+								type="headline"
+								size="small"
+								className="googlesitekit-audience-segmentation-tile-error__title"
+							>
 								{ hasInsufficientPermissionsError
 									? __(
 											'Insufficient permissions',
@@ -60,7 +66,7 @@ const TileErrorContent = forwardRef(
 											'Data loading failed',
 											'google-site-kit'
 									  ) }
-							</h3>
+							</Typography>
 						</div>
 						<div className="googlesitekit-audience-segmentation-tile-error__actions">
 							<ReportErrorActions

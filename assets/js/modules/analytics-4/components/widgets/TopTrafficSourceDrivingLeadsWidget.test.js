@@ -25,23 +25,24 @@ import {
 	provideKeyMetrics,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import TopTrafficSourceDrivingLeadsWidget from './TopTrafficSourceDrivingLeadsWidget';
-import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import {
 	DATE_RANGE_OFFSET,
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../../../../util/errors';
-import { provideAnalytics4MockReport } from '../../../analytics-4/utils/data-mock';
+} from '@/js/util/errors';
+import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 
 describe( 'TopTrafficSourceDrivingLeadsWidget', () => {
 	let registry;
@@ -56,7 +57,7 @@ describe( 'TopTrafficSourceDrivingLeadsWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -83,6 +84,8 @@ describe( 'TopTrafficSourceDrivingLeadsWidget', () => {
 						value: [ ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ],
 					},
 				},
+				reportID:
+					'analytics-4_top-traffic-source-driving-leads-widget_widget_totalLeadsReportOptions',
 			},
 			{
 				...dates,
@@ -100,6 +103,8 @@ describe( 'TopTrafficSourceDrivingLeadsWidget', () => {
 				],
 				limit: 1,
 				orderBy: 'eventCount',
+				reportID:
+					'analytics-4_top-traffic-source-driving-leads-widget_widget_trafficSourceReportOptions',
 			},
 		];
 
@@ -136,6 +141,8 @@ describe( 'TopTrafficSourceDrivingLeadsWidget', () => {
 						value: [ ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ],
 					},
 				},
+				reportID:
+					'analytics-4_top-traffic-source-driving-leads-widget_widget_totalLeadsReportOptions',
 			},
 			{
 				...dates,
@@ -153,6 +160,8 @@ describe( 'TopTrafficSourceDrivingLeadsWidget', () => {
 				],
 				limit: 1,
 				orderBy: 'eventCount',
+				reportID:
+					'analytics-4_top-traffic-source-driving-leads-widget_widget_trafficSourceReportOptions',
 			},
 		];
 

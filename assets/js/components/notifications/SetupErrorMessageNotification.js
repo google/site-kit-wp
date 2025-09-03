@@ -20,24 +20,26 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, useRegistry } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-} from '../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import NotificationError from '../../googlesitekit/notifications/components/layout/NotificationError';
-import Description from '../../googlesitekit/notifications/components/common/Description';
-import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
-import CTALink from '../../googlesitekit/notifications/components/common/CTALink';
-import useViewContext from '../../hooks/useViewContext';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import BannerNotification, {
+	TYPES,
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function SetupErrorMessageNotification( { Notification } ) {
+	const id = 'setup_error';
 	const viewContext = useViewContext();
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
@@ -50,11 +52,9 @@ export default function SetupErrorMessageNotification( { Notification } ) {
 	const setupErrorMessage = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorMessage()
 	);
-	const temporaryPersistedPermissionsError = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-			'permissionsError'
-		)
+	const temporaryPersistedPermissionsError = useFormValue(
+		FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+		'permissionsError'
 	);
 	const setupErrorRedoURL = useSelect( ( select ) => {
 		if ( temporaryPersistedPermissionsError?.data ) {
@@ -97,38 +97,37 @@ export default function SetupErrorMessageNotification( { Notification } ) {
 		}
 	}
 
+	const registry = useRegistry();
+	const snapshotCoreFormsStore = useCallback( async () => {
+		if ( temporaryPersistedPermissionsError?.data ) {
+			// Snapshot `CORE_FORMS` store to ensure the form data with current error data
+			// is retained across page navigations.
+			await snapshotAllStores( registry );
+		}
+	}, [ temporaryPersistedPermissionsError, registry ] );
+
 	const gaTrackingProps = {
-		gaTrackingEventArgs: { category: `${ viewContext }_setup_error` },
+		gaTrackingEventArgs: { category: `${ viewContext }_${ id }` },
 	};
 
 	return (
-		<Notification
-			{ ...gaTrackingProps }
-			className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error"
-		>
-			<NotificationError
+		<Notification { ...gaTrackingProps }>
+			<BannerNotification
+				notificationID={ id }
 				title={ title }
-				description={
-					<Description
-						text={ setupErrorMessage }
-						learnMoreLink={
-							<LearnMoreLink
-								id="setup_error"
-								label={ __( 'Get help', 'google-site-kit' ) }
-								url={ errorTroubleshootingLinkURL }
-							/>
-						}
-					/>
+				type={ TYPES.ERROR }
+				description={ setupErrorMessage }
+				ctaButton={
+					setupErrorRedoURL && {
+						label: ctaLabel,
+						href: setupErrorRedoURL,
+						onClick: snapshotCoreFormsStore,
+					}
 				}
-				actions={
-					setupErrorRedoURL && (
-						<CTALink
-							id="setup_error"
-							ctaLabel={ ctaLabel }
-							ctaLink={ setupErrorRedoURL }
-						/>
-					)
-				}
+				learnMoreLink={ {
+					label: __( 'Get help', 'google-site-kit' ),
+					href: errorTroubleshootingLinkURL,
+				} }
 			/>
 		</Notification>
 	);

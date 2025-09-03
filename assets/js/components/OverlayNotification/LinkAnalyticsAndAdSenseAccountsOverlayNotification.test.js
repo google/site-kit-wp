@@ -29,16 +29,34 @@ import {
 	fireEvent,
 	act,
 } from '../../../../tests/js/test-utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
+import Notifications from '@/js/components/notifications/Notifications';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
 
 describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
+	const LinkAnalyticsAndAdSenseAccountsOverlayNotificationComponent =
+		withNotificationComponentProps(
+			LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+		)( LinkAnalyticsAndAdSenseAccountsOverlayNotification );
+
+	const notification =
+		DEFAULT_NOTIFICATIONS[ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ];
+
 	let registry;
 
 	const fetchGetDismissedItems = new RegExp(
@@ -52,179 +70,33 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				active: true,
 				connected: true,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
 		] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			adSenseLinked: false,
 		} );
-	} );
 
-	it( 'does not render when Analytics module is not connected', () => {
-		provideModules( registry, [
-			{
-				slug: 'adsense',
-				active: true,
-				connected: true,
-			},
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: false,
-			},
-		] );
-
-		const { container } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
-			{
-				registry,
-			}
-		);
-		expect( container ).not.toHaveTextContent(
-			'Link your Analytics and AdSense accounts to find out'
-		);
-	} );
-
-	it( 'does not render when AdSense module is not connected', () => {
-		provideModules( registry, [
-			{
-				slug: 'adsense',
-				active: true,
-				connected: false,
-			},
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-
-		const { container } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
-			{
-				registry,
-			}
-		);
-		expect( container ).not.toHaveTextContent(
-			'Link your Analytics and AdSense accounts to find out'
-		);
-	} );
-
-	it( 'does not render when isAdSenseLinked is `true`', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( true );
-
-		const { container } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
-			{
-				registry,
-			}
-		);
-		expect( container ).not.toHaveTextContent(
-			'Link your Analytics and AdSense accounts to find out'
-		);
-	} );
-
-	it( 'does not render if dismissed previously', () => {
 		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
 				LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
-			] );
-
-		const { container } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
-			{
-				registry,
-			}
-		);
-		expect( container ).not.toHaveTextContent(
-			'Link your Analytics and AdSense accounts to find out'
-		);
-	} );
-
-	it( 'does not render if it was dismissed by the `dismissItem` action', async () => {
-		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
-		fetchMock.postOnce( fetchDismissItem, {
-			body: [ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ],
-		} );
-
-		// Dismissing the notification should cause it to not render.
-		await registry
-			.dispatch( CORE_UI )
-			.dismissOverlayNotification(
-				LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION
+				notification
 			);
-
-		const { container } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
-			{
-				registry,
-			}
-		);
-		expect( container ).not.toHaveTextContent(
-			'Link your Analytics and AdSense accounts to find out'
-		);
 	} );
 
-	it( 'does not render if another notification is showing', async () => {
-		await registry
-			.dispatch( CORE_UI )
-			.setOverlayNotificationToShow( 'TestOverlayNotification' );
-
+	it( 'renders the overlay notification component correctly', () => {
 		const { container } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
-			{
-				registry,
-			}
-		);
-		expect( container ).not.toHaveTextContent(
-			'Link your Analytics and AdSense accounts to find out'
-		);
-	} );
-
-	it( 'does not render in "view only" dashboard', () => {
-		const { container } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-			}
-		);
-		expect( container ).not.toHaveTextContent(
-			'Link your Analytics and AdSense accounts to find out'
-		);
-	} );
-
-	it( 'does not render without the feature flag', () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
-			] );
-
-		const { container } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-		expect( container ).not.toHaveTextContent(
-			'Link your Analytics and AdSense accounts to find out'
-		);
-	} );
-
-	it( 'renders if adSenseLinked is not set', () => {
-		const { container } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
+			<LinkAnalyticsAndAdSenseAccountsOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -236,18 +108,76 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		);
 	} );
 
-	it( 'renders `Learn how` and `Maybe later` buttons`', () => {
-		const supportURL = registry.select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/adsense/answer/6084409',
-		} );
-
-		const { container, getByRole } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
+	it( 'renders the overlay notification correctly on the main dashboard', async () => {
+		const { container, waitForRegistry } = render(
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
+		await waitForRegistry();
+
+		expect( container ).toHaveTextContent(
+			'Link your Analytics and AdSense accounts to find out'
+		);
+	} );
+
+	it( 'does not render on the main view only dashboard', async () => {
+		const { container, waitForRegistry } = render(
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).not.toHaveTextContent(
+			'Link your Analytics and AdSense accounts to find out'
+		);
+	} );
+
+	it( 'does not render on the entity dashboard', async () => {
+		const { container, waitForRegistry } = render(
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).not.toHaveTextContent(
+			'Link your Analytics and AdSense accounts to find out'
+		);
+	} );
+
+	it( 'renders `Learn how` and `Maybe later` buttons`', async () => {
+		const supportURL = registry.select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/adsense/answer/6084409',
+		} );
+
+		const { container, getByRole, waitForRegistry } = render(
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+		await waitForRegistry();
 
 		expect( container ).toHaveTextContent( 'Learn how' );
 		expect( getByRole( 'button', { name: /learn how/i } ) ).toHaveAttribute(
@@ -264,7 +194,10 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		} );
 
 		const { container, getByRole, rerender, waitForRegistry } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -295,7 +228,10 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		} );
 
 		const { container, getByRole, rerender, waitForRegistry } = render(
-			<LinkAnalyticsAndAdSenseAccountsOverlayNotification />,
+			<Notifications
+				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+			/>,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -317,5 +253,66 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		expect( container ).not.toHaveTextContent(
 			'Link your Analytics and AdSense accounts to find out'
 		);
+	} );
+
+	describe( 'checkRequirements', () => {
+		it( 'is active when all the conditions are met', async () => {
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( true );
+		} );
+
+		it( 'is not active when the Analytics module is not connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ADSENSE,
+					active: true,
+					connected: true,
+				},
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: false,
+				},
+			] );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when the AdSense module is not connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ADSENSE,
+					active: true,
+					connected: false,
+				},
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+				},
+			] );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when adSenseLinked is `true`', async () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( true );
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
+		} );
 	} );
 } );

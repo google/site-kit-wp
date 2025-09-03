@@ -28,23 +28,24 @@ import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
-} from '../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
-} from '../../../../components/KeyMetrics';
-import Link from '../../../../components/Link';
-import { ZeroDataMessage } from '../common';
-import { numFmt } from '../../../../util';
-import whenActive from '../../../../util/when-active';
+} from '@/js/components/KeyMetrics';
+import Link from '@/js/components/Link';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { numFmt } from '@/js/util';
+import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import useViewOnly from '../../../../hooks/useViewOnly';
-import { decodeAmpersand } from '../../utils';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
 
 function TopPagesDrivingLeadsWidget( props ) {
 	const { Widget } = props;
@@ -94,6 +95,8 @@ function TopPagesDrivingLeadsWidget( props ) {
 		],
 		limit: 3,
 		keepEmptyRows: false,
+		reportID:
+			'analytics-4_top-pages-driving-leads-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(
@@ -207,6 +210,6 @@ TopPagesDrivingLeadsWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( TopPagesDrivingLeadsWidget );

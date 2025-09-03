@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { SpinnerButton } from 'googlesitekit-components';
-import ExternalIcon from '../../../svg/icons/external.svg';
+import ExternalIcon from '@/svg/icons/external.svg';
 
 export default function CTAButton( {
 	label,
@@ -53,7 +53,6 @@ export default function CTAButton( {
 	);
 }
 
-// eslint-disable-next-line sitekit/acronym-case
 CTAButton.propTypes = {
 	label: PropTypes.string.isRequired,
 	disabled: PropTypes.bool,

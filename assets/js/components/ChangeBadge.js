@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * Internal dependencies
  */
-import { calculateChange, numFmt } from '../util';
+import { calculateChange, numFmt } from '@/js/util';
 
 export default function ChangeBadge( props ) {
 	const { previousValue, currentValue, isAbsolute } = props;

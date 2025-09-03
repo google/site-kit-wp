@@ -75,7 +75,7 @@ class ScreensTest extends TestCase {
 
 		ob_start();
 		do_action( $hookname );
-		$this->assertEmpty( ob_get_clean() );
+		$this->assertEmpty( ob_get_clean(), 'Admin notices should be removed on Site Kit admin pages.' );
 	}
 
 	/**
@@ -96,7 +96,7 @@ class ScreensTest extends TestCase {
 
 		ob_start();
 		do_action( $hookname );
-		$this->assertNotEmpty( ob_get_clean() );
+		$this->assertNotEmpty( ob_get_clean(), 'Admin notices should not be removed outside Site Kit admin pages.' );
 	}
 
 
@@ -182,6 +182,6 @@ class ScreensTest extends TestCase {
 			$menu_order = apply_filters( 'menu_order', $given_menu_order );
 		}
 
-		$this->assertEquals( $expected_order, $menu_order );
+		$this->assertEquals( $expected_order, $menu_order, 'Menu order should match expected order for Site Kit.' );
 	}
 }

@@ -21,8 +21,8 @@
  */
 import { provideUserAuthentication } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
-import { EDIT_SCOPE } from '../../../datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { EDIT_SCOPE } from '@/js/modules/analytics-4/datastore/constants';
 import SetupBanner from './SetupBanner';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -42,20 +42,16 @@ Default.scenario = {};
 
 export const NoEditScope = Template.bind( {} );
 NoEditScope.storyName = 'No Edit Scope';
-NoEditScope.args = {
-	grantedScopes: [],
-};
-NoEditScope.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/EnhancedMeasurementActivationBanner/SetupBanner',
 	decorators: [
 		( Story, { args: { grantedScopes } } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry, {
 					grantedScopes,
 				} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

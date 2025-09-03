@@ -30,10 +30,8 @@
 			padding: $grid-gap-desktop;
 		}
 
-		h4 {
-			font-family: $f-primary;
+		.googlesitekit-typography {
 			font-size: $fs-title-md;
-			font-weight: $fw-medium;
 			line-height: $lh-title-md;
 			margin: 0;
 		}
@@ -46,7 +44,7 @@
 			}
 		}
 
-		.googlesitekit-first-party-mode-toggle__switch-badge {
+		.googlesitekit-google-tag-gateway-toggle__switch-badge {
 			position: relative;
 			top: -2px;
 		}

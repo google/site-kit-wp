@@ -15,7 +15,7 @@ exports[`TopEarningContentWidget should render correctly with the expected metri
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Top earning pages
           </h3>
@@ -139,7 +139,7 @@ exports[`TopEarningContentWidget should render the generic error variant when th
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top earning pages
         </h2>
@@ -154,7 +154,7 @@ exports[`TopEarningContentWidget should render the generic error variant when th
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Data loading failed
         </h3>
@@ -201,7 +201,7 @@ exports[`TopEarningContentWidget should render the insufficient permissions erro
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top earning pages
         </h2>
@@ -216,7 +216,7 @@ exports[`TopEarningContentWidget should render the insufficient permissions erro
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Insufficient permissions
         </h3>
@@ -267,7 +267,7 @@ exports[`TopEarningContentWidget should render the loading state while resolving
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Top earning pages
           </h3>

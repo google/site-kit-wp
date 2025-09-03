@@ -37,19 +37,19 @@ import {
 	API_STATE_GETTING_READY,
 	API_STATE_NEEDS_ATTENTION,
 	API_STATE_REQUIRES_REVIEW,
-} from '../../../datastore/constants';
+} from '@/js/modules/adsense/datastore/constants';
 import {
 	SITE_STATUS_READY,
 	SITE_STATUS_GETTING_READY,
 	SITE_STATUS_NEEDS_ATTENTION,
 	SITE_STATUS_REQUIRES_REVIEW,
 	SITE_STATUS_READY_NO_AUTO_ADS,
-} from '../../../util/status';
+} from '@/js/modules/adsense/util/status';
 import NeedsAttention from './NeedsAttention';
 import GettingReady from './GettingReady';
 import RequiresReview from './RequiresReview';
 import Ready from './Ready';
-import ErrorNotice from '../../../../../components/ErrorNotice';
+import ErrorNotice from '@/js/components/ErrorNotice';
 
 export default function SetupAccountSite( { site, finishSetup } ) {
 	const { autoAdsEnabled, state } = site;
@@ -97,6 +97,7 @@ export default function SetupAccountSite( { site, finishSetup } ) {
 						__( 'Invalid site state %s', 'google-site-kit' ),
 						state
 					) }
+					skipRetryMessage
 				/>
 			);
 	}

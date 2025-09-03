@@ -32,14 +32,14 @@ import { ESCAPE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import ModalDialog from '../../ModalDialog';
-import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { clearCache } from '../../../googlesitekit/api/cache';
-import { listFormat, trackEvent } from '../../../util';
-import useViewContext from '../../../hooks/useViewContext';
+import RefocusableModalDialog from '@/js/components/RefocusableModalDialog';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { clearCache } from '@/js/googlesitekit/api/cache';
+import { listFormat, trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function ConfirmDisconnect( { slug } ) {
 	const viewContext = useViewContext();
@@ -65,26 +65,22 @@ export default function ConfirmDisconnect( { slug } ) {
 		select( CORE_UI ).getValue( dialogActiveKey )
 	);
 
-	const handleDialog = useCallback( () => {
-		setValue( dialogActiveKey, ! dialogActive );
-	}, [ dialogActive, dialogActiveKey, setValue ] );
+	const onClose = useCallback( () => {
+		setValue( dialogActiveKey, false );
+	}, [ dialogActiveKey, setValue ] );
 
 	useEffect( () => {
-		const onKeyPress = ( event ) => {
-			// Only trigger the `handleDialog()` code when a key is pressed and
-			// the dialog is active. Calling `handleDialog()` without `dialogActive`
-			// being truthy will cause all dialogs to appear, see
-			// https://github.com/google/site-kit-wp/issues/3707.
+		function onKeyPress( event ) {
 			if ( ESCAPE === event.keyCode && dialogActive ) {
-				handleDialog();
+				onClose();
 			}
-		};
+		}
 
 		global.addEventListener( 'keydown', onKeyPress );
 		return () => {
 			global.removeEventListener( 'keydown', onKeyPress );
 		};
-	}, [ dialogActive, handleDialog ] );
+	}, [ dialogActive, onClose ] );
 
 	const { deactivateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -145,16 +141,16 @@ export default function ConfirmDisconnect( { slug } ) {
 	}
 
 	return (
-		<ModalDialog
+		<RefocusableModalDialog
 			className="googlesitekit-settings-module__confirm-disconnect-modal"
-			dialogActive
-			handleDialog={ handleDialog }
-			onClose={ handleDialog }
+			handleCancel={ onClose }
+			onClose={ onClose }
 			title={ title }
 			provides={ features }
 			handleConfirm={ handleDisconnect }
 			dependentModules={ dependentModulesText }
 			inProgress={ isDeactivating }
+			dialogActive
 			danger
 		/>
 	);

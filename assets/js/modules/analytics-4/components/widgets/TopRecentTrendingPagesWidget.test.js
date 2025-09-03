@@ -27,28 +27,29 @@ import {
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import TopRecentTrendingPagesWidget, {
 	getDateRange,
 	getReportOptions,
 } from './TopRecentTrendingPagesWidget';
-import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../../../../util/errors';
+} from '@/js/util/errors';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 	STRATEGY_ZIP,
-} from '../../../analytics-4/utils/data-mock';
-import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
-import { provideCustomDimensionError } from '../../utils/custom-dimensions';
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 
 describe( 'TopRecentTrendingPagesWidget', () => {
 	let registry;
@@ -65,7 +66,7 @@ describe( 'TopRecentTrendingPagesWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 		provideUserAuthentication( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID,
@@ -107,6 +108,7 @@ describe( 'TopRecentTrendingPagesWidget', () => {
 				{ metric: { metricName: 'screenPageViews' }, desc: true },
 			],
 			limit: 15,
+			reportID: 'analytics-4_get-page-titles_store:selector_options',
 		};
 
 		const pageTitlesReport = getAnalytics4MockResponse(

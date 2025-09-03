@@ -37,16 +37,17 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
-} from '../../datastore/constants';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../../../../components/KeyMetrics/constants';
-import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import * as tracking from '../../../../util/tracking';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/KeyMetrics/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import * as tracking from '@/js/util/tracking';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	render,
 	createTestRegistry,
@@ -59,7 +60,8 @@ import {
 	provideKeyMetrics,
 } from '../../../../../../tests/js/test-utils';
 import ConversionReportingNotificationCTAWidget from './ConversionReportingNotificationCTAWidget';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -86,7 +88,7 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 		provideKeyMetricsUserInputSettings( registry );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -311,12 +313,12 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: true,
 					connected: true,
 				},
 				{
-					slug: 'search-console',
+					slug: MODULE_SLUG_SEARCH_CONSOLE,
 					active: true,
 					connected: true,
 				},

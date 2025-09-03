@@ -32,10 +32,11 @@ import {
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const userAuthenticationEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/user/data/authentication'
@@ -102,12 +103,12 @@ export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/SecondaryUserSetupWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = async ( registry ) => {
+			async function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 					},
 				] );
 				provideModuleRegistrations( registry );
@@ -142,7 +143,7 @@ export default {
 					.receiveGetUserAudienceSettings( audienceSettings );
 
 				await args?.setupRegistry( registry );
-			};
+			}
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
 					<Story />

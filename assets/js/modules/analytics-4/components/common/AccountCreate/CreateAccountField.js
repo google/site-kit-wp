@@ -48,9 +48,9 @@ export default function CreateAccountField( {
 			onChange={ ( event ) => {
 				setValue( event.target.value, name );
 			} }
-			outlined
 			value={ value }
 			id={ `googlesitekit_analytics_account_create_${ name }` }
+			outlined
 		/>
 	);
 }

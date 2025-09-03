@@ -25,17 +25,21 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { get } from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createReducer } from '../../../googlesitekit/data/create-reducer';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 
 const fetchGetGoogleTagContainerStore = createFetchStore( {
 	baseName: 'getGoogleTagContainer',
 	controlCallback( { measurementID } ) {
 		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'container-lookup',
 			{ destinationID: measurementID },
 			{
@@ -59,7 +63,7 @@ const fetchGetGoogleTagContainerDestinationsStore = createFetchStore( {
 	controlCallback( { gtmAccountID, gtmContainerID } ) {
 		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'container-destinations',
 			{ accountID: gtmAccountID, containerID: gtmContainerID },
 			{
@@ -99,13 +103,13 @@ const baseActions = {};
 
 const baseControls = {};
 
-const baseReducer = ( state, { type } ) => {
+function baseReducer( state, { type } ) {
 	switch ( type ) {
 		default: {
 			return state;
 		}
 	}
-};
+}
 
 const baseResolvers = {
 	*getGoogleTagContainer( measurementID ) {

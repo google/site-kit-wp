@@ -40,10 +40,10 @@ import { END, ENTER, ESCAPE, HOME } from '@wordpress/keycodes';
  */
 import { get } from 'googlesitekit-api';
 import { useSelect } from 'googlesitekit-data';
-import { useDebouncedState } from '../hooks/useDebouncedState';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { useDebouncedState } from '@/js/hooks/useDebouncedState';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
-const noop = () => {};
+function noop() {}
 
 export default function PostSearcherAutoSuggest( {
 	id,

@@ -25,38 +25,38 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	ERROR_CODE_NON_HTTPS_SITE,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 	PUBLICATION_ONBOARDING_STATES,
 } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
-import ReaderRevenueManagerIcon from '../../../svg/graphics/reader-revenue-manager.svg';
-import { isURLUsingHTTPS } from './utils/validation';
+import ReaderRevenueManagerIcon from '@/svg/graphics/reader-revenue-manager.svg';
+import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
 import {
 	ReaderRevenueManagerSetupCTABanner,
 	RRMSetupSuccessSubtleNotification,
 } from './components/dashboard';
 import {
-	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+	NOTIFICATION_AREAS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import ProductIDContributionsNotification from './components/dashboard/ProductIDContributionsNotification';
 import {
 	RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID,
 	RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID,
 	RRM_SETUP_NOTIFICATION_ID,
 	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
+	MODULE_SLUG_READER_REVENUE_MANAGER,
 } from './constants';
 import ProductIDSubscriptionsNotification from './components/dashboard/ProductIDSubscriptionsNotification';
-import { PRIORITY } from '../../googlesitekit/notifications/constants';
 import PublicationApprovedOverlayNotification, {
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
 } from './components/dashboard/PublicationApprovedOverlayNotification';
@@ -66,8 +66,8 @@ import RRMIntroductoryOverlayNotification, {
 
 export { registerStore } from './datastore';
 
-export const registerModule = ( modules ) => {
-	modules.registerModule( 'reader-revenue-manager', {
+export function registerModule( modules ) {
+	modules.registerModule( MODULE_SLUG_READER_REVENUE_MANAGER, {
 		storeName: MODULES_READER_REVENUE_MANAGER,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
@@ -99,7 +99,7 @@ export const registerModule = ( modules ) => {
 			};
 		},
 	} );
-};
+}
 
 async function checkRequirementsForProductIDNotification(
 	{ select, resolveSelect },
@@ -136,7 +136,7 @@ export const NOTIFICATIONS = {
 	[ RRM_SETUP_NOTIFICATION_ID ]: {
 		Component: ReaderRevenueManagerSetupCTABanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -145,10 +145,10 @@ export const NOTIFICATIONS = {
 				// of the getDismissedPrompts() resolver.
 				resolveSelect( CORE_USER ).getDismissedPrompts(),
 				resolveSelect( CORE_MODULES ).isModuleConnected(
-					READER_REVENUE_MANAGER_MODULE_SLUG
+					MODULE_SLUG_READER_REVENUE_MANAGER
 				),
 				resolveSelect( CORE_MODULES ).canActivateModule(
-					READER_REVENUE_MANAGER_MODULE_SLUG
+					MODULE_SLUG_READER_REVENUE_MANAGER
 				),
 			] );
 
@@ -160,11 +160,11 @@ export const NOTIFICATIONS = {
 
 			const isRRMModuleConnected = select(
 				CORE_MODULES
-			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
 
 			const canActivateRRMModule = select(
 				CORE_MODULES
-			).canActivateModule( READER_REVENUE_MANAGER_MODULE_SLUG );
+			).canActivateModule( MODULE_SLUG_READER_REVENUE_MANAGER );
 
 			if (
 				isLegacyDismissed === false &&
@@ -181,12 +181,12 @@ export const NOTIFICATIONS = {
 	},
 	[ RRM_SETUP_SUCCESS_NOTIFICATION_ID ]: {
 		Component: RRMSetupSuccessSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			const rrmConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
 
 			if ( ! rrmConnected ) {
 				return false;
@@ -202,7 +202,7 @@ export const NOTIFICATIONS = {
 
 			if (
 				notification === 'authentication_success' &&
-				slug === READER_REVENUE_MANAGER_MODULE_SLUG &&
+				slug === MODULE_SLUG_READER_REVENUE_MANAGER &&
 				publicationOnboardingState !== undefined
 			) {
 				return true;
@@ -215,7 +215,7 @@ export const NOTIFICATIONS = {
 	[ RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID ]: {
 		Component: ProductIDContributionsNotification,
 		priority: 20,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: async ( registry ) => {
@@ -230,7 +230,7 @@ export const NOTIFICATIONS = {
 	[ RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID ]: {
 		Component: ProductIDSubscriptionsNotification,
 		priority: 20,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: async ( registry ) => {
@@ -252,7 +252,7 @@ export const NOTIFICATIONS = {
 		checkRequirements: async ( { resolveSelect, dispatch } ) => {
 			const rrmConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
 
 			if ( ! rrmConnected ) {
 				return false;
@@ -271,7 +271,7 @@ export const NOTIFICATIONS = {
 			const slug = getQueryArg( location.href, 'slug' );
 			const showingSuccessNotification =
 				notification === 'authentication_success' &&
-				slug === READER_REVENUE_MANAGER_MODULE_SLUG;
+				slug === MODULE_SLUG_READER_REVENUE_MANAGER;
 
 			// Show the overlay if the publication onboarding state is complete, and if either
 			// setup has just been completed but there is no paymentOption selected, or if the
@@ -310,7 +310,7 @@ export const NOTIFICATIONS = {
 		checkRequirements: async ( { resolveSelect } ) => {
 			const rrmConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( READER_REVENUE_MANAGER_MODULE_SLUG );
+			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
 
 			if ( ! rrmConnected ) {
 				return false;
@@ -325,7 +325,7 @@ export const NOTIFICATIONS = {
 			const slug = getQueryArg( location.href, 'slug' );
 			const showingSuccessNotification =
 				notification === 'authentication_success' &&
-				slug === READER_REVENUE_MANAGER_MODULE_SLUG;
+				slug === MODULE_SLUG_READER_REVENUE_MANAGER;
 
 			if (
 				publicationOnboardingState ===
@@ -341,11 +341,11 @@ export const NOTIFICATIONS = {
 	},
 };
 
-export const registerNotifications = ( notificationsAPI ) => {
+export function registerNotifications( notificationsAPI ) {
 	for ( const notificationID in NOTIFICATIONS ) {
 		notificationsAPI.registerNotification(
 			notificationID,
 			NOTIFICATIONS[ notificationID ]
 		);
 	}
-};
+}

@@ -33,8 +33,9 @@ import { useSelect } from '@wordpress-core/data';
 import { select, resolveSelect } from 'googlesitekit-data';
 import EditorButton from './EditorButton';
 import { CORE_EDITOR } from './constants';
-import { CORE_MODULES } from '../../../js/googlesitekit/modules/datastore/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '../../../js/modules/reader-revenue-manager/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { getNoticeAndDisabled } from './button-edit-utils';
 
 /**
@@ -68,12 +69,12 @@ export default function ButtonEdit( {
 		async function getModuleAccess() {
 			let hasModuleOwnershipOrAccess = select(
 				CORE_MODULES
-			).hasModuleOwnership( 'reader-revenue-manager' );
+			).hasModuleOwnership( MODULE_SLUG_READER_REVENUE_MANAGER );
 
 			if ( hasModuleOwnershipOrAccess === false ) {
 				hasModuleOwnershipOrAccess = await resolveSelect(
 					CORE_MODULES
-				).hasModuleAccess( 'reader-revenue-manager' );
+				).hasModuleAccess( MODULE_SLUG_READER_REVENUE_MANAGER );
 			}
 
 			// Note: `hasModuleOwnershipOrAccess` can be expected to be `undefined` if `ownerID` is not set for a view-only user.

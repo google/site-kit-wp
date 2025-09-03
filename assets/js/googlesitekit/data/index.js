@@ -35,7 +35,7 @@ import {
 /**
  * Internal dependencies
  */
-import { useInViewSelect } from '../../hooks/useInViewSelect';
+import { useInViewSelect } from '@/js/hooks/useInViewSelect';
 import {
 	combineStores,
 	commonActions,

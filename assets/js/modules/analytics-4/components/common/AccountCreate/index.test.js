@@ -37,11 +37,13 @@ import {
 	GTM_SCOPE,
 	MODULES_ANALYTICS_4,
 	PROVISIONING_SCOPE,
-} from '../../../datastore/constants';
-import { createCacheKey } from '../../../../../googlesitekit/api';
-import { getKeys, setItem } from '../../../../../googlesitekit/api/cache';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { createCacheKey } from '@/js/googlesitekit/api';
+import { getKeys, setItem } from '@/js/googlesitekit/api/cache';
 import AccountCreate from '.';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 const REGEX_REST_CONVERSION_TRACKING_SETTINGS = new RegExp(
 	'^/google-site-kit/v1/core/site/data/conversion-tracking'
@@ -58,7 +60,7 @@ describe( 'AccountCreate', () => {
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -78,7 +80,7 @@ describe( 'AccountCreate', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getAccountSummaries', [] );
 
-		// Enable Enhanced Conversion Tracking by default to avoid adding
+		// Enable Plugin Conversion Tracking by default to avoid adding
 		// the notice in existing cases.
 		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {
 			enabled: true,
@@ -149,7 +151,7 @@ describe( 'AccountCreate', () => {
 			await setItem(
 				createCacheKey(
 					'modules',
-					'analytics-4',
+					MODULE_SLUG_ANALYTICS_4,
 					'analytics-datapoint'
 				),
 				'analytics-value'
@@ -157,7 +159,7 @@ describe( 'AccountCreate', () => {
 
 			const searchConsoleItemCacheKey = createCacheKey(
 				'modules',
-				'search-console',
+				MODULE_SLUG_SEARCH_CONSOLE,
 				'search-console-datapoint'
 			);
 

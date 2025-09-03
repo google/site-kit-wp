@@ -25,7 +25,7 @@ class REST_RouteTest extends TestCase {
 	public function test_get_uri( $uri, $expected_uri ) {
 		$route = new REST_Route( $uri, array() );
 
-		$this->assertEquals( $expected_uri, $route->get_uri() );
+		$this->assertEquals( $expected_uri, $route->get_uri(), 'REST route should normalize URI as expected.' );
 	}
 
 	public function uri_provider() {
@@ -43,7 +43,7 @@ class REST_RouteTest extends TestCase {
 
 	public function test_get_args() {
 		$route = new REST_Route( 'test-uri', array() );
-		$this->assertEquals( array(), $route->get_args() );
+		$this->assertEquals( array(), $route->get_args(), 'Default route args should be empty when not provided.' );
 
 		// Test default args
 		$route = new REST_Route(
@@ -52,11 +52,11 @@ class REST_RouteTest extends TestCase {
 				'args' => array(),
 			)
 		);
-		$this->assertCount( 1, $route->get_args() );
+		$this->assertCount( 1, $route->get_args(), 'Route should have one default arg set.' );
 		$single_route_args = $route->get_args()[0];
-		$this->assertEquals( WP_REST_Server::READABLE, $single_route_args['methods'] );
-		$this->assertNull( $single_route_args['callback'] );
-		$this->assertEquals( array(), $single_route_args['args'] );
+		$this->assertEquals( WP_REST_Server::READABLE, $single_route_args['methods'], 'Default method should be READABLE.' );
+		$this->assertNull( $single_route_args['callback'], 'Default callback should be null.' );
+		$this->assertEquals( array(), $single_route_args['args'], 'Default args should be empty.' );
 
 		// Test arg defaults
 		$route = new REST_Route(

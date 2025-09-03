@@ -114,7 +114,7 @@ class WP_Query_FactoryTest extends TestCase {
 		$query->enable_404_detection( false );
 		$query->get_posts();
 
-		$this->assertEqualSetsWithIndex( $expected_args, $query->query );
+		$this->assertEqualSetsWithIndex( $expected_args, $query->query, 'Query arguments should match expected values.' );
 
 		foreach ( $template_tags as $template_tag => $expected_result ) {
 			if ( $expected_result ) {
@@ -619,7 +619,7 @@ class WP_Query_FactoryTest extends TestCase {
 		$query->enable_404_detection( false );
 		$query->get_posts();
 
-		$this->assertEqualSetsWithIndex( $expected_args, $query->query );
+		$this->assertEqualSetsWithIndex( $expected_args, $query->query, 'Query arguments should match expected values for rewrite URLs.' );
 
 		foreach ( $template_tags as $template_tag => $expected_result ) {
 			if ( $expected_result ) {
@@ -1055,15 +1055,15 @@ class WP_Query_FactoryTest extends TestCase {
 		$query->enable_404_detection( false );
 		$query->get_posts();
 
-		$this->assertEqualSetsWithIndex( $expected_args, $query->query );
+		$this->assertEqualSetsWithIndex( $expected_args, $query->query, 'Query arguments should match expected values for homepage URLs.' );
 
-		$this->assertTrue( $query->is_front_page() );
+		$this->assertTrue( $query->is_front_page(), 'Homepage should be treated as front page.' );
 		if ( 'page' === $show_on_front ) {
-			$this->assertTrue( $query->is_page() );
-			$this->assertFalse( $query->is_home() );
+			$this->assertTrue( $query->is_page(), 'Static homepage should be treated as page.' );
+			$this->assertFalse( $query->is_home(), 'Static homepage should not be treated as home.' );
 		} else {
-			$this->assertTrue( $query->is_home() );
-			$this->assertFalse( $query->is_page() );
+			$this->assertTrue( $query->is_home(), 'Posts homepage should be treated as home.' );
+			$this->assertFalse( $query->is_page(), 'Posts homepage should not be treated as page.' );
 		}
 	}
 

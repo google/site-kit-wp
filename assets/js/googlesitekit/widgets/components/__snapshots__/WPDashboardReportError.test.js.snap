@@ -11,7 +11,7 @@ exports[`WPDashboardReportError should only render one error per module when the
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Data error in Search Console
         </h3>
@@ -32,7 +32,9 @@ exports[`WPDashboardReportError should only render one error per module when the
               <p
                 class="googlesitekit-notice__description"
               >
-                Error: Test error message (Please try again.)
+                <span>
+                  Error: Test error message (Please try again.)
+                </span>
               </p>
             </div>
           </div>
@@ -68,7 +70,7 @@ exports[`WPDashboardReportError should only render one error per module when the
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Data error in Analytics
         </h3>
@@ -89,7 +91,9 @@ exports[`WPDashboardReportError should only render one error per module when the
               <p
                 class="googlesitekit-notice__description"
               >
-                Error: Test error message (Please try again.)
+                <span>
+                  Error: Test error message (Please try again.)
+                </span>
               </p>
             </div>
           </div>

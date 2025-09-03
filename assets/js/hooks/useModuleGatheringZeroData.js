@@ -20,10 +20,12 @@
  * Internal dependencies
  */
 import { useInViewSelect, useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '../modules/search-console/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import useViewOnly from './useViewOnly';
 
 /**
@@ -37,7 +39,7 @@ export default function useModuleGatheringZeroData() {
 	const viewOnly = useViewOnly();
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const canViewSharedAnalytics = useSelect( ( select ) => {
@@ -45,14 +47,18 @@ export default function useModuleGatheringZeroData() {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'analytics-4' );
+		return select( CORE_USER ).canViewSharedModule(
+			MODULE_SLUG_ANALYTICS_4
+		);
 	} );
 	const canViewSharedSearchConsole = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
 			return true;
 		}
 
-		return select( CORE_USER ).canViewSharedModule( 'search-console' );
+		return select( CORE_USER ).canViewSharedModule(
+			MODULE_SLUG_SEARCH_CONSOLE
+		);
 	} );
 
 	const showRecoverableAnalytics = useSelect( ( select ) => {
@@ -67,7 +73,9 @@ export default function useModuleGatheringZeroData() {
 			return undefined;
 		}
 
-		return Object.keys( recoverableModules ).includes( 'analytics-4' );
+		return Object.keys( recoverableModules ).includes(
+			MODULE_SLUG_ANALYTICS_4
+		);
 	} );
 	const showRecoverableSearchConsole = useSelect( ( select ) => {
 		if ( ! viewOnly ) {
@@ -81,7 +89,9 @@ export default function useModuleGatheringZeroData() {
 			return undefined;
 		}
 
-		return Object.keys( recoverableModules ).includes( 'search-console' );
+		return Object.keys( recoverableModules ).includes(
+			MODULE_SLUG_SEARCH_CONSOLE
+		);
 	} );
 
 	const analyticsGatheringData = useInViewSelect(

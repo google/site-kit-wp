@@ -25,45 +25,38 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MINUTE_IN_SECONDS, WEEK_IN_SECONDS } from '../../../../util';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { DAY_IN_SECONDS, MINUTE_IN_SECONDS, WEEK_IN_SECONDS } from '@/js/util';
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
 	MODULES_ADS,
-} from '../../datastore/constants';
-import AdsSetupSVG from '../../../../../svg/graphics/ads-setup.svg';
-import AdsSetupTabletSVG from '../../../../../svg/graphics/ads-setup-tablet.svg';
-import AdsSetupMobileSVG from '../../../../../svg/graphics/ads-setup-mobile.svg';
-import NotificationWithSVG from '../../../../googlesitekit/notifications/components/layout/NotificationWithSVG';
-import Description from '../../../../googlesitekit/notifications/components/common/Description';
-import LearnMoreLink from '../../../../googlesitekit/notifications/components/common/LearnMoreLink';
-import ActionsCTALinkDismiss from '../../../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
-import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
-import {
-	BREAKPOINT_SMALL,
-	BREAKPOINT_TABLET,
-	useBreakpoint,
-} from '../../../../hooks/useBreakpoint';
-import { WooCommerceRedirectModal } from '../common';
-import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
-import { useShowTooltip } from '../../../../components/AdminMenuTooltip';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-
-const breakpointSVGMap = {
-	[ BREAKPOINT_SMALL ]: AdsSetupMobileSVG,
-	[ BREAKPOINT_TABLET ]: AdsSetupTabletSVG,
-};
+} from '@/js/modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import { WooCommerceRedirectModal } from '@/js/modules/ads/components/common';
+import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
+import { useShowTooltip } from '@/js/components/AdminMenuTooltip';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
+import BannerSVGDesktop from '@/svg/graphics/banner-ads-setup-cta.svg?url';
+import BannerSVGMobile from '@/svg/graphics/banner-ads-setup-cta-mobile.svg?url';
+import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
+import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
 
 export default function AdsModuleSetupCTABanner( { id, Notification } ) {
-	const breakpoint = useBreakpoint();
 	const [ openDialog, setOpenDialog ] = useState( false );
 	const [ isSaving, setIsSaving ] = useState( false );
 
@@ -100,13 +93,6 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const markNotificationDismissed = useCallback( () => {
-		dismissNotification( id, {
-			skipHidingFromQueue: true,
-			expiresInSeconds: 2 * WEEK_IN_SECONDS,
-		} );
-	}, [ id, dismissNotification ] );
-
 	const { setCacheItem } = useDispatch( CORE_SITE );
 	const dismissWooCommerceRedirectModal = useCallback( () => {
 		setCacheItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY, true, {
@@ -114,24 +100,27 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 		} );
 	}, [ setCacheItem ] );
 
-	const activateModule = useActivateModuleCallback( 'ads' );
+	const activateModule = useActivateModuleCallback( MODULE_SLUG_ADS );
+
+	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	const onSetupCallback = useCallback( () => {
+		triggerSurvey( 'accept_ads_setup_cta' );
+
 		if (
 			! shouldShowWooCommerceRedirectModal ||
 			isWooCommerceRedirectModalDismissed
 		) {
 			setIsSaving( true );
-			markNotificationDismissed();
 			activateModule();
 			return;
 		}
 
 		setOpenDialog( true );
 	}, [
+		triggerSurvey,
 		shouldShowWooCommerceRedirectModal,
 		activateModule,
-		markNotificationDismissed,
 		isWooCommerceRedirectModalDismissed,
 	] );
 
@@ -161,58 +150,76 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 
 	return (
 		<Notification>
-			<NotificationWithSVG
-				id={ id }
+			<SetupCTA
+				notificationID={ id }
 				title={ __(
 					'Get better quality leads and enhance conversions with Ads',
 					'google-site-kit'
 				) }
 				description={
-					<Description
-						text={ __(
-							'Help drive sales, leads, or site traffic by getting your business in front of people who are actively searching Google for products or services you offer.',
-							'google-site-kit'
+					<Fragment>
+						{ createInterpolateElement(
+							__(
+								'Help drive sales, leads, or site traffic by getting your business in front of people who are actively searching Google for products or services you offer. <a />',
+								'google-site-kit'
+							),
+							{
+								a: (
+									<LearnMoreLink
+										id={ id }
+										label={ __(
+											'Learn more',
+											'google-site-kit'
+										) }
+										url={ learnMoreURL }
+									/>
+								),
+							}
 						) }
-						learnMoreLink={
-							<LearnMoreLink
-								id={ id }
-								label={ __( 'Learn more', 'google-site-kit' ) }
-								url={ learnMoreURL }
-							/>
-						}
-					>
 						{ isAdBlockerActive && (
 							<AdBlockerWarning moduleSlug="ads" />
 						) }
-					</Description>
+					</Fragment>
 				}
-				actions={
-					<ActionsCTALinkDismiss
-						id={ id }
-						className="googlesitekit-setup-cta-banner__actions-wrapper"
-						ctaLabel={ __( 'Set up Ads', 'google-site-kit' ) }
-						onCTAClick={ onSetupCallback }
-						dismissOnCTAClick={ false }
-						isSaving={ isSaving }
-						dismissLabel={ dismissLabel }
-						ctaDismissOptions={ {
-							skipHidingFromQueue: true,
-						} }
-						onDismiss={ showTooltip }
-						dismissExpires={ 2 * WEEK_IN_SECONDS }
-						ctaDisabled={ isAdBlockerActive }
-					/>
-				}
-				SVG={ breakpointSVGMap[ breakpoint ] || AdsSetupSVG }
+				ctaButton={ {
+					label: __( 'Set up Ads', 'google-site-kit' ),
+					onClick: onSetupCallback,
+					disabled: isAdBlockerActive || isSaving || openDialog,
+					inProgress: isSaving,
+					dismissOnClick: true,
+					dismissOptions: {
+						expiresInSeconds: 2 * WEEK_IN_SECONDS,
+						skipHidingFromQueue: true,
+					},
+				} }
+				dismissButton={ {
+					label: dismissLabel,
+					onClick: showTooltip,
+					disabled: isSaving,
+					dismissOptions: {
+						expiresInSeconds: isDismissalFinal
+							? 0
+							: 2 * WEEK_IN_SECONDS,
+					},
+				} }
+				svg={ {
+					desktop: BannerSVGDesktop,
+					mobile: BannerSVGMobile,
+					verticalPosition: 'center',
+				} }
 			/>
 			{ openDialog && (
 				<WooCommerceRedirectModal
-					onDismiss={ markNotificationDismissed }
+					onDismiss={ () => dismissNotification( id ) }
 					onClose={ onModalClose }
 					onBeforeSetupCallback={ dismissWooCommerceRedirectModal }
 					dialogActive
 				/>
 			) }
+			<SurveyViewTrigger
+				triggerID="view_ads_setup_cta"
+				ttl={ DAY_IN_SECONDS }
+			/>
 		</Notification>
 	);
 }

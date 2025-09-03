@@ -25,9 +25,9 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../../datastore/constants';
-import useNotificationEvents from '../../hooks/useNotificationEvents';
-import OverlayCard from '../../../../components/OverlayCard';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import OverlayCard from '@/js/components/OverlayCard';
 
 export default function OverlayNotification( {
 	notificationID,
@@ -38,12 +38,16 @@ export default function OverlayNotification( {
 } ) {
 	const trackEvents = useNotificationEvents(
 		notificationID,
-		gaTrackingEventArgs?.category
+		gaTrackingEventArgs?.category,
+		{
+			confirmAction: gaTrackingEventArgs?.confirmAction,
+			dismissAction: gaTrackingEventArgs?.dismissAction,
+		}
 	);
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const handleDismissWithTrackEvent = async ( event ) => {
+	async function handleDismissWithTrackEvent( event ) {
 		await dismissButton?.onClick?.( event );
 		trackEvents.dismiss(
 			gaTrackingEventArgs?.label,
@@ -52,19 +56,18 @@ export default function OverlayNotification( {
 		dismissNotification( notificationID, {
 			...dismissButton.dismissOptions,
 		} );
-	};
+	}
 
-	const handleCTAClickWithTrackEvent = async ( event ) => {
+	async function handleCTAClickWithTrackEvent( event ) {
 		trackEvents.confirm(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
 		await ctaButton?.onClick?.( event );
-	};
+	}
 
 	return (
 		<OverlayCard
-			visible
 			ctaButton={ {
 				...ctaButton,
 				onClick: handleCTAClickWithTrackEvent,
@@ -74,6 +77,7 @@ export default function OverlayNotification( {
 				onClick: handleDismissWithTrackEvent,
 			} }
 			{ ...props }
+			visible
 		/>
 	);
 }

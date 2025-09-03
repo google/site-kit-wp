@@ -32,7 +32,9 @@ import { Component, Fragment } from '@wordpress/element';
  */
 import { get, set } from 'googlesitekit-api';
 import { Button, ProgressBar, TextField } from 'googlesitekit-components';
-import { validateJSON, trackEvent } from '../../util';
+import { validateJSON, trackEvent } from '@/js/util';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 class SiteVerification extends Component {
 	constructor( props ) {
@@ -176,7 +178,7 @@ class SiteVerification extends Component {
 
 		const loadingDiv = (
 			<Fragment>
-				{ loadingMsg && <p>{ loadingMsg }</p> }
+				{ loadingMsg && <P>{ loadingMsg }</P> }
 				<ProgressBar />
 			</Fragment>
 		);
@@ -192,8 +194,8 @@ class SiteVerification extends Component {
 					<TextField
 						label={ __( 'Website Address', 'google-site-kit' ) }
 						name="siteProperty"
-						outlined
 						value={ siteURL }
+						outlined
 					/>
 				</div>
 				<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
@@ -208,14 +210,14 @@ class SiteVerification extends Component {
 	static renderSetupDone() {
 		return (
 			<Fragment>
-				<h2
-					className="
-					googlesitekit-heading-3
-					googlesitekit-wizard-step__title
-				"
+				<Typography
+					as="h3"
+					className="googlesitekit-wizard-step__title"
+					size="small"
+					type="headline"
 				>
 					{ __( 'Verify URL', 'google-site-kit' ) }
-				</h2>
+				</Typography>
 
 				<p className="googlesitekit-wizard-step__text">
 					{ __(
@@ -237,14 +239,14 @@ class SiteVerification extends Component {
 
 		return (
 			<Fragment>
-				<h2
-					className="
-					googlesitekit-heading-3
-					googlesitekit-wizard-step__title
-				"
+				<Typography
+					as="h3"
+					className="googlesitekit-wizard-step__title"
+					size="small"
+					type="headline"
 				>
 					{ __( 'Verify URL', 'google-site-kit' ) }
-				</h2>
+				</Typography>
 
 				<p className="googlesitekit-wizard-step__text">
 					{ __(

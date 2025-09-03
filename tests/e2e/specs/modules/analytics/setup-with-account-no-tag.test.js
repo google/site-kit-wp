@@ -34,7 +34,6 @@ import {
 	setSearchConsoleProperty,
 	wpApiFetch,
 	useRequestInterception,
-	pageWait,
 	step,
 } from '../../../utils';
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
@@ -54,7 +53,7 @@ async function proceedToSetUpAnalytics() {
 	);
 }
 
-const setReferenceURL = () => {
+function setReferenceURL() {
 	return wpApiFetch( {
 		path: 'google-site-kit/v1/e2e/reference-url',
 		method: 'post',
@@ -62,7 +61,7 @@ const setReferenceURL = () => {
 			url: 'http://non-matching-url.test',
 		},
 	} );
-};
+}
 
 describe( 'setting up the Analytics module with an existing account and no existing tag', () => {
 	beforeAll( async () => {
@@ -114,12 +113,12 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				request
 					.url()
 					.match(
-						'/wp-json/google-site-kit/v1/modules/analytics-4/data/conversion-events'
+						'/wp-json/google-site-kit/v1/modules/analytics-4/data/key-events'
 					)
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( fixtures.conversionEvents ),
+					body: JSON.stringify( fixtures.keyEvents ),
 				} );
 			} else if ( request.url().match( 'user/data/audience-settings' ) ) {
 				request.respond( {
@@ -325,7 +324,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			} );
 
 			await step( 'wait and click configure button', async () => {
-				await pageWait( 500 );
+				await page.waitForNetworkIdle();
 				await expect( page ).toClick( 'button', {
 					text: /complete setup/i,
 				} );
