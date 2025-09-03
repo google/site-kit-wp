@@ -89,6 +89,57 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields {
 		$this->cron->register();
 
 		add_action( 'admin_init', fn () => $this->on_admin_init() );
+
+		add_filter(
+			'googlesitekit_features_request_data',
+			function ( $body ) {
+				$body['feature_metrics'] = array_merge(
+					$body['feature_metrics'] ?? array(),
+					$this->get_internal_metrics()
+				);
+
+				return $body;
+			}
+		);
+	}
+
+	/**
+	 * Gets an array of internal metrics.
+	 *
+	 * @since 1.161.0
+	 *
+	 * @return array
+	 */
+	private function get_internal_metrics() {
+		$settings = $this->google_tag_gateway_settings->get();
+
+		return array(
+			'google_tag_gateway' => array(
+				'gtg_enabled' => (bool) $settings['isEnabled'],
+				'gtg_healthy' => $this->parse_health_check_internal_metric( $settings['isGTGHealthy'] ),
+			),
+		);
+	}
+
+	/**
+	 * Maps the healthcheck setting value to a suitable string
+	 * for internal metrics.
+	 *
+	 * @since 1.161.0
+	 *
+	 * @param mixed $setting_value Setting value.
+	 * @return string
+	 */
+	private function parse_health_check_internal_metric( $setting_value ) {
+		if ( true === $setting_value ) {
+			return 'yes';
+		}
+
+		if ( false === $setting_value ) {
+			return 'no';
+		}
+
+		return '';
 	}
 
 	/**
