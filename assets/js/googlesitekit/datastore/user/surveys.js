@@ -252,6 +252,8 @@ const baseActions = {
 					);
 				return { response, error };
 			}
+
+			return { response: null, error: 'no session found' };
 		}
 	),
 };
