@@ -38,21 +38,28 @@ export const PII_INDICATORS = {
 		'name',
 		'full-name',
 		'full name',
+		'full_name',
 		'fullname',
 		'first-name',
 		'first name',
+		'first_name',
 		'firstname',
 		'last-name',
 		'last name',
+		'last_name',
 		'lastname',
 		'given-name',
 		'given name',
+		'given_name',
 		'givenname',
 		'family-name',
 		'family name',
+		'family_name',
 		'familyname',
 		'fname',
 		'lname',
+		'first',
+		'last',
 	],
 };
 
@@ -70,6 +77,31 @@ export function normalizeValue( value ) {
 	}
 
 	return value.trim().toLowerCase();
+}
+
+/**
+ * Normalizes a label by removing common form suffixes and prefixes.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} label The label to normalize.
+ * @return {string} The normalized label.
+ */
+export function normalizeLabel( label ) {
+	if ( ! label || typeof label !== 'string' ) {
+		return '';
+	}
+
+	return (
+		label
+			.trim()
+			.toLowerCase()
+			// Remove common required field indicators
+			.replace( /\s*\*+\s*$/, '' ) // "Name *" → "Name"
+			.replace( /\s*\(required\)\s*$/i, '' ) // "Name (Required)" → "Name"
+			.replace( /\s*:\s*$/, '' ) // "Name:" → "Name"
+			.trim()
+	);
 }
 
 /**
@@ -181,7 +213,7 @@ export function classifyPII( fieldMeta ) {
 	type = normalizeValue( type );
 	name = normalizeValue( name );
 	value = normalizeValue( value );
-	label = normalizeValue( label );
+	label = normalizeLabel( label );
 
 	switch ( type ) {
 		case 'email':
