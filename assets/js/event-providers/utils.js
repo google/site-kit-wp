@@ -66,7 +66,7 @@ export const PII_INDICATORS = {
 /**
  * Normalizes a value for use in conversion tracking.
  *
- * @since n.e.x.t
+ * @since 1.161.0
  *
  * @param {string} value The value to normalize.
  * @return {string} The normalized value.
@@ -107,7 +107,7 @@ export function normalizeLabel( label ) {
 /**
  * Normalizes an email address for conversion tracking.
  *
- * @since n.e.x.t
+ * @since 1.161.0
  *
  * @param {string} email The email address to normalize.
  * @return {string} The normalized email address.
@@ -140,7 +140,7 @@ export function normalizeEmail( email ) {
 /**
  * Normalizes a phone number for conversion tracking.
  *
- * @since n.e.x.t
+ * @since 1.161.0
  *
  * @param {string} phone The phone number to normalize.
  * @return {string} The normalized phone number.
@@ -162,7 +162,7 @@ export function normalizePhone( phone ) {
 /**
  * Checks if a value is likely an email address.
  *
- * @since n.e.x.t
+ * @since 1.161.0
  *
  * @param {string} value The value to check.
  * @return {boolean} True if the value is likely an email address, false otherwise.
@@ -182,7 +182,7 @@ export function isLikelyEmail( value ) {
 /**
  * Checks if a value is likely a phone number.
  *
- * @since n.e.x.t
+ * @since 1.161.0
  *
  * @param {string} value The value to check.
  * @return {boolean} True if the value is likely a phone number, false otherwise.
@@ -202,7 +202,7 @@ export function isLikelyPhone( value ) {
 /**
  * Classifies a field as PII based on its metadata.
  *
- * @since n.e.x.t
+ * @since 1.161.0
  *
  * @param {Object} fieldMeta The metadata of the field to classify.
  * @return {Object|null} An object containing the PII type and value, or null if not classified.
