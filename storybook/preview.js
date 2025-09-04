@@ -41,11 +41,7 @@ import { resetGlobals } from './utils/resetGlobals';
 import { bootstrapFetchMocks } from './fetch-mocks';
 import { enabledFeatures } from '../assets/js/features';
 import { Cell, Grid, Row } from '../assets/js/material-components';
-import {
-	createTestRegistry,
-	provideUserInfo,
-	setEnabledFeatures,
-} from '../tests/js/test-utils';
+import { createTestRegistry, provideUserInfo } from '../tests/js/test-utils';
 import InViewProvider from '../assets/js/components/InViewProvider';
 import FeaturesProvider from '../assets/js/components/FeaturesProvider';
 
@@ -94,7 +90,10 @@ export const decorators = [
 		useUnmount( () => enabledFeatures.clear() );
 
 		if ( isFirstMount ) {
-			setEnabledFeatures( features );
+			enabledFeatures.clear();
+			for ( const feature of features ) {
+				enabledFeatures.add( feature );
+			}
 		}
 
 		const registry = createTestRegistry();
@@ -133,18 +132,16 @@ export const decorators = [
 export const parameters = {
 	layout: 'fullscreen',
 	options: {
-		storySort: ( aStory, bStory ) => {
-			const aParts = aStory[ 1 ].title.split( '/' );
-			const bParts = bStory[ 1 ].title.split( '/' );
-
-			// Normalize segments for comparison, required for consistent
-			// folder sorting.
-			function normalize( segmentName ) {
+		storySort: ( a, b ) => {
+			function normalize( segmentName = '' ) {
 				return segmentName
 					.trim()
 					.replace( /^[^A-Za-z0-9]+/, '' )
 					.toLowerCase();
 			}
+
+			const aParts = ( a.title || '' ).split( '/' );
+			const bParts = ( b.title || '' ).split( '/' );
 
 			const lowestNumberOfSegments = Math.min(
 				aParts.length,
@@ -164,16 +161,19 @@ export const parameters = {
 					if ( aIsFolderHere !== bIsFolderHere ) {
 						return aIsFolderHere ? -1 : 1;
 					}
-
 					// Otherwise, sort alphabetically by normalized segment title.
 					return aStorySegment.localeCompare( bStorySegment );
 				}
 			}
 
-			// Fallback to compare full normalized titles.
-			return normalize( aStory[ 1 ].title ).localeCompare(
-				normalize( bStory[ 1 ].title )
+			// Fallback to compare full normalized titles, then names for stability.
+			const titleCompare = normalize( a.title ).localeCompare(
+				normalize( b.title )
 			);
+			if ( titleCompare !== 0 ) {
+				return titleCompare;
+			}
+			return normalize( a.name ).localeCompare( normalize( b.name ) );
 		},
 	},
 	async puppeteerTest( page ) {

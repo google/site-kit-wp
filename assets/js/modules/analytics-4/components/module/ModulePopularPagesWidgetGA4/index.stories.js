@@ -37,7 +37,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import ModulePopularPagesWidgetGA4 from '.';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../tests/js/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 
 const reportOptions = [
 	{

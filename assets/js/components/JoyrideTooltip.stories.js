@@ -36,7 +36,7 @@ DefaultTooltip.args = {
 	target: '.target',
 };
 DefaultTooltip.scenario = {
-	delay: 300,
+	delay: 500,
 };
 
 export const PlacementTooltip = Template.bind( {} );
@@ -49,7 +49,7 @@ PlacementTooltip.args = {
 	placement: 'top',
 };
 PlacementTooltip.scenario = {
-	delay: 300,
+	delay: 500,
 };
 
 export const MobileModalTooltip = Template.bind( {} );
@@ -65,7 +65,7 @@ MobileModalTooltip.args = {
 	disableOverlay: false,
 };
 MobileModalTooltip.scenario = {
-	delay: 300,
+	delay: 500,
 };
 
 export default {
@@ -74,7 +74,7 @@ export default {
 	decorators: [
 		( Story ) => {
 			return (
-				<div>
+				<div className="googlesitekit-vrt-animation-paused">
 					<Button className="target">A button</Button>
 					<Story />
 				</div>

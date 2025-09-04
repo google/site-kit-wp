@@ -36,6 +36,7 @@ import {
 	freezeFetch,
 	provideSiteInfo,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/utils';
 import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
 
@@ -118,7 +119,7 @@ describe( 'WebContainerSelect', () => {
 		);
 	} );
 
-	it( 'can select the "Set up a new container" option', () => {
+	it( 'can select the "Set up a new container" option', async () => {
 		const { account, containers } = factories.buildAccountWithContainers( {
 			container: { usageContext: [ CONTEXT_WEB ] },
 		} );
@@ -149,6 +150,8 @@ describe( 'WebContainerSelect', () => {
 		expect(
 			container.querySelector( '.mdc-select__selected-text' )
 		).toHaveTextContent( /set up a new container/i );
+
+		await waitForDefaultTimeouts();
 	} );
 
 	it( 'should update the container ID and internal container ID when selected', async () => {
@@ -203,6 +206,8 @@ describe( 'WebContainerSelect', () => {
 			registry.select( MODULES_TAGMANAGER ).getInternalContainerID()
 			// eslint-disable-next-line sitekit/acronym-case
 		).toBe( webContainer.containerId );
+
+		await waitForDefaultTimeouts();
 	} );
 
 	it( 'should render a loading state while accounts have not been loaded', () => {
