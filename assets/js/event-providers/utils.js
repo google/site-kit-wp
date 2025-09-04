@@ -63,6 +63,8 @@ export const PII_INDICATORS = {
 	],
 };
 
+const PHONE_MIN_DIGIT_COUNT = 7;
+
 /**
  * Normalizes a value for use in conversion tracking.
  *
@@ -138,6 +140,28 @@ export function normalizeEmail( email ) {
 }
 
 /**
+ * Determines if a string has a phone-like pattern.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} value The string to validate.
+ * @return {boolean} Whether the string passed has a phone-like pattern or not.
+ */
+export function hasPhoneLikePattern( value ) {
+	const digits = value.replace( /\D/g, '' );
+
+	if (
+		digits.length < PHONE_MIN_DIGIT_COUNT ||
+		digits.length < value.length / 2
+	) {
+		return false;
+	}
+
+	// Ensure the string only contains digits and phone-like separators, such as spaces, dashes, parentheses, plus signs, and dots.
+	return /^[\s\-()+.\d]*$/.test( value );
+}
+
+/**
  * Normalizes a phone number for conversion tracking.
  *
  * @since 1.161.0
@@ -189,6 +213,10 @@ export function isLikelyEmail( value ) {
  */
 export function isLikelyPhone( value ) {
 	if ( ! value ) {
+		return false;
+	}
+
+	if ( ! hasPhoneLikePattern( value ) ) {
 		return false;
 	}
 
