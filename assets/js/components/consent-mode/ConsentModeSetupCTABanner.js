@@ -86,11 +86,10 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 		setConsentModeEnabled( true );
 		setIsSaving( true );
 
-		const promises = [ saveConsentModeSettings() ];
-
-		promises.push(
-			triggerSurvey( 'enable_como', { ttl: DAY_IN_SECONDS } )
-		);
+		const promises = [
+			saveConsentModeSettings(),
+			triggerSurvey( 'enable_como', { ttl: DAY_IN_SECONDS } ),
+		];
 
 		const [ { error } ] = await Promise.all( promises );
 
