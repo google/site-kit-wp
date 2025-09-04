@@ -74,7 +74,7 @@ export default {
 	decorators: [
 		( Story ) => {
 			return (
-				<div>
+				<div className="googlesitekit-vrt-animation-paused">
 					<Button className="target">A button</Button>
 					<Story />
 				</div>
