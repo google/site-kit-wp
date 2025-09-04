@@ -62,7 +62,7 @@ const gtgServerRequirementsEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 );
 
-function defaultSetupRegistry( registry ) {
+function setupRegistryWithDefaultSettings( registry ) {
 	// eslint-disable-next-line sitekit/acronym-case
 	const accountID = fixtures.accounts[ 0 ].accountId;
 	registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
@@ -113,7 +113,7 @@ function Template( args ) {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.args = {
-	setupRegistry: defaultSetupRegistry,
+	setupRegistry: setupRegistryWithDefaultSettings,
 };
 
 export const NoAccounts = Template.bind( {} );
@@ -428,7 +428,7 @@ GTGEnabled.parameters = {
 GTGEnabled.decorators = [
 	( Story ) => {
 		function setupRegistry( registry ) {
-			defaultSetupRegistry( registry );
+			setupRegistryWithDefaultSettings( registry );
 
 			const gtgSettings = {
 				isEnabled: true,
@@ -462,7 +462,7 @@ GTGDisabledWithWarning.parameters = {
 GTGDisabledWithWarning.decorators = [
 	( Story ) => {
 		function setupRegistry( registry ) {
-			defaultSetupRegistry( registry );
+			setupRegistryWithDefaultSettings( registry );
 
 			const gtgSettings = {
 				isEnabled: true,
