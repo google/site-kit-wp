@@ -60,6 +60,8 @@ export const PII_INDICATORS = {
 		'lname',
 		'first',
 		'last',
+		'your-name',
+		'your name',
 	],
 };
 
