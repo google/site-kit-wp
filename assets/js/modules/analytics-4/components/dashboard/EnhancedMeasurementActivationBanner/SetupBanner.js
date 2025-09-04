@@ -121,18 +121,13 @@ export default function SetupBanner( props ) {
 		setValues,
 	] );
 
-	const isUsingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	const handleView = useCallback( () => {
-		if ( isUsingProxy ) {
-			triggerSurvey( 'view_enhanced_measurement_cta', {
-				ttl: DAY_IN_SECONDS,
-			} );
-		}
-	}, [ triggerSurvey, isUsingProxy ] );
+		triggerSurvey( 'view_enhanced_measurement_cta', {
+			ttl: DAY_IN_SECONDS,
+		} );
+	}, [ triggerSurvey ] );
 
 	const description = hasEditScope
 		? __(

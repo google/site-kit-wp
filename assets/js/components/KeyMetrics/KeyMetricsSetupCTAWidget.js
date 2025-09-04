@@ -71,10 +71,6 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
-	const usingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
-
 	useEffect( () => {
 		if ( ! inView || hasBeenInView ) {
 			return;
@@ -85,12 +81,10 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 			'view_notification'
 		);
 
-		if ( usingProxy ) {
-			triggerSurvey( 'view_kmw_setup_cta', { ttl: WEEK_IN_SECONDS } );
-		}
+		triggerSurvey( 'view_kmw_setup_cta', { ttl: WEEK_IN_SECONDS } );
 
 		setHasBeenInView( true );
-	}, [ inView, hasBeenInView, viewContext, usingProxy, triggerSurvey ] );
+	}, [ inView, hasBeenInView, viewContext, triggerSurvey ] );
 
 	const tooltipSettings = {
 		tooltipSlug: KEY_METRICS_SETUP_CTA_WIDGET_SLUG,

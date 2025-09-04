@@ -73,32 +73,23 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
 
-	const usingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
-
 	const { setConsentModeEnabled, saveConsentModeSettings } =
 		useDispatch( CORE_SITE );
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	useEffect( () => {
-		if ( usingProxy ) {
-			triggerSurvey( 'view_como_setup_cta', { ttl: DAY_IN_SECONDS } );
-		}
-	}, [ triggerSurvey, usingProxy ] );
+		triggerSurvey( 'view_como_setup_cta', { ttl: DAY_IN_SECONDS } );
+	}, [ triggerSurvey ] );
 
 	async function handleCTAClick() {
 		setSaveError( null );
 		setConsentModeEnabled( true );
 		setIsSaving( true );
 
-		const promises = [ saveConsentModeSettings() ];
-
-		if ( usingProxy ) {
-			promises.push(
-				triggerSurvey( 'enable_como', { ttl: DAY_IN_SECONDS } )
-			);
-		}
+		const promises = [
+			saveConsentModeSettings(),
+			triggerSurvey( 'enable_como', { ttl: DAY_IN_SECONDS } ),
+		];
 
 		const [ { error } ] = await Promise.all( promises );
 
