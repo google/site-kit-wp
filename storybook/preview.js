@@ -132,42 +132,49 @@ export const decorators = [
 export const parameters = {
 	layout: 'fullscreen',
 	options: {
-		// TODO: migrate to v6 sort to v7
-		// storySort: ( aStory, bStory ) => {
-		// 	const aParts = aStory[ 1 ].title.split( '/' );
-		// 	const bParts = bStory[ 1 ].title.split( '/' );
-		// 	// Normalize segments for comparison, required for consistent
-		// 	// folder sorting.
-		// 	function normalize( segmentName ) {
-		// 		return segmentName
-		// 			.trim()
-		// 			.replace( /^[^A-Za-z0-9]+/, '' )
-		// 			.toLowerCase();
-		// 	}
-		// 	const lowestNumberOfSegments = Math.min(
-		// 		aParts.length,
-		// 		bParts.length
-		// 	);
-		// 	for ( let i = 0; i < lowestNumberOfSegments; i++ ) {
-		// 		const aStorySegment = normalize( aParts[ i ] );
-		// 		const bStorySegment = normalize( bParts[ i ] );
-		// 		// Find the first segment which does not match and sort by this title.
-		// 		if ( aStorySegment !== bStorySegment ) {
-		// 			// Sort folders before files by checking if they have children.
-		// 			const aIsFolderHere = aParts.length > i + 1;
-		// 			const bIsFolderHere = bParts.length > i + 1;
-		// 			if ( aIsFolderHere !== bIsFolderHere ) {
-		// 				return aIsFolderHere ? -1 : 1;
-		// 			}
-		// 			// Otherwise, sort alphabetically by normalized segment title.
-		// 			return aStorySegment.localeCompare( bStorySegment );
-		// 		}
-		// 	}
-		// 	// Fallback to compare full normalized titles.
-		// 	return normalize( aStory[ 1 ].title ).localeCompare(
-		// 		normalize( bStory[ 1 ].title )
-		// 	);
-		// },
+		storySort: ( a, b ) => {
+			function normalize( segmentName = '' ) {
+				return segmentName
+					.trim()
+					.replace( /^[^A-Za-z0-9]+/, '' )
+					.toLowerCase();
+			}
+
+			const aParts = ( a.title || '' ).split( '/' );
+			const bParts = ( b.title || '' ).split( '/' );
+
+			const lowestNumberOfSegments = Math.min(
+				aParts.length,
+				bParts.length
+			);
+
+			for ( let i = 0; i < lowestNumberOfSegments; i++ ) {
+				const aStorySegment = normalize( aParts[ i ] );
+				const bStorySegment = normalize( bParts[ i ] );
+
+				// Find the first segment which does not match and sort by this title.
+				if ( aStorySegment !== bStorySegment ) {
+					// Sort folders before files by checking if they have children.
+					const aIsFolderHere = aParts.length > i + 1;
+					const bIsFolderHere = bParts.length > i + 1;
+
+					if ( aIsFolderHere !== bIsFolderHere ) {
+						return aIsFolderHere ? -1 : 1;
+					}
+					// Otherwise, sort alphabetically by normalized segment title.
+					return aStorySegment.localeCompare( bStorySegment );
+				}
+			}
+
+			// Fallback to compare full normalized titles, then names for stability.
+			const titleCompare = normalize( a.title ).localeCompare(
+				normalize( b.title )
+			);
+			if ( titleCompare !== 0 ) {
+				return titleCompare;
+			}
+			return normalize( a.name ).localeCompare( normalize( b.name ) );
+		},
 	},
 	async puppeteerTest( page ) {
 		await page.waitForTimeout( 50 );
