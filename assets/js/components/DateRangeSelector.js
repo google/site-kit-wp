@@ -34,12 +34,12 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Menu, Button } from 'googlesitekit-components';
-import DateRangeIcon from '../../svg/icons/date-range.svg';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
-import { getAvailableDateRanges, trackEvent } from '../util';
-import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
-import useViewContext from '../hooks/useViewContext';
+import DateRangeIcon from '@/svg/icons/date-range.svg';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
+import { getAvailableDateRanges, trackEvent } from '@/js/util';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function DateRangeSelector() {
 	const ranges = getAvailableDateRanges();

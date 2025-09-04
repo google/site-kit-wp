@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager;
 
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
@@ -46,7 +44,7 @@ class Web_TagTest extends TestCase {
 		$footer_html = $this->capture_action( 'wp_footer' );
 
 		foreach ( self::EXPECTED_SNIPPET_STRINGS as $snippet_string ) {
-			$this->assertStringContainsString( $snippet_string, $footer_html );
+			$this->assertStringContainsString( $snippet_string, $footer_html, 'Footer HTML should contain expected Reader Revenue Manager snippet: ' . $snippet_string );
 		}
 	}
 }

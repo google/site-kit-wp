@@ -31,21 +31,21 @@ import {
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import OptIn from '../OptIn';
-import Header from '../Header';
-import Layout from '../layout/Layout';
-import Link from '../Link';
-import HelpMenu from '../help/HelpMenu';
-import SideKickSVG from '../../../svg/graphics/view-only-setup-sidekick.svg';
+import OptIn from '@/js/components/OptIn';
+import Header from '@/js/components/Header';
+import Layout from '@/js/components/layout/Layout';
+import Link from '@/js/components/Link';
+import HelpMenu from '@/js/components/help/HelpMenu';
+import SideKickSVG from '@/svg/graphics/view-only-setup-sidekick.svg';
 import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from './constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { Grid, Row, Cell } from '../../material-components';
-import { trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
-import Typography from '../Typography';
-import P from '../Typography/P';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { Grid, Row, Cell } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function SetupUsingProxyViewOnly() {
 	const viewContext = useViewContext();

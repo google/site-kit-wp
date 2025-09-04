@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Storage;
 
@@ -30,7 +28,7 @@ class Data_EncryptionTest extends TestCase {
 		// The result is base64_encoded.
 		$encrypted       = $encryption->encrypt( 'test-value' );
 		$base_64_decoded = base64_decode( $encrypted, true );
-		$this->assertNotFalse( $base_64_decoded );
+		$this->assertNotFalse( $base_64_decoded, 'Encrypted value should be valid base64.' );
 
 		// Decrypt.
 		$iv_len    = openssl_cipher_iv_length( self::METHOD );
@@ -39,7 +37,7 @@ class Data_EncryptionTest extends TestCase {
 		$decrypted = openssl_decrypt( $raw_value, self::METHOD, 'test-key', 0, $iv );
 		$value     = substr( $decrypted, 0, -strlen( 'test-salt' ) );
 
-		$this->assertEquals( 'test-value', $value );
+		$this->assertEquals( 'test-value', $value, 'Decrypted value should match original string.' );
 	}
 
 	public function test_decrypt() {
@@ -54,18 +52,18 @@ class Data_EncryptionTest extends TestCase {
 		$encrypted_value = base64_encode( $iv . $encrypted );
 		$decrypted_value = $encryption->decrypt( $encrypted_value );
 
-		$this->assertEquals( 'test-value', $decrypted_value );
+		$this->assertEquals( 'test-value', $decrypted_value, 'decrypt should return original value for valid encrypted input.' );
 
 		// Test with non string value, it should return the original value.
 		$array_value     = array( 'key' => 'value' );
 		$decrypted_value = $encryption->decrypt( $array_value );
 
-		$this->assertEquals( $array_value, $decrypted_value );
+		$this->assertEquals( $array_value, $decrypted_value, 'decrypt should return non-string input unmodified.' );
 
 		// Non-encrypted strings should be returned unmodified, without errors.
 		$string_value    = 'test-value';
 		$decrypted_value = $encryption->decrypt( $string_value );
 
-		$this->assertEquals( $string_value, $decrypted_value );
+		$this->assertEquals( $string_value, $decrypted_value, 'decrypt should return non-encrypted strings unmodified.' );
 	}
 }

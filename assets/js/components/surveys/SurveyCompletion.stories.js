@@ -63,4 +63,5 @@ SurveyCompletionForumStory.args = {
 
 export default {
 	title: 'Components/Surveys/SurveyCompletion',
+	component: SurveyCompletion,
 };

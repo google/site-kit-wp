@@ -25,17 +25,17 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	MODULES_SIGN_IN_WITH_GOOGLE,
 	SIGN_IN_WITH_GOOGLE_SHAPES,
 	SIGN_IN_WITH_GOOGLE_TEXTS,
 	SIGN_IN_WITH_GOOGLE_THEMES,
-} from '../../datastore/constants';
-import { SettingsNotice } from '../common';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import DisplaySetting from '../../../../components/DisplaySetting';
-import Typography from '../../../../components/Typography';
+} from '@/js/modules/sign-in-with-google/datastore/constants';
+import { SettingsNotice } from '@/js/modules/sign-in-with-google/components/common';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import DisplaySetting from '@/js/components/DisplaySetting';
+import Typography from '@/js/components/Typography';
 
 export default function SettingsView() {
 	const clientID = useSelect( ( select ) =>

@@ -26,7 +26,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import { isValidStringsOrObjects } from '../../../util/report-validation';
+import { isValidStringsOrObjects } from '@/js/util/report-validation';
 
 /**
  * Verifies that provided metrics match allowed values. Metrics can be a string,

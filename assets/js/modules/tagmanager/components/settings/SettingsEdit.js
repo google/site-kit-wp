@@ -21,11 +21,14 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
-import { MODULE_SLUG_TAGMANAGER } from '../../constants';
-import useExistingTagEffect from '../../hooks/useExistingTagEffect';
-import { AccountCreate } from '../common';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	MODULES_TAGMANAGER,
+	ACCOUNT_CREATE,
+} from '@/js/modules/tagmanager/datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import useExistingTagEffect from '@/js/modules/tagmanager/hooks/useExistingTagEffect';
+import { AccountCreate } from '@/js/modules/tagmanager/components/common';
 import SettingsForm from './SettingsForm';
 
 export default function SettingsEdit() {

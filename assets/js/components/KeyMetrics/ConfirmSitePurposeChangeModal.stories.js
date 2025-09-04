@@ -26,12 +26,12 @@ import {
 	provideSiteInfo,
 } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 	USER_INPUT_QUESTIONS_PURPOSE,
-} from '../user-input/util/constants';
+} from '@/js/components/user-input/util/constants';
 
 function Template( args ) {
 	function handleDialog() {}

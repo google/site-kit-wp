@@ -31,9 +31,9 @@ import {
 	ANALYTICS_NOTICE_FORM_NAME,
 	ANALYTICS_NOTICE_CHECKBOX,
 } from './constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import AnalyticsSetupSidekickSVG from '../../../svg/graphics/analytics-setup-sidekick.svg';
-import useFormValue from '../../hooks/useFormValue';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import AnalyticsSetupSidekickSVG from '@/svg/graphics/analytics-setup-sidekick.svg';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function ActivateAnalyticsNotice() {
 	const { setValues } = useDispatch( CORE_FORMS );

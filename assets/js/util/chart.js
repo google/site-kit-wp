@@ -24,7 +24,7 @@ import { renderToString } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import ChangeArrow from '../components/ChangeArrow';
+import ChangeArrow from '@/js/components/ChangeArrow';
 
 /**
  * Gets the up/down SVG arrow for Google Chart tooltips.

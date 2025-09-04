@@ -33,28 +33,28 @@ import {
 	EDIT_SCOPE,
 	GTM_SCOPE,
 	MODULES_ANALYTICS_4,
-} from '../../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
-import { trackEvent } from '../../../../../util';
-import { getAccountDefaults as getAccountDefaults } from '../../../utils/account';
-import { Cell } from '../../../../../material-components';
-import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
+import { trackEvent } from '@/js/util';
+import { getAccountDefaults as getAccountDefaults } from '@/js/modules/analytics-4/utils/account';
+import { Cell } from '@/js/material-components';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import TimezoneSelect from './TimezoneSelect';
 import AccountField from './AccountField';
 import PropertyField from './PropertyField';
 import CountrySelect from './CountrySelect';
 import WebDataStreamField from './WebDataStreamField';
-import EnhancedMeasurementSwitch from '../EnhancedMeasurementSwitch';
-import useViewContext from '../../../../../hooks/useViewContext';
-import SetupEnhancedConversionTrackingNotice from '../../../../../components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
-import Typography from '../../../../../components/Typography';
-import useFormValue from '../../../../../hooks/useFormValue';
-import P from '../../../../../components/Typography/P';
+import EnhancedMeasurementSwitch from '@/js/modules/analytics-4/components/common/EnhancedMeasurementSwitch';
+import useViewContext from '@/js/hooks/useViewContext';
+import SetupEnhancedConversionTrackingNotice from '@/js/components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
+import Typography from '@/js/components/Typography';
+import useFormValue from '@/js/hooks/useFormValue';
+import P from '@/js/components/Typography/P';
 
 export default function AccountCreate() {
 	const [ isNavigating, setIsNavigating ] = useState( false );

@@ -35,11 +35,11 @@ import {
 	PERMISSION_AUTHENTICATE,
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	CORE_USER,
-} from '../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/util/permissions';
-import { Cell, Grid, Row } from '../../material-components';
+import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { Cell, Grid, Row } from '@/js/material-components';
 import ViewOnlyMenu from './';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 

@@ -61,8 +61,8 @@ class Migration_1_3_0 {
 	 */
 	public function __construct(
 		Context $context,
-		Options $options = null,
-		User_Options $user_options = null
+		?Options $options = null,
+		?User_Options $user_options = null
 	) {
 		$this->context      = $context;
 		$this->options      = $options ?: new Options( $context );

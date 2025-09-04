@@ -29,10 +29,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import VisitorsGraph from '../../../../../svg/graphics/cta-graph-visitors.svg';
-import GoalsGraph from '../../../../../svg/graphics/cta-graph-goals.svg';
-import AnalyticsCTA from '../../../../components/ActivateAnalyticsCTA';
-import PreviewGraph from '../../../../components/PreviewGraph';
+import VisitorsGraph from '@/svg/graphics/cta-graph-visitors.svg';
+import GoalsGraph from '@/svg/graphics/cta-graph-goals.svg';
+import AnalyticsCTA from '@/js/components/ActivateAnalyticsCTA';
+import PreviewGraph from '@/js/components/PreviewGraph';
 
 export default function ActivateAnalyticsCTA( { title } ) {
 	return (

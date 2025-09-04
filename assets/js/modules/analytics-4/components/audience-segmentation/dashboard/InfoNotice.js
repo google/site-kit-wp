@@ -31,8 +31,8 @@ import { forwardRef } from '@wordpress/element';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import P from '../../../../../components/Typography/P';
-import LightbulbIcon from '../../../../../../svg/icons/lightbulb.svg';
+import P from '@/js/components/Typography/P';
+import LightbulbIcon from '@/svg/icons/lightbulb.svg';
 
 const InfoNotice = forwardRef(
 	(

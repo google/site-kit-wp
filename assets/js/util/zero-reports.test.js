@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from './zero-reports';
-import mockedReportResponse from '../modules/analytics-4/utils/__fixtures__/mocked-report-multiple-distinct-date-ranges.json';
+import mockedReportResponse from '@/js/modules/analytics-4/utils/__fixtures__/mocked-report-multiple-distinct-date-ranges.json';
 
 describe( 'zeroReports', () => {
 	describe( 'replaceValuesOrRemoveRowForDateRangeInAnalyticsReport', () => {

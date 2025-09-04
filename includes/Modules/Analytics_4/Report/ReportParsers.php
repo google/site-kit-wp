@@ -31,7 +31,7 @@ class ReportParsers {
 	 * Parses report dimensions received in the request params.
 	 *
 	 * @since 1.99.0
-	 * @since 1.130.0 Moved into ReportParsers for shared used between Report and PivotReport.
+	 * @since 1.130.0 Moved into `ReportParsers` for shared used (originally between `Report` and `PivotReport`). `PivotReport` has since been removed.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_Dimension[] An array of AnalyticsData Dimension objects.
@@ -74,7 +74,7 @@ class ReportParsers {
 	 * Parses report date ranges received in the request params.
 	 *
 	 * @since 1.99.0
-	 * @since 1.130.0 Moved into ReportParsers for shared used between Report and PivotReport.
+	 * @since 1.130.0 Moved into `ReportParsers` for shared used (originally between `Report` and `PivotReport`). `PivotReport` has since been removed.
 	 * @since 1.157.0 Added support for dateRangeName and compareDateRangeName parameters.
 	 *
 	 * @param Data_Request $data Data request object.
@@ -132,7 +132,7 @@ class ReportParsers {
 	 * Parses the orderby value of the data request into an array of AnalyticsData OrderBy object instances.
 	 *
 	 * @since 1.99.0
-	 * @since 1.130.0 Moved into ReportParsers for shared used between Report and PivotReport.
+	 * @since 1.130.0 Moved into `ReportParsers` for shared used (originally between `Report` and `PivotReport`). `PivotReport` has since been removed.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return Google_Service_AnalyticsData_OrderBy[] An array of AnalyticsData OrderBy objects.

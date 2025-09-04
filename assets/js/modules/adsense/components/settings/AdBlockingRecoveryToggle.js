@@ -32,19 +32,19 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { Switch } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import Link from '../../../../components/Link';
-import P from '../../../../components/Typography/P';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import useViewContext from '../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../util';
+import Link from '@/js/components/Link';
+import P from '@/js/components/Typography/P';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import {
 	AD_BLOCKING_FORM_SETTINGS,
 	MODULES_ADSENSE,
-} from '../../datastore/constants';
-import { parseAccountIDFromExistingTag } from '../../util';
-import Notice from '../../../../components/Notice';
-import useFormValue from '../../../../hooks/useFormValue';
+} from '@/js/modules/adsense/datastore/constants';
+import { parseAccountIDFromExistingTag } from '@/js/modules/adsense/util';
+import Notice from '@/js/components/Notice';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function AdBlockingRecoveryToggle() {
 	const viewContext = useViewContext();

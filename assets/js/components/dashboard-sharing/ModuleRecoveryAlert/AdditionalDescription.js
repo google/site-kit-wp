@@ -32,9 +32,9 @@ import { Fragment } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { Checkbox } from 'googlesitekit-components';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import Errors from './Errors';
-import P from '../../Typography/P';
+import P from '@/js/components/Typography/P';
 
 export default function AdditionalDescription( {
 	inProgress,

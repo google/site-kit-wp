@@ -28,22 +28,22 @@ import {
 	waitFor,
 } from '../../../../../../tests/js/test-utils';
 import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
-import * as fixtures from '../../datastore/__fixtures__';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
+import * as fixtures from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../../../../googlesitekit/notifications/constants';
+} from '@/js/googlesitekit/notifications/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-} from '../../datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
-import * as tracking from '../../../../util/tracking';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import useQueryArg from '../../../../hooks/useQueryArg';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
-import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import * as tracking from '@/js/util/tracking';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
 jest.mock( '../../../../hooks/useQueryArg' );
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -115,6 +115,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 					return [ 'authentication_success', setValueMock ];
 				case 'slug':
 					return [ MODULE_SLUG_READER_REVENUE_MANAGER, setValueMock ];
+				default:
+					return [ null, setValueMock ];
 			}
 		} );
 

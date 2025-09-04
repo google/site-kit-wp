@@ -20,10 +20,10 @@
  * Internal dependencies
  */
 import { provideModules } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import AdSenseConnectCTAWidget from './AdSenseConnectCTAWidget';
-import { MODULE_SLUG_ADSENSE } from '../../constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'adSenseConnectCTA'

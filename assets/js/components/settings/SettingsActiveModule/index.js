@@ -27,11 +27,11 @@ import { useParams } from 'react-router-dom';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { Cell, Grid, Row } from '../../../material-components';
-import SettingsOverlay from '../SettingsOverlay';
-import SettingsRenderer from '../SettingsRenderer';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
+import SettingsOverlay from '@/js/components/settings/SettingsOverlay';
+import SettingsRenderer from '@/js/components/settings/SettingsRenderer';
 import Header from './Header';
 import Footer from './Footer';
 import ConfirmDisconnect from './ConfirmDisconnect';

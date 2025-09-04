@@ -24,19 +24,19 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import {
 	getAnalytics4MockResponse,
 	provideAnalyticsReportWithoutDateRangeData,
-} from '../../modules/analytics-4/utils/data-mock';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { provideSearchConsoleMockReport } from '@/js/modules/search-console/util/data-mock';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { DAY_IN_SECONDS } from '../../util';
-import { properties } from '../../modules/analytics-4/datastore/__fixtures__';
-import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
+import { properties } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 
 const adminbarSearchConsoleOptions = [
 	{

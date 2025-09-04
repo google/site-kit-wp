@@ -39,24 +39,24 @@ import {
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../googlesitekit/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { stringToDate } from '../../../../util';
-import * as tracking from '../../../../util/tracking';
+} from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { stringToDate } from '@/js/util';
+import * as tracking from '@/js/util/tracking';
 import {
 	AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
-} from '../../datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../constants';
+} from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import {
 	ACCOUNT_STATUS_PENDING,
 	ACCOUNT_STATUS_READY,
 	SITE_STATUS_ADDED,
 	SITE_STATUS_READY,
-} from '../../util';
+} from '@/js/modules/adsense/util';
 import AdBlockingRecoverySetupCTAWidget from './AdBlockingRecoverySetupCTAWidget';
 import {
 	dismissedPromptsEndpoint,

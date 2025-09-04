@@ -35,15 +35,15 @@ import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
-} from '../../modules/analytics-4/datastore/constants';
-import { ZeroDataMessage } from '../../modules/analytics-4/components/common';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import PreviewTable from '../PreviewTable';
-import TableOverflowContainer from '../TableOverflowContainer';
-import ReportTable from '../ReportTable';
-import DetailsPermaLinks from '../DetailsPermaLinks';
-import { numFmt } from '../../util';
-import Typography from '../Typography';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import PreviewTable from '@/js/components/PreviewTable';
+import TableOverflowContainer from '@/js/components/TableOverflowContainer';
+import ReportTable from '@/js/components/ReportTable';
+import DetailsPermaLinks from '@/js/components/DetailsPermaLinks';
+import { numFmt } from '@/js/util';
+import Typography from '@/js/components/Typography';
 
 export default function WPDashboardPopularPagesGA4( {
 	WPDashboardReportError,

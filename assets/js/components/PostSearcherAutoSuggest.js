@@ -40,8 +40,8 @@ import { END, ENTER, ESCAPE, HOME } from '@wordpress/keycodes';
  */
 import { get } from 'googlesitekit-api';
 import { useSelect } from 'googlesitekit-data';
-import { useDebouncedState } from '../hooks/useDebouncedState';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { useDebouncedState } from '@/js/hooks/useDebouncedState';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 function noop() {}
 
@@ -178,6 +178,8 @@ export default function PostSearcherAutoSuggest( {
 			// Clean-up abort
 			return () => controller?.abort();
 		}
+		// Return noop cleanup function to satisfy consistent-return rule.
+		return () => {};
 	}, [
 		debouncedValue,
 		setIsLoading,
@@ -224,9 +226,11 @@ export default function PostSearcherAutoSuggest( {
 
 			switch ( e.keyCode ) {
 				case ESCAPE:
-					return onClose();
+					onClose();
+					break;
 				case ENTER:
-					return onSelectCallback( searchTerm );
+					onSelectCallback( searchTerm );
+					break;
 				default:
 					break;
 			}

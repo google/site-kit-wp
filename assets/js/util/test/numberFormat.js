@@ -24,7 +24,7 @@ import { set, unset } from 'lodash';
 /**
  * Internal dependencies
  */
-import { numberFormat } from '../';
+import { numberFormat } from '@/js/util';
 
 function setupGoogleSiteKit( langCode ) {
 	set( global._googlesitekitLegacyData, 'locale', langCode );

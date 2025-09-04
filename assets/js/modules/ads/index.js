@@ -25,17 +25,17 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import AdsIcon from '../../../svg/graphics/ads.svg';
+import AdsIcon from '@/svg/graphics/ads.svg';
 import { SettingsEdit, SettingsView } from './components/settings';
 import { SetupMain, SetupMainPAX } from './components/setup';
 import { MODULES_ADS } from './datastore/constants';
 import { MODULE_SLUG_ADS } from './constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	CORE_USER,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
-} from '../../googlesitekit/datastore/user/constants';
-import { isFeatureEnabled } from '../../features';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { isFeatureEnabled } from '@/js/features';
 import {
 	PAXSetupSuccessSubtleNotification,
 	SetupSuccessSubtleNotification,
@@ -46,11 +46,11 @@ import {
 	NOTIFICATION_GROUPS,
 	NOTIFICATION_AREAS,
 	PRIORITY,
-} from '../../googlesitekit/notifications/constants';
+} from '@/js/googlesitekit/notifications/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
 
 export { registerStore } from './datastore';

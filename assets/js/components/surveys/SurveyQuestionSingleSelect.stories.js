@@ -67,4 +67,5 @@ SurveyQuestionSingleSelectStory.args = {
 
 export default {
 	title: 'Components/Surveys/SurveyQuestionSingleSelect',
+	component: SurveyQuestionSingleSelect,
 };

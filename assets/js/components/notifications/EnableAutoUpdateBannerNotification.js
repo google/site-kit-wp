@@ -31,11 +31,11 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { TYPES } from '../Notice/constants';
-import useViewContext from '../../hooks/useViewContext';
-import ErrorNotice from '../ErrorNotice';
-import NoticeNotification from '../../googlesitekit/notifications/components/layout/NoticeNotification';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { TYPES } from '@/js/components/Notice/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 
 export const ENABLE_AUTO_UPDATES_BANNER_SLUG = 'auto-update-cta';
 

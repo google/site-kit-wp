@@ -30,8 +30,8 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import useViewContext from '../hooks/useViewContext';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import TourTooltips from './TourTooltips';
 
 export default function FeatureTours() {
@@ -48,7 +48,8 @@ export default function FeatureTours() {
 
 	useEffect( () => {
 		if ( ! tour ) {
-			return;
+			// Return noop cleanup function to satisfy consistent-return rule.
+			return () => {};
 		}
 
 		const dashboardElement = document.getElementById(
@@ -56,7 +57,8 @@ export default function FeatureTours() {
 		);
 
 		if ( ! dashboardElement ) {
-			return;
+			// Return noop cleanup function to satisfy consistent-return rule.
+			return () => {};
 		}
 
 		const observer = new ResizeObserver( () => {

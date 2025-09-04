@@ -39,9 +39,9 @@ import {
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	getUserInputAnswers,
 	USER_INPUT_QUESTIONS_GOALS,
@@ -53,17 +53,17 @@ import {
 } from './util/constants';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
-import useQueryArg from '../../hooks/useQueryArg';
-import ErrorNotice from '../ErrorNotice';
-import LoadingWrapper from '../LoadingWrapper';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import LoadingWrapper from '@/js/components/LoadingWrapper';
 import CancelUserInputButton from './CancelUserInputButton';
 import { hasErrorForAnswer } from './util/validation';
-import Portal from '../Portal';
-import ConfirmSitePurposeChangeModal from '../KeyMetrics/ConfirmSitePurposeChangeModal';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import Portal from '@/js/components/Portal';
+import ConfirmSitePurposeChangeModal from '@/js/components/KeyMetrics/ConfirmSitePurposeChangeModal';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import KeyMetricsSettingsSellProductsSubtleNotification from './KeyMetricsSettingsSellProductsSubtleNotification';
-import useFormValue from '../../hooks/useFormValue';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function UserInputPreview( props ) {
 	const {

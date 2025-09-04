@@ -20,10 +20,10 @@
  * Internal dependencies
  */
 import WPDashboardWidgets from './WPDashboardWidgets';
-import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
@@ -42,7 +42,7 @@ import {
 	widgetDecorators,
 	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
 } from './common-GA4-stories';
-import { VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY } from '../../googlesitekit/constants';
+import { VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 function Template( { setupRegistry, viewContext } ) {

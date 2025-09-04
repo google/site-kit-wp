@@ -7,7 +7,7 @@
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  *
- * @version   e0c6ff8
+ * @version   72113a8
  *
  * NOTICE: This file has been modified from its original version in accordance with the Apache License, Version 2.0.
  */
@@ -32,6 +32,7 @@ if ( isset( $_GET['healthCheck'] ) ) { // phpcs:ignore WordPress.Security.NonceV
 final class Measurement
 {
     private const TAG_ID_QUERY = '?id=';
+    private const GEO_QUERY = '&geo=';
     private const PATH_QUERY = '&s=';
     private const FPS_PATH = 'PHP_GTG_REPLACE_PATH';
 
@@ -51,6 +52,7 @@ final class Measurement
     public function run()
     {
         $redirectorFile = $_SERVER['SCRIPT_NAME'] ?? '';
+        $redirectorFile = RequestHelper::sanitizePathForUrl($redirectorFile);
         if (empty($redirectorFile)) {
             $this->helper->invalidRequest(500);
             return "";
@@ -60,74 +62,69 @@ final class Measurement
 
         $tagId = $parameters['tag_id'];
         $path = $parameters['path'];
+        $geo = $parameters['geo'];
+        $mpath = $parameters['mpath'];
 
         if (empty($tagId) || empty($path)) {
             $this->helper->invalidRequest(400);
             return "";
         }
 
-        if (!self::isScriptRequest($path) && !self::isHealthCheck($path)) {
-            $path = self::appendRequestIP($path);
-        }
+        $useMpath = empty($mpath) ? self::FPS_PATH : $mpath;
 
-        $fpsUrl = 'https://' . $tagId . '.fps.goog/' . self::FPS_PATH . $path;
+        $fpsUrl = 'https://' . $tagId . '.fps.goog/' . $useMpath . $path;
 
         $requestHeaders = $this->helper->getRequestHeaders();
+        if (isset($_SERVER['REMOTE_ADDR'])) {
+            $requestHeaders[] = "x-forwarded-for: {$_SERVER['REMOTE_ADDR']}";
+        }
+        if (!empty($geo)) {
+            $requestHeaders[] = "x-forwarded-countryregion: {$geo}";
+        }
+
         $response = $this->helper->sendRequest($fpsUrl, $requestHeaders);
-        if (self::isScriptResponse($response['headers'])) {
-            $response['body'] = str_replace(
-                '/' . self::FPS_PATH . '/',
-                $redirectorFile . self::TAG_ID_QUERY . $tagId . self::PATH_QUERY,
-                $response['body']
-            );
+
+        if ($useMpath === self::FPS_PATH) {
+            $substitutionMpath = $redirectorFile . self::TAG_ID_QUERY . $tagId;
+            if (!empty($geo)) {
+                $substitutionMpath .= self::GEO_QUERY . $geo;
+            }
+            $substitutionMpath .= self::PATH_QUERY;
+
+            if (self::isScriptResponse($response['headers'])) {
+                $response['body'] = str_replace(
+                    '/' . self::FPS_PATH . '/',
+                    $substitutionMpath,
+                    $response['body']
+                );
+            } elseif (self::isRedirectResponse($response['statusCode']) && !empty($response['headers'])) {
+                foreach ($response['headers'] as $refKey => $header) {
+                    // Ensure we are only processing strings.
+                    if (!is_string($header)) {
+                        continue;
+                    }
+
+                    $headerParts = explode(':', $response['headers'][$refKey], 2);
+                    if (count($headerParts) !== 2) {
+                        continue;
+                    }
+                    $key = trim($headerParts[0]);
+                    $value = trim($headerParts[1]);
+                    if (strtolower($key) !== 'location') {
+                        continue;
+                    }
+
+                    $newValue = str_replace(
+                        '/' . self::FPS_PATH,
+                        $substitutionMpath,
+                        $value
+                    );
+                    $response['headers'][$refKey] = "{$key}: {$newValue}";
+                    break;
+                }
+            }
         }
         return $response;
-    }
-
-    private static function appendRequestIP($path)
-    {
-        if (!isset($_SERVER['REMOTE_ADDR'])) {
-            return $path;
-        }
-
-        $requestIP = $_SERVER['REMOTE_ADDR'];
-        //  Use x-forwarded-for IP if behind a proxy
-        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $requestIP = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        }
-        $requestIP = urlencode($requestIP);
-
-        $isGaPath = strpos($path, '/g/collect') !== false;
-        if ($isGaPath) {
-            return $path . '&_uip=' . $requestIP;
-        } else {
-            return $path . '&uip=' . $requestIP;
-        }
-    }
-
-    /**
-     * Use best effort for determining if a request path is a script request.
-     *
-     * @param string $requestPath
-     * @return bool
-     */
-    private static function isScriptRequest(string $requestPath): bool
-    {
-        return substr($requestPath, 0, 7) === "/gtm.js"
-            || substr($requestPath, 0, 8) === "/gtag.js"
-            || substr($requestPath, 0, 8) === "/gtag/js";
-    }
-
-    /**
-     * Use best effort for determining if a request path is a health check
-     * request.
-     *
-     * @param string $requestPath
-     * @return bool
-     */
-    private static function isHealthCheck(string $requestPath): bool
-    {
-        return substr($requestPath, 0, 8) === "/healthy";
     }
 
     /**
@@ -152,6 +149,26 @@ final class Measurement
         return false;
     }
 
+    /**
+     * Checks if the response is a redirect response.
+     * @param int $statusCode
+     */
+    private static function isRedirectResponse(int $statusCode): bool
+    {
+        return $statusCode >= 300 && $statusCode < 400;
+    }
+
+    /**
+     * Extract the the tag ID, request path, geo location, and measurement path
+     * from the current request context.
+     *
+     * @return array{
+     *      'tag_id': string,
+     *      'path': string,
+     *      'geo': string,
+     *      'mpath': string,
+     * } The request parameters extracted.
+     */
     private static function extractParameters(): array
     {
         $get = $_GET;
@@ -159,31 +176,53 @@ final class Measurement
             return array(
                 "tag_id" => '',
                 "path" => '',
+                "geo" => '',
+                "mpath" => '',
             );
         }
 
         $tagId = $get['id'] ?? '';
         $path = $get['s'] ?? '';
+        $geo = $get['geo'] ?? '';
+        $mpath = $get['mpath'] ?? '';
+
+        // When measurment path is present it might accidently pass an empty
+        // path character depending on how the url rules are processed so as a
+        // safety when path is empty we should assume that it is a request to
+        // the root.
+        if (empty($path)) {
+            $path = '/';
+        }
 
         // Validate tagId
         if (!preg_match('/^[A-Za-z0-9-]*$/', $tagId)) {
             return array(
                 "tag_id" => '',
                 "path" => '',
+                "geo" => '',
+                "mpath" => '',
             );
         }
 
-        unset($get['id'], $get['s']);
+        // Basic Geo validation
+        if (!preg_match('/^[A-Za-z0-9-]*$/', $geo)) {
+            $geo = '';
+        }
+
+        unset($get['id'], $get['s'], $get['geo'], $get['mpath']);
 
         if (!empty($get)) {
             $containsQueryParameters = strpos($path, '?') !== false;
             $paramSeparator = $containsQueryParameters ? '&' : '?';
-            $path .= $paramSeparator . http_build_query($get, '', '&', PHP_QUERY_RFC3986);
+            $path .= $paramSeparator .
+                http_build_query($get, '', '&', PHP_QUERY_RFC3986);
         }
 
         return array(
             "tag_id" => $tagId,
             "path" => $path,
+            "geo" => $geo,
+            "mpath" => $mpath,
         );
     }
 }
@@ -209,7 +248,9 @@ class RequestHelper
         'HTTP_HOST' => true,
         'HTTP_TRANSFER_ENCODING' => true,
         # Sensitive headers to exclude from all requests.
-        'HTTP_COOKIE' => true,
+        'HTTP_AUTHORIZATION' => true,
+        'HTTP_PROXY_AUTHORIZATION' => true,
+        'HTTP_X_API_KEY' => true,
     ];
 
     /**
@@ -269,6 +310,58 @@ class RequestHelper
             $headers[] = "$headerKey: $value";
         }
         return $headers;
+    }
+
+    /**
+     * Sanitizes a path to a URL path.
+     *
+     * This function performs two critical actions:
+     * 1. Extract ONLY the path component, discarding any scheme, host, port,
+     *    user, pass, query, or fragment.
+     *    Primary defense against Server-Side Request Forgery (SSRF).
+     * 2. Normalize the path to resolve directory traversal segments like
+     *    '.' and '..'.
+     *    Prevents path traversal attacks.
+     *
+     * @param string $pathInput The raw path string.
+     * @return string|false The sanitized and normalized URL path.
+     */
+    public static function sanitizePathForUrl(string $pathInput): string
+    {
+        if (empty($pathInput)) {
+            return false;
+        }
+        // Normalize directory separators to forward slashes for Windows like directories.
+        $path = str_replace('\\', '/', $pathInput);
+
+        // 2. Normalize the path to resolve '..' and '.' segments.
+        $parts = [];
+        // Explode the path into segments. filter removes empty segments (e.g., from '//').
+        $segments = explode('/', trim($path, '/'));
+
+        foreach ($segments as $segment) {
+            if ($segment === '.' || $segment === '') {
+                // Ignore current directory and empty segments.
+                continue;
+            }
+            if ($segment === '..') {
+                // Go up one level by removing the last part.
+                if (array_pop($parts) === null) {
+                    // If we try and traverse too far back, outside of the root
+                    // directory, this is likely an invalid configuration so
+                    // eturn false to have caller handle this error.
+                    return false;
+                }
+            } else {
+                // Add the segment to our clean path.
+                $parts[] = rawurlencode($segment);
+            }
+        }
+
+        // Rebuild the final path.
+        $sanitizedPath = implode('/', $parts);
+
+        return '/' . $sanitizedPath;
     }
 
     /**

@@ -32,9 +32,12 @@ import {
 	combineStores,
 	createReducer,
 } from 'googlesitekit-data';
-import { createFetchStore } from '../../data/create-fetch-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { CORE_MODULES } from './constants';
-import { createStrictSelect, createValidationSelector } from '../../data/utils';
+import {
+	createStrictSelect,
+	createValidationSelector,
+} from '@/js/googlesitekit/data/utils';
 
 // Actions
 const SET_SHARING_MANAGEMENT = 'SET_SHARING_MANAGEMENT';

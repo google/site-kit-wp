@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { readableLargeNumber } from '../';
+import { readableLargeNumber } from '@/js/util';
 
 describe( 'readableLargeNumber', () => {
 	const valuesToTest = [

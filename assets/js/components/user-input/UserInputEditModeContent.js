@@ -26,13 +26,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import ErrorNotice from '../ErrorNotice';
-import useViewContext from '../../hooks/useViewContext';
-import { trackEvent } from '../../util';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
 import UserInputSelectOptions from './UserInputSelectOptions';
 import { getErrorMessageForAnswer, hasErrorForAnswer } from './util/validation';
@@ -67,12 +67,15 @@ export default function UserInputEditModeContent( {
 	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigating()
 	);
-	const isSavingSettings = useSelect( ( select ) => {
-		const userInputSettings = select( CORE_USER ).getUserInputSettings();
-		return select( CORE_USER ).isSavingUserInputSettings(
-			userInputSettings
-		);
-	} );
+	const userInputSettings = useSelect( ( select ) =>
+		select( CORE_USER ).getUserInputSettings()
+	);
+	const isSavingSettings = useSelect( ( select ) =>
+		select( CORE_USER ).isSavingUserInputSettings( userInputSettings )
+	);
+	const userInputValuesHaveErrors = hasErrorForAnswer(
+		userInputSettings?.[ slug ]?.values || []
+	);
 	const isScreenLoading = isSavingSettings || isNavigating;
 	const saveSettingsError = useSelect( ( select ) =>
 		select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] )
@@ -145,7 +148,9 @@ export default function UserInputEditModeContent( {
 					) }
 					<div className="googlesitekit-user-input__preview-actions">
 						<SpinnerButton
-							disabled={ answerHasError }
+							disabled={
+								answerHasError || userInputValuesHaveErrors
+							}
 							onClick={
 								hasSettingChanged
 									? submitChanges

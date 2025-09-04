@@ -24,8 +24,8 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import useWidgetStateEffect from '../hooks/useWidgetStateEffect';
-import Null from '../../../components/Null';
+import useWidgetStateEffect from '@/js/googlesitekit/widgets/hooks/useWidgetStateEffect';
+import Null from '@/js/components/Null';
 
 // This doesn't need to change.
 const metadata = {};

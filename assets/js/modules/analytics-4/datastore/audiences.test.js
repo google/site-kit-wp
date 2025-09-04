@@ -24,6 +24,7 @@ import {
 	freezeFetch,
 	muteFetch,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
 	provideUserInfo,
@@ -39,9 +40,9 @@ import {
 	MODULES_ANALYTICS_4,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../util/errors';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import {
 	properties as propertiesFixture,
 	audiences as audiencesFixture,
@@ -619,6 +620,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					},
 				] );
 
+				provideSiteInfo( registry );
 				provideUserAuthentication( registry );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {

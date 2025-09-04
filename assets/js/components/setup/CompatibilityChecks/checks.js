@@ -17,8 +17,8 @@
  */
 
 import { get } from 'googlesitekit-api';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { isIPAddressInRange } from '../../../util/ip-cidr';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { isIPAddressInRange } from '@/js/util/ip-cidr';
 import {
 	AMP_PROJECT_TEST_URL,
 	ERROR_AMP_CDN_RESTRICTED,

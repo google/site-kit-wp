@@ -20,21 +20,23 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, useRegistry } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-} from '../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import useViewContext from '../../hooks/useViewContext';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import BannerNotification, {
 	TYPES,
-} from '../../googlesitekit/notifications/components/layout/BannerNotification';
-import useFormValue from '../../hooks/useFormValue';
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function SetupErrorMessageNotification( { Notification } ) {
 	const id = 'setup_error';
@@ -95,6 +97,15 @@ export default function SetupErrorMessageNotification( { Notification } ) {
 		}
 	}
 
+	const registry = useRegistry();
+	const snapshotCoreFormsStore = useCallback( async () => {
+		if ( temporaryPersistedPermissionsError?.data ) {
+			// Snapshot `CORE_FORMS` store to ensure the form data with current error data
+			// is retained across page navigations.
+			await snapshotAllStores( registry );
+		}
+	}, [ temporaryPersistedPermissionsError, registry ] );
+
 	const gaTrackingProps = {
 		gaTrackingEventArgs: { category: `${ viewContext }_${ id }` },
 	};
@@ -110,6 +121,7 @@ export default function SetupErrorMessageNotification( { Notification } ) {
 					setupErrorRedoURL && {
 						label: ctaLabel,
 						href: setupErrorRedoURL,
+						onClick: snapshotCoreFormsStore,
 					}
 				}
 				learnMoreLink={ {

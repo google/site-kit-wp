@@ -32,14 +32,14 @@ import { act, fireEvent, render } from '../../../../../../tests/js/test-utils';
 import PublicationApprovedOverlayNotification, {
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
 } from './PublicationApprovedOverlayNotification';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
-import { NOTIFICATIONS } from '../..';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 
 describe( 'PublicationApprovedOverlayNotification', () => {

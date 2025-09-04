@@ -66,4 +66,5 @@ SurveyQuestionRatingStory.args = {
 
 export default {
 	title: 'Components/Surveys/SurveyQuestionRating',
+	component: SurveyQuestionRating,
 };

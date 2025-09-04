@@ -27,7 +27,7 @@ import {
 	combineStores,
 } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
-import { createFetchStore } from '../../data/create-fetch-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 
 // Actions
 const RECEIVE_NONCES = 'RECEIVE_NONCES';

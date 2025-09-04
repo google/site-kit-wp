@@ -48,12 +48,12 @@ import {
 	CORE_MODULES,
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
 } from './constants';
-import { CORE_SITE } from '../../datastore/site/constants';
-import { CORE_USER } from '../../datastore/user/constants';
-import { createFetchStore } from '../../data/create-fetch-store';
-import { listFormat } from '../../../util';
-import DefaultSettingsSetupIncomplete from '../../../components/settings/DefaultSettingsSetupIncomplete';
-import { createValidatedAction } from '../../data/utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { listFormat } from '@/js/util';
+import DefaultSettingsSetupIncomplete from '@/js/components/settings/DefaultSettingsSetupIncomplete';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
@@ -579,7 +579,7 @@ export const baseControls = {
 
 				// If a storeName wasn't specified on registerModule we assume there is no store for this module
 				if ( ! storeName ) {
-					return;
+					return null;
 				}
 
 				if ( select( storeName )?.getAdminReauthURL ) {

@@ -31,7 +31,7 @@ import { addQueryArgs, isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { AMP_MODE_SECONDARY } from '../googlesitekit/datastore/site/constants';
+import { AMP_MODE_SECONDARY } from '@/js/googlesitekit/datastore/site/constants';
 
 /**
  * Extracts a tag from the given HTML string matched by given matchers.
