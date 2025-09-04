@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+// TODO: #10473 will complete the migration to Storybook test-runner as storyshots is deprecated.
+
 // /**
 //  * Node dependencies
 //  */
