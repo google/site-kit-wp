@@ -1,7 +1,7 @@
 # Site Kit by Google
 
-![WordPress Version](https://img.shields.io/badge/WordPress-%3E=5.2-blue)
-![PHP Version](https://img.shields.io/badge/PHP-%3E=7.4-lightgrey)
+![WordPress Version](https://img.shields.io/badge/WordPress-%3E=5.2-blue) &nbsp;&nbsp;
+![PHP Version](https://img.shields.io/badge/PHP-%3E=7.4-lightgrey) &nbsp;&nbsp;
 ![GitHub Stars](https://img.shields.io/github/stars/google/site-kit-wp?style=social)
 
 Site Kit is a **one-stop solution for WordPress users** to use everything Google has to offer to succeed on the web.  
