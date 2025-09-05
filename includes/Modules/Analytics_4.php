@@ -375,6 +375,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 				// For new users connecting for the first time, always require the edit scope.
 				// For existing users who already have the edit scope, continue requiring it.
+				// For existing users who are in the process of connecting Analytics, require the edit scope.
 				// For existing users who only have the readonly scope, don't require the edit
 				// scope. This ensures they don't have to reconnect.
 				$is_authenticated = $this->authentication->is_authenticated();
@@ -383,10 +384,16 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					// New user connecting for the first time - require edit scope.
 					$scopes[] = self::EDIT_SCOPE;
 				} else {
-					// Existing user - only require edit scope if they already have it.
+					// Existing user - only require edit scope if they have already connected Analytics and granted
+					// the edit scope, or if they are in the process of connecting Analytics.
 					$granted_scopes = $oauth_client->get_granted_scopes();
 
-					if ( in_array( self::EDIT_SCOPE, $granted_scopes, true ) ) {
+					// Check if the user is in the process of connecting Analytics by:
+					// 1. User has granted the edit scope previously, OR
+					// 2. User is currently in setup mode (not yet fully connected).
+					$is_in_setup_process = ! $this->is_connected();
+
+					if ( in_array( self::EDIT_SCOPE, $granted_scopes, true ) || $is_in_setup_process ) {
 						$scopes[] = self::EDIT_SCOPE;
 					}
 				}
