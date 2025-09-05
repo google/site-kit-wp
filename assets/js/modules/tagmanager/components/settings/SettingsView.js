@@ -35,6 +35,7 @@ import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants'
 import { escapeURI } from '@/js/util/escape-uri';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import SettingsGoogleTagGatewayStatus from './SettingsGoogleTagGatewayStatus';
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>
@@ -263,6 +264,7 @@ export default function SettingsView() {
 						</P>
 					) }
 				</div>
+				<SettingsGoogleTagGatewayStatus />
 			</div>
 		</Fragment>
 	);
