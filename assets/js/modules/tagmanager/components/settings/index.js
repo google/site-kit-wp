@@ -20,3 +20,4 @@ export { default as SettingsEdit } from './SettingsEdit';
 export { default as SettingsForm } from './SettingsForm';
 export { default as SettingsUseSnippetSwitch } from './SettingsUseSnippetSwitch';
 export { default as SettingsView } from './SettingsView';
+export { default as SettingsGoogleTagGatewayStatus } from './SettingsGoogleTagGatewayStatus';
