@@ -115,7 +115,7 @@ export function normalizeMessage( message ) {
  * @return {boolean} True if any pattern matches; otherwise false.
  */
 export function matchesAny( text, patterns ) {
-	return patterns.some( ( rx ) => rx.test( text ) );
+	return patterns.some( ( regularExpression ) => regularExpression.test( text ) );
 }
 
 /**
