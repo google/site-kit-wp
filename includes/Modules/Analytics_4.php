@@ -497,9 +497,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 * @return array List of Google OAuth scopes.
 	 */
 	public function get_scopes() {
-		// We are always going to setup Key Metric and Audience Segmentation when connecting Analytics, so we need to include the `edit` scope
-		// in order to be able to create audiences and custom dimensions. We also need the `readonly` scope for viewing Analytics data.
-		return array( self::READONLY_SCOPE, self::EDIT_SCOPE );
+		return array( self::READONLY_SCOPE );
 	}
 
 	/**
