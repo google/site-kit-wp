@@ -80,9 +80,11 @@ export function AdminMenuTooltip() {
 	return (
 		<JoyrideTooltip
 			target={ isMobileTablet ? 'body' : defaultTarget }
-			placement={ isMobileTablet ? 'center' : 'auto' }
+			placement={ isMobileTablet ? 'center' : 'right' }
 			className={
-				isMobileTablet ? 'googlesitekit-tour-tooltip__modal_step' : ''
+				isMobileTablet
+					? 'googlesitekit-tour-tooltip__modal_step'
+					: 'googlesitekit-tour-tooltip__fixed-settings-tooltip'
 			}
 			disableOverlay={ ! isMobileTablet }
 			slug="ga4-activation-banner-admin-menu-tooltip"
