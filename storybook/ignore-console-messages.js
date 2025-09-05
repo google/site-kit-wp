@@ -155,14 +155,14 @@ export function isIgnored( rawMessage, storyID ) {
  *
  * @since n.e.x.t
  *
- * @param {string} url Full storybook URL.
+ * @param {string} urlString Full storybook URL.
  * @return {string|null} Story ID if found; otherwise null.
  */
-export function getStoryIDFromURL( url ) {
+export function getStoryIDFromURL( urlString ) {
 	try {
-		const u = new URL( url );
-		return u.searchParams.get( 'id' );
-	} catch ( e ) {
+		const url = new URL( urlString );
+		return url.searchParams.get( 'id' );
+	} catch ( error ) {
 		return null;
 	}
 }
