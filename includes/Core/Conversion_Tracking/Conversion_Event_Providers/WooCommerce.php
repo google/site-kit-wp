@@ -12,6 +12,8 @@ namespace Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers;
 
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
+use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Modules\Ads\Enhanced_Conversions;
 
 /**
  * Class for handling WooCommerce conversion events.
@@ -320,7 +322,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 * @return array
 	 */
 	public function get_formatted_order( $order ) {
-		return array(
+		$order_data = array(
 			'id'          => $order->get_id(),
 			'affiliation' => get_bloginfo( 'name' ),
 			'totals'      => array(
@@ -342,6 +344,136 @@ class WooCommerce extends Conversion_Events_Provider {
 				array_values( $order->get_items() ),
 			),
 		);
+
+		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
+			$user_data = $this->extract_user_data_from_order( $order );
+			if ( ! empty( $user_data ) ) {
+				$order_data['user_data'] = $user_data;
+			}
+		}
+
+		return $order_data;
+	}
+
+	/**
+	 * Extracts and normalizes user data from WooCommerce order for Enhanced Conversions.
+	 *
+	 * @since 1.161.0
+	 *
+	 * @param WC_Abstract_Order $order An instance of the WooCommerce Order object.
+	 *
+	 * @return array Normalized user data or empty array if no supported fields are available.
+	 */
+	protected function extract_user_data_from_order( $order ) {
+		$user_data = array();
+
+		// Extract billing information from the order.
+		$billing_email      = $order->get_billing_email();
+		$billing_phone      = $order->get_billing_phone();
+		$billing_first_name = $order->get_billing_first_name();
+		$billing_last_name  = $order->get_billing_last_name();
+		$billing_address_1  = $order->get_billing_address_1();
+		$billing_city       = $order->get_billing_city();
+		$billing_state      = $order->get_billing_state();
+		$billing_postcode   = $order->get_billing_postcode();
+		$billing_country    = $order->get_billing_country();
+
+		// Normalize and add email if available.
+		if ( ! empty( $billing_email ) ) {
+			$user_data['email'] = Enhanced_Conversions::get_normalized_email( $billing_email );
+		}
+
+		// Normalize and add phone number if available.
+		if ( ! empty( $billing_phone ) ) {
+			$normalized_phone = $this->get_normalized_phone( $billing_phone, $billing_country );
+			if ( ! empty( $normalized_phone ) ) {
+				$user_data['phone_number'] = $normalized_phone;
+			}
+		}
+
+		// Build address object if any address fields are available.
+		$address_data = array();
+
+		if ( ! empty( $billing_first_name ) ) {
+			$address_data['first_name'] = Enhanced_Conversions::get_normalized_value( $billing_first_name );
+		}
+
+		if ( ! empty( $billing_last_name ) ) {
+			$address_data['last_name'] = Enhanced_Conversions::get_normalized_value( $billing_last_name );
+		}
+
+		if ( ! empty( $billing_address_1 ) ) {
+			$address_data['street'] = Enhanced_Conversions::get_normalized_value( $billing_address_1 );
+		}
+
+		if ( ! empty( $billing_city ) ) {
+			$address_data['city'] = Enhanced_Conversions::get_normalized_value( $billing_city );
+		}
+
+		if ( ! empty( $billing_state ) ) {
+			$address_data['region'] = Enhanced_Conversions::get_normalized_value( $billing_state );
+		}
+
+		if ( ! empty( $billing_postcode ) ) {
+			$address_data['postal_code'] = Enhanced_Conversions::get_normalized_value( $billing_postcode );
+		}
+
+		if ( ! empty( $billing_country ) ) {
+			$address_data['country'] = Enhanced_Conversions::get_normalized_value( $billing_country );
+		}
+
+		// Only include address if it has at least one field.
+		if ( ! empty( $address_data ) ) {
+			$user_data['address'] = $address_data;
+		}
+
+		return $user_data;
+	}
+
+	/**
+	 * Gets a normalized phone number for Enhanced Conversions.
+	 *
+	 * @since 1.161.0
+	 *
+	 * @param string $phone The phone number to normalize.
+	 * @param string $country The country code (2-letter ISO 3166-1 alpha-2).
+	 * @return string Normalized phone number (E.164 format if possible, basic normalization otherwise).
+	 */
+	protected function get_normalized_phone( $phone, $country ) {
+		if ( empty( $phone ) ) {
+			return '';
+		}
+
+		// Try to use WooCommerce's country calling codes for proper E.164 formatting.
+		if ( class_exists( 'WC_Countries' ) && ! empty( $country ) ) {
+			$countries    = new \WC_Countries();
+			$calling_code = $countries->get_country_calling_code( $country );
+
+			// If we have a valid calling code, format to E.164.
+			if ( ! empty( $calling_code ) ) {
+				// Remove any non-digit characters and leading zeros.
+				$phone = ltrim( preg_replace( '/[^0-9]/', '', $phone ), '0' );
+
+				// Skip if phone is empty after cleaning.
+				if ( empty( $phone ) ) {
+					return '';
+				}
+
+				// Prepend the calling code (which already includes the + sign).
+				$phone = $calling_code . $phone;
+
+				// Validate the number is the correct length (11-15 digits including +).
+				if ( strlen( $phone ) < 11 || strlen( $phone ) > 15 ) {
+					return '';
+				}
+
+				return $phone;
+			}
+		}
+
+		// Fallback: use Enhanced_Conversions basic normalization if WooCommerce is unavailable
+		// or country calling code cannot be determined.
+		return Enhanced_Conversions::get_normalized_value( $phone );
 	}
 
 	/**

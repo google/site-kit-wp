@@ -88,7 +88,7 @@ import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
 		Component: UnsatisfiedScopesAlert,
-		priority: PRIORITY.ERROR_LOW,
+		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -99,9 +99,6 @@ export const DEFAULT_NOTIFICATIONS = {
 		],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			await Promise.all( [
-				// The getSetupErrorMessage selector relies on the resolution
-				// of the getSiteInfo() resolver.
-				resolveSelect( CORE_SITE ).getSiteInfo(),
 				// The isAuthenticated(), hasScope() and getUnsatisfiedScopes() selectors
 				// rely on the resolution of getAuthentication().
 				resolveSelect( CORE_USER ).getAuthentication(),
@@ -109,9 +106,6 @@ export const DEFAULT_NOTIFICATIONS = {
 				// of the getModules() resolver.
 				resolveSelect( CORE_MODULES ).getModules(),
 			] );
-
-			const setupErrorMessage =
-				select( CORE_SITE ).getSetupErrorMessage();
 
 			const isAuthenticated = select( CORE_USER ).isAuthenticated();
 
@@ -133,7 +127,6 @@ export const DEFAULT_NOTIFICATIONS = {
 
 			return (
 				unsatisfiedScopes?.length &&
-				! setupErrorMessage &&
 				isAuthenticated &&
 				! showUnsatisfiedScopesAlertGTE
 			);
@@ -142,7 +135,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'authentication-error-gte': {
 		Component: UnsatisfiedScopesAlertGTE,
-		priority: PRIORITY.ERROR_LOW,
+		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -153,9 +146,6 @@ export const DEFAULT_NOTIFICATIONS = {
 		],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			await Promise.all( [
-				// The getSetupErrorMessage selector relies on the resolution
-				// of the getSiteInfo() resolver.
-				resolveSelect( CORE_SITE ).getSiteInfo(),
 				// The isAuthenticated() and hasScope() selectors
 				// rely on the resolution of getAuthentication().
 				resolveSelect( CORE_USER ).getAuthentication(),
@@ -163,9 +153,6 @@ export const DEFAULT_NOTIFICATIONS = {
 				// of the getModules() resolver.
 				resolveSelect( CORE_MODULES ).getModules(),
 			] );
-
-			const setupErrorMessage =
-				select( CORE_SITE ).getSetupErrorMessage();
 
 			const isAuthenticated = select( CORE_USER ).isAuthenticated();
 
@@ -180,17 +167,13 @@ export const DEFAULT_NOTIFICATIONS = {
 			const showUnsatisfiedScopesAlertGTE =
 				ga4ModuleConnected && ! hasTagManagerReadScope;
 
-			return (
-				! setupErrorMessage &&
-				isAuthenticated &&
-				showUnsatisfiedScopesAlertGTE
-			);
+			return isAuthenticated && showUnsatisfiedScopesAlertGTE;
 		},
 		isDismissible: false,
 	},
 	setup_plugin_error: {
 		Component: SetupErrorMessageNotification,
-		priority: PRIORITY.ERROR_HIGH,
+		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,

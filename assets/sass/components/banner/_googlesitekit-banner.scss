@@ -52,6 +52,12 @@
 		}
 	}
 
+	.googlesitekit-banner__title-icon {
+		height: 52px;
+		margin-bottom: $grid-gap-phone / 4;
+		width: 52px;
+	}
+
 	p.googlesitekit-banner__title {
 		font-family: $f-primary;
 		font-size: $fs-title-md;
