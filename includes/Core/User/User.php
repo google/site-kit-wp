@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\User;
 
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
  * Class for handling user settings rest routes.
@@ -38,6 +39,14 @@ class User {
 	private $conversion_reporting;
 
 	/**
+	 * Proactive_User_Engagement instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Proactive_User_Engagement
+	 */
+	private $proactive_user_engagement;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.134.0
@@ -47,6 +56,10 @@ class User {
 	public function __construct( User_Options $user_options ) {
 		$this->audience_segmentation = new Audience_Segmentation( $user_options );
 		$this->conversion_reporting  = new Conversion_Reporting( $user_options );
+
+		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) ) {
+			$this->proactive_user_engagement = new Proactive_User_Engagement( $user_options );
+		}
 	}
 
 	/**
@@ -57,5 +70,9 @@ class User {
 	public function register() {
 		$this->audience_segmentation->register();
 		$this->conversion_reporting->register();
+
+		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) && $this->proactive_user_engagement ) {
+			$this->proactive_user_engagement->register();
+		}
 	}
 }
