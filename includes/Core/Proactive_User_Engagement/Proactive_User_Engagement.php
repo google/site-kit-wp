@@ -25,6 +25,7 @@ class Proactive_User_Engagement {
 	/**
 	 * Context instance.
 	 *
+	 * @since n.e.x.t
 	 * @var Context
 	 */
 	protected $context;
@@ -32,12 +33,15 @@ class Proactive_User_Engagement {
 	/**
 	 * Proactive_User_Engagement_Settings instance.
 	 *
+	 * @since n.e.x.t
 	 * @var Proactive_User_Engagement_Settings
 	 */
 	protected $settings;
 
 	/**
 	 * Constructor.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param Context      $context      Plugin context.
 	 * @param Options|null $options      Optional. Options instance. Default is a new instance.
