@@ -24,12 +24,12 @@ import { PII_TYPE, normalizeValue, classifyPII } from './utils';
 		return;
 	}
 
-	PUM.hooks.addAction( 'pum.integration.form.success', ( event, args ) => {
+	PUM.hooks.addAction( 'pum.integration.form.success', ( form, args ) => {
 		const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
 
 		const userData =
 			gtagUserDataEnabled && shouldHandleProvider( args.formProvider )
-				? getUserData( event, args )
+				? getUserData( form, args )
 				: undefined;
 
 		global._googlesitekit?.gtagEvent?.(
@@ -47,7 +47,7 @@ const HANDLED_PROVIDERS = [ 'wpforms', 'contactform7', 'ninjaforms', 'mc4wp' ];
  * @since n.e.x.t
  *
  * @param {string} provider The form provider (plugin) slug.
- * @return {boolean} Whether this provider's submission should handled here or not.
+ * @return {boolean} Whether this provider's submission should be handled here or not.
  */
 function shouldHandleProvider( provider ) {
 	return ! HANDLED_PROVIDERS.includes( provider );
@@ -58,12 +58,12 @@ function shouldHandleProvider( provider ) {
  *
  * @since n.e.x.t
  *
- * @param {Object} event A jQuery event object or a HTMLFormElement instance.
+ * @param {Object} form A jQuery object or an HTMLFormElement instance.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
  */
-function getUserData( event ) {
+function getUserData( form ) {
 	// eslint-disable-next-line sitekit/acronym-case
-	const form = event instanceof HTMLFormElement ? event : event[ 0 ];
+	form = form instanceof HTMLFormElement ? form : form[ 0 ];
 
 	if ( ! form ) {
 		return undefined;
@@ -76,7 +76,7 @@ function getUserData( event ) {
 
 			const type = input?.type;
 
-			// WPForms adds a lot of hidden fields that can end up causing false positives, so we're filtering them out
+			// Filter out hidden fields.
 			if ( type === 'hidden' ) {
 				return null;
 			}
