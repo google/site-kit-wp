@@ -28,7 +28,12 @@
 	 */
 	#storybook-root .googlesitekit-vrt-animation-paused *,
 	#storybook-root .googlesitekit-vrt-animation-paused *::before,
-	#storybook-root .googlesitekit-vrt-animation-paused *::after{
+	#storybook-root .googlesitekit-vrt-animation-paused *::after {
 		animation-play-state: paused !important;
+	}
+
+	/* Disable Joyride animations. These are not covered by the above CSS because they render outside of #storybook-root. */
+	#react-joyride-step-0 div.__floater.__floater__open {
+		transition: none !important;
 	}
 </style>
