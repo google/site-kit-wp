@@ -49,12 +49,7 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
-
-		// TODO: This plugin activation is timing out on GitHub Actions with Node.js 22.
-		// This will be investigated and fixed in a follow-up.
-		page.setDefaultTimeout( 20000 );
 		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
-		page.setDefaultTimeout( 5000 );
 	} );
 
 	afterEach( async () => {
