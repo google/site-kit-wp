@@ -170,11 +170,6 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 } );
 
 export const resolvers = {
-	/**
-	 * Resolves module data.
-	 *
-	 * @since 1.148.0
-	 */
 	*getModuleData() {
 		const { resolveSelect } = yield commonActions.getRegistry();
 

@@ -2423,7 +2423,7 @@ describe( 'core/modules modules', () => {
 				delete global[ inlineModulesDataVar ];
 			} );
 
-			it( 'returns undefined when the global variable is not set', () => {
+			it( 'should return undefined when the global variable is not set', () => {
 				const inlineData = registry
 					.select( CORE_MODULES )
 					.getInlineModulesData();
@@ -2431,7 +2431,7 @@ describe( 'core/modules modules', () => {
 				expect( inlineData ).toBeUndefined();
 			} );
 
-			it( 'returns the inline modules data when set via action', () => {
+			it( 'should return the inline modules data when set via action', () => {
 				const mockData = {
 					[ MODULE_SLUG_ANALYTICS_4 ]: { test: 'data' },
 				};
@@ -2449,7 +2449,7 @@ describe( 'core/modules modules', () => {
 		} );
 
 		describe( 'getModuleInlineData', () => {
-			it( 'returns undefined when inline modules data is not loaded', () => {
+			it( 'should return undefined when inline modules data is not loaded', () => {
 				const moduleData = registry
 					.select( CORE_MODULES )
 					.getModuleInlineData( MODULE_SLUG_ANALYTICS_4 );
@@ -2457,7 +2457,7 @@ describe( 'core/modules modules', () => {
 				expect( moduleData ).toBeUndefined();
 			} );
 
-			it( 'returns module specific data when inline modules data is loaded', () => {
+			it( 'should return module specific data when inline modules data is loaded', () => {
 				const mockData = {
 					[ MODULE_SLUG_ANALYTICS_4 ]: {
 						newEvents: [ 'contact' ],
@@ -2487,7 +2487,7 @@ describe( 'core/modules modules', () => {
 				expect( adsData ).toEqual( mockData.ads );
 			} );
 
-			it( 'returns undefined for non-existent module', () => {
+			it( 'should return undefined for non-existent module', () => {
 				const mockData = {
 					[ MODULE_SLUG_ANALYTICS_4 ]: { test: 'data' },
 				};

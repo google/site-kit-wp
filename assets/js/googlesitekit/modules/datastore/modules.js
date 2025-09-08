@@ -814,11 +814,6 @@ const baseResolvers = {
 		);
 	},
 
-	/**
-	 * Resolves inline modules data.
-	 *
-	 * @since n.e.x.t
-	 */
 	*getInlineModulesData() {
 		const registry = yield commonActions.getRegistry();
 
@@ -837,11 +832,6 @@ const baseResolvers = {
 
 	getModule: waitForModules,
 
-	/**
-	 * Resolves module inline data for a specific module.
-	 *
-	 * @since n.e.x.t
-	 */
 	getModuleInlineData: waitForModulesInlineData,
 
 	isModuleActive: waitForModules,
