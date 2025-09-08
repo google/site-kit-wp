@@ -47,7 +47,6 @@ class Proactive_User_Engagement {
 	 * @param Options|null $options Optional. Options instance. Default is a new instance.
 	 */
 	public function __construct( Context $context, ?Options $options = null ) {
-		$this->context  = $context;
 		$options        = $options ?: new Options( $context );
 		$this->settings = new Proactive_User_Engagement_Settings( $options );
 	}
