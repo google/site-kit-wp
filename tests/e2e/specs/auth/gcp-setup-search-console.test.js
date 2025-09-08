@@ -3,7 +3,6 @@
  */
 import {
 	activatePlugin,
-	__experimentalActivatePlugin as restActivatePlugin,
 	createURL,
 	visitAdminPage,
 } from '@wordpress/e2e-test-utils';
@@ -50,7 +49,12 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
-		await restActivatePlugin( 'e2e-tests-site-verification-api-mock' );
+
+		// TODO: This plugin activation is timing out on GitHub Actions with Node.js 22.
+		// This will be investigated and fixed in a follow-up.
+		page.setDefaultTimeout( 20000 );
+		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
+		page.setDefaultTimeout( 5000 );
 
 		// Simulate that the user is already verified.
 		await wpApiFetch( {
