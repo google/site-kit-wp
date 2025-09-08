@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
 /**
  * Class for proactive user engagement settings.
  *
- * @since n.e.x.t
+ * @since 1.161.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Proactive_User_Engagement_Settings extends User_Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.161.0
 	 *
 	 * @return string The type name.
 	 */
@@ -40,7 +40,7 @@ class Proactive_User_Engagement_Settings extends User_Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.161.0
 	 *
 	 * @return array The default value.
 	 */
@@ -54,7 +54,7 @@ class Proactive_User_Engagement_Settings extends User_Setting {
 	/**
 	 * Merges an array of settings to update.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.161.0
 	 *
 	 * @param array $partial Partial settings array to save.
 	 * @return bool True on success, false on failure.
@@ -81,7 +81,7 @@ class Proactive_User_Engagement_Settings extends User_Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.161.0
 	 *
 	 * @return callable Sanitize callback.
 	 */
@@ -116,7 +116,7 @@ class Proactive_User_Engagement_Settings extends User_Setting {
 	/**
 	 * Accessor for the `subscribed` setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.161.0
 	 *
 	 * @return bool TRUE if user is subscribed, otherwise FALSE.
 	 */

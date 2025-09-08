@@ -86,7 +86,7 @@
 		"cssnano": "^6.1.2",
 		"eslint-webpack-plugin": "^2.5.1",
 		"faker": "^5.5.3",
-		"google-pax-sdk": "1.1.9",
+		"google-pax-sdk": "1.1.10",
 		"mini-css-extract-plugin": "^1.6.2",
 		"postcss-import-url": "^7.0.0",
 		"postcss-loader": "^4.3.0",
