@@ -114,8 +114,8 @@ function getUserData( form ) {
 
 			const type = input?.type;
 
-			// WPForms adds a lot of hidden fields that can end up causing false positives, so we're filtering them out
-			if ( type === 'hidden' ) {
+			// Skip hidden fields and submit buttons that don't contain user data.
+			if ( type === 'hidden' || type === 'submit' ) {
 				return null;
 			}
 
