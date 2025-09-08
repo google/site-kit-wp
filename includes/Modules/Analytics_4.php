@@ -394,10 +394,10 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				}
 
 				if ( $needs_tagmanager_scope ) {
-					$scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
+					$refined_scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
 				}
 
-				return $scopes;
+				return $refined_scopes;
 			}
 		);
 
