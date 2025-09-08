@@ -82,7 +82,7 @@ class User {
 		$this->audience_segmentation->register();
 		$this->conversion_reporting->register();
 
-		if ( $this->proactive_user_engagement_settings && $this->proactive_user_engagement_controller ) {
+		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) && $this->proactive_user_engagement_settings && $this->proactive_user_engagement_controller ) {
 			$this->proactive_user_engagement_settings->register();
 			$this->proactive_user_engagement_controller->register();
 		}
