@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import { isFeatureEnabled } from '../features';
-
 ( ( jQuery ) => {
 	// eslint-disable-next-line no-undef
 	if ( ! jQuery ) {
@@ -48,7 +43,7 @@ import { isFeatureEnabled } from '../features';
 	// Handle Enhanced Conversions user data (only when purchase data available)
 	const { purchase } = edddata || {};
 
-	if ( purchase && isFeatureEnabled( 'gtagUserData' ) ) {
+	if ( purchase && global._googlesitekit?.gtagUserData ) {
 		const { user_data: userData } = purchase;
 
 		if ( userData ) {
