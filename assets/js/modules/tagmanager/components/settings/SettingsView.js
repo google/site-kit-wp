@@ -35,7 +35,8 @@ import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants'
 import { escapeURI } from '@/js/util/escape-uri';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
-import SettingsGoogleTagGatewayStatus from './SettingsGoogleTagGatewayStatus';
+import { isFeatureEnabled } from '@/js/features';
+import SettingsStatuses from '@/js/components/settings/SettingsStatuses';
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>
@@ -72,6 +73,13 @@ export default function SettingsView() {
 		select( MODULES_TAGMANAGER ).getServiceURL( {
 			path: escapeURI`/container/accounts/${ accountID }/containers/${ internalAMPContainerID }`,
 		} )
+	);
+	const googleTagGatewayEnabled = useSelect(
+		( select ) =>
+			isFeatureEnabled( 'googleTagGateway' ) &&
+			select( CORE_SITE ).isGoogleTagGatewayEnabled() &&
+			select( CORE_SITE ).isGTGHealthy() &&
+			select( CORE_SITE ).isScriptAccessEnabled()
 	);
 
 	return (
@@ -264,8 +272,18 @@ export default function SettingsView() {
 						</P>
 					) }
 				</div>
-				<SettingsGoogleTagGatewayStatus />
 			</div>
+			<SettingsStatuses
+				statuses={ [
+					{
+						label: __(
+							'Google tag gateway for advertisers',
+							'google-site-kit'
+						),
+						status: googleTagGatewayEnabled,
+					},
+				] }
+			/>
 		</Fragment>
 	);
 }
