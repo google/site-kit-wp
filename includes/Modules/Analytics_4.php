@@ -371,10 +371,14 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 				$needs_tagmanager_scope = false;
 
+				$refined_scopes = $this->get_refined_scopes( $scopes );
+
 				if ( $oauth_client->has_sufficient_scopes(
-					array(
-						self::READONLY_SCOPE,
-						'https://www.googleapis.com/auth/tagmanager.readonly',
+					array_merge(
+						$refined_scopes,
+						array(
+							'https://www.googleapis.com/auth/tagmanager.readonly',
+						),
 					)
 				) ) {
 					$needs_tagmanager_scope = true;
@@ -384,9 +388,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					// Unsatisfied Scopes notification to be displayed without the Additional Permissions Required
 					// modal also appearing.
 				} elseif ( ! $oauth_client->has_sufficient_scopes(
-					array(
-						self::READONLY_SCOPE,
-					)
+					$refined_scopes
 				) ) {
 					$needs_tagmanager_scope = true;
 				}
@@ -2681,6 +2683,39 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			'lostEvents'     => is_array( $lost_events ) ? $lost_events : array(),
 			'newBadgeEvents' => is_array( $new_events_badge ) ? $new_events_badge['events'] : array(),
 		);
+	}
+
+	/**
+	 * Refines the requested scopes based on the current authentication and connection state.
+	 *
+	 * Specifically, the `EDIT_SCOPE` is only added if the user is not yet authenticated,
+	 * or if they are authenticated and have already granted the scope, or if the module
+	 * is not yet connected (i.e. during setup).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string[] $scopes Array of requested scopes.
+	 * @return string[] Refined array of requested scopes.
+	 */
+	private function get_refined_scopes( $scopes = array() ) {
+		if ( ! Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			return $scopes;
+		}
+
+		if ( ! $this->authentication->is_authenticated() ) {
+			$scopes[] = self::EDIT_SCOPE;
+			return $scopes;
+		}
+
+		$oauth_client        = $this->authentication->get_oauth_client();
+		$granted_scopes      = $oauth_client->get_granted_scopes();
+		$is_in_setup_process = ! $this->is_connected();
+
+		if ( in_array( self::EDIT_SCOPE, $granted_scopes, true ) || $is_in_setup_process ) {
+			$scopes[] = self::EDIT_SCOPE;
+		}
+
+		return $scopes;
 	}
 
 	/**
