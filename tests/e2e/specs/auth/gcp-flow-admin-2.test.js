@@ -3,6 +3,7 @@
  */
 import {
 	activatePlugin,
+	__experimentalRestActivatePlugin as restActivatePlugin,
 	loginUser,
 	createURL,
 	visitAdminPage,
@@ -53,7 +54,7 @@ describe( 'the set up flow for the second administrator', () => {
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
-		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
+		await restActivatePlugin( 'e2e-tests-site-verification-api-mock' );
 		await setAuthToken();
 		await setSiteVerification();
 		await setSearchConsoleProperty();

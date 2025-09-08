@@ -3,6 +3,7 @@
  */
 import {
 	activatePlugin,
+	__experimentalRestActivatePlugin as restActivatePlugin,
 	createURL,
 	visitAdminPage,
 } from '@wordpress/e2e-test-utils';
@@ -49,7 +50,7 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
-		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
+		await restActivatePlugin( 'e2e-tests-site-verification-api-mock' );
 	} );
 
 	afterEach( async () => {
