@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Proactive_User_Engagement;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
  * Base class for Proactive User Engagement feature.
@@ -39,6 +40,14 @@ class Proactive_User_Engagement {
 	protected $settings;
 
 	/**
+	 * REST_Proactive_User_Engagement_Controller instance.
+	 *
+	 * @since n.e.x.t
+	 * @var REST_Proactive_User_Engagement_Controller|null
+	 */
+	protected $rest_controller;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -47,8 +56,13 @@ class Proactive_User_Engagement {
 	 * @param Options|null $options Optional. Options instance. Default is a new instance.
 	 */
 	public function __construct( Context $context, ?Options $options = null ) {
-		$options        = $options ?: new Options( $context );
-		$this->settings = new Proactive_User_Engagement_Settings( $options );
+		$options               = $options ?: new Options( $context );
+		$this->settings        = new Proactive_User_Engagement_Settings( $options );
+		$this->rest_controller = null;
+
+		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) ) {
+			$this->rest_controller = new REST_Proactive_User_Engagement_Controller( $this->settings );
+		}
 	}
 
 	/**
@@ -58,5 +72,9 @@ class Proactive_User_Engagement {
 	 */
 	public function register() {
 		$this->settings->register();
+
+		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) && $this->rest_controller ) {
+			$this->rest_controller->register();
+		}
 	}
 }
