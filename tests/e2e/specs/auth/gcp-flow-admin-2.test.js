@@ -3,7 +3,7 @@
  */
 import {
 	activatePlugin,
-	__experimentalRestActivatePlugin as restActivatePlugin,
+	__experimentalActivatePlugin as restActivatePlugin,
 	loginUser,
 	createURL,
 	visitAdminPage,
