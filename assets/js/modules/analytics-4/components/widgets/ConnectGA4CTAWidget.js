@@ -110,6 +110,7 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 		}
 
 		activateAnalytics();
+		return null;
 	}, [ activateAnalytics, completeAnalyticsActivation, isAnalyticsActive ] );
 
 	const intersectionEntry = useIntersection( trackingRef, {

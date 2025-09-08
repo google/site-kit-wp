@@ -358,7 +358,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	/**
 	 * Extracts and normalizes user data from WooCommerce order for Enhanced Conversions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.161.0
 	 *
 	 * @param WC_Abstract_Order $order An instance of the WooCommerce Order object.
 	 *
@@ -433,7 +433,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	/**
 	 * Gets a normalized phone number for Enhanced Conversions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.161.0
 	 *
 	 * @param string $phone The phone number to normalize.
 	 * @param string $country The country code (2-letter ISO 3166-1 alpha-2).

@@ -54,7 +54,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 
 	const conversionTrackingDocumentationURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL(
-			'enhanced-conversion-tracking'
+			'plugin-conversion-tracking'
 		)
 	);
 
