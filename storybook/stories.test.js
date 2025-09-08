@@ -19,15 +19,51 @@
 // TODO: #10473 will complete the migration to Storybook test-runner as storyshots is deprecated.
 
 // /**
-//  * Node dependencies
-//  */
-// import path from 'path';
-
-// /**
 //  * External dependencies
 //  */
 // import initStoryshots from '@storybook/addon-storyshots';
 // import { puppeteerTest } from '@storybook/addon-storyshots-puppeteer';
+// import { getStoryIDFromURL, isIgnored } from './ignore-console-messages';
+
+// function customizePage( page ) {
+// 	// Track the current story ID for scoping ignore rules.
+// 	let currentStoryID = getStoryIDFromURL( page.url() );
+
+// 	// Update story ID on main frame navigations.
+// 	page.on( 'framenavigated', ( frame ) => {
+// 		if ( frame === page.mainFrame() ) {
+// 			currentStoryID = getStoryIDFromURL( frame.url() );
+// 		}
+// 	} );
+
+// 	page.on( 'pageerror', ( error ) => {
+// 		const messageText = error?.message || String( error );
+// 		if ( isIgnored( messageText, currentStoryID ) ) {
+// 			return;
+// 		}
+// 		throw new Error(
+// 			`Page error detected during story rendering:\n${ error.message }`
+// 		);
+// 	} );
+
+// 	page.on( 'console', ( message ) => {
+// 		// Only fail on console "error" events.
+// 		if ( message.type() !== 'error' ) {
+// 			return;
+// 		}
+
+// 		const text = message.text();
+// 		if ( isIgnored( text, currentStoryID ) ) {
+// 			return;
+// 		}
+
+// 		throw new Error(
+// 			`Console error detected during story rendering:\n${ text }`
+// 		);
+// 	} );
+
+// 	return page;
+// }
 
 // initStoryshots( {
 // 	suite: 'Puppeteer storyshots',
@@ -37,5 +73,6 @@
 // 		storybookUrl: `file://${ path.resolve( __dirname, '../dist' ) }`,
 // 		setupTimeout: 5000,
 // 		testTimeout: 5000,
+// 		customizePage,
 // 	} ),
 // } );
