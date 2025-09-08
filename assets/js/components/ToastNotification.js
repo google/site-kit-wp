@@ -35,9 +35,8 @@ export default function ToastNotification( { children } ) {
 	const [ isVisible, setIsVisible ] = useState( true );
 
 	useMount( () => {
-		setTimeout( () => {
-			setIsVisible( false );
-		}, 5000 );
+		// Remove from DOM after animations complete (5.5 seconds total - 5000ms duration for full visibility + 250ms each for fade in/out).
+		setTimeout( () => setIsVisible( false ), 5500 );
 	} );
 
 	if ( ! isVisible ) {

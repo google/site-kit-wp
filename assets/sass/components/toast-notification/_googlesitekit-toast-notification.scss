@@ -24,12 +24,17 @@
 
 	.googlesitekit-toast-notification__wrapper {
 		align-items: center;
+
+		// 5.25s is 5000ms (5 seconds duration for full visibility) + 250ms (fade in).
+		animation: toast-fade-in 250ms ease-in-out, toast-fade-out 250ms ease-in-out 5.25s;
+		animation-fill-mode: forwards;
 		background-color: $c-content-primary-container;
 		border-radius: $br-xs;
 		color: $c-content-on-primary-container;
 		display: flex;
 		font-size: $fs-body-lg;
 		letter-spacing: $ls-xxs;
+		opacity: 0;
 		padding: 14px 24px;
 
 		p {
@@ -37,6 +42,24 @@
 			display: flex;
 			gap: 12px;
 			margin: 0;
+		}
+	}
+
+	@keyframes toast-fade-in {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	@keyframes toast-fade-out {
+		from {
+			opacity: 1;
+		}
+		to {
+			opacity: 0;
 		}
 	}
 }
