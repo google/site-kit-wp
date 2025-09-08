@@ -98,20 +98,20 @@ function getUserData( form ) {
 		return undefined;
 	}
 
-	// Get all interactive form controls (input, textarea, select)
-	const formControls = form.querySelectorAll( 'input, textarea, select' );
-	const detectedFields = Array.from( formControls )
-		.map( ( input ) => {
-			const { type, name, value } = input;
+	const formData = new FormData( form );
+	const detectedFields = Array.from( formData.entries() )
+		.map( ( [ name, value ] ) => {
+			const input = form.querySelector( `[name='${ name }']` );
 
-			// Skip empty values and hidden fields
-			if ( ! value || type === 'hidden' || type === 'submit' ) {
+			const type = input?.type;
+
+			// Skip hidden fields and submit buttons that don't contain user data.
+			if ( type === 'hidden' || type === 'submit' ) {
 				return null;
 			}
 
-			// Get label text for better PII classification
-			const label = input.id
-				? form.querySelector( `label[for='${ input.id }']` )
+			const label = input?.id
+				? form.querySelector( `label[for='${ input?.id }']` )
 						?.textContent
 				: undefined;
 
