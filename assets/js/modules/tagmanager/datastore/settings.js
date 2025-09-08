@@ -156,9 +156,7 @@ export async function submitChanges( { select, dispatch } ) {
 		}
 	}
 
-	const haveGoogleTagGatewaySettingsChanged =
-		select( CORE_SITE ).haveGoogleTagGatewaySettingsChanged();
-	if ( haveGoogleTagGatewaySettingsChanged ) {
+	if ( select( CORE_SITE ).haveGoogleTagGatewaySettingsChanged() ) {
 		const { error } = await dispatch(
 			CORE_SITE
 		).saveGoogleTagGatewaySettings();
