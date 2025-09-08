@@ -35,4 +35,8 @@ RUN apt-get update && \
 
 WORKDIR /src
 
-ENTRYPOINT ["backstop"]
+# Copy and setup custom entrypoint script
+COPY backstop-entrypoint.sh /usr/local/bin/backstop-entrypoint.sh
+RUN chmod +x /usr/local/bin/backstop-entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/backstop-entrypoint.sh"]
