@@ -28,6 +28,14 @@ class Web_Tag extends Module_Web_Tag {
 	use Tag_With_DNS_Prefetch_Trait;
 
 	/**
+	 * Google tag gateway active state.
+	 *
+	 * @since n.e.x.t
+	 * @var bool
+	 */
+	private $is_google_tag_gateway_active;
+
+	/**
 	 * Registers tag hooks.
 	 *
 	 * @since 1.24.0
@@ -100,5 +108,16 @@ class Web_Tag extends Module_Web_Tag {
 		</noscript>
 		<!-- <?php esc_html_e( 'End Google Tag Manager (noscript) snippet added by Site Kit', 'google-site-kit' ); ?> -->
 		<?php
+	}
+
+	/**
+	 * Sets Google tag gateway active state.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param bool $active Google tag gateway active state.
+	 */
+	public function set_is_google_tag_gateway_active( $active ) {
+		$this->is_google_tag_gateway_active = $active;
 	}
 }

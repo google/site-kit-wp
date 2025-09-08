@@ -37,6 +37,8 @@ use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
@@ -601,6 +603,8 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 			if ( $tag->can_register() ) {
+				$tag->set_is_google_tag_gateway_active( $this->is_google_tag_gateway_active() );
+
 				$tag->register();
 			}
 		}
@@ -649,5 +653,22 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 		);
 
 		return empty( array_diff( $configured_containers, $all_containers ) );
+	}
+
+	/**
+	 * Checks if Google tag gateway is active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if Google tag gateway is active, false otherwise.
+	 */
+	protected function is_google_tag_gateway_active() {
+		if ( ! Feature_Flags::enabled( 'googleTagGateway' ) ) {
+			return false;
+		}
+
+		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
+
+		return $google_tag_gateway_settings->is_google_tag_gateway_active();
 	}
 }
