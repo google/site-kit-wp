@@ -436,9 +436,13 @@ GTGEnabled.decorators = [
 				isScriptAccessEnabled: true,
 			};
 
-			fetchMock.getOnce( gtgServerRequirementsEndpoint, {
-				body: gtgSettings,
-			} );
+			fetchMock.getOnce(
+				gtgServerRequirementsEndpoint,
+				{
+					body: gtgSettings,
+				},
+				{ overwriteRoutes: true }
+			);
 
 			registry
 				.dispatch( CORE_SITE )
@@ -470,9 +474,13 @@ GTGDisabledWithWarning.decorators = [
 				isScriptAccessEnabled: false,
 			};
 
-			fetchMock.getOnce( gtgServerRequirementsEndpoint, {
-				body: gtgSettings,
-			} );
+			fetchMock.getOnce(
+				gtgServerRequirementsEndpoint,
+				{
+					body: gtgSettings,
+				},
+				{ overwriteRoutes: true }
+			);
 
 			registry
 				.dispatch( CORE_SITE )
