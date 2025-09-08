@@ -43,8 +43,8 @@ class Proactive_User_Engagement {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Context      $context      Plugin context.
-	 * @param Options|null $options      Optional. Options instance. Default is a new instance.
+	 * @param Context      $context Plugin context.
+	 * @param Options|null $options Optional. Options instance. Default is a new instance.
 	 */
 	public function __construct( Context $context, ?Options $options = null ) {
 		$this->context  = $context;
