@@ -187,9 +187,7 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields {
 		$settings = $this->google_tag_gateway_settings->get();
 
 		// Determine effective GTG status based on settings and health checks.
-		$is_gtg_effectively_enabled = true === $settings['isEnabled']
-			&& true === $settings['isGTGHealthy']
-			&& true === $settings['isScriptAccessEnabled'];
+		$is_gtg_effectively_enabled = $this->google_tag_gateway_settings->is_google_tag_gateway_active();
 
 		return array(
 			'google_tag_gateway_is_enabled'               => array(

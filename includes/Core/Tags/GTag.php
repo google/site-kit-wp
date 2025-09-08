@@ -329,17 +329,7 @@ JS;
 
 		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
 
-		$settings = $google_tag_gateway_settings->get();
-
-		$required_settings = array( 'isEnabled', 'isGTGHealthy', 'isScriptAccessEnabled' );
-
-		foreach ( $required_settings as $setting ) {
-			if ( ! isset( $settings[ $setting ] ) || ! $settings[ $setting ] ) {
-				return false;
-			}
-		}
-
-		return true;
+		return $google_tag_gateway_settings->is_google_tag_gateway_active();
 	}
 
 	/**

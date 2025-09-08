@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Tags\Google_Tag_Gateway;
 
 use Google\Site_Kit\Core\Storage\Setting;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
  * Class to store user Google Tag Gateway settings.
@@ -106,5 +107,25 @@ class Google_Tag_Gateway_Settings extends Setting {
 		$updated = array_intersect_key( $partial, $allowed_settings );
 
 		return $this->set( array_merge( $settings, $updated ) );
+	}
+
+	/**
+	 * Checks if Google tag gateway is active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if Google tag gateway is active, false otherwise.
+	 */
+	public function is_google_tag_gateway_active() {
+		$settings          = $this->get();
+		$required_settings = array( 'isEnabled', 'isGTGHealthy', 'isScriptAccessEnabled' );
+
+		foreach ( $required_settings as $setting ) {
+			if ( ! isset( $settings[ $setting ] ) || ! $settings[ $setting ] ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }
