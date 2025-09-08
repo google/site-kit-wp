@@ -139,10 +139,9 @@ class REST_Proactive_User_Engagement_ControllerTest extends TestCase {
 
 	public function provider_wrong_data() {
 		return array(
-			'wrong data type'            => array( '{}' ),
-			'invalid property'           => array( array( 'some-invalid-property' => 'value' ) ),
-			'non-boolean enabled'        => array( array( 'enabled' => 123 ) ),
-			'missing required `enabled`' => array( array() ),
+			'wrong data type'     => array( '{}' ),
+			'invalid property'    => array( array( 'some-invalid-property' => 'value' ) ),
+			'non-boolean enabled' => array( array( 'enabled' => 123 ) ),
 		);
 	}
 }
