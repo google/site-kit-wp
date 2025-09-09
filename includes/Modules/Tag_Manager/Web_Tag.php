@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Tag_Manager;
 
 use Google\Site_Kit\Core\Modules\Tags\Module_Web_Tag;
+use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
 use Google\Site_Kit\Core\Util\BC_Functions;
@@ -41,20 +42,30 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @since 1.24.0
 	 */
 	public function register() {
-		$render_no_js = $this->get_method_proxy_once( 'render_no_js' );
+		if ( $this->is_google_tag_gateway_active ) {
+			add_action(
+				'googlesitekit_setup_gtag',
+				$this->get_method_proxy( 'setup_gtag' ),
+				30
+			);
 
-		add_action( 'wp_head', $this->get_method_proxy( 'render' ) );
-		// For non-AMP (if `wp_body_open` supported).
-		add_action( 'wp_body_open', $render_no_js, -9999 );
-		// For non-AMP (as fallback).
-		add_action( 'wp_footer', $render_no_js );
+			add_filter( 'script_loader_tag', $this->get_method_proxy( 'filter_tag_output' ), 10, 2 );
+		} else {
+			$render_no_js = $this->get_method_proxy_once( 'render_no_js' );
 
-		add_filter(
-			'wp_resource_hints',
-			$this->get_dns_prefetch_hints_callback( '//www.googletagmanager.com' ),
-			10,
-			2
-		);
+			add_action( 'wp_head', $this->get_method_proxy( 'render' ) );
+			// For non-AMP (if `wp_body_open` supported).
+			add_action( 'wp_body_open', $render_no_js, -9999 );
+			// For non-AMP (as fallback).
+			add_action( 'wp_footer', $render_no_js );
+
+			add_filter(
+				'wp_resource_hints',
+				$this->get_dns_prefetch_hints_callback( '//www.googletagmanager.com' ),
+				10,
+				2
+			);
+		}
 
 		$this->do_init_tag_action();
 	}
@@ -65,6 +76,9 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @since 1.24.0
 	 */
 	protected function render() {
+		if ( $this->is_google_tag_gateway_active ) {
+			return;
+		}
 
 		$tag_manager_inline_script = sprintf(
 			"
@@ -94,6 +108,10 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @since 1.24.0
 	 */
 	private function render_no_js() {
+		if ( $this->is_google_tag_gateway_active ) {
+			return;
+		}
+
 		// Consent-based blocking requires JS to be enabled so we need to bail here if present.
 		if ( $this->get_tag_blocked_on_consent_attribute() ) {
 			return;
@@ -119,5 +137,38 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 */
 	public function set_is_google_tag_gateway_active( $active ) {
 		$this->is_google_tag_gateway_active = $active;
+	}
+
+	/**
+	 * Configures gtag script.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param GTag $gtag GTag instance.
+	 */
+	protected function setup_gtag( $gtag ) {
+		$gtag->add_tag( $this->tag_id );
+	}
+
+
+	/**
+	 * Filters output of tag HTML.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $tag Tag HTML.
+	 * @param string $handle WP script handle of given tag.
+	 * @return string
+	 */
+	protected function filter_tag_output( $tag, $handle ) {
+		// The tag will either have its own handle or use the common GTag handle, not both.
+		if ( GTag::get_handle_for_tag( $this->tag_id ) !== $handle && GTag::HANDLE !== $handle ) {
+			return $tag;
+		}
+
+		// Retain this comment for detection of Site Kit placed tag.
+		$snippet_comment = sprintf( "<!-- %s -->\n", esc_html__( 'Google Tag Manager snippet added by Site Kit', 'google-site-kit' ) );
+
+		return $snippet_comment . $tag;
 	}
 }
