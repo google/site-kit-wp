@@ -187,4 +187,49 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 		$this->settings->merge( array( 'isEnabled' => null ) );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
 	}
+
+	public function test_is_google_tag_gateway_active() {
+		// By default, GTG should be inactive.
+		$this->assertFalse( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be inactive by default.' );
+
+		// GTG should be inactive if only isEnabled is true.
+		$this->settings->set(
+			array(
+				'isEnabled'             => true,
+				'isGTGHealthy'          => false,
+				'isScriptAccessEnabled' => false,
+			)
+		);
+		$this->assertFalse( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be inactive unless all settings are true.' );
+
+		// GTG should be inactive if only isEnabled and isGTGHealthy are true.
+		$this->settings->set(
+			array(
+				'isEnabled'             => true,
+				'isGTGHealthy'          => true,
+				'isScriptAccessEnabled' => false,
+			)
+		);
+		$this->assertFalse( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be inactive unless all settings are true.' );
+
+		// GTG should be inactive if only isEnabled and isScriptAccessEnabled are true.
+		$this->settings->set(
+			array(
+				'isEnabled'             => true,
+				'isGTGHealthy'          => false,
+				'isScriptAccessEnabled' => true,
+			)
+		);
+		$this->assertFalse( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be inactive unless all settings are true.' );
+
+		// GTG should be active if all settings are true.
+		$this->settings->set(
+			array(
+				'isEnabled'             => true,
+				'isGTGHealthy'          => true,
+				'isScriptAccessEnabled' => true,
+			)
+		);
+		$this->assertTrue( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be active when all settings are true.' );
+	}
 }
