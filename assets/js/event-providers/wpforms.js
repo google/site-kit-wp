@@ -110,7 +110,16 @@ function getUserData( form ) {
 	const formData = new FormData( form );
 	const detectedFields = Array.from( formData.entries() )
 		.map( ( [ name, value ] ) => {
-			const input = form.querySelector( `[name='${ name }']` );
+			let input = form.querySelector( `[name='${ name }']` );
+
+			// WPForms create two inputs for special fields (such as the phone number field), a visible one for UI purposes and a hidden one to hold the actual value directly after it
+			// so here we attempt to find the hidden one.
+			if (
+				input?.type === 'hidden' &&
+				input?.previousSibling?.type !== 'hidden'
+			) {
+				input = input.previousSibling;
+			}
 
 			const type = input?.type;
 
