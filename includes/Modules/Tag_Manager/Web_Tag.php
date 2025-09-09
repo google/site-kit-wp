@@ -22,7 +22,7 @@ use Google\Site_Kit\Core\Util\BC_Functions;
  * @access private
  * @ignore
  */
-class Web_Tag extends Module_Web_Tag {
+class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 
 	use Method_Proxy_Trait;
 	use Tag_With_DNS_Prefetch_Trait;
