@@ -18,7 +18,7 @@
 	},
 	"dependencies": {
 		"@wordpress/babel-preset-default": "^8.23.0",
-		"@wordpress/e2e-test-utils": "^11.23.0",
+		"@wordpress/e2e-test-utils": "^11.30.0",
 		"@wordpress/jest-console": "^8.23.0",
 		"amphtml-validator": "^1.0.35",
 		"babel-jest": "^29.7.0",
