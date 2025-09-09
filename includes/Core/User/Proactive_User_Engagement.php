@@ -30,10 +30,10 @@ class Proactive_User_Engagement {
 	private $proactive_user_engagement_settings;
 
 	/**
-	 * REST_Proactive_User_Engagement_Settings_Controller instance.
+	 * REST_Proactive_User_Engagement_Controller instance.
 	 *
 	 * @since n.e.x.t
-	 * @var REST_Proactive_User_Engagement_Settings_Controller
+	 * @var REST_Proactive_User_Engagement_Controller
 	 */
 	private $rest_controller;
 
@@ -46,7 +46,7 @@ class Proactive_User_Engagement {
 	 */
 	public function __construct( User_Options $user_options ) {
 		$this->proactive_user_engagement_settings = new Proactive_User_Engagement_Settings( $user_options );
-		$this->rest_controller                    = new REST_Proactive_User_Engagement_Settings_Controller( $this->proactive_user_engagement_settings );
+		$this->rest_controller                    = new REST_Proactive_User_Engagement_Controller( $this->proactive_user_engagement_settings );
 	}
 
 	/**
