@@ -39,26 +39,18 @@ class User {
 	private $conversion_reporting;
 
 	/**
-	 * Proactive_User_Engagement_Settings instance.
+	 * Proactive_User_Engagement instance.
 	 *
 	 * @since n.e.x.t
-	 * @var Proactive_User_Engagement_Settings|null
+	 * @var Proactive_User_Engagement
 	 */
-	private $proactive_user_engagement_settings;
-
-	/**
-	 * REST_Proactive_User_Engagement_Controller instance.
-	 *
-	 * @since n.e.x.t
-	 * @var REST_Proactive_User_Engagement_Controller|null
-	 */
-	private $proactive_user_engagement_controller;
+	private $proactive_user_engagement;
 
 	/**
 	 * Constructor.
 	 *
 	 * @since 1.134.0
-	 * @since n.e.x.t Added Proactive User Engagement settings and REST controller.
+	 * @since n.e.x.t Added Proactive User Engagement.
 	 *
 	 * @param User_Options $user_options User_Options instance.
 	 */
@@ -67,8 +59,7 @@ class User {
 		$this->conversion_reporting  = new Conversion_Reporting( $user_options );
 
 		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) ) {
-			$this->proactive_user_engagement_settings   = new Proactive_User_Engagement_Settings( $user_options );
-			$this->proactive_user_engagement_controller = new REST_Proactive_User_Engagement_Controller( $this->proactive_user_engagement_settings );
+			$this->proactive_user_engagement = new Proactive_User_Engagement( $user_options );
 		}
 	}
 
@@ -76,15 +67,14 @@ class User {
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.134.0
-	 * @since n.e.x.t Added Proactive User Engagement settings and REST controller.
+	 * @since n.e.x.t Added Proactive User Engagement.
 	 */
 	public function register() {
 		$this->audience_segmentation->register();
 		$this->conversion_reporting->register();
 
-		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) && $this->proactive_user_engagement_settings && $this->proactive_user_engagement_controller ) {
-			$this->proactive_user_engagement_settings->register();
-			$this->proactive_user_engagement_controller->register();
+		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) && $this->proactive_user_engagement ) {
+			$this->proactive_user_engagement->register();
 		}
 	}
 }
