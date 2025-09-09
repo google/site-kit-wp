@@ -24,11 +24,11 @@ import { set, unset } from 'lodash';
 /**
  * Internal dependencies
  */
-import { numFmt } from '../';
+import { numFmt } from '@/js/util';
 
-const setupGoogleSiteKit = ( langCode ) => {
+function setupGoogleSiteKit( langCode ) {
 	set( global._googlesitekitLegacyData, 'locale', langCode );
-};
+}
 
 // Unlike normal space. ASCII 32
 // This `NO-BREAK SPACE` or HTML's `&nbsp;` is used by Intl.NumberFormat between unit and number. ASCII `194 160`

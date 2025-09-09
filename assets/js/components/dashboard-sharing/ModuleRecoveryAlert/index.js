@@ -32,16 +32,16 @@ import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { DAY_IN_SECONDS } from '../../../util';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
 import Description from './Description';
 import BannerNotification, {
 	TYPES,
-} from '../../../googlesitekit/notifications/components/layout/BannerNotification';
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import AdditionalDescription from './AdditionalDescription';
-import PreviewBlock from '../../PreviewBlock';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import { computeAriaLabel } from './utils';
 
 export default function ModuleRecoveryAlert( { id, Notification } ) {
 	const [ selectedModuleSlugs, setSelectedModuleSlugs ] = useState( null );
@@ -55,12 +55,6 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 	const userRecoverableModuleSlugs = useSelect( ( select ) =>
 		select( CORE_MODULES ).getUserRecoverableModuleSlugs()
 	);
-
-	const documentationURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getDocumentationLinkURL(
-			'dashboard-sharing'
-		);
-	} );
 
 	// The alert renders conditional copy and actions based on:
 	// 1. If there is one or more than one module to recover.
@@ -130,6 +124,14 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 		return null;
 	}
 
+	const ariaLabel = computeAriaLabel( {
+		recoverableModules,
+		userRecoverableModuleSlugs,
+		selectedModuleSlugs,
+		hasUserRecoverableModules,
+		hasMultipleRecoverableModules,
+	} );
+
 	return (
 		<Notification>
 			<BannerNotification
@@ -161,14 +163,6 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 						/>
 					)
 				}
-				learnMoreLink={
-					! isLoading
-						? {
-								label: __( 'Learn more', 'google-site-kit' ),
-								href: documentationURL,
-						  }
-						: undefined
-				}
 				additionalDescription={
 					! isLoading && (
 						<AdditionalDescription
@@ -194,8 +188,9 @@ export default function ModuleRecoveryAlert( { id, Notification } ) {
 						: {
 								label: __( 'Recover', 'google-site-kit' ),
 								onClick: handleRecoverModules,
-								inProgress,
 								disabled: disableCTA,
+								ariaLabel,
+								inProgress,
 						  }
 				}
 				dismissButton={

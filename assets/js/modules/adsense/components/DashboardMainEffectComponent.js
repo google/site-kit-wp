@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import useAdSenseNotifications from '../../../hooks/useAdSenseNotifications';
+import useAdSenseNotifications from '@/js/hooks/useAdSenseNotifications';
 
 export default function DashboardMainEffectComponent() {
 	useAdSenseNotifications();

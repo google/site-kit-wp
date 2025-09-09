@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Analytics_4;
 
 use Google\Site_Kit\Context;
@@ -166,7 +164,7 @@ class Reset_AudiencesTest extends TestCase {
 			}
 			$user_dismissed_prompts = $this->dismissed_prompts->get();
 			foreach ( Reset_Audiences::AUDIENCE_SEGMENTATION_DISMISSED_PROMPTS as $dismissed_prompt ) {
-				$this->assertTrue( array_key_exists( $dismissed_prompt, $user_dismissed_prompts ) );
+				$this->assertTrue( array_key_exists( $dismissed_prompt, $user_dismissed_prompts ), 'Dismissed prompt should be present before reset.' );
 			}
 
 			// Give each user some dismissed items.
@@ -175,7 +173,7 @@ class Reset_AudiencesTest extends TestCase {
 			}
 			$user_dismissed_items = $this->dismissed_items->get();
 			foreach ( $test_dismissed_items as $dismissed_item ) {
-				$this->assertTrue( array_key_exists( $dismissed_item, $user_dismissed_items ) );
+				$this->assertTrue( array_key_exists( $dismissed_item, $user_dismissed_items ), 'Dismissed item should be present before reset.' );
 			}
 
 			// Give each user some configured audiences.
@@ -187,7 +185,7 @@ class Reset_AudiencesTest extends TestCase {
 			);
 			$audience_settings = $this->audience_settings->get();
 			foreach ( array_keys( $default_user_audience_settings ) as $key ) {
-				$this->assertEquals( $activated_user_audience_settings[ $key ], $audience_settings[ $key ] );
+				$this->assertEquals( $activated_user_audience_settings[ $key ], $audience_settings[ $key ], 'Audience setting should match activated state before reset.' );
 			}
 		}
 
@@ -202,13 +200,13 @@ class Reset_AudiencesTest extends TestCase {
 			// Confirm the user's dismissed prompts have been reset.
 			$user_dismissed_prompts = $this->dismissed_prompts->get();
 			foreach ( Reset_Audiences::AUDIENCE_SEGMENTATION_DISMISSED_PROMPTS as $dismissed_prompt ) {
-				$this->assertFalse( array_key_exists( $dismissed_prompt, $user_dismissed_prompts ) );
+				$this->assertFalse( array_key_exists( $dismissed_prompt, $user_dismissed_prompts ), 'Dismissed prompt should be cleared after reset.' );
 			}
 
 			// Confirm the user's dismissed items have been reset.
 			$user_dismissed_items = $this->dismissed_items->get();
 			foreach ( $test_dismissed_items as $dismissed_item ) {
-				$this->assertFalse( array_key_exists( $dismissed_item, $user_dismissed_items ) );
+				$this->assertFalse( array_key_exists( $dismissed_item, $user_dismissed_items ), 'Dismissed item should be cleared after reset.' );
 			}
 
 			// Confirm the user's applicable audience settings have been reset.
@@ -216,9 +214,9 @@ class Reset_AudiencesTest extends TestCase {
 			foreach ( array_keys( $default_user_audience_settings ) as $key ) {
 				// `isAudienceSegmentationWidgetHidden` should not be reset.
 				if ( 'isAudienceSegmentationWidgetHidden' === $key ) {
-					$this->assertEquals( $activated_user_audience_settings[ $key ], $audience_settings[ $key ] );
+					$this->assertEquals( $activated_user_audience_settings[ $key ], $audience_settings[ $key ], 'Widget hidden flag should remain unchanged after reset.' );
 				} else {
-					$this->assertEquals( $default_user_audience_settings[ $key ], $audience_settings[ $key ] );
+					$this->assertEquals( $default_user_audience_settings[ $key ], $audience_settings[ $key ], 'Other audience settings should be reset to defaults.' );
 				}
 			}
 		}

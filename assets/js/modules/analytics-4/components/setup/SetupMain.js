@@ -32,13 +32,19 @@ import { useEffect, useState } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import AnalyticsIcon from '../../../../../svg/graphics/analytics.svg';
+import AnalyticsIcon from '@/svg/graphics/analytics.svg';
 import SetupForm from './SetupForm';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
-import useExistingTagEffect from '../../hooks/useExistingTagEffect';
-import { AccountCreate, AccountCreateLegacy } from '../common';
-import Typography from '../../../../components/Typography';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	MODULES_ANALYTICS_4,
+	ACCOUNT_CREATE,
+} from '@/js/modules/analytics-4/datastore/constants';
+import useExistingTagEffect from '@/js/modules/analytics-4/hooks/useExistingTagEffect';
+import {
+	AccountCreate,
+	AccountCreateLegacy,
+} from '@/js/modules/analytics-4/components/common';
+import Typography from '@/js/components/Typography';
 
 export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) =>
@@ -65,7 +71,7 @@ export default function SetupMain( { finishSetup } ) {
 			return;
 		}
 
-		const fetchMatchedAccount = async () => {
+		async function fetchMatchedAccount() {
 			setIsMatchedAccount( true );
 			const matchedAccount = await findMatchedAccount();
 			setIsMatchedAccount( false );
@@ -73,7 +79,7 @@ export default function SetupMain( { finishSetup } ) {
 				setAccountID( matchedAccount._id );
 				matchAndSelectProperty( matchedAccount._id );
 			}
-		};
+		}
 
 		if ( ! accountID ) {
 			fetchMatchedAccount();

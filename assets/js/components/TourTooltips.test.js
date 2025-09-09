@@ -25,9 +25,9 @@ import {
 	fireEvent,
 } from '../../../tests/js/test-utils';
 import TourTooltips, { GA_ACTIONS } from './TourTooltips';
-import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import * as tracking from '../util/tracking';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import * as tracking from '@/js/util/tracking';
 import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 
 const SECOND_STEP = 1;
@@ -72,8 +72,8 @@ function MockUIWrapper( { children } ) {
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-const renderTourTooltipsWithMockUI = ( registry, overrideProps = {} ) =>
-	render(
+function renderTourTooltipsWithMockUI( registry, overrideProps = {} ) {
+	return render(
 		<MockUIWrapper>
 			<TourTooltips
 				steps={ MOCK_STEPS }
@@ -84,6 +84,7 @@ const renderTourTooltipsWithMockUI = ( registry, overrideProps = {} ) =>
 		</MockUIWrapper>,
 		{ registry }
 	);
+}
 
 describe( 'TourTooltips', () => {
 	let registry;
@@ -247,10 +248,10 @@ describe( 'TourTooltips', () => {
 	} );
 
 	it( 'should load Joyride in controlled mode', () => {
-		const callback = ( data ) => {
+		function callback( data ) {
 			const { controlled } = data;
 			expect( controlled ).toBe( true );
-		};
+		}
 		renderTourTooltipsWithMockUI( registry, {
 			callback,
 		} );
@@ -416,7 +417,9 @@ describe( 'TourTooltips', () => {
 		} );
 
 		it( 'accepts a function to generate the event category', async () => {
-			const gaEventCategory = ( viewContext ) => `${ viewContext }_test`;
+			function gaEventCategory( viewContext ) {
+				return `${ viewContext }_test`;
+			}
 			const expectedCategory = gaEventCategory( TEST_VIEW_CONTEXT );
 
 			const { getByRole } = renderTourTooltipsWithMockUI( registry, {

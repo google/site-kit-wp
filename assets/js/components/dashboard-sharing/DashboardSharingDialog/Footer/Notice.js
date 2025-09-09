@@ -26,7 +26,7 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 export default function Notice() {
 	const canSubmitSharingChanges = useSelect( ( select ) =>

@@ -27,16 +27,17 @@ import { Fragment, createInterpolateElement } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { parseAccountID } from '../../util/parsing';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { parseAccountID } from '@/js/modules/adsense/util/parsing';
 import {
 	ErrorNotices,
 	UseSnippetSwitch,
 	AutoAdExclusionSwitches,
-} from '../common';
-import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
-import Link from '../../../../components/Link';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+} from '@/js/modules/adsense/components/common';
+import WebStoriesAdUnitSelect from '@/js/modules/adsense/components/common/WebStoriesAdUnitSelect';
+import Link from '@/js/components/Link';
+import P from '@/js/components/Typography/P';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
 
@@ -118,7 +119,7 @@ export default function SettingsForm() {
 			{ webStoriesActive && (
 				<Fragment>
 					<WebStoriesAdUnitSelect />
-					<p>
+					<P>
 						{ createInterpolateElement(
 							__(
 								'This ad unit will be used for your Web Stories. <LearnMoreLink />',
@@ -142,7 +143,7 @@ export default function SettingsForm() {
 								),
 							}
 						) }
-					</p>
+					</P>
 				</Fragment>
 			) }
 

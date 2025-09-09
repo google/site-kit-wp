@@ -30,18 +30,18 @@ import { useCallback, useRef, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { getItem } from '../../../googlesitekit/api/cache';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { getItem } from '@/js/googlesitekit/api/cache';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-} from '../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import { getUnsatisfiedScopesMessage } from './utils';
-import BannerNotification from '../../../googlesitekit/notifications/components/layout/BannerNotification';
-import { TYPES } from '../../Notice/constants';
+import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import { TYPES } from '@/js/components/Notice/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
@@ -55,11 +55,9 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 			new RegExp( '//oauth2|action=googlesitekit_connect', 'i' )
 		)
 	);
-	const temporaryPersistedPermissionsError = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-			'permissionsError'
-		)
+	const temporaryPersistedPermissionsError = useFormValue(
+		FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+		'permissionsError'
 	);
 	const unsatisfiedScopes = useSelect( ( select ) =>
 		select( CORE_USER ).getUnsatisfiedScopes()

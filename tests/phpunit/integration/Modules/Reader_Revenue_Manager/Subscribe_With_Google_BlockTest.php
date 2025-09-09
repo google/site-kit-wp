@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager;
 
 use Google\Site_Kit\Context;
@@ -50,7 +48,7 @@ class Subscribe_With_Google_BlockTest extends TestCase {
 	public function test_register() {
 		$this->block->register();
 
-		$this->assertTrue( has_action( 'init' ) );
+		$this->assertTrue( has_action( 'init' ), 'Subscribe_With_Google_Block should register the init action.' );
 	}
 
 	public function test_render_callback_with_incorrect_payment_option() {
@@ -64,7 +62,7 @@ class Subscribe_With_Google_BlockTest extends TestCase {
 
 		$output = $this->block->render_callback();
 
-		$this->assertEquals( '', $output );
+		$this->assertEquals( '', $output, 'Output should be empty for incorrect payment option.' );
 	}
 
 	public function test_render_callback_with_tag_guard_preventing_activation() {
@@ -78,7 +76,7 @@ class Subscribe_With_Google_BlockTest extends TestCase {
 
 		$output = $this->block->render_callback();
 
-		$this->assertEquals( '', $output );
+		$this->assertEquals( '', $output, 'Output should be empty when tag guard prevents activation.' );
 	}
 
 	public function test_render_callback_with_tag_guard_allowing_activation() {
@@ -92,6 +90,6 @@ class Subscribe_With_Google_BlockTest extends TestCase {
 
 		$output = $this->block->render_callback();
 
-		$this->assertEquals( '<div style="margin: 0 auto;"><button swg-standard-button="subscription"></button></div>', $output );
+		$this->assertEquals( '<div style="margin: 0 auto;"><button swg-standard-button="subscription"></button></div>', $output, 'Output should match expected markup when tag guard allows activation.' );
 	}
 }

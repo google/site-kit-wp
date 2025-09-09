@@ -24,13 +24,13 @@ import { withQuery } from '@storybook/addon-queryparams';
 /**
  * Internal dependencies
  */
-import SetupUsingProxyWithSignIn from '../SetupUsingProxyWithSignIn';
+import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWithSignIn';
 import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	PERMISSION_AUTHENTICATE,
-} from '../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	provideSiteConnection,
 	provideUserAuthentication,
@@ -41,9 +41,9 @@ import {
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
-import { getMetaCapabilityPropertyName } from '../../../googlesitekit/datastore/util/permissions';
-import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../googlesitekit/constants';
+import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 
 function Template() {
 	return (
@@ -229,7 +229,7 @@ export default {
 	decorators: [
 		withQuery,
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetTracking( { enabled: false } );
@@ -238,7 +238,7 @@ export default {
 				if ( typeof args?.setupRegistry === 'function' ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

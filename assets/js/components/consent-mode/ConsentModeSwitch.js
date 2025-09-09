@@ -29,15 +29,16 @@ import { __ } from '@wordpress/i18n';
  */
 import { Switch } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import Link from '../Link';
-import LoadingWrapper from '../LoadingWrapper';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import Link from '@/js/components/Link';
+import LoadingWrapper from '@/js/components/LoadingWrapper';
 import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
-import { DAY_IN_SECONDS, trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
+import { DAY_IN_SECONDS, trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
-import ErrorNotice from '../ErrorNotice';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import P from '@/js/components/Typography/P';
 
 export default function ConsentModeSwitch( { loading } ) {
 	const viewContext = useViewContext();
@@ -156,7 +157,7 @@ export default function ConsentModeSwitch( { loading } ) {
 						tabletWidth="540px"
 						tabletHeight="84px"
 					>
-						<p>
+						<P>
 							{ createInterpolateElement(
 								__(
 									'Consent mode will help adjust tracking on your site, so only visitors who have explicitly given consent are tracked. <br />This is required in some parts of the world, like the European Economic Area. <a>Learn more</a>',
@@ -182,7 +183,7 @@ export default function ConsentModeSwitch( { loading } ) {
 									),
 								}
 							) }
-						</p>
+						</P>
 					</LoadingWrapper>
 				}
 			</div>

@@ -27,12 +27,12 @@ import { _x } from '@wordpress/i18n';
 import {
 	MODULES_ADSENSE,
 	DATE_RANGE_OFFSET,
-} from '../../../datastore/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { generateDateRangeArgs } from '../../../util/report-date-range-args';
-import SourceLink from '../../../../../components/SourceLink';
+} from '@/js/modules/adsense/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { generateDateRangeArgs } from '@/js/modules/adsense/util/report-date-range-args';
+import SourceLink from '@/js/components/SourceLink';
 import { useSelect } from 'googlesitekit-data';
-import useViewOnly from '../../../../../hooks/useViewOnly';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 function Footer() {
 	const viewOnlyDashboard = useViewOnly();

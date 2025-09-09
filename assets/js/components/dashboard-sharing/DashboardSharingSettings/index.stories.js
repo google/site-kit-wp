@@ -27,16 +27,16 @@ import {
 } from '../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import DashboardSharingSettings from './index';
-import { MODULES_PAGESPEED_INSIGHTS } from '../../../modules/pagespeed-insights/datastore/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/datastore/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { Dialog, DialogContent } from '../../../material-components';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { Dialog, DialogContent } from '@/js/material-components';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { sharingSettings, modules, roles } from './__fixtures__';
 
 function Template( { setupRegistry = () => {}, ...args } ) {
@@ -266,7 +266,7 @@ export default {
 	title: 'Components/DashboardSharingSettings',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( CORE_MODULES )
 					.receiveGetSharingSettings( sharingSettings );
@@ -295,7 +295,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

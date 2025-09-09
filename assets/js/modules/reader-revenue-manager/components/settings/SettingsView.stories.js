@@ -22,13 +22,13 @@
 import {
 	provideModuleRegistrations,
 	provideSiteInfo,
-	WithTestRegistry,
 } from '../../../../../../tests/js/utils';
-import { Grid, Row, Cell } from '../../../../material-components';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
-import { publications } from '../../datastore/__fixtures__';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { Grid, Row, Cell } from '@/js/material-components';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import SettingsView from './SettingsView';
 
 function Template() {
@@ -110,7 +110,7 @@ export default {
 	component: SettingsView,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry, {
 					postTypes: [
 						{ slug: 'post', label: 'Posts' },
@@ -146,12 +146,12 @@ export default {
 				if ( args?.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
-				<WithTestRegistry callback={ setupRegistry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

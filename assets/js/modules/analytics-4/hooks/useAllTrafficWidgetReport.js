@@ -20,11 +20,14 @@
  * Internal dependencies
  */
 import { useInViewSelect, useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from '../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
-import useViewOnly from '../../../hooks/useViewOnly';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 /**
  * Gets report information for the Dashboard All Traffic GA4 widget.

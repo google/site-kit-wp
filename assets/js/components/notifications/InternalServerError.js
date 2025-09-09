@@ -20,11 +20,11 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import BannerNotification, {
 	TYPES,
-} from '../../googlesitekit/notifications/components/layout/BannerNotification';
-import Notification from '../../googlesitekit/notifications/components/Notification';
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import Notification from '@/js/googlesitekit/notifications/components/Notification';
 
 export default function InternalServerError() {
 	const error = useSelect( ( select ) =>

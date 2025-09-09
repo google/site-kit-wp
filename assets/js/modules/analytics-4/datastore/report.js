@@ -34,16 +34,20 @@ import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createGatheringDataStore } from '../../../googlesitekit/modules/create-gathering-data-store';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createGatheringDataStore } from '@/js/googlesitekit/modules/create-gathering-data-store';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4, DATE_RANGE_OFFSET } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
-import { DAY_IN_SECONDS, dateSub, stringifyObject } from '../../../util';
-import { normalizeReportOptions, isZeroReport } from '../utils';
-import { validateReport } from '../utils/validation';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { DAY_IN_SECONDS, dateSub, stringifyObject } from '@/js/util';
+import {
+	normalizeReportOptions,
+	isZeroReport,
+} from '@/js/modules/analytics-4/utils';
+import { validateReport } from '@/js/modules/analytics-4/utils/validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -55,15 +59,9 @@ const fetchGetReportStore = createFetchStore( {
 			normalizeReportOptions( options )
 		);
 	},
-	reducerCallback: ( state, report, { options } ) => {
-		return {
-			...state,
-			reports: {
-				...state.reports,
-				[ stringifyObject( options ) ]: report,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, report, { options } ) => {
+		state.reports[ stringifyObject( options ) ] = report;
+	} ),
 	argsToParams: ( options ) => {
 		return { options };
 	},
@@ -199,7 +197,7 @@ const baseSelectors = {
 		( select ) =>
 			( state, report, { startDate, endDate } = {} ) => {
 				if ( ! isPlainObject( report ) ) {
-					return;
+					return undefined;
 				}
 
 				const pagePaths = [];
@@ -255,7 +253,7 @@ const baseSelectors = {
 				const pageTitlesReport =
 					select( MODULES_ANALYTICS_4 ).getReport( options );
 				if ( undefined === pageTitlesReport ) {
-					return;
+					return undefined;
 				}
 
 				( pageTitlesReport?.rows || [] ).forEach(
@@ -358,8 +356,6 @@ const baseSelectors = {
 
 	/**
 	 * Gets a given report for each of the provided audiences.
-	 *
-	 * TODO: This will be refactored to use pivot reports in #8484.
 	 *
 	 * @since 1.126.0
 	 *

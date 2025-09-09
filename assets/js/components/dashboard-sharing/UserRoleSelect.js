@@ -40,14 +40,14 @@ import {
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, Chip } from 'googlesitekit-components';
-import Link from '../Link';
-import ShareIcon from '../../../svg/icons/share.svg';
-import CheckIcon from '../../../svg/icons/check.svg';
-import useViewContext from '../../hooks/useViewContext';
-import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
-import { trackEvent } from '../../util';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import Link from '@/js/components/Link';
+import ShareIcon from '@/svg/icons/share.svg';
+import CheckIcon from '@/svg/icons/check.svg';
+import useViewContext from '@/js/hooks/useViewContext';
+import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
+import { trackEvent } from '@/js/util';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { EDITING_USER_ROLE_SELECT_SLUG_KEY } from './DashboardSharingSettings/constants';
 
 const ALL_CHIP_ID = 'all';
@@ -160,7 +160,7 @@ const UserRoleSelect = forwardRef(
 			[ moduleSlug, setSharedRoles, sharedRoles, shareableRoles ]
 		);
 
-		const getSharedRolesDisplayNames = () => {
+		function getSharedRolesDisplayNames() {
 			const roleDisplayNames = shareableRoles?.reduce( ( acc, role ) => {
 				if ( sharedRoles.includes( role.id ) ) {
 					acc.push( role.displayName );
@@ -169,7 +169,7 @@ const UserRoleSelect = forwardRef(
 			}, [] );
 
 			return roleDisplayNames.join( ', ' );
-		};
+		}
 
 		if ( ! shareableRoles ) {
 			return null;

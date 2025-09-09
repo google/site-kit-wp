@@ -1,7 +1,7 @@
 import { useCallback } from '@wordpress/element';
 
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
 export function useShowTooltip( tooltipSettings ) {
 	const { setValue } = useDispatch( CORE_UI );

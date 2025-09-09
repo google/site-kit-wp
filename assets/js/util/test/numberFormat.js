@@ -24,11 +24,11 @@ import { set, unset } from 'lodash';
 /**
  * Internal dependencies
  */
-import { numberFormat } from '../';
+import { numberFormat } from '@/js/util';
 
-const setupGoogleSiteKit = ( langCode ) => {
+function setupGoogleSiteKit( langCode ) {
 	set( global._googlesitekitLegacyData, 'locale', langCode );
-};
+}
 
 describe( 'numberFormat', () => {
 	it( 'formats numbers correctly according to the locale provided', () => {
@@ -126,9 +126,8 @@ describe( 'numberFormat', () => {
 			'TypeError: Failed to initialize NumberFormat since used feature is not supported in the linked ICU version';
 
 		// Replicate a browser behaviour to throw errors when certain option key/values are encountered.
-		const createThrowIfOptionMatch =
-			( key, value ) =>
-			( locales, options = {} ) => {
+		function createThrowIfOptionMatch( key, value ) {
+			return ( locales, options = {} ) => {
 				if (
 					options[ key ] &&
 					( value === options[ key ] || value === undefined )
@@ -137,6 +136,7 @@ describe( 'numberFormat', () => {
 				}
 				return NumberFormat( locales, options );
 			};
+		}
 
 		it( 'degrades gracefully when `signDisplay` has any value other than the default of `auto`', () => {
 			// Regular implementation.

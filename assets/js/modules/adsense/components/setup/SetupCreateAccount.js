@@ -31,14 +31,18 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import SupportLink from '../../../../components/SupportLink';
-import { trackEvent } from '../../../../util';
-import { parseAccountID } from '../../util/parsing';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { ErrorNotices, UserProfile } from '../common';
-import useViewContext from '../../../../hooks/useViewContext';
-import Typography from '../../../../components/Typography';
+import SupportLink from '@/js/components/SupportLink';
+import { trackEvent } from '@/js/util';
+import { parseAccountID } from '@/js/modules/adsense/util/parsing';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	ErrorNotices,
+	UserProfile,
+} from '@/js/modules/adsense/components/common';
+import useViewContext from '@/js/hooks/useViewContext';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function SetupCreateAccount() {
 	const viewContext = useViewContext();
@@ -73,12 +77,12 @@ export default function SetupCreateAccount() {
 
 			<ErrorNotices />
 
-			<p>
+			<P>
 				{ __(
 					'Once you create your account, Site Kit will place AdSense code on every page across your site. This means your site will be automatically optimized to help you earn money from your content.',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 
 			<UserProfile />
 

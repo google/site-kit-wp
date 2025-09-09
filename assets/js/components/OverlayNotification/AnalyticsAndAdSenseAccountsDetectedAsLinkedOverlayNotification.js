@@ -30,14 +30,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import AnalyticsAdsenseLinkedGraphicDesktop from '../../../svg/graphics/analytics-adsense-linked-desktop.svg';
-import AnalyticsAdsenseLinkedGraphicMobile from '../../../svg/graphics/analytics-adsense-linked-mobile.svg';
-import { ANCHOR_ID_MONETIZATION } from '../../googlesitekit/constants';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
-import { useBreakpoint } from '../../hooks/useBreakpoint';
-import { getNavigationalScrollTop } from '../../util/scroll';
-import OverlayNotification from '../../googlesitekit/notifications/components/layout/OverlayNotification';
-import useViewContext from '../../hooks/useViewContext';
+import AnalyticsAdsenseLinkedGraphicDesktop from '@/svg/graphics/analytics-adsense-linked-desktop.svg';
+import AnalyticsAdsenseLinkedGraphicMobile from '@/svg/graphics/analytics-adsense-linked-mobile.svg';
+import { ANCHOR_ID_MONETIZATION } from '@/js/googlesitekit/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { getNavigationalScrollTop } from '@/js/util/scroll';
+import OverlayNotification from '@/js/googlesitekit/notifications/components/layout/OverlayNotification';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export const ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION =
 	'AnalyticsAndAdSenseLinkedOverlayNotification';
@@ -52,7 +52,7 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const scrollToWidgetAndDismissNotification = ( event ) => {
+	function scrollToWidgetAndDismissNotification( event ) {
 		event.preventDefault();
 
 		dismissNotification( id );
@@ -71,7 +71,7 @@ export default function AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotifi
 				behavior: 'smooth',
 			} );
 		}, 50 );
-	};
+	}
 
 	const gaTrackingEventArgs = {
 		category: `${ viewContext }_top-earning-pages-widget`,

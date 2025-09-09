@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\REST_API;
 
 use Google\Site_Kit\Context;
@@ -23,7 +21,7 @@ class REST_RoutesTest extends TestCase {
 
 	public function test_rest_root() {
 		// Assert that REST root is correct (this must not change).
-		$this->assertEquals( 'google-site-kit/v1', REST_Routes::REST_ROOT );
+		$this->assertEquals( 'google-site-kit/v1', REST_Routes::REST_ROOT, 'REST root should be google-site-kit/v1.' );
 	}
 
 	public function test_register() {
@@ -37,7 +35,7 @@ class REST_RoutesTest extends TestCase {
 		$server = rest_get_server();
 
 		// Assert that routes with the site-kit namespace were registered.
-		$this->assertEquals( array( REST_Routes::REST_ROOT ), $server->get_namespaces() );
+		$this->assertEquals( array( REST_Routes::REST_ROOT ), $server->get_namespaces(), 'Only Site Kit REST namespace should be registered.' );
 
 		// While most of these routes are added via filter, they should all be in this list.
 		$routes = array(
@@ -63,6 +61,6 @@ class REST_RoutesTest extends TestCase {
 		// Filter out other endpoints (not registered in the plugin).
 		$get_routes = array_intersect( $routes, array_keys( $server->get_routes() ) );
 
-		$this->assertEqualSets( $routes, $get_routes );
+		$this->assertEqualSets( $routes, $get_routes, 'Registered routes should match expected list.' );
 	}
 }

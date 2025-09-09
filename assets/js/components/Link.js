@@ -32,10 +32,10 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ArrowIcon from '../../svg/icons/arrow.svg';
-import ArrowInverseIcon from '../../svg/icons/arrow-inverse.svg';
-import BackIcon from '../../svg/icons/back.svg';
-import ExternalIcon from '../../svg/icons/external.svg';
+import ArrowIcon from '@/svg/icons/arrow.svg';
+import ArrowInverseIcon from '@/svg/icons/arrow-inverse.svg';
+import BackIcon from '@/svg/icons/back.svg';
+import ExternalIcon from '@/svg/icons/external.svg';
 import IconWrapper from './IconWrapper';
 
 const BUTTON = 'BUTTON';
@@ -70,7 +70,7 @@ const Link = forwardRef( ( props, ref ) => {
 		...otherProps
 	} = props;
 
-	const getType = () => {
+	function getType() {
 		// Force button element if `onClick` prop is passed and there's no `href`
 		// or `to` prop.
 		if ( ! href && ! to && onClick ) {
@@ -94,11 +94,11 @@ const Link = forwardRef( ( props, ref ) => {
 
 		// A regular `<a>` tag without external indicators.
 		return LINK;
-	};
+	}
 
 	const type = getType();
 
-	const getLinkComponent = () => {
+	function getLinkComponent() {
 		if ( type === BUTTON || type === BUTTON_DISABLED ) {
 			return 'button';
 		}
@@ -108,9 +108,9 @@ const Link = forwardRef( ( props, ref ) => {
 		}
 
 		return 'a';
-	};
+	}
 
-	const getAriaLabel = () => {
+	function getAriaLabel() {
 		// Otherwise, create an ARIA label if the link opens in a new window
 		// or is disabled, to add extra context to the link.
 		let labelSuffix;
@@ -149,7 +149,7 @@ const Link = forwardRef( ( props, ref ) => {
 		// make one; otherwise we'll only create an ARIA label that says
 		// "(opens in a new tab)", which is not good.
 		return undefined;
-	};
+	}
 
 	const LinkComponent = getLinkComponent();
 	const ariaLabel = getAriaLabel();

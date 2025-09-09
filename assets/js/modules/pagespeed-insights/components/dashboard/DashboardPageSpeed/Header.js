@@ -27,8 +27,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { Tab, TabBar } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import DeviceSizeTabBar from '../../../../../components/DeviceSizeTabBar';
-import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import DeviceSizeTabBar from '@/js/components/DeviceSizeTabBar';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	STRATEGY_MOBILE,
 	STRATEGY_DESKTOP,
@@ -37,7 +37,7 @@ import {
 	DATA_SRC_RECOMMENDATIONS,
 	UI_STRATEGY,
 	UI_DATA_SOURCE,
-} from '../../../datastore/constants';
+} from '@/js/modules/pagespeed-insights/datastore/constants';
 
 const Header = forwardRef( ( { isFetching, updateActiveTab }, ref ) => {
 	const strategy =

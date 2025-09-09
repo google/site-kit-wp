@@ -21,31 +21,45 @@
  */
 import { combineWidgets } from './combine-widgets';
 import { getWidgetLayout } from './get-widget-layout';
-import { WIDGET_WIDTHS } from '../datastore/constants';
-import ReportZero from '../../../components/ReportZero';
-import Null from '../../../components/Null';
-import RecoverableModules from '../../../components/RecoverableModules';
+import { WIDGET_WIDTHS } from '@/js/googlesitekit/widgets/datastore/constants';
+import ReportZero from '@/js/components/ReportZero';
+import Null from '@/js/components/Null';
+import RecoverableModules from '@/js/components/RecoverableModules';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 describe( 'combineWidgets', () => {
-	const getQuarterWidget = ( slug ) => ( {
-		slug,
-		width: WIDGET_WIDTHS.QUARTER,
-	} );
-	const getHalfWidget = ( slug ) => ( { slug, width: WIDGET_WIDTHS.HALF } );
-	const getFullWidget = ( slug ) => ( { slug, width: WIDGET_WIDTHS.FULL } );
+	function getQuarterWidget( slug ) {
+		return {
+			slug,
+			width: WIDGET_WIDTHS.QUARTER,
+		};
+	}
+	function getHalfWidget( slug ) {
+		return { slug, width: WIDGET_WIDTHS.HALF };
+	}
+	function getFullWidget( slug ) {
+		return { slug, width: WIDGET_WIDTHS.FULL };
+	}
 
-	const getRegularState = () => null;
-	const getReportZeroState = ( moduleSlug ) => ( {
-		Component: ReportZero,
-		metadata: { moduleSlug },
-	} );
-	const getRecoverableModulesState = ( moduleSlugs ) => ( {
-		Component: RecoverableModules,
-		metadata: { moduleSlugs },
-	} );
-	const getNullState = () => ( { Component: Null, metadata: {} } );
+	function getRegularState() {
+		return null;
+	}
+	function getReportZeroState( moduleSlug ) {
+		return {
+			Component: ReportZero,
+			metadata: { moduleSlug },
+		};
+	}
+	function getRecoverableModulesState( moduleSlugs ) {
+		return {
+			Component: RecoverableModules,
+			metadata: { moduleSlugs },
+		};
+	}
+	function getNullState() {
+		return { Component: Null, metadata: {} };
+	}
 
 	it( 'should combine widgets beyond their row if all of them have the same special state', () => {
 		const widgets = [

@@ -68,7 +68,7 @@ class Key_Metrics {
 	 * @param User_Options $user_options Optional. User option API. Default is a new instance.
 	 * @param Options      $options        Optional. Option API instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, User_Options $user_options = null, Options $options = null ) {
+	public function __construct( Context $context, ?User_Options $user_options = null, ?Options $options = null ) {
 		$this->key_metrics_settings           = new Key_Metrics_Settings( $user_options ?: new User_Options( $context ) );
 		$this->key_metrics_setup_completed_by = new Key_Metrics_Setup_Completed_By( $options ?: new Options( $context ) );
 		$this->key_metrics_setup_new          = new Key_Metrics_Setup_New( new Transients( $context ) );

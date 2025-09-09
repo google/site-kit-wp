@@ -25,9 +25,9 @@ import {
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_ADS } from '../../constants';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'ads-setup-cta'
@@ -60,7 +60,7 @@ export default {
 	title: 'Modules/Ads/Components/Dashboard/AdsModuleSetupCTABanner',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ADS,
@@ -73,7 +73,7 @@ export default {
 					.finishResolution( 'getDismissedPrompts', [] );
 
 				args?.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

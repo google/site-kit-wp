@@ -26,7 +26,7 @@ import {
 	provideSiteInfo,
 	provideUserInfo,
 } from '../../../../../tests/js/utils';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 
 describe( 'module/search-console service store', () => {

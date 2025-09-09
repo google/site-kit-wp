@@ -29,12 +29,12 @@ import {
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
-import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
+import { withActive } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -44,7 +44,7 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
-import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
+import { INVARIANT_SETTINGS_NOT_CHANGED } from '@/js/googlesitekit/data/create-settings-store';
 import {
 	INVARIANT_INVALID_PROPERTY_SELECTION,
 	INVARIANT_INVALID_WEBDATASTREAM_ID,
@@ -52,7 +52,7 @@ import {
 	INVARIANT_WEBDATASTREAM_ALREADY_EXISTS,
 } from './settings';
 import * as fixtures from './__fixtures__';
-import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { ANALYTICS_4_NOTIFICATIONS } from '..';
 
 describe( 'modules/analytics-4 settings', () => {

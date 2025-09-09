@@ -23,8 +23,8 @@ import WidgetRenderer from './WidgetRenderer';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../googlesitekit/constants';
-import { CORE_WIDGETS } from '../datastore/constants';
+} from '@/js/googlesitekit/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
 	createTestRegistry,
 	provideModules,
@@ -36,12 +36,12 @@ import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constant
 describe( 'WidgetRenderer', () => {
 	let registry;
 
-	const setupRegistry = ( {
+	function setupRegistry( {
 		Component = () => <div>Test</div>,
 		wrapWidget = false,
 		preloadWidget = false,
 		recoverableModules = [],
-	} = {} ) => {
+	} = {} ) {
 		registry = createTestRegistry();
 
 		provideModules(
@@ -74,7 +74,7 @@ describe( 'WidgetRenderer', () => {
 		registry
 			.dispatch( CORE_WIDGETS )
 			.assignWidget( 'TestWidget', 'dashboard-header' );
-	};
+	}
 
 	beforeEach( () => {
 		setupRegistry();

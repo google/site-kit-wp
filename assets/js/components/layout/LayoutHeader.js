@@ -29,9 +29,9 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Cell, Grid, Row } from '../../material-components';
-import Link from '../Link';
-import Typography from '../Typography';
+import { Cell, Grid, Row } from '@/js/material-components';
+import Link from '@/js/components/Link';
+import Typography from '@/js/components/Typography';
 
 class LayoutHeader extends Component {
 	render() {

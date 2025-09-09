@@ -28,19 +28,19 @@ import { getQueryArg } from '@wordpress/url';
 import {
 	AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
 	AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
-} from '../../googlesitekit/widgets/default-areas';
+} from '@/js/googlesitekit/widgets/default-areas';
 import { SettingsView } from './components/settings';
 import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedWidget';
-import PageSpeedInsightsIcon from '../../../svg/graphics/pagespeed-insights.svg';
+import PageSpeedInsightsIcon from '@/svg/graphics/pagespeed-insights.svg';
 import { MODULES_PAGESPEED_INSIGHTS } from './datastore/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from './constants';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import SetupSuccessNotification from './components/notifications/SetupSuccessNotification';
 
 export { registerStore } from './datastore';
 
-export const registerModule = ( modules ) => {
+export function registerModule( modules ) {
 	modules.registerModule( MODULE_SLUG_PAGESPEED_INSIGHTS, {
 		storeName: MODULES_PAGESPEED_INSIGHTS,
 		SettingsViewComponent: SettingsView,
@@ -53,9 +53,9 @@ export const registerModule = ( modules ) => {
 		],
 		overrideSetupSuccessNotification: true,
 	} );
-};
+}
 
-export const registerWidgets = ( widgets ) => {
+export function registerWidgets( widgets ) {
 	widgets.registerWidget(
 		'pagespeedInsightsWebVitals',
 		{
@@ -69,7 +69,7 @@ export const registerWidgets = ( widgets ) => {
 			AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
 		]
 	);
-};
+}
 
 export const NOTIFICATIONS = {
 	'setup-success-notification-psi': {
@@ -92,11 +92,11 @@ export const NOTIFICATIONS = {
 	},
 };
 
-export const registerNotifications = ( notificationsAPI ) => {
+export function registerNotifications( notificationsAPI ) {
 	for ( const notificationID in NOTIFICATIONS ) {
 		notificationsAPI.registerNotification(
 			notificationID,
 			NOTIFICATIONS[ notificationID ]
 		);
 	}
-};
+}

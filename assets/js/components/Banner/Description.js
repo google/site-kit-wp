@@ -28,7 +28,7 @@ import { isValidElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { sanitizeHTML } from '../../util';
+import { sanitizeHTML } from '@/js/util';
 import LearnMoreLink from './LearnMoreLink';
 
 export default function Description( {
@@ -38,7 +38,7 @@ export default function Description( {
 	additionalDescription,
 	children,
 } ) {
-	const renderDescription = () => {
+	function renderDescription() {
 		if ( isValidElement( description ) ) {
 			return description;
 		}
@@ -55,7 +55,7 @@ export default function Description( {
 		}
 
 		return description;
-	};
+	}
 
 	return (
 		<div

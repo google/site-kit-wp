@@ -36,23 +36,24 @@ import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../../../../../../hooks/useBreakpoint';
-import { CORE_FORMS } from '../../../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
+} from '@/js/hooks/useBreakpoint';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 	CUSTOM_DIMENSION_DEFINITIONS,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
-} from '../../../../../datastore/constants';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../../../util/errors';
-import BadgeWithTooltip from '../../../../../../../components/BadgeWithTooltip';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
+import BadgeWithTooltip from '@/js/components/BadgeWithTooltip';
 import AudienceTilePagesMetricContent from './AudienceTilePagesMetricContent';
-import AudienceErrorModal from '../../AudienceErrorModal';
-import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../../googlesitekit/widgets/default-areas';
-import useViewContext from '../../../../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../../../../util';
+import AudienceErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceErrorModal';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '@/js/googlesitekit/widgets/default-areas';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function AudienceTilePagesMetric( {
 	// TODO: The prop `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
@@ -91,11 +92,9 @@ export default function AudienceTilePagesMetric( {
 		widgetArea: AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 	} );
 
-	const isAutoCreatingCustomDimensionsForAudience = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
-			'isAutoCreatingCustomDimensionsForAudience'
-		)
+	const isAutoCreatingCustomDimensionsForAudience = useFormValue(
+		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+		'isAutoCreatingCustomDimensionsForAudience'
 	);
 
 	const isCreatingCustomDimension = useSelect( ( select ) =>
@@ -123,18 +122,14 @@ export default function AudienceTilePagesMetric( {
 	const { setPermissionScopeError, clearPermissionScopeError } =
 		useDispatch( CORE_USER );
 
-	const isRetryingCustomDimensionCreate = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
-			'isRetrying'
-		)
+	const isRetryingCustomDimensionCreate = useFormValue(
+		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+		'isRetrying'
 	);
 
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
-			'autoSubmit'
-		)
+	const autoSubmit = useFormValue(
+		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+		'autoSubmit'
 	);
 
 	const setupErrorCode = useSelect( ( select ) =>

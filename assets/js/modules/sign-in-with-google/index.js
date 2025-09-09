@@ -23,14 +23,14 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
 	MODULES_SIGN_IN_WITH_GOOGLE,
 } from './datastore/constants';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from './constants';
-import Icon from '../../../svg/graphics/sign-in-with-google.svg';
+import Icon from '@/svg/graphics/sign-in-with-google.svg';
 import SetupMain from './components/setup/SetupMain';
 import SettingsEdit from './components/settings/SettingsEdit';
 import SettingsView from './components/settings/SettingsView';
@@ -39,10 +39,10 @@ import {
 	NOTIFICATION_GROUPS,
 	NOTIFICATION_AREAS,
 	PRIORITY,
-} from '../../googlesitekit/notifications/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+} from '@/js/googlesitekit/notifications/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import SetupSuccessSubtleNotification from './components/dashboard/SetupSuccessSubtleNotification';
-import { isURLUsingHTTPS } from '../../util/is-url-using-https';
+import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
 
 export { registerStore } from './datastore';
 
@@ -99,7 +99,7 @@ export function registerModule( modules ) {
 	} );
 }
 
-export const registerNotifications = ( notifications ) => {
+export function registerNotifications( notifications ) {
 	notifications.registerNotification( 'sign-in-with-google-setup-cta', {
 		Component: SignInWithGoogleSetupCTABanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
@@ -149,4 +149,4 @@ export const registerNotifications = ( notifications ) => {
 			return false;
 		},
 	} );
-};
+}

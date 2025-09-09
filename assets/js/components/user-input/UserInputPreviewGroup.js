@@ -33,24 +33,25 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { trackEvent } from '../../util';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { trackEvent } from '@/js/util';
 import { getErrorMessageForAnswer } from './util/validation';
-import useViewContext from '../../hooks/useViewContext';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_MAX_ANSWERS,
 	USER_INPUT_QUESTIONS_PURPOSE,
 } from './util/constants';
-import Link from '../Link';
-import LoadingWrapper from '../LoadingWrapper';
-import ChevronDownIcon from '../../../svg/icons/chevron-down.svg';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import Link from '@/js/components/Link';
+import LoadingWrapper from '@/js/components/LoadingWrapper';
+import ChevronDownIcon from '@/svg/icons/chevron-down.svg';
 import UserInputPreviewAnswers from './UserInputPreviewAnswers';
 import UserInputEditModeContent from './UserInputEditModeContent';
+import useFormValue from '@/js/hooks/useFormValue';
+import P from '@/js/components/Typography/P';
 
 export default function UserInputPreviewGroup( {
 	slug,
@@ -76,11 +77,9 @@ export default function UserInputPreviewGroup( {
 			userInputSettings
 		);
 	} );
-	const savedPurposeAnswer = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_USER_INPUT_QUESTION_SNAPSHOT,
-			USER_INPUT_QUESTIONS_PURPOSE
-		)
+	const savedPurposeAnswer = useFormValue(
+		FORM_USER_INPUT_QUESTION_SNAPSHOT,
+		USER_INPUT_QUESTIONS_PURPOSE
 	);
 	const previousPurposeAnswer = usePrevious( savedPurposeAnswer );
 
@@ -176,7 +175,7 @@ export default function UserInputPreviewGroup( {
 				) }
 			>
 				<LoadingWrapper loading={ loading } width="340px" height="21px">
-					<p>{ title }</p>
+					<P>{ title }</P>
 				</LoadingWrapper>
 				<LoadingWrapper
 					loading={ loading }
@@ -210,7 +209,7 @@ export default function UserInputPreviewGroup( {
 							<Subtitle />
 						</div>
 					) }
-					{ ! Subtitle && <p>{ subtitle }</p> }
+					{ ! Subtitle && <P>{ subtitle }</P> }
 				</div>
 			</LoadingWrapper>
 

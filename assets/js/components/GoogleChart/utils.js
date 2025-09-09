@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -26,8 +24,8 @@ import { cloneDeep, findLast, merge, set } from 'lodash';
 /**
  * Internal dependencies
  */
-import { BREAKPOINT_SMALL } from '../../hooks/useBreakpoint';
-import { getLocale, stringToDate } from '../../util';
+import { BREAKPOINT_SMALL } from '@/js/hooks/useBreakpoint';
+import { getLocale, stringToDate } from '@/js/util';
 
 /**
  * Returns the Google chart data, filtered by selected stats if present.
@@ -38,7 +36,7 @@ import { getLocale, stringToDate } from '../../util';
  * @param {Array|undefined} selectedStats The columns that should be displayed for the data set.
  * @return {Object} The chart data, filtered by selected stats if present.
  */
-export const getFilteredChartData = ( data, selectedStats ) => {
+export function getFilteredChartData( data, selectedStats ) {
 	if ( ! selectedStats?.length ) {
 		return data;
 	}
@@ -61,7 +59,7 @@ export const getFilteredChartData = ( data, selectedStats ) => {
 			);
 		} );
 	} );
-};
+}
 
 /**
  * Returns the optimal height and width for a preview element.
@@ -74,12 +72,12 @@ export const getFilteredChartData = ( data, selectedStats ) => {
  * @param {string|undefined} width         Chart width.
  * @return {Object} The optimal height and width to use in a preview element.
  */
-export const getLoadingDimensions = (
+export function getLoadingDimensions(
 	loadingHeight,
 	height,
 	loadingWidth,
 	width
-) => {
+) {
 	const dimensions = {
 		height: loadingHeight || height,
 		width: loadingWidth || width,
@@ -95,7 +93,7 @@ export const getLoadingDimensions = (
 	}
 
 	return dimensions;
-};
+}
 
 /**
  * Returns a combined chart events object.
@@ -107,7 +105,7 @@ export const getLoadingDimensions = (
  * @param {Function|undefined}       onSelect    Chart event.
  * @return {Object} The object containig all events.
  */
-export const getCombinedChartEvents = ( chartEvents, onReady, onSelect ) => {
+export function getCombinedChartEvents( chartEvents, onReady, onSelect ) {
 	const combinedChartEvents = [ ...( chartEvents || [] ) ];
 
 	if ( onReady ) {
@@ -125,30 +123,28 @@ export const getCombinedChartEvents = ( chartEvents, onReady, onSelect ) => {
 	}
 
 	return combinedChartEvents;
-};
+}
 
 /**
  * Returns a chart configuration object.
  *
  * @since 1.93.0
  * @since 1.119.0 Added `breakpoint` parameter.
+ * @since 1.160.0 Refactored `gatheringData`, `chartType`, `startDate`, `endDate`, and `breakpoint` to be named parameters.
  *
- * @param {Object}  options       Configuration data.
- * @param {boolean} gatheringData If chart is in gathering info state.
- * @param {string}  chartType     Chart types: PieChart, LineChart.
- * @param {string}  startDate     Start date for a user data range.
- * @param {string}  endDate       End date for a user data range.
- * @param {string}  breakpoint    Current breakpoint.
- * @return {Object} Chart options configuration.
+ * @param {Object}  options                     Chart options to extend.
+ * @param {Object}  configuration               Configuration for the extended chart options.
+ * @param {boolean} configuration.gatheringData If chart is in gathering info state.
+ * @param {string}  configuration.chartType     Chart types: PieChart, LineChart.
+ * @param {string}  configuration.startDate     Start date for a user data range.
+ * @param {string}  configuration.endDate       End date for a user data range.
+ * @param {string}  configuration.breakpoint    Current breakpoint.
+ * @return {Object} Chart options object.
  */
-export const getChartOptions = (
+export function getChartOptions(
 	options,
-	gatheringData,
-	chartType,
-	startDate,
-	endDate,
-	breakpoint
-) => {
+	{ gatheringData, chartType, startDate, endDate, breakpoint }
+) {
 	const chartOptions = cloneDeep( options );
 	if ( gatheringData && chartType === 'LineChart' ) {
 		if ( ! options?.vAxis?.viewWindow?.min ) {
@@ -215,7 +211,7 @@ export const getChartOptions = (
 	} );
 
 	return chartOptions;
-};
+}
 
 /**
  * Returns the Google Charts currency pattern for a given currency code and locale.
@@ -226,7 +222,7 @@ export const getChartOptions = (
  * @param {string} locale       Locale to use for formatting.
  * @return {string} The currency pattern.
  */
-export const getCurrencyPattern = ( currencyCode, locale = getLocale() ) => {
+export function getCurrencyPattern( currencyCode, locale = getLocale() ) {
 	const formatter = Intl.NumberFormat( locale, {
 		style: 'currency',
 		currency: currencyCode,
@@ -268,4 +264,4 @@ export const getCurrencyPattern = ( currencyCode, locale = getLocale() ) => {
 				return pattern;
 		}
 	}, '' );
-};
+}

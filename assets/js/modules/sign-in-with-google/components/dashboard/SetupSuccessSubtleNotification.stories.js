@@ -25,15 +25,14 @@ import { withQuery } from '@storybook/addon-queryparams';
  * Internal dependencies
  */
 import SetupSuccessSubtleNotification from './SetupSuccessSubtleNotification';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '../../constants';
-import { WithTestRegistry } from '../../../../../../tests/js/utils';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-siwg'
 )( SetupSuccessSubtleNotification );
 
-function Template( { ...args } ) {
+function Template( args ) {
 	return <NotificationWithComponentProps { ...args } />;
 }
 
@@ -49,14 +48,5 @@ Default.parameters = {
 export default {
 	title: 'Modules/SignInWithGoogle/Dashboard/SetupSuccessSubtleNotification',
 	component: SetupSuccessSubtleNotification,
-	decorators: [
-		withQuery,
-		( Story ) => {
-			return (
-				<WithTestRegistry>
-					<Story />
-				</WithTestRegistry>
-			);
-		},
-	],
+	decorators: [ withQuery ],
 };

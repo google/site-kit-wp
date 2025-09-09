@@ -25,16 +25,16 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import { provideModules } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import {
-	useBreakpoint,
-	BREAKPOINT_SMALL,
-} from '../../../../hooks/useBreakpoint';
+import { useBreakpoint, BREAKPOINT_SMALL } from '@/js/hooks/useBreakpoint';
 import AdBlockingRecoverySetupCTAWidget from './AdBlockingRecoverySetupCTAWidget';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../constants';
-import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import {
+	ACCOUNT_STATUS_READY,
+	SITE_STATUS_READY,
+} from '@/js/modules/adsense/util';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'adBlockingRecovery'
@@ -72,7 +72,7 @@ export default {
 	title: 'Modules/AdSense/Widgets/AdBlockingRecoverySetupCTAWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
@@ -82,7 +82,7 @@ export default {
 				] );
 
 				args?.setupRegistry( registry );
-			};
+			}
 
 			const breakpoint = useBreakpoint();
 

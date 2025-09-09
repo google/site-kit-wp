@@ -26,6 +26,7 @@ import { setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	muteFetch,
+	provideSiteInfo,
 	provideUserAuthentication,
 	subscribeUntil,
 	untilResolved,
@@ -33,7 +34,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
 import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
-import { CORE_USER } from '../user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 describe( 'core/site Google tag gateway', () => {
 	let registry;
@@ -48,6 +49,7 @@ describe( 'core/site Google tag gateway', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		provideSiteInfo( registry );
 	} );
 
 	afterAll( () => {

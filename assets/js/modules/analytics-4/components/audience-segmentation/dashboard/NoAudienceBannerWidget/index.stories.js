@@ -25,16 +25,16 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { availableAudiences } from '../../../../datastore/__fixtures__';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { Provider as ViewContextProvider } from '../../../../../../components/Root/ViewContextContext';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'analyticsNoAudienceBanner'
@@ -102,7 +102,7 @@ export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/NoAudienceBannerWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = async ( registry ) => {
+			async function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
@@ -117,7 +117,7 @@ export default {
 					.setAvailableAudiences( availableAudiences );
 
 				await args.setupRegistry( registry );
-			};
+			}
 
 			const viewContext = args.isViewOnly
 				? VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY

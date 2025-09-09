@@ -26,21 +26,21 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	PostTypesSelect,
 	PublicationOnboardingStateNotice,
 	PublicationSelect,
 	SnippetModeSelect,
-} from '../common';
+} from '@/js/modules/reader-revenue-manager/components/common';
 import ProductIDSettings from './ProductIDSettings';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { getProductIDLabel } from '../../../../../../assets/js/modules/reader-revenue-manager/utils/settings';
-import Notice from '../../../../components/Notice';
-import ErrorNotice from '../../../../components/ErrorNotice';
-import Typography from '../../../../components/Typography';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { getProductIDLabel } from '@/js/modules/reader-revenue-manager/utils/settings';
+import Notice from '@/js/components/Notice';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import Typography from '@/js/components/Typography';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const publicationID = useSelect( ( select ) =>

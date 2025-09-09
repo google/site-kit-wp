@@ -30,7 +30,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Spinner from '../../components/Spinner';
+import Spinner from '@/js/components/Spinner';
 
 export default function Checkbox( props ) {
 	const {
@@ -86,12 +86,13 @@ export default function Checkbox( props ) {
 						<div className="mdc-checkbox__background">
 							<svg
 								className="mdc-checkbox__checkmark"
-								viewBox="0 0 24 24"
+								viewBox="0 0 12 9"
 							>
 								<path
 									className="mdc-checkbox__checkmark-path"
+									d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
 									fill="none"
-									d="M1.73,12.91 8.1,19.28 22.79,4.59"
+									stroke="none"
 								/>
 							</svg>
 							<div className="mdc-checkbox__mixedmark" />

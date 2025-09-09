@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { SITE_KIT_VIEW_CONTEXTS } from '../googlesitekit/constants';
+import { SITE_KIT_VIEW_CONTEXTS } from '@/js/googlesitekit/constants';
 
 /**
  * Checks whether or not the current viewContext is a Site Kit screen.
@@ -29,5 +29,6 @@ import { SITE_KIT_VIEW_CONTEXTS } from '../googlesitekit/constants';
  * @param {string} viewContext The view-context.
  * @return {boolean} TRUE if the passed view-context is a site kit view; otherwise FALSE.
  */
-export const isSiteKitScreen = ( viewContext ) =>
-	SITE_KIT_VIEW_CONTEXTS.includes( viewContext );
+export function isSiteKitScreen( viewContext ) {
+	return SITE_KIT_VIEW_CONTEXTS.includes( viewContext );
+}

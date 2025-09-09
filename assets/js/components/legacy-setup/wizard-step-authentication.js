@@ -31,12 +31,13 @@ import { Component } from '@wordpress/element';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { Cell, Grid, Row } from '../../material-components';
-import OptIn from '../OptIn';
-import { VIEW_CONTEXT_SPLASH } from '../../googlesitekit/constants';
-import { setItem } from '../../googlesitekit/api/cache';
-import { trackEvent } from '../../util';
-import Typography from '../Typography';
+import { Cell, Grid, Row } from '@/js/material-components';
+import OptIn from '@/js/components/OptIn';
+import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import { trackEvent } from '@/js/util';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 class WizardStepAuthentication extends Component {
 	constructor( props ) {
@@ -93,12 +94,12 @@ class WizardStepAuthentication extends Component {
 									'google-site-kit'
 								) }
 							</Typography>
-							<p>
+							<P>
 								{ __(
 									'Please sign into your Google account to begin.',
 									'google-site-kit'
 								) }
-							</p>
+							</P>
 							{ needReauthenticate && (
 								<p className="googlesitekit-error-text">
 									{ __(
@@ -107,7 +108,7 @@ class WizardStepAuthentication extends Component {
 									) }
 								</p>
 							) }
-							<p>
+							<P>
 								<Button onClick={ this.onButtonClick }>
 									{ _x(
 										'Sign in with Google',
@@ -124,7 +125,7 @@ class WizardStepAuthentication extends Component {
 										{ __( 'Back', 'google-site-kit' ) }
 									</Button>
 								) }
-							</p>
+							</P>
 							<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
 								<OptIn />
 							</div>

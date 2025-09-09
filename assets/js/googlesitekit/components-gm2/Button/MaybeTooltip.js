@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Tooltip from '../Tooltip';
+import Tooltip from '@/js/googlesitekit/components-gm2/Tooltip';
 
 export default function MaybeTooltip( {
 	children,

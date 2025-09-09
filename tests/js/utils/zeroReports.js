@@ -34,7 +34,9 @@ export function replaceValuesInAnalytics4ReportWithZeroData( report ) {
 	// eslint-disable-next-line no-unused-vars -- Ignore `rows` and `rowCount` since we're omitting them from the returned report object.
 	const { rows, rowCount, ...reportWithoutRows } = report;
 
-	const toEmptyObject = () => ( {} );
+	function toEmptyObject() {
+		return {};
+	}
 
 	return {
 		...reportWithoutRows,
@@ -67,13 +69,16 @@ export function replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
 
 	const { rows, totals, minimums, maximums } = report;
 
-	const matchesDateRange = ( cell ) =>
-		cell.dimensionValues?.some( ( value ) => value.value === dateRangeKey );
+	function matchesDateRange( cell ) {
+		return cell.dimensionValues?.some(
+			( value ) => value.value === dateRangeKey
+		);
+	}
 
 	// If emptyRowBehavior is 'zero', keep the rows but zero the value for each row and aggregate key in the specified date range.
 	if ( emptyRowBehavior === 'zero' ) {
-		const mapDateRangeToZero = ( cells ) =>
-			cells.map( ( cell ) => {
+		function mapDateRangeToZero( cells ) {
+			return cells.map( ( cell ) => {
 				if ( matchesDateRange( cell ) ) {
 					return {
 						...cell,
@@ -84,6 +89,7 @@ export function replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
 				}
 				return cell;
 			} );
+		}
 
 		return {
 			...report,
@@ -95,10 +101,11 @@ export function replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
 	}
 
 	// If emptyRowBehavior is 'remove', remove the rows and aggregate data that has a dimensionValues[].value equal to dateRangeKey.
-	const removeDateRangeEntirely = ( cells ) =>
-		cells.filter( ( cell ) => {
+	function removeDateRangeEntirely( cells ) {
+		return cells.filter( ( cell ) => {
 			return ! matchesDateRange( cell );
 		} );
+	}
 
 	const filteredRows = removeDateRangeEntirely( rows );
 
@@ -121,8 +128,10 @@ export function replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
  * @param {Object} report AdSense report data.
  * @return {Object} AdSense report data with zeroed data.
  */
-export const replaceValuesInAdSenseReportWithZeroData = ( report ) => {
-	const zeroValue = ( cell ) => ( { ...cell, value: 0 } );
+export function replaceValuesInAdSenseReportWithZeroData( report ) {
+	function zeroValue( cell ) {
+		return { ...cell, value: 0 };
+	}
 
 	let clonedReport = { ...report };
 
@@ -146,7 +155,7 @@ export const replaceValuesInAdSenseReportWithZeroData = ( report ) => {
 	};
 
 	return clonedReport;
-};
+}
 
 /**
  * Returns an Search Console report with zeroed data.
@@ -157,10 +166,10 @@ export const replaceValuesInAdSenseReportWithZeroData = ( report ) => {
  * @param {Object} options Search Console report options.
  * @return {Object} Search Console report data with zeroed data.
  */
-export const replaceValuesInSearchConsoleReportWithZeroData = (
+export function replaceValuesInSearchConsoleReportWithZeroData(
 	report,
 	options
-) => {
+) {
 	if ( options.dimensions === 'query' ) {
 		return [];
 	}
@@ -172,4 +181,4 @@ export const replaceValuesInSearchConsoleReportWithZeroData = (
 		impressions: 0,
 		position: 0,
 	} ) );
-};
+}

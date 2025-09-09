@@ -20,13 +20,13 @@
  * Internal dependencies
  */
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../googlesitekit/constants';
-import { availableAudiences } from '../../../../datastore/__fixtures__';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	act,
 	createTestRegistry,
@@ -40,7 +40,7 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
-import * as tracking from '../../../../../../util/tracking';
+import * as tracking from '@/js/util/tracking';
 import ErrorNotice from './ErrorNotice';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -94,9 +94,8 @@ describe( 'ErrorNotice', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 
@@ -104,7 +103,8 @@ describe( 'ErrorNotice', () => {
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: '12345',
@@ -357,9 +357,8 @@ describe( 'ErrorNotice', () => {
 				data: {},
 			};
 
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveResourceDataAvailabilityDates( {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+				resourceAvailabilityDates: {
 					audience: availableAudiences.reduce(
 						( acc, { name, audienceType } ) => {
 							if ( 'SITE_KIT_AUDIENCE' === audienceType ) {
@@ -374,7 +373,8 @@ describe( 'ErrorNotice', () => {
 					),
 					customDimension: {},
 					property: {},
-				} );
+				},
+			} );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )

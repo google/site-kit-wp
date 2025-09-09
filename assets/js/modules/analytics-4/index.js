@@ -52,7 +52,7 @@ import {
 	PopularAuthorsWidget,
 	TopPagesDrivingLeadsWidget,
 } from './components/widgets';
-import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
+import AnalyticsIcon from '@/svg/graphics/analytics.svg';
 import { GTM_SCOPE, MODULES_ANALYTICS_4 } from './datastore/constants';
 import {
 	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
@@ -61,7 +61,7 @@ import {
 	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 	AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
-} from '../../googlesitekit/widgets/default-areas';
+} from '@/js/googlesitekit/widgets/default-areas';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -90,7 +90,7 @@ import {
 	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
-} from '../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import { SettingsEdit, SettingsView } from './components/settings';
 import { SetupMain } from './components/setup';
 import {
@@ -107,17 +107,17 @@ import {
 	SecondaryUserSetupWidget,
 } from './components/audience-segmentation/dashboard';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	SITE_KIT_VIEW_ONLY_CONTEXTS,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 	PRIORITY,
-} from '../../googlesitekit/notifications/constants';
+} from '@/js/googlesitekit/notifications/constants';
 import AudienceSegmentationSetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 } from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTABanner';
@@ -135,7 +135,7 @@ import { AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION } from './compo
 
 export { registerStore } from './datastore';
 
-export const registerModule = ( modules ) => {
+export function registerModule( modules ) {
 	modules.registerModule( MODULE_SLUG_ANALYTICS_4, {
 		storeName: MODULES_ANALYTICS_4,
 		SettingsEditComponent: SettingsEdit,
@@ -154,9 +154,9 @@ export const registerModule = ( modules ) => {
 			),
 		],
 	} );
-};
+}
 
-export const registerWidgets = ( widgets ) => {
+export function registerWidgets( widgets ) {
 	// Register Analytics 4 Widgets.
 	widgets.registerWidget(
 		'analyticsAllTrafficGA4',
@@ -721,7 +721,7 @@ export const registerWidgets = ( widgets ) => {
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
-};
+}
 
 export const ANALYTICS_4_NOTIFICATIONS = {
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
@@ -1010,11 +1010,11 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 };
 
-export const registerNotifications = ( notifications ) => {
+export function registerNotifications( notifications ) {
 	for ( const notificationID in ANALYTICS_4_NOTIFICATIONS ) {
 		notifications.registerNotification(
 			notificationID,
 			ANALYTICS_4_NOTIFICATIONS[ notificationID ]
 		);
 	}
-};
+}

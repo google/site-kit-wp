@@ -33,8 +33,8 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
-import { createFetchStore } from '../../data/create-fetch-store';
-import { actions as errorStoreActions } from '../../data/create-error-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 const { receiveError, clearError } = errorStoreActions;
 
 const fetchStoreReducerCallback = createReducer( ( state, inputSettings ) => {
@@ -105,8 +105,12 @@ const baseActions = {
 		const registry = yield commonActions.getRegistry();
 		yield clearError( 'saveUserInputSettings', [] );
 
-		const trim = ( value ) => value.trim();
-		const notEmpty = ( value ) => value.length > 0;
+		function trim( value ) {
+			return value.trim();
+		}
+		function notEmpty( value ) {
+			return value.length > 0;
+		}
 
 		const settings = registry.select( CORE_USER ).getUserInputSettings();
 		const values = Object.keys( settings ).reduce(
@@ -178,7 +182,7 @@ const baseActions = {
 		);
 
 		if ( ! settingsAnsweredOther.length > 0 ) {
-			return;
+			return {};
 		}
 
 		const triggerID = `userInput_answered_other__${ settingsAnsweredOther.join(

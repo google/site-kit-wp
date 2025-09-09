@@ -21,13 +21,19 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import { ACCOUNT_CREATE, MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import useExistingTagEffect from '../../hooks/useExistingTagEffect';
+import {
+	ACCOUNT_CREATE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useExistingTagEffect from '@/js/modules/analytics-4/hooks/useExistingTagEffect';
 import SettingsForm from './SettingsForm';
-import { AccountCreate, AccountCreateLegacy } from '../common';
+import {
+	AccountCreate,
+	AccountCreateLegacy,
+} from '@/js/modules/analytics-4/components/common';
 
 export default function SettingsEdit() {
 	const accounts =

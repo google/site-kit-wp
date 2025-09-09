@@ -31,10 +31,10 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import SurveyCompletion from '../SurveyCompletion';
-import SurveyTerms from '../SurveyTerms';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import SurveyCompletion from '@/js/components/surveys/SurveyCompletion';
+import SurveyTerms from '@/js/components/surveys/SurveyTerms';
 import SurveyQuestion from './SurveyQuestion';
 import {
 	getCurrentQuestionAndOrdinal,
@@ -42,8 +42,10 @@ import {
 	isLastQuestion,
 } from './utils';
 import { SURVEY_QUESTION_TYPE } from './constants';
+import useFormValue from '@/js/hooks/useFormValue';
 
 const SURVEY_ANSWER_DELAY_MS = 300;
+const defaultAnswers = Object.freeze( [] );
 
 export default function CurrentSurvey() {
 	const [ sentSurveyShownEvent, setSentSurveyShownEvent ] = useState( false );
@@ -67,12 +69,8 @@ export default function CurrentSurvey() {
 	const formName = surveySession
 		? `survey-${ surveySession.session_id }`
 		: null;
-	const shouldHide = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( formName, 'hideSurvey' )
-	);
-	const answers = useSelect(
-		( select ) => select( CORE_FORMS ).getValue( formName, 'answers' ) || []
-	);
+	const shouldHide = useFormValue( formName, 'hideSurvey' );
+	const answers = useFormValue( formName, 'answers' ) || defaultAnswers;
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { sendSurveyEvent } = useDispatch( CORE_USER );

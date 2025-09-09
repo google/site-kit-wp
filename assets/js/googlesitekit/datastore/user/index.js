@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { combineStores, commonStore } from 'googlesitekit-data';
-import { createErrorStore } from '../../data/create-error-store';
+import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 import adblocker from './adblocker';
 import audienceSettings from './audience-settings';
 import authentication from './authentication';
@@ -73,7 +73,7 @@ export const {
 	selectors,
 } = store;
 
-export const registerStore = ( registry ) => {
+export function registerStore( registry ) {
 	registry.registerStore( CORE_USER, store );
 
 	// If a reference date was set by the server, set it in the store.
@@ -82,6 +82,6 @@ export const registerStore = ( registry ) => {
 			.dispatch( CORE_USER )
 			.setReferenceDate( global._googlesitekitBaseData.referenceDate );
 	}
-};
+}
 
 export default store;

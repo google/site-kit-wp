@@ -40,21 +40,23 @@ import {
 	SpinnerButton,
 } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_QUESTIONS_PURPOSE,
-} from '../user-input/util/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+} from '@/js/components/user-input/util/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
-import Typography from '../Typography';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import Typography from '@/js/components/Typography';
+import useFormValue from '@/js/hooks/useFormValue';
+import P from '@/js/components/Typography/P';
 
 function ConfirmSitePurposeChangeModal( {
 	dialogActive = false,
@@ -76,11 +78,9 @@ function ConfirmSitePurposeChangeModal( {
 		)
 	);
 
-	const savedPurposeSnapshot = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_USER_INPUT_QUESTION_SNAPSHOT,
-			USER_INPUT_QUESTIONS_PURPOSE
-		)
+	const savedPurposeSnapshot = useFormValue(
+		FORM_USER_INPUT_QUESTION_SNAPSHOT,
+		USER_INPUT_QUESTIONS_PURPOSE
 	);
 
 	const savedPurpose = useSelect( ( select ) =>
@@ -237,7 +237,7 @@ function ConfirmSitePurposeChangeModal( {
 			<DialogTitle>
 				{ __( 'Tailored metrics suggestions', 'google-site-kit' ) }
 			</DialogTitle>
-			<p>
+			<P>
 				{ __(
 					'You have changed your website purpose. We can suggest new tailored metrics for you based on your answers or you can keep your current metrics selection on your dashboard.',
 					'google-site-kit'
@@ -247,7 +247,7 @@ function ConfirmSitePurposeChangeModal( {
 					'You can always edit your metrics selection from the dashboard.',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 			<DialogContent>
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone">

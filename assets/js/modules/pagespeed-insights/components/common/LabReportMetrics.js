@@ -32,10 +32,11 @@ import { __, _x } from '@wordpress/i18n';
  */
 import ReportMetric from './ReportMetric';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
-import { getScoreCategory } from '../../util';
-import { getReportErrorMessage } from '../../../../util/errors';
-import ReportErrorActions from '../../../../components/ReportErrorActions';
-import ErrorNotice from '../../../../components/ErrorNotice';
+import { getScoreCategory } from '@/js/modules/pagespeed-insights/util';
+import { getReportErrorMessage } from '@/js/util/errors';
+import ReportErrorActions from '@/js/components/ReportErrorActions';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import P from '@/js/components/Typography/P';
 
 export default function LabReportMetrics( { data, error } ) {
 	const largestContentfulPaint =
@@ -68,7 +69,7 @@ export default function LabReportMetrics( { data, error } ) {
 	return (
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
-				<p>
+				<P>
 					{ createInterpolateElement(
 						__(
 							'Lab data is a snapshot of how your page performs right now, measured in tests we run in a controlled environment. <LearnMoreLink />',
@@ -78,7 +79,7 @@ export default function LabReportMetrics( { data, error } ) {
 							LearnMoreLink: <MetricsLearnMoreLink />,
 						}
 					) }
-				</p>
+				</P>
 			</div>
 			<table className="googlesitekit-table googlesitekit-table--with-list">
 				<thead>

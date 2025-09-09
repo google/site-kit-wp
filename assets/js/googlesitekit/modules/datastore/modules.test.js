@@ -33,20 +33,20 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
-import { sortByProperty } from '../../../util/sort-by-property';
-import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
+import { sortByProperty } from '@/js/util/sort-by-property';
+import { convertArrayListToKeyedObjectMap } from '@/js/util/convert-array-to-keyed-object-map';
 import {
 	CORE_MODULES,
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
 } from './constants';
 import FIXTURES, { withActive } from './__fixtures__';
-import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { CORE_USER } from '../../datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import * as analytics4fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
+import * as analytics4fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 
 describe( 'core/modules modules', () => {
@@ -116,7 +116,7 @@ describe( 'core/modules modules', () => {
 		'slug'
 	);
 
-	const getModulesBySlugList = ( slugList, modules ) => {
+	function getModulesBySlugList( slugList, modules ) {
 		return Object.values( modules ).reduce(
 			( recoverableModules, module ) => {
 				if ( slugList.includes( module.slug ) ) {
@@ -130,7 +130,7 @@ describe( 'core/modules modules', () => {
 			},
 			{}
 		);
-	};
+	}
 
 	let registry;
 	let store;
@@ -855,8 +855,12 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'accepts settings components for the module', () => {
-				const SettingsViewComponent = () => 'view';
-				const SettingsEditComponent = () => 'edit';
+				function SettingsViewComponent() {
+					return 'view';
+				}
+				function SettingsEditComponent() {
+					return 'edit';
+				}
 
 				registry.dispatch( CORE_MODULES ).registerModule( moduleSlug, {
 					SettingsViewComponent,
@@ -874,8 +878,12 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'accepts DashboardMainEffectComponent and DashboardEntityEffectComponent components for the module', () => {
-				const DashboardMainEffectComponent = () => 'main';
-				const DashboardEntityEffectComponent = () => 'entity';
+				function DashboardMainEffectComponent() {
+					return 'main';
+				}
+				function DashboardEntityEffectComponent() {
+					return 'entity';
+				}
 
 				registry.dispatch( CORE_MODULES ).registerModule( moduleSlug, {
 					DashboardMainEffectComponent,
@@ -1036,7 +1044,7 @@ describe( 'core/modules modules', () => {
 
 	describe( 'selectors', () => {
 		// We need a module set where one dependency is active, and the other inactive.
-		const bootStrapActivateModulesTests = async () => {
+		async function bootStrapActivateModulesTests() {
 			const moduleFixtures = [
 				{
 					slug: 'slug1',
@@ -1081,7 +1089,7 @@ describe( 'core/modules modules', () => {
 
 			// Wait for loading to complete.
 			await untilResolved( registry, CORE_MODULES ).getModules();
-		};
+		}
 
 		describe( 'getModules', () => {
 			it( 'uses a resolver to make a network request', async () => {

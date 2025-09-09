@@ -20,10 +20,10 @@
  * Internal dependencies
  */
 import { commonActions, combineStores } from 'googlesitekit-data';
-import { createExistingTagStore } from '../../../googlesitekit/data/create-existing-tag-store';
+import { createExistingTagStore } from '@/js/googlesitekit/data/create-existing-tag-store';
 import { MODULES_ANALYTICS_4 } from './constants';
-import { getTagMatchers } from '../utils/tag-matchers';
-import { isValidMeasurementID } from '../utils/validation';
+import { getTagMatchers } from '@/js/modules/analytics-4/utils/tag-matchers';
+import { isValidMeasurementID } from '@/js/modules/analytics-4/utils/validation';
 
 const existingTagStore = createExistingTagStore( {
 	storeName: MODULES_ANALYTICS_4,

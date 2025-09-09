@@ -24,10 +24,10 @@ import {
 	provideUserAuthentication,
 } from '../../../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import ConversionReportingNotificationCTAWidget from './ConversionReportingNotificationCTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -54,7 +54,7 @@ export default {
 	title: 'Key Metrics/ConversionReportingNotificationCTAWidget',
 	decorators: [
 		( Story, { parameters } ) => {
-			const setupRegistry = async ( registry ) => {
+			async function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ANALYTICS_4,
@@ -109,7 +109,7 @@ export default {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setNewConversionEventsLastUpdateAt( 1734531413 );
-			};
+			}
 
 			return (
 				<WithRegistrySetup

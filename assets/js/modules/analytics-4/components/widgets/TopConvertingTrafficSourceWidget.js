@@ -33,16 +33,16 @@ import { useSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
-import { useInViewSelect } from '../../../../hooks/useInViewSelect';
-import MetricTileText from '../../../../components/KeyMetrics/MetricTileText';
-import { numFmt } from '../../../../util';
-import whenActive from '../../../../util/when-active';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { useInViewSelect } from '@/js/hooks/useInViewSelect';
+import MetricTileText from '@/js/components/KeyMetrics/MetricTileText';
+import { numFmt } from '@/js/util';
+import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 function TopConvertingTrafficSourceWidget( { Widget } ) {
@@ -86,7 +86,7 @@ function TopConvertingTrafficSourceWidget( { Widget } ) {
 			)
 	);
 
-	const getRowForDateRange = ( dateRange ) => {
+	function getRowForDateRange( dateRange ) {
 		if ( ! report?.rows ) {
 			return null;
 		}
@@ -99,7 +99,7 @@ function TopConvertingTrafficSourceWidget( { Widget } ) {
 
 		// As the report is limited to 1 row per date range, return the first row.
 		return rows[ 0 ];
-	};
+	}
 
 	const currentRow = getRowForDateRange( 'date_range_0' );
 	const previousRow = getRowForDateRange( 'date_range_1' );

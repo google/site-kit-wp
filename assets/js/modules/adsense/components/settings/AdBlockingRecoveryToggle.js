@@ -32,17 +32,19 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { Switch } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import Link from '../../../../components/Link';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import useViewContext from '../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../util';
+import Link from '@/js/components/Link';
+import P from '@/js/components/Typography/P';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import {
 	AD_BLOCKING_FORM_SETTINGS,
 	MODULES_ADSENSE,
-} from '../../datastore/constants';
-import { parseAccountIDFromExistingTag } from '../../util';
-import Notice from '../../../../components/Notice';
+} from '@/js/modules/adsense/datastore/constants';
+import { parseAccountIDFromExistingTag } from '@/js/modules/adsense/util';
+import Notice from '@/js/components/Notice';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function AdBlockingRecoveryToggle() {
 	const viewContext = useViewContext();
@@ -70,17 +72,13 @@ export default function AdBlockingRecoveryToggle() {
 	const learnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'ad-blocking-recovery' )
 	);
-	const adBlockingRecoveryToggle = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AD_BLOCKING_FORM_SETTINGS,
-			'adBlockingRecoveryToggle'
-		)
+	const adBlockingRecoveryToggle = useFormValue(
+		AD_BLOCKING_FORM_SETTINGS,
+		'adBlockingRecoveryToggle'
 	);
-	const adBlockingRecoveryErrorToggle = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AD_BLOCKING_FORM_SETTINGS,
-			'adBlockingRecoveryErrorToggle'
-		)
+	const adBlockingRecoveryErrorToggle = useFormValue(
+		AD_BLOCKING_FORM_SETTINGS,
+		'adBlockingRecoveryErrorToggle'
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -89,7 +87,7 @@ export default function AdBlockingRecoveryToggle() {
 		setUseAdBlockingRecoveryErrorSnippet,
 	} = useDispatch( MODULES_ADSENSE );
 
-	const handleAdBlockingRecoveryToggleClick = () => {
+	function handleAdBlockingRecoveryToggleClick() {
 		const toggleValue = ! adBlockingRecoveryToggle;
 		setValues( AD_BLOCKING_FORM_SETTINGS, {
 			adBlockingRecoveryToggle: toggleValue,
@@ -101,9 +99,9 @@ export default function AdBlockingRecoveryToggle() {
 			toggleValue ? 'enable_tag' : 'disable_tag',
 			'abr_tag'
 		);
-	};
+	}
 
-	const handleErrorProtectionToggleClick = () => {
+	function handleErrorProtectionToggleClick() {
 		const toggleValue = ! adBlockingRecoveryErrorToggle;
 		setValues( AD_BLOCKING_FORM_SETTINGS, {
 			adBlockingRecoveryErrorToggle: toggleValue,
@@ -115,7 +113,7 @@ export default function AdBlockingRecoveryToggle() {
 			toggleValue ? 'enable_tag' : 'disable_tag',
 			'error_protection_tag'
 		);
-	};
+	}
 
 	useMount( () => {
 		const initialToggleValues = {
@@ -166,7 +164,7 @@ export default function AdBlockingRecoveryToggle() {
 						onClick={ handleAdBlockingRecoveryToggleClick }
 						hideLabel={ false }
 					/>
-					<p>
+					<P>
 						{ createInterpolateElement(
 							__(
 								'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense. <a>Configure your message</a>',
@@ -181,7 +179,7 @@ export default function AdBlockingRecoveryToggle() {
 								),
 							}
 						) }
-					</p>
+					</P>
 				</div>
 				{ ( adBlockingRecoveryToggle || adBlockingRecoverySnippet ) && (
 					<div className="googlesitekit-settings-module__meta-item">
@@ -194,7 +192,7 @@ export default function AdBlockingRecoveryToggle() {
 							onClick={ handleErrorProtectionToggleClick }
 							hideLabel={ false }
 						/>
-						<p>
+						<P>
 							{ createInterpolateElement(
 								__(
 									'If a site visitor’s ad blocker browser extension blocks the message you create in AdSense, a default, non-customizable ad blocking recovery message will display instead. <a>Learn more</a>',
@@ -204,7 +202,7 @@ export default function AdBlockingRecoveryToggle() {
 									a: <Link href={ learnMoreURL } external />,
 								}
 							) }
-						</p>
+						</P>
 					</div>
 				) }
 			</div>

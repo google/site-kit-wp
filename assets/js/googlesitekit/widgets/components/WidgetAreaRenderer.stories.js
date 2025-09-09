@@ -28,7 +28,7 @@ import {
 	CORE_WIDGETS,
 	WIDGET_WIDTHS,
 	WIDGET_AREA_STYLES,
-} from '../datastore/constants';
+} from '@/js/googlesitekit/widgets/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
@@ -74,14 +74,16 @@ function createWidgetArea( registry, areaName, widgets ) {
 
 	widgets.forEach( ( { Component, slug, width }, i ) => {
 		const widgetSlug = slug || `${ areaName }-widget${ i + 1 }`;
-		const componentFallback = () => (
-			<div>
-				{ ( Array.isArray( width )
-					? width.join( ' / ' )
-					: width
-				).toUpperCase() }
-			</div>
-		);
+		function componentFallback() {
+			return (
+				<div>
+					{ ( Array.isArray( width )
+						? width.join( ' / ' )
+						: width
+					).toUpperCase() }
+				</div>
+			);
+		}
 
 		registry.dispatch( CORE_WIDGETS ).registerWidget( widgetSlug, {
 			Component: Component || componentFallback,
@@ -239,12 +241,12 @@ export default {
 	component: WidgetAreaRenderer,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserCapabilities( registry );
 				provideModules( registry );
 
 				args?.registerWidgetAreas?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

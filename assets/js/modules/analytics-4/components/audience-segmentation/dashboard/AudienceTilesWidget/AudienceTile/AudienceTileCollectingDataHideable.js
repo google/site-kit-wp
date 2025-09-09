@@ -30,8 +30,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from '../../../../../../../components/Link';
-import VisibilityIcon from '../../../../../../../../svg/icons/visibility.svg';
+import Link from '@/js/components/Link';
+import VisibilityIcon from '@/svg/icons/visibility.svg';
 
 export default function AudienceTileCollectingDataHideable( { onHideTile } ) {
 	return (

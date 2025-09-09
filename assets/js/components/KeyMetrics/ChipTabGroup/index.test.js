@@ -27,19 +27,19 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { withConnected } from '../../../googlesitekit/modules/datastore/__fixtures__';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
-} from '../../../modules/analytics-4/datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
-import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
 import ChipTabGroup from './';
 
 function ChipTabGroupWrapped( { savedItemSlugs } ) {
-	const metricsListReducer = ( acc, metricSlug ) => {
+	function metricsListReducer( acc, metricSlug ) {
 		const {
 			title,
 			description,
@@ -54,7 +54,7 @@ function ChipTabGroupWrapped( { savedItemSlugs } ) {
 				group,
 			},
 		};
-	};
+	}
 	const allMetricItems = Object.keys( KEY_METRICS_WIDGETS ).reduce(
 		metricsListReducer,
 		{}

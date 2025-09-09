@@ -21,32 +21,32 @@
  */
 import WithRegistrySetup from '../../../../../../../../../tests/js/WithRegistrySetup';
 import { provideUserAuthentication } from '../../../../../../../../../tests/js/utils';
-import { Provider as ViewContextProvider } from '../../../../../../../components/Root/ViewContextContext';
-import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../../../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../../../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import AudienceTile from '.';
-import { getPreviousDate } from '../../../../../../../util';
-import { withWidgetComponentProps } from '../../../../../../../googlesitekit/widgets/util';
+import { getPreviousDate } from '@/js/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 
 const WidgetWithComponentProps =
 	withWidgetComponentProps( 'audienceTile' )( AudienceTile );
 
 function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
-	const setupRegistryCallback = ( registry ) => {
+	function setupRegistryCallback( registry ) {
 		provideUserAuthentication( registry );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			availableCustomDimensions: [ 'googlesitekit_post_type' ],
 		} );
 		setupRegistry( registry );
-	};
+	}
 
 	return (
 		<WithRegistrySetup func={ setupRegistryCallback }>
@@ -61,8 +61,6 @@ function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 
 const audienceResourceName = 'properties/12345/audiences/12345';
 
-// TODO: As part of #8484, update these stories to use the data-mock
-// functions to provide report data rather than hardcoding props.
 const readyProps = {
 	audienceResourceName,
 	title: 'New visitors',
@@ -246,9 +244,8 @@ AudiencePartialData.args = {
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 		);
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: {
 					[ audienceResourceName ]: dataAvailabilityDate,
 				},
@@ -256,7 +253,8 @@ AudiencePartialData.args = {
 				property: {
 					12345: 20201218,
 				},
-			} );
+			},
+		} );
 	},
 };
 AudiencePartialData.scenario = {};
@@ -284,9 +282,8 @@ TopContentPartialData.args = {
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 		);
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: {},
 				customDimension: {
 					googlesitekit_post_type: dataAvailabilityDate,
@@ -294,7 +291,8 @@ TopContentPartialData.args = {
 				property: {
 					12345: 20201218,
 				},
-			} );
+			},
+		} );
 	},
 };
 TopContentPartialData.scenario = {};

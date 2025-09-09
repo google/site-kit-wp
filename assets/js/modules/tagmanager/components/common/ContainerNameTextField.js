@@ -32,20 +32,22 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { MODULES_TAGMANAGER, FORM_SETUP } from '../../datastore/constants';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import AccessibleWarningIcon from '../../../../components/AccessibleWarningIcon';
+import {
+	MODULES_TAGMANAGER,
+	FORM_SETUP,
+} from '@/js/modules/tagmanager/datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import AccessibleWarningIcon from '@/js/components/AccessibleWarningIcon';
 import { TextField } from 'googlesitekit-components';
-import { isUniqueContainerName } from '../../util';
+import { isUniqueContainerName } from '@/js/modules/tagmanager/util';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function ContainerNameTextField( { label, name } ) {
 	const containers = useSelect( ( select ) => {
 		const accountID = select( MODULES_TAGMANAGER ).getAccountID();
 		return select( MODULES_TAGMANAGER ).getContainers( accountID );
 	} );
-	const containerName = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, name )
-	);
+	const containerName = useFormValue( FORM_SETUP, name );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onChange = useCallback(

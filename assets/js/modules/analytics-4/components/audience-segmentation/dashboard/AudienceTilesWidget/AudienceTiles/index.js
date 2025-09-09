@@ -40,21 +40,21 @@ import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../../../../../../hooks/useBreakpoint';
-import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../../datastore/constants';
+} from '@/js/hooks/useBreakpoint';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import Body from './Body';
 import Header from './Header';
-import useAudienceTilesReports from '../../../../../hooks/useAudienceTilesReports';
-import { isInvalidCustomDimensionError } from '../../../../../utils/custom-dimensions';
+import useAudienceTilesReports from '@/js/modules/analytics-4/hooks/useAudienceTilesReports';
+import { isInvalidCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 
-const hasZeroDataForAudience = ( report, dimensionName ) => {
+function hasZeroDataForAudience( report, dimensionName ) {
 	const audienceData = report?.rows?.find(
 		( row ) => row.dimensionValues?.[ 0 ]?.value === dimensionName
 	);
 	const totalUsers = audienceData?.metricValues?.[ 0 ]?.value || 0;
 	return totalUsers === 0;
-};
+}
 
 export default function AudienceTiles( { Widget, widgetLoading } ) {
 	const breakpoint = useBreakpoint();

@@ -23,7 +23,7 @@ import { combineStores, commonStore } from 'googlesitekit-data';
 import areas from './areas';
 import widgets from './widgets';
 import contexts from './contexts';
-import { createErrorStore } from '../../data/create-error-store';
+import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 import { CORE_WIDGETS } from './constants';
 
 const store = combineStores(
@@ -34,8 +34,8 @@ const store = combineStores(
 	createErrorStore( CORE_WIDGETS )
 );
 
-export const registerStore = ( registry ) => {
+export function registerStore( registry ) {
 	registry.registerStore( CORE_WIDGETS, store );
-};
+}
 
 export default store;

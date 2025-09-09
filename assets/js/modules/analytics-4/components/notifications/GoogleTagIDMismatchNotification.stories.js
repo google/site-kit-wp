@@ -20,10 +20,10 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import * as fixtures from '../../datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'google-tag-id-mismatch'
@@ -37,7 +37,7 @@ export const AlternativeGA4Config = Template.bind( {} );
 AlternativeGA4Config.storyName = 'AlternativeGA4Config';
 AlternativeGA4Config.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			const gtmAccountID = '6065484567';
 			const gtmContainerID = '98369876';
 			const containerDestinationsMock =
@@ -60,7 +60,7 @@ AlternativeGA4Config.decorators = [
 						gtmContainerID,
 					}
 				);
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -75,7 +75,7 @@ export const NoAlternativeGA4Config = Template.bind( {} );
 NoAlternativeGA4Config.storyName = 'NoAlternativeGA4Config';
 NoAlternativeGA4Config.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			const gtmAccountID = '6065484567';
 			const gtmContainerID = '98369876';
 
@@ -91,7 +91,7 @@ NoAlternativeGA4Config.decorators = [
 					gtmAccountID,
 					gtmContainerID,
 				} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -107,7 +107,7 @@ export default {
 	component: GoogleTagIDMismatchNotification,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 
 				registry
@@ -195,7 +195,7 @@ export default {
 					.receiveGetProperty( fixtures.properties[ 1 ], {
 						propertyID: newAnalyticsPropertyID,
 					} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

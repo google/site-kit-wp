@@ -28,17 +28,17 @@ import {
 	CONTEXT_AMP,
 	FORM_SETUP,
 } from './constants';
-import { MODULE_SLUG_TAGMANAGER } from '../constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 import {
 	CORE_SITE,
 	AMP_MODE_SECONDARY,
 	AMP_MODE_PRIMARY,
-} from '../../../googlesitekit/datastore/site/constants';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../analytics-4/constants';
-import defaultModules from '../../../googlesitekit/modules/datastore/__fixtures__';
+} from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import defaultModules from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import * as fixtures from './__fixtures__';
 import {
 	accountBuilder,
@@ -49,12 +49,15 @@ import {
 	createTestRegistry,
 	muteFetch,
 	provideModules,
+	provideNotifications,
+	provideUserAuthentication,
+	subscribeUntil,
 } from '../../../../../tests/js/utils';
-import { getItem, setItem } from '../../../googlesitekit/api/cache';
-import { createCacheKey } from '../../../googlesitekit/api';
+import { getItem, setItem } from '@/js/googlesitekit/api/cache';
+import { createCacheKey } from '@/js/googlesitekit/api';
 import fetchMock from 'fetch-mock';
 import { createBuildAndReceivers } from './__factories__/utils';
-import { getNormalizedContainerName } from '../util';
+import { getNormalizedContainerName } from '@/js/modules/tagmanager/util';
 import {
 	INVARIANT_INVALID_ACCOUNT_ID,
 	INVARIANT_INVALID_AMP_CONTAINER_SELECTION,
@@ -63,6 +66,8 @@ import {
 	INVARIANT_INVALID_INTERNAL_CONTAINER_ID,
 	INVARIANT_INVALID_CONTAINER_NAME,
 } from './settings';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
 
 describe( 'modules/tagmanager settings', () => {
 	let registry;
@@ -134,6 +139,22 @@ describe( 'modules/tagmanager settings', () => {
 		} );
 
 		describe( 'submitChanges', () => {
+			const settingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/tagmanager/data/settings'
+			);
+			const gtgSettingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/gtg-settings'
+			);
+			const dismissItemEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/dismiss-item'
+			);
+
+			const errorResponse = {
+				code: 'internal_error',
+				message: 'Something wrong happened.',
+				data: { status: 500 },
+			};
+
 			describe( 'with no AMP', () => {
 				it( 'dispatches createContainer if the "set up a new container" option is chosen', async () => {
 					registry.dispatch( MODULES_TAGMANAGER ).setSettings( {
@@ -477,6 +498,308 @@ describe( 'modules/tagmanager settings', () => {
 						// eslint-disable-next-line sitekit/acronym-case
 					).toBe( createdAMPContainer.publicId );
 				} );
+			} );
+
+			it( 'should send a POST request to the GTG settings endpoint when the toggle state is changed', async () => {
+				provideUserAuthentication( registry );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetGoogleTagGatewaySettings( {
+						isEnabled: false,
+						isGTGHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedItems( [
+						GTG_SETUP_CTA_BANNER_NOTIFICATION,
+					] );
+
+				provideNotifications( registry );
+
+				fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+					body: JSON.parse( opts.body )?.data,
+					status: 200,
+				} ) );
+
+				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+					const {
+						data: {
+							settings: { isEnabled },
+						},
+					} = JSON.parse( opts.body );
+
+					return {
+						body: {
+							isEnabled, // Return the `isEnabled` value passed to the API.
+							isGTGHealthy: true,
+							isScriptAccessEnabled: true,
+						},
+						status: 200,
+					};
+				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( true );
+				await registry.dispatch( MODULES_TAGMANAGER ).submitChanges();
+
+				expect( fetchMock ).toHaveFetched( gtgSettingsEndpoint, {
+					body: {
+						data: {
+							settings: { isEnabled: true },
+						},
+					},
+				} );
+			} );
+
+			it( 'should handle an error when sending a POST request to the GTG settings endpoint', async () => {
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetGoogleTagGatewaySettings( {
+						isEnabled: false,
+						isGTGHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+					body: JSON.parse( opts.body ).data,
+					status: 200,
+				} ) );
+
+				fetchMock.postOnce( gtgSettingsEndpoint, {
+					body: errorResponse,
+					status: 500,
+				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( true );
+				const { error: submitChangesError } = await registry
+					.dispatch( MODULES_TAGMANAGER )
+					.submitChanges();
+
+				expect( submitChangesError ).toEqual( errorResponse );
+
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should not send a POST request to the GTG settings endpoint when the toggle state is not changed', async () => {
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetGoogleTagGatewaySettings( {
+						isEnabled: false,
+						isGTGHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+					body: JSON.parse( opts.body )?.data,
+					status: 200,
+				} ) );
+
+				await registry.dispatch( MODULES_TAGMANAGER ).submitChanges();
+
+				expect( fetchMock ).not.toHaveFetched( gtgSettingsEndpoint );
+			} );
+
+			it( 'should dismiss the GTG setup CTA banner when the GTG `isEnabled` setting is changed to `true`', async () => {
+				provideUserAuthentication( registry );
+				provideNotifications( registry );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetGoogleTagGatewaySettings( {
+						isEnabled: false,
+						isGTGHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+				fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+					body: JSON.parse( opts.body ).data,
+					status: 200,
+				} ) );
+
+				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+					const {
+						data: {
+							settings: { isEnabled },
+						},
+					} = JSON.parse( opts.body );
+
+					return {
+						body: {
+							isEnabled, // Return the `isEnabled` value passed to the API.
+							isGTGHealthy: true,
+							isScriptAccessEnabled: true,
+						},
+						status: 200,
+					};
+				} );
+
+				fetchMock.postOnce( dismissItemEndpoint, {
+					body: [ GTG_SETUP_CTA_BANNER_NOTIFICATION ],
+					status: 200,
+				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( true );
+				await registry.dispatch( MODULES_TAGMANAGER ).submitChanges();
+
+				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+					body: {
+						data: {
+							slug: GTG_SETUP_CTA_BANNER_NOTIFICATION,
+							expiration: 0,
+						},
+					},
+				} );
+			} );
+
+			it( 'should handle an error when dismissing the GTG setup CTA banner', async () => {
+				provideUserAuthentication( registry );
+				provideNotifications( registry );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetGoogleTagGatewaySettings( {
+						isEnabled: false,
+						isGTGHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+				fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+					body: JSON.parse( opts.body ).data,
+					status: 200,
+				} ) );
+
+				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+					const {
+						data: {
+							settings: { isEnabled },
+						},
+					} = JSON.parse( opts.body );
+
+					return {
+						body: {
+							isEnabled, // Return the `isEnabled` value passed to the API.
+							isGTGHealthy: true,
+							isScriptAccessEnabled: true,
+						},
+						status: 200,
+					};
+				} );
+
+				fetchMock.postOnce( dismissItemEndpoint, {
+					body: errorResponse,
+					status: 500,
+				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( true );
+				const { error: submitChangesError } = await registry
+					.dispatch( MODULES_TAGMANAGER )
+					.submitChanges();
+
+				expect( submitChangesError ).toEqual( errorResponse );
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should not dismiss the GTG setup CTA banner when the GTG `isEnabled` setting is changed to `false`', async () => {
+				provideNotifications( registry );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetGoogleTagGatewaySettings( {
+						isEnabled: true,
+						isGTGHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+				fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+					body: JSON.parse( opts.body ).data,
+					status: 200,
+				} ) );
+
+				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+					const {
+						data: {
+							settings: { isEnabled },
+						},
+					} = JSON.parse( opts.body );
+
+					return {
+						body: {
+							isEnabled, // Return the `isEnabled` value passed to the API.
+							isGTGHealthy: true,
+							isScriptAccessEnabled: true,
+						},
+						status: 200,
+					};
+				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( false );
+				await registry.dispatch( MODULES_TAGMANAGER ).submitChanges();
+
+				expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+			} );
+		} );
+
+		describe( 'rollbackChanges', () => {
+			it( 'should revert to the original settings', () => {
+				const tagManagerSettings = {
+					ownerID: 0,
+					accountID: '12345',
+					ampContainerID: 'GTM-ABC123',
+					containerID: 'GTM-DEF567',
+					internalContainerID: '23456',
+					internalAMPContainerID: '34567',
+					useSnippet: true,
+				};
+
+				const googleTagGatewaySettings = {
+					isEnabled: false,
+					isGTGHealthy: true,
+					isScriptAccessEnabled: true,
+				};
+
+				registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {
+					...tagManagerSettings,
+				} );
+				registry.dispatch( MODULES_TAGMANAGER ).setAccountID( '54321' );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetGoogleTagGatewaySettings( {
+						...googleTagGatewaySettings,
+					} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( true );
+
+				registry.dispatch( MODULES_TAGMANAGER ).rollbackChanges();
+
+				expect(
+					registry.select( MODULES_TAGMANAGER ).getSettings()
+				).toEqual( tagManagerSettings );
+
+				expect(
+					registry.select( CORE_SITE ).getGoogleTagGatewaySettings()
+				).toEqual( googleTagGatewaySettings );
 			} );
 		} );
 	} );
@@ -1217,6 +1540,60 @@ describe( 'modules/tagmanager settings', () => {
 						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
 					).toBe( true );
 				} );
+			} );
+		} );
+
+		describe( 'haveSettingsChanged', () => {
+			const googleTagGatewaySettingsEndpointRegExp = new RegExp(
+				'^/google-site-kit/v1/core/site/data/gtg-settings'
+			);
+
+			it( 'should return true when GTG settings have changed', async () => {
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetGoogleTagGatewaySettings( {
+						isEnabled: false,
+					} );
+
+				// Initially false.
+				expect(
+					registry.select( MODULES_TAGMANAGER ).haveSettingsChanged()
+				).toEqual( false );
+
+				fetchMock.getOnce( googleTagGatewaySettingsEndpointRegExp, {
+					body: { isEnabled: false },
+					status: 200,
+				} );
+
+				registry.select( CORE_SITE ).getGoogleTagGatewaySettings();
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( CORE_SITE )
+							.getGoogleTagGatewaySettings() !== undefined
+				);
+
+				// Still false after fetching settings from server.
+				expect(
+					registry.select( MODULES_TAGMANAGER ).haveSettingsChanged()
+				).toEqual( false );
+
+				// True after updating settings on client.
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( true );
+				expect(
+					registry.select( MODULES_TAGMANAGER ).haveSettingsChanged()
+				).toEqual( true );
+
+				// Verify the selector returns false after reverting to the original value.
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( false );
+				expect(
+					registry.select( MODULES_TAGMANAGER ).haveSettingsChanged()
+				).toEqual( false );
 			} );
 		} );
 	} );

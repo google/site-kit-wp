@@ -20,27 +20,13 @@
  * Internal dependencies
  */
 import AutoAdExclusionSwitches from './AutoAdExclusionSwitches';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../constants';
-import {
-	createTestRegistry,
-	WithTestRegistry,
-	provideModules,
-} from '../../../../../../tests/js/utils';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-function Template( { setupRegistry, ...args } ) {
-	return (
-		<WithRegistrySetup func={ setupRegistry }>
-			<div className="googlesitekit-setup">
-				<section className="googlesitekit-setup__wrapper">
-					<div className="googlesitekit-setup-module">
-						<AutoAdExclusionSwitches { ...args } />
-					</div>
-				</section>
-			</div>
-		</WithRegistrySetup>
-	);
+function Template() {
+	return <AutoAdExclusionSwitches />;
 }
 
 export const AdExclusionDefault = Template.bind( {} );
@@ -76,20 +62,31 @@ export default {
 	title: 'Modules/AdSense/Components/AutoAdExclusionSwitches',
 	component: AutoAdExclusionSwitches,
 	decorators: [
-		( Story ) => {
-			const registry = createTestRegistry();
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ADSENSE,
-					active: true,
-					connected: true,
-				},
-			] );
+		( Story, { args } ) => {
+			function setupRegistry( registry ) {
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ADSENSE,
+						active: true,
+						connected: true,
+					},
+				] );
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			}
 
 			return (
-				<WithTestRegistry registry={ registry }>
-					<Story />
-				</WithTestRegistry>
+				<WithRegistrySetup func={ setupRegistry }>
+					<div className="googlesitekit-setup">
+						<section className="googlesitekit-setup__wrapper">
+							<div className="googlesitekit-setup-module">
+								<Story />
+							</div>
+						</section>
+					</div>
+				</WithRegistrySetup>
 			);
 		},
 	],

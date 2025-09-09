@@ -27,9 +27,9 @@ import { __ } from '@wordpress/i18n';
  */
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { trackEvent } from '../../../../util';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function AccountSelect() {
 	const viewContext = useViewContext();
