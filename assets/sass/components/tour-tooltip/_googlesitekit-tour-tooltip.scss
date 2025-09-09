@@ -186,8 +186,8 @@
 }
 
 // Fix AdminMenuTooltip jumping on scroll by using fixed positioning.
+// !important is required to override Joyride's inline styles.
 #react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) > div.__floater {
-
 	left: 170px !important;
 	position: fixed !important;
 	top: 113px !important;
@@ -195,7 +195,6 @@
 }
 .folded {
 	#react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) > div.__floater {
-
 		left: 46px !important;
 		top: 46px !important;
 	}
