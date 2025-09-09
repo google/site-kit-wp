@@ -597,14 +597,16 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			? new AMP_Tag( $settings['ampContainerID'], self::MODULE_SLUG )
 			: new Web_Tag( $settings['containerID'], self::MODULE_SLUG );
 
+		if ( ! $is_amp ) {
+			$tag->set_is_google_tag_gateway_active( $this->is_google_tag_gateway_active() );
+		}
+
 		if ( ! $tag->is_tag_blocked() ) {
 			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
 			$tag->use_guard( new Tag_Guard( $module_settings, $is_amp ) );
 			$tag->use_guard( new Tag_Environment_Type_Guard() );
 
 			if ( $tag->can_register() ) {
-				$tag->set_is_google_tag_gateway_active( $this->is_google_tag_gateway_active() );
-
 				$tag->register();
 			}
 		}
