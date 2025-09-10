@@ -1,5 +1,5 @@
 /**
- * Keyboard Shortcuts components.
+ * Command Palette components.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -17,8 +17,7 @@
  */
 
 export {
-	default as KeyboardShortcutProvider,
-	useKeyboardShortcuts,
-} from './KeyboardShortcutProvider';
-export { default as KeyboardShortcutHelp } from './KeyboardShortcutHelp';
+	default as CommandPaletteProvider,
+	useCommandPalette,
+} from './CommandPaletteProvider';
 export { default as CommandPalette } from './CommandPalette';

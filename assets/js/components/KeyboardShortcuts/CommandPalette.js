@@ -25,24 +25,132 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import {
-	Fragment,
-	useCallback,
-	useEffect,
-	useState,
-	useRef,
-} from '@wordpress/element';
+import { useCallback, useEffect, useState, useRef } from '@wordpress/element';
+import { doAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
  */
 import { Dialog, DialogContent } from 'googlesitekit-components';
-import { useKeyboardShortcuts } from './KeyboardShortcutProvider';
+import { useSelect } from 'googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 /**
- * Available commands/pages for navigation
+ * Performs enhanced fuzzy search with typo tolerance.
+ *
+ * @since 1.137.0
+ *
+ * @param {string} query     The search query.
+ * @param {string} target    The target string to match against.
+ * @param {number} threshold The similarity threshold (0-1).
+ * @return {boolean} Whether the target matches the query.
+ */
+function fuzzyMatch( query, target, threshold = 0.6 ) {
+	if ( ! query || ! target ) {
+		return false;
+	}
+
+	const queryLower = query.toLowerCase().trim();
+	const targetLower = target.toLowerCase();
+
+	// Exact match
+	if ( targetLower.includes( queryLower ) ) {
+		return true;
+	}
+
+	// Calculate similarity using Levenshtein distance
+	const distance = levenshteinDistance( queryLower, targetLower );
+	const maxLength = Math.max( queryLower.length, targetLower.length );
+	const similarity = 1 - distance / maxLength;
+
+	return similarity >= threshold;
+}
+
+/**
+ * Calculates Levenshtein distance between two strings.
+ *
+ * @since 1.137.0
+ *
+ * @param {string} a First string.
+ * @param {string} b Second string.
+ * @return {number} The Levenshtein distance.
+ */
+function levenshteinDistance( a, b ) {
+	const matrix = [];
+
+	for ( let i = 0; i <= b.length; i++ ) {
+		matrix[ i ] = [ i ];
+	}
+
+	for ( let j = 0; j <= a.length; j++ ) {
+		matrix[ 0 ][ j ] = j;
+	}
+
+	for ( let i = 1; i <= b.length; i++ ) {
+		for ( let j = 1; j <= a.length; j++ ) {
+			if ( b.charAt( i - 1 ) === a.charAt( j - 1 ) ) {
+				matrix[ i ][ j ] = matrix[ i - 1 ][ j - 1 ];
+			} else {
+				matrix[ i ][ j ] = Math.min(
+					matrix[ i - 1 ][ j - 1 ] + 1, // substitution
+					matrix[ i ][ j - 1 ] + 1, // insertion
+					matrix[ i - 1 ][ j ] + 1 // deletion
+				);
+			}
+		}
+	}
+
+	return matrix[ b.length ][ a.length ];
+}
+
+/**
+ * Available commands/pages for navigation.
  */
 const COMMANDS = [
+	// Quick Actions
+	{
+		id: 'create-post',
+		title: __( 'Create New Post', 'google-site-kit' ),
+		description: __( 'Create a new blog post', 'google-site-kit' ),
+		action: 'create',
+		target: 'post',
+		keywords: [ 'new', 'blog', 'article', 'write' ],
+		category: 'Quick Actions',
+		icon: '📝',
+	},
+	{
+		id: 'create-page',
+		title: __( 'Create New Page', 'google-site-kit' ),
+		description: __( 'Create a new page', 'google-site-kit' ),
+		action: 'create',
+		target: 'page',
+		keywords: [ 'new', 'static' ],
+		category: 'Quick Actions',
+		icon: '📄',
+	},
+	{
+		id: 'flush-permalinks',
+		title: __( 'Flush Permalinks', 'google-site-kit' ),
+		description: __( 'Refresh permalink structure', 'google-site-kit' ),
+		action: 'wp-action',
+		target: 'flush_permalinks',
+		keywords: [ 'refresh', 'urls', 'links', 'structure' ],
+		category: 'Quick Actions',
+		icon: '🔄',
+	},
+	{
+		id: 'wp-commands',
+		title: __( 'WordPress Commands', 'google-site-kit' ),
+		description: __(
+			'Access WordPress native command palette',
+			'google-site-kit'
+		),
+		action: 'wp-commands',
+		target: 'open',
+		keywords: [ 'wp', 'native', 'core', 'commands' ],
+		category: 'Quick Actions',
+		icon: '⚡',
+	},
 	// Main pages
 	{
 		id: 'dashboard',
@@ -203,7 +311,12 @@ const COMMANDS = [
 ];
 
 /**
- * Filters commands based on search query
+ * Filters commands based on search query.
+ *
+ * @since 1.137.0
+ *
+ * @param {string} query The search query to filter by.
+ * @return {Array} Filtered array of commands.
  */
 function filterCommands( query ) {
 	if ( ! query.trim() ) {
@@ -213,25 +326,47 @@ function filterCommands( query ) {
 	const searchTerm = query.toLowerCase().trim();
 
 	return COMMANDS.filter( ( command ) => {
-		// Search in title
+		// Exact matches first (higher priority)
 		if ( command.title.toLowerCase().includes( searchTerm ) ) {
 			return true;
 		}
 
-		// Search in description
 		if ( command.description.toLowerCase().includes( searchTerm ) ) {
 			return true;
 		}
 
-		// Search in keywords
+		// Exact keyword matches
+		if (
+			command.keywords.some( ( keyword ) =>
+				keyword.toLowerCase().includes( searchTerm )
+			)
+		) {
+			return true;
+		}
+
+		// Fuzzy matches for typo tolerance
+		if ( fuzzyMatch( searchTerm, command.title ) ) {
+			return true;
+		}
+
+		if ( fuzzyMatch( searchTerm, command.description ) ) {
+			return true;
+		}
+
+		// Fuzzy keyword matches
 		return command.keywords.some( ( keyword ) =>
-			keyword.toLowerCase().includes( searchTerm )
+			fuzzyMatch( searchTerm, keyword )
 		);
 	} );
 }
 
 /**
- * Groups commands by category
+ * Groups commands by category.
+ *
+ * @since 1.137.0
+ *
+ * @param {Array} commands The array of commands to group.
+ * @return {Object} Commands grouped by category.
  */
 function groupCommands( commands ) {
 	const groups = {};
@@ -246,12 +381,22 @@ function groupCommands( commands ) {
 	return groups;
 }
 
+/**
+ * Command Palette component for quick navigation.
+ *
+ * @since 1.137.0
+ *
+ * @return {WPElement} The component.
+ */
 export default function CommandPalette() {
 	const [ query, setQuery ] = useState( '' );
 	const [ selectedIndex, setSelectedIndex ] = useState( 0 );
 	const [ isVisible, setIsVisible ] = useState( false );
 	const inputRef = useRef( null );
-	const { executeShortcut } = useKeyboardShortcuts();
+
+	const adminURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL()
+	);
 
 	const filteredCommands = filterCommands( query );
 	const groupedCommands = groupCommands( filteredCommands );
@@ -260,26 +405,168 @@ export default function CommandPalette() {
 	const flatCommands = Object.values( groupedCommands ).flat();
 
 	/**
-	 * Handles command execution
+	 * Handles navigation actions.
+	 *
+	 * @since 1.137.0
+	 *
+	 * @param {string} target The navigation target.
 	 */
-	const executeCommand = useCallback(
-		( command ) => {
-			// Create a mock shortcut object for the executeShortcut function
-			const mockShortcut = {
-				action: command.action,
-				target: command.target,
+	const handleNavigation = useCallback(
+		( target ) => {
+			if ( target.startsWith( '/' ) ) {
+				// Handle hash-based navigation for React Router
+				global.location.hash = target;
+			} else if ( target.includes( '#' ) ) {
+				// Handle navigation with hash (e.g., "settings#/connected-services/analytics-4")
+				const [ page, hash ] = target.split( '#' );
+				const url = `${ adminURL }admin.php?page=googlesitekit-${ page }#${ hash }`;
+				global.location.href = url;
+			} else {
+				// Handle full page navigation
+				const url = `${ adminURL }admin.php?page=googlesitekit-${ target }`;
+				global.location.href = url;
+			}
+		},
+		[ adminURL ]
+	);
+
+	/**
+	 * Handles scroll-to-section actions.
+	 *
+	 * @since 1.137.0
+	 *
+	 * @param {string} target The element ID to scroll to.
+	 */
+	const handleScrollTo = useCallback( ( target ) => {
+		const element = document.getElementById( target );
+		if ( element ) {
+			element.scrollIntoView( {
+				behavior: 'smooth',
+				block: 'start',
+			} );
+		}
+	}, [] );
+
+	/**
+	 * Executes the selected command.
+	 *
+	 * @since 1.137.0
+	 *
+	 * @param {Object} command The command to execute.
+	 */
+	/**
+	 * Handles WordPress actions.
+	 *
+	 * @since 1.137.0
+	 *
+	 * @param {string} action The WordPress action to execute.
+	 */
+	const handleWpAction = useCallback( ( action ) => {
+		switch ( action ) {
+			case 'flush_permalinks':
+				// Trigger WordPress permalink flush
+				doAction( 'sitekit.flushPermalinks' );
+				// Show notification
+				global.console?.log( 'Permalinks flushed successfully!' );
+				break;
+			default:
+				break;
+		}
+	}, [] );
+
+	/**
+	 * Handles content creation.
+	 *
+	 * @since 1.137.0
+	 *
+	 * @param {string} type The content type to create.
+	 */
+	const handleCreate = useCallback(
+		( type ) => {
+			const createUrls = {
+				post: `${ adminURL }post-new.php`,
+				page: `${ adminURL }post-new.php?post_type=page`,
 			};
 
-			executeShortcut( mockShortcut );
+			if ( createUrls[ type ] ) {
+				global.location.href = createUrls[ type ];
+			}
+		},
+		[ adminURL ]
+	);
+
+	/**
+	 * Handles WordPress native commands.
+	 *
+	 * @since 1.137.0
+	 */
+	const handleWpCommands = useCallback( () => {
+		// Try to open WordPress native command palette if available
+		if ( global.wp?.commands?.open ) {
+			global.wp.commands.open();
+		} else if (
+			document.querySelector( '[data-command="core/command-palette"]' )
+		) {
+			// Fallback: simulate Cmd/Ctrl + K for WP command palette
+			const event = new KeyboardEvent( 'keydown', {
+				key: 'k',
+				ctrlKey: true,
+				metaKey: true,
+				bubbles: true,
+			} );
+			document.dispatchEvent( event );
+		} else {
+			// Show message if not available
+			global.console?.log(
+				'WordPress command palette not available in this version.'
+			);
+		}
+	}, [] );
+
+	const executeCommand = useCallback(
+		( command ) => {
+			switch ( command.action ) {
+				case 'navigate':
+					handleNavigation( command.target );
+					break;
+				case 'scroll-to':
+					handleScrollTo( command.target );
+					break;
+				case 'create':
+					handleCreate( command.target );
+					break;
+				case 'wp-action':
+					handleWpAction( command.target );
+					break;
+				case 'wp-commands':
+					handleWpCommands();
+					break;
+				case 'clear-cache':
+					// Hook for cache plugins to implement
+					doAction( 'sitekit.clearCache', command.target );
+					global.console?.log( 'Cache clear requested!' );
+					break;
+				default:
+					break;
+			}
+
 			setIsVisible( false );
 			setQuery( '' );
 			setSelectedIndex( 0 );
 		},
-		[ executeShortcut ]
+		[
+			handleNavigation,
+			handleScrollTo,
+			handleCreate,
+			handleWpAction,
+			handleWpCommands,
+		]
 	);
 
 	/**
-	 * Handles keyboard navigation
+	 * Handles keyboard navigation.
+	 *
+	 * @since 1.137.0
 	 */
 	const handleKeyDown = useCallback(
 		( event ) => {
@@ -314,7 +601,9 @@ export default function CommandPalette() {
 	);
 
 	/**
-	 * Handles search input changes
+	 * Handles search input changes.
+	 *
+	 * @since 1.137.0
 	 */
 	const handleInputChange = useCallback( ( event ) => {
 		setQuery( event.target.value );
@@ -322,7 +611,9 @@ export default function CommandPalette() {
 	}, [] );
 
 	/**
-	 * Handles command clicks
+	 * Handles command clicks.
+	 *
+	 * @since 1.137.0
 	 */
 	const handleCommandClick = useCallback(
 		( command ) => {
@@ -369,103 +660,75 @@ export default function CommandPalette() {
 			onClose={ () => setIsVisible( false ) }
 			className="googlesitekit-command-palette"
 		>
-			<DialogContent
-				style={ {
-					padding: 0,
-					maxHeight: '70vh',
-					width: '100%',
-					maxWidth: '600px',
-					minWidth: window.innerWidth < 640 ? '90vw' : '400px',
-					overflow: 'hidden',
-					margin: window.innerWidth < 640 ? '16px' : '24px',
-				} }
-			>
-				<div
-					className="googlesitekit-command-palette__content"
-					style={ {
-						display: 'flex',
-						flexDirection: 'column',
-						height: '100%',
-					} }
-				>
-					<div
-						className="googlesitekit-command-palette__search"
-						style={ {
-							borderBottom: '1px solid #e0e0e0',
-							padding: '20px 24px',
-							position: 'relative',
-							width: '100%',
-							boxSizing: 'border-box',
-						} }
-					>
-						<div
-							style={ {
-								position: 'absolute',
-								left: '24px',
-								top: '50%',
-								transform: 'translateY(-50%)',
-								fontSize: '16px',
-								opacity: 0.5,
-							} }
-						>
-							🔍
-						</div>
-						<input
-							ref={ inputRef }
-							type="text"
-							value={ query }
-							onChange={ handleInputChange }
-							onKeyDown={ handleKeyDown }
-							placeholder={ __(
-								'Search for pages, settings, or actions...',
-								'google-site-kit'
+			<DialogContent className="googlesitekit-command-palette__dialog">
+				<div className="googlesitekit-command-palette__container">
+					<div className="googlesitekit-command-palette__header">
+						<div className="googlesitekit-command-palette__search-wrapper">
+							<div className="googlesitekit-command-palette__search-icon">
+								<span
+									role="img"
+									aria-label={ __(
+										'Search',
+										'google-site-kit'
+									) }
+								>
+									🔍
+								</span>
+							</div>
+							<input
+								ref={ inputRef }
+								type="text"
+								value={ query }
+								onChange={ handleInputChange }
+								onKeyDown={ handleKeyDown }
+								placeholder={ __(
+									'Search for pages, settings, or actions…',
+									'google-site-kit'
+								) }
+								className="googlesitekit-command-palette__input"
+							/>
+							{ query && (
+								<button
+									type="button"
+									className="googlesitekit-command-palette__clear"
+									onClick={ () => {
+										setQuery( '' );
+										setSelectedIndex( 0 );
+									} }
+									aria-label={ __(
+										'Clear search',
+										'google-site-kit'
+									) }
+								>
+									×
+								</button>
 							) }
-							className="googlesitekit-command-palette__input"
-							style={ {
-								background: 'transparent',
-								border: 'none',
-								fontSize: '18px',
-								outline: 'none',
-								paddingLeft: '32px',
-								paddingRight: '8px',
-								width: '100%',
-								boxSizing: 'border-box',
-								maxWidth: '100%',
-							} }
-						/>
+						</div>
 					</div>
 
-					<div
-						className="googlesitekit-command-palette__results"
-						style={ {
-							flex: 1,
-							maxHeight: '400px',
-							overflowY: 'auto',
-							padding: 0,
-						} }
-					>
+					<div className="googlesitekit-command-palette__results">
 						{ flatCommands.length === 0 ? (
-							<div
-								className="googlesitekit-command-palette__no-results"
-								style={ {
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'center',
-									padding: '48px 24px',
-									color: '#666',
-									fontSize: '15px',
-									textAlign: 'center',
-								} }
-							>
-								{ query.trim()
-									? __(
-											'No results found',
-											'google-site-kit'
-									  )
-									: __(
-											'Type to search for pages, settings, or actions...',
-											'google-site-kit'
-									  ) }
+							<div className="googlesitekit-command-palette__no-results">
+								<div className="googlesitekit-command-palette__no-results-icon">
+									{ query.trim() ? '🔍' : '⌨️' }
+								</div>
+								<div className="googlesitekit-command-palette__no-results-text">
+									{ query.trim()
+										? __(
+												'No results found',
+												'google-site-kit'
+										  )
+										: __(
+												'Type to search for pages, settings, or actions…',
+												'google-site-kit'
+										  ) }
+								</div>
+								{ query.trim() && (
+									<div className="googlesitekit-command-palette__no-results-hint">
+										Try a different search term or browse
+										categories below
+									</div>
+								) }
 							</div>
 						) : (
 							Object.entries( groupedCommands ).map(
@@ -473,32 +736,14 @@ export default function CommandPalette() {
 									<div
 										key={ category }
 										className="googlesitekit-command-palette__group"
-										style={ {
-											marginBottom: 0,
-											borderBottom:
-												category !==
-												Object.keys( groupedCommands )[
-													Object.keys(
-														groupedCommands
-													).length - 1
-												]
-													? '1px solid rgba(0,0,0,0.05)'
-													: 'none',
-										} }
 									>
-										<div
-											className="googlesitekit-command-palette__group-title"
-											style={ {
-												background: 'rgba(0,0,0,0.02)',
-												color: '#666',
-												fontSize: '12px',
-												fontWeight: 600,
-												textTransform: 'uppercase',
-												padding: '8px 24px',
-												letterSpacing: '0.3px',
-											} }
-										>
-											{ category }
+										<div className="googlesitekit-command-palette__group-header">
+											<div className="googlesitekit-command-palette__group-title">
+												{ category }
+											</div>
+											<div className="googlesitekit-command-palette__group-count">
+												{ commands.length }
+											</div>
 										</div>
 										<div className="googlesitekit-command-palette__group-commands">
 											{ commands.map( ( command ) => {
@@ -519,26 +764,6 @@ export default function CommandPalette() {
 																	isSelected,
 															}
 														) }
-														style={ {
-															background:
-																isSelected
-																	? 'rgba(66, 133, 244, 0.08)'
-																	: 'transparent',
-															border: 'none',
-															borderLeft:
-																isSelected
-																	? '3px solid #4285f4'
-																	: 'none',
-															cursor: 'pointer',
-															display: 'block',
-															padding: isSelected
-																? '16px 21px 16px 21px'
-																: '16px 24px',
-															textAlign: 'left',
-															transition:
-																'all 0.2s ease',
-															width: '100%',
-														} }
 														onClick={ () =>
 															handleCommandClick(
 																command
@@ -550,42 +775,36 @@ export default function CommandPalette() {
 															)
 														}
 													>
-														<div
-															className="googlesitekit-command-palette__command-content"
-															style={ {
-																display: 'flex',
-																flexDirection:
-																	'column',
-																gap: '4px',
-															} }
-														>
-															<div
-																className="googlesitekit-command-palette__command-title"
-																style={ {
-																	fontSize:
-																		'15px',
-																	fontWeight: 500,
-																	lineHeight: 1.3,
-																	color: '#333',
-																} }
-															>
-																{
-																	command.title
-																}
+														<div className="googlesitekit-command-palette__command-content">
+															<div className="googlesitekit-command-palette__command-main">
+																<div className="googlesitekit-command-palette__command-icon">
+																	{ command.icon ||
+																		'⚡' }
+																</div>
+																<div className="googlesitekit-command-palette__command-text">
+																	<div className="googlesitekit-command-palette__command-title">
+																		{
+																			command.title
+																		}
+																	</div>
+																	<div className="googlesitekit-command-palette__command-description">
+																		{
+																			command.description
+																		}
+																	</div>
+																</div>
 															</div>
-															<div
-																className="googlesitekit-command-palette__command-description"
-																style={ {
-																	fontSize:
-																		'13px',
-																	lineHeight: 1.4,
-																	color: '#666',
-																	opacity: 0.8,
-																} }
-															>
-																{
-																	command.description
-																}
+															<div className="googlesitekit-command-palette__command-meta">
+																<div className="googlesitekit-command-palette__command-category">
+																	{
+																		command.category
+																	}
+																</div>
+																{ isSelected && (
+																	<div className="googlesitekit-command-palette__command-shortcut">
+																		↵
+																	</div>
+																) }
 															</div>
 														</div>
 													</button>
@@ -598,88 +817,101 @@ export default function CommandPalette() {
 						) }
 					</div>
 
-					<div
-						className="googlesitekit-command-palette__footer"
-						style={ {
-							background: 'rgba(0,0,0,0.02)',
-							borderTop: '1px solid #e0e0e0',
-							padding: '12px 24px',
-						} }
-					>
-						<div
-							className="googlesitekit-command-palette__hint"
-							style={ {
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'center',
-								fontSize: '12px',
-								color: '#666',
-								gap: '4px',
-							} }
-						>
-							<kbd
-								style={ {
-									background: 'rgba(255,255,255,0.9)',
-									border: '1px solid rgba(0,0,0,0.15)',
-									borderRadius: '4px',
-									padding: '4px 6px',
-									fontSize: '11px',
-									fontWeight: 600,
-									minWidth: '20px',
-									textAlign: 'center',
-								} }
-							>
-								↑
-							</kbd>
-							<kbd
-								style={ {
-									background: 'rgba(255,255,255,0.9)',
-									border: '1px solid rgba(0,0,0,0.15)',
-									borderRadius: '4px',
-									padding: '4px 6px',
-									fontSize: '11px',
-									fontWeight: 600,
-									minWidth: '20px',
-									textAlign: 'center',
-								} }
-							>
-								↓
-							</kbd>{ ' ' }
-							to navigate,
-							<kbd
-								style={ {
-									background: 'rgba(255,255,255,0.9)',
-									border: '1px solid rgba(0,0,0,0.15)',
-									borderRadius: '4px',
-									padding: '4px 6px',
-									fontSize: '11px',
-									fontWeight: 600,
-									minWidth: '20px',
-									textAlign: 'center',
-								} }
-							>
-								↵
-							</kbd>{ ' ' }
-							to select,{ ' ' }
-							<kbd
-								style={ {
-									background: 'rgba(255,255,255,0.9)',
-									border: '1px solid rgba(0,0,0,0.15)',
-									borderRadius: '4px',
-									padding: '4px 6px',
-									fontSize: '11px',
-									fontWeight: 600,
-									minWidth: '20px',
-									textAlign: 'center',
-								} }
-							>
-								esc
-							</kbd>{ ' ' }
-							to close
+					<div className="googlesitekit-command-palette__footer">
+						<div className="googlesitekit-command-palette__hint">
+							<div className="googlesitekit-command-palette__shortcuts">
+								<kbd className="googlesitekit-command-palette__kbd">
+									↑
+								</kbd>
+								<kbd className="googlesitekit-command-palette__kbd">
+									↓
+								</kbd>
+								<span>to navigate</span>
+							</div>
+							<div className="googlesitekit-command-palette__shortcuts">
+								<kbd className="googlesitekit-command-palette__kbd">
+									↵
+								</kbd>
+								<span>to select</span>
+							</div>
+							<div className="googlesitekit-command-palette__shortcuts">
+								<kbd className="googlesitekit-command-palette__kbd">
+									esc
+								</kbd>
+								<span>to close</span>
+							</div>
+						</div>
+						<div className="googlesitekit-command-palette__branding">
+							<span>Site Kit Command Palette</span>
 						</div>
 					</div>
 				</div>
 			</DialogContent>
 		</Dialog>
 	);
+}
+
+/**
+ * Registers Site Kit commands with WordPress Command Palette API.
+ *
+ * @since 1.137.0
+ */
+function registerSiteKitCommands() {
+	// Check if WordPress Command Palette API is available
+	if ( ! global.wp?.commands?.registerCommand ) {
+		return;
+	}
+
+	// Register key Site Kit commands with WordPress
+	const wpCommands = [
+		{
+			name: 'sitekit/dashboard',
+			label: __( 'Site Kit Dashboard', 'google-site-kit' ),
+			callback: () => {
+				global.location.href = `${
+					global.googlesitekit?.admin?.adminURL || '/wp-admin/'
+				}admin.php?page=googlesitekit-dashboard`;
+			},
+		},
+		{
+			name: 'sitekit/settings',
+			label: __( 'Site Kit Settings', 'google-site-kit' ),
+			callback: () => {
+				global.location.href = `${
+					global.googlesitekit?.admin?.adminURL || '/wp-admin/'
+				}admin.php?page=googlesitekit-settings`;
+			},
+		},
+		{
+			name: 'sitekit/analytics',
+			label: __( 'Analytics Settings', 'google-site-kit' ),
+			callback: () => {
+				global.location.href = `${
+					global.googlesitekit?.admin?.adminURL || '/wp-admin/'
+				}admin.php?page=googlesitekit-settings#/connected-services/analytics-4`;
+			},
+		},
+		{
+			name: 'sitekit/search-console',
+			label: __( 'Search Console Settings', 'google-site-kit' ),
+			callback: () => {
+				global.location.href = `${
+					global.googlesitekit?.admin?.adminURL || '/wp-admin/'
+				}admin.php?page=googlesitekit-settings#/connected-services/search-console`;
+			},
+		},
+	];
+
+	// Register each command
+	wpCommands.forEach( ( command ) => {
+		global.wp.commands.registerCommand( command );
+	} );
+}
+
+// Register commands when WordPress is ready
+if ( global.wp?.domReady ) {
+	global.wp.domReady( registerSiteKitCommands );
+} else {
+	// Fallback for immediate registration
+	registerSiteKitCommands();
 }

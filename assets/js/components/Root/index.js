@@ -49,8 +49,7 @@ import InViewProvider from '@/js/components/InViewProvider';
 import { isSiteKitScreen } from '@/js/util/is-site-kit-screen';
 import {
 	CommandPalette,
-	KeyboardShortcutHelp,
-	KeyboardShortcutProvider,
+	CommandPaletteProvider,
 } from '@/js/components/KeyboardShortcuts';
 
 export default function Root( { children, registry, viewContext = null } ) {
@@ -70,7 +69,7 @@ export default function Root( { children, registry, viewContext = null } ) {
 				<RegistryProvider value={ registry }>
 					<FeaturesProvider value={ enabledFeatures }>
 						<ViewContextProvider value={ viewContext }>
-							<KeyboardShortcutProvider>
+							<CommandPaletteProvider>
 								<ThemeProvider theme={ theme() }>
 									<ErrorHandler>
 										<RestoreSnapshots>
@@ -81,14 +80,11 @@ export default function Root( { children, registry, viewContext = null } ) {
 											<PermissionsModal />
 										) }
 										{ isSiteKitScreen( viewContext ) && (
-											<KeyboardShortcutHelp />
-										) }
-										{ isSiteKitScreen( viewContext ) && (
 											<CommandPalette />
 										) }
 									</ErrorHandler>
 								</ThemeProvider>
-							</KeyboardShortcutProvider>
+							</CommandPaletteProvider>
 						</ViewContextProvider>
 					</FeaturesProvider>
 				</RegistryProvider>

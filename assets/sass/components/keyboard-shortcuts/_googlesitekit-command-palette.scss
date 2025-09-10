@@ -1,0 +1,569 @@
+/* stylelint-disable max-line-length */
+/* stylelint-disable no-descending-specificity */
+
+/**
+ * Command Palette styles - CommandUI inspired modern design.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// Modern Command Palette - CommandUI inspired design
+.googlesitekit-command-palette {
+	.mdc-dialog__surface {
+		background: #fff;
+		border: 1px solid rgba(0, 0, 0, 0.08);
+		border-radius: 16px;
+		box-shadow:
+			0 20px 25px -5px rgba(0, 0, 0, 0.1),
+			0 10px 10px -5px rgba(0, 0, 0, 0.04),
+			0 0 0 1px rgba(0, 0, 0, 0.05);
+		max-height: 80vh;
+		max-width: 640px;
+		min-height: 400px;
+		overflow: hidden;
+		padding: 0;
+		transform: scale(0.95);
+		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		width: 100%;
+
+		&[data-mdc-dialog-action="close"] {
+			transform: scale(0.95);
+		}
+	}
+
+	.mdc-dialog__container {
+		padding: 0;
+	}
+
+	&[aria-hidden="false"] .mdc-dialog__surface {
+		animation: command-palette-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		transform: scale(1);
+	}
+}
+
+@keyframes command-palette-enter {
+	from {
+		opacity: 0;
+		transform: scale(0.95) translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1) translateY(0);
+	}
+}
+
+// Dialog Content
+.googlesitekit-command-palette__dialog {
+	background: transparent;
+	padding: 0 !important;
+}
+
+// Main Container
+.googlesitekit-command-palette__container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	max-height: 80vh;
+	min-height: 400px;
+}
+
+// Header Section
+.googlesitekit-command-palette__header {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	border-radius: 16px 16px 0 0;
+	padding: 24px;
+	position: relative;
+
+	&::before {
+		background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 100%);
+		border-radius: 16px 16px 0 0;
+		content: "";
+		height: 100%;
+		left: 0;
+		position: absolute;
+		top: 0;
+		width: 100%;
+		z-index: 1;
+	}
+}
+
+// Search Wrapper
+.googlesitekit-command-palette__search-wrapper {
+	align-items: center;
+	backdrop-filter: blur(10px);
+	background: rgba(255, 255, 255, 0.15);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 12px;
+	display: flex;
+	gap: 12px;
+	padding: 16px 20px;
+	position: relative;
+	transition: all 0.2s ease;
+	z-index: 2;
+
+	&:focus-within {
+		background: rgba(255, 255, 255, 0.25);
+		border-color: rgba(255, 255, 255, 0.4);
+		box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+	}
+}
+
+// Search Icon
+.googlesitekit-command-palette__search-icon {
+	color: rgba(255, 255, 255, 0.8);
+	font-size: 18px;
+	line-height: 1;
+}
+
+// Search Input
+.googlesitekit-command-palette__input {
+	background: transparent;
+	border: none;
+	color: #fff;
+	flex: 1;
+	font-size: 18px;
+	font-weight: 400;
+	line-height: 1.4;
+	outline: none;
+
+	&::placeholder {
+		color: rgba(255, 255, 255, 0.7);
+		font-weight: 300;
+	}
+}
+
+// Clear Button
+.googlesitekit-command-palette__clear {
+	align-items: center;
+	background: rgba(255, 255, 255, 0.15);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 8px;
+	color: rgba(255, 255, 255, 0.8);
+	cursor: pointer;
+	display: flex;
+	font-size: 18px;
+	height: 28px;
+	justify-content: center;
+	transition: all 0.15s ease;
+	width: 28px;
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.25);
+		border-color: rgba(255, 255, 255, 0.4);
+		color: #fff;
+	}
+}
+
+// Results Section
+.googlesitekit-command-palette__results {
+	flex: 1;
+	max-height: 500px;
+	overflow-y: auto;
+	padding: 0;
+
+	// Custom scrollbar
+	&::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: rgba(0, 0, 0, 0.1);
+		border-radius: 3px;
+		transition: background 0.2s ease;
+
+		&:hover {
+			background: rgba(0, 0, 0, 0.2);
+		}
+	}
+}
+
+// No Results State
+.googlesitekit-command-palette__no-results {
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	justify-content: center;
+	padding: 80px 32px;
+	text-align: center;
+}
+
+.googlesitekit-command-palette__no-results-icon {
+	font-size: 48px;
+	opacity: 0.3;
+}
+
+.googlesitekit-command-palette__no-results-text {
+	color: #6b7280;
+	font-size: 16px;
+	font-weight: 500;
+}
+
+.googlesitekit-command-palette__no-results-hint {
+	color: #9ca3af;
+	font-size: 14px;
+	max-width: 300px;
+}
+
+// Command Groups
+.googlesitekit-command-palette__group {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+	&:last-child {
+		border-bottom: none;
+	}
+}
+
+// Group Header
+.googlesitekit-command-palette__group-header {
+	align-items: center;
+	background: #f9fafb;
+	display: flex;
+	justify-content: space-between;
+	padding: 12px 24px;
+	position: sticky;
+	top: 0;
+	z-index: 10;
+}
+
+.googlesitekit-command-palette__group-title {
+	color: #374151;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.5px;
+	text-transform: uppercase;
+}
+
+.googlesitekit-command-palette__group-count {
+	align-items: center;
+	background: #e5e7eb;
+	border-radius: 12px;
+	color: #6b7280;
+	display: flex;
+	font-size: 11px;
+	font-weight: 600;
+	height: 20px;
+	justify-content: center;
+	min-width: 20px;
+	padding: 0 6px;
+}
+
+// Command Items
+.googlesitekit-command-palette__command {
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	display: block;
+	padding: 0;
+	position: relative;
+	text-align: left;
+	transition: all 0.15s ease;
+	width: 100%;
+
+	&:hover {
+		background: #f8fafc;
+	}
+}
+
+.googlesitekit-command-palette__command:hover .googlesitekit-command-palette__command-content::before {
+	opacity: 1;
+	transform: scaleY(1);
+}
+
+.googlesitekit-command-palette__command.googlesitekit-command-palette__command--selected {
+	background: #eff6ff;
+}
+
+.googlesitekit-command-palette__command.googlesitekit-command-palette__command--selected .googlesitekit-command-palette__command-content::before {
+	opacity: 1;
+	transform: scaleY(1);
+}
+
+.googlesitekit-command-palette__command.googlesitekit-command-palette__command--selected .googlesitekit-command-palette__command-icon {
+	transform: scale(1.1);
+}
+
+.googlesitekit-command-palette__command.googlesitekit-command-palette__command--selected .googlesitekit-command-palette__command-shortcut {
+	opacity: 1;
+	transform: translateX(0);
+}
+
+// Command Content
+.googlesitekit-command-palette__command-content {
+	align-items: center;
+	display: flex;
+	justify-content: space-between;
+	padding: 16px 24px;
+	position: relative;
+}
+
+.googlesitekit-command-palette__command-content::before {
+	background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+	border-radius: 0 4px 4px 0;
+	content: "";
+	height: 60%;
+	left: 0;
+	opacity: 0;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%) scaleY(0.3);
+	transition: all 0.2s ease;
+	width: 3px;
+}
+
+.googlesitekit-command-palette__command-main {
+	align-items: center;
+	display: flex;
+	flex: 1;
+	gap: 16px;
+}
+
+// Command Icon
+.googlesitekit-command-palette__command-icon {
+	align-items: center;
+	background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+	border: 1px solid rgba(0, 0, 0, 0.08);
+	border-radius: 10px;
+	color: #6b7280;
+	display: flex;
+	font-size: 16px;
+	height: 40px;
+	justify-content: center;
+	transition: all 0.2s ease;
+	width: 40px;
+}
+
+// Command Text
+.googlesitekit-command-palette__command-text {
+	flex: 1;
+	min-width: 0;
+}
+
+.googlesitekit-command-palette__command-title {
+	color: #111827;
+	font-size: 15px;
+	font-weight: 500;
+	line-height: 1.3;
+	margin: 0 0 4px;
+}
+
+.googlesitekit-command-palette__command-description {
+	color: #6b7280;
+	font-size: 13px;
+	line-height: 1.4;
+	margin: 0;
+}
+
+// Command Meta
+.googlesitekit-command-palette__command-meta {
+	align-items: center;
+	display: flex;
+	gap: 12px;
+}
+
+.googlesitekit-command-palette__command-category {
+	background: #f3f4f6;
+	border-radius: 6px;
+	color: #6b7280;
+	font-size: 11px;
+	font-weight: 500;
+	padding: 4px 8px;
+}
+
+.googlesitekit-command-palette__command-shortcut {
+	align-items: center;
+	background: #374151;
+	border-radius: 6px;
+	color: #fff;
+	display: flex;
+	font-size: 12px;
+	font-weight: 600;
+	height: 24px;
+	justify-content: center;
+	opacity: 0;
+	transform: translateX(8px);
+	transition: all 0.2s ease;
+	width: 24px;
+}
+
+// Footer
+.googlesitekit-command-palette__footer {
+	align-items: center;
+	background: #f9fafb;
+	border-top: 1px solid rgba(0, 0, 0, 0.05);
+	display: flex;
+	justify-content: space-between;
+	padding: 12px 24px;
+}
+
+.googlesitekit-command-palette__hint {
+	align-items: center;
+	display: flex;
+	gap: 16px;
+}
+
+.googlesitekit-command-palette__shortcuts {
+	align-items: center;
+	display: flex;
+	font-size: 12px;
+	gap: 6px;
+
+	span {
+		color: #6b7280;
+		font-weight: 500;
+	}
+}
+
+.googlesitekit-command-palette__kbd {
+	align-items: center;
+	background: #fff;
+	border: 1px solid #d1d5db;
+	border-radius: 4px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	color: #374151;
+	display: inline-flex;
+	font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+	font-size: 11px;
+	font-weight: 600;
+	height: 20px;
+	justify-content: center;
+	line-height: 1;
+	min-width: 20px;
+	padding: 0 6px;
+}
+
+.googlesitekit-command-palette__branding {
+	color: #9ca3af;
+	font-size: 11px;
+	font-weight: 500;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+	.googlesitekit-command-palette {
+		.mdc-dialog__surface {
+			border-radius: 12px;
+			margin: 16px;
+			max-height: calc(100vh - 32px);
+			max-width: calc(100vw - 32px);
+		}
+	}
+
+	.googlesitekit-command-palette__header {
+		padding: 20px;
+	}
+
+	.googlesitekit-command-palette__search-wrapper {
+		padding: 14px 16px;
+	}
+
+	.googlesitekit-command-palette__input {
+		font-size: 16px; // Prevent zoom on iOS
+	}
+
+	.googlesitekit-command-palette__command-content {
+		padding: 14px 20px;
+	}
+
+	.googlesitekit-command-palette__command-main {
+		gap: 12px;
+	}
+
+	.googlesitekit-command-palette__command-icon {
+		height: 36px;
+		width: 36px;
+	}
+
+	.googlesitekit-command-palette__footer {
+		padding: 12px 20px;
+	}
+
+	.googlesitekit-command-palette__hint {
+		gap: 12px;
+	}
+}
+
+@media (max-width: 480px) {
+	.googlesitekit-command-palette {
+		.mdc-dialog__surface {
+			border-radius: 8px;
+			margin: 8px;
+			max-height: calc(100vh - 16px);
+			max-width: calc(100vw - 16px);
+		}
+	}
+
+	.googlesitekit-command-palette__command-meta {
+		display: none;
+	}
+
+	.googlesitekit-command-palette__hint {
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	.googlesitekit-command-palette__shortcuts {
+		gap: 4px;
+	}
+}
+
+// Dark mode support (if needed)
+@media (prefers-color-scheme: dark) {
+	.googlesitekit-command-palette {
+		.mdc-dialog__surface {
+			background: #1f2937;
+			border-color: rgba(255, 255, 255, 0.1);
+		}
+	}
+
+	.googlesitekit-command-palette__group-header {
+		background: #111827;
+	}
+
+	.googlesitekit-command-palette__group-title {
+		color: #d1d5db;
+	}
+
+	.googlesitekit-command-palette__command:hover {
+		background: #374151;
+	}
+
+	.googlesitekit-command-palette__command.googlesitekit-command-palette__command--selected {
+		background: #1e40af;
+	}
+
+	.googlesitekit-command-palette__command-title {
+		color: #f9fafb;
+	}
+
+	.googlesitekit-command-palette__command-description {
+		color: #9ca3af;
+	}
+
+	.googlesitekit-command-palette__footer {
+		background: #111827;
+		border-color: rgba(255, 255, 255, 0.1);
+	}
+
+	.googlesitekit-command-palette__kbd {
+		background: #374151;
+		border-color: #4b5563;
+		color: #d1d5db;
+	}
+}

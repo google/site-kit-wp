@@ -1,5 +1,5 @@
 /**
- * Keyboard Shortcuts styles.
+ * Command Palette styles.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -15,129 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// Help modal styles
-.googlesitekit-keyboard-shortcuts-modal {
-	.mdc-dialog__surface {
-		max-height: 80vh;
-		max-width: 800px;
-		overflow: hidden;
-		padding: 0;
-	}
-}
-
-.googlesitekit-keyboard-shortcuts-modal__content {
-	display: flex;
-	flex-direction: column;
-	max-height: 80vh;
-}
-
-.googlesitekit-keyboard-shortcuts-modal__header {
-	border-bottom: 1px solid $c-border-light;
-	padding: 24px;
-}
-
-.googlesitekit-keyboard-shortcuts-modal__title {
-	font-size: 20px;
-	font-weight: 500;
-	margin: 0;
-}
-
-.googlesitekit-keyboard-shortcuts-modal__body {
-	flex: 1;
-	overflow-y: auto;
-	padding: 0;
-}
-
-.googlesitekit-keyboard-shortcuts-group {
-	border-bottom: 1px solid $c-border-light;
-
-	&:last-child {
-		border-bottom: none;
-	}
-}
-
-.googlesitekit-keyboard-shortcuts-group__title {
-	background: $c-background-subtle;
-	color: $c-content-secondary;
-	font-size: 13px;
-	font-weight: 600;
-	padding: 12px 24px;
-	text-transform: uppercase;
-}
-
-.googlesitekit-keyboard-shortcuts-group__items {
-	padding: 16px 0;
-}
-
-.googlesitekit-keyboard-shortcut-item {
-	align-items: center;
-	display: flex;
-	gap: 16px;
-	justify-content: space-between;
-	padding: 8px 24px;
-
-	&:hover {
-		background: $c-background-subtle;
-	}
-}
-
-.googlesitekit-keyboard-shortcut-item__description {
-	flex: 1;
-	font-size: 14px;
-}
-
-.googlesitekit-keyboard-shortcut-item__keys {
-	display: flex;
-	gap: 4px;
-	min-width: 120px;
-}
-
-.googlesitekit-keyboard-shortcut-key {
-	background: $c-background-subtle;
-	border: 1px solid $c-border-light;
-	border-radius: 4px;
-	color: $c-content-secondary;
-	font-family: $f-secondary;
-	font-size: 11px;
-	font-weight: 600;
-	padding: 4px 6px;
-	text-align: center;
-}
-
-.googlesitekit-keyboard-shortcuts-modal__footer {
-	border-top: 1px solid $c-border-light;
-	padding: 16px 24px;
-	text-align: center;
-}
-
-.googlesitekit-keyboard-shortcuts-modal__footer-text {
-	color: $c-content-secondary;
-	font-size: 13px;
-	font-style: italic;
-	margin: 0;
-	text-align: center;
-}
-
-// Demo component styles
-.googlesitekit-keyboard-shortcuts-demo__shortcuts {
-	margin: 16px 0;
-}
-
-.googlesitekit-keyboard-shortcuts-demo__shortcut {
-	background: $c-background-subtle;
-	border-radius: 4px;
-	font-family: $f-secondary;
-	margin: 8px 0;
-	padding: 8px;
-}
-
-.googlesitekit-keyboard-shortcuts-demo__note {
-	color: $c-content-secondary;
-	font-size: 13px;
-	font-style: italic;
-	margin-top: 16px;
-}
 
 // Command Palette styles
 .googlesitekit-command-palette {
@@ -359,27 +236,6 @@
 }
 
 @media (max-width: 480px) {
-	.googlesitekit-keyboard-shortcuts-modal {
-		.mdc-dialog__surface {
-			margin: 16px;
-			max-width: 95vw;
-		}
-	}
-
-	.googlesitekit-keyboard-shortcut-item {
-		align-items: flex-start;
-		flex-direction: column;
-		gap: 8px;
-	}
-
-	.googlesitekit-keyboard-shortcut-item__keys {
-		min-width: auto;
-	}
-
-	.googlesitekit-keyboard-shortcut-item__description {
-		margin-left: 0;
-	}
-
 	.googlesitekit-command-palette__content {
 		max-height: 85vh;
 	}
