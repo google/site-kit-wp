@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
+
+/**
  * Internal dependencies
  */
 import {
@@ -26,6 +31,12 @@ import {
 	useRequestInterception,
 	enableFeature,
 } from '../../../utils';
+
+// Selectors
+const WOO_MODAL_SELECTOR = '.googlesitekit-dialog-woocommerce-redirect';
+
+// CTA texts
+const CTA_SETUP_ADS = /set up ads/i;
 
 describe( 'Ads WooCommerce Redirect Modal', () => {
 	beforeAll( async () => {
@@ -81,5 +92,21 @@ describe( 'Ads WooCommerce Redirect Modal', () => {
 	afterEach( async () => {
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
+	} );
+
+	it( 'shows WooCommerce modal when WooCommerce is active, but Google for WooCommerce is not', async () => {
+		await activatePlugin( 'e2e-tests-mock-woocommerce-active' );
+
+		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
+
+		// Wait for the Ads setup CTA banner to appear and click primary CTA.
+		await Promise.all( [
+			page.waitForSelector( '.googlesitekit-banner--setup-cta' ),
+			expect( page ).toClick( '.googlesitekit-banner__cta', {
+				text: CTA_SETUP_ADS,
+			} ),
+		] );
+
+		await expect( page ).toMatchElement( WOO_MODAL_SELECTOR );
 	} );
 } );
