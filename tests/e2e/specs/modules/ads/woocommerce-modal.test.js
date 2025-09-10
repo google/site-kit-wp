@@ -19,7 +19,13 @@
 /**
  * Internal dependencies
  */
-import { useRequestInterception } from '../../../utils';
+import {
+	deactivateUtilityPlugins,
+	resetSiteKit,
+	setupSiteKit,
+	useRequestInterception,
+	enableFeature,
+} from '../../../utils';
 
 describe( 'Ads WooCommerce Redirect Modal', () => {
 	beforeAll( async () => {
@@ -65,5 +71,15 @@ describe( 'Ads WooCommerce Redirect Modal', () => {
 				request.continue();
 			}
 		} );
+	} );
+
+	beforeEach( async () => {
+		await setupSiteKit();
+		await enableFeature( 'adsPax' );
+	} );
+
+	afterEach( async () => {
+		await deactivateUtilityPlugins();
+		await resetSiteKit();
 	} );
 } );
