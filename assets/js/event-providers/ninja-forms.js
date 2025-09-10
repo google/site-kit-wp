@@ -64,6 +64,7 @@ const NINJA_FORMS_TYPES = {
  * Extracts and classifies user data from a Ninja Forms form submission.
  *
  * @since n.e.x.t
+ * @since n.e.x.t Renamed to `getUserDataFromNinjaFormFields` because `getUserData` was extracted into a generic utility function.
  *
  * @param {Object<string, Object>} fields The submitted Ninja Form fields.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
