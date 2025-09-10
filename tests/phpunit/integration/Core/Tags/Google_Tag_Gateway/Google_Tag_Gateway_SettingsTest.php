@@ -200,7 +200,7 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 				'isScriptAccessEnabled' => false,
 			)
 		);
-		$this->assertFalse( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be inactive unless all settings are true.' );
+		$this->assertFalse( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be inactive if only isEnabled is true.' );
 
 		// GTG should be inactive if only isEnabled and isGTGHealthy are true.
 		$this->settings->set(
@@ -210,7 +210,7 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 				'isScriptAccessEnabled' => false,
 			)
 		);
-		$this->assertFalse( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be inactive unless all settings are true.' );
+		$this->assertFalse( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be inactive if only isEnabled and isGTGHealthy are true.' );
 
 		// GTG should be inactive if only isEnabled and isScriptAccessEnabled are true.
 		$this->settings->set(
@@ -220,7 +220,7 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 				'isScriptAccessEnabled' => true,
 			)
 		);
-		$this->assertFalse( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be inactive unless all settings are true.' );
+		$this->assertFalse( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be inactive if only isEnabled and isScriptAccessEnabled are true.' );
 
 		// GTG should be active if all settings are true.
 		$this->settings->set(
