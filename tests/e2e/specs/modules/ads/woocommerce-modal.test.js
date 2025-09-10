@@ -105,6 +105,14 @@ describe( 'Ads WooCommerce Redirect Modal', () => {
 	} );
 
 	afterEach( async () => {
+		// Wait for network idle to allow outstanding requests to resolve
+		// and prevent Invalid JSON Response error.
+		try {
+			await page.waitForNetworkIdle( { timeout: 15_000 } );
+		} catch ( error ) {
+			// Allow to fail silently if timeout is reached which can occur mostly running locally.
+		}
+
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
@@ -113,6 +121,8 @@ describe( 'Ads WooCommerce Redirect Modal', () => {
 		await activatePlugin( 'e2e-tests-mock-woocommerce-active' );
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
+
+		await page.waitForNetworkIdle();
 
 		// Wait for the Ads setup CTA banner to appear and click primary CTA.
 		await Promise.all( [
@@ -149,25 +159,25 @@ describe( 'Ads WooCommerce Redirect Modal', () => {
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
-		// Wait for the subtle notification to appear
+		// Wait for the subtle notification to appear.
 		await page.waitForSelector( '.googlesitekit-notice', {
 			timeout: 10000,
 		} );
 
-		// Verify the notification contains the expected text
+		// Verify the notification contains the expected text.
 		await expect( page ).toMatchElement( '.googlesitekit-notice', {
 			text: /detected an existing Ads account/,
 		} );
 
-		// Click the "Create new account" CTA
+		// Click the "Create new account" CTA.
 		await expect( page ).toClick( '.mdc-button', {
 			text: CTA_CREATE_NEW_ACCOUNT,
 		} );
 
-		// Wait for navigation to complete
+		// Wait for navigation to complete.
 		await page.waitForNavigation( { waitUntil: 'networkidle0' } );
 
-		// Verify we're on the Ads setup page
+		// Verify we're on the Ads setup page.
 		await page.waitForSelector( '.googlesitekit-setup-module--ads', {
 			timeout: 10000,
 		} );
@@ -224,7 +234,7 @@ describe( 'Ads WooCommerce Redirect Modal', () => {
 				expect( page ).toClick( '.googlesitekit-cta-link__contents', {
 					text: CTA_SETUP_ADS,
 				} ),
-				page.waitForNavigation(),
+				page.waitForNavigation( { waitUntil: 'networkidle0' } ),
 			] );
 		} );
 
