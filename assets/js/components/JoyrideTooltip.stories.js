@@ -70,6 +70,10 @@ MobileModalTooltip.scenario = {
 	readySelector: '#react-joyride-step-0 div.__floater__open',
 	delay: 150,
 };
+// Skip 100vh-based story padding for this mobile variant to avoid a variable margin in the Joyride overlay on different runs.
+MobileModalTooltip.parameters = {
+	padding: '20',
+};
 
 export default {
 	title: 'Components/JoyrideTooltip',
