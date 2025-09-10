@@ -82,6 +82,11 @@ describe( 'Ads WooCommerce Redirect Modal', () => {
 					status: 200,
 					body: JSON.stringify( [] ),
 				} );
+			} else if ( url.match( 'core/site/data/ads-measurement-status' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( { connected: true } ),
+				} );
 			} else {
 				request.continue();
 			}
