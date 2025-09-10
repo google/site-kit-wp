@@ -32,6 +32,7 @@ import {
 	enableFeature,
 	step,
 } from '../../../utils';
+import surveyResponse from '@/js/components/surveys/__fixtures__/survey-single-question.json';
 
 // Selectors
 const WOO_MODAL_SELECTOR = '.googlesitekit-dialog-woocommerce-redirect';
@@ -86,6 +87,11 @@ describe( 'Ads WooCommerce Redirect Modal', () => {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( { connected: true } ),
+				} );
+			} else if ( url.match( 'user/data/survey' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( { survey: surveyResponse } ),
 				} );
 			} else {
 				request.continue();
