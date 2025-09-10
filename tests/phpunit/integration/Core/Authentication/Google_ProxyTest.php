@@ -109,6 +109,20 @@ class Google_ProxyTest extends TestCase {
 		}
 	}
 
+	public function test_setup_url__with_setup_flow_refresh_feature_flag_enabled() {
+		$this->enable_feature( 'setupFlowRefresh' );
+
+		$url = $this->google_proxy->setup_url(
+			array(
+				'code'    => 'code-123',
+				'site_id' => 'site_id-456',
+				'foo'     => 'foo-789',
+			)
+		);
+
+		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789', 'Setup URL should use the v3 route and  match the expected format with query parameters.' );
+	}
+
 	public function test_add_setup_step_from_error_code() {
 		// Ensure the `step` query param is correctly added according to the error code.
 		$params = $this->google_proxy->add_setup_step_from_error_code( array(), 'missing_verification' );
