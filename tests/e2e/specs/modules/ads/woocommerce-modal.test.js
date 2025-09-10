@@ -30,6 +30,7 @@ import {
 	setupSiteKit,
 	useRequestInterception,
 	enableFeature,
+	step,
 } from '../../../utils';
 
 // Selectors
@@ -190,5 +191,41 @@ describe( 'Ads WooCommerce Redirect Modal', () => {
 		] );
 
 		await expect( page ).not.toMatchElement( WOO_MODAL_SELECTOR );
+	} );
+
+	it( 'shows WooCommerce modal on Ads setup screen when "Start setup" is clicked and WooCommerce is active', async () => {
+		await activatePlugin( 'e2e-tests-mock-woocommerce-active' );
+
+		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
+
+		await step( 'open connect more services tab', async () => {
+			await Promise.all( [
+				page.waitForSelector( '.mdc-tab-bar' ),
+				expect( page ).toClick( '.mdc-tab', {
+					text: /connect more services/i,
+				} ),
+			] );
+		} );
+
+		await step( 'enter the setup Ads module screen', async () => {
+			await Promise.all( [
+				page.waitForSelector( '.googlesitekit-cta-link__contents' ),
+				expect( page ).toClick( '.googlesitekit-cta-link__contents', {
+					text: CTA_SETUP_ADS,
+				} ),
+				page.waitForNavigation(),
+			] );
+		} );
+
+		await step( 'click "Start setup" button', async () => {
+			await Promise.all( [
+				page.waitForSelector( '.googlesitekit-setup-module--ads' ),
+				expect( page ).toClick( '.mdc-button', {
+					text: CTA_START_SETUP,
+				} ),
+			] );
+		} );
+
+		await expect( page ).toMatchElement( WOO_MODAL_SELECTOR );
 	} );
 } );
