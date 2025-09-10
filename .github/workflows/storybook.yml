@@ -162,5 +162,6 @@ jobs:
           cache: npm
       - name: npm install
         run: npm i -w assets -w storybook -w tests/js --include-workspace-root
+      # TODO: #10473 will complete the migration to Storybook test-runner as storyshots is deprecated.
       # - name: Test Storybook
       #   run: npm run test:storybook
