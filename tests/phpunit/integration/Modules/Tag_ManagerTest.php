@@ -18,6 +18,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
+use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
@@ -180,6 +182,102 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertTrue( has_action( 'wp_head' ), 'WP head action should be hooked when only AMP is blocked.' );
 		$this->assertTrue( has_action( 'wp_body_open' ), 'WP body open action should be hooked when only AMP is blocked.' );
 		$this->assertTrue( has_action( 'wp_footer' ), 'WP footer action should be hooked when only AMP is blocked.' );
+	}
+
+	/**
+	 * @dataProvider gtg_status_provider
+	 * @param array $gtg_settings
+	 */
+	public function test_register__template_redirect_non_amp_google_tag_gateway( array $gtg_settings ) {
+		self::enable_feature( 'googleTagGateway' );
+
+		// Prevent test from failing in CI with deprecation notice.
+		remove_action( 'wp_print_styles', 'print_emoji_styles' );
+
+		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options    = new Options( $context );
+		$gtag       = new GTag( $options );
+		$tagmanager = new Tag_Manager( $context, $options );
+
+		remove_all_actions( 'template_redirect' );
+		$gtag->register();
+		$tagmanager->register();
+
+		// Configure module as connected.
+		$tagmanager->get_settings()->merge(
+			array(
+				'useSnippet'  => true,
+				'containerID' => 'GTM-999999',
+			)
+		);
+
+		// Configure GTG status.
+		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $options );
+		$google_tag_gateway_settings->register();
+		$google_tag_gateway_settings->set( $gtg_settings );
+
+		do_action( 'template_redirect' );
+
+		$head_html = $this->capture_action( 'wp_head' );
+
+		if ( $google_tag_gateway_settings->is_google_tag_gateway_active() ) {
+			$this->assertTrue(
+				has_action( 'googlesitekit_setup_gtag' ),
+				'gtag setup action should be present when Google tag gateway is active.'
+			);
+
+			$this->assertStringContainsString(
+				'gtag("config", "GTM-999999")',
+				$head_html,
+				'Head output should contain gtag config when Google tag gateway is active.'
+			);
+		} else {
+			$this->assertFalse(
+				has_action( 'googlesitekit_setup_gtag' ),
+				'gtag setup action should not be present when Google tag gateway is not active.'
+			);
+
+			$expected = "
+			( function( w, d, s, l, i ) {
+				w[l] = w[l] || [];
+				w[l].push( {'gtm.start': new Date().getTime(), event: 'gtm.js'} );
+				var f = d.getElementsByTagName( s )[0],
+					j = d.createElement( s ), dl = l != 'dataLayer' ? '&l=' + l : '';
+				j.async = true;
+				j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+				f.parentNode.insertBefore( j, f );
+			} )( window, document, 'script', 'dataLayer', 'GTM-999999' );
+			";
+
+			// Normalize whitespace in both strings.
+			$normalized_expected = preg_replace( '/\s+/', ' ', trim( $expected ) );
+			$normalized_actual   = preg_replace( '/\s+/', ' ', trim( $head_html ) );
+
+			$this->assertStringContainsString(
+				$normalized_expected,
+				$normalized_actual,
+				'Head output should contain Tag Manager script when Google tag gateway is not active.'
+			);
+		}
+	}
+
+	public function gtg_status_provider() {
+		return array(
+			'Google tag gateway active'     => array(
+				array(
+					'isEnabled'             => true,
+					'isGTGHealthy'          => true,
+					'isScriptAccessEnabled' => true,
+				),
+			),
+			'Google tag gateway not active' => array(
+				array(
+					'isEnabled'             => false,
+					'isGTGHealthy'          => false,
+					'isScriptAccessEnabled' => false,
+				),
+			),
+		);
 	}
 
 	/**
