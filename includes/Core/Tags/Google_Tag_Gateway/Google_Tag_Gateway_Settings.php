@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Core\Tags\Google_Tag_Gateway;
 
 use Google\Site_Kit\Core\Storage\Setting;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
  * Class to store user Google Tag Gateway settings.
