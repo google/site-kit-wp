@@ -206,6 +206,9 @@ GTGEnabled.decorators = [
 export const GTGDisabledWithWarning = Template.bind( null );
 GTGDisabledWithWarning.storyName =
 	'With Google tag gateway disabled with warning';
+GTGDisabledWithWarning.parameters = {
+	features: [ 'googleTagGateway' ],
+};
 GTGDisabledWithWarning.decorators = [
 	( Story ) => {
 		function setupRegistry( registry ) {

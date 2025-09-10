@@ -41,6 +41,7 @@ import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { isFeatureEnabled } from '@/js/features';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 
 const SET_GOOGLE_TAG_GATEWAY_ENABLED = 'SET_GOOGLE_TAG_GATEWAY_ENABLED';
 const RESET_GOOGLE_TAG_GATEWAY_SETTINGS = 'RESET_GOOGLE_TAG_GATEWAY_SETTINGS';
@@ -295,7 +296,8 @@ const baseSelectors = {
 
 			return (
 				isModuleConnected( MODULE_SLUG_ANALYTICS_4 ) ||
-				isModuleConnected( MODULE_SLUG_ADS )
+				isModuleConnected( MODULE_SLUG_ADS ) ||
+				isModuleConnected( MODULE_SLUG_TAGMANAGER )
 			);
 		}
 	),
