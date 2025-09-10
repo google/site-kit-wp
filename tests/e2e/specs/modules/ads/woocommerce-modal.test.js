@@ -37,6 +37,8 @@ const WOO_MODAL_SELECTOR = '.googlesitekit-dialog-woocommerce-redirect';
 
 // CTA texts
 const CTA_SETUP_ADS = /set up ads/i;
+const CTA_START_SETUP = /start setup/i;
+const CTA_CREATE_NEW_ACCOUNT = /create new account/i;
 
 describe( 'Ads WooCommerce Redirect Modal', () => {
 	beforeAll( async () => {
@@ -122,5 +124,50 @@ describe( 'Ads WooCommerce Redirect Modal', () => {
 		} );
 
 		await expect( page ).toMatchElement( WOO_MODAL_SELECTOR );
+	} );
+
+	it( 'dismisses the WooCommerce modal when "Create new account" CTA is clicked in AccountLinkedViaGoogleForWooCommerceSubtleNotification', async () => {
+		await activatePlugin( 'e2e-tests-mock-woocommerce-active' );
+		await activatePlugin( 'e2e-tests-mock-google-for-woocommerce-active' );
+		await activatePlugin(
+			'e2e-tests-mock-google-for-woocommerce-ads-connected'
+		);
+		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
+
+		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
+
+		// Wait for the subtle notification to appear
+		await page.waitForSelector( '.googlesitekit-notice', {
+			timeout: 10000,
+		} );
+
+		// Verify the notification contains the expected text
+		await expect( page ).toMatchElement( '.googlesitekit-notice', {
+			text: /detected an existing Ads account/,
+		} );
+
+		// Click the "Create new account" CTA
+		await expect( page ).toClick( '.mdc-button', {
+			text: CTA_CREATE_NEW_ACCOUNT,
+		} );
+
+		// Wait for navigation to complete
+		await page.waitForNavigation( { waitUntil: 'networkidle0' } );
+
+		// Verify we're on the Ads setup page
+		await page.waitForSelector( '.googlesitekit-setup-module--ads', {
+			timeout: 10000,
+		} );
+
+		// Click "Start setup" button to trigger the modal check.
+		await expect( page ).toClick( '.mdc-button', {
+			text: CTA_START_SETUP,
+		} );
+
+		// Verify the modal is not present (it should be dismissed by the notification CTA).
+		// Oauth flow being triggered verifies that the modal was dismissed.
+		await page.waitForRequest( ( req ) =>
+			req.url().includes( 'sitekit.withgoogle.com/o/oauth2/auth' )
+		);
 	} );
 } );
