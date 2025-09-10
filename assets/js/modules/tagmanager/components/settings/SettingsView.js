@@ -264,7 +264,7 @@ export default function SettingsView() {
 					</p>
 
 					{ hasExistingTag && (
-						<P>
+						<P className="googlesitekit-margin-bottom-0">
 							{ __(
 								'Placing two tags at the same time is not recommended.',
 								'google-site-kit'
