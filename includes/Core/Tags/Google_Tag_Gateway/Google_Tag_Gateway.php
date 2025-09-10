@@ -180,6 +180,8 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields {
 	 * Gets an array of debug field definitions.
 	 *
 	 * @since 1.142.0
+	 * @since n.e.x.t Updated to use Google_Tag_Gateway_Settings->is_google_tag_gateway_active()
+	 * instead of inline logic to determine effective GTG status.
 	 *
 	 * @return array
 	 */

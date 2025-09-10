@@ -587,6 +587,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 *
 	 * @since 1.24.0
 	 * @since 1.119.0 Made method public.
+	 * @since n.e.x.t Updated to pass Google tag gateway status to Web_Tag.
 	 */
 	public function register_tag() {
 		$is_amp          = $this->context->is_amp();

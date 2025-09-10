@@ -40,6 +40,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * Registers tag hooks.
 	 *
 	 * @since 1.24.0
+	 * @since n.e.x.t Updated to handle GTag snippet insertion when Google tag gateway is active.
 	 */
 	public function register() {
 		if ( $this->is_google_tag_gateway_active ) {
@@ -74,6 +75,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * Outputs Tag Manager script.
 	 *
 	 * @since 1.24.0
+	 * @since n.e.x.t Updated to skip rendering if Google tag gateway is active.
 	 */
 	protected function render() {
 		if ( $this->is_google_tag_gateway_active ) {
@@ -106,6 +108,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * Outputs Tag Manager iframe for when the browser has JavaScript disabled.
 	 *
 	 * @since 1.24.0
+	 * @since n.e.x.t Updated to skip rendering if Google tag gateway is active.
 	 */
 	private function render_no_js() {
 		if ( $this->is_google_tag_gateway_active ) {

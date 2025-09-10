@@ -319,6 +319,8 @@ JS;
 	 * Checks if Google tag gateway is active.
 	 *
 	 * @since 1.142.0
+	 * @since n.e.x.t Updated to use Google_Tag_Gateway_Settings->is_google_tag_gateway_active
+	 * instead of inline logic.
 	 *
 	 * @return bool True if Google tag gateway is active, false otherwise.
 	 */
