@@ -35,10 +35,10 @@ DefaultTooltip.args = {
 	dismissLabel: 'Got it',
 	target: '.target',
 };
-// TODO: re-enable scenarios as part of follow up issue.
-// DefaultTooltip.scenario = {
-// 	delay: 200, // Slight delays are required to ensure the tooltip is fully rendered even with animations disabled.
-// };
+DefaultTooltip.scenario = {
+	readySelector: '#react-joyride-step-0 div.__floater__open',
+	delay: 150,
+};
 
 export const PlacementTooltip = Template.bind( {} );
 PlacementTooltip.storyName = 'Tooltip with Custom Placement';
@@ -49,10 +49,10 @@ PlacementTooltip.args = {
 	target: '.target',
 	placement: 'bottom',
 };
-// TODO: re-enable scenarios as part of follow up issue.
-// PlacementTooltip.scenario = {
-// 	delay: 200,
-// };
+PlacementTooltip.scenario = {
+	readySelector: '#react-joyride-step-0 div.__floater__open',
+	delay: 150,
+};
 
 export const MobileModalTooltip = Template.bind( {} );
 MobileModalTooltip.storyName = 'Mobile Modal Tooltip';
@@ -66,10 +66,10 @@ MobileModalTooltip.args = {
 	className: 'googlesitekit-tour-tooltip__modal_step',
 	disableOverlay: false,
 };
-// TODO: re-enable scenarios as part of follow up issue.
-// MobileModalTooltip.scenario = {
-// 	delay: 200,
-// };
+MobileModalTooltip.scenario = {
+	readySelector: '#react-joyride-step-0 div.__floater__open',
+	delay: 150,
+};
 
 export default {
 	title: 'Components/JoyrideTooltip',

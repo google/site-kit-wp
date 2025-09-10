@@ -33,7 +33,7 @@
 	}
 
 	/* Disable Joyride animations. These are not covered by the above CSS because they render outside of #storybook-root. */
-	#react-joyride-step-0 div.__floater.__floater__open {
+	div[id^="react-joyride-step-"] div.__floater.__floater__open {
 		transition: none !important;
 	}
 </style>
