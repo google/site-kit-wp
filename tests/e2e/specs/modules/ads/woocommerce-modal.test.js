@@ -109,4 +109,18 @@ describe( 'Ads WooCommerce Redirect Modal', () => {
 
 		await expect( page ).toMatchElement( WOO_MODAL_SELECTOR );
 	} );
+
+	it( 'shows WooCommerce modal when both WooCommerce and Google for WooCommerce are active, but Ads account is not set', async () => {
+		await activatePlugin( 'e2e-tests-mock-woocommerce-active' );
+		await activatePlugin( 'e2e-tests-mock-google-for-woocommerce-active' );
+
+		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
+
+		await page.waitForSelector( '.googlesitekit-banner--setup-cta' );
+		await expect( page ).toClick( '.googlesitekit-banner__cta', {
+			text: CTA_SETUP_ADS,
+		} );
+
+		await expect( page ).toMatchElement( WOO_MODAL_SELECTOR );
+	} );
 } );
