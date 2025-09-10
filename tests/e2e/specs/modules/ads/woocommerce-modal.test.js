@@ -39,6 +39,7 @@ const WOO_MODAL_SELECTOR = '.googlesitekit-dialog-woocommerce-redirect';
 const CTA_SETUP_ADS = /set up ads/i;
 const CTA_START_SETUP = /start setup/i;
 const CTA_CREATE_NEW_ACCOUNT = /create new account/i;
+const CTA_KEEP_EXISTING_ACCOUNT = /keep existing account/i;
 
 describe( 'Ads WooCommerce Redirect Modal', () => {
 	beforeAll( async () => {
@@ -169,5 +170,25 @@ describe( 'Ads WooCommerce Redirect Modal', () => {
 		await page.waitForRequest( ( req ) =>
 			req.url().includes( 'sitekit.withgoogle.com/o/oauth2/auth' )
 		);
+	} );
+
+	it( 'dismisses the WooCommerce modal when "Keep existing account" CTA is clicked in AccountLinkedViaGoogleForWooCommerceSubtleNotification', async () => {
+		await activatePlugin( 'e2e-tests-mock-woocommerce-active' );
+		await activatePlugin( 'e2e-tests-mock-google-for-woocommerce-active' );
+		await activatePlugin(
+			'e2e-tests-mock-google-for-woocommerce-ads-connected'
+		);
+
+		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
+
+		// Wait for the subtle notification to appear, then click the CTA.
+		await Promise.all( [
+			page.waitForSelector( '.googlesitekit-notice' ),
+			expect( page ).toClick( '.mdc-button', {
+				text: CTA_KEEP_EXISTING_ACCOUNT,
+			} ),
+		] );
+
+		await expect( page ).not.toMatchElement( WOO_MODAL_SELECTOR );
 	} );
 } );
