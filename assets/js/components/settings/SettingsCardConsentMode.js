@@ -74,6 +74,9 @@ export default function SettingsCardConsentMode() {
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
 	const inView = !! intersectionEntry?.intersectionRatio;
 
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	useEffect( () => {
@@ -81,7 +84,11 @@ export default function SettingsCardConsentMode() {
 			// Track an event when the user sees the Consent Mode settings.
 			trackEvent( `${ viewContext }_CoMo`, 'view_requirements' );
 
-			if ( isAdsConnected && isConsentModeEnabled === false ) {
+			if (
+				isAdsConnected &&
+				isConsentModeEnabled === false &&
+				usingProxy
+			) {
 				triggerSurvey( 'view_como_setup_cta', { ttl: DAY_IN_SECONDS } );
 			}
 
@@ -91,6 +98,7 @@ export default function SettingsCardConsentMode() {
 		inView,
 		hasBeenInView,
 		viewContext,
+		usingProxy,
 		triggerSurvey,
 		isAdsConnected,
 		isConsentModeEnabled,

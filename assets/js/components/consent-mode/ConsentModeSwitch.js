@@ -61,6 +61,9 @@ export default function ConsentModeSwitch( { loading } ) {
 	const { setConsentModeEnabled, saveConsentModeSettings } =
 		useDispatch( CORE_SITE );
 
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
 	const { dismissPrompt, triggerSurvey } = useDispatch( CORE_USER );
 
 	const isDismissed = useSelect( ( select ) =>
@@ -72,10 +75,13 @@ export default function ConsentModeSwitch( { loading } ) {
 	async function saveSettings() {
 		setSaveError( null );
 
-		const promises = [
-			saveConsentModeSettings(),
-			triggerSurvey( 'enable_como', { ttl: DAY_IN_SECONDS } ),
-		];
+		const promises = [ saveConsentModeSettings() ];
+
+		if ( usingProxy ) {
+			promises.push(
+				triggerSurvey( 'enable_como', { ttl: DAY_IN_SECONDS } )
+			);
+		}
 
 		const [ { error } ] = await Promise.all( promises );
 

@@ -33,6 +33,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import { TYPES } from '@/js/components/Notice/constants';
@@ -45,6 +46,10 @@ export default function AdBlockingRecoverySetupSuccessNotification( {
 } ) {
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+
 	const adsenseAccountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
@@ -56,8 +61,10 @@ export default function AdBlockingRecoverySetupSuccessNotification( {
 	);
 
 	const handleView = useCallback( () => {
-		triggerSurvey( 'abr_setup_completed', { ttl: DAY_IN_SECONDS } );
-	}, [ triggerSurvey ] );
+		if ( usingProxy ) {
+			triggerSurvey( 'abr_setup_completed', { ttl: DAY_IN_SECONDS } );
+		}
+	}, [ triggerSurvey, usingProxy ] );
 
 	const [ , setNotification ] = useQueryArg( 'notification' );
 

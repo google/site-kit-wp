@@ -29,15 +29,22 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 export default function SurveyViewTrigger( { triggerID, ttl = 0 } ) {
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	useEffect( () => {
-		triggerSurvey( triggerID, { ttl } );
-	}, [ triggerID, ttl, triggerSurvey ] );
+		if ( usingProxy ) {
+			triggerSurvey( triggerID, { ttl } );
+		}
+	}, [ usingProxy, triggerID, ttl, triggerSurvey ] );
 
 	return null;
 }

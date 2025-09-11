@@ -63,6 +63,10 @@ export default function GoogleTagGatewaySetupBanner( { id, Notification } ) {
 	};
 	const showTooltip = useShowTooltip( tooltipSettings );
 
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+
 	const { dismissNotification, registerNotification } =
 		useDispatch( CORE_NOTIFICATIONS );
 
@@ -105,8 +109,10 @@ export default function GoogleTagGatewaySetupBanner( { id, Notification } ) {
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 	const handleView = useCallback( () => {
-		triggerSurvey( 'view_gtg_setup_cta', { ttl: DAY_IN_SECONDS } );
-	}, [ triggerSurvey ] );
+		if ( usingProxy ) {
+			triggerSurvey( 'view_gtg_setup_cta', { ttl: DAY_IN_SECONDS } );
+		}
+	}, [ triggerSurvey, usingProxy ] );
 
 	return (
 		<Notification onView={ handleView }>
