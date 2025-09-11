@@ -17,7 +17,7 @@
 /**
  * Internal dependencies
  */
-import { classifyPII, normalizeValue, PII_TYPE } from './utils';
+import { classifyPII, getUserData } from './utils';
 
 ( ( jQuery ) => {
 	if ( ! jQuery ) {
@@ -30,7 +30,7 @@ import { classifyPII, normalizeValue, PII_TYPE } from './utils';
 			const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
 
 			const userData = gtagUserDataEnabled
-				? getUserData( event.target )
+				? getUserDataFromForm( event.target )
 				: null;
 
 			global._googlesitekit?.gtagEvent?.(
@@ -42,66 +42,15 @@ import { classifyPII, normalizeValue, PII_TYPE } from './utils';
 } )( global.jQuery );
 
 /**
- * Extracts and formats name fields for Google Tag's user_data address object.
- *
- * @since n.e.x.t
- *
- * @param {Array<Object>} fields An array of detected PII fields.
- * @return {Object|undefined} An object containing normalized first_name and optionally last_name, or undefined if no names found.
- */
-function getAddress( fields ) {
-	const names = fields
-		.filter( ( { type } ) => type === PII_TYPE.NAME )
-		.map( ( { value } ) => value );
-
-	if ( ! names.length ) {
-		return undefined;
-	}
-
-	const [ firstName, ...lastNames ] =
-		names.length === 1 ? names[ 0 ].split( ' ' ) : names;
-
-	return {
-		first_name: normalizeValue( firstName ),
-		...( lastNames?.length > 0
-			? { last_name: normalizeValue( lastNames.join( ' ' ) ) }
-			: {} ),
-	};
-}
-
-/**
- * Extracts the email address from detected PII fields.
- *
- * @since n.e.x.t
- *
- * @param {Array<Object>} fields An array of detected PII fields.
- * @return {string|undefined} The email address if found, undefined otherwise.
- */
-function getEmail( fields ) {
-	return fields.find( ( { type } ) => type === PII_TYPE.EMAIL )?.value;
-}
-
-/**
- * Extracts the phone number from detected PII fields.
- *
- * @since n.e.x.t
- *
- * @param {Array<Object>} fields An array of detected PII fields.
- * @return {string|undefined} The phone number if found, undefined otherwise.
- */
-function getPhoneNumber( fields ) {
-	return fields.find( ( { type } ) => type === PII_TYPE.PHONE )?.value;
-}
-
-/**
  * Extracts and classifies user data from a WPForms form submission.
  *
  * @since n.e.x.t
+ * @since n.e.x.t Renamed to `getUserDataFromForm` because `getUserData` was extracted into a generic utility function.
  *
  * @param {HTMLFormElement} form The submitted form element.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
  */
-function getUserData( form ) {
+function getUserDataFromForm( form ) {
 	// eslint-disable-next-line sitekit/acronym-case
 	if ( ! form || ! ( form instanceof HTMLFormElement ) ) {
 		return undefined;
@@ -145,15 +94,5 @@ function getUserData( form ) {
 		} )
 		.filter( Boolean );
 
-	const userDataFields = [
-		[ 'address', getAddress( detectedFields ) ],
-		[ 'email', getEmail( detectedFields ) ],
-		[ 'phone_number', getPhoneNumber( detectedFields ) ],
-	].filter( ( [ , value ] ) => value );
-
-	if ( userDataFields.length === 0 ) {
-		return undefined;
-	}
-
-	return Object.fromEntries( userDataFields );
+	return getUserData( detectedFields );
 }
