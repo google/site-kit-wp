@@ -122,14 +122,20 @@ describe( 'ProductIDSubscriptionsNotification', () => {
 		} );
 
 		it( 'should not call the settings endpoint when RRM is not active', async () => {
-			registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
+			registry.dispatch( CORE_MODULES ).receiveGetModules( [
+				{
+					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+					active: false,
+					connected: false,
+				},
+			] );
 
 			const settingsEndpoint = new RegExp(
 				'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
 			);
 
 			fetchMock.get( settingsEndpoint, {
-				body: '',
+				body: {},
 				status: 200,
 			} );
 
