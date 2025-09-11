@@ -110,7 +110,19 @@ function getUserData( form ) {
 	const formData = new FormData( form );
 	const detectedFields = Array.from( formData.entries() )
 		.map( ( [ name, value ] ) => {
-			const input = form.querySelector( `[name='${ name }']` );
+			let input = form.querySelector( `[name='${ name }']` );
+
+			// WPForms creates dual inputs for special fields (e.g., phone numbers):
+			// - A visible input for UI/display purposes
+			// - A hidden input containing the actual raw value (positioned immediately after)
+			// When FormData gives us the hidden input, we switch to the visible input
+			// for better field type detection and label association.
+			if (
+				input?.type === 'hidden' &&
+				input?.previousSibling?.type !== 'hidden'
+			) {
+				input = input.previousSibling;
+			}
 
 			const type = input?.type;
 
