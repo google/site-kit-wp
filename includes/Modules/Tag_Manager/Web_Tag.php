@@ -150,11 +150,9 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * @param GTag $gtag GTag instance.
 	 */
 	protected function setup_gtag( $gtag ) {
-		// Do not add the default `s` query arg to the GTG src URL.
-		$gtag->set_gtg_src_extra_query_args( array() );
-
 		$gtag->add_tag( $this->tag_id );
 	}
+
 
 	/**
 	 * Filters output of tag HTML.
