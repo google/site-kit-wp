@@ -1112,6 +1112,60 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	/**
+	 * @dataProvider data_scope_with_setupRefreshFlow
+	 */
+	public function test_auth_scopes_with_setupRefreshFlow( array $granted_scopes, array $expected_scopes ) {
+		$this->enable_feature( 'setupFlowRefresh' );
+		remove_all_filters( 'googlesitekit_auth_scopes' );
+
+		$this->analytics->register();
+		// Set user as non-authenticated.
+		$this->authentication->token()->delete();
+
+		$this->authentication->get_oauth_client()->set_granted_scopes( $granted_scopes );
+
+		$this->assertEqualSets(
+			$expected_scopes,
+			apply_filters( 'googlesitekit_auth_scopes', array() ),
+			'Auth scopes should match expected scopes based on granted scopes when setupFlowRefresh feature is enabled.'
+		);
+	}
+
+	public function data_scope_with_setupRefreshFlow() {
+		return array(
+			'with analytics and tag manager scopes granted' => array(
+				array(
+					Analytics_4::READONLY_SCOPE,
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				),
+				array(
+					Analytics_4::READONLY_SCOPE,
+					Analytics_4::EDIT_SCOPE,
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				),
+			),
+			'with analytics scope granted' => array(
+				array(
+					Analytics_4::READONLY_SCOPE,
+				),
+				array(
+					Analytics_4::READONLY_SCOPE,
+					Analytics_4::EDIT_SCOPE,
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				),
+			),
+			'with no scopes granted'       => array(
+				array(),
+				array(
+					Analytics_4::READONLY_SCOPE,
+					Analytics_4::EDIT_SCOPE,
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				),
+			),
+		);
+	}
+
 	public function test_is_connected() {
 		$options   = new Options( $this->context );
 		$analytics = new Analytics_4( $this->context, $options );
