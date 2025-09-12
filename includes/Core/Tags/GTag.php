@@ -308,12 +308,13 @@ JS;
 	protected function get_gtg_src( $tag_id ) {
 		$query_args = array(
 			'id' => $tag_id,
+			's'  => '/gtag/js',
 		);
 
-		// Do not add the `s` query arg for Tag Manager tags.
+		// Remove the `s` query arg for Tag Manager tags.
 		// See: https://github.com/google/site-kit-wp/issues/11417#issuecomment-3282223421.
-		if ( ! str_starts_with( $tag_id, 'GTM-' ) ) {
-			$query_args['s'] = '/gtag/js';
+		if ( strpos( $tag_id, 'GTM-' ) === 0 ) {
+			unset( $query_args['s'] );
 		}
 
 		return add_query_arg(
