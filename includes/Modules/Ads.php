@@ -34,7 +34,6 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Core\Util\Plugin_Status;
 use Google\Site_Kit\Modules\Ads\Enhanced_Conversions;
 use Google\Site_Kit\Modules\Ads\PAX_Config;
@@ -398,24 +397,13 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
-		$debug_fields = array(
+		return array(
 			'ads_conversion_tracking_id' => array(
 				'label' => __( 'Ads: Conversion ID', 'google-site-kit' ),
 				'value' => $settings['conversionID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['conversionID'] ),
 			),
 		);
-
-		// Add fields from Google tag gateway.
-		// Note: fields are added in both Analytics and Ads so that the debug fields will show if either module is enabled.
-		if ( Feature_Flags::enabled( 'googleTagGateway' ) ) {
-			$google_tag_gateway             = new Google_Tag_Gateway( $this->context );
-			$fields_from_google_tag_gateway = $google_tag_gateway->get_debug_fields();
-
-			$debug_fields = array_merge( $debug_fields, $fields_from_google_tag_gateway );
-		}
-
-		return $debug_fields;
 	}
 
 	/**
