@@ -60,6 +60,8 @@ export const PII_INDICATORS = {
 		'lname',
 		'first',
 		'last',
+		'your-name',
+		'your name',
 	],
 };
 
@@ -301,4 +303,78 @@ export function classifyPII( fieldMeta ) {
 	}
 
 	return null;
+}
+
+/**
+ * Extracts and formats name fields for Google Tag's user_data address object.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array<Object>} fields An array of detected PII fields.
+ * @return {Object|undefined} An object containing normalized first_name and optionally last_name, or undefined if no names found.
+ */
+export function getAddress( fields ) {
+	const names = fields
+		.filter( ( { type } ) => type === PII_TYPE.NAME )
+		.map( ( { value } ) => value );
+
+	if ( ! names.length ) {
+		return undefined;
+	}
+
+	const [ firstName, ...lastNames ] =
+		names.length === 1 ? names[ 0 ].split( ' ' ) : names;
+
+	return {
+		first_name: normalizeValue( firstName ),
+		...( lastNames?.length > 0
+			? { last_name: normalizeValue( lastNames.join( ' ' ) ) }
+			: {} ),
+	};
+}
+
+/**
+ * Extracts the email address from detected PII fields.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array<Object>} fields An array of detected PII fields.
+ * @return {string|undefined} The email address if found, undefined otherwise.
+ */
+export function getEmail( fields ) {
+	return fields.find( ( { type } ) => type === PII_TYPE.EMAIL )?.value;
+}
+
+/**
+ * Extracts the phone number from detected PII fields.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array<Object>} fields An array of detected PII fields.
+ * @return {string|undefined} The phone number if found, undefined otherwise.
+ */
+export function getPhoneNumber( fields ) {
+	return fields.find( ( { type } ) => type === PII_TYPE.PHONE )?.value;
+}
+
+/**
+ * Extracts and classifies user data from a WPForms form submission.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array<Object>} fields An array of detected PII fields.
+ * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
+ */
+export function getUserData( fields ) {
+	const userDataFields = [
+		[ 'address', getAddress( fields ) ],
+		[ 'email', getEmail( fields ) ],
+		[ 'phone_number', getPhoneNumber( fields ) ],
+	].filter( ( [ , value ] ) => value );
+
+	if ( userDataFields.length === 0 ) {
+		return undefined;
+	}
+
+	return Object.fromEntries( userDataFields );
 }

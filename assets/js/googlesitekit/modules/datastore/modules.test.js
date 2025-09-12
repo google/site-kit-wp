@@ -1040,6 +1040,36 @@ describe( 'core/modules modules', () => {
 				);
 			} );
 		} );
+
+		describe( 'receiveInlineModulesData', () => {
+			it( 'requires the inlineModulesData param', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_MODULES )
+						.receiveInlineModulesData();
+				} ).toThrow( 'inlineModulesData is required' );
+			} );
+
+			it( 'receives inlineModulesData and sets it to the state', () => {
+				const mockInlineData = {
+					[ MODULE_SLUG_ANALYTICS_4 ]: {
+						newEvents: [ 'contact' ],
+						lostEvents: [ 'add_to_cart' ],
+					},
+					ads: {
+						supportedConversionEvents: [ 'purchase' ],
+					},
+				};
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveInlineModulesData( mockInlineData );
+
+				expect( store.getState().inlineModulesData ).toEqual(
+					mockInlineData
+				);
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -2383,6 +2413,94 @@ describe( 'core/modules modules', () => {
 				expect(
 					registry.select( CORE_MODULES ).getDetailsLinkURL( slug )
 				).toBe( 'https://example.com/custom-link' );
+			} );
+		} );
+
+		describe( 'getInlineModulesData', () => {
+			const inlineModulesDataVar = '_googlesitekitModulesData';
+
+			afterEach( () => {
+				delete global[ inlineModulesDataVar ];
+			} );
+
+			it( 'should return undefined when the global variable is not set', () => {
+				const inlineData = registry
+					.select( CORE_MODULES )
+					.getInlineModulesData();
+
+				expect( inlineData ).toBeUndefined();
+			} );
+
+			it( 'should return the inline modules data when set via action', () => {
+				const mockData = {
+					[ MODULE_SLUG_ANALYTICS_4 ]: { test: 'data' },
+				};
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveInlineModulesData( mockData );
+
+				const inlineData = registry
+					.select( CORE_MODULES )
+					.getInlineModulesData();
+
+				expect( inlineData ).toEqual( mockData );
+			} );
+		} );
+
+		describe( 'getModuleInlineData', () => {
+			it( 'should return undefined when inline modules data is not loaded', () => {
+				const moduleData = registry
+					.select( CORE_MODULES )
+					.getModuleInlineData( MODULE_SLUG_ANALYTICS_4 );
+
+				expect( moduleData ).toBeUndefined();
+			} );
+
+			it( 'should return module specific data when inline modules data is loaded', () => {
+				const mockData = {
+					[ MODULE_SLUG_ANALYTICS_4 ]: {
+						newEvents: [ 'contact' ],
+						lostEvents: [ 'add_to_cart' ],
+					},
+					ads: {
+						supportedConversionEvents: [ 'purchase' ],
+					},
+				};
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveInlineModulesData( mockData );
+
+				const analyticsData = registry
+					.select( CORE_MODULES )
+					.getModuleInlineData( MODULE_SLUG_ANALYTICS_4 );
+
+				expect( analyticsData ).toEqual(
+					mockData[ MODULE_SLUG_ANALYTICS_4 ]
+				);
+
+				const adsData = registry
+					.select( CORE_MODULES )
+					.getModuleInlineData( 'ads' );
+
+				expect( adsData ).toEqual( mockData.ads );
+			} );
+
+			it( 'should return undefined for non-existent module', () => {
+				const mockData = {
+					[ MODULE_SLUG_ANALYTICS_4 ]: { test: 'data' },
+				};
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveInlineModulesData( mockData );
+
+				const moduleData = registry
+					.select( CORE_MODULES )
+					.getModuleInlineData( 'non-existent-module' );
+
+				expect( moduleData ).toBeUndefined();
 			} );
 		} );
 	} );

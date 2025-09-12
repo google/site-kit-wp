@@ -42,6 +42,7 @@ import {
 import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import ProductIDContributionsNotification from './ProductIDContributionsNotification';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 describe( 'ProductIDContributionsNotification', () => {
 	let registry;
@@ -118,6 +119,33 @@ describe( 'ProductIDContributionsNotification', () => {
 			);
 
 			expect( isActive ).toBe( true );
+		} );
+
+		it( 'should not call the settings endpoint when RRM is not active', async () => {
+			registry.dispatch( CORE_MODULES ).receiveGetModules( [
+				{
+					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+					active: false,
+					connected: false,
+				},
+			] );
+
+			const settingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+			);
+
+			fetchMock.get( settingsEndpoint, {
+				body: {},
+				status: 200,
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
+			expect( isActive ).toBe( false );
 		} );
 	} );
 
