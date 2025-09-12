@@ -41,7 +41,7 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
+                d="M12 13.06l3.712 3.713 1.061-1.06L13.061 12l3.712-3.712-1.06-1.06L12 10.938 8.288 7.227l-1.061 1.06L10.939 12l-3.712 3.712 1.06 1.061L12 13.061z"
               />
             </svg>
           </button>
@@ -186,7 +186,7 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
+                d="M12 13.06l3.712 3.713 1.061-1.06L13.061 12l3.712-3.712-1.06-1.06L12 10.938 8.288 7.227l-1.061 1.06L10.939 12l-3.712 3.712 1.06 1.061L12 13.061z"
               />
             </svg>
           </button>
@@ -331,7 +331,7 @@ exports[`CurrentSurvey should render the completed survey component if all quest
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
+                d="M12 13.06l3.712 3.713 1.061-1.06L13.061 12l3.712-3.712-1.06-1.06L12 10.938 8.288 7.227l-1.061 1.06L10.939 12l-3.712 3.712 1.06 1.061L12 13.061z"
               />
             </svg>
           </button>
@@ -405,7 +405,7 @@ exports[`CurrentSurvey should trigger the first completion when no matching trig
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
+                d="M12 13.06l3.712 3.713 1.061-1.06L13.061 12l3.712-3.712-1.06-1.06L12 10.938 8.288 7.227l-1.061 1.06L10.939 12l-3.712 3.712 1.06 1.061L12 13.061z"
               />
             </svg>
           </button>

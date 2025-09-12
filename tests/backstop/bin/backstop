@@ -18,12 +18,12 @@ BIN_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 ROOT_DIR="$(dirname "$BIN_DIR")/../../"
 
 # Remember to update the version tag in the publish-vrt-docker-image workflow when updating this version.
-VERSION=6.3.25
+VERSION=6.3.25-node22 # node 22 suffix added here as we have updated the image as part of the node update, but have not changed the backstop version.
 
 # Use the GitHub Container Registry image.
 IMAGE=ghcr.io/google/site-kit-wp/vrt:$VERSION
 
-# Run the backstopjs command inside a Docker container.
+# Run the backstopjs command inside a Docker container with an HTTP server for Storybook.
 #
 # The `--pull` flag is used to ensure the docker image used is the correct
 # architecture; if a previous image was pulled on a different architecture,
@@ -32,9 +32,9 @@ docker run --rm --tty \
 	--pull=always \
 	--shm-size=512m \
 	--mount "type=bind,source=$ROOT_DIR,target=/src" \
+	--env STORYBOOK_SERVER_URL=http://localhost:3000/iframe.html?id= \
 	$IMAGE \
-	"$@" \
-	--config=/src/tests/backstop/config.js
+	"$@"
 
 DOCKER_EXIT_CODE=$?
 

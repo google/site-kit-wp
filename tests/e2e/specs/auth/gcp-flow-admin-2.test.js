@@ -54,6 +54,7 @@ describe( 'the set up flow for the second administrator', () => {
 		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
+
 		await setAuthToken();
 		await setSiteVerification();
 		await setSearchConsoleProperty();

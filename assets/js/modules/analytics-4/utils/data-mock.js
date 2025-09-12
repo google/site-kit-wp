@@ -32,7 +32,7 @@ import { map, reduce, take, toArray, mergeMap } from 'rxjs/operators';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { isValidDateString, stringifyObject, stringToDate } from '@/js/util';
 import { isValidDimensionFilters } from './report-validation';
-import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '../../../../../tests/js/utils/zeroReports';
+import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '@/js/util/zero-reports';
 
 export const STRATEGY_CARTESIAN = 'cartesian';
 export const STRATEGY_ZIP = 'zip';
