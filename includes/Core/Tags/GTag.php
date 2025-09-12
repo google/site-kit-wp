@@ -306,11 +306,18 @@ JS;
 	 * @return string
 	 */
 	protected function get_gtg_src( $tag_id ) {
+		$query_args = array(
+			'id' => $tag_id,
+		);
+
+		// Do not add the `s` query arg for Tag Manager tags.
+		// See: https://github.com/google/site-kit-wp/issues/11417#issuecomment-3282223421.
+		if ( ! str_starts_with( $tag_id, 'GTM-' ) ) {
+			$query_args['s'] = '/gtag/js';
+		}
+
 		return add_query_arg(
-			array(
-				'id' => $tag_id,
-				's'  => '/gtag/js',
-			),
+			$query_args,
 			plugins_url( 'gtg/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE )
 		);
 	}
