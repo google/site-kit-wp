@@ -41,12 +41,22 @@ class GTag {
 	 * @var array $tags Array of tag ID's and their configs.
 	 */
 	private $tags = array();
+
 	/**
 	 * Holds an array of gtag commands, their parameters and command positions.
 	 *
 	 * @var array $commands Array of gtag config commands.
 	 */
 	private $commands = array();
+
+	/**
+	 * Extra query args to add to the GTG src URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var array
+	 */
+	private $gtg_src_extra_query_args = array( 's' => '/gtag/js' );
 
 	/**
 	 * Constructor.
@@ -307,9 +317,9 @@ JS;
 	 */
 	protected function get_gtg_src( $tag_id ) {
 		return add_query_arg(
-			array(
-				'id' => $tag_id,
-				's'  => '/gtag/js',
+			array_merge(
+				array( 'id' => $tag_id ),
+				$this->gtg_src_extra_query_args,
 			),
 			plugins_url( 'gtg/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE )
 		);
@@ -344,5 +354,16 @@ JS;
 	 */
 	public static function get_handle_for_tag( $tag_id ): string {
 		return self::HANDLE . "-$tag_id";
+	}
+
+	/**
+	 * Sets extra query args to add to the GTG src URL when using Google tag gateway.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $args Extra query args.
+	 */
+	public function set_gtg_src_extra_query_args( array $args ) {
+		$this->gtg_src_extra_query_args = $args;
 	}
 }
