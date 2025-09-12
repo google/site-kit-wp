@@ -192,7 +192,10 @@ const pageEvents = [];
 // The Jest timeout is increased because these tests are a bit slow
 jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
 // Set default timeout for Puppeteer waits. (Default: 30 sec)
-page.setDefaultTimeout( 5000 );
+// IMPORTANT: timeout increased to 100 sec due to frequent timeouts on GitHub Actions
+// for activatePlugin function after node upgrade to v22. This should be reviewed and
+// reverted as part of the migration to Playwright #11436.
+page.setDefaultTimeout( 100000 );
 // Set default timeout for individual expect-puppeteer assertions. (Default: 1000)
 setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 1000 } );
 

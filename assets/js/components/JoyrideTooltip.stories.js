@@ -36,20 +36,20 @@ DefaultTooltip.args = {
 	target: '.target',
 };
 DefaultTooltip.scenario = {
-	delay: 300,
+	delay: 200, // Slight delays are required to ensure the tooltip is fully rendered even with animations disabled.
 };
 
 export const PlacementTooltip = Template.bind( {} );
 PlacementTooltip.storyName = 'Tooltip with Custom Placement';
 PlacementTooltip.args = {
-	title: 'Tooltip with Top Placement',
-	content: 'This tooltip is positioned at the top of the target element.',
+	title: 'Tooltip with Bottom Placement',
+	content: 'This tooltip is positioned at the bottom of the target element.',
 	dismissLabel: 'Got it',
 	target: '.target',
-	placement: 'top',
+	placement: 'bottom',
 };
 PlacementTooltip.scenario = {
-	delay: 300,
+	delay: 200,
 };
 
 export const MobileModalTooltip = Template.bind( {} );
@@ -65,7 +65,7 @@ MobileModalTooltip.args = {
 	disableOverlay: false,
 };
 MobileModalTooltip.scenario = {
-	delay: 300,
+	delay: 200,
 };
 
 export default {

@@ -48,3 +48,4 @@ export { wpApiFetch } from './wp-api-fetch';
 export * from './console';
 export * from './features';
 export * from './step-and-screenshot';
+export { activatePlugin } from './activate-plugin';

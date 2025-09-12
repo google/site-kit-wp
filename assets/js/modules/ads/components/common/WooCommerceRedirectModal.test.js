@@ -28,6 +28,7 @@ import {
 	provideSiteInfo,
 	provideModules,
 	provideUserCapabilities,
+	provideUserAuthentication,
 	provideModuleRegistrations,
 	act,
 } from '../../../../../../tests/js/test-utils';
@@ -82,6 +83,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		provideModules( registry );
 		provideModuleRegistrations( registry );
 		provideUserCapabilities( registry );
+		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {

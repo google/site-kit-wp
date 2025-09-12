@@ -41,7 +41,7 @@ import {
 	setupAnalytics4GatheringData,
 	widgetDecorators,
 	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
-} from './common-GA4.stories';
+} from './common-GA4-stories';
 import { VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
@@ -113,7 +113,9 @@ ReadyWithActivateAnalyticsCTA.args = {
 	},
 };
 
-ReadyWithActivateAnalyticsCTA.scenario = {};
+ReadyWithActivateAnalyticsCTA.scenario = {
+	delay: 6000, // This extra delay is required to fix unstable VRTs.
+};
 
 export const ReadyWithCompleteAnalyticsActivationCTA = Template.bind( {} );
 ReadyWithCompleteAnalyticsActivationCTA.storyName =
