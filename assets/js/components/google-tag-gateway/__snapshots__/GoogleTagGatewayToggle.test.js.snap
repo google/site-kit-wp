@@ -41,15 +41,6 @@ exports[`GoogleTagGatewayToggle should render in default state 1`] = `
       >
         Google tag gateway for advertisers
       </label>
-      <div
-        class="googlesitekit-google-tag-gateway-toggle__switch-badge"
-      >
-        <span
-          class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
-        >
-          Beta
-        </span>
-      </div>
     </div>
     <p
       class="googlesitekit-module-settings-group__helper-text"
@@ -121,15 +112,6 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
       >
         Google tag gateway for advertisers
       </label>
-      <div
-        class="googlesitekit-google-tag-gateway-toggle__switch-badge"
-      >
-        <span
-          class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
-        >
-          Beta
-        </span>
-      </div>
     </div>
     <p
       class="googlesitekit-module-settings-group__helper-text"
