@@ -243,7 +243,7 @@ class Consent_Mode {
 
 		// The core Consent Mode code is in assets/js/consent-mode/consent-mode.js.
 		// Only code that passes data from PHP to JS should be in this file.
-		printf( "<!-- %s -->\n", esc_html__( 'Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', 'google-site-kit' ) );
+        printf( "<!-- %s -->\n", esc_html__( 'Google tag (gtag.js) consent mode dataLayer added by Site Kit', 'google-site-kit' ) );
 		BC_Functions::wp_print_inline_script_tag(
 			join(
 				"\n",
@@ -256,7 +256,7 @@ class Consent_Mode {
 			),
 			array( 'id' => 'google_gtagjs-js-consent-mode-data-layer' )
 		);
-		printf( "<!-- %s -->\n", esc_html__( 'End Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', 'google-site-kit' ) );
+        printf( "<!-- %s -->\n", esc_html__( 'End Google tag (gtag.js) consent mode dataLayer added by Site Kit', 'google-site-kit' ) );
 	}
 
 	/**

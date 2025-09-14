@@ -98,7 +98,7 @@ export default function SettingsCardConsentMode() {
 
 	return (
 		<Layout
-			title={ __( 'Consent Mode', 'google-site-kit' ) }
+            title={ __( 'Consent mode', 'google-site-kit' ) }
 			badge={
 				isAdsConnected ? (
 					<Badge

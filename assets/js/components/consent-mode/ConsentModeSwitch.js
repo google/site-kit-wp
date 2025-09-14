@@ -134,10 +134,10 @@ export default function ConsentModeSwitch( { loading } ) {
 				{ saveError && <ErrorNotice message={ saveError.message } /> }
 				{ ! loading && isConsentModeEnabled && (
 					<p className="googlesitekit-settings-consent-mode-switch__enabled-notice">
-						{ __(
-							'Site Kit added the necessary code to your tag to comply with Consent Mode.',
-							'google-site-kit'
-						) }
+                        { __(
+                            'Site Kit added the necessary code to your tag to comply with consent mode.',
+                            'google-site-kit'
+                        ) }
 					</p>
 				) }
 				{
