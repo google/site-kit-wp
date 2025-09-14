@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Setting;
 /**
  * Class for Proactive User Engagement settings.
  *
- * @since n.e.x.t
+ * @since 1.161.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Proactive_User_Engagement_Settings extends Setting {
 	/**
 	 * Returns the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.161.0
 	 *
 	 * @return string The type of the setting.
 	 */
@@ -40,7 +40,7 @@ class Proactive_User_Engagement_Settings extends Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.161.0
 	 *
 	 * @return array The default value.
 	 */
@@ -53,7 +53,7 @@ class Proactive_User_Engagement_Settings extends Setting {
 	/**
 	 * Gets the sanitize callback.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.161.0
 	 *
 	 * @return callable The sanitize callback.
 	 */
@@ -72,7 +72,7 @@ class Proactive_User_Engagement_Settings extends Setting {
 	/**
 	 * Checks if proactive user engagement is enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.161.0
 	 *
 	 * @return bool True if proactive user engagement is enabled, false otherwise.
 	 */

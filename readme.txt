@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.8
 Requires PHP:      7.4
-Stable tag:        1.160.1
+Stable tag:        1.161.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,33 +109,28 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.160.1 =
-
-**Fixed**
-
-* Fix bug that could cause errors to appear in the Analytics pie chart when switching to the "Locations" tab. See [#11359](https://github.com/google/site-kit-wp/issues/11359).
-
-= 1.160.0 =
+= 1.161.0 =
 
 **Enhanced**
 
-* Update the Partner Ads Experience script version to `1.1.9`. See [#11283](https://github.com/google/site-kit-wp/issues/11283).
-* Rename the "Enhanced conversion tracking" toggle, the new name is "Plugin conversion tracking". See [#11192](https://github.com/google/site-kit-wp/issues/11192).
-* Add ARIA label to the Recover CTA of the ModuleRecoveryAlert banner. See [#11022](https://github.com/google/site-kit-wp/issues/11022).
-* Track Enhanced Conversions user data for logged in users. See [#11015](https://github.com/google/site-kit-wp/issues/11015).
-* Update paragraph text styling across plugin. See [#10946](https://github.com/google/site-kit-wp/issues/10946).
-* Harmonize heading styles throughout Site Kit. See [#10945](https://github.com/google/site-kit-wp/issues/10945).
-* Add GA event tracking for Reader Revenue Manager block insertion. See [#10334](https://github.com/google/site-kit-wp/issues/10334).
-* Add vertical padding to the **Enable One Tap sign in** toggle, ensuring its interaction states don't overlap adjacent controls. See [#9968](https://github.com/google/site-kit-wp/issues/9968).
-* Remove Ads Conversion ID under Analytics from Site Health information. See [#9960](https://github.com/google/site-kit-wp/issues/9960).
-* Fix the icon, hover and focus styling for the `Checkbox` component. See [#9692](https://github.com/google/site-kit-wp/issues/9692).
-* Scroll down to the "Visitor groups" section when following the Settings links on the Audience Selection Panel and the "no audiences" banner, ensuring the section is visible. See [#8875](https://github.com/google/site-kit-wp/issues/8875).
-* Update styles for survey answers. See [#7591](https://github.com/google/site-kit-wp/issues/7591).
+* Add GTG key metrics tracking. See [#11412](https://github.com/google/site-kit-wp/issues/11412).
+* Update Partner Ads Experience to `1.1.10` and add `'site-kit'` identifier. See [#11399](https://github.com/google/site-kit-wp/issues/11399).
+* Add logo and GA events tracking to the AdSense server notifications. See [#11214](https://github.com/google/site-kit-wp/issues/11214).
+* Add integration for WooCommerce with Enhanced Conversions. See [#11006](https://github.com/google/site-kit-wp/issues/11006).
+* Update background colors of various UI elements to use a consistent, lighter gray. Props 10upsimon. See [#5579](https://github.com/google/site-kit-wp/issues/5579).
+
+**Changed**
+
+* Remove support for Analytics Pivot reports. Props 10upsimon. See [#10298](https://github.com/google/site-kit-wp/issues/10298).
 
 **Fixed**
 
-* Ensure WooCommerce Redirect Modal appears when WooCommerce and Google for WooCommerce plugins are installed. See [#11310](https://github.com/google/site-kit-wp/issues/11310).
-* Fix deprecation errors from appearing when `WP_DEBUG_DISPLAY` is enabled on PHP 8.4+. See [#10883](https://github.com/google/site-kit-wp/issues/10883).
-* Fix bug that allowed buttons to submit multiple times. See [#10837](https://github.com/google/site-kit-wp/issues/10837).
+* Update the Google tag gateway for advertisers `measurement.php` proxy script to the latest version. See [#11389](https://github.com/google/site-kit-wp/issues/11389).
+* Update notification priorities to have more important permission-related notifications have higher priority. See [#11206](https://github.com/google/site-kit-wp/issues/11206).
+* Fix color issues for hX tags created by the `Typography` component. See [#11159](https://github.com/google/site-kit-wp/issues/11159).
+* Fix bug that caused the "Grant permission" button not to appear during failed plugin setup. See [#11063](https://github.com/google/site-kit-wp/issues/11063).
+* Fix a regression that caused the font size of the admin bar data block to appear too small. Props sudhanshugaikwad. See [#11041](https://github.com/google/site-kit-wp/issues/11041).
+* Fix bug that could cause odd error state when answering Key Metrics question about site goals. See [#10645](https://github.com/google/site-kit-wp/issues/10645).
+* Improve/consolidate permissions errors UI when setting up Site Kit. See [#10118](https://github.com/google/site-kit-wp/issues/10118).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

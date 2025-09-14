@@ -80,17 +80,16 @@ export default function SetupForm() {
 			.select( MODULES_SIGN_IN_WITH_GOOGLE )
 			.getClientID();
 
-		if (
-			currentClientID === '' &&
-			global._googlesitekitModulesData?.[
-				MODULE_SLUG_SIGN_IN_WITH_GOOGLE
-			]?.existingClientID
-		) {
-			setExistingClientID(
-				global._googlesitekitModulesData[
-					MODULE_SLUG_SIGN_IN_WITH_GOOGLE
-				].existingClientID
-			);
+		await registry
+			.resolveSelect( MODULES_SIGN_IN_WITH_GOOGLE )
+			.getExistingClientID();
+
+		const existingID = registry
+			.select( MODULES_SIGN_IN_WITH_GOOGLE )
+			.getExistingClientID();
+
+		if ( currentClientID === '' && existingID ) {
+			setExistingClientID( existingID );
 		}
 	} );
 

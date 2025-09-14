@@ -105,6 +105,14 @@ async function checkRequirementsForProductIDNotification(
 	{ select, resolveSelect },
 	requiredPaymentOption
 ) {
+	const readerRevenueManagerActive = select( CORE_MODULES ).isModuleActive(
+		MODULE_SLUG_READER_REVENUE_MANAGER
+	);
+
+	if ( ! readerRevenueManagerActive ) {
+		return false;
+	}
+
 	await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
 
 	const publicationOnboardingState = select(

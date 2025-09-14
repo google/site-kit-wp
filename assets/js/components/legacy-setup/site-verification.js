@@ -90,7 +90,7 @@ class SiteVerification extends Component {
 
 					if ( true === response.verified ) {
 						this.props.siteVerificationSetup( true );
-						return true;
+						return;
 					}
 				} else {
 					await trackEvent(
@@ -103,6 +103,8 @@ class SiteVerification extends Component {
 					loading: false,
 					siteURL: identifier,
 				} );
+
+				return;
 			} catch ( err ) {
 				let message = err.message;
 
