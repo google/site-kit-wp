@@ -13,6 +13,7 @@ namespace Google\Site_Kit;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Remote_Features\Remote_Features_Provider;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\Public_Dashboard;
 
 /**
  * Main class for the plugin.
@@ -185,56 +186,9 @@ final class Plugin {
 				$permissions = new Core\Permissions\Permissions( $this->context, $authentication, $modules, $user_options, $dismissed_items );
 				$permissions->register();
 
-				// TODO: Move this to Core\Util\Public_Dashboard.
 				if ( Feature_Flags::enabled( 'publicDashboard' ) ) {
-					$public_dashboard_permissions = array(
-						Permissions::VIEW_DASHBOARD,
-						Permissions::VIEW_POSTS_INSIGHTS,
-						Permissions::READ_SHARED_MODULE_DATA,
-					);
-
-					add_filter(
-						'map_meta_cap',
-						function ( $caps, $cap ) use ( $public_dashboard_permissions ) {
-							if ( is_user_logged_in() ) {
-								return $caps;
-							}
-
-							if ( in_array( $cap, $public_dashboard_permissions, true ) ) {
-								return array( $cap );
-							}
-
-							return $caps;
-						},
-						20,
-						2
-					);
-
-					add_filter(
-						'user_has_cap',
-						function ( $allcaps ) use ( $public_dashboard_permissions ) {
-							if ( ! is_user_logged_in() ) {
-								foreach ( $public_dashboard_permissions as $permission ) {
-									$allcaps[ $permission ] = true;
-								}
-							}
-
-							return $allcaps;
-						},
-						20,
-						1
-					);
-
-					add_action(
-						'wp_enqueue_scripts',
-						function () use ( $assets, $modules ) {
-							if ( get_query_var( 'custom_page' ) === 'google-site-kit' ) {
-								$assets->enqueue_asset( 'googlesitekit-public-dashboard' );
-								$assets->enqueue_asset( 'googlesitekit-admin-css' );
-								$modules->enqueue_assets();
-							}
-						}
-					);
+					$public_dashboard = new Public_Dashboard( $assets, $modules );
+					$public_dashboard->register();
 				}
 
 				$nonces = new Core\Nonces\Nonces( $this->context );
