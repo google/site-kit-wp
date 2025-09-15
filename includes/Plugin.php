@@ -184,6 +184,19 @@ final class Plugin {
 				$permissions = new Core\Permissions\Permissions( $this->context, $authentication, $modules, $user_options, $dismissed_items );
 				$permissions->register();
 
+				if ( Feature_Flags::enabled( 'publicDashboard' ) ) {
+					add_action(
+						'wp_enqueue_scripts',
+						function () use ( $assets, $modules ) {
+							if ( get_query_var( 'custom_page' ) === 'google-site-kit' ) {
+								$assets->enqueue_asset( 'googlesitekit-public-dashboard' );
+								$assets->enqueue_asset( 'googlesitekit-admin-css' );
+								$modules->enqueue_assets();
+							}
+						}
+					);
+				}
+
 				$nonces = new Core\Nonces\Nonces( $this->context );
 				$nonces->register();
 
