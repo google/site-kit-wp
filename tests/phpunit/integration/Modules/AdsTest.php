@@ -60,12 +60,14 @@ class AdsTest extends TestCase {
 		remove_all_actions( 'template_redirect' );
 		remove_all_filters( 'googlesitekit_inline_modules_data' );
 		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+		remove_all_filters( 'googlesitekit_feature_metrics' );
 
 		$this->ads->register();
 
 		$this->assertTrue( has_action( 'template_redirect' ), 'template_redirect action should be registered.' );
 		$this->assertTrue( has_filter( 'googlesitekit_inline_modules_data' ), 'inline_modules_data filter should be registered.' );
 		$this->assertTrue( has_filter( 'googlesitekit_ads_measurement_connection_checks' ), 'ads_measurement_connection_checks filter should be registered.' );
+		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'googlesitekit_feature_metrics filter should be registered.' );
 	}
 
 	public function test_register__googlesitekit_ads_measurement_connection_checks() {
