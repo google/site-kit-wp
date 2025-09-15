@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit;
 
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Remote_Features\Remote_Features_Provider;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 
@@ -184,7 +185,34 @@ final class Plugin {
 				$permissions = new Core\Permissions\Permissions( $this->context, $authentication, $modules, $user_options, $dismissed_items );
 				$permissions->register();
 
+				// TODO: Move this to Core\Util\Public_Dashboard.
 				if ( Feature_Flags::enabled( 'publicDashboard' ) ) {
+					add_filter(
+						'map_meta_cap',
+						function ( $caps, $cap ) {
+							if ( Permissions::VIEW_DASHBOARD === $cap && ! is_user_logged_in() ) {
+								return array( Permissions::VIEW_DASHBOARD );
+							}
+
+							return $caps;
+						},
+						20,
+						2
+					);
+
+					add_filter(
+						'user_has_cap',
+						function ( $allcaps ) {
+							if ( ! is_user_logged_in() ) {
+								$allcaps[ Permissions::VIEW_DASHBOARD ] = true;
+							}
+
+							return $allcaps;
+						},
+						20,
+						1
+					);
+
 					add_action(
 						'wp_enqueue_scripts',
 						function () use ( $assets, $modules ) {
