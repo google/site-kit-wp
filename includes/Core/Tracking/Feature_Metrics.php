@@ -26,18 +26,18 @@ class Feature_Metrics {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		/**
-		 * Filters internal feature metrics data sent with the body of a remote-controlled features request.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param array $feature_metrics Feature metrics tracking data to be sent with the features request.
-		 */
-		$feature_metrics = apply_filters( 'googlesitekit_feature_metrics', array() );
-
 		add_filter(
 			'googlesitekit_features_request_data',
-			function ( $body ) use ( $feature_metrics ) {
+			function ( $body ) {
+				/**
+				 * Filters internal feature metrics data sent with the body of a remote-controlled features request.
+				 *
+				 * @since n.e.x.t
+				 *
+				 * @param array $feature_metrics Feature metrics tracking data to be sent with the features request.
+				 */
+				$feature_metrics = apply_filters( 'googlesitekit_feature_metrics', array() );
+
 				$body['feature_metrics'] = $feature_metrics;
 				return $body;
 			}
