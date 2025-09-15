@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit;
 
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Remote_Features\Remote_Features_Provider;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Public_Dashboard;
