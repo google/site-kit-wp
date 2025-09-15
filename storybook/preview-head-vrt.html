@@ -13,39 +13,27 @@
 	} );
 </script>
 <style>
-	#root *,
-	#root *::before,
-	#root *::after {
-		transition-duration: 0ms !important;
-	}
-
-	/* We only want to override animation-duration if _not_ pausing the animations via the .googlesitekit-vrt-animation-paused class. */
-	#root:not( :has( .googlesitekit-vrt-animation-paused ) ) *,
-	#root:not( :has( .googlesitekit-vrt-animation-paused ) ) *::before,
-	#root:not( :has( .googlesitekit-vrt-animation-paused ) ) *::after {
-		animation-duration: 0ms !important;
-	}
-
-	/**
-	 * While the rules above set animation-duration to 0ms for VRT builds, there can be times where this is not appropriate.
-	 * For example if there is a constant animation in a story, it results in the animation running constantly at top speed and the VRT screengrab becomes somewhat undeterministic.
-	 * Instead we can apply the following .googlesitekit-vrt-animation-none class to a story wrapper element to entirely disable animations for a given story.
-	 */
-	#root .googlesitekit-vrt-animation-none *,
-	#root .googlesitekit-vrt-animation-none *::before,
-	#root .googlesitekit-vrt-animation-none *::after {
+	/* Disable animations/transitions by default in VRT unless a paused wrapper is present. */
+	#storybook-root:not( :has( .googlesitekit-vrt-animation-paused ) ) *,
+	#storybook-root:not( :has( .googlesitekit-vrt-animation-paused ) ) *::before,
+	#storybook-root:not( :has( .googlesitekit-vrt-animation-paused ) ) *::after {
 		animation: none !important;
 		transition: none !important;
 	}
 
 	/**
-	 * An alternative scenario is that the VRT scenario does not render correctly unless the animation is active but paused.
-	 * In this case, we can apply the following .googlesitekit-vrt-animation-paused class to a story wrapper element to pause animations for a given story.
-	 * Please note, this only applies to animations and not transitions which don't have an equivalent paused state.
+	 * If a story needs animations active but paused, wrap with:
+	 *   .googlesitekit-vrt-animation-paused
+	 * This only affects animations (not transitions).
 	 */
-	#root .googlesitekit-vrt-animation-paused *,
-	#root .googlesitekit-vrt-animation-paused *::before,
-	#root .googlesitekit-vrt-animation-paused *::after {
+	#storybook-root .googlesitekit-vrt-animation-paused *,
+	#storybook-root .googlesitekit-vrt-animation-paused *::before,
+	#storybook-root .googlesitekit-vrt-animation-paused *::after {
 		animation-play-state: paused !important;
+	}
+
+	/* Disable Joyride animations. These are not covered by the above CSS because they render outside of #storybook-root. */
+	#react-joyride-step-0 div.__floater.__floater__open {
+		transition: none !important;
 	}
 </style>

@@ -18,7 +18,16 @@ module.exports = {
 	transform: {
 		'^.+\\.[jt]sx?$': path.join( __dirname, 'babel-transform' ),
 	},
-	transformIgnorePatterns: [ 'node_modules' ],
+	// Exclude uuid package from transformation ignore patterns because it uses ESM syntax
+	// that needs to be transformed by Babel for Jest to process correctly.
+	transformIgnorePatterns: [ '/node_modules/(?!(uuid)/)' ],
+
+	// Remap @wordpress/e2e-test-utils to our proxy so we can override activatePlugin with tracing.
+	moduleNameMapper: {
+		'^@wordpress/e2e-test-utils$':
+			'<rootDir>/utils/e2e-test-utils-proxy.js',
+	},
+
 	testPathIgnorePatterns: [ '.git', 'node_modules' ],
 	verbose: true,
 };
