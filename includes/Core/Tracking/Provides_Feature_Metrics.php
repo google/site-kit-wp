@@ -1,0 +1,31 @@
+<?php
+/**
+ * Interface Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics
+ *
+ * @package   Google\Site_Kit\Core\Tracking
+ * @copyright 2025 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
+
+namespace Google\Site_Kit\Core\Tracking;
+
+/**
+ * Interface for any feature that has metrics to be tracked via the
+ * `site-management/features` endpoint.
+ *
+ * @since n.e.x.t
+ * @access private
+ * @ignore
+ */
+interface Provides_Feature_Metrics {
+
+	/**
+	 * Gets feature metrics to be tracked.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of Google OAuth scopes.
+	 */
+	public function get_feature_metrics();
+}
