@@ -25,7 +25,8 @@ interface Provides_Feature_Metrics {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array List of Google OAuth scopes.
+	 * @return array Feature metrics tracking data to be tracked via the
+	 * `site-management/features` endpoint.
 	 */
 	public function get_feature_metrics();
 }
