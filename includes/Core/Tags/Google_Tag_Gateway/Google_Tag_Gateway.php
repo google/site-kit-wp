@@ -90,10 +90,9 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_M
 		$this->google_tag_gateway_settings->register();
 		$this->rest_controller->register();
 		$this->cron->register();
+		$this->register_feature_metrics();
 
 		add_action( 'admin_init', fn () => $this->on_admin_init() );
-
-		$this->register_feature_metrics();
 	}
 
 	/**
