@@ -57,4 +57,88 @@ class Google_Tag_GatewayTest extends TestCase {
 
 		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
 	}
+
+	/**
+	 * @dataProvider data_feature_metrics_settings
+	 *
+	 * @param array $settings               Settings to set.
+	 * @param array $expected_feature_metrics Expected feature metrics.
+	 * @param string $message                Message for the assertion.
+	 */
+	public function test_get_feature_metrics( $settings, $expected_feature_metrics, $message ) {
+		$this->settings->set( $settings );
+		$feature_metrics = $this->google_tag_gateway->get_feature_metrics();
+		$this->assertEquals( $expected_feature_metrics, $feature_metrics, $message );
+	}
+
+	public function data_feature_metrics_settings() {
+		return array(
+			'disabled'                                     => array(
+				array(),
+				array(
+					'gtg_enabled' => false,
+					'gtg_healthy' => '',
+				),
+				'When settings are not set, gtg_enabled should be false and gtg_healthy should be an empty string.',
+			),
+			'disabled but healthy and accessible'          => array(
+				array(
+					'isEnabled'             => false,
+					'isGTGHealthy'          => true,
+					'isScriptAccessEnabled' => true,
+				),
+				array(
+					'gtg_enabled' => false,
+					'gtg_healthy' => '',
+				),
+				'When GTG is disabled, gtg_enabled should be false and gtg_healthy should be an empty string.',
+			),
+			'enabled, healthy but not accessible'          => array(
+				array(
+					'isEnabled'             => true,
+					'isGTGHealthy'          => true,
+					'isScriptAccessEnabled' => false,
+				),
+				array(
+					'gtg_enabled' => true,
+					'gtg_healthy' => 'no',
+				),
+				'When GTG is enabled, healthy but not accessible, gtg_healthy should be "no".',
+			),
+			'enabled, not healthy and not accessible'      => array(
+				array(
+					'isEnabled'             => true,
+					'isGTGHealthy'          => false,
+					'isScriptAccessEnabled' => false,
+				),
+				array(
+					'gtg_enabled' => true,
+					'gtg_healthy' => 'no',
+				),
+				'When GTG is enabled, not healthy and not accessible, gtg_healthy should be "no".',
+			),
+			'enabled but no healthy and accessible values' => array(
+				array(
+					'isEnabled' => true,
+				),
+				array(
+					'gtg_enabled' => true,
+					'gtg_healthy' => 'no',
+				),
+				'When GTG is enabled but health and accessibility are not set, gtg_healthy should be "no".',
+			),
+			'enabled, healthy and accessible'              => array(
+				array(
+					'isEnabled'             => true,
+					'isGTGHealthy'          => true,
+					'isScriptAccessEnabled' => true,
+				),
+				array(
+					'gtg_enabled' => true,
+					'gtg_healthy' => 'yes',
+				),
+				'When GTG is enabled, healthy and accessible, gtg_healthy should be "yes".',
+			),
+		);
+	}
 }
