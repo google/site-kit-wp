@@ -42,9 +42,6 @@ class Google_Tag_GatewayTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
 		$this->context            = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options                  = new Options( $this->context );
 		$this->google_tag_gateway = new Google_Tag_Gateway( $this->context );
