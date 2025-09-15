@@ -20,6 +20,13 @@ class Feature_MetricsTest extends TestCase {
 
 	public function test_register() {
 		remove_all_filters( 'googlesitekit_features_request_data' );
+		add_filter(
+			'googlesitekit_feature_metrics',
+			function ( $metrics ) {
+				$metrics['test_metric_key'] = 'test_metric_value';
+				return $metrics;
+			}
+		);
 
 		$feature_metrics = new Feature_Metrics();
 
@@ -28,5 +35,15 @@ class Feature_MetricsTest extends TestCase {
 		$feature_metrics->register();
 
 		$this->assertTrue( has_filter( 'googlesitekit_features_request_data' ), 'The filter for features request data should be registered.' );
+		$features_request_data = apply_filters( 'googlesitekit_features_request_data', array() );
+		$this->assertEquals(
+			array(
+				'feature_metrics' => array(
+					'test_metric_key' => 'test_metric_value',
+				),
+			),
+			$features_request_data,
+			'The features request data should include feature metrics.'
+		);
 	}
 }
