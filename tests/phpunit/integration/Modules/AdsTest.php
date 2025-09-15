@@ -82,6 +82,40 @@ class AdsTest extends TestCase {
 		);
 	}
 
+	public function test_register__feature_metrics() {
+		remove_all_filters( 'googlesitekit_feature_metrics' );
+
+		$this->assertFalse( has_filter( 'googlesitekit_feature_metrics' ), 'There should be no filter for features metrics initially.' );
+
+		$this->ads->register();
+		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
+
+		$expected_feature_metrics = array(
+			'ads_connection' => '',
+		);
+		$feature_metrics          = apply_filters( 'googlesitekit_feature_metrics', array() );
+		$this->assertEquals( $expected_feature_metrics, $feature_metrics, 'Feature metric for ads_connection should be blank when Ads is not connected.' );
+
+		$this->ads->get_settings()->merge(
+			array( 'conversionID' => 'AW-123456789' )
+		);
+		$expected_feature_metrics = array(
+			'ads_connection' => 'manual',
+		);
+		$feature_metrics          = apply_filters( 'googlesitekit_feature_metrics', array() );
+		$this->assertEquals( $expected_feature_metrics, $feature_metrics, 'Feature metric for ads_connection should be manual when conversionID is set.' );
+
+		self::enable_feature( 'adsPax' );
+		$this->ads->get_settings()->merge(
+			array( 'paxConversionID' => 'AW-123456789' )
+		);
+		$expected_feature_metrics = array(
+			'ads_connection' => 'pax',
+		);
+		$feature_metrics          = apply_filters( 'googlesitekit_feature_metrics', array() );
+		$this->assertEquals( $expected_feature_metrics, $feature_metrics, 'Feature metric for ads_connection should be pax when paxConversionID is set and adsPax feature flag is enabled.' );
+	}
+
 	public function test_is_connected__when_ads_conversion_id_is_set() {
 		$this->assertFalse( $this->ads->is_connected(), 'Ads module should not be connected without conversion ID.' );
 
