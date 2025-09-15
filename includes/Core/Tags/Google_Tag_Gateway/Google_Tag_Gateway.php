@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Cron;
+use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -24,7 +25,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * @access private
  * @ignore
  */
-class Google_Tag_Gateway implements Module_With_Debug_Fields {
+class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_Metrics {
 	use Method_Proxy_Trait;
 
 	/**
@@ -104,20 +105,18 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields {
 	}
 
 	/**
-	 * Gets an array of internal metrics.
+	 * Gets an array of internal feature metrics.
 	 *
-	 * @since 1.161.0
+	 * @since n.e.x.t
 	 *
 	 * @return array
 	 */
-	private function get_internal_metrics() {
+	public function get_feature_metrics() {
 		$settings = $this->google_tag_gateway_settings->get();
 
 		return array(
-			'google_tag_gateway' => array(
-				'gtg_enabled' => (bool) $settings['isEnabled'],
-				'gtg_healthy' => $this->parse_health_check_internal_metric( $settings['isGTGHealthy'] ),
-			),
+			'gtg_enabled' => (bool) $settings['isEnabled'],
+			'gtg_healthy' => $this->parse_health_check_internal_metric( $settings['isGTGHealthy'] ),
 		);
 	}
 
