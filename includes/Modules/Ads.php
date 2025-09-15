@@ -111,6 +111,8 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	public function register() {
 		$this->register_scopes_hook();
 		$this->register_inline_data();
+		$this->register_feature_metrics();
+
 		// Ads tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 		add_filter(
@@ -127,8 +129,6 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 			$enhanced_conversions = new Enhanced_Conversions();
 			$enhanced_conversions->register();
 		}
-
-		$this->register_feature_metrics();
 	}
 
 	/**
