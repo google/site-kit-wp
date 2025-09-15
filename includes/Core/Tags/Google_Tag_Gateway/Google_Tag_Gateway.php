@@ -90,18 +90,6 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_M
 		$this->cron->register();
 
 		add_action( 'admin_init', fn () => $this->on_admin_init() );
-
-		add_filter(
-			'googlesitekit_features_request_data',
-			function ( $body ) {
-				$body['feature_metrics'] = array_merge(
-					$body['feature_metrics'] ?? array(),
-					$this->get_internal_metrics()
-				);
-
-				return $body;
-			}
-		);
 	}
 
 	/**
