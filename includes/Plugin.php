@@ -187,11 +187,21 @@ final class Plugin {
 
 				// TODO: Move this to Core\Util\Public_Dashboard.
 				if ( Feature_Flags::enabled( 'publicDashboard' ) ) {
+					$public_dashboard_permissions = array(
+						Permissions::VIEW_DASHBOARD,
+						Permissions::VIEW_POSTS_INSIGHTS,
+						Permissions::READ_SHARED_MODULE_DATA,
+					);
+
 					add_filter(
 						'map_meta_cap',
-						function ( $caps, $cap ) {
-							if ( Permissions::VIEW_DASHBOARD === $cap && ! is_user_logged_in() ) {
-								return array( Permissions::VIEW_DASHBOARD );
+						function ( $caps, $cap ) use ( $public_dashboard_permissions ) {
+							if ( is_user_logged_in() ) {
+								return $caps;
+							}
+
+							if ( in_array( $cap, $public_dashboard_permissions, true ) ) {
+								return array( $cap );
 							}
 
 							return $caps;
@@ -202,9 +212,11 @@ final class Plugin {
 
 					add_filter(
 						'user_has_cap',
-						function ( $allcaps ) {
+						function ( $allcaps ) use ( $public_dashboard_permissions ) {
 							if ( ! is_user_logged_in() ) {
-								$allcaps[ Permissions::VIEW_DASHBOARD ] = true;
+								foreach ( $public_dashboard_permissions as $permission ) {
+									$allcaps[ $permission ] = true;
+								}
 							}
 
 							return $allcaps;
