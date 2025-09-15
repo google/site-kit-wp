@@ -22,33 +22,41 @@ class Easy_Digital_DownloadsTest extends TestCase {
 	 *
 	 * @var Easy_Digital_Downloads
 	 */
-	private $contactform;
+	private $edd;
 
 	public function set_up() {
 		parent::set_up();
-		$this->contactform = new Easy_Digital_Downloads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->edd = new Easy_Digital_Downloads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
 	/**
 	 * @runInSeparateProcess
 	 */
 	public function test_is_active() {
-		$this->assertFalse( $this->contactform->is_active() );
+		$this->assertFalse( $this->edd->is_active() );
 		define( 'EDD_VERSION', 1 );
-		$this->assertTrue( $this->contactform->is_active() );
+		$this->assertTrue( $this->edd->is_active() );
 	}
 
-	public function test_get_event_names() {
-		$events = $this->contactform->get_event_names();
+	public function test_get_event_names_with_gtag_disabled() {
+		$events = $this->edd->get_event_names();
 		$this->assertCount( 1, $events );
 		$this->assertEquals( 'add_to_cart', $events[0] );
 	}
+
+	public function test_get_event_names_with_gtag_enabled() {
+		$this->enable_feature( 'gtagUserData' );
+		$events = $this->edd->get_event_names();
+		$this->assertCount( 2, $events );
+		$this->assertEquals( array( 'add_to_cart', 'purchase' ), $events );
+	}
+
 
 	public function test_register_script() {
 		$handle = 'googlesitekit-events-provider-' . Easy_Digital_Downloads::CONVERSION_EVENT_PROVIDER_SLUG;
 		$this->assertFalse( wp_script_is( $handle, 'registered' ) );
 
-		$script = $this->contactform->register_script();
+		$script = $this->edd->register_script();
 		$this->assertInstanceOf( Script::class, $script );
 		$this->assertTrue( wp_script_is( $handle, 'registered' ) );
 	}
