@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Cron;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
@@ -27,6 +28,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  */
 class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_Metrics {
 	use Method_Proxy_Trait;
+	use Feature_Metrics_Trait;
 
 	/**
 	 * Context instance.
@@ -90,6 +92,8 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_M
 		$this->cron->register();
 
 		add_action( 'admin_init', fn () => $this->on_admin_init() );
+
+		$this->register_feature_metrics();
 	}
 
 	/**
