@@ -106,30 +106,35 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_M
 		$settings = $this->google_tag_gateway_settings->get();
 
 		return array(
-			'gtg_enabled' => (bool) $settings['isEnabled'],
-			'gtg_healthy' => $this->parse_health_check_internal_metric( $settings['isGTGHealthy'] ),
+			'gtg_enabled' => (bool) isset( $settings['isEnabled'] ) && $settings['isEnabled'],
+			'gtg_healthy' => $this->get_health_check_feature_metric( $settings ),
 		);
 	}
 
 	/**
-	 * Maps the healthcheck setting value to a suitable string
-	 * for internal metrics.
+	 * Maps a combination of GTG settings to a suitable string
+	 * for internal feature metrics tracking.
 	 *
-	 * @since 1.161.0
+	 * @since n.e.x.t
 	 *
-	 * @param mixed $setting_value Setting value.
+	 * @param mixed $settings Settings array.
 	 * @return string
 	 */
-	private function parse_health_check_internal_metric( $setting_value ) {
-		if ( true === $setting_value ) {
+	private function get_health_check_feature_metric( $settings ) {
+		if ( ! isset( $settings['isEnabled'] ) || ! $settings['isEnabled'] ) {
+			return '';
+		}
+
+		if (
+			isset( $settings['isGTGHealthy'] ) &&
+			true === $settings['isGTGHealthy'] &&
+			isset( $settings['isScriptAccessEnabled'] ) &&
+			true === $settings['isScriptAccessEnabled']
+		) {
 			return 'yes';
 		}
 
-		if ( false === $setting_value ) {
-			return 'no';
-		}
-
-		return '';
+		return 'no';
 	}
 
 	/**
