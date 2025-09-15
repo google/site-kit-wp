@@ -70,7 +70,7 @@ const fetchSaveProactiveUserEngagementSettingsStore = createFetchStore( {
 } );
 
 const baseInitialState = {
-	// Holds the PUE settings object, e.g. { enabled: boolean } once loaded.
+	// Holds the Proactive User Engagement settings object, e.g. `{ enabled: boolean }` once loaded.
 	proactiveUserEngagementSettings: undefined,
 };
 
