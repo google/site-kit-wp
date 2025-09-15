@@ -21,6 +21,11 @@
  */
 import {
 	classifyPII,
+	getAddress,
+	getEmail,
+	getPhoneNumber,
+	getUserData,
+	hasPhoneLikePattern,
 	isLikelyEmail,
 	isLikelyPhone,
 	normalizeEmail,
@@ -237,6 +242,241 @@ describe( 'Event Providers Utilities', () => {
 					name: 'quantity',
 				} )
 			).toBe( null );
+		} );
+	} );
+
+	describe( 'hasPhoneLikePattern', () => {
+		it.each( [
+			'123-456-7890',
+			'(123) 456-7890',
+			'+1 (123) 456-7890',
+			'123.456.7890',
+			'+44 20 7946 0958',
+			'9876543210',
+			'+919876543210',
+		] )( 'should detect "%s" as having a phone like pattern', ( input ) => {
+			expect( hasPhoneLikePattern( input ) ).toBe( true );
+		} );
+
+		it.each( [
+			'f1bc311ae4',
+			'123456',
+			'12-34',
+			'++ + + + 1234567',
+			'(xx) 123-4567',
+			'123-abc-4567',
+			'phone: 1234567890',
+			'',
+		] )(
+			'should detect "%s" as not having a phone like pattern',
+			( input ) => {
+				expect( hasPhoneLikePattern( input ) ).toBe( false );
+			}
+		);
+
+		it( 'should allow multiple plus/parentheses/dots/spaces if digits are sufficient', () => {
+			expect( hasPhoneLikePattern( '++(123).456.7890' ) ).toBe( true );
+		} );
+
+		it( 'should reject when non-allowed characters appear even with enough digits', () => {
+			expect( hasPhoneLikePattern( '1234567#' ) ).toBe( false );
+			expect( hasPhoneLikePattern( '1234567x' ) ).toBe( false );
+		} );
+	} );
+
+	describe( 'getAddress', () => {
+		it( 'should return undefined when no name fields are provided', () => {
+			expect( getAddress( [] ) ).toBeUndefined();
+			expect(
+				getAddress( [
+					{ type: PII_TYPE.EMAIL, value: 'test@example.com' },
+					{ type: PII_TYPE.PHONE, value: '1234567890' },
+				] )
+			).toBeUndefined();
+		} );
+
+		it( 'should extract first_name from a single name field', () => {
+			expect(
+				getAddress( [ { type: PII_TYPE.NAME, value: 'john' } ] )
+			).toEqual( {
+				first_name: 'john',
+			} );
+		} );
+
+		it( 'should extract first_name and last_name from a single full name field', () => {
+			expect(
+				getAddress( [ { type: PII_TYPE.NAME, value: 'john doe' } ] )
+			).toEqual( {
+				first_name: 'john',
+				last_name: 'doe',
+			} );
+		} );
+
+		it( 'should handle multiple name parts in last name', () => {
+			expect(
+				getAddress( [
+					{ type: PII_TYPE.NAME, value: 'john doe smith jr' },
+				] )
+			).toEqual( {
+				first_name: 'john',
+				last_name: 'doe smith jr',
+			} );
+		} );
+
+		it( 'should handle multiple separate name fields', () => {
+			expect(
+				getAddress( [
+					{ type: PII_TYPE.NAME, value: 'john' },
+					{ type: PII_TYPE.NAME, value: 'doe' },
+				] )
+			).toEqual( {
+				first_name: 'john',
+				last_name: 'doe',
+			} );
+		} );
+
+		it( 'should handle multiple separate name fields with more than 2 names', () => {
+			expect(
+				getAddress( [
+					{ type: PII_TYPE.NAME, value: 'john' },
+					{ type: PII_TYPE.NAME, value: 'michael' },
+					{ type: PII_TYPE.NAME, value: 'doe' },
+				] )
+			).toEqual( {
+				first_name: 'john',
+				last_name: 'michael doe',
+			} );
+		} );
+	} );
+
+	describe( 'getEmail', () => {
+		it( 'should return undefined when no email field is provided', () => {
+			expect( getEmail( [] ) ).toBeUndefined();
+			expect(
+				getEmail( [
+					{ type: PII_TYPE.NAME, value: 'john doe' },
+					{ type: PII_TYPE.PHONE, value: '1234567890' },
+				] )
+			).toBeUndefined();
+		} );
+
+		it( 'should extract email from fields', () => {
+			expect(
+				getEmail( [
+					{ type: PII_TYPE.EMAIL, value: 'test@example.com' },
+					{ type: PII_TYPE.NAME, value: 'john doe' },
+				] )
+			).toBe( 'test@example.com' );
+		} );
+
+		it( 'should return the first email when multiple emails exist', () => {
+			expect(
+				getEmail( [
+					{ type: PII_TYPE.EMAIL, value: 'first@example.com' },
+					{ type: PII_TYPE.EMAIL, value: 'second@example.com' },
+				] )
+			).toBe( 'first@example.com' );
+		} );
+	} );
+
+	describe( 'getPhoneNumber', () => {
+		it( 'should return undefined when no phone field is provided', () => {
+			expect( getPhoneNumber( [] ) ).toBeUndefined();
+			expect(
+				getPhoneNumber( [
+					{ type: PII_TYPE.NAME, value: 'john doe' },
+					{ type: PII_TYPE.EMAIL, value: 'test@example.com' },
+				] )
+			).toBeUndefined();
+		} );
+
+		it( 'should extract phone number from fields', () => {
+			expect(
+				getPhoneNumber( [
+					{ type: PII_TYPE.PHONE, value: '1234567890' },
+					{ type: PII_TYPE.NAME, value: 'john doe' },
+				] )
+			).toBe( '1234567890' );
+		} );
+
+		it( 'should return the first phone number when multiple phone numbers exist', () => {
+			expect(
+				getPhoneNumber( [
+					{ type: PII_TYPE.PHONE, value: '1234567890' },
+					{ type: PII_TYPE.PHONE, value: '+15551234567' },
+				] )
+			).toBe( '1234567890' );
+		} );
+	} );
+
+	describe( 'getUserData', () => {
+		it( 'should return undefined when no PII fields are provided', () => {
+			expect( getUserData( [] ) ).toBeUndefined();
+		} );
+
+		it( 'should return object with only available PII fields', () => {
+			expect(
+				getUserData( [
+					{ type: PII_TYPE.EMAIL, value: 'test@example.com' },
+				] )
+			).toEqual( {
+				email: 'test@example.com',
+			} );
+
+			expect(
+				getUserData( [ { type: PII_TYPE.PHONE, value: '1234567890' } ] )
+			).toEqual( {
+				phone_number: '1234567890',
+			} );
+
+			expect(
+				getUserData( [ { type: PII_TYPE.NAME, value: 'john doe' } ] )
+			).toEqual( {
+				address: {
+					first_name: 'john',
+					last_name: 'doe',
+				},
+			} );
+		} );
+
+		it( 'should return object with all available PII fields', () => {
+			expect(
+				getUserData( [
+					{ type: PII_TYPE.EMAIL, value: 'test@example.com' },
+					{ type: PII_TYPE.PHONE, value: '1234567890' },
+					{ type: PII_TYPE.NAME, value: 'john doe' },
+				] )
+			).toEqual( {
+				address: {
+					first_name: 'john',
+					last_name: 'doe',
+				},
+				email: 'test@example.com',
+				phone_number: '1234567890',
+			} );
+		} );
+
+		it( 'should handle mixed data correctly', () => {
+			expect(
+				getUserData( [
+					{ type: PII_TYPE.EMAIL, value: 'john@example.com' },
+					{ type: PII_TYPE.NAME, value: 'john' },
+					{ type: PII_TYPE.NAME, value: 'smith' },
+					{ type: 'other', value: 'non-pii-data' },
+				] )
+			).toEqual( {
+				address: {
+					first_name: 'john',
+					last_name: 'smith',
+				},
+				email: 'john@example.com',
+			} );
+		} );
+
+		it( 'should return undefined if no user data could be extracted', () => {
+			expect(
+				getUserData( [ { type: 'other', value: 'non-pii-data' } ] )
+			).toBeUndefined();
 		} );
 	} );
 } );

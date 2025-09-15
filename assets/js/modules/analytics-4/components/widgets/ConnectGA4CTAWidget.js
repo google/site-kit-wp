@@ -110,6 +110,7 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 		}
 
 		activateAnalytics();
+		return null;
 	}, [ activateAnalytics, completeAnalyticsActivation, isAnalyticsActive ] );
 
 	const intersectionEntry = useIntersection( trackingRef, {
@@ -120,21 +121,15 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
-	const usingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
-
 	useEffect( () => {
 		if ( ! inView || hasBeenInView ) {
 			return;
 		}
 
-		if ( usingProxy ) {
-			triggerSurvey( 'view_kmw_setup_cta', { ttl: WEEK_IN_SECONDS } );
-		}
+		triggerSurvey( 'view_kmw_setup_cta', { ttl: WEEK_IN_SECONDS } );
 
 		setHasBeenInView( true );
-	}, [ inView, hasBeenInView, usingProxy, triggerSurvey ] );
+	}, [ inView, hasBeenInView, triggerSurvey ] );
 
 	const [ inProgress, setInProgress ] = useState( false );
 
