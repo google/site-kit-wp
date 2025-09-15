@@ -24,7 +24,7 @@ trait Feature_Metrics_Trait {
 			'googlesitekit_feature_metrics',
 			function ( $feature_metrics ) {
 				$feature_metrics = array_merge(
-					$feature_metrics ?? array(),
+					is_array( $feature_metrics ) ? $feature_metrics : array(),
 					$this->get_feature_metrics()
 				);
 
