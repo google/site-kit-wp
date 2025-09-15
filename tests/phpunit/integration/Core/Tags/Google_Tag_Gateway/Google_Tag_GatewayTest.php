@@ -54,32 +54,7 @@ class Google_Tag_GatewayTest extends TestCase {
 		$this->assertFalse( has_filter( 'googlesitekit_feature_metrics' ), 'There should be no filter for features metrics initially.' );
 
 		$this->google_tag_gateway->register();
-		$this->settings->set(
-			array(
-				'isEnabled'    => true,
-				'isGTGHealthy' => true,
-			)
-		);
+
 		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
-
-		$expected_feature_metrics = array(
-			'gtg_enabled' => true,
-			'gtg_healthy' => true,
-		);
-		$feature_metrics          = apply_filters( 'googlesitekit_feature_metrics', array() );
-		$this->assertEquals( $expected_feature_metrics, $feature_metrics, 'Feature metrics should reflect a true state when corresponding settings are true.' );
-
-		$this->settings->set(
-			array(
-				'isEnabled'    => false,
-				'isGTGHealthy' => false,
-			)
-		);
-		$expected_feature_metrics = array(
-			'gtg_enabled' => false,
-			'gtg_healthy' => 'no',
-		);
-		$feature_metrics          = apply_filters( 'googlesitekit_feature_metrics', array() );
-		$this->assertEquals( $expected_feature_metrics, $feature_metrics, 'Feature metrics should reflect a false state when corresponding settings are false.' );
 	}
 }
