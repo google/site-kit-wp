@@ -51,6 +51,7 @@ use Google\Site_Kit\Modules\Ads\AMP_Tag;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 use Google\Site_Kit\Core\Modules\Module_With_Inline_Data;
 use Google\Site_Kit\Core\Modules\Module_With_Inline_Data_Trait;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 
 /**
@@ -67,6 +68,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	use Module_With_Tag_Trait;
 	use Method_Proxy_Trait;
 	use Module_With_Inline_Data_Trait;
+	use Feature_Metrics_Trait;
 
 	/**
 	 * Module slug name.
@@ -125,6 +127,8 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 			$enhanced_conversions = new Enhanced_Conversions();
 			$enhanced_conversions->register();
 		}
+
+		$this->register_feature_metrics();
 	}
 
 	/**
