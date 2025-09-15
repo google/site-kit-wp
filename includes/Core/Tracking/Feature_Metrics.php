@@ -10,12 +10,6 @@
 
 namespace Google\Site_Kit\Core\Tracking;
 
-use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Admin\Screen;
-use Google\Site_Kit\Core\Admin\Screens;
-use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-
 /**
  * Class managing the collection of internal site-wide feature
  * metrics for tracking via the `site-management/features` endpoint.
