@@ -38,7 +38,6 @@ import P from '@/js/components/Typography/P';
 import SettingsStatuses from '@/js/components/settings/SettingsStatuses';
 import { useFeature } from '@/js/hooks/useFeature';
 
-/* eslint complexity: [ "error", 16 ] */
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccountID()
@@ -76,14 +75,30 @@ export default function SettingsView() {
 		} )
 	);
 
-	const showGoogleTagGatewayStatus = useFeature( 'googleTagGateway' );
-
-	const googleTagGatewayEnabled = useSelect(
-		( select ) =>
-			select( CORE_SITE ).isGoogleTagGatewayEnabled() &&
-			select( CORE_SITE ).isGTGHealthy() &&
-			select( CORE_SITE ).isScriptAccessEnabled()
-	);
+	const googleTagGatewayEnabled = useFeature( 'googleTagGateway' );
+	const googleTagGatewayStatuses = useSelect( ( select ) => {
+		if ( ! googleTagGatewayEnabled ) {
+			return [];
+		}
+		const {
+			isGoogleTagGatewayEnabled,
+			isGTGHealthy,
+			isScriptAccessEnabled,
+		} = select( CORE_SITE );
+		const status =
+			isGoogleTagGatewayEnabled() &&
+			isGTGHealthy() &&
+			isScriptAccessEnabled();
+		return [
+			{
+				label: __(
+					'Google tag gateway for advertisers',
+					'google-site-kit'
+				),
+				status,
+			},
+		];
+	} );
 
 	return (
 		<Fragment>
@@ -276,19 +291,8 @@ export default function SettingsView() {
 					) }
 				</div>
 			</div>
-			{ showGoogleTagGatewayStatus && (
-				<SettingsStatuses
-					statuses={ [
-						{
-							label: __(
-								'Google tag gateway for advertisers',
-								'google-site-kit'
-							),
-							status: googleTagGatewayEnabled,
-						},
-					] }
-				/>
-			) }
+
+			<SettingsStatuses statuses={ googleTagGatewayStatuses } />
 		</Fragment>
 	);
 }
