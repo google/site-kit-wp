@@ -429,35 +429,48 @@ class AdsTest extends TestCase {
 		return $this->ads;
 	}
 
-	public function test_get_feature_metrics__not_connected() {
-		$expected_feature_metrics = array(
-			'ads_connection' => '',
-		);
-		$feature_metrics          = $this->ads->get_feature_metrics();
-		$this->assertEquals( $expected_feature_metrics, $feature_metrics, 'Feature metric for ads_connection should be blank when Ads is not connected.' );
+	/**
+	 * @dataProvider data_get_feature_metrics
+	 */
+	public function test_get_feature_metrics( $settings, $feature_flag, $expected_feature_metrics, $message ) {
+		if ( $feature_flag ) {
+			self::enable_feature( $feature_flag );
+		}
+
+		if ( ! empty( $settings ) ) {
+			$this->ads->get_settings()->merge( $settings );
+		}
+
+		$feature_metrics = $this->ads->get_feature_metrics();
+		$this->assertEquals( $expected_feature_metrics, $feature_metrics, $message );
 	}
 
-	public function test_get_feature_metrics__manual() {
-		$this->ads->get_settings()->merge(
-			array( 'conversionID' => 'AW-123456789' )
+	public function data_get_feature_metrics() {
+		return array(
+			'not connected' => array(
+				array(), // settings
+				false,    // feature_flag
+				array(
+					'ads_connection' => '',
+				),
+				'Feature metric for ads_connection should be blank when Ads is not connected.',
+			),
+			'manual'        => array(
+				array( 'conversionID' => 'AW-123456789' ),
+				false,
+				array(
+					'ads_connection' => 'manual',
+				),
+				'Feature metric for ads_connection should be manual when conversionID is set.',
+			),
+			'pax'           => array(
+				array( 'paxConversionID' => 'AW-123456789' ),
+				'adsPax',
+				array(
+					'ads_connection' => 'pax',
+				),
+				'Feature metric for ads_connection should be pax when paxConversionID is set.',
+			),
 		);
-		$expected_feature_metrics = array(
-			'ads_connection' => 'manual',
-		);
-		$feature_metrics          = $this->ads->get_feature_metrics();
-		$this->assertEquals( $expected_feature_metrics, $feature_metrics, 'Feature metric for ads_connection should be manual when conversionID is set.' );
-	}
-
-	public function test_get_feature_metrics__pax() {
-		self::enable_feature( 'adsPax' );
-
-		$this->ads->get_settings()->merge(
-			array( 'paxConversionID' => 'AW-123456789' )
-		);
-		$expected_feature_metrics = array(
-			'ads_connection' => 'pax',
-		);
-		$feature_metrics          = $this->ads->get_feature_metrics();
-		$this->assertEquals( $expected_feature_metrics, $feature_metrics, 'Feature metric for ads_connection should be pax when paxConversionID is set.' );
 	}
 }
