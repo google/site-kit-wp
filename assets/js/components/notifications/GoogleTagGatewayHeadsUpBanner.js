@@ -96,7 +96,7 @@ export default function GoogleTagGatewayHeadsUpBanner( { id, Notification } ) {
 	}, [ viewContext, settingsURL, navigateTo ] );
 
 	const title = __(
-		"An upgrade is coming to your site's measurement",
+		'An upgrade is coming to your site’s measurement',
 		'google-site-kit'
 	);
 
