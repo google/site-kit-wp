@@ -11,8 +11,7 @@
 namespace Google\Site_Kit\Core\Tracking;
 
 /**
- * Class managing the collection of internal site-wide feature
- * metrics for tracking via the `site-management/features` endpoint.
+ * Class managing the collection of site-wide feature metrics.
  *
  * @since n.e.x.t
  * @access private
@@ -30,7 +29,7 @@ class Feature_Metrics {
 			'googlesitekit_features_request_data',
 			function ( $body ) {
 				/**
-				 * Filters internal feature metrics data sent with the body of a remote-controlled features request.
+				 * Filters feature metrics data sent with the features request.
 				 *
 				 * @since n.e.x.t
 				 *
