@@ -91,6 +91,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 			'isEnabled'             => false,
 			'isGTGHealthy'          => null,
 			'isScriptAccessEnabled' => null,
+			'isGTGDefault'          => true,
 		);
 
 		$this->settings->register();
@@ -111,6 +112,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 			'isEnabled'             => false,
 			'isGTGHealthy'          => null,
 			'isScriptAccessEnabled' => null,
+			'isGTGDefault'          => true,
 		);
 
 		$this->settings->register();
@@ -135,12 +137,14 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 			'isEnabled'             => false,
 			'isGTGHealthy'          => null,
 			'isScriptAccessEnabled' => null,
+			'isGTGDefault'          => true,
 		);
 
 		$changed_settings = array(
 			'isEnabled'             => true,
 			'isGTGHealthy'          => null,
 			'isScriptAccessEnabled' => null,
+			'isGTGDefault'          => true,
 		);
 
 		$this->settings->register();
@@ -170,6 +174,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 			'isEnabled'             => false,
 			'isGTGHealthy'          => null,
 			'isScriptAccessEnabled' => null,
+			'isGTGDefault'          => true,
 		);
 
 		$this->settings->register();
@@ -217,14 +222,17 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 
 	public function provider_wrong_settings_data() {
 		return array(
-			'wrong data type'              => array(
+			'wrong data type'                   => array(
 				'{}',
 			),
-			'invalid property'             => array(
+			'invalid property'                  => array(
 				array( 'some-invalid-property' => 'value' ),
 			),
-			'non-boolean enabled property' => array(
+			'non-boolean enabled property'      => array(
 				array( 'isEnabled' => 123 ),
+			),
+			'non-boolean isGTGDefault property' => array(
+				array( 'isGTGDefault' => 'not-boolean' ),
 			),
 		);
 	}
@@ -287,6 +295,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 				'isEnabled'             => false,
 				'isGTGHealthy'          => $expected_settings['isGTGHealthy'],
 				'isScriptAccessEnabled' => $expected_settings['isScriptAccessEnabled'],
+				'isGTGDefault'          => true,
 			),
 			$response->get_data()
 		);
@@ -358,6 +367,88 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 		// This request is made by a user who is not authenticated with dashboard
 		// view permissions and is therefore forbidden.
 		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+	}
+
+	public function test_set_settings_isGTGDefault() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		// Set up the site and admin user to make a successful REST request.
+		$this->grant_manage_options_permission();
+
+		$this->settings->register();
+
+		// Test explicitly setting isGTGDefault to false.
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/gtg-settings' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'settings' => array(
+						'isEnabled'    => false,
+						'isGTGDefault' => false,
+					),
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertEqualSetsWithIndex(
+			array(
+				'isEnabled'             => false,
+				'isGTGHealthy'          => null,
+				'isScriptAccessEnabled' => null,
+				'isGTGDefault'          => false,
+			),
+			$response->get_data()
+		);
+
+		// Test explicitly setting isGTGDefault to true.
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/gtg-settings' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'settings' => array(
+						'isEnabled'    => false,
+						'isGTGDefault' => true,
+					),
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertEqualSetsWithIndex(
+			array(
+				'isEnabled'             => false,
+				'isGTGHealthy'          => null,
+				'isScriptAccessEnabled' => null,
+				'isGTGDefault'          => true,
+			),
+			$response->get_data()
+		);
+
+		// Test setting both isEnabled and isGTGDefault - REST API allows explicit control.
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/gtg-settings' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'settings' => array(
+						'isEnabled'    => true,
+						'isGTGDefault' => true,
+					),
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+		$this->assertEqualSetsWithIndex(
+			array(
+				'isEnabled'             => true,
+				'isGTGHealthy'          => null,
+				'isScriptAccessEnabled' => null,
+				'isGTGDefault'          => true, // REST API allows explicit control.
+			),
+			$response->get_data()
+		);
 	}
 
 	private function grant_manage_options_permission() {
