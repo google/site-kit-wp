@@ -105,10 +105,11 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 	} );
 
 	describe( 'Refresh setup flow', () => {
-		it( 'should render the setup page without the Activate Analytics notice when the Analytics module is inactive', async () => {
-			// Enable setupFlowRefresh feature flag.
+		beforeAll( () => {
 			enabledFeatures.add( 'setupFlowRefresh' );
+		} );
 
+		it( 'should render the setup page without the Activate Analytics notice when the Analytics module is inactive', async () => {
 			registry.dispatch( CORE_MODULES ).receiveGetModules(
 				coreModulesFixture.map( ( module ) => {
 					if ( MODULE_SLUG_ANALYTICS_4 === module.slug ) {
@@ -121,7 +122,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				} )
 			);
 
-			const { waitForRegistry, queryByText } = render(
+			const { waitForRegistry, container, queryByText } = render(
 				<SetupUsingProxyWithSignIn />,
 				{
 					registry,
@@ -130,6 +131,40 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			);
 
 			await waitForRegistry();
+
+			expect( container ).toMatchSnapshot();
+
+			expect(
+				queryByText(
+					/Get visitor insights by connecting Google Analytics as part of setup/
+				)
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should not render the activate analytics checkbox when the Analytics module is already active', async () => {
+			registry.dispatch( CORE_MODULES ).receiveGetModules(
+				coreModulesFixture.map( ( module ) => {
+					if ( MODULE_SLUG_ANALYTICS_4 === module.slug ) {
+						return {
+							...module,
+							active: true,
+						};
+					}
+					return module;
+				} )
+			);
+
+			const { waitForRegistry, container, queryByText } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( container ).toMatchSnapshot();
 
 			expect(
 				queryByText(
