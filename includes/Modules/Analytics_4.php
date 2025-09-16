@@ -644,7 +644,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		// Add fields from Google tag gateway.
 		// Note: fields are added in both Analytics and Ads so that the debug fields will show if either module is enabled.
 		if ( Feature_Flags::enabled( 'googleTagGateway' ) ) {
-			$google_tag_gateway             = new Google_Tag_Gateway( $this->context );
+			$google_tag_gateway             = new Google_Tag_Gateway( $this->context, $this->options );
 			$fields_from_google_tag_gateway = $google_tag_gateway->get_debug_fields();
 
 			$debug_fields = array_merge( $debug_fields, $fields_from_google_tag_gateway );

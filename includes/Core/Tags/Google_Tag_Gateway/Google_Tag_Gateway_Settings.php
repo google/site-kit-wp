@@ -27,6 +27,37 @@ class Google_Tag_Gateway_Settings extends Setting {
 	 */
 	const OPTION = 'googlesitekit_google_tag_gateway';
 
+	public function register() {
+		parent::register();
+
+		$this->add_option_default_filters();
+	}
+
+	protected function add_option_default_filters() {
+		add_filter(
+			'option_' . static::OPTION,
+			function ( $option ) {
+				if ( ! is_array( $option ) ) {
+					return $this->get_default();
+				}
+				return $option;
+			},
+			0
+		);
+
+		// Fill in any missing keys with defaults.
+		add_filter(
+			'option_' . static::OPTION,
+			function ( $option ) {
+				if ( is_array( $option ) ) {
+					return $option + $this->get_default();
+				}
+				return $option;
+			},
+			99
+		);
+	}
+
 	/**
 	 * Gets the expected value type.
 	 *
@@ -47,9 +78,8 @@ class Google_Tag_Gateway_Settings extends Setting {
 	 */
 	protected function get_default() {
 		return array(
-			'isEnabled'             => false,
-			'isGTGHealthy'          => null,
-			'isScriptAccessEnabled' => null,
+			'isEnabled' => false,
+			'isDefault' => true,
 		);
 	}
 
@@ -68,12 +98,8 @@ class Google_Tag_Gateway_Settings extends Setting {
 				$new_value['isEnabled'] = (bool) $value['isEnabled'];
 			}
 
-			if ( isset( $value['isGTGHealthy'] ) ) {
-				$new_value['isGTGHealthy'] = (bool) $value['isGTGHealthy'];
-			}
-
-			if ( isset( $value['isScriptAccessEnabled'] ) ) {
-				$new_value['isScriptAccessEnabled'] = (bool) $value['isScriptAccessEnabled'];
+			if ( isset( $value['isDefault'] ) ) {
+				$new_value['isDefault'] = (bool) $value['isDefault'];
 			}
 
 			return $new_value;
@@ -97,13 +123,7 @@ class Google_Tag_Gateway_Settings extends Setting {
 			}
 		);
 
-		$allowed_settings = array(
-			'isEnabled'             => true,
-			'isGTGHealthy'          => true,
-			'isScriptAccessEnabled' => true,
-		);
-
-		$updated = array_intersect_key( $partial, $allowed_settings );
+		$updated = array_intersect_key( $partial, $this->get_default() );
 
 		return $this->set( array_merge( $settings, $updated ) );
 	}
@@ -112,19 +132,12 @@ class Google_Tag_Gateway_Settings extends Setting {
 	 * Checks if Google tag gateway is active.
 	 *
 	 * @since n.e.x.t
-	 *
+	 * @deprecated
 	 * @return bool True if Google tag gateway is active, false otherwise.
 	 */
 	public function is_google_tag_gateway_active() {
-		$settings          = $this->get();
-		$required_settings = array( 'isEnabled', 'isGTGHealthy', 'isScriptAccessEnabled' );
+		$settings = $this->get();
 
-		foreach ( $required_settings as $setting ) {
-			if ( ! isset( $settings[ $setting ] ) || ! $settings[ $setting ] ) {
-				return false;
-			}
-		}
-
-		return true;
+		return $settings['isEnabled'];
 	}
 }

@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Health;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
 use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Modules\Tag_Manager;
@@ -214,7 +215,10 @@ class Tag_ManagerTest extends TestCase {
 		// Configure GTG status.
 		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $options );
 		$google_tag_gateway_settings->register();
-		$google_tag_gateway_settings->set( $gtg_settings );
+		$google_tag_gateway_settings->merge( $gtg_settings );
+		$google_tag_gateway_health = new Google_Tag_Gateway_Health( $options );
+		$google_tag_gateway_health->register();
+		$google_tag_gateway_health->merge( $gtg_settings );
 
 		do_action( 'template_redirect' );
 

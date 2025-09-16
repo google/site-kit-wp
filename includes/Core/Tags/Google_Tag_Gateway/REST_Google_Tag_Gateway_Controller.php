@@ -45,6 +45,11 @@ class REST_Google_Tag_Gateway_Controller {
 	private $google_tag_gateway_settings;
 
 	/**
+	 * @var Google_Tag_Gateway_Health
+	 */
+	private $health_state;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.141.0
@@ -52,9 +57,14 @@ class REST_Google_Tag_Gateway_Controller {
 	 * @param Google_Tag_Gateway          $google_tag_gateway          Google_Tag_Gateway instance.
 	 * @param Google_Tag_Gateway_Settings $google_tag_gateway_settings Google_Tag_Gateway_Settings instance.
 	 */
-	public function __construct( Google_Tag_Gateway $google_tag_gateway, Google_Tag_Gateway_Settings $google_tag_gateway_settings ) {
+	public function __construct(
+		Google_Tag_Gateway $google_tag_gateway,
+		Google_Tag_Gateway_Settings $google_tag_gateway_settings,
+		Google_Tag_Gateway_Health $health_state
+	) {
 		$this->google_tag_gateway          = $google_tag_gateway;
 		$this->google_tag_gateway_settings = $google_tag_gateway_settings;
+		$this->health_state                = $health_state;
 	}
 
 	/**
@@ -102,18 +112,27 @@ class REST_Google_Tag_Gateway_Controller {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function () {
-							return new WP_REST_Response( $this->google_tag_gateway_settings->get() );
+							return new WP_REST_Response(
+								$this->health_state->get()
+								+ $this->google_tag_gateway_settings->get()
+							);
 						},
 						'permission_callback' => $can_manage_options,
 					),
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function ( WP_REST_Request $request ) {
-							$this->google_tag_gateway_settings->set(
+							$this->google_tag_gateway_settings->merge(
+								$request['data']['settings']
+							);
+							$this->health_state->merge(
 								$request['data']['settings']
 							);
 
-							return new WP_REST_Response( $this->google_tag_gateway_settings->get() );
+							return new WP_REST_Response(
+								$this->health_state->get()
+								+ $this->google_tag_gateway_settings->get()
+							);
 						},
 						'permission_callback' => $can_manage_options,
 						'args'                => array(
@@ -147,7 +166,11 @@ class REST_Google_Tag_Gateway_Controller {
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function () {
 							$this->google_tag_gateway->healthcheck();
-							return new WP_REST_Response( $this->google_tag_gateway_settings->get() );
+
+							return new WP_REST_Response(
+								$this->health_state->get()
+								+ $this->google_tag_gateway_settings->get()
+							);
 						},
 						'permission_callback' => $can_manage_options,
 					),

@@ -34,6 +34,7 @@ use Google\Site_Kit\Core\Modules\Tag_Manager\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
@@ -670,8 +671,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			return false;
 		}
 
-		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
-
-		return $google_tag_gateway_settings->is_google_tag_gateway_active();
+		return ( new Google_Tag_Gateway( $this->context, $this->options ) )->is_ready_and_active();
 	}
 }

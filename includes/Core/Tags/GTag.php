@@ -11,10 +11,12 @@
 namespace Google\Site_Kit\Core\Tags;
 
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Plugin;
 
 /**
  * Class to handle gtag rendering across modules.
@@ -337,9 +339,7 @@ JS;
 			return false;
 		}
 
-		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
-
-		return $google_tag_gateway_settings->is_google_tag_gateway_active();
+		return ( new Google_Tag_Gateway( Plugin::instance()->context(), $this->options ) )->is_ready_and_active();
 	}
 
 	/**
