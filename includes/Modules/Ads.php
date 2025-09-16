@@ -51,6 +51,8 @@ use Google\Site_Kit\Modules\Ads\AMP_Tag;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 use Google\Site_Kit\Core\Modules\Module_With_Inline_Data;
 use Google\Site_Kit\Core\Modules\Module_With_Inline_Data_Trait;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
+use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 
 /**
  * Class representing the Ads module.
@@ -59,13 +61,14 @@ use Google\Site_Kit\Core\Modules\Module_With_Inline_Data_Trait;
  * @access private
  * @ignore
  */
-final class Ads extends Module implements Module_With_Inline_Data, Module_With_Assets, Module_With_Debug_Fields, Module_With_Scopes, Module_With_Settings, Module_With_Tag, Module_With_Deactivation, Module_With_Persistent_Registration {
+final class Ads extends Module implements Module_With_Inline_Data, Module_With_Assets, Module_With_Debug_Fields, Module_With_Scopes, Module_With_Settings, Module_With_Tag, Module_With_Deactivation, Module_With_Persistent_Registration, Provides_Feature_Metrics {
 	use Module_With_Assets_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Tag_Trait;
 	use Method_Proxy_Trait;
 	use Module_With_Inline_Data_Trait;
+	use Feature_Metrics_Trait;
 
 	/**
 	 * Module slug name.
@@ -108,6 +111,8 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	public function register() {
 		$this->register_scopes_hook();
 		$this->register_inline_data();
+		$this->register_feature_metrics();
+
 		// Ads tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 		add_filter(
@@ -473,5 +478,34 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 		$modules_data[ self::MODULE_SLUG ]['supportedConversionEvents'] = $this->get_supported_conversion_events();
 
 		return $modules_data;
+	}
+
+	/**
+	 * Gets an array of internal feature metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_feature_metrics() {
+		$is_connected = $this->is_connected();
+
+		if ( ! $is_connected ) {
+			return array(
+				'ads_connection' => '',
+			);
+		}
+
+		$settings = $this->get_settings()->get();
+
+		if ( Feature_Flags::enabled( 'adsPax' ) && ! empty( $settings['paxConversionID'] ) ) {
+			return array(
+				'ads_connection' => 'pax',
+			);
+		}
+
+		return array(
+			'ads_connection' => 'manual',
+		);
 	}
 }

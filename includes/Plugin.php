@@ -233,6 +233,7 @@ final class Plugin {
 				if ( Feature_Flags::enabled( 'googleTagGateway' ) ) {
 					( new Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway( $this->context, $options ) )->register();
 				}
+				( new Core\Tracking\Feature_Metrics() )->register();
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(

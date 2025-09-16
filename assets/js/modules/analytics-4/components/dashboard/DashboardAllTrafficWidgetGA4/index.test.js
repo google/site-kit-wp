@@ -25,6 +25,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
 	provideModules,
+	provideUserAuthentication,
 } from '../../../../../../../tests/js/utils';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { render } from '../../../../../../../tests/js/test-utils';
@@ -150,6 +151,7 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
+		provideUserAuthentication( registry );
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
