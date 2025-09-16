@@ -37,7 +37,6 @@ import SplashScreenshot from '@/svg/graphics/splash-screenshot.svg';
 export default function RefreshedSplash( {
 	analyticsModuleActive,
 	analyticsModuleAvailable,
-	cellDetailsProp,
 	children,
 	connectedProxyURL,
 	disconnectedReason,
@@ -45,6 +44,10 @@ export default function RefreshedSplash( {
 	title,
 } ) {
 	const { checked, handleOnChange } = useActivateAnalyticsOptIn();
+
+	const cellDetailsProp = analyticsModuleActive
+		? { smSize: 4, mdSize: 6, lgSize: 5 }
+		: { smSize: 4, mdSize: 7, lgSize: 7 };
 
 	return (
 		<Row className="googlesitekit-setup__content">

@@ -38,7 +38,6 @@ import WelcomeSVG from '@/svg/graphics/welcome.svg';
 export default function LegacySplash( {
 	analyticsModuleActive,
 	analyticsModuleAvailable,
-	cellDetailsProp,
 	children,
 	connectedProxyURL,
 	description,
@@ -49,6 +48,10 @@ export default function LegacySplash( {
 } ) {
 	const showLearnMoreLink = false;
 	const getHelpURL = null;
+
+	const cellDetailsProp = analyticsModuleActive
+		? { smSize: 4, mdSize: 8, lgSize: 6 }
+		: { smSize: 4, mdSize: 8, lgSize: 8 };
 
 	return (
 		<Row className="googlesitekit-setup__content">

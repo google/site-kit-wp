@@ -69,10 +69,6 @@ export default function Splash( { children } ) {
 		select( CORE_USER ).getDisconnectedReason()
 	);
 
-	const cellDetailsProp = analyticsModuleActive
-		? { smSize: 4, mdSize: 6, lgSize: 5 }
-		: { smSize: 4, mdSize: 7, lgSize: 7 };
-
 	let title;
 	let description;
 
@@ -129,7 +125,6 @@ export default function Splash( { children } ) {
 		homeURL,
 		analyticsModuleAvailable,
 		disconnectedReason,
-		cellDetailsProp,
 		title,
 		description,
 		connectedProxyURL,

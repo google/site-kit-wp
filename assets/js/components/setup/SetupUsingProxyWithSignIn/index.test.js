@@ -31,6 +31,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWithSignIn';
 import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { enabledFeatures } from '@/js/features';
 
 jest.mock(
 	'../CompatibilityChecks',
@@ -101,5 +102,40 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		expect(
 			queryByText( /Connect Google Analytics as part of your setup/ )
 		).not.toBeInTheDocument();
+	} );
+
+	describe( 'Refresh setup flow', () => {
+		it( 'should render the setup page without the Activate Analytics notice when the Analytics module is inactive', async () => {
+			// Enable setupFlowRefresh feature flag.
+			enabledFeatures.add( 'setupFlowRefresh' );
+
+			registry.dispatch( CORE_MODULES ).receiveGetModules(
+				coreModulesFixture.map( ( module ) => {
+					if ( MODULE_SLUG_ANALYTICS_4 === module.slug ) {
+						return {
+							...module,
+							active: false,
+						};
+					}
+					return module;
+				} )
+			);
+
+			const { waitForRegistry, queryByText } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				queryByText(
+					/Get visitor insights by connecting Google Analytics as part of setup/
+				)
+			).not.toBeInTheDocument();
+		} );
 	} );
 } );
