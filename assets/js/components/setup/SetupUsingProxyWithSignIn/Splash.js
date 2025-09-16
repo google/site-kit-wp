@@ -24,7 +24,6 @@ import punycode from 'punycode';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { getQueryArg } from '@wordpress/url';
 
@@ -32,28 +31,29 @@ import { getQueryArg } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import WelcomeSVG from '@/svg/graphics/welcome.svg';
-import WelcomeAnalyticsSVG from '@/svg/graphics/welcome-analytics.svg';
-import Link from '@/js/components/Link';
-import ActivateAnalyticsNotice from '@/js/components/setup/ActivateAnalyticsNotice';
-import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
+import { useFeature } from '@/js/hooks/useFeature';
+import LegacySplash from '@/js/components/setup/SetupUsingProxyWithSignIn/LegacySplash';
+import RefreshedSplash from '@/js/components/setup/SetupUsingProxyWithSignIn/RefreshedSplash';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { Cell, Grid, Row } from '@/js/material-components';
+import { Grid } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import Typography from '@/js/components/Typography';
-import P from '@/js/components/Typography/P';
 
 export default function Splash( { children } ) {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	const analyticsModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
+	);
+	const connectedProxyURL = useSelect( ( select ) =>
+		select( CORE_USER ).getConnectedProxyURL()
 	);
 	const isSecondAdmin = useSelect( ( select ) =>
 		select( CORE_SITE ).hasConnectedAdmins()
@@ -68,21 +68,13 @@ export default function Splash( { children } ) {
 	const disconnectedReason = useSelect( ( select ) =>
 		select( CORE_USER ).getDisconnectedReason()
 	);
-	const connectedProxyURL = useSelect( ( select ) =>
-		select( CORE_USER ).getConnectedProxyURL()
-	);
-	const changedURLHelpLink = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'url-has-changed' )
-	);
 
 	const cellDetailsProp = analyticsModuleActive
-		? { smSize: 4, mdSize: 8, lgSize: 6 }
-		: { smSize: 4, mdSize: 8, lgSize: 8 };
+		? { smSize: 4, mdSize: 6, lgSize: 5 }
+		: { smSize: 4, mdSize: 7, lgSize: 7 };
 
 	let title;
 	let description;
-	let showLearnMoreLink = false;
-	let getHelpURL = null;
 
 	if ( 'revoked' === getQueryArg( location.href, 'googlesitekit_context' ) ) {
 		title = sprintf(
@@ -102,8 +94,6 @@ export default function Splash( { children } ) {
 			'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.',
 			'google-site-kit'
 		);
-
-		getHelpURL = changedURLHelpLink;
 	} else if ( isSecondAdmin ) {
 		title = __(
 			'Connect your Google account to Site Kit',
@@ -113,106 +103,44 @@ export default function Splash( { children } ) {
 			'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google services.',
 			'google-site-kit'
 		);
-		showLearnMoreLink = true;
 	} else {
-		title = __( 'Set up Site Kit', 'google-site-kit' );
-		description = __(
-			'Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard',
-			'google-site-kit'
-		);
+		title = setupFlowRefreshEnabled
+			? __( "Let's get started!", 'google-site-kit' )
+			: __( 'Set up Site Kit', 'google-site-kit' );
+		description = ! setupFlowRefreshEnabled
+			? __(
+					'Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard',
+					'google-site-kit'
+			  )
+			: null;
 	}
 
+	const classname = setupFlowRefreshEnabled
+		? 'googlesitekit-splash'
+		: 'googlesitekit-setup__splash';
+
+	const SplashComponent = setupFlowRefreshEnabled
+		? RefreshedSplash
+		: LegacySplash;
+
+	const splashProps = {
+		analyticsModuleActive,
+		secondAdminLearnMoreLink,
+		homeURL,
+		analyticsModuleAvailable,
+		disconnectedReason,
+		cellDetailsProp,
+		title,
+		description,
+		connectedProxyURL,
+	};
+
 	return (
-		<section className="googlesitekit-setup__splash">
+		<section className={ classname }>
 			<Grid>
-				<Row className="googlesitekit-setup__content">
-					<Cell
-						smSize={ 4 }
-						mdSize={ 8 }
-						lgSize={ ! analyticsModuleActive ? 4 : 6 }
-						className="googlesitekit-setup__icon"
-					>
-						{ analyticsModuleActive && (
-							<WelcomeSVG width="570" height="336" />
-						) }
-						{ ! analyticsModuleActive && (
-							<WelcomeAnalyticsSVG height="167" width="175" />
-						) }
-					</Cell>
-
-					<Cell { ...cellDetailsProp }>
-						<Typography
-							as="h1"
-							className="googlesitekit-setup__title"
-							size="large"
-							type="headline"
-						>
-							{ title }
-						</Typography>
-
-						<p className="googlesitekit-setup__description">
-							{ ! showLearnMoreLink && description }
-
-							{ showLearnMoreLink &&
-								createInterpolateElement(
-									sprintf(
-										/* translators: 1: The description. 2: The learn more link. */
-										__(
-											'%1$s <Link>%2$s</Link>',
-											'google-site-kit'
-										),
-										description,
-										__( 'Learn more', 'google-site-kit' )
-									),
-									{
-										Link: (
-											<Link
-												href={
-													secondAdminLearnMoreLink
-												}
-												external
-											/>
-										),
-									}
-								) }
-						</p>
-						{ getHelpURL && (
-							<Link href={ getHelpURL } external>
-								{ __( 'Get help', 'google-site-kit' ) }
-							</Link>
-						) }
-						{ DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ===
-							disconnectedReason &&
-							connectedProxyURL !== homeURL && (
-								<P>
-									{ sprintf(
-										/* translators: %s: Previous Connected Proxy URL */
-										__(
-											'— Old URL: %s',
-											'google-site-kit'
-										),
-										connectedProxyURL
-									) }
-									<br />
-									{ sprintf(
-										/* translators: %s: Connected Proxy URL */
-										__(
-											'— New URL: %s',
-											'google-site-kit'
-										),
-										homeURL
-									) }
-								</P>
-							) }
-
-						{ analyticsModuleAvailable &&
-							! analyticsModuleActive && (
-								<ActivateAnalyticsNotice />
-							) }
-
-						<CompatibilityChecks>{ children }</CompatibilityChecks>
-					</Cell>
-				</Row>
+				<SplashComponent { ...splashProps }>
+					{ children }
+				</SplashComponent>
 			</Grid>
 		</section>
 	);
