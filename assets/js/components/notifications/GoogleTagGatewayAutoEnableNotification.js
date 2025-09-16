@@ -78,7 +78,7 @@ export default function GoogleTagGatewayAutoEnableNotification( {
 				MODULE_SLUG_TAGMANAGER
 			);
 		}
-		return select( CORE_SITE ).getConnectMoreServicesURL(); // Fallback
+		return null;
 	} );
 
 	const handleGotItClick = useCallback( () => {
