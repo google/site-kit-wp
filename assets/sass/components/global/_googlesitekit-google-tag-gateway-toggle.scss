@@ -32,6 +32,14 @@
 			}
 		}
 
+		.googlesitekit-notice--new {
+			margin-top: 10px;
+
+			@media (min-width: $bp-tablet) {
+				padding: 14px $grid-gap-desktop;
+			}
+		}
+
 		.googlesitekit-badge {
 			margin-left: 6px;
 		}
