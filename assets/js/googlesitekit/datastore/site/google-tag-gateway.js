@@ -34,14 +34,10 @@ import {
 	combineStores,
 	createReducer,
 } from 'googlesitekit-data';
-import { CORE_SITE } from './constants';
+import { CORE_SITE, GOOGLE_TAG_GATEWAY_MODULES } from './constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { isFeatureEnabled } from '@/js/features';
-import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 
 const SET_GOOGLE_TAG_GATEWAY_ENABLED = 'SET_GOOGLE_TAG_GATEWAY_ENABLED';
 const SET_IS_GTG_DEFAULT = 'SET_IS_GTG_DEFAULT';
@@ -334,16 +330,10 @@ const baseSelectors = {
 	 */
 	isAnyGoogleTagGatewayModuleConnected: createRegistrySelector(
 		( select ) => () => {
-			if ( ! isFeatureEnabled( 'googleTagGateway' ) ) {
-				return false;
-			}
-
 			const { isModuleConnected } = select( CORE_MODULES );
 
-			return (
-				isModuleConnected( MODULE_SLUG_ANALYTICS_4 ) ||
-				isModuleConnected( MODULE_SLUG_ADS ) ||
-				isModuleConnected( MODULE_SLUG_TAGMANAGER )
+			return GOOGLE_TAG_GATEWAY_MODULES.some( ( moduleSlug ) =>
+				isModuleConnected( moduleSlug )
 			);
 		}
 	),

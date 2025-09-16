@@ -43,7 +43,10 @@ import {
 	PRIORITY,
 } from './constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	CORE_SITE,
+	GOOGLE_TAG_GATEWAY_MODULES,
+} from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
@@ -629,6 +632,14 @@ export const DEFAULT_NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
+			// The `CORE_SITE` `isAnyGoogleTagGatewayModuleConnected` selector
+			// relies on the resolution of `isModuleConnected`.
+			await Promise.all(
+				GOOGLE_TAG_GATEWAY_MODULES.map( ( module ) =>
+					resolveSelect( CORE_MODULES ).isModuleConnected( module )
+				)
+			);
+
 			const isGTGModuleConnected =
 				select( CORE_SITE ).isAnyGoogleTagGatewayModuleConnected();
 
@@ -713,6 +724,14 @@ export const DEFAULT_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
+			// The `CORE_SITE` `isAnyGoogleTagGatewayModuleConnected` selector
+			// relies on the resolution of `isModuleConnected`.
+			await Promise.all(
+				GOOGLE_TAG_GATEWAY_MODULES.map( ( module ) =>
+					resolveSelect( CORE_MODULES ).isModuleConnected( module )
+				)
+			);
+
 			const isGTGModuleConnected =
 				select( CORE_SITE ).isAnyGoogleTagGatewayModuleConnected();
 
