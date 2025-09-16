@@ -42,7 +42,7 @@ class Google_Tag_Gateway_Settings extends Setting {
 	 * Gets the default value.
 	 *
 	 * @since 1.141.0
-	 * @n.e.x.t Add `isGTGDefault` setting to track if the user has ever interacted with GTG settings.
+	 * @since n.e.x.t Add `isGTGDefault` setting to track if the user has ever interacted with GTG settings.
 	 *
 	 * @return array The default value.
 	 */
