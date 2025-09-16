@@ -29,7 +29,7 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { GTG_HEADS_UP_BANNER_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
+import { GTG_AUTO_ENABLE_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
 import Notice from '@/js/components/Notice';
 import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -79,10 +79,10 @@ export default function GoogleTagGatewayOptOutNotice() {
 		)
 	);
 
-	const isHeadsUpBannerVisible = useSelect(
+	const isAutoEnableNotificationVisible = useSelect(
 		( select ) =>
 			! select( CORE_NOTIFICATIONS ).isNotificationDismissed(
-				GTG_HEADS_UP_BANNER_NOTIFICATION
+				GTG_AUTO_ENABLE_NOTIFICATION
 			)
 	);
 
@@ -91,13 +91,13 @@ export default function GoogleTagGatewayOptOutNotice() {
 
 		await dismissItem( GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY );
 
-		if ( isHeadsUpBannerVisible ) {
-			dismissNotification( GTG_HEADS_UP_BANNER_NOTIFICATION );
+		if ( isAutoEnableNotificationVisible ) {
+			dismissNotification( GTG_AUTO_ENABLE_NOTIFICATION );
 		}
 	}, [
 		viewContext,
 		dismissItem,
-		isHeadsUpBannerVisible,
+		isAutoEnableNotificationVisible,
 		dismissNotification,
 	] );
 
@@ -111,16 +111,16 @@ export default function GoogleTagGatewayOptOutNotice() {
 		// Dismiss this notice persistently
 		await dismissItem( GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY );
 
-		// If heads-up banner is still visible, dismiss it too
-		if ( isHeadsUpBannerVisible ) {
-			dismissNotification( GTG_HEADS_UP_BANNER_NOTIFICATION );
+		// If auto-enable notification is still visible, dismiss it too
+		if ( isAutoEnableNotificationVisible ) {
+			dismissNotification( GTG_AUTO_ENABLE_NOTIFICATION );
 		}
 	}, [
 		viewContext,
 		setIsGTGDefault,
 		saveGoogleTagGatewaySettings,
 		dismissItem,
-		isHeadsUpBannerVisible,
+		isAutoEnableNotificationVisible,
 		dismissNotification,
 	] );
 

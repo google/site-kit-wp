@@ -39,7 +39,7 @@ import {
 	NOTIFICATION_AREAS,
 	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 	GTG_SETUP_CTA_BANNER_NOTIFICATION,
-	GTG_HEADS_UP_BANNER_NOTIFICATION,
+	GTG_AUTO_ENABLE_NOTIFICATION,
 	PRIORITY,
 } from './constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
@@ -70,7 +70,7 @@ import GA4AdSenseLinkedNotification from '@/js/components/notifications/GA4AdSen
 import SetupErrorMessageNotification from '@/js/components/notifications/SetupErrorMessageNotification';
 import GoogleTagGatewayWarningNotification from '@/js/components/notifications/GoogleTagGatewayWarningNotification';
 import GoogleTagGatewaySetupBanner from '@/js/components/notifications/GoogleTagGatewaySetupBanner';
-import GoogleTagGatewayHeadsUpBanner from '@/js/components/notifications/GoogleTagGatewayHeadsUpBanner';
+import GoogleTagGatewayAutoEnableNotification from '@/js/components/notifications/GoogleTagGatewayAutoEnableNotification';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '@/js/components/consent-mode/constants';
 import ConsentModeSetupCTABanner from '@/js/components/consent-mode/ConsentModeSetupCTABanner';
 import EnableAutoUpdateBannerNotification, {
@@ -661,8 +661,8 @@ export const DEFAULT_NOTIFICATIONS = {
 		isDismissible: true,
 		featureFlag: 'googleTagGateway',
 	},
-	[ GTG_HEADS_UP_BANNER_NOTIFICATION ]: {
-		Component: GoogleTagGatewayHeadsUpBanner,
+	[ GTG_AUTO_ENABLE_NOTIFICATION ]: {
+		Component: GoogleTagGatewayAutoEnableNotification,
 		priority: PRIORITY.INFO,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.DEFAULT,
