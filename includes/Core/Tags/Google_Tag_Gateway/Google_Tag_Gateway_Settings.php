@@ -42,6 +42,7 @@ class Google_Tag_Gateway_Settings extends Setting {
 	 * Gets the default value.
 	 *
 	 * @since 1.141.0
+	 * @n.e.x.t Add `isGTGDefault` setting to track if the user has ever interacted with GTG settings.
 	 *
 	 * @return array The default value.
 	 */
@@ -50,6 +51,7 @@ class Google_Tag_Gateway_Settings extends Setting {
 			'isEnabled'             => false,
 			'isGTGHealthy'          => null,
 			'isScriptAccessEnabled' => null,
+			'isGTGDefault'          => true,
 		);
 	}
 
@@ -74,6 +76,10 @@ class Google_Tag_Gateway_Settings extends Setting {
 
 			if ( isset( $value['isScriptAccessEnabled'] ) ) {
 				$new_value['isScriptAccessEnabled'] = (bool) $value['isScriptAccessEnabled'];
+			}
+
+			if ( isset( $value['isGTGDefault'] ) ) {
+				$new_value['isGTGDefault'] = (bool) $value['isGTGDefault'];
 			}
 
 			return $new_value;
@@ -101,9 +107,15 @@ class Google_Tag_Gateway_Settings extends Setting {
 			'isEnabled'             => true,
 			'isGTGHealthy'          => true,
 			'isScriptAccessEnabled' => true,
+			'isGTGDefault'          => true,
 		);
 
 		$updated = array_intersect_key( $partial, $allowed_settings );
+
+		// Auto-update isGTGDefault to false when isEnabled changes, but only if isGTGDefault is currently true.
+		if ( isset( $updated['isEnabled'] ) && true === $settings['isGTGDefault'] ) {
+			$updated['isGTGDefault'] = false;
+		}
 
 		return $this->set( array_merge( $settings, $updated ) );
 	}
