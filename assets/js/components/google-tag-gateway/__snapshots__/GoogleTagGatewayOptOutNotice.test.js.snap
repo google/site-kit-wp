@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GoogleTagGatewayOptOutNotice visibility conditions should render when all conditions are met 1`] = `
+<div>
+  <div
+    class="googlesitekit-notice googlesitekit-notice--new googlesitekit-gtg-settings-notice"
+  >
+    <div
+      class="googlesitekit-notice__icon"
+    >
+      <svg />
+    </div>
+    <div
+      class="googlesitekit-notice__content"
+    >
+      <p
+        class="googlesitekit-notice__description"
+      >
+        Starting in October 2025, Google tag gateway for advertisers will gradually be enabled. You can opt out now before the change happens and it won’t be automatically enabled for you.
+      </p>
+    </div>
+    <div
+      class="googlesitekit-notice__action"
+    >
+      <button
+        class="mdc-button mdc-button--tertiary"
+        target="_self"
+      >
+        <span
+          class="mdc-button__label"
+        >
+          Opt out
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
