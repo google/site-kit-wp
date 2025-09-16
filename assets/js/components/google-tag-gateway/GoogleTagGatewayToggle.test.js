@@ -31,11 +31,14 @@ import {
 	freezeFetch,
 	act,
 	waitForDefaultTimeouts,
+	provideSiteInfo,
 } from '../../../../tests/js/test-utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import * as tracking from '@/js/util/tracking';
 import GoogleTagGatewayToggle from './GoogleTagGatewayToggle';
+import { GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY } from '@/js/components/google-tag-gateway/GoogleTagGatewayOptOutNotice';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -51,6 +54,9 @@ describe( 'GoogleTagGatewayToggle', () => {
 	const serverRequirementStatusEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 	);
+	const dismissedItemsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismissed-items'
+	);
 
 	beforeEach( () => {
 		mockUseIntersection.mockImplementation( () => ( {
@@ -60,10 +66,26 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		registry = createTestRegistry();
 
+		provideSiteInfo( registry );
+
 		registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 			isEnabled: false,
 			isGTGHealthy: null,
 			isScriptAccessEnabled: null,
+			isGTGDefault: true,
+		} );
+
+		// Mock dismissed items to prevent opt-out notice from showing by default.
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [
+				GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY,
+			] );
+
+		// Mock the dismissed items endpoint to prevent fetch errors.
+		fetchMock.get( dismissedItemsEndpoint, {
+			body: [ GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY ],
+			status: 200,
 		} );
 	} );
 
@@ -106,6 +128,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 				isEnabled: false,
 				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
+				isGTGDefault: true,
 			},
 			status: 200,
 		} );
@@ -132,6 +155,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 				isEnabled: false,
 				isGTGHealthy: false,
 				isScriptAccessEnabled: false,
+				isGTGDefault: true,
 			},
 			status: 200,
 		} );
@@ -162,6 +186,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 				isEnabled: false,
 				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
+				isGTGDefault: true,
 			},
 			status: 200,
 		} );
@@ -201,6 +226,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 				isEnabled: false,
 				isGTGHealthy: false,
 				isScriptAccessEnabled: false,
+				isGTGDefault: true,
 			},
 			status: 200,
 		} );
@@ -246,6 +272,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 				isEnabled: false,
 				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
+				isGTGDefault: true,
 			},
 			status: 200,
 		} );
@@ -281,6 +308,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 				isEnabled: false,
 				isGTGHealthy: false,
 				isScriptAccessEnabled: false,
+				isGTGDefault: true,
 			},
 			status: 200,
 		} );
@@ -317,6 +345,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 				isEnabled: false,
 				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
+				isGTGDefault: true,
 			};
 
 			response[ requirement ] = null;
@@ -348,6 +377,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 				isEnabled: false,
 				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
+				isGTGDefault: true,
 			};
 
 			response[ requirement ] = false;
@@ -378,6 +408,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 				isEnabled: false,
 				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
+				isGTGDefault: true,
 			},
 			status: 200,
 		} );
@@ -431,6 +462,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 				isEnabled: false,
 				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
+				isGTGDefault: true,
 			},
 			status: 200,
 		} );
@@ -478,6 +510,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 				isEnabled: false,
 				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
+				isGTGDefault: true,
 			},
 			status: 200,
 		} );

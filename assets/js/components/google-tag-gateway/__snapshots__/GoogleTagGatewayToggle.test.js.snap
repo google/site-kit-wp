@@ -58,7 +58,7 @@ exports[`GoogleTagGatewayToggle should render in default state 1`] = `
       <a
         aria-label="Learn more about Google tag gateway for advertisers (opens in a new tab)"
         class="googlesitekit-cta-link"
-        href="undefined?doc=google-tag-gateway-introduction"
+        href="https://sitekit.withgoogle.com/support/?doc=google-tag-gateway-introduction"
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -138,7 +138,7 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
       <a
         aria-label="Learn more about Google tag gateway for advertisers (opens in a new tab)"
         class="googlesitekit-cta-link"
-        href="undefined?doc=google-tag-gateway-introduction"
+        href="https://sitekit.withgoogle.com/support/?doc=google-tag-gateway-introduction"
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -173,7 +173,7 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
           <a
             aria-label="Learn more about Google tag gateway for advertisers server requirements (opens in a new tab)"
             class="googlesitekit-cta-link"
-            href="undefined?doc=google-tag-gateway-server-requirements"
+            href="https://sitekit.withgoogle.com/support/?doc=google-tag-gateway-server-requirements"
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -234,7 +234,7 @@ exports[`GoogleTagGatewayToggle should render in loading state if the server req
       <a
         aria-label="Learn more about Google tag gateway for advertisers (opens in a new tab)"
         class="googlesitekit-cta-link"
-        href="undefined?doc=google-tag-gateway-introduction"
+        href="https://sitekit.withgoogle.com/support/?doc=google-tag-gateway-introduction"
         rel="noopener noreferrer"
         target="_blank"
       >
