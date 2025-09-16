@@ -32,6 +32,7 @@ import {
 	act,
 	waitForDefaultTimeouts,
 	provideSiteInfo,
+	provideModules,
 } from '../../../../tests/js/test-utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -39,6 +40,10 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import * as tracking from '@/js/util/tracking';
 import GoogleTagGatewayToggle from './GoogleTagGatewayToggle';
 import { GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY } from '@/js/components/google-tag-gateway/GoogleTagGatewayOptOutNotice';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import { GTG_AUTO_ENABLE_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -67,6 +72,23 @@ describe( 'GoogleTagGatewayToggle', () => {
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+			{
+				slug: MODULE_SLUG_ADS,
+				active: true,
+				connected: true,
+			},
+			{
+				slug: MODULE_SLUG_TAGMANAGER,
+				active: true,
+				connected: true,
+			},
+		] );
 
 		registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 			isEnabled: false,
@@ -80,11 +102,15 @@ describe( 'GoogleTagGatewayToggle', () => {
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [
 				GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY,
+				GTG_AUTO_ENABLE_NOTIFICATION,
 			] );
 
 		// Mock the dismissed items endpoint to prevent fetch errors.
 		fetchMock.get( dismissedItemsEndpoint, {
-			body: [ GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY ],
+			body: [
+				GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY,
+				GTG_AUTO_ENABLE_NOTIFICATION,
+			],
 			status: 200,
 		} );
 	} );
@@ -528,5 +554,284 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		expect( badgeElement ).toBeInTheDocument();
 		expect( badgeElement ).toHaveTextContent( 'Beta' );
+	} );
+
+	describe( 'Opt-out notice integration', () => {
+		it( 'should not show the opt-out notice when it has been dismissed', async () => {
+			fetchMock.getOnce( serverRequirementStatusEndpoint, {
+				body: {
+					isEnabled: false,
+					isGTGHealthy: true,
+					isScriptAccessEnabled: true,
+					isGTGDefault: true,
+				},
+				status: 200,
+			} );
+
+			const { queryByText, waitForRegistry } = render(
+				<GoogleTagGatewayToggle />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			// Opt-out notice should not be visible when dismissed
+			expect(
+				queryByText(
+					/Starting in October 2025, Google tag gateway for advertisers will gradually be enabled/
+				)
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should show the opt-out notice when conditions are met', async () => {
+			fetchMock.getOnce( serverRequirementStatusEndpoint, {
+				body: {
+					isEnabled: false,
+					isGTGHealthy: true,
+					isScriptAccessEnabled: true,
+					isGTGDefault: true,
+				},
+				status: 200,
+			} );
+
+			// Clear dismissed items to allow notice to show
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			// Update GTG settings to have health status true (not null)
+			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
+				isEnabled: false,
+				isGTGHealthy: true,
+				isScriptAccessEnabled: true,
+				isGTGDefault: true,
+			} );
+
+			// Mock the dismissed items endpoint with empty array
+			fetchMock.getOnce(
+				dismissedItemsEndpoint,
+				{
+					body: [],
+					status: 200,
+				},
+				{ overwriteRoutes: true }
+			);
+
+			const { getByText, waitForRegistry } = render(
+				<GoogleTagGatewayToggle />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			// Opt-out notice should be visible
+			expect(
+				getByText(
+					/Starting in October 2025, Google tag gateway for advertisers will gradually be enabled/
+				)
+			).toBeInTheDocument();
+
+			// Should have "Opt out" button
+			expect( getByText( 'Opt out' ) ).toBeInTheDocument();
+		} );
+
+		it( 'should not show the opt-out notice when GTG is already enabled', async () => {
+			fetchMock.getOnce( serverRequirementStatusEndpoint, {
+				body: {
+					isEnabled: true,
+					isGTGHealthy: true,
+					isScriptAccessEnabled: true,
+					isGTGDefault: true,
+				},
+				status: 200,
+			} );
+
+			// Clear dismissed items to allow notice to show if conditions were met
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			// Update settings to have GTG enabled
+			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
+				isEnabled: true,
+				isGTGHealthy: true,
+				isScriptAccessEnabled: true,
+				isGTGDefault: true,
+			} );
+
+			const { queryByText, waitForRegistry } = render(
+				<GoogleTagGatewayToggle />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			// Opt-out notice should not be visible when GTG is already enabled
+			expect(
+				queryByText(
+					/Starting in October 2025, Google tag gateway for advertisers will gradually be enabled/
+				)
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should not show the opt-out notice when isGTGDefault is false', async () => {
+			fetchMock.getOnce( serverRequirementStatusEndpoint, {
+				body: {
+					isEnabled: false,
+					isGTGHealthy: true,
+					isScriptAccessEnabled: true,
+					isGTGDefault: false,
+				},
+				status: 200,
+			} );
+
+			// Clear dismissed items to allow notice to show if conditions were met
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			// Update settings to have isGTGDefault as false (user has interacted)
+			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
+				isEnabled: false,
+				isGTGHealthy: true,
+				isScriptAccessEnabled: true,
+				isGTGDefault: false,
+			} );
+
+			const { queryByText, waitForRegistry } = render(
+				<GoogleTagGatewayToggle />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			// Opt-out notice should not be visible when user has already interacted
+			expect(
+				queryByText(
+					/Starting in October 2025, Google tag gateway for advertisers will gradually be enabled/
+				)
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should track an event when the opt-out notice is viewed', async () => {
+			fetchMock.getOnce( serverRequirementStatusEndpoint, {
+				body: {
+					isEnabled: false,
+					isGTGHealthy: true,
+					isScriptAccessEnabled: true,
+					isGTGDefault: true,
+				},
+				status: 200,
+			} );
+
+			// Clear dismissed items to allow notice to show
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			// Update GTG settings to have health status true (not null)
+			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
+				isEnabled: false,
+				isGTGHealthy: true,
+				isScriptAccessEnabled: true,
+				isGTGDefault: true,
+			} );
+
+			const { getByText, rerender, waitForRegistry } = render(
+				<GoogleTagGatewayToggle />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			// Verify notice is present
+			expect(
+				getByText(
+					/Starting in October 2025, Google tag gateway for advertisers will gradually be enabled/
+				)
+			).toBeInTheDocument();
+
+			// Simulate notice becoming visible
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} ) );
+
+			rerender( <GoogleTagGatewayToggle /> );
+
+			// Should track view event
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_gtg-opt-out-notice',
+				'view_notice'
+			);
+		} );
+
+		it( 'should handle "Opt out" button click and update isGTGDefault', async () => {
+			fetchMock.getOnce( serverRequirementStatusEndpoint, {
+				body: {
+					isEnabled: false,
+					isGTGHealthy: true,
+					isScriptAccessEnabled: true,
+					isGTGDefault: true,
+				},
+				status: 200,
+			} );
+
+			// Clear dismissed items to allow notice to show
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			// Update GTG settings to have health status true (not null)
+			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
+				isEnabled: false,
+				isGTGHealthy: true,
+				isScriptAccessEnabled: true,
+				isGTGDefault: true,
+			} );
+
+			const { getByText, queryByText, waitForRegistry } = render(
+				<GoogleTagGatewayToggle />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			// Verify notice is present
+			expect(
+				getByText(
+					/Starting in October 2025, Google tag gateway for advertisers will gradually be enabled/
+				)
+			).toBeInTheDocument();
+
+			// Verify initial state
+			expect( registry.select( CORE_SITE ).isGTGDefault() ).toBe( true );
+
+			const optOutButton = getByText( 'Opt out' );
+
+			// Click "Opt out" button
+			optOutButton.click();
+
+			// Should track opt out event
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_gtg-opt-out-notice',
+				'click_opt_out'
+			);
+
+			// Should update isGTGDefault to false
+			expect( registry.select( CORE_SITE ).isGTGDefault() ).toBe( false );
+
+			// Notice should be dismissed (no longer visible)
+			await waitForRegistry();
+			expect(
+				queryByText(
+					/Starting in October 2025, Google tag gateway for advertisers will gradually be enabled/
+				)
+			).not.toBeInTheDocument();
+		} );
 	} );
 } );
