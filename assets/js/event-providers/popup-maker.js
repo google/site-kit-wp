@@ -17,7 +17,7 @@
 /**
  * Internal dependencies
  */
-import { PII_TYPE, normalizeValue, classifyPII } from './utils';
+import { classifyPII, getUserData } from './utils';
 
 ( ( jQuery, PUM ) => {
 	if ( ! jQuery || ! PUM ) {
@@ -29,7 +29,7 @@ import { PII_TYPE, normalizeValue, classifyPII } from './utils';
 
 		const userData =
 			gtagUserDataEnabled && shouldHandleProvider( args.formProvider )
-				? getUserData( form, args )
+				? getUserDataFromPMForm( form )
 				: undefined;
 
 		global._googlesitekit?.gtagEvent?.(
@@ -57,11 +57,12 @@ function shouldHandleProvider( provider ) {
  * Extracts and classifies user data from a form submission inside a Popup Maker popup.
  *
  * @since n.e.x.t
+ * @since n.e.x.t Renamed to `getUserDataFromPMForm` because `getUserData` was extracted into a generic utility function.
  *
  * @param {Object} form A jQuery object or an HTMLFormElement instance.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
  */
-function getUserData( form ) {
+function getUserDataFromPMForm( form ) {
 	// eslint-disable-next-line sitekit/acronym-case
 	form = form instanceof HTMLFormElement ? form : form[ 0 ];
 
@@ -96,67 +97,5 @@ function getUserData( form ) {
 		} )
 		.filter( Boolean );
 
-	const userDataFields = [
-		[ 'address', getAddress( detectedFields ) ],
-		[ 'email', getEmail( detectedFields ) ],
-		[ 'phone_number', getPhoneNumber( detectedFields ) ],
-	].filter( ( [ , value ] ) => value );
-
-	if ( userDataFields.length === 0 ) {
-		return undefined;
-	}
-
-	return Object.fromEntries( userDataFields );
-}
-
-/**
- * Extracts and formats name fields for Google Tag's user_data address object.
- *
- * @since n.e.x.t
- *
- * @param {Array<Object>} fields An array of detected PII fields.
- * @return {Object|undefined} An object containing normalized first_name and optionally last_name, or undefined if no names found.
- */
-function getAddress( fields ) {
-	const names = fields
-		.filter( ( { type } ) => type === PII_TYPE.NAME )
-		.map( ( { value } ) => value );
-
-	if ( ! names.length ) {
-		return undefined;
-	}
-
-	const [ firstName, ...lastNames ] =
-		names.length === 1 ? names[ 0 ].split( ' ' ) : names;
-
-	return {
-		first_name: normalizeValue( firstName ),
-		...( lastNames?.length > 0
-			? { last_name: normalizeValue( lastNames.join( ' ' ) ) }
-			: {} ),
-	};
-}
-
-/**
- * Extracts the email address from detected PII fields.
- *
- * @since n.e.x.t
- *
- * @param {Array<Object>} fields An array of detected PII fields.
- * @return {string|undefined} The email address if found, undefined otherwise.
- */
-function getEmail( fields ) {
-	return fields.find( ( { type } ) => type === PII_TYPE.EMAIL )?.value;
-}
-
-/**
- * Extracts the phone number from detected PII fields.
- *
- * @since n.e.x.t
- *
- * @param {Array<Object>} fields An array of detected PII fields.
- * @return {string|undefined} The phone number if found, undefined otherwise.
- */
-function getPhoneNumber( fields ) {
-	return fields.find( ( { type } ) => type === PII_TYPE.PHONE )?.value;
+	return getUserData( detectedFields );
 }
