@@ -53,6 +53,12 @@ export default function NoticeNotification( {
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
+
+		if ( ctaButton?.dismissOnClick ) {
+			dismissNotification( notificationID, {
+				...( ctaButton?.dismissOptions || {} ),
+			} );
+		}
 	}
 
 	return (
