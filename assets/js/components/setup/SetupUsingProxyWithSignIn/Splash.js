@@ -71,6 +71,7 @@ export default function Splash( { children } ) {
 
 	let title;
 	let description;
+	let showLearnMoreLink = false;
 
 	if ( 'revoked' === getQueryArg( location.href, 'googlesitekit_context' ) ) {
 		title = sprintf(
@@ -99,6 +100,7 @@ export default function Splash( { children } ) {
 			'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google services.',
 			'google-site-kit'
 		);
+		showLearnMoreLink = true;
 	} else {
 		title = setupFlowRefreshEnabled
 			? __( "Let's get started!", 'google-site-kit' )
@@ -128,6 +130,7 @@ export default function Splash( { children } ) {
 		title,
 		description,
 		connectedProxyURL,
+		showLearnMoreLink,
 	};
 
 	return (

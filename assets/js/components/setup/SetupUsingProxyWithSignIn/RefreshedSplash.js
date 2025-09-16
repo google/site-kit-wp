@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -29,6 +30,7 @@ import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
 import Checkbox from '@/js/googlesitekit/components-gm2/Checkbox';
 import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
+import Link from '@/js/components/Link';
 import useActivateAnalyticsOptIn from '@/js/hooks/useActivateAnalyticsOptIn';
 import { Cell, Row } from '@/js/material-components';
 import SplashGraphic from '@/svg/graphics/splash-graphic.svg';
@@ -39,8 +41,11 @@ export default function RefreshedSplash( {
 	analyticsModuleAvailable,
 	children,
 	connectedProxyURL,
+	description,
 	disconnectedReason,
 	homeURL,
+	secondAdminLearnMoreLink,
+	showLearnMoreLink,
 	title,
 } ) {
 	const { checked, handleOnChange } = useActivateAnalyticsOptIn();
@@ -70,6 +75,31 @@ export default function RefreshedSplash( {
 				>
 					{ title }
 				</Typography>
+
+				<p className="googlesitekit-setup__description">
+					{ ! showLearnMoreLink && description }
+
+					{ showLearnMoreLink &&
+						createInterpolateElement(
+							sprintf(
+								/* translators: 1: The description. 2: The learn more link. */
+								__(
+									'%1$s <Link>%2$s</Link>',
+									'google-site-kit'
+								),
+								description,
+								__( 'Learn more', 'google-site-kit' )
+							),
+							{
+								Link: (
+									<Link
+										href={ secondAdminLearnMoreLink }
+										external
+									/>
+								),
+							}
+						) }
+				</p>
 
 				{ analyticsModuleAvailable && ! analyticsModuleActive && (
 					<div className="googlesitekit-setup__analytics-opt-in-wrapper">

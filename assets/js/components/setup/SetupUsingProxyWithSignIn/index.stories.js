@@ -224,6 +224,230 @@ ResetSuccess.parameters = {
 	},
 };
 
+export const RefreshedSetupFlow = Template.bind( {} );
+RefreshedSetupFlow.storyName = 'Refreshed setup flow';
+RefreshedSetupFlow.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+			resettable: false,
+		} );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+	},
+};
+RefreshedSetupFlow.parameters = {
+	features: [ 'setupFlowRefresh' ],
+};
+
+export const RefreshedSetupFlowStagingEnvironmentWarning = Template.bind( {} );
+RefreshedSetupFlowStagingEnvironmentWarning.storyName =
+	'Refreshed setup flow - Staging environment warning';
+RefreshedSetupFlowStagingEnvironmentWarning.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+			resettable: false,
+		} );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+	},
+};
+RefreshedSetupFlowStagingEnvironmentWarning.parameters = {
+	features: [ 'setupFlowRefresh' ],
+};
+
+export const RefreshedSetupFlowWithDashboardSharing = Template.bind( {} );
+RefreshedSetupFlowWithDashboardSharing.storyName =
+	'Refreshed setup flow - with Dashboard Sharing enabled and available';
+RefreshedSetupFlowWithDashboardSharing.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: true,
+			hasMultipleAdmins: true,
+		} );
+
+		const commonModuleCapabilities = {
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_SEARCH_CONSOLE
+			) ]: true,
+		};
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: true,
+			...commonModuleCapabilities,
+		} );
+
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_SEARCH_CONSOLE, active: true, connected: true },
+		] );
+	},
+};
+RefreshedSetupFlowWithDashboardSharing.parameters = {
+	features: [ 'setupFlowRefresh' ],
+};
+
+export const RefreshedSetupFlowWithDashboardSharingOneAdmin = Template.bind(
+	{}
+);
+RefreshedSetupFlowWithDashboardSharingOneAdmin.storyName =
+	'Refreshed setup flow - with Dashboard Sharing enabled and available but there is only one admin';
+RefreshedSetupFlowWithDashboardSharingOneAdmin.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: true,
+			hasMultipleAdmins: false,
+		} );
+
+		const commonModuleCapabilities = {
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_SEARCH_CONSOLE
+			) ]: true,
+		};
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: true,
+			...commonModuleCapabilities,
+		} );
+
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_SEARCH_CONSOLE, active: true, connected: true },
+		] );
+	},
+};
+RefreshedSetupFlowWithDashboardSharingOneAdmin.parameters = {
+	features: [ 'setupFlowRefresh' ],
+};
+
+export const RefreshedSetupFlowConnected = Template.bind( {} );
+RefreshedSetupFlowConnected.storyName = 'Refreshed setup flow - Connected';
+RefreshedSetupFlowConnected.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+			resettable: true,
+		} );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+	},
+};
+RefreshedSetupFlowConnected.parameters = {
+	features: [ 'setupFlowRefresh' ],
+};
+
+export const RefreshedSetupFlowDisconnectedURLChanged = Template.bind( {} );
+RefreshedSetupFlowDisconnectedURLChanged.storyName =
+	'Refreshed setup flow - Disconnected - URL changed';
+RefreshedSetupFlowDisconnectedURLChanged.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+			resettable: false,
+		} );
+		provideUserAuthentication( registry, {
+			authenticated: false,
+			disconnectedReason: DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
+			connectedProxyURL: 'https://example.org',
+		} );
+	},
+};
+RefreshedSetupFlowDisconnectedURLChanged.parameters = {
+	features: [ 'setupFlowRefresh' ],
+};
+
+export const RefreshedSetupFlowRevokedAccess = Template.bind( {} );
+RefreshedSetupFlowRevokedAccess.storyName =
+	'Refreshed setup flow - Revoked access';
+RefreshedSetupFlowRevokedAccess.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteInfo( registry );
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+			resettable: false,
+		} );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+	},
+};
+RefreshedSetupFlowRevokedAccess.parameters = {
+	features: [ 'setupFlowRefresh' ],
+	query: {
+		googlesitekit_context: 'revoked',
+	},
+};
+
+export const RefreshedSetupFlowResetSuccess = Template.bind( {} );
+RefreshedSetupFlowResetSuccess.storyName =
+	'Refreshed setup flow - Reset success';
+RefreshedSetupFlowResetSuccess.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteInfo( registry );
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+			resettable: false,
+		} );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+	},
+};
+RefreshedSetupFlowResetSuccess.parameters = {
+	features: [ 'setupFlowRefresh' ],
+	query: {
+		googlesitekit_context: '',
+		notification: 'reset_success',
+	},
+};
+
+export const RefreshedSetupFlowWithAnalyticsActive = Template.bind( {} );
+RefreshedSetupFlowWithAnalyticsActive.storyName =
+	'Refreshed setup flow - with Analytics active';
+RefreshedSetupFlowWithAnalyticsActive.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+			resettable: false,
+		} );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: false,
+			},
+		] );
+	},
+};
+RefreshedSetupFlowWithAnalyticsActive.parameters = {
+	features: [ 'setupFlowRefresh' ],
+};
+
 export default {
 	title: 'Setup / Using Proxy With Sign-in',
 	decorators: [
