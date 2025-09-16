@@ -35,7 +35,8 @@ import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 
-const GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY = 'gtg-opt-out-notice-dismissed';
+export const GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY =
+	'gtg-opt-out-notice-dismissed';
 
 const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
 
@@ -85,21 +86,6 @@ export default function GoogleTagGatewayOptOutNotice() {
 				GTG_AUTO_ENABLE_NOTIFICATION
 			)
 	);
-
-	const handleGotItClick = useCallback( async () => {
-		trackEvent( `${ viewContext }_gtg-opt-out-notice`, 'dismiss_notice' );
-
-		await dismissItem( GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY );
-
-		if ( isAutoEnableNotificationVisible ) {
-			dismissNotification( GTG_AUTO_ENABLE_NOTIFICATION );
-		}
-	}, [
-		viewContext,
-		dismissItem,
-		isAutoEnableNotificationVisible,
-		dismissNotification,
-	] );
 
 	const handleOptOutClick = useCallback( async () => {
 		trackEvent( `${ viewContext }_gtg-opt-out-notice`, 'click_opt_out' );
@@ -164,10 +150,6 @@ export default function GoogleTagGatewayOptOutNotice() {
 			type={ Notice.TYPES.NEW }
 			description={ description }
 			className="googlesitekit-gtg-settings-notice"
-			ctaButton={ {
-				label: __( 'Got it', 'google-site-kit' ),
-				onClick: handleGotItClick,
-			} }
 			dismissButton={ {
 				label: __( 'Opt out', 'google-site-kit' ),
 				onClick: handleOptOutClick,
