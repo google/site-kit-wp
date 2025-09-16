@@ -696,6 +696,9 @@ export const DEFAULT_NOTIFICATIONS = {
 			const isAccessEnabled = isScriptAccessEnabled();
 
 			if ( [ isHealthy, isAccessEnabled ].includes( null ) ) {
+				// Health check results are not yet available.
+				// Trigger a fetch so the values will be updated on the next render.
+				// No need to wait here since this function only needs the current state.
 				dispatch( CORE_SITE ).fetchGetGTGServerRequirementStatus();
 				return false;
 			}
