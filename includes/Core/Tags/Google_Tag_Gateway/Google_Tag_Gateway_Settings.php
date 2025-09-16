@@ -28,6 +28,53 @@ class Google_Tag_Gateway_Settings extends Setting {
 	const OPTION = 'googlesitekit_google_tag_gateway';
 
 	/**
+	 * Registers the GTG settings.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function register() {
+		parent::register();
+
+		$this->add_option_default_filters();
+	}
+
+	/**
+	 * Adds default filters to the GTG settings to ensure default values are present in the saved option.
+	 *
+	 * This is particularly important for newly added settings like `isGTGDefault` which won't exist
+	 * in the database for existing sites. The filters ensure that:
+	 * 1. If no GTG settings exist at all, the complete default array is returned
+	 * 2. If GTG settings exist but are missing new fields (like `isGTGDefault`), those missing
+	 *    fields are filled in with their default values
+	 *
+	 * @since n.e.x.t
+	 */
+	protected function add_option_default_filters() {
+		add_filter(
+			'option_' . static::OPTION,
+			function ( $option ) {
+				if ( ! is_array( $option ) ) {
+					return $this->get_default();
+				}
+				return $option;
+			},
+			0
+		);
+
+		// Fill in any missing keys with defaults.
+		add_filter(
+			'option_' . static::OPTION,
+			function ( $option ) {
+				if ( is_array( $option ) ) {
+					return $option + $this->get_default();
+				}
+				return $option;
+			},
+			99
+		);
+	}
+
+	/**
 	 * Gets the expected value type.
 	 *
 	 * @since 1.141.0
