@@ -431,6 +431,7 @@ class Google_ProxyTest extends TestCase {
 				'active_modules'         => 'site-verification search-console pagespeed-insights',
 				'connected_modules'      => 'site-verification search-console pagespeed-insights',
 				'php_version'            => phpversion(),
+				'feature_metrics'        => array(),
 			),
 			$this->request_args['body'],
 			'Get features request body should contain site credentials and platform information.'
