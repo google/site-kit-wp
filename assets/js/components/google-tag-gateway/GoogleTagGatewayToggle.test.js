@@ -37,7 +37,10 @@ import {
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_SETTINGS,
+} from '@/js/googlesitekit/constants';
 import * as tracking from '@/js/util/tracking';
 import GoogleTagGatewayToggle from './GoogleTagGatewayToggle';
 import { GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY } from '@/js/components/google-tag-gateway/GoogleTagGatewayOptOutNotice';
@@ -734,7 +737,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 				<GoogleTagGatewayToggle />,
 				{
 					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					viewContext: VIEW_CONTEXT_SETTINGS,
 				}
 			);
 
@@ -757,7 +760,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 			// Should track view event.
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'mainDashboard_gtg-opt-out-notice',
+				'settings_gtg-opt-out-notice',
 				'view_notice'
 			);
 		} );
@@ -798,7 +801,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 				<GoogleTagGatewayToggle />,
 				{
 					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					viewContext: VIEW_CONTEXT_SETTINGS,
 				}
 			);
 
@@ -820,7 +823,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 			// Should track opt out event.
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'mainDashboard_gtg-opt-out-notice',
+				'settings_gtg-opt-out-notice',
 				'click_opt_out'
 			);
 
