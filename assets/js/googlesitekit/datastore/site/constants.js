@@ -16,7 +16,20 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+
 export const CORE_SITE = 'core/site';
 
 export const AMP_MODE_PRIMARY = 'primary';
 export const AMP_MODE_SECONDARY = 'secondary';
+
+export const GOOGLE_TAG_GATEWAY_MODULES = [
+	MODULE_SLUG_ANALYTICS_4,
+	MODULE_SLUG_ADS,
+	MODULE_SLUG_TAGMANAGER,
+];
