@@ -1,5 +1,5 @@
 /**
- * Google Tag Gateway Heads-Up Banner component.
+ * Google Tag Gateway Auto-Enable Notification component.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -37,7 +37,10 @@ import Notice from '@/js/components/Notice';
 import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
 
-export default function GoogleTagGatewayHeadsUpBanner( { id, Notification } ) {
+export default function GoogleTagGatewayAutoEnableNotification( {
+	id,
+	Notification,
+} ) {
 	const viewContext = useViewContext();
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -80,14 +83,14 @@ export default function GoogleTagGatewayHeadsUpBanner( { id, Notification } ) {
 
 	const handleGotItClick = useCallback( () => {
 		trackEvent(
-			`${ viewContext }_gtg-heads-up-banner`,
+			`${ viewContext }_gtg-auto-enable-notification`,
 			'dismiss_notification'
 		);
 	}, [ viewContext ] );
 
 	const handleEditSettingsClick = useCallback( () => {
 		trackEvent(
-			`${ viewContext }_gtg-heads-up-banner`,
+			`${ viewContext }_gtg-auto-enable-notification`,
 			'click_edit_settings'
 		);
 		if ( settingsURL ) {
@@ -113,7 +116,7 @@ export default function GoogleTagGatewayHeadsUpBanner( { id, Notification } ) {
 					rel="noopener noreferrer"
 					onClick={ () => {
 						trackEvent(
-							`${ viewContext }_gtg-heads-up-banner`,
+							`${ viewContext }_gtg-auto-enable-notification`,
 							'click_learn_more_link'
 						);
 					} }
