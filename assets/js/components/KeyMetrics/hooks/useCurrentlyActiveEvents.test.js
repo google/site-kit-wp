@@ -35,7 +35,6 @@ describe( 'useCurrentlyActiveEvents', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideUserAuthentication( registry );
-		// Ensure the Analytics 4 datastore is registered so selectors are available.
 		registerAnalytics4Store( registry );
 	} );
 
@@ -47,7 +46,7 @@ describe( 'useCurrentlyActiveEvents', () => {
 			],
 			isWidgetHidden: false,
 		} );
-		// Pre-provide user input settings to avoid triggering fetch in early render.
+
 		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 			includeConversionEvents: { values: [], scope: 'site' },
 		} );
@@ -61,7 +60,6 @@ describe( 'useCurrentlyActiveEvents', () => {
 
 		await waitForRegistry();
 
-		// Lead-related events map to the selected metric.
 		expect( result.current ).toEqual(
 			expect.arrayContaining( [
 				'contact',
