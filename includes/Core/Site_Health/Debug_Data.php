@@ -688,7 +688,7 @@ class Debug_Data {
 	/**
 	 * Gets debug fields for Google tag gateway.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 * @return array
 	 */
 	private function get_gtg_fields() {

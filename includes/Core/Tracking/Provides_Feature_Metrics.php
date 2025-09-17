@@ -14,7 +14,7 @@ namespace Google\Site_Kit\Core\Tracking;
  * Interface for any feature that has metrics to be tracked via the
  * `site-management/features` endpoint.
  *
- * @since n.e.x.t
+ * @since 1.162.0
  * @access private
  * @ignore
  */
@@ -23,7 +23,7 @@ interface Provides_Feature_Metrics {
 	/**
 	 * Gets feature metrics to be tracked.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @return array Feature metrics tracking data to be tracked via the
 	 * `site-management/features` endpoint.

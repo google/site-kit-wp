@@ -44,7 +44,7 @@ const HANDLED_PROVIDERS = [ 'wpforms', 'contactform7', 'ninjaforms', 'mc4wp' ];
 /**
  * Determines if the form provider is already handled in another script.
  *
- * @since n.e.x.t
+ * @since 1.162.0
  *
  * @param {string} provider The form provider (plugin) slug.
  * @return {boolean} Whether this provider's submission should be handled here or not.
@@ -56,8 +56,7 @@ function shouldHandleProvider( provider ) {
 /**
  * Extracts and classifies user data from a form submission inside a Popup Maker popup.
  *
- * @since n.e.x.t
- * @since n.e.x.t Renamed to `getUserDataFromPMForm` because `getUserData` was extracted into a generic utility function.
+ * @since 1.162.0 Renamed to `getUserDataFromPMForm` because `getUserData` was extracted into a generic utility function.
  *
  * @param {Object} form A jQuery object or an HTMLFormElement instance.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.

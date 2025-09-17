@@ -471,7 +471,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	/**
 	 * Gets an array of internal feature metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @return array
 	 */

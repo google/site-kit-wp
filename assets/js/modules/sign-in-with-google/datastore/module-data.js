@@ -101,7 +101,7 @@ export const resolvers = {
 	 * Resolves module data.
 	 *
 	 * @since 1.146.0
-	 * @since n.e.x.t Updated to use centralized module data access.
+	 * @since 1.162.0 Updated to use centralized module data access.
 	 */
 	*getModuleData() {
 		const registry = yield commonActions.getRegistry();
@@ -162,7 +162,7 @@ export const selectors = {
 	/**
 	 * Gets existing client ID from previous module connection.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} Existing client ID string or undefined.
