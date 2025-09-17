@@ -32,7 +32,7 @@ import {
 	provideAnalytics4MockReport,
 	provideAnalyticsReportWithoutDateRangeData,
 } from '@/js/modules/analytics-4/utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../tests/js/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import { DAY_IN_SECONDS } from '@/js/util';
 import * as __fixtures__ from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { provideSearchConsoleMockReport } from '@/js/modules/search-console/util/data-mock';
@@ -329,6 +329,7 @@ export function setupAnalytics4Error(
 }
 
 export function setupAnalytics4Property( registry, createdDayBefore = 10 ) {
+	// eslint-disable-next-line sitekit/no-direct-date
 	const createTime = new Date(
 		Date.now() - DAY_IN_SECONDS * createdDayBefore * 1000
 	).toISOString();

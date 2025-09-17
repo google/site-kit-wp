@@ -24,12 +24,8 @@
 			margin: 11.5px 0; // Prevents layout shift.
 		}
 
-		.googlesitekit-notice--warning {
+		.googlesitekit-notice {
 			margin-top: 10px;
-
-			@media (min-width: $bp-tablet) {
-				padding: 14px $grid-gap-desktop;
-			}
 		}
 
 		.googlesitekit-badge {
