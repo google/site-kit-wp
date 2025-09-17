@@ -45,9 +45,9 @@ exports[`GoogleTagGatewayToggle should render in default state 1`] = `
         class="googlesitekit-google-tag-gateway-toggle__switch-badge"
       >
         <span
-          class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
+          class="googlesitekit-badge googlesitekit-new-badge googlesitekit-badge--has-left-spacing"
         >
-          Beta
+          New
         </span>
       </div>
     </div>
@@ -125,9 +125,9 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
         class="googlesitekit-google-tag-gateway-toggle__switch-badge"
       >
         <span
-          class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
+          class="googlesitekit-badge googlesitekit-new-badge googlesitekit-badge--has-left-spacing"
         >
-          Beta
+          New
         </span>
       </div>
     </div>

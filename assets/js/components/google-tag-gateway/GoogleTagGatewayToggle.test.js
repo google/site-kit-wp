@@ -526,7 +526,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 		);
 	} );
 
-	it( 'should render a "Beta" badge', async () => {
+	it( 'should render a "New" badge', async () => {
 		fetchMock.getOnce( serverRequirementStatusEndpoint, {
 			body: {
 				isEnabled: false,
@@ -549,7 +549,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 		const badgeElement = container.querySelector( '.googlesitekit-badge' );
 
 		expect( badgeElement ).toBeInTheDocument();
-		expect( badgeElement ).toHaveTextContent( 'Beta' );
+		expect( badgeElement ).toHaveTextContent( 'New' );
 	} );
 
 	describe( 'Opt-out notice integration', () => {
