@@ -159,11 +159,6 @@ class Google_Tag_Gateway_Settings extends Setting {
 
 		$updated = array_intersect_key( $partial, $allowed_settings );
 
-		// Auto-update isGTGDefault to false when isEnabled changes, but only if isGTGDefault is currently true.
-		if ( isset( $updated['isEnabled'] ) && true === $settings['isGTGDefault'] ) {
-			$updated['isGTGDefault'] = false;
-		}
-
 		return $this->set( array_merge( $settings, $updated ) );
 	}
 
