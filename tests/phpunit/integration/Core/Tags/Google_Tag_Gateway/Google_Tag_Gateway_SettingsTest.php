@@ -192,15 +192,12 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 		);
 
 		// Make sure settings can be updated even without having them set initially.
-		// Note: When isEnabled is set and isGTGDefault is true (default), isGTGDefault auto-updates to false.
 		$this->settings->merge( $original_settings );
-		$expected_after_merge                 = $original_settings;
-		$expected_after_merge['isGTGDefault'] = false; // Auto-updated because isEnabled was set.
-		$this->assertEqualSetsWithIndex( $expected_after_merge, $this->settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
 
 		// Make sure invalid keys aren't set.
 		$this->settings->merge( array( 'test_key' => 'test_value' ) );
-		$this->assertEqualSetsWithIndex( $expected_after_merge, $this->settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
 
 		// Make sure that we can update settings partially.
 		$this->settings->set( $original_settings );
@@ -218,11 +215,7 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 		// Make sure that we can update all settings at once.
 		$this->settings->set( $original_settings );
 		$this->settings->merge( $changed_settings );
-		// Note: When isEnabled is in the merged settings and current isGTGDefault is true,
-		// isGTGDefault will be auto-updated to false regardless of what's in $changed_settings.
-		$expected_changed_settings                 = $changed_settings;
-		$expected_changed_settings['isGTGDefault'] = false; // Auto-updated
-		$this->assertEqualSetsWithIndex( $expected_changed_settings, $this->settings->get() );
+		$this->assertEqualSetsWithIndex( $changed_settings, $this->settings->get() );
 
 		// Make sure that we can't set null for the isGTGHealthy property.
 		$this->settings->set( $original_settings );
@@ -245,8 +238,11 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
 	}
 
-	public function test_merge_isGTGDefault_auto_update_logic() {
-		// Test that isGTGDefault is automatically set to false when isEnabled changes and isGTGDefault is currently true.
+	public function test_merge_isGTGDefault_explicit_setting() {
+		// Test that isGTGDefault can be explicitly set via merge().
+		// Note: Auto-update logic is handled by the parent Setting::on_change(),
+		// via Google_Tag_Gateway::register().
+
 		$this->settings->set(
 			array(
 				'isEnabled'             => false,
@@ -256,63 +252,19 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 			)
 		);
 
-		// When isEnabled changes from false to true and isGTGDefault is true, isGTGDefault should auto-update to false.
+		// When isEnabled changes, isGTGDefault should maintain the explicit value set.
 		$this->settings->merge( array( 'isEnabled' => true ) );
 		$this->assertEqualSetsWithIndex(
-			array(
-				'isEnabled'             => true,
-				'isGTGHealthy'          => false,
-				'isScriptAccessEnabled' => false,
-				'isGTGDefault'          => false,
-			),
-			$this->settings->get()
-		);
-
-		// Reset settings for next test.
-		$this->settings->set(
 			array(
 				'isEnabled'             => true,
 				'isGTGHealthy'          => false,
 				'isScriptAccessEnabled' => false,
 				'isGTGDefault'          => true,
-			)
-		);
-
-		// When isEnabled changes from true to false and isGTGDefault is true, isGTGDefault should auto-update to false.
-		$this->settings->merge( array( 'isEnabled' => false ) );
-		$this->assertEqualSetsWithIndex(
-			array(
-				'isEnabled'             => false,
-				'isGTGHealthy'          => false,
-				'isScriptAccessEnabled' => false,
-				'isGTGDefault'          => false,
 			),
 			$this->settings->get()
 		);
 
-		// Test that isGTGDefault is NOT auto-updated when isGTGDefault is already false.
-		$this->settings->set(
-			array(
-				'isEnabled'             => false,
-				'isGTGHealthy'          => false,
-				'isScriptAccessEnabled' => false,
-				'isGTGDefault'          => false,
-			)
-		);
-
-		// When isEnabled changes and isGTGDefault is already false, isGTGDefault should remain false.
-		$this->settings->merge( array( 'isEnabled' => true ) );
-		$this->assertEqualSetsWithIndex(
-			array(
-				'isEnabled'             => true,
-				'isGTGHealthy'          => false,
-				'isScriptAccessEnabled' => false,
-				'isGTGDefault'          => false,
-			),
-			$this->settings->get()
-		);
-
-		// Test that isGTGDefault is NOT auto-updated when isEnabled is not being changed.
+		// Test that isGTGDefault remains unchanged when other settings change.
 		$this->settings->set(
 			array(
 				'isEnabled'             => false,
@@ -334,7 +286,7 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 			$this->settings->get()
 		);
 
-		// Test that auto-update logic takes precedence when isEnabled is changed.
+		// Test that isGTGDefault can be explicitly set to false.
 		$this->settings->set(
 			array(
 				'isEnabled'             => false,
@@ -344,25 +296,19 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 			)
 		);
 
-		// When both isEnabled and isGTGDefault are set, auto-update logic takes precedence.
-		// This ensures that any change to isEnabled marks the settings as "no longer default".
-		$this->settings->merge(
-			array(
-				'isEnabled'    => true,
-				'isGTGDefault' => true,
-			)
-		);
+		// When isGTGDefault is explicitly set to false, it should be respected.
+		$this->settings->merge( array( 'isGTGDefault' => false ) );
 		$this->assertEqualSetsWithIndex(
 			array(
-				'isEnabled'             => true,
+				'isEnabled'             => false,
 				'isGTGHealthy'          => false,
 				'isScriptAccessEnabled' => false,
-				'isGTGDefault'          => false, // Auto-updated despite explicit setting.
+				'isGTGDefault'          => false,
 			),
 			$this->settings->get()
 		);
 
-		// Test that isGTGDefault can be explicitly set when isEnabled is not being changed.
+		// Test that isGTGDefault can be explicitly set to true.
 		$this->settings->set(
 			array(
 				'isEnabled'             => false,
@@ -372,14 +318,14 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 			)
 		);
 
-		// When only isGTGDefault is set (no isEnabled change), explicit setting should work.
+		// When isGTGDefault is explicitly set to true, it should be respected.
 		$this->settings->merge( array( 'isGTGDefault' => true ) );
 		$this->assertEqualSetsWithIndex(
 			array(
 				'isEnabled'             => false,
 				'isGTGHealthy'          => false,
 				'isScriptAccessEnabled' => false,
-				'isGTGDefault'          => true, // Explicit setting works when isEnabled not changed.
+				'isGTGDefault'          => true,
 			),
 			$this->settings->get()
 		);
