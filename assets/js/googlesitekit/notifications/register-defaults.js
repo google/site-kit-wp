@@ -38,11 +38,13 @@ import {
 	NOTIFICATION_GROUPS,
 	NOTIFICATION_AREAS,
 	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
-	GTG_SETUP_CTA_BANNER_NOTIFICATION,
 	PRIORITY,
 } from './constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	CORE_SITE,
+	GOOGLE_TAG_GATEWAY_MODULES,
+} from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
@@ -68,7 +70,6 @@ import ZeroDataNotification from '@/js/components/notifications/ZeroDataNotifica
 import GA4AdSenseLinkedNotification from '@/js/components/notifications/GA4AdSenseLinkedNotification';
 import SetupErrorMessageNotification from '@/js/components/notifications/SetupErrorMessageNotification';
 import GoogleTagGatewayWarningNotification from '@/js/components/notifications/GoogleTagGatewayWarningNotification';
-import GoogleTagGatewaySetupBanner from '@/js/components/notifications/GoogleTagGatewaySetupBanner';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '@/js/components/consent-mode/constants';
 import ConsentModeSetupCTABanner from '@/js/components/consent-mode/ConsentModeSetupCTABanner';
 import EnableAutoUpdateBannerNotification, {
@@ -620,50 +621,19 @@ export const DEFAULT_NOTIFICATIONS = {
 		},
 		dismissRetries: 2,
 	},
-	[ GTG_SETUP_CTA_BANNER_NOTIFICATION ]: {
-		Component: GoogleTagGatewaySetupBanner,
-		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
-			const isGTGModuleConnected =
-				select( CORE_SITE ).isAnyGoogleTagGatewayModuleConnected();
-
-			if ( ! isGTGModuleConnected ) {
-				return false;
-			}
-
-			await resolveSelect( CORE_SITE ).getGoogleTagGatewaySettings();
-
-			const {
-				isGoogleTagGatewayEnabled,
-				isGTGHealthy,
-				isScriptAccessEnabled,
-			} = select( CORE_SITE );
-
-			if ( isGoogleTagGatewayEnabled() ) {
-				return false;
-			}
-
-			const isHealthy = isGTGHealthy();
-			const isAccessEnabled = isScriptAccessEnabled();
-
-			if ( [ isHealthy, isAccessEnabled ].includes( null ) ) {
-				dispatch( CORE_SITE ).fetchGetGTGServerRequirementStatus();
-				return false;
-			}
-
-			return isHealthy && isAccessEnabled;
-		},
-		isDismissible: true,
-		featureFlag: 'googleTagGateway',
-	},
 	[ GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID ]: {
 		Component: GoogleTagGatewayWarningNotification,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
+			// The `CORE_SITE` `isAnyGoogleTagGatewayModuleConnected` selector
+			// relies on the resolution of `isModuleConnected`.
+			await Promise.all(
+				GOOGLE_TAG_GATEWAY_MODULES.map( ( module ) =>
+					resolveSelect( CORE_MODULES ).isModuleConnected( module )
+				)
+			);
+
 			const isGTGModuleConnected =
 				select( CORE_SITE ).isAnyGoogleTagGatewayModuleConnected();
 
