@@ -62,7 +62,7 @@ export default function RefreshedSplash( {
 			<Cell
 				smSize={ 4 }
 				mdSize={ 8 }
-				lgSize={ ! analyticsModuleActive ? 6 : 7 }
+				lgSize={ 6 }
 				className="googlesitekit-setup__icon"
 			>
 				<SplashGraphic width="508" height="466" />
