@@ -35,6 +35,8 @@ import useActivateAnalyticsOptIn from '@/js/hooks/useActivateAnalyticsOptIn';
 import { Cell, Row } from '@/js/material-components';
 import SplashGraphic from '@/svg/graphics/splash-graphic.svg';
 import SplashScreenshot from '@/svg/graphics/splash-screenshot.svg';
+import SplashScreenshotWide from '@/svg/graphics/splash-screenshot-wide-viewport.svg';
+import { useBreakpoint, BREAKPOINT_XLARGE } from '@/js/hooks/useBreakpoint';
 
 export default function RefreshedSplash( {
 	analyticsModuleActive,
@@ -48,22 +50,31 @@ export default function RefreshedSplash( {
 	showLearnMoreLink,
 	title,
 } ) {
+	const breakpoint = useBreakpoint();
 	const { checked, handleOnChange } = useActivateAnalyticsOptIn();
 
 	const cellDetailsProp = analyticsModuleActive
-		? { smSize: 4, mdSize: 6, lgSize: 5 }
-		: { smSize: 4, mdSize: 7, lgSize: 7 };
+		? { smSize: 4, mdSize: 6, lgSize: 6 }
+		: { smSize: 4, mdSize: 7, lgSize: 6 };
 
 	return (
 		<Row className="googlesitekit-setup__content">
 			<Cell
 				smSize={ 4 }
 				mdSize={ 8 }
-				lgSize={ ! analyticsModuleActive ? 5 : 7 }
+				lgSize={ ! analyticsModuleActive ? 6 : 7 }
 				className="googlesitekit-setup__icon"
 			>
 				<SplashGraphic width="508" height="466" />
-				<SplashScreenshot width="459" height="511" />
+				{ breakpoint !== BREAKPOINT_XLARGE ? (
+					<SplashScreenshot width="459" height="511" />
+				) : (
+					<SplashScreenshotWide
+						width="642"
+						height="916"
+						fill="none"
+					/>
+				) }
 			</Cell>
 
 			<Cell { ...cellDetailsProp }>
