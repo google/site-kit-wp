@@ -40,6 +40,7 @@ import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import Notice from '@/js/components/Notice';
+import GoogleTagGatewayOptOutNotice from './GoogleTagGatewayOptOutNotice';
 
 const SubtleNotificationWithIntersectionObserver =
 	withIntersectionObserver( Notice );
@@ -148,6 +149,7 @@ export default function GoogleTagGatewayToggle( { className } ) {
 					}
 				) }
 			</p>
+			<GoogleTagGatewayOptOutNotice />
 			{ ! isLoading && ! hasMetServerRequirements && (
 				<SubtleNotificationWithIntersectionObserver
 					type={ Notice.TYPES.WARNING }

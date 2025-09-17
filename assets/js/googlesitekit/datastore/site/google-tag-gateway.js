@@ -40,6 +40,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 
 const SET_GOOGLE_TAG_GATEWAY_ENABLED = 'SET_GOOGLE_TAG_GATEWAY_ENABLED';
+const SET_IS_GTG_DEFAULT = 'SET_IS_GTG_DEFAULT';
 const RESET_GOOGLE_TAG_GATEWAY_SETTINGS = 'RESET_GOOGLE_TAG_GATEWAY_SETTINGS';
 
 const settingsReducerCallback = createReducer(
@@ -65,8 +66,8 @@ const fetchSaveGoogleTagGatewaySettingsStore = createFetchStore( {
 	},
 	reducerCallback: settingsReducerCallback,
 	argsToParams: ( settings ) => {
-		const { isEnabled } = settings || {};
-		return { settings: { isEnabled } };
+		const { isEnabled, isGTGDefault } = settings || {};
+		return { settings: { isEnabled, isGTGDefault } };
 	},
 	validateParams: ( { settings } ) => {
 		invariant(
@@ -79,9 +80,16 @@ const fetchSaveGoogleTagGatewaySettingsStore = createFetchStore( {
 			'isEnabled must be a boolean.'
 		);
 
+		if ( settings.isGTGDefault !== undefined ) {
+			invariant(
+				typeof settings.isGTGDefault === 'boolean',
+				'isGTGDefault must be a boolean.'
+			);
+		}
+
 		invariant(
-			Object.keys( settings ).length === 1,
-			'settings must have only the `isEnabled` property.'
+			Object.keys( settings ).length <= 2,
+			'settings must have only the `isEnabled` and `isGTGDefault` properties.'
 		);
 	},
 } );
@@ -145,6 +153,21 @@ const baseActions = {
 	},
 
 	/**
+	 * Sets the GTG default status for Google tag gateway.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {boolean} isGTGDefault GTG default status.
+	 * @return {Object} Redux-style action.
+	 */
+	setIsGTGDefault( isGTGDefault ) {
+		return {
+			type: SET_IS_GTG_DEFAULT,
+			payload: { isGTGDefault },
+		};
+	},
+
+	/**
 	 * Returns the current settings back to the current saved values.
 	 *
 	 * @since 1.142.0
@@ -168,6 +191,14 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 			state.googleTagGatewaySettings =
 				state.googleTagGatewaySettings || {};
 			state.googleTagGatewaySettings.isEnabled = !! payload.isEnabled;
+			break;
+		}
+
+		case SET_IS_GTG_DEFAULT: {
+			state.googleTagGatewaySettings =
+				state.googleTagGatewaySettings || {};
+			state.googleTagGatewaySettings.isGTGDefault =
+				!! payload.isGTGDefault;
 			break;
 		}
 
@@ -253,6 +284,21 @@ const baseSelectors = {
 			select( CORE_SITE ).getGoogleTagGatewaySettings() || {};
 
 		return isScriptAccessEnabled;
+	} ),
+
+	/**
+	 * Checks if GTG settings are in their default state (never modified by user).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} True if GTG settings are in default state, otherwise false. Returns undefined if the state is not loaded.
+	 */
+	isGTGDefault: createRegistrySelector( ( select ) => () => {
+		const { isGTGDefault } =
+			select( CORE_SITE ).getGoogleTagGatewaySettings() || {};
+
+		return isGTGDefault;
 	} ),
 
 	/**

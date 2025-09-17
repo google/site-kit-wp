@@ -38,6 +38,7 @@ import {
 	NOTIFICATION_GROUPS,
 	NOTIFICATION_AREAS,
 	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
+	GTG_AUTO_ENABLE_NOTIFICATION,
 	PRIORITY,
 } from './constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
@@ -69,6 +70,7 @@ import GatheringDataNotification from '@/js/components/notifications/GatheringDa
 import ZeroDataNotification from '@/js/components/notifications/ZeroDataNotification';
 import GA4AdSenseLinkedNotification from '@/js/components/notifications/GA4AdSenseLinkedNotification';
 import SetupErrorMessageNotification from '@/js/components/notifications/SetupErrorMessageNotification';
+import GoogleTagGatewayAutoEnableNotification from '@/js/components/notifications/GoogleTagGatewayAutoEnableNotification';
 import GoogleTagGatewayWarningNotification from '@/js/components/notifications/GoogleTagGatewayWarningNotification';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '@/js/components/consent-mode/constants';
 import ConsentModeSetupCTABanner from '@/js/components/consent-mode/ConsentModeSetupCTABanner';
@@ -620,6 +622,61 @@ export const DEFAULT_NOTIFICATIONS = {
 			return resolveSelect( CORE_SITE ).isAdsConnected();
 		},
 		dismissRetries: 2,
+	},
+	[ GTG_AUTO_ENABLE_NOTIFICATION ]: {
+		Component: GoogleTagGatewayAutoEnableNotification,
+		priority: PRIORITY.INFO,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+		groupID: NOTIFICATION_GROUPS.DEFAULT,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
+			// The `CORE_SITE` `isAnyGoogleTagGatewayModuleConnected` selector
+			// relies on the resolution of `isModuleConnected`.
+			await Promise.all(
+				GOOGLE_TAG_GATEWAY_MODULES.map( ( module ) =>
+					resolveSelect( CORE_MODULES ).isModuleConnected( module )
+				)
+			);
+
+			const isGTGModuleConnected =
+				select( CORE_SITE ).isAnyGoogleTagGatewayModuleConnected();
+
+			if ( ! isGTGModuleConnected ) {
+				return false;
+			}
+
+			await resolveSelect( CORE_SITE ).getGoogleTagGatewaySettings();
+
+			const {
+				isGoogleTagGatewayEnabled,
+				isGTGDefault,
+				isGTGHealthy,
+				isScriptAccessEnabled,
+			} = select( CORE_SITE );
+
+			if ( isGoogleTagGatewayEnabled() ) {
+				return false;
+			}
+
+			if ( ! isGTGDefault() ) {
+				return false;
+			}
+
+			const isHealthy = isGTGHealthy();
+			const isAccessEnabled = isScriptAccessEnabled();
+
+			if ( [ isHealthy, isAccessEnabled ].includes( null ) ) {
+				// Health check results are not yet available.
+				// Trigger a fetch so the values will be updated on the next render.
+				// No need to wait here since this function only needs the current state.
+				dispatch( CORE_SITE ).fetchGetGTGServerRequirementStatus();
+				return false;
+			}
+
+			return isHealthy && isAccessEnabled;
+		},
+		isDismissible: true,
+		featureFlag: 'googleTagGateway',
 	},
 	[ GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID ]: {
 		Component: GoogleTagGatewayWarningNotification,
