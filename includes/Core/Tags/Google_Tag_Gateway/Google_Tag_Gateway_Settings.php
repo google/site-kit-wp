@@ -39,17 +39,12 @@ class Google_Tag_Gateway_Settings extends Setting {
 	}
 
 	/**
-	 * Adds default filters to the GTG settings to ensure default values are present in the saved option.
-	 *
-	 * This is particularly important for newly added settings like `isGTGDefault` which won't exist
-	 * in the database for existing sites. The filters ensure that:
-	 * 1. If no GTG settings exist at all, the complete default array is returned
-	 * 2. If GTG settings exist but are missing new fields (like `isGTGDefault`), those missing
-	 *    fields are filled in with their default values
+	 * Registers a filter to ensure default values are present in the saved option.
 	 *
 	 * @since n.e.x.t
 	 */
 	protected function add_option_default_filters() {
+		// Ensure that a non-array is never saved as the option value.
 		add_filter(
 			'option_' . static::OPTION,
 			function ( $option ) {
@@ -62,6 +57,11 @@ class Google_Tag_Gateway_Settings extends Setting {
 		);
 
 		// Fill in any missing keys with defaults.
+		//
+		// This is particularly important for newly added settings like `isGTGDefault`
+		// which won't exist in the database for existing sites. The filter ensures that
+		// if GTG settings exist but there are missing new fields (like `isGTGDefault`), those
+		// missing fields are filled in with their default values.
 		add_filter(
 			'option_' . static::OPTION,
 			function ( $option ) {
