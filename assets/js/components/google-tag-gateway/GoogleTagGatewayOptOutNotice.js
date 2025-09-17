@@ -35,8 +35,7 @@ import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 
-export const GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY =
-	'gtg-opt-out-notice-dismissed';
+export const GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY = 'gtg-opt-out-notice';
 
 const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
 
@@ -48,57 +47,51 @@ export default function GoogleTagGatewayOptOutNotice() {
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 	const { dismissItem } = useDispatch( CORE_USER );
 
-	const isGTGModuleConnected = useSelect( ( select ) =>
-		select( CORE_SITE ).isAnyGoogleTagGatewayModuleConnected()
-	);
+	const shouldShowNotice = useSelect( ( select ) => {
+		const isNoticeDismissed = select( CORE_USER ).isItemDismissed(
+			GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY
+		);
 
-	const isGoogleTagGatewayEnabled = useSelect( ( select ) =>
-		select( CORE_SITE ).isGoogleTagGatewayEnabled()
-	);
+		const {
+			isAnyGoogleTagGatewayModuleConnected: isGTGModuleConnected,
+			isGoogleTagGatewayEnabled: isGTGEnabled,
+			isGTGDefault,
+			isGTGHealthy,
+			isScriptAccessEnabled,
+		} = select( CORE_SITE );
 
-	const isGTGDefault = useSelect( ( select ) =>
-		select( CORE_SITE ).isGTGDefault()
-	);
-
-	const isGTGHealthy = useSelect( ( select ) =>
-		select( CORE_SITE ).isGTGHealthy()
-	);
-
-	const isScriptAccessEnabled = useSelect( ( select ) =>
-		select( CORE_SITE ).isScriptAccessEnabled()
-	);
-
-	const learnMoreURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getDocumentationLinkURL(
-			'google-tag-gateway-introduction'
+		return (
+			isNoticeDismissed === false &&
+			isGTGModuleConnected() === true &&
+			isGTGEnabled() === false &&
+			isGTGDefault() === true &&
+			isGTGHealthy() === true &&
+			isScriptAccessEnabled() === true
 		);
 	} );
 
-	const isNoticeDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY
+	const isAutoEnableNotificationDismissed = useSelect( ( select ) =>
+		select( CORE_NOTIFICATIONS ).isNotificationDismissed(
+			GTG_AUTO_ENABLE_NOTIFICATION
 		)
-	);
-
-	const isAutoEnableNotificationVisible = useSelect(
-		( select ) =>
-			! select( CORE_NOTIFICATIONS ).isNotificationDismissed(
-				GTG_AUTO_ENABLE_NOTIFICATION
-			)
 	);
 
 	const handleOptOutClick = useCallback( async () => {
 		trackEvent( `${ viewContext }_gtg-opt-out-notice`, 'click_opt_out' );
 
-		// Mark settings as no longer default (user has explicitly opted out)
+		// Mark settings as no longer default (user has explicitly opted out).
 		setIsGTGDefault( false );
-		await saveGoogleTagGatewaySettings();
+		const { error } = await saveGoogleTagGatewaySettings();
 
-		// Dismiss this notice persistently
+		if ( error ) {
+			return;
+		}
+
+		// Dismiss this notice persistently.
 		await dismissItem( GTG_OPT_OUT_NOTICE_DISMISSED_ITEM_KEY );
 
-		// If auto-enable notification is still visible, dismiss it too
-		if ( isAutoEnableNotificationVisible ) {
+		// If auto-enable notification is still visible, dismiss it too.
+		if ( ! isAutoEnableNotificationDismissed ) {
 			dismissNotification( GTG_AUTO_ENABLE_NOTIFICATION );
 		}
 	}, [
@@ -106,42 +99,21 @@ export default function GoogleTagGatewayOptOutNotice() {
 		setIsGTGDefault,
 		saveGoogleTagGatewaySettings,
 		dismissItem,
-		isAutoEnableNotificationVisible,
+		isAutoEnableNotificationDismissed,
 		dismissNotification,
 	] );
 
-	if (
-		! isGTGModuleConnected ||
-		isGoogleTagGatewayEnabled ||
-		! isGTGDefault ||
-		isNoticeDismissed ||
-		! isGTGHealthy ||
-		! isScriptAccessEnabled
-	) {
+	if ( ! shouldShowNotice ) {
 		return null;
 	}
 
 	const description = createInterpolateElement(
 		__(
-			'Starting in October 2025, Google tag gateway for advertisers will gradually be enabled. You can opt out now before the change happens and it won’t be automatically enabled for you.',
+			'Starting in October 2025, Google tag gateway for advertisers will gradually be enabled. <br />You can opt out now before the change happens and it won’t be automatically enabled for you.',
 			'google-site-kit'
 		),
 		{
-			a: (
-				<a
-					href={ learnMoreURL }
-					target="_blank"
-					rel="noopener noreferrer"
-					onClick={ () => {
-						trackEvent(
-							`${ viewContext }_gtg-opt-out-notice`,
-							'click_learn_more_link'
-						);
-					} }
-				>
-					{ __( 'Learn more', 'google-site-kit' ) }
-				</a>
-			),
+			br: <br />,
 		}
 	);
 
@@ -149,7 +121,6 @@ export default function GoogleTagGatewayOptOutNotice() {
 		<NoticeWithIntersectionObserver
 			type={ Notice.TYPES.NEW }
 			description={ description }
-			className="googlesitekit-gtg-settings-notice"
 			dismissButton={ {
 				label: __( 'Opt out', 'google-site-kit' ),
 				onClick: handleOptOutClick,
