@@ -31,6 +31,8 @@ import { enabledFeatures } from '../../assets/js/features';
 // This global is instantiated in tests/js/setup-globals.js.
 // It is re-set here since fetch-mock-jest must be imported during Jest's `setupFilesAfterEnv` or later.
 global.fetchMock = fetchMockJest;
+// https://www.wheresrhys.co.uk/fetch-mock/docs/legacy-api/Usage/configuration/#overwriteroutes
+global.fetchMock.config.overwriteRoutes = false; // Appends the new route to the list of routes.
 
 beforeEach( () => {
 	// Use real timers in order to be able to wait for them. This was introduced to support the changes introduced in @wordpress/data 4.23.0
@@ -62,7 +64,9 @@ afterEach( async () => {
 	// In order to catch (most) unhandled promise rejections
 	// we need to wait at least one more event cycle.
 	// To do this, we need to switch back to real timers if we're currently using fake timers.
-	if ( jest.isMockFunction( setTimeout ) ) {
+	// We can check for jest.getTimerCount() which only exists when fake timers are active.
+	const isUsingFakeTimers = typeof jest.getTimerCount === 'function';
+	if ( isUsingFakeTimers ) {
 		jest.useRealTimers();
 	}
 

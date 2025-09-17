@@ -31,7 +31,7 @@ import {
 	setupAnalytics4Error,
 	widgetDecorators,
 	setupAnalytics4GatheringData,
-} from './common-GA4.stories';
+} from './common-GA4-stories';
 
 const WidgetWithComponentProps = withWPDashboardWidgetComponentProps(
 	'widget-slug'
