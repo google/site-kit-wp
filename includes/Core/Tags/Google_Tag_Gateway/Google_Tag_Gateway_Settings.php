@@ -30,7 +30,7 @@ class Google_Tag_Gateway_Settings extends Setting {
 	/**
 	 * Registers the GTG settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 */
 	public function register() {
 		parent::register();
@@ -41,7 +41,7 @@ class Google_Tag_Gateway_Settings extends Setting {
 	/**
 	 * Registers a filter to ensure default values are present in the saved option.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 */
 	protected function add_option_default_filters() {
 		// Ensure that a non-array is never saved as the option value.
@@ -89,7 +89,7 @@ class Google_Tag_Gateway_Settings extends Setting {
 	 * Gets the default value.
 	 *
 	 * @since 1.141.0
-	 * @since n.e.x.t Add `isGTGDefault` setting to track if the user has ever interacted with GTG settings.
+	 * @since 1.162.0 Add `isGTGDefault` setting to track if the user has ever interacted with GTG settings.
 	 *
 	 * @return array The default value.
 	 */
@@ -165,7 +165,7 @@ class Google_Tag_Gateway_Settings extends Setting {
 	/**
 	 * Checks if Google tag gateway is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @return bool True if Google tag gateway is active, false otherwise.
 	 */

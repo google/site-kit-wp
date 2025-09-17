@@ -155,7 +155,7 @@ const baseActions = {
 	/**
 	 * Sets the GTG default status for Google tag gateway.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @param {boolean} isGTGDefault GTG default status.
 	 * @return {Object} Redux-style action.
@@ -289,7 +289,7 @@ const baseSelectors = {
 	/**
 	 * Checks if GTG settings are in their default state (never modified by user).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} True if GTG settings are in default state, otherwise false. Returns undefined if the state is not loaded.

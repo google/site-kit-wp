@@ -37,8 +37,7 @@ global.document.addEventListener( 'wpcf7mailsent', ( event ) => {
 /**
  * Extracts and classifies user data from a Contact Form 7 form submission.
  *
- * @since n.e.x.t
- * @since n.e.x.t Renamed to `getUserDataFromForm` because `getUserData` was extracted into a generic utility function.
+ * @since 1.162.0 Renamed to `getUserDataFromForm` because `getUserData` was extracted into a generic utility function.
  *
  * @param {HTMLFormElement} form The submitted form element.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
