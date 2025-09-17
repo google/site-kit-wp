@@ -26,7 +26,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../../tests/js/utils';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../tests/js/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
