@@ -34,8 +34,7 @@ import Link from '@/js/components/Link';
 import useActivateAnalyticsOptIn from '@/js/hooks/useActivateAnalyticsOptIn';
 import { Cell, Row } from '@/js/material-components';
 import SplashGraphic from '@/svg/graphics/splash-graphic.svg';
-import SplashScreenshot from '@/svg/graphics/splash-screenshot.svg';
-import SplashScreenshotWide from '@/svg/graphics/splash-screenshot-wide-viewport.svg';
+import SetupFlowSVG from './SetupFlowSVG';
 import { useBreakpoint, BREAKPOINT_XLARGE } from '@/js/hooks/useBreakpoint';
 
 export default function RefreshedSplash( {
@@ -67,12 +66,16 @@ export default function RefreshedSplash( {
 			>
 				<SplashGraphic width="508" height="466" />
 				{ breakpoint !== BREAKPOINT_XLARGE ? (
-					<SplashScreenshot width="459" height="511" />
+					<SetupFlowSVG
+						name="splash-screenshot"
+						width="459"
+						height="511"
+					/>
 				) : (
-					<SplashScreenshotWide
+					<SetupFlowSVG
+						name="splash-screenshot-wide-viewport"
 						width="642"
 						height="916"
-						fill="none"
 					/>
 				) }
 			</Cell>

@@ -32,8 +32,7 @@ import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
 import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
 import { Cell, Row } from '@/js/material-components';
-import WelcomeAnalyticsSVG from '@/svg/graphics/welcome-analytics.svg';
-import WelcomeSVG from '@/svg/graphics/welcome.svg';
+import SetupFlowSVG from './SetupFlowSVG';
 
 export default function LegacySplash( {
 	analyticsModuleActive,
@@ -62,10 +61,14 @@ export default function LegacySplash( {
 				className="googlesitekit-setup__icon"
 			>
 				{ analyticsModuleActive && (
-					<WelcomeSVG width="570" height="336" />
+					<SetupFlowSVG name="welcome" width="570" height="336" />
 				) }
 				{ ! analyticsModuleActive && (
-					<WelcomeAnalyticsSVG height="167" width="175" />
+					<SetupFlowSVG
+						name="welcome-analytics"
+						height="167"
+						width="175"
+					/>
 				) }
 			</Cell>
 
