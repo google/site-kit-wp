@@ -38,6 +38,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 describe( 'core/site Google tag gateway', () => {
 	let registry;
+	let store;
 
 	const googleTagGatewaySettingsEndpointRegExp = new RegExp(
 		'^/google-site-kit/v1/core/site/data/gtg-settings'
@@ -49,6 +50,7 @@ describe( 'core/site Google tag gateway', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		store = registry.stores[ CORE_SITE ].store;
 		provideSiteInfo( registry );
 	} );
 
@@ -294,21 +296,21 @@ describe( 'core/site Google tag gateway', () => {
 						isGTGDefault: true,
 					} );
 
-				expect( registry.select( CORE_SITE ).isGTGDefault() ).toBe(
-					true
-				);
+				expect(
+					store.getState().googleTagGatewaySettings.isGTGDefault
+				).toBe( true );
 
 				registry.dispatch( CORE_SITE ).setIsGTGDefault( false );
 
-				expect( registry.select( CORE_SITE ).isGTGDefault() ).toBe(
-					false
-				);
+				expect(
+					store.getState().googleTagGatewaySettings.isGTGDefault
+				).toBe( false );
 
 				registry.dispatch( CORE_SITE ).setIsGTGDefault( true );
 
-				expect( registry.select( CORE_SITE ).isGTGDefault() ).toBe(
-					true
-				);
+				expect(
+					store.getState().googleTagGatewaySettings.isGTGDefault
+				).toBe( true );
 			} );
 		} );
 
