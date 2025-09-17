@@ -35,11 +35,17 @@ exports[`GoogleTagGatewayAutoEnableNotification should render the notification w
               >
                 Your site will begin routing measurement data (like page views, clicks, and conversions) through your own server. This new Google tag gateway for advertisers feature makes your data more reliable and gives you more control. Starting in October 2025, this feature will gradually be enabled for sites using Analytics, Ads, or Google Tag Manager. If you prefer, you can opt out from Site Kit settings before the change happens. 
                 <a
+                  aria-label="Learn more (opens in a new tab)"
+                  class="googlesitekit-cta-link"
                   href="https://sitekit.withgoogle.com/support/?doc=google-tag-gateway-introduction"
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  Learn more
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Learn more
+                  </span>
                 </a>
               </p>
             </div>

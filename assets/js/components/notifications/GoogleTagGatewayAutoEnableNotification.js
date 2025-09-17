@@ -36,6 +36,7 @@ import NoticeNotification from '@/js/googlesitekit/notifications/components/layo
 import Notice from '@/js/components/Notice';
 import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
+import Link from '@/js/components/Link';
 
 export default function GoogleTagGatewayAutoEnableNotification( {
 	id,
@@ -45,58 +46,39 @@ export default function GoogleTagGatewayAutoEnableNotification( {
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const isAnalyticsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
-	);
-	const isAdsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADS )
-	);
-	const isTagManagerConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_TAGMANAGER )
-	);
-
-	const learnMoreURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getDocumentationLinkURL(
+	const learnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
 			'google-tag-gateway-introduction'
-		);
-	} );
+		)
+	);
 
-	// Determine navigation priority: Analytics → Ads → GTM.
 	const settingsURL = useSelect( ( select ) => {
-		if ( isAnalyticsConnected ) {
-			return select( CORE_SITE ).getModuleSettingsEditURL(
-				MODULE_SLUG_ANALYTICS_4
-			);
-		}
-		if ( isAdsConnected ) {
-			return select( CORE_SITE ).getModuleSettingsEditURL(
-				MODULE_SLUG_ADS
-			);
-		}
-		if ( isTagManagerConnected ) {
-			return select( CORE_SITE ).getModuleSettingsEditURL(
-				MODULE_SLUG_TAGMANAGER
-			);
-		}
-		return null;
-	} );
+		const { isModuleConnected } = select( CORE_MODULES );
 
-	const handleGotItClick = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_gtg-auto-enable-notification`,
-			'dismiss_notification'
+		// Navigation priority: Analytics → Ads → GTM.
+		const MODULES_BY_PRIORITY = [
+			MODULE_SLUG_ANALYTICS_4,
+			MODULE_SLUG_ADS,
+			MODULE_SLUG_TAGMANAGER,
+		];
+
+		// Find the first connected module.
+		const connectedModule = MODULES_BY_PRIORITY.find( ( moduleSlug ) =>
+			isModuleConnected( moduleSlug )
 		);
-	}, [ viewContext ] );
+
+		if ( ! connectedModule ) {
+			return null;
+		}
+
+		return select( CORE_SITE ).getModuleSettingsEditURL( connectedModule );
+	} );
 
 	const handleEditSettingsClick = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_gtg-auto-enable-notification`,
-			'click_edit_settings'
-		);
 		if ( settingsURL ) {
 			navigateTo( settingsURL );
 		}
-	}, [ viewContext, settingsURL, navigateTo ] );
+	}, [ settingsURL, navigateTo ] );
 
 	const title = __(
 		'An upgrade is coming to your site’s measurement',
@@ -110,25 +92,30 @@ export default function GoogleTagGatewayAutoEnableNotification( {
 		),
 		{
 			a: (
-				<a
-					href={ learnMoreURL }
-					target="_blank"
-					rel="noopener noreferrer"
+				<Link
 					onClick={ () => {
 						trackEvent(
-							`${ viewContext }_gtg-auto-enable-notification`,
+							`${ viewContext }_${ id }`,
 							'click_learn_more_link'
 						);
 					} }
+					href={ learnMoreURL }
+					external
+					hideExternalIndicator
 				>
 					{ __( 'Learn more', 'google-site-kit' ) }
-				</a>
+				</Link>
 			),
 		}
 	);
 
+	const gaTrackingEventArgs = {
+		dismissAction: 'click_edit_settings',
+		confirmAction: 'dismiss_notification',
+	};
+
 	return (
-		<Notification>
+		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			<NoticeNotification
 				notificationID={ id }
 				type={ Notice.TYPES.NEW }
@@ -136,16 +123,13 @@ export default function GoogleTagGatewayAutoEnableNotification( {
 				description={ description }
 				ctaButton={ {
 					label: __( 'Got it', 'google-site-kit' ),
-					onClick: handleGotItClick,
 					dismissOnClick: true,
-					dismissOptions: {
-						skipHidingFromQueue: true,
-					},
 				} }
 				dismissButton={ {
 					label: __( 'Edit settings', 'google-site-kit' ),
 					onClick: handleEditSettingsClick,
 				} }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
 			/>
 		</Notification>
 	);

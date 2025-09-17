@@ -280,17 +280,21 @@ describe( 'GoogleTagGatewayAutoEnableNotification', () => {
 
 		fireEvent.click( gotItButton );
 
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'mainDashboard_gtg-auto-enable-notification',
-			'dismiss_notification'
-		);
-
 		await waitFor( () => {
 			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_gtg-auto-enable-notification',
+			'dismiss_notification',
+			// Since additional arguments are not passed, mimick empty
+			// arguments to match the mocked call.
+			undefined,
+			undefined
+		);
 	} );
 
-	it( 'should track an event and navigate when "Edit settings" button is clicked', () => {
+	it( 'should track an event and navigate when "Edit settings" button is clicked', async () => {
 		const { getByRole } = render( <GTGAutoEnableNotificationComponent />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -302,10 +306,16 @@ describe( 'GoogleTagGatewayAutoEnableNotification', () => {
 
 		fireEvent.click( editSettingsButton );
 
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'mainDashboard_gtg-auto-enable-notification',
-			'click_edit_settings'
-		);
+		await waitFor( () => {
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_gtg-auto-enable-notification',
+				'click_edit_settings',
+				// Since additional arguments are not passed, mimick empty
+				// arguments to match the mocked call.
+				undefined,
+				undefined
+			);
+		} );
 
 		expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
 		// The exact navigation path will depend on connected modules.
