@@ -117,7 +117,7 @@ class GTagTest extends TestCase {
 						'isGTGHealthy'          => true,
 						'isScriptAccessEnabled' => true,
 					),
-					'expected_src' => plugins_url( 'gtg/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?id=' . static::TEST_TAG_ID_1 . '&#038;s=/gtag/js',
+					'expected_src' => plugins_url( 'gtg/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?id=' . static::TEST_TAG_ID_1,
 				),
 			),
 			'isEnabled false'             => array(

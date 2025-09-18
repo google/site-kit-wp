@@ -141,4 +141,111 @@ class Google_Tag_GatewayTest extends TestCase {
 			),
 		);
 	}
+
+	/**
+	 * Data provider for isGTGDefault behavior tests.
+	 *
+	 * @return array Test scenarios with settings, merge data, expected results, and register flag.
+	 */
+	public function data_isGTGDefault_behavior() {
+		return array(
+			'auto-update: false to true with isGTGDefault true' => array(
+				array(
+					'isEnabled'    => false,
+					'isGTGDefault' => true,
+				),
+				array( 'isEnabled' => true ),
+				array(
+					'isEnabled'    => true,
+					'isGTGDefault' => false,
+				),
+				true, // register
+			),
+			'auto-update: true to false with isGTGDefault true' => array(
+				array(
+					'isEnabled'    => true,
+					'isGTGDefault' => true,
+				),
+				array( 'isEnabled' => false ),
+				array(
+					'isEnabled'    => false,
+					'isGTGDefault' => false,
+				),
+				true, // register
+			),
+			'auto-update: explicit isGTGDefault overridden' => array(
+				array(
+					'isEnabled'    => false,
+					'isGTGDefault' => true,
+				),
+				array(
+					'isEnabled'    => true,
+					'isGTGDefault' => true,
+				),
+				array(
+					'isEnabled'    => true,
+					'isGTGDefault' => false,
+				),
+				true, // register
+			),
+			'no auto-update: isGTGDefault already false' => array(
+				array(
+					'isEnabled'    => false,
+					'isGTGDefault' => false,
+				),
+				array( 'isEnabled' => true ),
+				array(
+					'isEnabled'    => true,
+					'isGTGDefault' => false,
+				),
+				true, // register
+			),
+			'no auto-update: isEnabled unchanged'        => array(
+				array(
+					'isEnabled'    => false,
+					'isGTGDefault' => true,
+				),
+				array( 'isGTGHealthy' => true ),
+				array(
+					'isEnabled'    => false,
+					'isGTGHealthy' => true,
+					'isGTGDefault' => true,
+				),
+				true, // register
+			),
+			'no auto-update: without register'           => array(
+				array(
+					'isEnabled'    => false,
+					'isGTGDefault' => true,
+				),
+				array( 'isEnabled' => true ),
+				array(
+					'isEnabled'    => true,
+					'isGTGDefault' => true,
+				),
+				false, // don't register
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_isGTGDefault_behavior
+	 */
+	public function test_isGTGDefault_behavior( $initial_settings, $merge_settings, $expected_settings, $should_register ) {
+		if ( $should_register ) {
+			$this->google_tag_gateway->register();
+		}
+
+		// Add default values for missing fields
+		$default_settings  = array(
+			'isGTGHealthy'          => false,
+			'isScriptAccessEnabled' => false,
+		);
+		$initial_settings  = array_merge( $default_settings, $initial_settings );
+		$expected_settings = array_merge( $default_settings, $expected_settings );
+
+		$this->settings->set( $initial_settings );
+		$this->settings->merge( $merge_settings );
+		$this->assertEqualSetsWithIndex( $expected_settings, $this->settings->get() );
+	}
 }

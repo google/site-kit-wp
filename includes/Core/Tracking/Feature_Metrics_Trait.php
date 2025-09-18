@@ -15,7 +15,7 @@ trait Feature_Metrics_Trait {
 	/**
 	 * Registers the feature metrics to be tracked.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @return void
 	 */

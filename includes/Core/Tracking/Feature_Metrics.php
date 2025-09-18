@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Tracking;
 /**
  * Class managing the collection of site-wide feature metrics.
  *
- * @since n.e.x.t
+ * @since 1.162.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Feature_Metrics {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 */
 	public function register() {
 		add_filter(
@@ -31,7 +31,7 @@ class Feature_Metrics {
 				/**
 				 * Filters feature metrics data sent with the features request.
 				 *
-				 * @since n.e.x.t
+				 * @since 1.162.0
 				 *
 				 * @param array $feature_metrics Feature metrics tracking data to be sent with the features request.
 				 */

@@ -569,7 +569,7 @@ const baseActions = {
 	 * from a global variable (`_googlesitekitModulesData`), set by PHP
 	 * in the `before_print` callback for `googlesitekit-modules`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 * @private
 	 *
 	 * @param {Object} inlineModulesData Inline modules data, usually supplied via a global variable from PHP.
@@ -1612,7 +1612,7 @@ const baseSelectors = {
 	 *
 	 * Returns all inline modules data that was loaded from the global variable.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Inline modules data object; `undefined` if not loaded.
@@ -1626,7 +1626,7 @@ const baseSelectors = {
 	 *
 	 * Returns inline data for the specified module slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.

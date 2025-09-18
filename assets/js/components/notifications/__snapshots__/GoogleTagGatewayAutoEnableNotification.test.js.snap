@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GoogleTagGatewayAutoEnableNotification should render the notification with correct title and description 1`] = `
+<div>
+  <section
+    id="gtg-auto-enable-notification"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
+        >
+          <div
+            class="googlesitekit-notice googlesitekit-notice--new"
+          >
+            <div
+              class="googlesitekit-notice__icon"
+            >
+              <svg />
+            </div>
+            <div
+              class="googlesitekit-notice__content"
+            >
+              <p
+                class="googlesitekit-notice__title"
+              >
+                An upgrade is coming to your site’s measurement
+              </p>
+              <p
+                class="googlesitekit-notice__description"
+              >
+                Your site will begin routing measurement data (like page views, clicks, and conversions) through your own server. This new Google tag gateway for advertisers feature makes your data more reliable and gives you more control. Starting in October 2025, this feature will gradually be enabled for sites using Analytics, Ads, or Google Tag Manager. If you prefer, you can opt out from Site Kit settings before the change happens. 
+                <a
+                  aria-label="Learn more (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href="https://sitekit.withgoogle.com/support/?doc=google-tag-gateway-introduction"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Learn more
+                  </span>
+                </a>
+              </p>
+            </div>
+            <div
+              class="googlesitekit-notice__action"
+            >
+              <button
+                class="mdc-button mdc-button--tertiary"
+                target="_self"
+              >
+                <span
+                  class="mdc-button__label"
+                >
+                  Edit settings
+                </span>
+              </button>
+              <button
+                class="mdc-button googlesitekit-notice__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+                target="_self"
+              >
+                <span
+                  class="mdc-button__label"
+                >
+                  Got it
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;

@@ -24,6 +24,7 @@ use Google\Site_Kit\Tests\Core\Modules\Datapoints\FakeModule_Test_Request;
 use WP_Error;
 use Exception;
 
+#[\AllowDynamicProperties]
 class FakeModule extends Module implements Module_With_Activation, Module_With_Deactivation, Module_With_Owner, Module_With_Settings {
 
 	use Module_With_Owner_Trait;

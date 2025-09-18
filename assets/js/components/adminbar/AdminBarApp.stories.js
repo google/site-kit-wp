@@ -28,7 +28,7 @@ import {
 	setupSearchConsoleZeroData,
 	setupAnalytics4ZeroData,
 	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
-} from './common-GA4.stories';
+} from './common-GA4-stories';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarApp from './AdminBarApp';
