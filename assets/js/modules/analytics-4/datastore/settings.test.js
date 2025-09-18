@@ -34,6 +34,7 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -530,6 +531,12 @@ describe( 'modules/analytics-4 settings', () => {
 						isScriptAccessEnabled: true,
 					} );
 
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedItems( [
+						GTG_SETUP_CTA_BANNER_NOTIFICATION,
+					] );
+
 				provideNotifications( registry );
 
 				const validSettings = {
@@ -648,6 +655,202 @@ describe( 'modules/analytics-4 settings', () => {
 				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 
 				expect( fetchMock ).not.toHaveFetched( gtgSettingsEndpoint );
+			} );
+
+			it( 'should dismiss the GTG setup CTA banner when the GTG `isEnabled` setting is changed to `true`', async () => {
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+				fetchMock.postOnce( surveyTriggerEndpoint, {
+					status: 200,
+					body: {},
+				} );
+
+				provideNotifications( registry );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetGoogleTagGatewaySettings( {
+						isEnabled: false,
+						isGTGHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+				const validSettings = {
+					accountID: fixtures.createProperty._accountID,
+					propertyID: fixtures.createProperty._id,
+					webDataStreamID: fixtures.createWebDataStream._id,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setSettings( validSettings );
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: validSettings,
+					status: 200,
+				} );
+
+				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+					const {
+						data: {
+							settings: { isEnabled },
+						},
+					} = JSON.parse( opts.body );
+
+					return {
+						body: {
+							isEnabled, // Return the `isEnabled` value passed to the API.
+							isGTGHealthy: true,
+							isScriptAccessEnabled: true,
+						},
+						status: 200,
+					};
+				} );
+
+				fetchMock.postOnce( dismissItemEndpoint, {
+					body: [ GTG_SETUP_CTA_BANNER_NOTIFICATION ],
+					status: 200,
+				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( true );
+				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+
+				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+					body: {
+						data: {
+							slug: GTG_SETUP_CTA_BANNER_NOTIFICATION,
+							expiration: 0,
+						},
+					},
+				} );
+			} );
+
+			it( 'should handle an error when dismissing the GTG setup CTA banner', async () => {
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+				fetchMock.postOnce( surveyTriggerEndpoint, {
+					status: 200,
+					body: {},
+				} );
+
+				provideNotifications( registry );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetGoogleTagGatewaySettings( {
+						isEnabled: false,
+						isGTGHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+				const validSettings = {
+					accountID: fixtures.createProperty._accountID,
+					propertyID: fixtures.createProperty._id,
+					webDataStreamID: fixtures.createWebDataStream._id,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setSettings( validSettings );
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: validSettings,
+					status: 200,
+				} );
+
+				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+					const {
+						data: {
+							settings: { isEnabled },
+						},
+					} = JSON.parse( opts.body );
+
+					return {
+						body: {
+							isEnabled, // Return the `isEnabled` value passed to the API.
+							isGTGHealthy: true,
+							isScriptAccessEnabled: true,
+						},
+						status: 200,
+					};
+				} );
+
+				fetchMock.postOnce( dismissItemEndpoint, {
+					body: error,
+					status: 500,
+				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( true );
+				const { error: submitChangesError } = await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.submitChanges();
+
+				expect( submitChangesError ).toEqual( error );
+				expect( console ).toHaveErrored();
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should not dismiss the GTG setup CTA banner when the GTG `isEnabled` setting is changed to `false`', async () => {
+				provideNotifications( registry );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetGoogleTagGatewaySettings( {
+						isEnabled: true,
+						isGTGHealthy: true,
+						isScriptAccessEnabled: true,
+					} );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+				const validSettings = {
+					accountID: fixtures.createProperty._accountID,
+					propertyID: fixtures.createProperty._id,
+					webDataStreamID: fixtures.createWebDataStream._id,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setSettings( validSettings );
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: validSettings,
+					status: 200,
+				} );
+
+				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+					const {
+						data: {
+							settings: { isEnabled },
+						},
+					} = JSON.parse( opts.body );
+
+					return {
+						body: {
+							isEnabled, // Return the `isEnabled` value passed to the API.
+							isGTGHealthy: true,
+							isScriptAccessEnabled: true,
+						},
+						status: 200,
+					};
+				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.setGoogleTagGatewayEnabled( false );
+				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+
+				expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
 			} );
 
 			it( 'should reset audience settings in the store when Analytics settings have successfully saved', async () => {
