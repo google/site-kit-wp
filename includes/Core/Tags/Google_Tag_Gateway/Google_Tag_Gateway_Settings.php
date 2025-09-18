@@ -61,12 +61,21 @@ class Google_Tag_Gateway_Settings extends Setting {
 		// This is particularly important for newly added settings like `isGTGDefault`
 		// which won't exist in the database for existing sites. The filter ensures that
 		// if GTG settings exist but there are missing new fields (like `isGTGDefault`), those
-		// missing fields are filled in with their default values.
+		// missing fields are filled in with appropriate values.
 		add_filter(
 			'option_' . static::OPTION,
 			function ( $option ) {
 				if ( is_array( $option ) ) {
-					return $option + $this->get_default();
+					$defaults = $this->get_default();
+
+					// Special logic for `isGTGDefault`: If GTG settings already exist and GTG was
+					// previously enabled, set `isGTGDefault` to false (user has interacted with settings).
+					// Otherwise, use the default value (true).
+					if ( ! isset( $option['isGTGDefault'] ) && isset( $option['isEnabled'] ) && $option['isEnabled'] ) {
+						$defaults['isGTGDefault'] = false;
+					}
+
+					return $option + $defaults;
 				}
 				return $option;
 			},
