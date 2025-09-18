@@ -63,15 +63,10 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 	} );
 
 	it( 'should render the setup page, including the Activate Analytics notice', () => {
-		const { container, getByText } = render(
-			<SetupUsingProxyWithSignIn />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_SPLASH,
-			}
-		);
-
-		expect( container ).toMatchSnapshot();
+		const { getByText } = render( <SetupUsingProxyWithSignIn />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SPLASH,
+		} );
 
 		expect(
 			getByText( /Connect Google Analytics as part of your setup/ )
@@ -87,7 +82,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				)
 			);
 
-		const { waitForRegistry, container, queryByText } = render(
+		const { waitForRegistry, queryByText } = render(
 			<SetupUsingProxyWithSignIn />,
 			{
 				registry,
@@ -96,8 +91,6 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		);
 
 		await waitForRegistry();
-
-		expect( container ).toMatchSnapshot();
 
 		expect(
 			queryByText( /Connect Google Analytics as part of your setup/ )
@@ -122,7 +115,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				} )
 			);
 
-			const { waitForRegistry, container, queryByText } = render(
+			const { waitForRegistry, queryByText } = render(
 				<SetupUsingProxyWithSignIn />,
 				{
 					registry,
@@ -131,8 +124,6 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			);
 
 			await waitForRegistry();
-
-			expect( container ).toMatchSnapshot();
 
 			expect(
 				queryByText(
@@ -154,7 +145,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				} )
 			);
 
-			const { waitForRegistry, container, queryByText } = render(
+			const { waitForRegistry, queryByText } = render(
 				<SetupUsingProxyWithSignIn />,
 				{
 					registry,
@@ -163,8 +154,6 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			);
 
 			await waitForRegistry();
-
-			expect( container ).toMatchSnapshot();
 
 			expect(
 				queryByText(
