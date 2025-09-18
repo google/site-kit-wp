@@ -61,26 +61,41 @@ class Google_Tag_Gateway_Settings extends Setting {
 		// This is particularly important for newly added settings like `isGTGDefault`
 		// which won't exist in the database for existing sites. The filter ensures that
 		// if GTG settings exist but there are missing new fields (like `isGTGDefault`), those
-		// missing fields are filled in with appropriate values.
+		// missing fields are filled in with their default values.
 		add_filter(
 			'option_' . static::OPTION,
 			function ( $option ) {
 				if ( is_array( $option ) ) {
-					$defaults = $this->get_default();
-
-					// Special logic for `isGTGDefault`: If GTG settings already exist and GTG was
-					// previously enabled, set `isGTGDefault` to false (user has interacted with settings).
-					// Otherwise, use the default value (true).
-					if ( ! isset( $option['isGTGDefault'] ) && ! empty( $option['isEnabled'] ) ) {
-						$defaults['isGTGDefault'] = false;
-					}
-
-					return $option + $defaults;
+					return $option + $this->get_default();
 				}
 				return $option;
 			},
 			99
 		);
+	}
+
+	/**
+	 * Gets the setting's value with isGTGDefault backward compatibility.
+	 *
+	 * Any site with GTG enabled should have isGTGDefault = false,
+	 * indicating that the site is no longer in its default state
+	 * (either through manual user interaction or auto-enablement).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array The setting value with isGTGDefault backward compatibility.
+	 */
+	public function get() {
+		$value   = parent::get();
+		$default = $this->get_default();
+
+		// If the enabled status differs from its default value,
+		// mark as non-default by setting `isGTGDefault` to false.
+		if ( $default['isEnabled'] !== $value['isEnabled'] ) {
+			$value['isGTGDefault'] = false;
+		}
+
+		return $value;
 	}
 
 	/**
@@ -135,7 +150,12 @@ class Google_Tag_Gateway_Settings extends Setting {
 			}
 
 			if ( isset( $value['isGTGDefault'] ) ) {
-				$new_value['isGTGDefault'] = (bool) $value['isGTGDefault'];
+				// Enforce one-way transition: isGTGDefault can only go from true->false,
+				// never from false->true. Once a site is marked as non-default (false),
+				// it should remain non-default permanently to preserve user intent.
+				if ( false !== $new_value['isGTGDefault'] ) {
+					$new_value['isGTGDefault'] = (bool) $value['isGTGDefault'];
+				}
 			}
 
 			return $new_value;
