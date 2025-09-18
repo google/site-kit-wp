@@ -106,7 +106,7 @@ export const resolvers = {
 	 * Resolves module data.
 	 *
 	 * @since 1.127.0
-	 * @since n.e.x.t Updated to use centralized module data access.
+	 * @since 1.162.0 Updated to use centralized module data access.
 	 */
 	*getModuleData() {
 		const { resolveSelect } = yield commonActions.getRegistry();

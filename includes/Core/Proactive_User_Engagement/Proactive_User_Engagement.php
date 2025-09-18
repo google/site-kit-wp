@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Options;
 /**
  * Base class for Proactive User Engagement feature.
  *
- * @since n.e.x.t
+ * @since 1.162.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class Proactive_User_Engagement {
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 * @var Context
 	 */
 	protected $context;
@@ -33,7 +33,7 @@ class Proactive_User_Engagement {
 	/**
 	 * Proactive_User_Engagement_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 * @var Proactive_User_Engagement_Settings
 	 */
 	protected $settings;
@@ -41,7 +41,7 @@ class Proactive_User_Engagement {
 	/**
 	 * REST_Proactive_User_Engagement_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 * @var REST_Proactive_User_Engagement_Controller|null
 	 */
 	protected $rest_controller;
@@ -49,7 +49,7 @@ class Proactive_User_Engagement {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @param Context      $context Plugin context.
 	 * @param Options|null $options Optional. Options instance. Default is a new instance.
@@ -63,7 +63,7 @@ class Proactive_User_Engagement {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 */
 	public function register() {
 		$this->settings->register();
