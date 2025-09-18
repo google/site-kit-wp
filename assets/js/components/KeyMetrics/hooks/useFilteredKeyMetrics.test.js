@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { renderHook } from '../../../../../tests/js/test-utils';
 import useFilteredKeyMetrics from './useFilteredKeyMetrics';
 import {
