@@ -17,17 +17,17 @@
  */
 
 /**
- * External dependencies.
+ * External dependencies
  */
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies.
+ * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
 import MetricItem from '@/js/components/KeyMetrics/MetricsSelectionPanel/MetricItem';
 import NoSelectedItemsSVG from '@/svg/graphics/key-metrics-no-selected-items.svg';

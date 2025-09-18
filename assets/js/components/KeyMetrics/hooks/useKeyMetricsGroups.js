@@ -17,12 +17,12 @@
  */
 
 /**
- * WordPress dependencies.
+ * WordPress dependencies
  */
 import { useMemo } from '@wordpress/element';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
 import { ENUM_CONVERSION_EVENTS } from '@/js/modules/analytics-4/datastore/constants';
 import {

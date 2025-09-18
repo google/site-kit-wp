@@ -17,7 +17,7 @@
  */
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';

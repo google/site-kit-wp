@@ -17,12 +17,12 @@
  */
 
 /**
- * WordPress dependencies.
+ * WordPress dependencies
  */
 import { useMemo } from '@wordpress/element';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
 import {
 	KEY_METRICS_GROUP_CURRENT,

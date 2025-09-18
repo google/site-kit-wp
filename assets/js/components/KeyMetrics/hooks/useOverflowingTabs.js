@@ -17,17 +17,17 @@
  */
 
 /**
- * External dependencies.
+ * External dependencies
  */
 import { useMount, useUnmount } from 'react-use';
 
 /**
- * WordPress dependencies.
+ * WordPress dependencies
  */
 import { useCallback, useEffect } from '@wordpress/element';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
 import { useDebounce } from '@/js/hooks/useDebounce';
 
