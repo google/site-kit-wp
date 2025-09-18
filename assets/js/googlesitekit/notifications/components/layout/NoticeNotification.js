@@ -32,14 +32,7 @@ export default function NoticeNotification( {
 	gaTrackingEventArgs,
 	...props
 } ) {
-	const trackEvents = useNotificationEvents(
-		notificationID,
-		gaTrackingEventArgs?.category,
-		{
-			confirmAction: gaTrackingEventArgs?.confirmAction,
-			dismissAction: gaTrackingEventArgs?.dismissAction,
-		}
-	);
+	const trackEvents = useNotificationEvents( notificationID );
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
@@ -60,12 +53,6 @@ export default function NoticeNotification( {
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
-
-		if ( ctaButton?.dismissOnClick ) {
-			dismissNotification( notificationID, {
-				...( ctaButton?.dismissOptions || {} ),
-			} );
-		}
 	}
 
 	return (
