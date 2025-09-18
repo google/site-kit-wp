@@ -21,14 +21,14 @@
  */
 import Modules from 'googlesitekit-modules';
 import { MODULES_ANALYTICS_4 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	submitChanges,
 	validateCanSubmitChanges,
 	rollbackChanges,
 	validateHaveSettingsChanged,
 } from './settings';
-import { convertDateStringToUNIXTimestamp } from '../../../util';
+import { convertDateStringToUNIXTimestamp } from '@/js/util';
 
 const baseModuleStore = Modules.createModuleStore( MODULE_SLUG_ANALYTICS_4, {
 	ownedSettingsSlugs: [

@@ -38,15 +38,20 @@ import {
 	FormInstructions,
 	TagCheckProgress,
 	WebContainerSelect,
-} from '../common';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import { MODULE_SLUG_TAGMANAGER } from '../../constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+} from '@/js/modules/tagmanager/components/common';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
-import Notice from '../../../../components/Notice';
+import Notice from '@/js/components/Notice';
+import SettingsGroup from '@/js/components/settings/SettingsGroup';
+import GoogleTagGatewayToggle from '@/js/components/google-tag-gateway/GoogleTagGatewayToggle';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SettingsForm( { hasModuleAccess } ) {
+	const gtgEnabled = useFeature( 'googleTagGateway' );
+
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( MODULE_SLUG_TAGMANAGER )
 	);
@@ -99,6 +104,17 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
 				<SettingsUseSnippetSwitch />
 			</div>
+
+			{ gtgEnabled && (
+				<SettingsGroup
+					title={ __(
+						'Improve your measurement',
+						'google-site-kit'
+					) }
+				>
+					<GoogleTagGatewayToggle />
+				</SettingsGroup>
+			) }
 		</div>
 	);
 }

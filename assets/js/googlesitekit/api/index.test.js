@@ -33,8 +33,8 @@ import {
 	siteKitRequest,
 	usingCache,
 } from './index';
-import { DATA_LAYER } from '../../util/tracking/constants';
-import { enableTracking } from '../../util/tracking';
+import { DATA_LAYER } from '@/js/util/tracking/constants';
+import { enableTracking } from '@/js/util/tracking';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
@@ -82,6 +82,7 @@ describe( 'googlesitekit.api', () => {
 		expect( usingCache() ).toEqual( true );
 	} );
 
+	/* eslint-disable consistent-return */
 	describe( 'get', () => {
 		it( 'should throw an error when required arguments are missing', async () => {
 			try {
@@ -385,7 +386,9 @@ describe( 'googlesitekit.api', () => {
 			}
 		} );
 	} );
+	/* eslint-enable consistent-return */
 
+	/* eslint-disable consistent-return */
 	describe( 'set', () => {
 		it( 'should throw an error when required arguments are missing', async () => {
 			try {
@@ -655,6 +658,7 @@ describe( 'googlesitekit.api', () => {
 			}
 		} );
 	} );
+	/* eslint-enable consistent-return */
 
 	describe( 'invalidateCache', () => {
 		it( 'should remove all cached items when called', async () => {

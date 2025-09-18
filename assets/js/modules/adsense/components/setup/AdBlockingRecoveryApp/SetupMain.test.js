@@ -36,11 +36,11 @@ import {
 	provideModules,
 	provideSiteInfo,
 } from '../../../../../../../tests/js/utils';
-import { VIEW_CONTEXT_AD_BLOCKING_RECOVERY } from '../../../../../googlesitekit/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import * as tracking from '../../../../../util/tracking';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../../constants';
+import { VIEW_CONTEXT_AD_BLOCKING_RECOVERY } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import * as tracking from '@/js/util/tracking';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import SetupMain from './SetupMain';
 
 const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );

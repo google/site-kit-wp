@@ -26,8 +26,8 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import Link from '../Link';
-import Typography from '../Typography';
+import Link from '@/js/components/Link';
+import Typography from '@/js/components/Typography';
 
 function CTA( {
 	title,

@@ -20,7 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import Typography from '../../../components/Typography';
+import Typography from '@/js/components/Typography';
 
 function WidgetHeaderTitle( { title } ) {
 	return (

@@ -29,14 +29,14 @@ import {
 	provideModuleRegistrations,
 	act,
 } from '../../../../../tests/js/test-utils';
-import { deleteItem, setItem } from '../../../googlesitekit/api/cache';
+import { deleteItem, setItem } from '@/js/googlesitekit/api/cache';
 import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
-import { withNotificationComponentProps } from '../../../googlesitekit/notifications/util/component-props';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import UnsatisfiedScopesAlert from '.';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../modules/analytics-4/constants';
-import { DEFAULT_NOTIFICATIONS } from '../../../googlesitekit/notifications/register-defaults';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../googlesitekit/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'authentication-error'
@@ -188,21 +188,6 @@ describe( 'UnsatisfiedScopesAlert', () => {
 				unsatisfiedScopes: [
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				],
-			} );
-
-			const isActive = await notification.checkRequirements(
-				registry,
-				VIEW_CONTEXT_MAIN_DASHBOARD
-			);
-
-			expect( isActive ).toBe( false );
-		} );
-
-		it( 'is not active when there is a setup error', async () => {
-			provideSiteInfo( registry, {
-				proxySupportLinkURL: 'https://test.com',
-				setupErrorCode: 'error_code',
-				setupErrorMessage: 'An error occurred',
 			} );
 
 			const isActive = await notification.checkRequirements(

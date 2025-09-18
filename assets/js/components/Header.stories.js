@@ -50,16 +50,16 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	CORE_USER,
 	PERMISSION_VIEW_SHARED_DASHBOARD,
-} from '../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import { Provider as ViewContextProvider } from './Root/ViewContextContext';
-import { getMetaCapabilityPropertyName } from '../googlesitekit/datastore/util/permissions';
+import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../googlesitekit/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../modules/search-console/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/constants';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '../modules/pagespeed-insights/constants';
+} from '@/js/googlesitekit/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 
 function Template( args ) {
 	return <Header { ...args } />;

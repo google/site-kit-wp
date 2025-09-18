@@ -24,8 +24,8 @@ import { cloneDeep, findLast, merge, set } from 'lodash';
 /**
  * Internal dependencies
  */
-import { BREAKPOINT_SMALL } from '../../hooks/useBreakpoint';
-import { getLocale, stringToDate } from '../../util';
+import { BREAKPOINT_SMALL } from '@/js/hooks/useBreakpoint';
+import { getLocale, stringToDate } from '@/js/util';
 
 /**
  * Returns the Google chart data, filtered by selected stats if present.
@@ -130,7 +130,7 @@ export function getCombinedChartEvents( chartEvents, onReady, onSelect ) {
  *
  * @since 1.93.0
  * @since 1.119.0 Added `breakpoint` parameter.
- * @since n.e.x.t Refactored `gatheringData`, `chartType`, `startDate`, `endDate`, and `breakpoint` to be named parameters.
+ * @since 1.160.0 Refactored `gatheringData`, `chartType`, `startDate`, `endDate`, and `breakpoint` to be named parameters.
  *
  * @param {Object}  options                     Chart options to extend.
  * @param {Object}  configuration               Configuration for the extended chart options.

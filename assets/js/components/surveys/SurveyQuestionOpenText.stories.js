@@ -47,4 +47,5 @@ SurveyQuestionOpenTextStory.args = {
 
 export default {
 	title: 'Components/Surveys/SurveyQuestionOpenText',
+	component: SurveyQuestionOpenText,
 };

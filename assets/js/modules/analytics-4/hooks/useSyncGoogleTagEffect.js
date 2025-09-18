@@ -22,8 +22,8 @@ import { useMount } from 'react-use';
 /**
  * Internal dependencies
  */
-import { useDispatch } from '../../../googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../datastore/constants';
+import { useDispatch } from '@/js/googlesitekit-data';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 export default function useSyncGoogleTagEffect() {
 	const { syncGoogleTagSettings } = useDispatch( MODULES_ANALYTICS_4 );

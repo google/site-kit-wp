@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooComme
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WPForms;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Tags\GTag;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use LogicException;
 
 /**
@@ -82,7 +83,7 @@ class Conversion_Tracking {
 	 * @param Context $context Plugin context.
 	 * @param Options $options Optional. Option API instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, Options $options = null ) {
+	public function __construct( Context $context, ?Options $options = null ) {
 		$this->context                             = $context;
 		$options                                   = $options ?: new Options( $context );
 		$this->conversion_tracking_settings        = new Conversion_Tracking_Settings( $options );
@@ -154,6 +155,10 @@ class Conversion_Tracking {
 
 		if ( function_exists( 'edd_get_currency' ) ) {
 			$gtag_event .= "window._googlesitekit.easyDigitalDownloadsCurrency = '" . edd_get_currency() . "';";
+		}
+
+		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
+			$gtag_event .= 'window._googlesitekit.gtagUserData = true;';
 		}
 
 		wp_add_inline_script( GTag::HANDLE, preg_replace( '/\s+/', ' ', $gtag_event ) );

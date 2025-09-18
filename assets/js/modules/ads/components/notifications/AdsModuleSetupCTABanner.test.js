@@ -37,19 +37,20 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import { ADS_NOTIFICATIONS } from '../..';
-import { MODULES_ADS, PLUGINS } from '../../datastore/constants';
-import { MODULE_SLUG_ADS } from '../../constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { ADS_NOTIFICATIONS } from '@/js/modules/ads';
+import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
-import { enabledFeatures } from '../../../../features';
+import { enabledFeatures } from '@/js/features';
 import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
 const NOTIFICATION_ID = 'ads-setup-cta';
@@ -75,7 +76,9 @@ describe( 'AdsModuleSetupCTABanner', () => {
 				connected: false,
 			},
 		] );
-		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
+		// Avoid invoking survey triggers for now.
+		provideSiteInfo( registry, { usingProxy: false } );
 
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {

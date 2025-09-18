@@ -34,7 +34,7 @@ const CLEAR_ERRORS = 'CLEAR_ERRORS';
 /**
  * Internal dependencies
  */
-import { stringifyObject } from '../../util';
+import { stringifyObject } from '@/js/util';
 import { createReducer } from 'googlesitekit-data';
 
 export function generateErrorKey( baseName, args ) {

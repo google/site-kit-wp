@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { Cell, Grid, Row } from '../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 import { Fragment } from '@wordpress/element';
 
 function TokenRow( { children } ) {

@@ -26,9 +26,9 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { sanitizeHTML } from '../../../util/sanitize';
-import Link from '../../Link';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { sanitizeHTML } from '@/js/util/sanitize';
+import Link from '@/js/components/Link';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	ERROR_AMP_CDN_RESTRICTED,
 	ERROR_API_UNAVAILABLE,
@@ -39,7 +39,7 @@ import {
 	ERROR_SK_SERVICE_CONNECTION_FAIL,
 } from './constants';
 import GetHelpLink from './GetHelpLink';
-import P from '../../Typography/P';
+import P from '@/js/components/Typography/P';
 
 function helperCTA( developerPlugin, stagingDocumentationURL ) {
 	const { installed, active, installURL, activateURL, configureURL } =

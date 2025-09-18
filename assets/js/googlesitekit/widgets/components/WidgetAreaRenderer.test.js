@@ -26,13 +26,13 @@ import { getByText } from '@testing-library/dom';
  */
 import { useSelect } from 'googlesitekit-data';
 import WidgetAreaRenderer from './WidgetAreaRenderer';
-import * as tracking from '../../../util/tracking';
+import * as tracking from '@/js/util/tracking';
 import {
 	CORE_WIDGETS,
 	WIDGET_WIDTHS,
 	WIDGET_AREA_STYLES,
-} from '../datastore/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+} from '@/js/googlesitekit/widgets/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	render,
@@ -43,11 +43,11 @@ import {
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../constants';
+} from '@/js/googlesitekit/constants';
 import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	PERMISSION_VIEW_DASHBOARD,
-} from '../../datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 

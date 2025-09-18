@@ -21,8 +21,8 @@
  */
 import { select, subscribe } from 'googlesitekit-data';
 import { watchBlocks } from './watch-blocks';
-import * as tracking from '../../util/tracking';
-import { VIEW_CONTEXT_WP_BLOCK_EDITOR } from '../constants';
+import * as tracking from '@/js/util/tracking';
+import { VIEW_CONTEXT_WP_BLOCK_EDITOR } from '@/js/googlesitekit/constants';
 import {
 	CONTRIBUTE_WITH_GOOGLE_BLOCK,
 	SUBSCRIBE_WITH_GOOGLE_BLOCK,
@@ -33,12 +33,18 @@ vi.mock( 'googlesitekit-data', () => ( {
 	subscribe: vi.fn(),
 } ) );
 
-vi.mock( './get-blocks-titles', () => ( {
-	getBlocksTitles: vi.fn( () =>
+vi.mock( './create-get-blocks-titles', () => ( {
+	createGetBlockTitle: vi.fn( () =>
 		vi.fn( ( name ) => {
+			const constants = vi.requireActual(
+				'@/blocks/reader-revenue-manager/common/constants'
+			);
+
 			const titles = {
-				SUBSCRIBE_WITH_GOOGLE_BLOCK: 'Subscribe with Google',
-				CONTRIBUTE_WITH_GOOGLE_BLOCK: 'Contribute with Google',
+				[ constants.SUBSCRIBE_WITH_GOOGLE_BLOCK ]:
+					'Subscribe with Google',
+				[ constants.CONTRIBUTE_WITH_GOOGLE_BLOCK ]:
+					'Contribute with Google',
 			};
 			return titles[ name ];
 		} )

@@ -27,18 +27,18 @@ import {
 	provideUserCapabilities,
 	renderHook,
 } from '../../../tests/js/test-utils';
-import { getItem } from '../googlesitekit/api/cache';
+import { getItem } from '@/js/googlesitekit/api/cache';
 import { mockLocation } from '../../../tests/js/mock-browser-utils';
-import * as tracking from '../util/tracking';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
+import * as tracking from '@/js/util/tracking';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
-} from '../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import useActivateModuleCallback from './useActivateModuleCallback';
 
 const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );

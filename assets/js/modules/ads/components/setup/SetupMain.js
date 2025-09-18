@@ -31,13 +31,13 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import AdsIcon from '../../../../../svg/graphics/ads.svg';
+import AdsIcon from '@/svg/graphics/ads.svg';
 import SetupForm from './SetupForm';
-import SupportLink from '../../../../components/SupportLink';
-import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import Typography from '../../../../components/Typography';
-import P from '../../../../components/Typography/P';
+import SupportLink from '@/js/components/SupportLink';
+import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function SetupMain( { finishSetup } ) {
 	const isAdBlockerActive = useSelect( ( select ) =>

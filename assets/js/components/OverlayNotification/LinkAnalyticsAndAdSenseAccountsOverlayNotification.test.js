@@ -29,24 +29,24 @@ import {
 	fireEvent,
 	act,
 } from '../../../../tests/js/test-utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../googlesitekit/constants';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
-import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
-import Notifications from '../notifications/Notifications';
+} from '@/js/googlesitekit/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
+import Notifications from '@/js/components/notifications/Notifications';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/constants';
+} from '@/js/googlesitekit/notifications/constants';
 
 describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 	const LinkAnalyticsAndAdSenseAccountsOverlayNotificationComponent =

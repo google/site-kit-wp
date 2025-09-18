@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import { MODULES_ADS } from './constants';
-import { MODULE_SLUG_ADS } from '../constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
 	muteFetch,

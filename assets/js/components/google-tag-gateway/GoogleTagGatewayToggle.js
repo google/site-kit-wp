@@ -33,13 +33,14 @@ import { __ } from '@wordpress/i18n';
  */
 import { ProgressBar, Switch } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import Badge from '../Badge';
-import Link from '../Link';
-import useViewContext from '../../hooks/useViewContext';
-import { trackEvent } from '../../util';
-import withIntersectionObserver from '../../util/withIntersectionObserver';
-import Notice from '../Notice';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import NewBadge from '@/js/components/NewBadge';
+import Link from '@/js/components/Link';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import Notice from '@/js/components/Notice';
+import GoogleTagGatewayOptOutNotice from './GoogleTagGatewayOptOutNotice';
 
 const SubtleNotificationWithIntersectionObserver =
 	withIntersectionObserver( Notice );
@@ -118,11 +119,7 @@ export default function GoogleTagGatewayToggle( { className } ) {
 						hideLabel={ false }
 					/>
 					<div className="googlesitekit-google-tag-gateway-toggle__switch-badge">
-						<Badge
-							className="googlesitekit-badge--beta"
-							label={ __( 'Beta', 'google-site-kit' ) }
-							hasLeftSpacing
-						/>
+						<NewBadge hasLeftSpacing />
 					</div>
 				</div>
 			) }
@@ -152,6 +149,7 @@ export default function GoogleTagGatewayToggle( { className } ) {
 					}
 				) }
 			</p>
+			<GoogleTagGatewayOptOutNotice />
 			{ ! isLoading && ! hasMetServerRequirements && (
 				<SubtleNotificationWithIntersectionObserver
 					type={ Notice.TYPES.WARNING }

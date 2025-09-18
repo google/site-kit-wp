@@ -73,4 +73,5 @@ SurveyQuestionMultiSelectStory.args = {
 
 export default {
 	title: 'Components/Surveys/SurveyQuestionMultiSelect',
+	component: SurveyQuestionMultiSelect,
 };

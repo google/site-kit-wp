@@ -30,9 +30,9 @@ import {
 	combineStores,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { getDateString } from '../../../util';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getDateString } from '@/js/util';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -41,7 +41,7 @@ import {
 	RESOURCE_TYPE_PROPERTY,
 	RESOURCE_TYPES,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const fetchSaveResourceDataAvailabilityDateStore = createFetchStore( {
 	baseName: 'saveResourceDataAvailabilityDate',
@@ -431,6 +431,9 @@ const baseSelectors = {
 						reportID:
 							'analytics-4_get-partial-data-report-options_store:selector_RESOURCE_TYPE_PROPERTY',
 					};
+
+				default:
+					return undefined;
 			}
 		}
 	),

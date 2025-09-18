@@ -32,9 +32,9 @@ import { Component, Fragment } from '@wordpress/element';
  */
 import { get, set } from 'googlesitekit-api';
 import { Button, ProgressBar, TextField } from 'googlesitekit-components';
-import { validateJSON, trackEvent } from '../../util';
-import Typography from '../Typography';
-import P from '../Typography/P';
+import { validateJSON, trackEvent } from '@/js/util';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 class SiteVerification extends Component {
 	constructor( props ) {
@@ -90,7 +90,7 @@ class SiteVerification extends Component {
 
 					if ( true === response.verified ) {
 						this.props.siteVerificationSetup( true );
-						return true;
+						return;
 					}
 				} else {
 					await trackEvent(
@@ -103,6 +103,8 @@ class SiteVerification extends Component {
 					loading: false,
 					siteURL: identifier,
 				} );
+
+				return;
 			} catch ( err ) {
 				let message = err.message;
 

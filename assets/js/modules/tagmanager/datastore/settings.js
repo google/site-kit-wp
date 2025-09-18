@@ -20,13 +20,14 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isEqual, pick } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import { invalidateCache } from 'googlesitekit-api';
 import { createRegistrySelector } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	isValidAccountID,
 	isValidContainerID,
@@ -35,7 +36,7 @@ import {
 	isValidContainerName,
 	isUniqueContainerName,
 	getNormalizedContainerName,
-} from '../util';
+} from '@/js/modules/tagmanager/util';
 import {
 	MODULES_TAGMANAGER,
 	CONTAINER_CREATE,
@@ -43,16 +44,16 @@ import {
 	CONTEXT_AMP,
 	FORM_SETUP,
 } from './constants';
-import { MODULE_SLUG_TAGMANAGER } from '../constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
-} from '../../../googlesitekit/data/create-settings-store';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { createStrictSelect } from '../../../googlesitekit/data/utils';
-import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../analytics-4/constants';
+} from '@/js/googlesitekit/data/create-settings-store';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { createStrictSelect } from '@/js/googlesitekit/data/utils';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID =
@@ -150,6 +151,16 @@ export async function submitChanges( { select, dispatch } ) {
 		).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 		if ( analyticsModuleConnected ) {
 			await dispatch( MODULES_ANALYTICS_4 ).fetchGetSettings();
+		}
+	}
+
+	if ( select( CORE_SITE ).haveGoogleTagGatewaySettingsChanged() ) {
+		const { error } = await dispatch(
+			CORE_SITE
+		).saveGoogleTagGatewaySettings();
+
+		if ( error ) {
+			return { error };
 		}
 	}
 
@@ -252,4 +263,31 @@ export function validateCanSubmitChanges( select ) {
 			);
 		}
 	}
+}
+
+export function rollbackChanges( { select, dispatch } ) {
+	if ( select( MODULES_TAGMANAGER ).haveSettingsChanged() ) {
+		dispatch( MODULES_TAGMANAGER ).rollbackSettings();
+		dispatch( CORE_SITE ).resetGoogleTagGatewaySettings();
+	}
+}
+
+export function validateHaveSettingsChanged( select, state, keys ) {
+	const { settings, savedSettings } = state;
+	const haveGoogleTagGatewaySettingsChanged =
+		select( CORE_SITE ).haveGoogleTagGatewaySettingsChanged();
+
+	if ( keys ) {
+		invariant(
+			isEqual( pick( settings, keys ), pick( savedSettings, keys ) ) ||
+				haveGoogleTagGatewaySettingsChanged,
+			INVARIANT_SETTINGS_NOT_CHANGED
+		);
+	}
+
+	invariant(
+		! isEqual( settings, savedSettings ) ||
+			haveGoogleTagGatewaySettingsChanged,
+		INVARIANT_SETTINGS_NOT_CHANGED
+	);
 }

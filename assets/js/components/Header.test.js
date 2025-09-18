@@ -25,10 +25,10 @@ import {
 	provideUserInfo,
 	waitForDefaultTimeouts,
 } from '../../../tests/js/test-utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../googlesitekit/constants';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import Header from './Header';
 import Null from './Null';
 

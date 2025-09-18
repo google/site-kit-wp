@@ -34,7 +34,6 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Core\Util\Plugin_Status;
 use Google\Site_Kit\Modules\Ads\Enhanced_Conversions;
 use Google\Site_Kit\Modules\Ads\PAX_Config;
@@ -51,6 +50,8 @@ use Google\Site_Kit\Modules\Ads\AMP_Tag;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 use Google\Site_Kit\Core\Modules\Module_With_Inline_Data;
 use Google\Site_Kit\Core\Modules\Module_With_Inline_Data_Trait;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
+use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 
 /**
  * Class representing the Ads module.
@@ -59,13 +60,14 @@ use Google\Site_Kit\Core\Modules\Module_With_Inline_Data_Trait;
  * @access private
  * @ignore
  */
-final class Ads extends Module implements Module_With_Inline_Data, Module_With_Assets, Module_With_Debug_Fields, Module_With_Scopes, Module_With_Settings, Module_With_Tag, Module_With_Deactivation, Module_With_Persistent_Registration {
+final class Ads extends Module implements Module_With_Inline_Data, Module_With_Assets, Module_With_Debug_Fields, Module_With_Scopes, Module_With_Settings, Module_With_Tag, Module_With_Deactivation, Module_With_Persistent_Registration, Provides_Feature_Metrics {
 	use Module_With_Assets_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Tag_Trait;
 	use Method_Proxy_Trait;
 	use Module_With_Inline_Data_Trait;
+	use Feature_Metrics_Trait;
 
 	/**
 	 * Module slug name.
@@ -94,7 +96,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	 * @param Authentication|null $authentication Authentication object.
 	 * @param Assets|null         $assets         Assets object.
 	 */
-	public function __construct( Context $context, Options $options = null, User_Options $user_options = null, Authentication $authentication = null, Assets $assets = null ) {
+	public function __construct( Context $context, ?Options $options = null, ?User_Options $user_options = null, ?Authentication $authentication = null, ?Assets $assets = null ) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 
 		$this->conversion_tracking = new Conversion_Tracking( $context );
@@ -108,6 +110,8 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	public function register() {
 		$this->register_scopes_hook();
 		$this->register_inline_data();
+		$this->register_feature_metrics();
+
 		// Ads tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 		add_filter(
@@ -213,7 +217,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 					'googlesitekit-ads-pax-integrator',
 					array(
 						// When updating, mirror the fixed version for google-pax-sdk in package.json.
-						'src'          => 'https://www.gstatic.com/pax/1.1.8/pax_integrator.js',
+						'src'          => 'https://www.gstatic.com/pax/1.1.10/pax_integrator.js',
 						'execution'    => 'async',
 						'dependencies' => array(
 							'googlesitekit-ads-pax-config',
@@ -398,24 +402,13 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	public function get_debug_fields() {
 		$settings = $this->get_settings()->get();
 
-		$debug_fields = array(
+		return array(
 			'ads_conversion_tracking_id' => array(
 				'label' => __( 'Ads: Conversion ID', 'google-site-kit' ),
 				'value' => $settings['conversionID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['conversionID'] ),
 			),
 		);
-
-		// Add fields from Google tag gateway.
-		// Note: fields are added in both Analytics and Ads so that the debug fields will show if either module is enabled.
-		if ( Feature_Flags::enabled( 'googleTagGateway' ) ) {
-			$google_tag_gateway             = new Google_Tag_Gateway( $this->context );
-			$fields_from_google_tag_gateway = $google_tag_gateway->get_debug_fields();
-
-			$debug_fields = array_merge( $debug_fields, $fields_from_google_tag_gateway );
-		}
-
-		return $debug_fields;
 	}
 
 	/**
@@ -456,18 +449,51 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	 * Gets required inline data for the module.
 	 *
 	 * @since 1.158.0
+	 * @since 1.160.0 Include $modules_data parameter to match the interface.
 	 *
+	 * @param array $modules_data Inline modules data.
 	 * @return array An array of the module's inline data.
 	 */
-	public function get_inline_data() {
+	public function get_inline_data( $modules_data ) {
 		if ( ! Feature_Flags::enabled( 'adsPax' ) ) {
-			return array();
+			return $modules_data;
+		}
+
+		if ( empty( $modules_data['ads'] ) ) {
+			$modules_data['ads'] = array();
+		}
+
+		$modules_data[ self::MODULE_SLUG ]['supportedConversionEvents'] = $this->get_supported_conversion_events();
+
+		return $modules_data;
+	}
+
+	/**
+	 * Gets an array of internal feature metrics.
+	 *
+	 * @since 1.162.0
+	 *
+	 * @return array
+	 */
+	public function get_feature_metrics() {
+		$is_connected = $this->is_connected();
+
+		if ( ! $is_connected ) {
+			return array(
+				'ads_connection' => '',
+			);
+		}
+
+		$settings = $this->get_settings()->get();
+
+		if ( Feature_Flags::enabled( 'adsPax' ) && ! empty( $settings['paxConversionID'] ) ) {
+			return array(
+				'ads_connection' => 'pax',
+			);
 		}
 
 		return array(
-			self::MODULE_SLUG => array(
-				'supportedConversionEvents' => $this->get_supported_conversion_events(),
-			),
+			'ads_connection' => 'manual',
 		);
 	}
 }

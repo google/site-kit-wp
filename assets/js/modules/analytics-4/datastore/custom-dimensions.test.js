@@ -26,7 +26,7 @@ import { times } from 'lodash';
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { MODULES_ANALYTICS_4 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
 	provideModules,
@@ -38,8 +38,8 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_TOP_CATEGORIES,
-} from '../../../googlesitekit/datastore/user/constants';
-import { provideCustomDimensionError } from '../utils/custom-dimensions';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 
 describe( 'modules/analytics-4 custom-dimensions', () => {
 	let registry;

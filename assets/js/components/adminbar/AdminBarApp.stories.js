@@ -29,14 +29,14 @@ import {
 	setupAnalytics4ZeroData,
 	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
 } from './common-GA4-stories';
-import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarApp from './AdminBarApp';
 import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from '../../../../tests/js/utils';
-import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '../../googlesitekit/constants';
+import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '@/js/googlesitekit/constants';
 
 function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 	return (

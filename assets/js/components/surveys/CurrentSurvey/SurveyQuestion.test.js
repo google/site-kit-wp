@@ -26,7 +26,7 @@ import {
 	singleQuestionOpenText,
 	singleQuestionSurveySingleSelect,
 	multiQuestionSurvey,
-} from '../__fixtures__';
+} from '@/js/components/surveys/__fixtures__';
 
 describe( 'SurveyQuestion', () => {
 	const defaultProps = {

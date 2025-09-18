@@ -78,6 +78,7 @@
 		"eslint-plugin-jest": "^22.21.0",
 		"eslint-plugin-jsdoc": "^30.7.13",
 		"eslint-plugin-lodash": "^7.4.0",
+		"eslint-plugin-no-relative-import-paths": "^1.6.1",
 		"eslint-plugin-react": "^7.37.5",
 		"eslint-plugin-react-hooks": "^4.2.0",
 		"eslint-plugin-sitekit": "file:packages/eslint-plugin",

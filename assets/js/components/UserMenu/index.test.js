@@ -34,7 +34,7 @@ import {
 	waitFor,
 } from '../../../../tests/js/test-utils';
 import UserMenu from '.';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 describe( 'UserMenu', () => {
 	let registry;

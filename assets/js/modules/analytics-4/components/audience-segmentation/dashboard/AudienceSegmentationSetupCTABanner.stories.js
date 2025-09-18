@@ -24,16 +24,16 @@ import {
 	provideUserAuthentication,
 } from '../../../../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
-import { getAnalytics4MockResponse } from '../../../utils/data-mock';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
 import AudienceSegmentationSetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 } from './AudienceSegmentationSetupCTABanner';
-import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
-import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
-import { ANALYTICS_4_NOTIFICATIONS } from '../../..';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION

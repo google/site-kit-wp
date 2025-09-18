@@ -24,19 +24,19 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import TopTrafficSourceWidget from './TopTrafficSourceWidget';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 	provideAnalyticsReportWithoutDateRangeData,
-} from '../../utils/data-mock';
+} from '@/js/modules/analytics-4/utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 
 const reportOptions = [
 	{

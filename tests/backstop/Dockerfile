@@ -6,8 +6,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG BACKSTOPJS_VERSION=6.3.25
 ENV BACKSTOPJS_VERSION=$BACKSTOPJS_VERSION
 
-# This version is the only version available on both arm64 and amd64 architectures as of June 2025.
-ARG CHROMIUM_VERSION=135.0.7049.95-1~deb12u1
+# This version is the only version available on both arm64 and amd64 architectures as of Sept 2025.
+# This verison appears to change periodically with security updates, so if this version cannot
+# be found, check https://packages.debian.org/bookworm/chromium-common for the latest version.
+ARG CHROMIUM_VERSION=140.0.7339.80-1~deb12u1
 ENV CHROMIUM_VERSION=$CHROMIUM_VERSION
 
 # Install all required packages.

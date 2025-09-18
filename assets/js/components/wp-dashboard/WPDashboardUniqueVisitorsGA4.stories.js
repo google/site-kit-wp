@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { withWPDashboardWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { withWPDashboardWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	setupAnalytics4GatheringData,
 	setupAnalytics4MockReports,
@@ -30,7 +30,7 @@ import {
 	widgetDecorators,
 	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
 } from './common-GA4-stories';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardUniqueVisitorsGA4 from './WPDashboardUniqueVisitorsGA4';
 

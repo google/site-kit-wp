@@ -30,21 +30,21 @@ import {
 	muteFetch,
 	act,
 } from '../../../../../../../../tests/js/test-utils';
-import { availableAudiences } from '../../../../datastore/__fixtures__';
-import * as tracking from '../../../../../../util/tracking';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import * as tracking from '@/js/util/tracking';
 import {
 	AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG,
 	AUDIENCE_CREATION_NOTICE_SLUG,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
-} from '../../../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../googlesitekit/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import AudienceCreationNotice from './AudienceCreationNotice';
 
 const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );

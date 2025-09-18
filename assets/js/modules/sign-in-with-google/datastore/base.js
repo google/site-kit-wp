@@ -21,7 +21,7 @@
  */
 import Modules from 'googlesitekit-modules';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '../constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 import { validateCanSubmitChanges } from './settings';
 
 export default Modules.createModuleStore( MODULE_SLUG_SIGN_IN_WITH_GOOGLE, {

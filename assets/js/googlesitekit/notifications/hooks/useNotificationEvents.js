@@ -24,8 +24,8 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import useViewContext from '../../../hooks/useViewContext';
-import { trackEvent } from '../../../util';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 export default function useNotificationEvents(
 	id,

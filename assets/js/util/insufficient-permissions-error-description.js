@@ -21,8 +21,8 @@
  */
 import { __, sprintf } from '@wordpress/i18n';
 
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../modules/search-console/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 /**
  * Gets a description for an insufficient permissions error.

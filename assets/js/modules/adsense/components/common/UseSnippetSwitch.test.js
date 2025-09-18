@@ -30,7 +30,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 } from '../../../../../../tests/js/utils';
-import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 
 // Mock apiFetch so we know if it's called.
 vi.mock( '@wordpress/api-fetch' );

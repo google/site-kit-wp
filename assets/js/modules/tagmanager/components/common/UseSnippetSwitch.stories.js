@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 import UseSnippetSwitch from './UseSnippetSwitch';
 
 function Template( args ) {

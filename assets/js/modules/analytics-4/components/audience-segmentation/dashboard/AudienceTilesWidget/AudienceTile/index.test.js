@@ -40,24 +40,24 @@ import {
 	waitForDefaultTimeouts,
 	waitForTimeouts,
 } from '../../../../../../../../../tests/js/utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../../googlesitekit/constants';
-import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '../../../../../../../googlesitekit/widgets/util';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../../util/errors';
-import * as tracking from '../../../../../../../util/tracking';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import * as tracking from '@/js/util/tracking';
 import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
-} from '../../../../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { provideCustomDimensionError } from '../../../../../utils/custom-dimensions';
-import { getAnalytics4MockResponse } from '../../../../../utils/data-mock';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
 import {
 	getViewportWidth,
 	setViewportWidth,
 } from '../../../../../../../../../tests/js/viewport-width-utils';
-import { getPreviousDate } from '../../../../../../../util';
+import { getPreviousDate } from '@/js/util';
 
 vi.mock( 'react-use', () => ( {
 	...vi.requireActual( 'react-use' ),

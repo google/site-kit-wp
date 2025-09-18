@@ -19,16 +19,17 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
 	provideModules,
+	provideUserAuthentication,
 } from '../../../../../../../tests/js/utils';
-import { provideAnalytics4MockReport } from '../../../utils/data-mock';
+import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { render } from '../../../../../../../tests/js/test-utils';
-import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import DashboardAllTrafficWidgetGA4 from '.';
 
 describe( 'DashboardAllTrafficWidgetGA4', () => {
@@ -150,6 +151,7 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
+		provideUserAuthentication( registry );
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,

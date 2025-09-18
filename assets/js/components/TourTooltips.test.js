@@ -25,9 +25,9 @@ import {
 	fireEvent,
 } from '../../../tests/js/test-utils';
 import TourTooltips, { GA_ACTIONS } from './TourTooltips';
-import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import * as tracking from '../util/tracking';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import * as tracking from '@/js/util/tracking';
 import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 
 const SECOND_STEP = 1;

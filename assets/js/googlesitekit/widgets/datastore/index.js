@@ -23,7 +23,7 @@ import { combineStores, commonStore } from 'googlesitekit-data';
 import areas from './areas';
 import widgets from './widgets';
 import contexts from './contexts';
-import { createErrorStore } from '../../data/create-error-store';
+import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 import { CORE_WIDGETS } from './constants';
 
 const store = combineStores(

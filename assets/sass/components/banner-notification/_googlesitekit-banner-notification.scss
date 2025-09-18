@@ -42,7 +42,7 @@
 		&.googlesitekit-banner-notification--error {
 			background-color: $c-red-r-10;
 
-			.googlesitekit-banner__cta {
+			.googlesitekit-banner__cta:not(:disabled) {
 				background-color: $c-red-r-500;
 			}
 		}

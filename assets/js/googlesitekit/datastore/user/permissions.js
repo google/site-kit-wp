@@ -32,9 +32,9 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { CORE_USER, PERMISSION_READ_SHARED_MODULE_DATA } from './constants';
-import { CORE_MODULES } from '../../modules/datastore/constants';
-import { getMetaCapabilityPropertyName } from '../util/permissions';
-import { createFetchStore } from '../../data/create-fetch-store';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 
 // Actions
 const CLEAR_PERMISSION_SCOPE_ERROR = 'CLEAR_PERMISSION_SCOPE_ERROR';

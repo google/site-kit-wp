@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	setupSearchConsoleAnalytics4ZeroData,
 	setupSearchConsoleGatheringData,

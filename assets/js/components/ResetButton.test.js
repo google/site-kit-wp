@@ -32,7 +32,7 @@ import {
 	provideSiteInfo,
 	waitFor,
 } from '../../../tests/js/test-utils';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import ResetButton from './ResetButton';
 import { subscribeUntil } from '../../../tests/js/utils';
 

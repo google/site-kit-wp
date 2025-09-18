@@ -43,30 +43,30 @@ import {
 	provideUserInfo,
 	waitForDefaultTimeouts,
 } from '../../../../../../../tests/js/utils';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
 	MODULES_ANALYTICS_4,
 	EDIT_SCOPE,
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
-} from '../../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	availableAudiences as audiencesFixture,
 	properties as propertiesFixture,
-} from '../../../datastore/__fixtures__';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../util/errors';
-import * as tracking from '../../../../../util/tracking';
-import { getAnalytics4MockResponse } from '../../../utils/data-mock';
+} from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import * as tracking from '@/js/util/tracking';
+import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
 import AudienceSegmentationSetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 } from './AudienceSegmentationSetupCTABanner';
-import { ANALYTICS_4_NOTIFICATIONS } from '../../..';
-import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
-import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
+import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
 import {
 	dismissedPromptsEndpoint,

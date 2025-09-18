@@ -27,7 +27,7 @@ import {
 } from '../../../tests/js/test-utils';
 import { mockCreateComponent } from '../../../tests/js/mock-component-utils';
 import DashboardEntryPoint from './DashboardEntryPoint';
-import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 vi.mock( './setup/ModuleSetup', () => mockCreateComponent( 'ModuleSetup' ) );
 vi.mock( './DashboardMainApp', () =>

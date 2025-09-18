@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	render,
 	fireEvent,
@@ -37,7 +37,7 @@ import {
 	multiQuestionSurvey,
 	multiQuestionConditionalSurvey,
 	invalidQuestionTypeSurvey,
-} from '../__fixtures__';
+} from '@/js/components/surveys/__fixtures__';
 
 // Text input should only allow up to 200 characters of input.
 const STRING_100_CHARACTERS =

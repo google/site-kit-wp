@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	createTestRegistry,
 	provideModules,
@@ -30,7 +30,7 @@ import {
 	render,
 	waitFor,
 } from '../../../../../../tests/js/test-utils';
-import { publications } from '../../datastore/__fixtures__';
+import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import SetupForm from './SetupForm';
 
 describe( 'SetupForm', () => {

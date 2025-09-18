@@ -19,11 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	getAnalytics4MockResponse,
-	getAnalytics4MockPivotResponse,
-	STRATEGY_ZIP,
-} from './data-mock';
+import { getAnalytics4MockResponse, STRATEGY_ZIP } from './data-mock';
 import mockedReportResponse from './__fixtures__/mocked-report.json';
 import mockedReportMultipleDistinctDateRangesResponse from './__fixtures__/mocked-report-multiple-distinct-date-ranges.json';
 import mockedReportMultipleOverlappingDateRangesResponse from './__fixtures__/mocked-report-multiple-overlapping-date-ranges.json';
@@ -35,8 +31,6 @@ import mockedReportOrderByMetricDescendingResponse from './__fixtures__/mocked-r
 import mockedReportOrderByDimensionAscendingResponse from './__fixtures__/mocked-report-order-by-dimension-ascending.json';
 import mockedReportOrderByDimensionDescendingResponse from './__fixtures__/mocked-report-order-by-dimension-descending.json';
 import mockedReportOrderByMetricsAndDimensionsResponse from './__fixtures__/mocked-report-order-by-metrics-and-dimensions.json';
-import mockedPivotReportResponse from './__fixtures__/mocked-pivot-report.json';
-import mockedPivotReportResponse3Dimensions from './__fixtures__/mocked-pivot-report-3-dimensions.json';
 
 describe( 'data-mock', () => {
 	describe( 'getAnalytics4MockResponse', () => {
@@ -444,117 +438,6 @@ describe( 'data-mock', () => {
 			expect( report ).toEqual(
 				mockedReportOrderByMetricsAndDimensionsResponse
 			);
-		} );
-	} );
-
-	describe( 'getAnalytics4MockPivotResponse', () => {
-		it( 'generates pivot reports with the correct number of columns', () => {
-			const report = getAnalytics4MockPivotResponse( {
-				startDate: '2024-04-18',
-				endDate: '2024-05-15',
-				metrics: [
-					{
-						name: 'screenPageViewsPerSession',
-					},
-					{
-						name: 'averageSessionDuration',
-					},
-				],
-				dimensions: [ 'city', 'audienceResourceName' ],
-				pivots: [
-					{
-						fieldNames: [ 'audienceResourceName' ],
-						limit: 3,
-					},
-					{
-						fieldNames: [ 'city' ],
-						limit: 3,
-						orderby: [
-							{
-								metric: {
-									metricName: 'screenPageViewsPerSession',
-								},
-							},
-						],
-					},
-				],
-			} );
-
-			expect( report ).toEqual( mockedPivotReportResponse );
-
-			// Verify the correct number of rows for the pivot, there should be the product of the limits of each pivot.
-			expect( report.rows ).toHaveLength( 3 * 3 );
-			// Verify a row has just a dimensionValue and metricValue key.
-			expect( report.rows[ 0 ] ).toHaveProperty( 'dimensionValues' );
-			expect( report.rows[ 0 ] ).toHaveProperty( 'metricValues' );
-
-			// Verify the correct number of pivotHeaders, there should be one for each pivot.
-			expect( report.pivotHeaders ).toHaveLength( 2 );
-			// And each should have a pivotDimensionHeaders and rowCount prop.
-			report.pivotHeaders.forEach( ( pivotHeader ) => {
-				expect( pivotHeader ).toHaveProperty( 'pivotDimensionHeaders' );
-				expect( pivotHeader ).toHaveProperty( 'rowCount' );
-			} );
-
-			// Verify the aggregate should have 3 * the number of dimensions as each dimension has a total, max and min.
-			expect( report.aggregates ).toHaveLength( 3 * 2 );
-		} );
-
-		it( 'generates pivot reports with the correct number of columns with three dimensions', () => {
-			const report = getAnalytics4MockPivotResponse( {
-				startDate: '2024-04-18',
-				endDate: '2024-05-15',
-				metrics: [
-					{
-						name: 'totalUsers',
-					},
-					{
-						name: 'activeUsers',
-					},
-				],
-				dimensions: [ 'city', 'audienceResourceName', 'country' ],
-				pivots: [
-					{
-						fieldNames: [ 'audienceResourceName' ],
-						limit: 2,
-					},
-					{
-						fieldNames: [ 'city' ],
-						limit: 3,
-						orderby: [
-							{
-								metric: {
-									metricName: 'totalUsers',
-								},
-								desc: true,
-							},
-						],
-					},
-					{
-						fieldNames: [ 'country' ],
-						limit: 3,
-					},
-				],
-			} );
-
-			expect( report ).toEqual( mockedPivotReportResponse3Dimensions );
-
-			// Verify the correct number of rows for the pivot, there should be the product of the limits of each pivot.
-			expect( report.rows ).toHaveLength( 2 * 3 * 3 );
-			// Verify a row has just a dimensionValue and metricValue key.
-			expect( report.rows[ 0 ] ).toHaveProperty( 'dimensionValues' );
-			expect( report.rows[ 0 ] ).toHaveProperty( 'metricValues' );
-
-			// Verify the correct number of pivotHeaders, there should be one for each pivot.
-			expect( report.pivotHeaders ).toHaveLength( 3 );
-			// And each should have a pivotDimensionHeaders and rowCount prop.
-			report.pivotHeaders.forEach( ( pivotHeader ) => {
-				expect( pivotHeader ).toHaveProperty( 'pivotDimensionHeaders' );
-				expect( pivotHeader ).toHaveProperty( 'rowCount' );
-			} );
-
-			// Verify the aggregate should have 3 * the number of dimensions as each dimension has a total, max and min.
-			expect( report.aggregates ).toHaveLength( 3 * 3 );
 		} );
 	} );
 } );

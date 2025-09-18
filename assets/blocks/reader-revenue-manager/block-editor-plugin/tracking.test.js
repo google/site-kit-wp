@@ -22,7 +22,7 @@
 import { select, subscribe } from 'googlesitekit-data';
 import * as tracking from '@/js/util/tracking';
 import { initializeTracking } from './tracking';
-import { CORE_EDITOR } from '../common/constants';
+import { CORE_EDITOR } from '@/blocks/reader-revenue-manager/common/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { VIEW_CONTEXT_WP_BLOCK_EDITOR } from '@/js/googlesitekit/constants';
 

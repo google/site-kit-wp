@@ -25,15 +25,15 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import JoyrideTooltip from '../JoyrideTooltip';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
+import JoyrideTooltip from '@/js/components/JoyrideTooltip';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../hooks/useBreakpoint';
+} from '@/js/hooks/useBreakpoint';
 
 export function AdminMenuTooltip() {
 	const viewContext = useViewContext();
@@ -80,9 +80,11 @@ export function AdminMenuTooltip() {
 	return (
 		<JoyrideTooltip
 			target={ isMobileTablet ? 'body' : defaultTarget }
-			placement={ isMobileTablet ? 'center' : 'auto' }
+			placement={ isMobileTablet ? 'center' : 'right' }
 			className={
-				isMobileTablet ? 'googlesitekit-tour-tooltip__modal_step' : ''
+				isMobileTablet
+					? 'googlesitekit-tour-tooltip__modal_step'
+					: 'googlesitekit-tour-tooltip__fixed-settings-tooltip'
 			}
 			disableOverlay={ ! isMobileTablet }
 			slug="ga4-activation-banner-admin-menu-tooltip"

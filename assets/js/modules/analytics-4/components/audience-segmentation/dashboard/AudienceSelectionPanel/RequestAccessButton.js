@@ -30,8 +30,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { trackEvent } from '../../../../../../util';
-import useViewContext from '../../../../../../hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function RequestAccessButton( { requestAccessURL } ) {
 	const viewContext = useViewContext();

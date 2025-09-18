@@ -24,7 +24,7 @@ import {
 	provideSiteInfo,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
 	MODULES_ADS,

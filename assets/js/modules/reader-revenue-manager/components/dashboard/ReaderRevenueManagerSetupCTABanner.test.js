@@ -33,24 +33,25 @@ import {
 	provideModules,
 	waitFor,
 	provideUserAuthentication,
+	provideSiteInfo,
 } from '../../../../../../tests/js/test-utils';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
-} from '../../datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
-import { WEEK_IN_SECONDS } from '../../../../util';
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import { WEEK_IN_SECONDS } from '@/js/util';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
 } from '../../../../../../tests/js/mock-survey-endpoints';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import { NOTIFICATIONS } from '../..';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager';
 import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
 vi.mock( '../../../../hooks/useActivateModuleCallback' );
@@ -73,6 +74,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		activateModuleMock = vi.fn( () => activateModuleCallbackMock );
 
 		provideUserAuthentication( registry );
+		provideSiteInfo( registry );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
 

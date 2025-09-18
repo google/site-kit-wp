@@ -14,6 +14,8 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Cron;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
+use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -24,8 +26,9 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * @access private
  * @ignore
  */
-class Google_Tag_Gateway implements Module_With_Debug_Fields {
+class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_Metrics {
 	use Method_Proxy_Trait;
+	use Feature_Metrics_Trait;
 
 	/**
 	 * Context instance.
@@ -67,7 +70,7 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields {
 	 * @param Context $context Plugin context.
 	 * @param Options $options Optional. Option API instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, Options $options = null ) {
+	public function __construct( Context $context, ?Options $options = null ) {
 		$this->context                     = $context;
 		$options                           = $options ?: new Options( $context );
 		$this->google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $options );
@@ -87,8 +90,68 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields {
 		$this->google_tag_gateway_settings->register();
 		$this->rest_controller->register();
 		$this->cron->register();
+		$this->register_feature_metrics();
 
 		add_action( 'admin_init', fn () => $this->on_admin_init() );
+
+		// Auto-update `isGTGDefault` to false when `isEnabled` changes,
+		// but only if `isGTGDefault` is currently true.
+		$this->google_tag_gateway_settings->on_change(
+			function ( $old_value, $new_value ) {
+				if (
+					$old_value['isEnabled'] !== $new_value['isEnabled'] &&
+					true === $new_value['isGTGDefault']
+				) {
+					$this->google_tag_gateway_settings->merge(
+						array(
+							'isGTGDefault' => false,
+						)
+					);
+				}
+			}
+		);
+	}
+
+	/**
+	 * Gets an array of internal feature metrics.
+	 *
+	 * @since 1.162.0
+	 *
+	 * @return array
+	 */
+	public function get_feature_metrics() {
+		$settings = $this->google_tag_gateway_settings->get();
+
+		return array(
+			'gtg_enabled' => (bool) isset( $settings['isEnabled'] ) && $settings['isEnabled'],
+			'gtg_healthy' => $this->get_health_check_feature_metric( $settings ),
+		);
+	}
+
+	/**
+	 * Maps a combination of GTG settings to a suitable string
+	 * for internal feature metrics tracking.
+	 *
+	 * @since 1.162.0
+	 *
+	 * @param mixed $settings Settings array.
+	 * @return string
+	 */
+	private function get_health_check_feature_metric( $settings ) {
+		if ( ! isset( $settings['isEnabled'] ) || ! $settings['isEnabled'] ) {
+			return '';
+		}
+
+		if (
+			isset( $settings['isGTGHealthy'] ) &&
+			true === $settings['isGTGHealthy'] &&
+			isset( $settings['isScriptAccessEnabled'] ) &&
+			true === $settings['isScriptAccessEnabled']
+		) {
+			return 'yes';
+		}
+
+		return 'no';
 	}
 
 	/**
@@ -129,6 +192,8 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields {
 	 * Gets an array of debug field definitions.
 	 *
 	 * @since 1.142.0
+	 * @since 1.162.0 Updated to use Google_Tag_Gateway_Settings->is_google_tag_gateway_active()
+	 * instead of inline logic to determine effective GTG status.
 	 *
 	 * @return array
 	 */
@@ -136,9 +201,7 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields {
 		$settings = $this->google_tag_gateway_settings->get();
 
 		// Determine effective GTG status based on settings and health checks.
-		$is_gtg_effectively_enabled = true === $settings['isEnabled']
-			&& true === $settings['isGTGHealthy']
-			&& true === $settings['isScriptAccessEnabled'];
+		$is_gtg_effectively_enabled = $this->google_tag_gateway_settings->is_google_tag_gateway_active();
 
 		return array(
 			'google_tag_gateway_is_enabled'               => array(

@@ -23,11 +23,11 @@ import {
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
-} from '../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { availableAudiences as audiencesFixture } from '../datastore/__fixtures__';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { availableAudiences as audiencesFixture } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { actHook, renderHook } from '../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,

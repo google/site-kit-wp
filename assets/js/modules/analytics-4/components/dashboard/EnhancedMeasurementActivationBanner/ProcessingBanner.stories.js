@@ -21,8 +21,8 @@
  */
 import { provideUserAuthentication } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
-import { EDIT_SCOPE } from '../../../datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { EDIT_SCOPE } from '@/js/modules/analytics-4/datastore/constants';
 import ProcessingBanner from './ProcessingBanner';
 
 const NotificationWithComponentProps = withNotificationComponentProps(

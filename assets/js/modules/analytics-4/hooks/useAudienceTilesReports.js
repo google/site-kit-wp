@@ -20,8 +20,11 @@
  * Internal dependencies
  */
 import { useInViewSelect, useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from '../datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 
 /**
  * Checks if the audience reports are loaded for the given report options.

@@ -36,22 +36,22 @@ import {
 	AUDIENCE_SELECTION_FORM,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
-import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	DATE_RANGE_OFFSET,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
-} from '../../../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../../../googlesitekit/constants';
-import { WEEK_IN_SECONDS } from '../../../../../../util';
+} from '@/js/googlesitekit/constants';
+import { WEEK_IN_SECONDS } from '@/js/util';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -62,7 +62,7 @@ import {
 	provideUserInfo,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/utils';
-import { provideAnalytics4MockReport } from '../../../../utils/data-mock';
+import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import {
 	act,
 	fireEvent,
@@ -70,7 +70,7 @@ import {
 	waitFor,
 } from '../../../../../../../../tests/js/test-utils';
 import { availableAudiences } from './../../../../datastore/__fixtures__';
-import * as tracking from '../../../../../../util/tracking';
+import * as tracking from '@/js/util/tracking';
 import AudienceSelectionPanel from '.';
 
 const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
