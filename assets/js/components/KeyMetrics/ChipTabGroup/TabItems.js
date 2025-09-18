@@ -17,12 +17,12 @@
  */
 
 /**
- * WordPress dependencies.
+ * External dependencies
  */
 import PropTypes from 'prop-types';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
 import Chip from './Chip';
