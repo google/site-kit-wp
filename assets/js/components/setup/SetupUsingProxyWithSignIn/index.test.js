@@ -24,6 +24,8 @@ import {
 	provideUserInfo,
 	provideUserCapabilities,
 	muteFetch,
+	act,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/test-utils';
 import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
@@ -62,15 +64,22 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		);
 	} );
 
-	it( 'should render the setup page, including the Activate Analytics notice', () => {
-		const { getByText } = render( <SetupUsingProxyWithSignIn />, {
-			registry,
-			viewContext: VIEW_CONTEXT_SPLASH,
-		} );
+	it( 'should render the setup page, including the Activate Analytics notice', async () => {
+		const { container, getByText } = render(
+			<SetupUsingProxyWithSignIn />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+			}
+		);
+
+		expect( container ).toMatchSnapshot();
 
 		expect(
 			getByText( /Connect Google Analytics as part of your setup/ )
 		).toBeInTheDocument();
+
+		await act( waitForDefaultTimeouts );
 	} );
 
 	it( 'should not render the Activate Analytics notice when the Analytics module is not available', async () => {

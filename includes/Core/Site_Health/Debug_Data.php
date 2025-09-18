@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Core\Site_Health;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
-use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
@@ -23,6 +22,7 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Scopes;
 
@@ -199,6 +199,7 @@ class Debug_Data {
 		$fields = array_merge( $fields, $this->get_consent_mode_fields() );
 		$fields = array_merge( $fields, $this->get_module_sharing_settings_fields() );
 		$fields = array_merge( $fields, $this->get_key_metrics_fields() );
+		$fields = array_merge( $fields, $this->get_gtg_fields() );
 
 		$fields = array_filter(
 			array_merge(
@@ -682,5 +683,19 @@ class Debug_Data {
 				'value' => $key_metrics_source,
 			),
 		);
+	}
+
+	/**
+	 * Gets debug fields for Google tag gateway.
+	 *
+	 * @since 1.162.0
+	 * @return array
+	 */
+	private function get_gtg_fields() {
+		if ( ! Feature_Flags::enabled( 'googleTagGateway' ) ) {
+			return array();
+		}
+
+		return ( new Google_Tag_Gateway( $this->context, $this->options ) )->get_debug_fields();
 	}
 }

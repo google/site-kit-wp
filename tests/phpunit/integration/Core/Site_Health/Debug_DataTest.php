@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Tests\Core\Modules\FakeModule;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -207,5 +208,26 @@ class Debug_DataTest extends TestCase {
 		$info = apply_filters( 'debug_information', array() );
 		$this->assertArrayHasKey( 'google-site-kit', $info );
 		$this->assertEquals( 'Setup and Disabled', $info['google-site-kit']['fields']['key_metrics_status']['value'] );
+	}
+
+	public function test_gtg_fields() {
+		$this->enable_feature( 'googleTagGateway' );
+		( new Google_Tag_Gateway( new Context( __FILE__ ) ) )->register();
+
+		remove_all_filters( 'debug_information' );
+		$debug_data = $this->new_debug_data();
+		$debug_data->register();
+
+		$info = apply_filters( 'debug_information', array() );
+
+		$this->assertListIntersection(
+			array(
+				'google_tag_gateway_is_enabled',
+				'google_tag_gateway_is_gtg_healthy',
+				'google_tag_gateway_is_script_access_enabled',
+			),
+			array_keys( $info['google-site-kit']['fields'] ),
+			'Failed to assert one or more GTG fields were included in the list of Site Kit fields'
+		);
 	}
 }

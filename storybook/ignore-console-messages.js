@@ -94,7 +94,7 @@ export const IGNORE_CONSOLE_MESSAGES = {
 /**
  * Normalizes a Puppeteer console/page message for robust matching.
  *
- * @since n.e.x.t
+ * @since 1.162.0
  *
  * @param {string} message Raw message text to normalize.
  * @return {string} Normalized message text.
@@ -108,7 +108,7 @@ export function normalizeMessage( message ) {
 /**
  * Checks whether the given text matches any of the provided patterns.
  *
- * @since n.e.x.t
+ * @since 1.162.0
  *
  * @param {string}   text     Text to test.
  * @param {RegExp[]} patterns Array of regular expressions to test against.
@@ -123,7 +123,7 @@ export function matchesAny( text, patterns ) {
 /**
  * Determines whether the given message should be ignored globally or for a given story.
  *
- * @since n.e.x.t
+ * @since 1.162.0
  *
  * @param {string} rawMessage Raw message text.
  * @param {string} storyID    Storybook story ID (e.g. "components-errorhandler--default").
@@ -155,7 +155,7 @@ export function isIgnored( rawMessage, storyID ) {
 /**
  * Extracts story ID from the current Storybook URL (?id=<storyId>).
  *
- * @since n.e.x.t
+ * @since 1.162.0
  *
  * @param {string} urlString Full storybook URL.
  * @return {string|null} Story ID if found; otherwise null.

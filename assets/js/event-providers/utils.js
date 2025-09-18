@@ -86,7 +86,7 @@ export function normalizeValue( value ) {
 /**
  * Normalizes a label by removing common form suffixes and prefixes.
  *
- * @since n.e.x.t
+ * @since 1.162.0
  *
  * @param {string} label The label to normalize.
  * @return {string} The normalized label.
@@ -144,7 +144,7 @@ export function normalizeEmail( email ) {
 /**
  * Determines if a string has a phone-like pattern.
  *
- * @since n.e.x.t
+ * @since 1.162.0
  *
  * @param {string} value The string to validate.
  * @return {boolean} Whether the string passed has a phone-like pattern or not.
@@ -308,7 +308,7 @@ export function classifyPII( fieldMeta ) {
 /**
  * Extracts and formats name fields for Google Tag's user_data address object.
  *
- * @since n.e.x.t
+ * @since 1.162.0
  *
  * @param {Array<Object>} fields An array of detected PII fields.
  * @return {Object|undefined} An object containing normalized first_name and optionally last_name, or undefined if no names found.
@@ -336,7 +336,7 @@ export function getAddress( fields ) {
 /**
  * Extracts the email address from detected PII fields.
  *
- * @since n.e.x.t
+ * @since 1.162.0
  *
  * @param {Array<Object>} fields An array of detected PII fields.
  * @return {string|undefined} The email address if found, undefined otherwise.
@@ -348,7 +348,7 @@ export function getEmail( fields ) {
 /**
  * Extracts the phone number from detected PII fields.
  *
- * @since n.e.x.t
+ * @since 1.162.0
  *
  * @param {Array<Object>} fields An array of detected PII fields.
  * @return {string|undefined} The phone number if found, undefined otherwise.
@@ -360,7 +360,7 @@ export function getPhoneNumber( fields ) {
 /**
  * Extracts and classifies user data from a WPForms form submission.
  *
- * @since n.e.x.t
+ * @since 1.162.0
  *
  * @param {Array<Object>} fields An array of detected PII fields.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.

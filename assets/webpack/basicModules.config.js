@@ -19,8 +19,7 @@
 /**
  * External dependencies
  */
-const WebpackBar = require( 'webpackbar' );
-const ManifestPlugin = require( 'webpack-manifest-plugin' );
+const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 
 /**
  * Internal dependencies
@@ -34,6 +33,7 @@ const {
 } = require( '../../webpack/common' );
 
 module.exports = ( mode ) => ( {
+	name: 'Basic Modules',
 	entry: {
 		'googlesitekit-i18n': './js/googlesitekit-i18n.js',
 		// Analytics advanced tracking script to be injected in the frontend.
@@ -50,11 +50,7 @@ module.exports = ( mode ) => ( {
 		rules,
 	},
 	plugins: [
-		new WebpackBar( {
-			name: 'Basic Modules',
-			color: '#fb1105',
-		} ),
-		new ManifestPlugin( {
+		new WebpackManifestPlugin( {
 			...manifestArgs( mode ),
 			filter( file ) {
 				return ( file.name || '' ).match( /\.js$/ );
