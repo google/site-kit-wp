@@ -162,6 +162,8 @@ jobs:
           cache: npm
       - name: npm install
         run: npm i -w assets -w storybook -w tests/js --include-workspace-root
+      - name: Install playwright browser
+        run: npx playwright install chromium
       - name: Serve static Storybook
         run: npx http-server ./dist -p 6006 &
 
