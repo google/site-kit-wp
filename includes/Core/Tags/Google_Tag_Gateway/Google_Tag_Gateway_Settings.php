@@ -71,7 +71,7 @@ class Google_Tag_Gateway_Settings extends Setting {
 					// Special logic for `isGTGDefault`: If GTG settings already exist and GTG was
 					// previously enabled, set `isGTGDefault` to false (user has interacted with settings).
 					// Otherwise, use the default value (true).
-					if ( ! isset( $option['isGTGDefault'] ) && isset( $option['isEnabled'] ) && $option['isEnabled'] ) {
+					if ( ! isset( $option['isGTGDefault'] ) && ! empty( $option['isEnabled'] ) ) {
 						$defaults['isGTGDefault'] = false;
 					}
 
