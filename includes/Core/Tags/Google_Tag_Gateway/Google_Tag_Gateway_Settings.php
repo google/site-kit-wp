@@ -75,6 +75,30 @@ class Google_Tag_Gateway_Settings extends Setting {
 	}
 
 	/**
+	 * Gets the setting's value with isGTGDefault backward compatibility.
+	 *
+	 * Any site with GTG enabled should have isGTGDefault = false,
+	 * indicating that the site is no longer in its default state
+	 * (either through manual user interaction or auto-enablement).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array The setting value with isGTGDefault backward compatibility.
+	 */
+	public function get() {
+		$value   = parent::get();
+		$default = $this->get_default();
+
+		// If the enabled status differs from its default value,
+		// mark as non-default by setting `isGTGDefault` to false.
+		if ( $default['isEnabled'] !== $value['isEnabled'] ) {
+			$value['isGTGDefault'] = false;
+		}
+
+		return $value;
+	}
+
+	/**
 	 * Gets the expected value type.
 	 *
 	 * @since 1.141.0
@@ -126,7 +150,12 @@ class Google_Tag_Gateway_Settings extends Setting {
 			}
 
 			if ( isset( $value['isGTGDefault'] ) ) {
-				$new_value['isGTGDefault'] = (bool) $value['isGTGDefault'];
+				// Enforce one-way transition: isGTGDefault can only go from true->false,
+				// never from false->true. Once a site is marked as non-default (false),
+				// it should remain non-default permanently to preserve user intent.
+				if ( false !== $new_value['isGTGDefault'] ) {
+					$new_value['isGTGDefault'] = (bool) $value['isGTGDefault'];
+				}
 			}
 
 			return $new_value;
