@@ -17,11 +17,7 @@
  */
 
 /**
- * External dependencies.
- */
-
-/**
- * WordPress dependencies.
+ * WordPress dependencies
  */
 import {
 	useCallback,
@@ -33,7 +29,7 @@ import {
 import { usePrevious } from '@wordpress/compose';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
@@ -50,17 +46,15 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import TabItems from './TabItems';
-import TabContent from './TabContent';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
-
 import useFormValue from '@/js/hooks/useFormValue';
-
 import useCurrentlyActiveEvents from '@/js/components/KeyMetrics/hooks/useCurrentlyActiveEvents';
 import useKeyMetricsGroups from '@/js/components/KeyMetrics/hooks/useKeyMetricsGroups';
 import useFilteredKeyMetrics from '@/js/components/KeyMetrics/hooks/useFilteredKeyMetrics';
 import useOverflowingTabs from '@/js/components/KeyMetrics/hooks/useOverflowingTabs';
 import useNewBadgeEvents from '@/js/components/KeyMetrics/hooks/useNewBadgeEvents';
+import TabItems from './TabItems';
+import TabContent from './TabContent';
 
 const emptyArray = Object.freeze( [] );
 
