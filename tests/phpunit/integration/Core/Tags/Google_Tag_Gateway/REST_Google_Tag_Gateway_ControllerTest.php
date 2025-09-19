@@ -91,7 +91,6 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 			'isEnabled'             => false,
 			'isGTGHealthy'          => null,
 			'isScriptAccessEnabled' => null,
-			'isGTGDefault'          => true,
 		);
 
 		$this->settings->register();
@@ -112,7 +111,6 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 			'isEnabled'             => false,
 			'isGTGHealthy'          => null,
 			'isScriptAccessEnabled' => null,
-			'isGTGDefault'          => true,
 		);
 
 		$this->settings->register();
@@ -137,14 +135,12 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 			'isEnabled'             => false,
 			'isGTGHealthy'          => null,
 			'isScriptAccessEnabled' => null,
-			'isGTGDefault'          => true,
 		);
 
 		$changed_settings = array(
 			'isEnabled'             => true,
 			'isGTGHealthy'          => null,
 			'isScriptAccessEnabled' => null,
-			'isGTGDefault'          => true,
 		);
 
 		$this->settings->register();
@@ -174,7 +170,6 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 			'isEnabled'             => false,
 			'isGTGHealthy'          => null,
 			'isScriptAccessEnabled' => null,
-			'isGTGDefault'          => true,
 		);
 
 		$this->settings->register();
@@ -222,17 +217,14 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 
 	public function provider_wrong_settings_data() {
 		return array(
-			'wrong data type'                   => array(
+			'wrong data type'              => array(
 				'{}',
 			),
-			'invalid property'                  => array(
+			'invalid property'             => array(
 				array( 'some-invalid-property' => 'value' ),
 			),
-			'non-boolean enabled property'      => array(
+			'non-boolean enabled property' => array(
 				array( 'isEnabled' => 123 ),
-			),
-			'non-boolean isGTGDefault property' => array(
-				array( 'isGTGDefault' => 'not-boolean' ),
 			),
 		);
 	}
@@ -295,7 +287,6 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 				'isEnabled'             => false,
 				'isGTGHealthy'          => $expected_settings['isGTGHealthy'],
 				'isScriptAccessEnabled' => $expected_settings['isScriptAccessEnabled'],
-				'isGTGDefault'          => true,
 			),
 			$response->get_data()
 		);
@@ -367,68 +358,6 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 		// This request is made by a user who is not authenticated with dashboard
 		// view permissions and is therefore forbidden.
 		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
-	}
-
-	/**
-	 * Data provider for isGTGDefault setting tests.
-	 *
-	 * @return array Test cases with input settings and expected responses.
-	 */
-	public function data_isGTGDefault_settings() {
-		return array(
-			'isGTGDefault false' => array(
-				array(
-					'isEnabled'    => false,
-					'isGTGDefault' => false,
-				),
-				array(
-					'isEnabled'    => false,
-					'isGTGDefault' => false,
-				),
-			),
-			'isGTGDefault true'  => array(
-				array(
-					'isEnabled'    => false,
-					'isGTGDefault' => true,
-				),
-				array(
-					'isEnabled'    => false,
-					'isGTGDefault' => true,
-				),
-			),
-		);
-	}
-
-	/**
-	 * @dataProvider data_isGTGDefault_settings
-	 */
-	public function test_set_settings_isGTGDefault( $input_settings, $expected_settings ) {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-		$this->grant_manage_options_permission();
-		$this->settings->register();
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/gtg-settings' );
-		$request->set_body_params(
-			array(
-				'data' => array(
-					'settings' => $input_settings,
-				),
-			)
-		);
-
-		$response = rest_get_server()->dispatch( $request );
-		$this->assertEqualSetsWithIndex(
-			array_merge(
-				array(
-					'isGTGHealthy'          => null,
-					'isScriptAccessEnabled' => null,
-				),
-				$expected_settings
-			),
-			$response->get_data()
-		);
 	}
 
 	private function grant_manage_options_permission() {
