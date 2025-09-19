@@ -725,6 +725,16 @@ final class Assets {
 			),
 		);
 
+		if ( Feature_Flags::enabled( 'publicDashboard' ) ) {
+			$assets[] = new Script(
+				'googlesitekit-public-dashboard',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-public-dashboard.js',
+					'dependencies' => $this->get_asset_dependencies(),
+				)
+			);
+		}
+
 		/**
 		 * Filters the list of assets that Site Kit should register.
 		 *
