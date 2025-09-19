@@ -106,10 +106,10 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			<SetupCTA
 				notificationID={ id }
-				title={ __(
-					'Enable Consent Mode to preserve tracking for your Ads campaigns',
-					'google-site-kit'
-				) }
+                    title={ __(
+                        'Enable consent mode to preserve tracking for your Ads campaigns',
+                        'google-site-kit'
+                    ) }
 				description={ __(
 					'Consent mode interacts with your Consent Management Platform (CMP) or custom implementation for obtaining visitor consent, such as a cookie consent banner.',
 					'google-site-kit'
