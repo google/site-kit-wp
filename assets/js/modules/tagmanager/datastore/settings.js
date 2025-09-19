@@ -54,8 +54,6 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { createStrictSelect } from '@/js/googlesitekit/data/utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID =
@@ -163,22 +161,6 @@ export async function submitChanges( { select, dispatch } ) {
 
 		if ( error ) {
 			return { error };
-		}
-
-		if (
-			select( CORE_SITE ).isGoogleTagGatewayEnabled() &&
-			! select( CORE_NOTIFICATIONS ).isNotificationDismissed(
-				GTG_SETUP_CTA_BANNER_NOTIFICATION
-			)
-		) {
-			const { error: dismissError } =
-				( await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
-					GTG_SETUP_CTA_BANNER_NOTIFICATION
-				) ) || {};
-
-			if ( dismissError ) {
-				return { error: dismissError };
-			}
 		}
 	}
 
