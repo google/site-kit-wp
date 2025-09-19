@@ -93,23 +93,6 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_M
 		$this->register_feature_metrics();
 
 		add_action( 'admin_init', fn () => $this->on_admin_init() );
-
-		// Auto-update `isGTGDefault` to false when `isEnabled` changes,
-		// but only if `isGTGDefault` is currently true.
-		$this->google_tag_gateway_settings->on_change(
-			function ( $old_value, $new_value ) {
-				if (
-					$old_value['isEnabled'] !== $new_value['isEnabled'] &&
-					true === $new_value['isGTGDefault']
-				) {
-					$this->google_tag_gateway_settings->merge(
-						array(
-							'isGTGDefault' => false,
-						)
-					);
-				}
-			}
-		);
 	}
 
 	/**
