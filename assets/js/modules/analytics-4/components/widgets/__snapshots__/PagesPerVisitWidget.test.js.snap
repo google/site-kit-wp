@@ -1,4 +1,63 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PagesPerVisitWidget > should render correctly with the expected metrics 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsPagesPerVisit googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--numeric"
+      >
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
+        >
+          <h3
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
+          >
+            Pages per visit
+          </h3>
+          <span
+            class="googlesitekit-info-tooltip"
+            title="Number of pages visitors viewed per session on average"
+          >
+            <svg />
+          </span>
+        </div>
+        <div
+          class="googlesitekit-km-widget-tile__body"
+        >
+          <div
+            class="googlesitekit-km-widget-tile__metric-container"
+          >
+            <div
+              class="googlesitekit-km-widget-tile__metric"
+            >
+              1.55
+            </div>
+            <p
+              class="googlesitekit-km-widget-tile__subtext"
+            >
+              14 page views
+            </p>
+          </div>
+          <div
+            class="googlesitekit-km-widget-tile__metric-change-container"
+          >
+            <div
+              class="googlesitekit-change-badge"
+            >
+              +49.3%
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
 
 exports[`PagesPerVisitWidget should render correctly with the expected metrics 1`] = `
 <div>

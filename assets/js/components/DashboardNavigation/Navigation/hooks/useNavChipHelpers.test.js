@@ -33,11 +33,11 @@ import useNavChipHelpers from './useNavChipHelpers';
 
 describe( 'useNavChipHelpers', () => {
 	beforeAll( () => {
-		global.history.replaceState = jest.fn();
+		global.history.replaceState = vi.fn();
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	} );
 
 	const visibleSections = [

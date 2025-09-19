@@ -927,7 +927,7 @@ describe( 'data utils', () => {
 
 		it( 'should call validation function', () => {
 			const args = { foo: 'bar' };
-			const validator = jest.fn();
+			const validator = vi.fn();
 			const actionCreator = noop;
 
 			const validatedAction = createValidatedAction(
@@ -944,7 +944,7 @@ describe( 'data utils', () => {
 		it( 'should call action creator', () => {
 			const args = { foo: 'bar' };
 			const validator = noop;
-			const actionCreator = jest.fn();
+			const actionCreator = vi.fn();
 
 			const validatedAction = createValidatedAction(
 				validator,
@@ -962,7 +962,7 @@ describe( 'data utils', () => {
 			function validator() {
 				throw new Error( 'foo' );
 			}
-			const actionCreator = jest.fn();
+			const actionCreator = vi.fn();
 
 			const validatedAction = createValidatedAction(
 				validator,

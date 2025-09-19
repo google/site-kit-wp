@@ -69,7 +69,7 @@ function MockUIWrapper( { children } ) {
 	);
 }
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 function renderTourTooltipsWithMockUI( registry, overrideProps = {} ) {
@@ -109,7 +109,7 @@ describe( 'TourTooltips', () => {
 		registry = createTestRegistry();
 		select = registry.select( CORE_UI );
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
-		dismissTourSpy = jest.spyOn(
+		dismissTourSpy = vi.spyOn(
 			registry.dispatch( CORE_USER ),
 			'dismissTour'
 		);

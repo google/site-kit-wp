@@ -813,7 +813,7 @@ describe( 'WidgetAreaRenderer', () => {
 	} );
 
 	describe( 'Error handling', () => {
-		const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+		const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 		mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 		it( 'should display the error using `WidgetErrorHandler` component within a widget', async () => {

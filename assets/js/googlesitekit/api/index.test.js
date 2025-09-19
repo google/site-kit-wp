@@ -41,7 +41,7 @@ import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constant
 
 describe( 'googlesitekit.api', () => {
 	// We import the entire caching module so we can use
-	// `jest.spyOn(CacheModule, 'getItem')` to monitor caching calls.
+	// `vi.spyOn(CacheModule, 'getItem')` to monitor caching calls.
 	const { getItem, setItem, setSelectedStorageBackend } = CacheModule;
 	let storageMechanism;
 	let dataLayerPushSpy;
@@ -49,11 +49,11 @@ describe( 'googlesitekit.api', () => {
 	let getItemSpy;
 	let setItemSpy;
 	beforeEach( () => {
-		getItemSpy = jest.spyOn( CacheModule, 'getItem' );
-		setItemSpy = jest.spyOn( CacheModule, 'setItem' );
+		getItemSpy = vi.spyOn( CacheModule, 'getItem' );
+		setItemSpy = vi.spyOn( CacheModule, 'setItem' );
 		enableTracking();
 		global[ DATA_LAYER ] = [];
-		dataLayerPushSpy = jest.spyOn( global[ DATA_LAYER ], 'push' );
+		dataLayerPushSpy = vi.spyOn( global[ DATA_LAYER ], 'push' );
 	} );
 
 	beforeAll( () => {

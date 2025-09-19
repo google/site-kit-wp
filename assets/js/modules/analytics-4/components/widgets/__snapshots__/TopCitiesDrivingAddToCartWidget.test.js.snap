@@ -1,4 +1,104 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`TopCitiesDrivingAddToCartWidget > should render correctly with the expected metrics 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopCitiesDrivingAddToCart googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--table"
+      >
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
+        >
+          <h3
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
+          >
+            Top cities driving add to cart
+          </h3>
+          <span
+            class="googlesitekit-info-tooltip"
+            title="Cities where visitors most frequently add products to their carts"
+          >
+            <svg />
+          </span>
+        </div>
+        <div
+          class="googlesitekit-km-widget-tile__body"
+        >
+          <div
+            class="googlesitekit-km-widget-tile__table"
+          >
+            <div
+              class="googlesitekit-table__body-row"
+            >
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <p
+                  class="googlesitekit-km-widget-tile__table-plain-text"
+                >
+                  Berlin
+                </p>
+              </div>
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <strong>
+                  76
+                </strong>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-table__body-row"
+            >
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <p
+                  class="googlesitekit-km-widget-tile__table-plain-text"
+                >
+                  Cork
+                </p>
+              </div>
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <strong>
+                  20
+                </strong>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-table__body-row"
+            >
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <p
+                  class="googlesitekit-km-widget-tile__table-plain-text"
+                >
+                  Dublin
+                </p>
+              </div>
+              <div
+                class="googlesitekit-table__body-item"
+              >
+                <strong>
+                  17
+                </strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
 
 exports[`TopCitiesDrivingAddToCartWidget should render correctly with the expected metrics 1`] = `
 <div>

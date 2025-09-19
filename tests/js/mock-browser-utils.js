@@ -23,7 +23,7 @@
  */
 export function mockLocation() {
 	let oldLocation;
-	const locationAssignMock = jest.fn();
+	const locationAssignMock = vi.fn();
 
 	beforeAll( () => {
 		oldLocation = global.location;
