@@ -37,6 +37,15 @@
 			],
 		} );
 	} );
+
+	if (
+		global._googlesitekit?.gtagUserData &&
+		global._googlesitekit?.edddata?.purchase?.user_data
+	) {
+		global._googlesitekit?.gtagEvent?.( 'purchase', {
+			user_data: global._googlesitekit.edddata.purchase.user_data,
+		} );
+	}
 } )( global.jQuery );
 
 /**
