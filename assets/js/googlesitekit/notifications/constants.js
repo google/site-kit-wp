@@ -19,6 +19,8 @@
 export const GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID =
 	'warning-notification-gtg';
 
+export const GTG_SETUP_CTA_BANNER_NOTIFICATION = 'gtg-setup-cta';
+
 export const PRIORITY = {
 	ERROR_HIGH: 30,
 	ERROR_LOW: 60,

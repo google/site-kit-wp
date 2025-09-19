@@ -27,6 +27,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '@/js/googlesitekit/data/create-settings-store';
+import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ADS } from './constants';
@@ -53,6 +54,9 @@ describe( 'modules/ads settings', () => {
 		);
 		const gtgSettingsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/site/data/gtg-settings'
+		);
+		const dismissItemEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismiss-item'
 		);
 
 		const error = {
@@ -105,6 +109,12 @@ describe( 'modules/ads settings', () => {
 				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			} );
+
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					GTG_SETUP_CTA_BANNER_NOTIFICATION,
+				] );
 
 			provideNotifications( registry );
 
@@ -184,6 +194,162 @@ describe( 'modules/ads settings', () => {
 			await registry.dispatch( MODULES_ADS ).submitChanges();
 
 			expect( fetchMock ).not.toHaveFetched( gtgSettingsEndpoint );
+		} );
+
+		it( 'should dismiss the GTG setup CTA banner when the GTG `isEnabled` setting is changed to `true`', async () => {
+			provideUserAuthentication( registry );
+
+			registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+			fetchMock.postOnce( surveyTriggerEndpoint, {
+				status: 200,
+				body: {},
+			} );
+
+			provideNotifications( registry );
+
+			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
+				isEnabled: false,
+				isGTGHealthy: true,
+				isScriptAccessEnabled: true,
+			} );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+				body: JSON.parse( opts.body ).data,
+				status: 200,
+			} ) );
+
+			fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+				const {
+					data: {
+						settings: { isEnabled },
+					},
+				} = JSON.parse( opts.body );
+
+				return {
+					body: {
+						isEnabled, // Return the `isEnabled` value passed to the API.
+						isGTGHealthy: true,
+						isScriptAccessEnabled: true,
+					},
+					status: 200,
+				};
+			} );
+
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: [ GTG_SETUP_CTA_BANNER_NOTIFICATION ],
+				status: 200,
+			} );
+
+			registry.dispatch( CORE_SITE ).setGoogleTagGatewayEnabled( true );
+			await registry.dispatch( MODULES_ADS ).submitChanges();
+
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+				body: {
+					data: {
+						slug: GTG_SETUP_CTA_BANNER_NOTIFICATION,
+						expiration: 0,
+					},
+				},
+			} );
+		} );
+
+		it( 'should handle an error when dismissing the GTG setup CTA banner', async () => {
+			provideUserAuthentication( registry );
+
+			registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+			fetchMock.postOnce( surveyTriggerEndpoint, {
+				status: 200,
+				body: {},
+			} );
+
+			provideNotifications( registry );
+
+			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
+				isEnabled: false,
+				isGTGHealthy: true,
+				isScriptAccessEnabled: true,
+			} );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+				body: JSON.parse( opts.body ).data,
+				status: 200,
+			} ) );
+
+			fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+				const {
+					data: {
+						settings: { isEnabled },
+					},
+				} = JSON.parse( opts.body );
+
+				return {
+					body: {
+						isEnabled, // Return the `isEnabled` value passed to the API.
+						isGTGHealthy: true,
+						isScriptAccessEnabled: true,
+					},
+					status: 200,
+				};
+			} );
+
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: error,
+				status: 500,
+			} );
+
+			registry.dispatch( CORE_SITE ).setGoogleTagGatewayEnabled( true );
+			const { error: submitChangesError } = await registry
+				.dispatch( MODULES_ADS )
+				.submitChanges();
+
+			expect( submitChangesError ).toEqual( error );
+			expect( console ).toHaveErrored();
+		} );
+
+		it( 'should not dismiss the GTG setup CTA banner when the GTG `isEnabled` setting is changed to `false`', async () => {
+			provideNotifications( registry );
+
+			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
+				isEnabled: true,
+				isGTGHealthy: true,
+				isScriptAccessEnabled: true,
+			} );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+				body: JSON.parse( opts.body ).data,
+				status: 200,
+			} ) );
+
+			fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+				const {
+					data: {
+						settings: { isEnabled },
+					},
+				} = JSON.parse( opts.body );
+
+				return {
+					body: {
+						isEnabled, // Return the `isEnabled` value passed to the API.
+						isGTGHealthy: true,
+						isScriptAccessEnabled: true,
+					},
+					status: 200,
+				};
+			} );
+
+			registry.dispatch( CORE_SITE ).setGoogleTagGatewayEnabled( false );
+			await registry.dispatch( MODULES_ADS ).submitChanges();
+
+			expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
 		} );
 	} );
 
