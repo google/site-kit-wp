@@ -1173,4 +1173,53 @@ class ModulesTest extends TestCase {
 
 		$this->assertEquals( array( 'pagespeed-insights' ), $modules->list_shared_modules() );
 	}
+
+	public function test_get_feature_metrics__no_shared_modules() {
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		// By default, no modules have shared roles.
+		$this->assertEquals(
+			array( 'shared_modules' => array() ),
+			$modules->get_feature_metrics()
+		);
+	}
+
+	public function test_get_feature_metrics__multiple_and_disconnected_shared_modules() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules = new Modules( $context );
+
+		// Activate and connect multiple modules.
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'pagespeed-insights', 'adsense', 'analytics-4' ) );
+		update_option(
+			'googlesitekit_adsense_settings',
+			array(
+				'accountSetupComplete' => true,
+				'siteSetupComplete'    => true,
+			)
+		);
+		// Do NOT connect analytics-4 (leave it disconnected).
+
+		// Add shared roles for all modules.
+		$sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'all_admins',
+			),
+			'adsense'            => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+			'analytics-4'        => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'owner',
+			),
+		);
+		update_option( 'googlesitekit_dashboard_sharing', $sharing_settings );
+
+		$feature_metrics = $modules->get_feature_metrics();
+		$this->assertArrayHasKey( 'shared_modules', $feature_metrics );
+		$shared = $feature_metrics['shared_modules'];
+		sort( $shared );
+		// Only adsense and pagespeed-insights are connected and shared.
+		$this->assertEquals( array( 'adsense', 'pagespeed-insights' ), $shared );
+	}
 }
