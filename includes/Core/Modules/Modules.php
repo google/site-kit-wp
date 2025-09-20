@@ -837,6 +837,29 @@ final class Modules {
 	}
 
 	/**
+	 * Lists connected modules that have a shared role.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Array of module slugs.
+	 */
+	public function list_shared_modules() {
+		$connected_modules = $this->get_connected_modules();
+		$sharing_settings  = $this->get_module_sharing_settings();
+
+		$shared_slugs = array();
+
+		foreach ( $connected_modules as $slug => $module ) {
+			$shared_roles = $sharing_settings->get_shared_roles( $slug );
+			if ( ! empty( $shared_roles ) ) {
+				$shared_slugs[] = $slug;
+			}
+		}
+
+		return $shared_slugs;
+	}
+
+	/**
 	 * Checks the given module is recoverable.
 	 *
 	 * A module is recoverable if:
