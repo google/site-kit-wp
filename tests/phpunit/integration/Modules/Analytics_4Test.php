@@ -158,8 +158,11 @@ class Analytics_4Test extends TestCase {
 
 	public function test_register() {
 		remove_all_filters( 'googlesitekit_auth_scopes' );
+		remove_all_filters( 'googlesitekit_feature_metrics' );
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'web_stories_story_head' );
+
+		$this->assertFalse( has_filter( 'googlesitekit_feature_metrics' ), 'There should be no filter for features metrics initially.' );
 
 		$this->analytics->register();
 
@@ -176,6 +179,7 @@ class Analytics_4Test extends TestCase {
 		// Test actions for tracking opt-out are added.
 		$this->assertTrue( has_action( 'wp_head' ), 'Analytics 4 should add tracking opt-out action to wp_head' );
 		$this->assertTrue( has_action( 'web_stories_story_head' ), 'Analytics 4 should add tracking opt-out action to web_stories_story_head' );
+		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
 	}
 
 	public function test_register__reset_adsense_link_settings() {
@@ -1390,6 +1394,81 @@ class Analytics_4Test extends TestCase {
 			),
 			array_keys( $this->analytics->get_debug_fields() ),
 			'Analytics 4 module should expose the expected debug fields when AdSense is enabled'
+		);
+	}
+
+	/**
+	 * @dataProvider data_feature_metrics_settings
+	 *
+	 * @param array $settings               Settings to set.
+	 * @param array $expected_feature_metrics Expected feature metrics.
+	 * @param string $message                Message for the assertion.
+	 */
+	public function test_get_feature_metrics( $settings, $expected_feature_metrics, $message ) {
+		$this->analytics->register();
+		$this->analytics->get_settings()->merge( $settings['analytics_settings'] ?? array() );
+		$this->audience_settings->merge(
+			$settings['audience_settings'] ?? array()
+		);
+		( new AdSense_Settings( $this->options ) )->set(
+			array(
+				'accountSetupComplete' => $settings['analytics_settings']['adSenseLinked'] ?? false,
+				'siteSetupComplete'    => $settings['analytics_settings']['adSenseLinked'] ?? false,
+			)
+		);
+
+		$feature_metrics = $this->analytics->get_feature_metrics();
+		$this->assertEquals( $expected_feature_metrics, $feature_metrics, $message );
+	}
+
+	public function data_feature_metrics_settings() {
+		$activated_audience_segmentation_settings = array(
+			'availableAudiences'                   => array(
+				array(
+					'name' => 'properties/12345678/audiences/12345',
+				),
+				array(
+					'name' => 'properties/12345678/audiences/67890',
+				),
+			),
+			'availableAudiencesLastSyncedAt'       => time(),
+			'audienceSegmentationSetupCompletedBy' => 2,
+		);
+
+		return array(
+			'default values when audience segmentation is not setup and adsense is unlinked' => array(
+				array(),
+				array(
+					'audseg_setup_completed'   => false,
+					'audseg_audience_count'    => 0,
+					'analytics_adsense_linked' => false,
+				),
+				'When settings are not set, feature metrics should be false or zero by default.',
+			),
+			'when audience segmentation is setup' => array(
+				array(
+					'audience_settings' => $activated_audience_segmentation_settings,
+				),
+				array(
+					'audseg_setup_completed'   => true,
+					'audseg_audience_count'    => 2,
+					'analytics_adsense_linked' => false,
+				),
+				'When audience settings are set, feature metrics should reflect them.',
+			),
+			'when adsense is linked'              => array(
+				array(
+					'analytics_settings' => array(
+						'adSenseLinked' => true,
+					),
+				),
+				array(
+					'audseg_setup_completed'   => false,
+					'audseg_audience_count'    => 0,
+					'analytics_adsense_linked' => true,
+				),
+				'When adsense is linked, feature metrics should reflect it.',
+			),
 		);
 	}
 
