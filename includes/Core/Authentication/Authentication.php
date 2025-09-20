@@ -1385,4 +1385,17 @@ final class Authentication {
 	public function get_connected_proxy_url_instance() {
 		return $this->connected_proxy_url;
 	}
+
+	/**
+	 * Gets an array of internal feature metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_feature_metrics() {
+		return array(
+			'auto_updates_enabled' => Auto_Updates::is_sitekit_autoupdates_enabled(),
+		);
+	}
 }
