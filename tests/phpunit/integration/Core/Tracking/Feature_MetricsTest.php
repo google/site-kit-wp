@@ -20,6 +20,10 @@ class Feature_MetricsTest extends TestCase {
 
 	public function test_register() {
 		remove_all_filters( 'googlesitekit_features_request_data' );
+
+		// Remove the filter being added by Modules::register() or any other class during bootstrap.
+		remove_all_filters( 'googlesitekit_feature_metrics' );
+
 		add_filter(
 			'googlesitekit_feature_metrics',
 			function ( $metrics ) {
