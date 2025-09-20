@@ -27,6 +27,8 @@ use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Core\Util\Auto_Updates;
 use Google\Site_Kit\Core\Authentication\REST_Authentication_Controller;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
+use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 
 /**
  * Authentication Class.
@@ -35,9 +37,10 @@ use Google\Site_Kit\Core\Authentication\REST_Authentication_Controller;
  * @access private
  * @ignore
  */
-final class Authentication {
+final class Authentication implements Provides_Feature_Metrics {
 
 	use Method_Proxy_Trait;
+	use Feature_Metrics_Trait;
 
 	const ACTION_CONNECT    = 'googlesitekit_connect';
 	const ACTION_DISCONNECT = 'googlesitekit_disconnect';
@@ -279,6 +282,7 @@ final class Authentication {
 		$this->disconnected_reason->register();
 		$this->initial_version->register();
 		$this->rest_authentication_controller->register();
+		$this->register_feature_metrics();
 
 		add_filter( 'allowed_redirect_hosts', $this->get_method_proxy( 'allowed_redirect_hosts' ) );
 		add_filter( 'googlesitekit_admin_data', $this->get_method_proxy( 'inline_js_admin_data' ) );
