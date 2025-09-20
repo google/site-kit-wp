@@ -994,4 +994,17 @@ final class Modules {
 	public function delete_dashboard_sharing_settings() {
 		return $this->options->delete( Module_Sharing_Settings::OPTION );
 	}
+
+	/**
+	 * Gets feature metrics for the modules.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Feature metrics data.
+	 */
+	public function get_feature_metrics() {
+		return array(
+			'shared_modules' => $this->list_shared_modules(),
+		);
+	}
 }
