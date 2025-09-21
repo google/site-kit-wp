@@ -80,6 +80,16 @@ class Conversion_TrackingTest extends TestCase {
 		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ) );
 	}
 
+	public function test_register__feature_metrics() {
+		remove_all_filters( 'googlesitekit_feature_metrics' );
+
+		$this->assertFalse( has_filter( 'googlesitekit_feature_metrics' ), 'There should be no filter for features metrics initially.' );
+
+		$this->conversion_tracking->register();
+
+		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
+	}
+
 	/**
 	 * @dataProvider data_modules
 	 */
