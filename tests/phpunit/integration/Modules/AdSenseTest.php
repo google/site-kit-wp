@@ -55,12 +55,15 @@ class AdSenseTest extends TestCase {
 	public function test_register() {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
+		remove_all_filters( 'googlesitekit_feature_metrics' );
 
 		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ), 'Auth scopes should be empty before AdSense module registration.' );
+		$this->assertFalse( has_filter( 'googlesitekit_feature_metrics' ), 'There should be no filter for features metrics initially.' );
 
 		$adsense->register();
 
 		$this->assertNotEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ), 'Auth scopes should not be empty after AdSense module registration.' );
+		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
 	}
 
 	public function test_register_template_redirect_amp() {
