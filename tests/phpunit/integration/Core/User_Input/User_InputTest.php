@@ -326,4 +326,19 @@ class User_InputTest extends TestCase {
 			'Feature metrics should include site purpose with empty values when no answer is set.'
 		);
 	}
+
+	public function test_get_feature_metrics__with_site_purpose() {
+		$this->user_input->set_answers(
+			array(
+				'purpose' => array( 'publish_blog' ),
+			)
+		);
+
+		$feature_metrics = $this->user_input->get_feature_metrics();
+		$this->assertEquals(
+			array( 'site_purpose' => array( 'publish_blog' ) ),
+			$feature_metrics,
+			'Feature metrics should include site purpose with correct value when answer is set.'
+		);
+	}
 }
