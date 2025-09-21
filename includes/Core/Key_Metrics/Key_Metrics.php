@@ -103,4 +103,17 @@ class Key_Metrics {
 
 		return $data;
 	}
+
+	/**
+	 * Gets an array of internal feature metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_feature_metrics() {
+		return array(
+			'km_setup' => (bool) $this->key_metrics_setup_completed_by->get(),
+		);
+	}
 }
