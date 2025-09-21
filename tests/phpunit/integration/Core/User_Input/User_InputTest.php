@@ -317,4 +317,13 @@ class User_InputTest extends TestCase {
 		// Since no answer changed, the "purpose" answer should still be attributed to admin 1.
 		$this->assertEquals( $existing_answers['purpose']['answeredBy'], $this->user_id, 'Purpose answeredBy should remain original when no answers changed.' );
 	}
+
+	public function test_get_feature_metrics__no_site_purpose() {
+		$feature_metrics = $this->user_input->get_feature_metrics();
+		$this->assertEquals(
+			array( 'site_purpose' => array() ),
+			$feature_metrics,
+			'Feature metrics should include site purpose with empty values when no answer is set.'
+		);
+	}
 }
