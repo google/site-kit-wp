@@ -166,6 +166,7 @@ class Conversion_TrackingTest extends TestCase {
 			array(
 				'conversion_tracking_enabled'   => true,
 				'conversion_tracking_providers' => array( FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ),
+				'conversion_tracking_events'    => array( 'test-event' ),
 			),
 			$feature_metrics,
 			'Feature metrics should match the expected values.'
