@@ -52,6 +52,16 @@ class Consent_ModeTest extends TestCase {
 		$this->consent_mode = new Consent_Mode( $this->context, $modules, $this->options );
 	}
 
+	public function test_register__feature_metrics() {
+		remove_all_filters( 'googlesitekit_feature_metrics' );
+
+		$this->assertFalse( has_filter( 'googlesitekit_feature_metrics' ), 'There should be no filter for features metrics initially.' );
+
+		$this->consent_mode->register();
+
+		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
+	}
+
 	public function test_renders_consent_mode_snippet_when_enabled() {
 		remove_all_actions( 'wp_head' );
 
