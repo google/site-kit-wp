@@ -286,7 +286,7 @@ class REST_Consent_Mode_Controller {
 	 *
 	 * @return false|string
 	 */
-	protected function get_consent_api_plugin_file() {
+	public function get_consent_api_plugin_file() {
 		// Check the default location first.
 		if ( Plugin_Status::is_plugin_installed( 'wp-consent-api/wp-consent-api.php' ) ) {
 			return 'wp-consent-api/wp-consent-api.php';
