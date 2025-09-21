@@ -223,6 +223,29 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	}
 
 	/**
+	 * Returns events supported by active providers from the conversion tracking infrastructure.
+	 *
+	 * @since n.e.x.t Moved this method here from the Ads class.
+	 *
+	 * @return array Array of supported conversion events, or empty array.
+	 */
+	public function get_supported_conversion_events() {
+		$providers = $this->get_active_providers();
+
+		if ( empty( $providers ) ) {
+			return array();
+		}
+
+		$events = array();
+
+		foreach ( $providers as $provider ) {
+			$events = array_merge( $events, array_values( $provider->get_event_names() ) );
+		}
+
+		return array_unique( $events );
+	}
+
+	/**
 	 * Gets an array of internal feature metrics.
 	 *
 	 * @since n.e.x.t
