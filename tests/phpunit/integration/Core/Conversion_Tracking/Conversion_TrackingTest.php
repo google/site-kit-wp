@@ -157,4 +157,17 @@ class Conversion_TrackingTest extends TestCase {
 			'existing class not-extending base' => array( array( 'test-provider' => __CLASS__ ), $exception_not_extends_base ),
 		);
 	}
+
+	public function test_get_feature_metrics() {
+		$this->conversion_tracking_settings->set( array( 'enabled' => true ) );
+		$feature_metrics = $this->conversion_tracking->get_feature_metrics();
+
+		$this->assertEquals(
+			array(
+				'conversion_tracking_enabled' => true,
+			),
+			$feature_metrics,
+			'Feature metrics should match the expected values.'
+		);
+	}
 }
