@@ -81,4 +81,19 @@ class Consent_ModeTest extends TestCase {
 
 		$this->assertTrue( has_filter( 'googlesitekit_consent_mode_status' ) );
 	}
+
+	public function test_get_feature_metrics() {
+		( new Consent_Mode_Settings( $this->options ) )->set( array( 'enabled' => true ) );
+
+		$feature_metrics = $this->consent_mode->get_feature_metrics();
+
+		$this->assertEquals(
+			array(
+				'consent_mode_enabled' => true,
+				'wp_consent_api'       => 'none',
+			),
+			$feature_metrics,
+			'Feature metrics should indicate that consent mode is enabled and WP Consent API is not installed.'
+		);
+	}
 }
