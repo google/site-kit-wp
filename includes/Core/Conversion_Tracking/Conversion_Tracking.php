@@ -22,6 +22,8 @@ use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooComme
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WPForms;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Tags\GTag;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
+use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use LogicException;
 
@@ -32,7 +34,9 @@ use LogicException;
  * @access private
  * @ignore
  */
-class Conversion_Tracking {
+class Conversion_Tracking implements Provides_Feature_Metrics {
+
+	use Feature_Metrics_Trait;
 
 	/**
 	 * Context object.
@@ -98,6 +102,7 @@ class Conversion_Tracking {
 	public function register() {
 		$this->conversion_tracking_settings->register();
 		$this->rest_conversion_tracking_controller->register();
+		$this->register_feature_metrics();
 
 		add_action( 'wp_enqueue_scripts', fn () => $this->maybe_enqueue_scripts(), 30 );
 
@@ -215,5 +220,18 @@ class Conversion_Tracking {
 		}
 
 		return $active_providers;
+	}
+
+	/**
+	 * Gets an array of internal feature metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_feature_metrics() {
+		return array(
+			'conversion_tracking_enabled' => $this->conversion_tracking_settings->is_conversion_tracking_enabled(),
+		);
 	}
 }
