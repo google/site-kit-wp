@@ -745,4 +745,54 @@ class AdSenseTest extends TestCase {
 			'Debug fields keys should match expected list.'
 		);
 	}
+
+	public function test_get_feature_metrics__adsense_not_connected() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertEquals(
+			array(
+				'adsense_abr_status' => '',
+			),
+			$adsense->get_feature_metrics(),
+			'Feature metrics should return adsense_abr_status as empty when AdSense is not connected.'
+		);
+	}
+
+	public function test_get_feature_metrics__adsense_not_connected_with_abr_setting() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		update_option(
+			'googlesitekit_adsense_settings',
+			array(
+				'adBlockingRecoverySetupStatus' => Settings::AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+			)
+		);
+
+		$this->assertEquals(
+			array(
+				'adsense_abr_status' => '',
+			),
+			$adsense->get_feature_metrics(),
+			'Feature metrics should return adsense_abr_status as empty when AdSense is not connected, even if a status is set.'
+		);
+	}
+
+	public function test_get_feature_metrics__adsense_connected_with_abr_setting() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		update_option(
+			'googlesitekit_adsense_settings',
+			array(
+				'accountSetupComplete'          => true,
+				'siteSetupComplete'             => true,
+				'adBlockingRecoverySetupStatus' => Settings::AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+			)
+		);
+
+		$this->assertEquals(
+			array(
+				'adsense_abr_status' => Settings::AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+			),
+			$adsense->get_feature_metrics(),
+			'Feature metrics should return adsense_abr_status as empty when AdSense is not connected, even if a status is set.'
+		);
+	}
 }
