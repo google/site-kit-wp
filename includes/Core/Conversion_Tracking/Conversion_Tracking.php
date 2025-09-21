@@ -256,6 +256,7 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 		return array(
 			'conversion_tracking_enabled'   => $this->conversion_tracking_settings->is_conversion_tracking_enabled(),
 			'conversion_tracking_providers' => array_keys( $this->get_active_providers() ),
+			'conversion_tracking_events'    => $this->get_supported_conversion_events(),
 		);
 	}
 }
