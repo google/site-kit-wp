@@ -272,4 +272,26 @@ class Consent_Mode {
 
 		return $data;
 	}
+
+	/**
+	 * Gets an array of internal feature metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_feature_metrics() {
+		$wp_consent_api_status = 'none';
+
+		if ( function_exists( 'wp_consent_api' ) ) {
+			$wp_consent_api_status = 'active';
+		} elseif ( $this->rest_controller->get_consent_api_plugin_file() ) {
+			$wp_consent_api_status = 'installed';
+		}
+
+		return array(
+			'consent_mode_enabled' => $this->consent_mode_settings->is_consent_mode_enabled(),
+			'wp_consent_api'       => $wp_consent_api_status,
+		);
+	}
 }
