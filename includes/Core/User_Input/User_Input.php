@@ -271,4 +271,17 @@ class User_Input {
 
 		return $this->get_answers();
 	}
+
+	/**
+	 * Gets an array of internal feature metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_feature_metrics() {
+		return array(
+			'site_purpose' => $this->site_specific_answers->get()['purpose']['values'] ?? array(),
+		);
+	}
 }
