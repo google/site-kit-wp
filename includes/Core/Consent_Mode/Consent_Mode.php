@@ -14,6 +14,8 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
+use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Plugin_Upgrader;
@@ -26,8 +28,9 @@ use Plugin_Installer_Skin;
  * @access private
  * @ignore
  */
-class Consent_Mode {
+class Consent_Mode implements Provides_Feature_Metrics {
 	use Method_Proxy_Trait;
+	use Feature_Metrics_Trait;
 
 	/**
 	 * Context instance.
@@ -86,6 +89,7 @@ class Consent_Mode {
 	public function register() {
 		$this->consent_mode_settings->register();
 		$this->rest_controller->register();
+		$this->register_feature_metrics();
 
 		// Declare that the plugin is compatible with the WP Consent API.
 		$plugin = GOOGLESITEKIT_PLUGIN_BASENAME;
