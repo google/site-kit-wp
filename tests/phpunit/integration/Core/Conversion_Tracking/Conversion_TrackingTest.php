@@ -164,7 +164,8 @@ class Conversion_TrackingTest extends TestCase {
 
 		$this->assertEquals(
 			array(
-				'conversion_tracking_enabled' => true,
+				'conversion_tracking_enabled'   => true,
+				'conversion_tracking_providers' => array( FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ),
 			),
 			$feature_metrics,
 			'Feature metrics should match the expected values.'
