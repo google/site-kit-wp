@@ -94,6 +94,9 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 	public function test_register() {
 		remove_all_filters( 'googlesitekit_auth_scopes' );
+		remove_all_filters( 'googlesitekit_feature_metrics' );
+
+		$this->assertFalse( has_filter( 'googlesitekit_feature_metrics' ), 'There should be no filter for features metrics initially.' );
 
 		$this->reader_revenue_manager->register();
 
@@ -102,6 +105,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			apply_filters( 'googlesitekit_auth_scopes', array() ),
 			'Reader Revenue Manager scopes should be properly registered and available through the auth scopes filter.'
 		);
+		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
 	}
 
 	public function test_register__reset_product_id_dismissals_on_publication_change() {
@@ -911,6 +915,42 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		do_action( 'enqueue_block_assets' );
 
 		$this->assertTrue( wp_style_is( 'blocks-reader-revenue-manager-common-editor-styles', 'enqueued' ), 'blocks-reader-revenue-manager-common-editor-styles should be enqueued' );
+	}
+
+	/**
+	 * @dataProvider data_feature_metrics_settings
+	 *
+	 * @param array $settings               Settings to set.
+	 * @param array $expected_feature_metrics Expected feature metrics.
+	 * @param string $message                Message for the assertion.
+	 */
+	public function test_get_feature_metrics( $settings, $expected_feature_metrics, $message ) {
+		$this->reader_revenue_manager->get_settings()->set( $settings );
+
+		$feature_metrics = $this->reader_revenue_manager->get_feature_metrics();
+
+		$this->assertEqualSets( $expected_feature_metrics, $feature_metrics, $message );
+	}
+
+	public function data_feature_metrics_settings() {
+		return array(
+			'default values when RRM is active but not fully setup'                                     => array(
+				array(),
+				array(
+					'rrm_publication_onboarding_state' => '',
+				),
+				'When settings are not set, the `rrm_publication_onboarding_state` feature metric should be empty.',
+			),
+			'publication onboarding state set to PENDING_VERIFICATION'                                   => array(
+				array(
+					'publicationOnboardingState' => 'PENDING_VERIFICATION',
+				),
+				array(
+					'rrm_publication_onboarding_state' => 'PENDING_VERIFICATION',
+				),
+				'When publication onboarding state is set to PENDING_VERIFICATION or some state, the feature metric should reflect that.',
+			),
+		);
 	}
 
 	/**
