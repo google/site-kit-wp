@@ -50,7 +50,7 @@ import { isSiteKitScreen } from '@/js/util/is-site-kit-screen';
 import {
 	CommandPalette,
 	CommandPaletteProvider,
-} from '@/js/components/KeyboardShortcuts';
+} from '@/js/components/CommandPalette';
 
 export default function Root( { children, registry, viewContext = null } ) {
 	const theme =

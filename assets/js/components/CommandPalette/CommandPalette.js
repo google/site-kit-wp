@@ -38,7 +38,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 /**
  * Performs enhanced fuzzy search with typo tolerance.
  *
- * @since 1.137.0
+ * @since n.e.x.t
  *
  * @param {string} query     The search query.
  * @param {string} target    The target string to match against.
@@ -69,7 +69,7 @@ function fuzzyMatch( query, target, threshold = 0.6 ) {
 /**
  * Calculates Levenshtein distance between two strings.
  *
- * @since 1.137.0
+ * @since n.e.x.t
  *
  * @param {string} a First string.
  * @param {string} b Second string.
@@ -293,7 +293,7 @@ const COMMANDS = [
 /**
  * Filters commands based on search query.
  *
- * @since 1.137.0
+ * @since n.e.x.t
  *
  * @param {string} query The search query to filter by.
  * @return {Array} Filtered array of commands.
@@ -343,7 +343,7 @@ function filterCommands( query ) {
 /**
  * Groups commands by category.
  *
- * @since 1.137.0
+ * @since n.e.x.t
  *
  * @param {Array} commands The array of commands to group.
  * @return {Object} Commands grouped by category.
@@ -364,7 +364,7 @@ function groupCommands( commands ) {
 /**
  * Command Palette component for quick navigation.
  *
- * @since 1.137.0
+ * @since n.e.x.t
  *
  * @return {WPElement} The component.
  */
@@ -387,7 +387,7 @@ export default function CommandPalette() {
 	/**
 	 * Handles navigation actions.
 	 *
-	 * @since 1.137.0
+	 * @since n.e.x.t
 	 *
 	 * @param {string} target The navigation target.
 	 */
@@ -413,7 +413,7 @@ export default function CommandPalette() {
 	/**
 	 * Handles scroll-to-section actions.
 	 *
-	 * @since 1.137.0
+	 * @since n.e.x.t
 	 *
 	 * @param {string} target The element ID to scroll to.
 	 */
@@ -430,14 +430,14 @@ export default function CommandPalette() {
 	/**
 	 * Executes the selected command.
 	 *
-	 * @since 1.137.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} command The command to execute.
 	 */
 	/**
 	 * Handles WordPress actions.
 	 *
-	 * @since 1.137.0
+	 * @since n.e.x.t
 	 *
 	 * @param {string} action The WordPress action to execute.
 	 */
@@ -457,7 +457,7 @@ export default function CommandPalette() {
 	/**
 	 * Handles WordPress native commands.
 	 *
-	 * @since 1.137.0
+	 * @since n.e.x.t
 	 */
 	const handleWpCommands = useCallback( () => {
 		// Try to open WordPress native command palette if available
@@ -516,7 +516,7 @@ export default function CommandPalette() {
 	/**
 	 * Handles keyboard navigation.
 	 *
-	 * @since 1.137.0
+	 * @since n.e.x.t
 	 */
 	const handleKeyDown = useCallback(
 		( event ) => {
@@ -553,7 +553,7 @@ export default function CommandPalette() {
 	/**
 	 * Handles search input changes.
 	 *
-	 * @since 1.137.0
+	 * @since n.e.x.t
 	 */
 	const handleInputChange = useCallback( ( event ) => {
 		setQuery( event.target.value );
@@ -563,7 +563,7 @@ export default function CommandPalette() {
 	/**
 	 * Handles command clicks.
 	 *
-	 * @since 1.137.0
+	 * @since n.e.x.t
 	 */
 	const handleCommandClick = useCallback(
 		( command ) => {
@@ -804,7 +804,7 @@ export default function CommandPalette() {
 /**
  * Registers Site Kit commands with WordPress Command Palette API.
  *
- * @since 1.137.0
+ * @since n.e.x.t
  */
 function registerSiteKitCommands() {
 	// Check if WordPress Command Palette API is available

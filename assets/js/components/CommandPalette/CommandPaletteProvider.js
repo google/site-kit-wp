@@ -1,7 +1,7 @@
 /**
  * Command Palette Provider component.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ const CommandPaletteContext = createContext();
 /**
  * Checks if the event should be ignored (e.g., when typing in input fields).
  *
- * @since 1.137.0
+ * @since n.e.x.t
  *
  * @param {KeyboardEvent} event The keyboard event.
  * @return {boolean} Whether to ignore the event.
@@ -53,7 +53,7 @@ function shouldIgnoreEvent( event ) {
 /**
  * Provides command palette functionality.
  *
- * @since 1.137.0
+ * @since n.e.x.t
  *
  * @param {Object}    props          Component props.
  * @param {WPElement} props.children Child components.
@@ -105,7 +105,7 @@ CommandPaletteProvider.propTypes = {
 /**
  * Returns command palette context.
  *
- * @since 1.137.0
+ * @since n.e.x.t
  *
  * @return {Object} Command palette context.
  */
