@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useState, useRef, useCallback } from '@wordpress/element';
+import { useState, useRef, useCallback, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
 
@@ -34,6 +34,7 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  */
 import { Button, Menu } from 'googlesitekit-components';
 import useViewContext from '@/js/hooks/useViewContext';
+import { useFeature } from '@/js/hooks/useFeature';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
 import { trackEvent } from '@/js/util';
 import ViewIcon from '@/svg/icons/view.svg';
@@ -45,8 +46,13 @@ import {
 	CORE_USER,
 	PERMISSION_AUTHENTICATE,
 } from '@/js/googlesitekit/datastore/user/constants';
+import ManageEmailReportsIcon from '@/svg/icons/manage-email-reports.svg';
 
 export default function ViewOnlyMenu() {
+	const proactiveUserEngagementEnabled = useFeature(
+		'proactiveUserEngagement'
+	);
+
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
 	const viewContext = useViewContext();
@@ -108,6 +114,26 @@ export default function ViewOnlyMenu() {
 			>
 				<Description />
 				<SharedServices />
+				{ proactiveUserEngagementEnabled && (
+					<Fragment>
+						<li className="mdc-list-divider" role="separator"></li>
+						<li className="googlesitekit-view-only-menu__list-item">
+							<ul className="googlesitekit-view-only-menu">
+								<li className="googlesitekit-view-only-menu__service googlesitekit-view-only-menu__service--standard-item">
+									<span className="googlesitekit-view-only-menu__service--icon">
+										<ManageEmailReportsIcon width="24" />
+									</span>
+									<span className="googlesitekit-view-only-menu__service--name">
+										{ __(
+											'Manage email reports',
+											'google-site-kit'
+										) }
+									</span>
+								</li>
+							</ul>
+						</li>
+					</Fragment>
+				) }
 				<li className="mdc-list-divider" role="separator"></li>
 				<Tracking />
 			</Menu>
