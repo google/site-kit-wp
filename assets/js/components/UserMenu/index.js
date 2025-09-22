@@ -282,7 +282,7 @@ export default function UserMenu() {
 							role="menuitem"
 						>
 							<Item
-								icon={ <ManageEmailReportsIcon width="22" /> }
+								icon={ <ManageEmailReportsIcon width="24" /> }
 								label={ __(
 									'Manage email reports',
 									'google-site-kit'
@@ -297,7 +297,7 @@ export default function UserMenu() {
 							role="menuitem"
 						>
 							<Item
-								icon={ <ManageSitesIcon width="22" /> }
+								icon={ <ManageSitesIcon width="24" /> }
 								label={ __(
 									'Manage Sites',
 									'google-site-kit'
@@ -311,7 +311,7 @@ export default function UserMenu() {
 						role="menuitem"
 					>
 						<Item
-							icon={ <DisconnectIcon width="22" /> }
+							icon={ <DisconnectIcon width="24" /> }
 							label={ __( 'Disconnect', 'google-site-kit' ) }
 						/>
 					</li>
