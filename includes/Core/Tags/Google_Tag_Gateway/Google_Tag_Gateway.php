@@ -14,6 +14,8 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Cron;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
+use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -24,8 +26,9 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * @access private
  * @ignore
  */
-class Google_Tag_Gateway implements Module_With_Debug_Fields {
+class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_Metrics {
 	use Method_Proxy_Trait;
+	use Feature_Metrics_Trait;
 
 	/**
 	 * Context instance.
@@ -87,59 +90,51 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields {
 		$this->google_tag_gateway_settings->register();
 		$this->rest_controller->register();
 		$this->cron->register();
+		$this->register_feature_metrics();
 
 		add_action( 'admin_init', fn () => $this->on_admin_init() );
-
-		add_filter(
-			'googlesitekit_features_request_data',
-			function ( $body ) {
-				$body['feature_metrics'] = array_merge(
-					$body['feature_metrics'] ?? array(),
-					$this->get_internal_metrics()
-				);
-
-				return $body;
-			}
-		);
 	}
 
 	/**
-	 * Gets an array of internal metrics.
+	 * Gets an array of internal feature metrics.
 	 *
-	 * @since 1.161.0
+	 * @since 1.162.0
 	 *
 	 * @return array
 	 */
-	private function get_internal_metrics() {
+	public function get_feature_metrics() {
 		$settings = $this->google_tag_gateway_settings->get();
 
 		return array(
-			'google_tag_gateway' => array(
-				'gtg_enabled' => (bool) $settings['isEnabled'],
-				'gtg_healthy' => $this->parse_health_check_internal_metric( $settings['isGTGHealthy'] ),
-			),
+			'gtg_enabled' => (bool) isset( $settings['isEnabled'] ) && $settings['isEnabled'],
+			'gtg_healthy' => $this->get_health_check_feature_metric( $settings ),
 		);
 	}
 
 	/**
-	 * Maps the healthcheck setting value to a suitable string
-	 * for internal metrics.
+	 * Maps a combination of GTG settings to a suitable string
+	 * for internal feature metrics tracking.
 	 *
-	 * @since 1.161.0
+	 * @since 1.162.0
 	 *
-	 * @param mixed $setting_value Setting value.
+	 * @param mixed $settings Settings array.
 	 * @return string
 	 */
-	private function parse_health_check_internal_metric( $setting_value ) {
-		if ( true === $setting_value ) {
+	private function get_health_check_feature_metric( $settings ) {
+		if ( ! isset( $settings['isEnabled'] ) || ! $settings['isEnabled'] ) {
+			return '';
+		}
+
+		if (
+			isset( $settings['isGTGHealthy'] ) &&
+			true === $settings['isGTGHealthy'] &&
+			isset( $settings['isScriptAccessEnabled'] ) &&
+			true === $settings['isScriptAccessEnabled']
+		) {
 			return 'yes';
 		}
 
-		if ( false === $setting_value ) {
-			return 'no';
-		}
-
-		return '';
+		return 'no';
 	}
 
 	/**
@@ -180,6 +175,8 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields {
 	 * Gets an array of debug field definitions.
 	 *
 	 * @since 1.142.0
+	 * @since 1.162.0 Updated to use Google_Tag_Gateway_Settings->is_google_tag_gateway_active()
+	 * instead of inline logic to determine effective GTG status.
 	 *
 	 * @return array
 	 */
@@ -187,9 +184,7 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields {
 		$settings = $this->google_tag_gateway_settings->get();
 
 		// Determine effective GTG status based on settings and health checks.
-		$is_gtg_effectively_enabled = true === $settings['isEnabled']
-			&& true === $settings['isGTGHealthy']
-			&& true === $settings['isScriptAccessEnabled'];
+		$is_gtg_effectively_enabled = $this->google_tag_gateway_settings->is_google_tag_gateway_active();
 
 		return array(
 			'google_tag_gateway_is_enabled'               => array(

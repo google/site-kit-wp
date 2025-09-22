@@ -107,4 +107,24 @@ class Google_Tag_Gateway_Settings extends Setting {
 
 		return $this->set( array_merge( $settings, $updated ) );
 	}
+
+	/**
+	 * Checks if Google tag gateway is active.
+	 *
+	 * @since 1.162.0
+	 *
+	 * @return bool True if Google tag gateway is active, false otherwise.
+	 */
+	public function is_google_tag_gateway_active() {
+		$settings          = $this->get();
+		$required_settings = array( 'isEnabled', 'isGTGHealthy', 'isScriptAccessEnabled' );
+
+		foreach ( $required_settings as $setting ) {
+			if ( ! isset( $settings[ $setting ] ) || ! $settings[ $setting ] ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 }

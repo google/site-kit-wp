@@ -23,6 +23,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	provideUserInfo,
+	waitForDefaultTimeouts,
 } from '../../../tests/js/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -46,11 +47,13 @@ describe( 'Header', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( [] );
 	} );
 
-	it( 'renders', () => {
+	it( 'renders', async () => {
 		render( <Header />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
+
+		await act( waitForDefaultTimeouts );
 	} );
 
 	it( 'can render a subheader', async () => {
