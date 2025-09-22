@@ -109,26 +109,6 @@ function levenshteinDistance( a, b ) {
 const COMMANDS = [
 	// Quick Actions
 	{
-		id: 'create-post',
-		title: __( 'Create New Post', 'google-site-kit' ),
-		description: __( 'Create a new blog post', 'google-site-kit' ),
-		action: 'create',
-		target: 'post',
-		keywords: [ 'new', 'blog', 'article', 'write' ],
-		category: 'Quick Actions',
-		icon: '📝',
-	},
-	{
-		id: 'create-page',
-		title: __( 'Create New Page', 'google-site-kit' ),
-		description: __( 'Create a new page', 'google-site-kit' ),
-		action: 'create',
-		target: 'page',
-		keywords: [ 'new', 'static' ],
-		category: 'Quick Actions',
-		icon: '📄',
-	},
-	{
 		id: 'flush-permalinks',
 		title: __( 'Flush Permalinks', 'google-site-kit' ),
 		description: __( 'Refresh permalink structure', 'google-site-kit' ),
@@ -475,27 +455,6 @@ export default function CommandPalette() {
 	}, [] );
 
 	/**
-	 * Handles content creation.
-	 *
-	 * @since 1.137.0
-	 *
-	 * @param {string} type The content type to create.
-	 */
-	const handleCreate = useCallback(
-		( type ) => {
-			const createUrls = {
-				post: `${ adminURL }post-new.php`,
-				page: `${ adminURL }post-new.php?post_type=page`,
-			};
-
-			if ( createUrls[ type ] ) {
-				global.location.href = createUrls[ type ];
-			}
-		},
-		[ adminURL ]
-	);
-
-	/**
 	 * Handles WordPress native commands.
 	 *
 	 * @since 1.137.0
@@ -532,9 +491,6 @@ export default function CommandPalette() {
 				case 'scroll-to':
 					handleScrollTo( command.target );
 					break;
-				case 'create':
-					handleCreate( command.target );
-					break;
 				case 'wp-action':
 					handleWpAction( command.target );
 					break;
@@ -554,13 +510,7 @@ export default function CommandPalette() {
 			setQuery( '' );
 			setSelectedIndex( 0 );
 		},
-		[
-			handleNavigation,
-			handleScrollTo,
-			handleCreate,
-			handleWpAction,
-			handleWpCommands,
-		]
+		[ handleNavigation, handleScrollTo, handleWpAction, handleWpCommands ]
 	);
 
 	/**
