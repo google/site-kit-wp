@@ -42,12 +42,12 @@ const SET_STATE_FROM_SNAPSHOT = 'SET_STATE_FROM_SNAPSHOT';
  * @since n.e.x.t Added the ability to pick specific parts of the state to save in the snapshot.
  * @private
  *
- * @param {string}          storeName      The name of the store to snapshot in the cache.
- * @param {Object}          [options]      Optional configuration object.
- * @param {string|string[]} [options.pick] Property path(s) to pick from state when creating snapshots.
+ * @param {string}          storeName                The name of the store to snapshot in the cache.
+ * @param {Object}          [options]                Optional configuration object.
+ * @param {string|string[]} [options.keysToSnapshot] Property path(s) to pick from state when creating snapshots.
  * @return {Object} The snapshot store object.
  */
-export function createSnapshotStore( storeName, { pick: pickPaths } = {} ) {
+export function createSnapshotStore( storeName, { keysToSnapshot } = {} ) {
 	invariant( storeName, 'storeName is required to create a snapshot store.' );
 
 	const initialState = {};
@@ -129,7 +129,9 @@ export function createSnapshotStore( storeName, { pick: pickPaths } = {} ) {
 		[ CREATE_SNAPSHOT ]: createRegistryControl( ( registry ) => () => {
 			const state = registry.stores[ storeName ].store.getState();
 			const stateToSnapshot =
-				pickPaths?.length > 0 ? pick( state, pickPaths ) : state;
+				keysToSnapshot?.length > 0
+					? pick( state, keysToSnapshot )
+					: state;
 
 			return setItem(
 				`datastore::cache::${ storeName }`,
@@ -157,7 +159,7 @@ export function createSnapshotStore( storeName, { pick: pickPaths } = {} ) {
 				// If only a part of the state has been added to the snapshot, then
 				// we should update the initial state with partial data restored
 				// from the snapshot.
-				if ( pickPaths?.length > 0 ) {
+				if ( keysToSnapshot?.length > 0 ) {
 					return { ...state, ...newState };
 				}
 
