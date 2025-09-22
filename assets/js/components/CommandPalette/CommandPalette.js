@@ -614,17 +614,6 @@ export default function CommandPalette() {
 				<div className="googlesitekit-command-palette__container">
 					<div className="googlesitekit-command-palette__header">
 						<div className="googlesitekit-command-palette__search-wrapper">
-							<div className="googlesitekit-command-palette__search-icon">
-								<span
-									role="img"
-									aria-label={ __(
-										'Search',
-										'google-site-kit'
-									) }
-								>
-									🔍
-								</span>
-							</div>
 							<input
 								ref={ inputRef }
 								type="text"

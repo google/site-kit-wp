@@ -97,18 +97,6 @@
 	width: 100%;
 }
 
-// Search Icon
-.googlesitekit-command-palette__search-icon {
-	color: #6b7280;
-	font-size: 18px;
-	left: 20px;
-	line-height: 1;
-	position: absolute;
-	top: 50%;
-	transform: translateY(-50%);
-	z-index: 2;
-}
-
 // Search Input
 .googlesitekit-command-palette__input {
 	background: #fff;
@@ -120,7 +108,7 @@
 	font-weight: 400;
 	line-height: 1.4;
 	outline: none;
-	padding: 16px 60px 16px 50px;
+	padding: 16px 60px 16px 20px;
 	transition: all 0.2s ease;
 	width: 100%;
 
