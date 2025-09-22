@@ -80,6 +80,16 @@ class Conversion_TrackingTest extends TestCase {
 		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ) );
 	}
 
+	public function test_register__feature_metrics() {
+		remove_all_filters( 'googlesitekit_feature_metrics' );
+
+		$this->assertFalse( has_filter( 'googlesitekit_feature_metrics' ), 'There should be no filter for features metrics initially.' );
+
+		$this->conversion_tracking->register();
+
+		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
+	}
+
 	/**
 	 * @dataProvider data_modules
 	 */
@@ -145,6 +155,21 @@ class Conversion_TrackingTest extends TestCase {
 			'no class name'                     => array( array( 'test-provider' => '' ), $exception_no_classname ),
 			'non-existent class name'           => array( array( 'foo-bar' => '\\Foo\\Bar' ), "The '\\Foo\\Bar' class does not exist" ),
 			'existing class not-extending base' => array( array( 'test-provider' => __CLASS__ ), $exception_not_extends_base ),
+		);
+	}
+
+	public function test_get_feature_metrics() {
+		$this->conversion_tracking_settings->set( array( 'enabled' => true ) );
+		$feature_metrics = $this->conversion_tracking->get_feature_metrics();
+
+		$this->assertEquals(
+			array(
+				'conversion_tracking_enabled'   => true,
+				'conversion_tracking_providers' => array( FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ),
+				'conversion_tracking_events'    => array( 'test-event' ),
+			),
+			$feature_metrics,
+			'Feature metrics should match the expected values.'
 		);
 	}
 }
