@@ -20,7 +20,7 @@ use WP_REST_Server;
 /**
  * Class for handling proactive user engagement user settings via REST API.
  *
- * @since n.e.x.t
+ * @since 1.162.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class REST_Proactive_User_Engagement_Controller {
 	/**
 	 * Proactive_User_Engagement_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 * @var Proactive_User_Engagement_Settings
 	 */
 	private $settings;
@@ -37,7 +37,7 @@ class REST_Proactive_User_Engagement_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @param Proactive_User_Engagement_Settings $settings Proactive_User_Engagement_Settings instance.
 	 */
@@ -48,7 +48,7 @@ class REST_Proactive_User_Engagement_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 */
 	public function register() {
 		add_filter(
@@ -74,7 +74,7 @@ class REST_Proactive_User_Engagement_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */

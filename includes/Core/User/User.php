@@ -41,7 +41,7 @@ class User {
 	/**
 	 * Proactive_User_Engagement instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 * @var Proactive_User_Engagement
 	 */
 	private $proactive_user_engagement;
@@ -50,7 +50,7 @@ class User {
 	 * Constructor.
 	 *
 	 * @since 1.134.0
-	 * @since n.e.x.t Added Proactive User Engagement.
+	 * @since 1.162.0 Added Proactive User Engagement.
 	 *
 	 * @param User_Options $user_options User_Options instance.
 	 */
@@ -67,7 +67,7 @@ class User {
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.134.0
-	 * @since n.e.x.t Added Proactive User Engagement.
+	 * @since 1.162.0 Added Proactive User Engagement.
 	 */
 	public function register() {
 		$this->audience_segmentation->register();

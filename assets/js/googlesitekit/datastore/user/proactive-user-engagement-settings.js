@@ -105,7 +105,7 @@ const baseActions = {
 	/**
 	 * Sets proactive user engagement settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @param {Object} settings Settings object.
 	 * @return {Object} Redux-style action.
@@ -120,7 +120,7 @@ const baseActions = {
 	/**
 	 * Saves the proactive user engagement settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
 	 * @return {Object} Object with `response` and `error`.
@@ -165,7 +165,7 @@ const baseActions = {
 	/**
 	 * Resets modified proactive user engagement settings to currently saved values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -223,7 +223,7 @@ const baseSelectors = {
 	/**
 	 * Gets the proactive user engagement settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Proactive User Engagement settings; `undefined` if not loaded.
@@ -235,7 +235,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the user is subscribed to proactive user engagement.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the user is subscribed, otherwise FALSE.
@@ -248,7 +248,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the proactive user engagement settings have changed from what is saved.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the settings have changed, otherwise FALSE.
@@ -261,7 +261,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the proactive user engagement settings are being saved or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the settings are being saved, otherwise FALSE.

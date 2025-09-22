@@ -31,7 +31,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	/**
 	 * Google tag gateway active state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 * @var bool
 	 */
 	private $is_google_tag_gateway_active;
@@ -40,7 +40,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * Registers tag hooks.
 	 *
 	 * @since 1.24.0
-	 * @since n.e.x.t Updated to handle GTag snippet insertion when Google tag gateway is active.
+	 * @since 1.162.0 Updated to handle GTag snippet insertion when Google tag gateway is active.
 	 */
 	public function register() {
 		if ( $this->is_google_tag_gateway_active ) {
@@ -75,7 +75,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * Outputs Tag Manager script.
 	 *
 	 * @since 1.24.0
-	 * @since n.e.x.t Updated to skip rendering if Google tag gateway is active.
+	 * @since 1.162.0 Updated to skip rendering if Google tag gateway is active.
 	 */
 	protected function render() {
 		if ( $this->is_google_tag_gateway_active ) {
@@ -108,7 +108,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	 * Outputs Tag Manager iframe for when the browser has JavaScript disabled.
 	 *
 	 * @since 1.24.0
-	 * @since n.e.x.t Updated to skip rendering if Google tag gateway is active.
+	 * @since 1.162.0 Updated to skip rendering if Google tag gateway is active.
 	 */
 	private function render_no_js() {
 		if ( $this->is_google_tag_gateway_active ) {
@@ -134,7 +134,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	/**
 	 * Sets Google tag gateway active state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @param bool $active Google tag gateway active state.
 	 */
@@ -145,7 +145,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	/**
 	 * Configures gtag script.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @param GTag $gtag GTag instance.
 	 */
@@ -157,7 +157,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 	/**
 	 * Filters output of tag HTML.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @param string $tag Tag HTML.
 	 * @param string $handle WP script handle of given tag.
