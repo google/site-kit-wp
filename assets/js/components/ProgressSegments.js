@@ -20,31 +20,50 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 export default function ProgressSegments( {
-	currentSegment,
-	totalSegments,
+	currentSegment = 0,
+	totalSegments = 0,
 	className,
 } ) {
 	return (
 		<div
+			style={ {
+				// The first segment is the initial stub segment with a fixed width of 46px.
+				gridTemplateColumns: `46px repeat(${
+					totalSegments || 1
+				}, 1fr)`,
+			} }
 			className={ classnames(
 				'googlesitekit-progress-segments',
 				className
 			) }
 		>
-			{ Array.from( Array( totalSegments ).keys() ).map( ( key ) => (
-				<div
-					key={ key }
-					className={ classnames(
-						'googlesitekit-progress-segments__segment',
-						{
-							'googlesitekit-progress-segments__segment--active':
-								key + 1 <= currentSegment,
-						}
-					) }
-				></div>
-			) ) }
+			{ /* Initial stub segment. */ }
+			<div
+				className={ classnames(
+					'googlesitekit-progress-segments__segment'
+				) }
+			></div>
+			{ /* Active segments. */ }
+			{ totalSegments > 0 &&
+				Array.from( Array( currentSegment + 1 ).keys() ).map(
+					( key ) => (
+						<div
+							key={ key }
+							className={ classnames(
+								'googlesitekit-progress-segments__segment'
+							) }
+						></div>
+					)
+				) }
 		</div>
 	);
 }
+
+ProgressSegments.propTypes = {
+	currentSegment: PropTypes.number, // Index of the current segment.
+	totalSegments: PropTypes.number,
+	className: PropTypes.string,
+};
