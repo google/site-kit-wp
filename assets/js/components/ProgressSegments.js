@@ -49,9 +49,9 @@ export default function ProgressSegments( {
 			{ /* Active segments. */ }
 			{ totalSegments > 0 &&
 				Array.from( Array( currentSegment + 1 ).keys() ).map(
-					( key ) => (
+					( segmentIndex ) => (
 						<div
-							key={ key }
+							key={ segmentIndex }
 							className={ classnames(
 								'googlesitekit-progress-segments__segment'
 							) }
