@@ -55,12 +55,15 @@ class AdSenseTest extends TestCase {
 	public function test_register() {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
+		remove_all_filters( 'googlesitekit_feature_metrics' );
 
 		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ), 'Auth scopes should be empty before AdSense module registration.' );
+		$this->assertFalse( has_filter( 'googlesitekit_feature_metrics' ), 'There should be no filter for features metrics initially.' );
 
 		$adsense->register();
 
 		$this->assertNotEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ), 'Auth scopes should not be empty after AdSense module registration.' );
+		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
 	}
 
 	public function test_register_template_redirect_amp() {
@@ -743,6 +746,56 @@ class AdSenseTest extends TestCase {
 			),
 			array_keys( $adsense->get_debug_fields() ),
 			'Debug fields keys should match expected list.'
+		);
+	}
+
+	public function test_get_feature_metrics__adsense_not_connected() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertEquals(
+			array(
+				'adsense_abr_status' => '',
+			),
+			$adsense->get_feature_metrics(),
+			'Feature metrics should return adsense_abr_status as empty when AdSense is not connected.'
+		);
+	}
+
+	public function test_get_feature_metrics__adsense_not_connected_with_abr_setting() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		update_option(
+			'googlesitekit_adsense_settings',
+			array(
+				'adBlockingRecoverySetupStatus' => Settings::AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+			)
+		);
+
+		$this->assertEquals(
+			array(
+				'adsense_abr_status' => '',
+			),
+			$adsense->get_feature_metrics(),
+			'Feature metrics should return adsense_abr_status as empty when AdSense is not connected, even if a status is set.'
+		);
+	}
+
+	public function test_get_feature_metrics__adsense_connected_with_abr_setting() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		update_option(
+			'googlesitekit_adsense_settings',
+			array(
+				'accountSetupComplete'          => true,
+				'siteSetupComplete'             => true,
+				'adBlockingRecoverySetupStatus' => Settings::AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+			)
+		);
+
+		$this->assertEquals(
+			array(
+				'adsense_abr_status' => Settings::AD_BLOCKING_RECOVERY_SETUP_STATUS_SETUP_CONFIRMED,
+			),
+			$adsense->get_feature_metrics(),
+			'Feature metrics should return adsense_abr_status as empty when AdSense is not connected, even if a status is set.'
 		);
 	}
 }

@@ -423,29 +423,6 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	}
 
 	/**
-	 * Returns events supported by active providers from the conversion tracking infrastructure.
-	 *
-	 * @since 1.147.0
-	 *
-	 * @return array Array of supported conversion events, or empty array.
-	 */
-	public function get_supported_conversion_events() {
-		$providers = $this->conversion_tracking->get_active_providers();
-
-		if ( empty( $providers ) ) {
-			return array();
-		}
-
-		$events = array();
-
-		foreach ( $providers as $provider ) {
-			$events = array_merge( $events, array_values( $provider->get_event_names() ) );
-		}
-
-		return array_unique( $events );
-	}
-
-	/**
 	 * Gets required inline data for the module.
 	 *
 	 * @since 1.158.0
@@ -463,7 +440,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 			$modules_data['ads'] = array();
 		}
 
-		$modules_data[ self::MODULE_SLUG ]['supportedConversionEvents'] = $this->get_supported_conversion_events();
+		$modules_data[ self::MODULE_SLUG ]['supportedConversionEvents'] = $this->conversion_tracking->get_supported_conversion_events();
 
 		return $modules_data;
 	}
