@@ -44,9 +44,9 @@ import {
 	AccountCreate,
 	AccountCreateLegacy,
 } from '@/js/modules/analytics-4/components/common';
+import ToastNotice from '@/js/components/ToastNotice';
 import Typography from '@/js/components/Typography';
 import useQueryArg from '@/js/hooks/useQueryArg';
-import ToastNotice from '@/js/components/ToastNotice';
 import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SetupMain( { finishSetup } ) {
