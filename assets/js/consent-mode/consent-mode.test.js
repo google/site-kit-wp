@@ -1,5 +1,5 @@
 /**
- * Consent Mode tests
+ * Consent mode tests
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -21,7 +21,7 @@
  */
 import './consent-mode';
 
-describe( 'Consent Mode', () => {
+describe( 'Consent mode', () => {
 	const gtagMock = jest.fn();
 
 	beforeEach( () => {
