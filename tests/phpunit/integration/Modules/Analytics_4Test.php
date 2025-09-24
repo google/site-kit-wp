@@ -1117,55 +1117,108 @@ class Analytics_4Test extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_scope_with_setupRefreshFlow
+	 * @dataProvider data_scope_with_setupRefreshFlow_enabled
 	 */
-	public function test_auth_scopes_with_setupRefreshFlow( array $granted_scopes, array $expected_scopes ) {
+	public function test_auth_scopes_with_setupRefreshFlow( array $granted_scopes, $is_authenticated, $is_connected, array $expected_scopes ) {
 		$this->enable_feature( 'setupFlowRefresh' );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 
 		$this->analytics->register();
-		// Set user as non-authenticated.
-		$this->authentication->token()->delete();
+
+		// Configure authentication state.
+		if ( $is_authenticated ) {
+			$this->authentication->token()->set( array( 'access_token' => 'test-access-token' ) );
+		} else {
+			$this->authentication->token()->delete();
+		}
+
+		// Configure connection state if requested.
+		if ( $is_connected ) {
+			$this->analytics->get_settings()->merge(
+				array(
+					'accountID'       => '12345678',
+					'propertyID'      => '87654321',
+					'webDataStreamID' => '1234567890',
+					'measurementID'   => 'A1B2C3D4E5',
+				)
+			);
+		}
 
 		$this->authentication->get_oauth_client()->set_granted_scopes( $granted_scopes );
 
 		$this->assertEqualSets(
 			$expected_scopes,
 			apply_filters( 'googlesitekit_auth_scopes', array() ),
-			'Auth scopes should match expected scopes based on granted scopes when setupFlowRefresh feature is enabled.'
+			'Auth scopes should match expected scopes based on granted scopes, authentication and connection state when setupFlowRefresh feature is enabled.'
 		);
 	}
 
-	public function data_scope_with_setupRefreshFlow() {
+	public function data_scope_with_setupRefreshFlow_enabled() {
 		return array(
-			'with analytics and tag manager scopes granted' => array(
-				array(
-					Analytics_4::READONLY_SCOPE,
-					'https://www.googleapis.com/auth/tagmanager.readonly',
-				),
-				array(
-					Analytics_4::READONLY_SCOPE,
-					Analytics_4::EDIT_SCOPE,
-					'https://www.googleapis.com/auth/tagmanager.readonly',
-				),
+			// Unauthenticated (always adds EDIT scope) and not connected by default.
+			'unauthenticated: analytics + tag manager granted' => array(
+				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+				false, // is_authenticated
+				false, // is_connected
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
 			),
-			'with analytics scope granted' => array(
-				array(
-					Analytics_4::READONLY_SCOPE,
-				),
-				array(
-					Analytics_4::READONLY_SCOPE,
-					Analytics_4::EDIT_SCOPE,
-					'https://www.googleapis.com/auth/tagmanager.readonly',
-				),
+			'unauthenticated: analytics granted'         => array(
+				array( Analytics_4::READONLY_SCOPE ),
+				false,
+				false,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
 			),
-			'with no scopes granted'       => array(
+			'unauthenticated: no scopes granted'         => array(
 				array(),
-				array(
-					Analytics_4::READONLY_SCOPE,
-					Analytics_4::EDIT_SCOPE,
-					'https://www.googleapis.com/auth/tagmanager.readonly',
-				),
+				false,
+				false,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+
+			// Authenticated but NOT connected (still in setup) - EDIT scope added because not connected.
+			'authenticated not connected: analytics + tag manager granted' => array(
+				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+				true,
+				false,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'authenticated not connected: analytics granted' => array(
+				array( Analytics_4::READONLY_SCOPE ),
+				true,
+				false,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'authenticated not connected: no scopes granted' => array(
+				array(),
+				true,
+				false,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+
+			// Authenticated and connected (EDIT scope only added if already granted).
+			'authenticated connected: analytics + tag manager granted (no edit granted)' => array(
+				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+				true,
+				true,
+				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'authenticated connected: analytics granted (no tagmanager)' => array(
+				array( Analytics_4::READONLY_SCOPE ),
+				true,
+				true,
+				array( Analytics_4::READONLY_SCOPE ),
+			),
+			'authenticated connected: no scopes granted' => array(
+				array(),
+				true,
+				true,
+				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'authenticated connected: edit + analytics granted (no tagmanager)' => array(
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE ),
+				true,
+				true,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE ),
 			),
 		);
 	}

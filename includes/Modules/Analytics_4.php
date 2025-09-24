@@ -93,6 +93,7 @@ use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
