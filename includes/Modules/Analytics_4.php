@@ -53,7 +53,6 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
@@ -92,7 +91,8 @@ use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_Tag
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
+use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
@@ -110,7 +110,7 @@ use WP_Post;
  * @access private
  * @ignore
  */
-final class Analytics_4 extends Module implements Module_With_Inline_Data, Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State, Module_With_Tag {
+final class Analytics_4 extends Module implements Module_With_Inline_Data, Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State, Module_With_Tag, Provides_Feature_Metrics {
 
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
@@ -120,6 +120,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	use Module_With_Data_Available_State_Trait;
 	use Module_With_Tag_Trait;
 	use Module_With_Inline_Data_Trait;
+	use Feature_Metrics_Trait;
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
@@ -220,6 +221,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->register_scopes_hook();
 
 		$this->register_inline_data();
+
+		$this->register_feature_metrics();
 
 		$synchronize_property = new Synchronize_Property(
 			$this,
@@ -643,16 +646,24 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				: join( ', ', $site_kit_audiences ),
 		);
 
-		// Add fields from Google tag gateway.
-		// Note: fields are added in both Analytics and Ads so that the debug fields will show if either module is enabled.
-		if ( Feature_Flags::enabled( 'googleTagGateway' ) ) {
-			$google_tag_gateway             = new Google_Tag_Gateway( $this->context );
-			$fields_from_google_tag_gateway = $google_tag_gateway->get_debug_fields();
-
-			$debug_fields = array_merge( $debug_fields, $fields_from_google_tag_gateway );
-		}
-
 		return $debug_fields;
+	}
+
+	/**
+	 * Gets an array of internal feature metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_feature_metrics() {
+		$settings = $this->get_settings()->get();
+
+		return array(
+			'audseg_setup_completed'   => (bool) $this->audience_settings->get()['audienceSegmentationSetupCompletedBy'],
+			'audseg_audience_count'    => count( $this->audience_settings->get()['availableAudiences'] ?? array() ),
+			'analytics_adsense_linked' => $this->is_adsense_connected() && $settings['adSenseLinked'],
+		);
 	}
 
 	/**

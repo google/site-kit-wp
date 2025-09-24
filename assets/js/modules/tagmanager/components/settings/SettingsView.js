@@ -35,8 +35,8 @@ import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants'
 import { escapeURI } from '@/js/util/escape-uri';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
-import { isFeatureEnabled } from '@/js/features';
 import SettingsStatuses from '@/js/components/settings/SettingsStatuses';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>
@@ -74,13 +74,31 @@ export default function SettingsView() {
 			path: escapeURI`/container/accounts/${ accountID }/containers/${ internalAMPContainerID }`,
 		} )
 	);
-	const googleTagGatewayEnabled = useSelect(
-		( select ) =>
-			isFeatureEnabled( 'googleTagGateway' ) &&
-			select( CORE_SITE ).isGoogleTagGatewayEnabled() &&
-			select( CORE_SITE ).isGTGHealthy() &&
-			select( CORE_SITE ).isScriptAccessEnabled()
-	);
+
+	const googleTagGatewayEnabled = useFeature( 'googleTagGateway' );
+	const googleTagGatewayStatuses = useSelect( ( select ) => {
+		if ( ! googleTagGatewayEnabled ) {
+			return [];
+		}
+		const {
+			isGoogleTagGatewayEnabled,
+			isGTGHealthy,
+			isScriptAccessEnabled,
+		} = select( CORE_SITE );
+		const status =
+			isGoogleTagGatewayEnabled() &&
+			isGTGHealthy() &&
+			isScriptAccessEnabled();
+		return [
+			{
+				label: __(
+					'Google tag gateway for advertisers',
+					'google-site-kit'
+				),
+				status,
+			},
+		];
+	} );
 
 	return (
 		<Fragment>
@@ -273,17 +291,8 @@ export default function SettingsView() {
 					) }
 				</div>
 			</div>
-			<SettingsStatuses
-				statuses={ [
-					{
-						label: __(
-							'Google tag gateway for advertisers',
-							'google-site-kit'
-						),
-						status: googleTagGatewayEnabled,
-					},
-				] }
-			/>
+
+			<SettingsStatuses statuses={ googleTagGatewayStatuses } />
 		</Fragment>
 	);
 }

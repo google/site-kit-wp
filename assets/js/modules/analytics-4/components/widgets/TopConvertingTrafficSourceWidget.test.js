@@ -26,7 +26,7 @@ import {
 	provideModules,
 	freezeFetch,
 } from '../../../../../../tests/js/utils';
-import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '../../../../../../tests/js/utils/zeroReports';
+import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '@/js/util/zero-reports';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	CORE_USER,

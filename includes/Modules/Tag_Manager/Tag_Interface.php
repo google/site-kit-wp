@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Tag_Manager;
 /**
  * Interface for a Tag Manager tag.
  *
- * @since n.e.x.t
+ * @since 1.162.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ interface Tag_Interface {
 	/**
 	 * Sets Google tag gateway active state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @param bool $active Google tag gateway active state.
 	 */

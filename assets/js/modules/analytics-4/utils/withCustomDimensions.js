@@ -223,12 +223,14 @@ export default function withCustomDimensions( options = {} ) {
 						moduleSlug="analytics-4"
 						title={ tileTitle }
 						Widget={ Widget }
-						ZeroState={ () =>
-							__(
-								'Setup successful: Analytics is gathering data for this metric',
-								'google-site-kit'
-							)
-						}
+						ZeroState={ () => (
+							<span>
+								{ __(
+									'Setup successful: Analytics is gathering data for this metric',
+									'google-site-kit'
+								) }
+							</span>
+						) }
 					/>
 				);
 			}

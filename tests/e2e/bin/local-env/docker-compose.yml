@@ -24,7 +24,7 @@ services:
       - mysql
 
   wordpress-debug-log:
-    image: alpine
+    image: alpine:3.22.1
     volumes:
       - wordpress_data:/var/www/html
     command: tail -n 0 -F /var/www/html/wp-content/debug.log
@@ -43,7 +43,7 @@ services:
     command: tail -f /dev/null
 
   mysql:
-    image: mariadb:10.3
+    image: mariadb:10.3.39
     ports:
       - 9306:3306
     environment:
