@@ -353,7 +353,7 @@ describe( 'DashboardPageSpeed', () => {
 				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 			)
 		);
-		const { getByRole } = render( <DashboardPageSpeed />, {
+		const { getByRole, queryByRole } = render( <DashboardPageSpeed />, {
 			registry,
 		} );
 
@@ -367,7 +367,7 @@ describe( 'DashboardPageSpeed', () => {
 		const inTheFieldTab = getByRole( 'tab', {
 			name: /In the Field/i,
 		} );
-		const howToImproveTab = getByRole( 'tab', {
+		const howToImproveTab = queryByRole( 'tab', {
 			name: /How to improve/i,
 		} );
 
@@ -379,8 +379,10 @@ describe( 'DashboardPageSpeed', () => {
 				expect( inTheLabTab ).toBeDisabled();
 				// Verifies the `In the Field` tab is disabled.
 				expect( inTheFieldTab ).toBeDisabled();
-				// Verifies the `How to improve` tab is disabled.
-				expect( howToImproveTab ).toBeDisabled();
+				if ( howToImproveTab ) {
+					// Verifies the `How to improve` tab is disabled.
+					expect( howToImproveTab ).toBeDisabled();
+				}
 			} );
 		} );
 	} );

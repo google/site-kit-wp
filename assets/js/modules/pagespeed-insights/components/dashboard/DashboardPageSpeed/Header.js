@@ -39,88 +39,97 @@ import {
 	UI_DATA_SOURCE,
 } from '@/js/modules/pagespeed-insights/datastore/constants';
 
-const Header = forwardRef( ( { isFetching, updateActiveTab }, ref ) => {
-	const strategy =
-		useSelect( ( select ) => select( CORE_UI ).getValue( UI_STRATEGY ) ) ||
-		STRATEGY_MOBILE;
+const Header = forwardRef(
+	( { isFetching, updateActiveTab, recommendations = [] }, ref ) => {
+		const strategy =
+			useSelect( ( select ) =>
+				select( CORE_UI ).getValue( UI_STRATEGY )
+			) || STRATEGY_MOBILE;
 
-	const dataSrc =
-		useSelect( ( select ) =>
-			select( CORE_UI ).getValue( UI_DATA_SOURCE )
-		) || DATA_SRC_LAB;
+		const dataSrc =
+			useSelect( ( select ) =>
+				select( CORE_UI ).getValue( UI_DATA_SOURCE )
+			) || DATA_SRC_LAB;
 
-	const { setValues } = useDispatch( CORE_UI );
+		const { setValues } = useDispatch( CORE_UI );
 
-	// Update the active tab for "mobile" or "desktop".
-	const updateActiveDeviceSize = useCallback(
-		( { slug } ) => {
-			if ( slug === STRATEGY_DESKTOP ) {
-				setValues( { [ UI_STRATEGY ]: STRATEGY_DESKTOP } );
-			} else {
-				setValues( { [ UI_STRATEGY ]: STRATEGY_MOBILE } );
-			}
-		},
-		[ setValues ]
-	);
+		// Tabs configuration.
+		const tabs = [
+			{
+				name: DATA_SRC_LAB,
+				label: __( 'In the Lab', 'google-site-kit' ),
+				ariaLabelledby: `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }`,
+				id: `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }`,
+			},
+			{
+				name: DATA_SRC_FIELD,
+				label: __( 'In the Field', 'google-site-kit' ),
+				ariaLabelledby: `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }`,
+				id: `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }`,
+			},
+		];
 
-	return (
-		<header className="googlesitekit-pagespeed-widget__header" ref={ ref }>
-			<div className="googlesitekit-pagespeed-widget__data-src-tabs">
-				<TabBar
-					activeIndex={ [
-						DATA_SRC_LAB,
-						DATA_SRC_FIELD,
-						DATA_SRC_RECOMMENDATIONS,
-					].indexOf( dataSrc ) }
-					handleActiveIndexUpdate={ updateActiveTab }
-				>
-					<Tab
-						focusOnActivate={ false }
-						aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }
-						disabled={ isFetching }
+		if ( recommendations?.length > 0 ) {
+			tabs.push( {
+				name: DATA_SRC_RECOMMENDATIONS,
+				label: __( 'How to improve', 'google-site-kit' ),
+				ariaLabelledby: `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_RECOMMENDATIONS }`,
+				id: `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_RECOMMENDATIONS }`,
+			} );
+		}
+
+		const dataSourceOrder = tabs.map( ( { name } ) => name );
+
+		// Update the active tab for "mobile" or "desktop".
+		const updateActiveDeviceSize = useCallback(
+			( { slug } ) => {
+				if ( slug === STRATEGY_DESKTOP ) {
+					setValues( { [ UI_STRATEGY ]: STRATEGY_DESKTOP } );
+				} else {
+					setValues( { [ UI_STRATEGY ]: STRATEGY_MOBILE } );
+				}
+			},
+			[ setValues ]
+		);
+
+		return (
+			<header
+				className="googlesitekit-pagespeed-widget__header"
+				ref={ ref }
+			>
+				<div className="googlesitekit-pagespeed-widget__data-src-tabs">
+					<TabBar
+						activeIndex={ dataSourceOrder.indexOf( dataSrc ) }
+						handleActiveIndexUpdate={ updateActiveTab }
 					>
-						<span
-							id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_LAB }` }
-							className="mdc-tab__text-label"
-						>
-							{ __( 'In the Lab', 'google-site-kit' ) }
-						</span>
-					</Tab>
-					<Tab
-						focusOnActivate={ false }
-						aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }
+						{ tabs.map( ( tab ) => (
+							<Tab
+								key={ tab.name }
+								name={ tab.name }
+								focusOnActivate={ false }
+								aria-labelledby={ tab.ariaLabelledby }
+								disabled={ isFetching }
+							>
+								<span
+									id={ tab.id }
+									className="mdc-tab__text-label"
+								>
+									{ tab.label }
+								</span>
+							</Tab>
+						) ) }
+					</TabBar>
+				</div>
+				<div className="googlesitekit-pagespeed-widget__device-size-tab-bar-wrapper">
+					<DeviceSizeTabBar
+						activeTab={ strategy }
 						disabled={ isFetching }
-					>
-						<span
-							id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_FIELD }` }
-							className="mdc-tab__text-label"
-						>
-							{ __( 'In the Field', 'google-site-kit' ) }
-						</span>
-					</Tab>
-					<Tab
-						focusOnActivate={ false }
-						aria-labelledby={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_RECOMMENDATIONS }` }
-						disabled={ isFetching }
-					>
-						<span
-							id={ `googlesitekit-pagespeed-widget__data-src-tab-${ DATA_SRC_RECOMMENDATIONS }` }
-							className="mdc-tab__text-label"
-						>
-							{ __( 'How to improve', 'google-site-kit' ) }
-						</span>
-					</Tab>
-				</TabBar>
-			</div>
-			<div className="googlesitekit-pagespeed-widget__device-size-tab-bar-wrapper">
-				<DeviceSizeTabBar
-					activeTab={ strategy }
-					disabled={ isFetching }
-					handleDeviceSizeUpdate={ updateActiveDeviceSize }
-				/>
-			</div>
-		</header>
-	);
-} );
+						handleDeviceSizeUpdate={ updateActiveDeviceSize }
+					/>
+				</div>
+			</header>
+		);
+	}
+);
 
 export default Header;
