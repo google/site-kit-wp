@@ -29,6 +29,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -46,6 +47,8 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Guard;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Matchers;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Web_Tag;
 use Google\Site_Kit\Modules\Sign_In_With_Google\WooCommerce_Authenticator;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Datapoint\Compatibility_Checks;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use WP_User;
 
@@ -365,6 +368,19 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		}
 
 		return parent::is_connected();
+	}
+
+	/**
+	 * Gets the datapoint definitions for the module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of datapoint definitions.
+	 */
+	protected function get_datapoint_definitions() {
+		return array(
+			'GET:compatibility-checks' => new Compatibility_Checks( array( 'service' => '' ) ),
+		);
 	}
 
 	/**

@@ -1,0 +1,63 @@
+<?php
+/**
+ * Class Google\Site_Kit\Modules\Sign_In_With_Google\Datapoint\Compatibility_Checks
+ *
+ * @package   Google\Site_Kit\Modules\Sign_In_With_Google\Datapoint
+ * @copyright 2025 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
+
+namespace Google\Site_Kit\Modules\Sign_In_With_Google\Datapoint;
+
+use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Modules\Datapoint;
+use Google\Site_Kit\Core\Modules\Executable_Datapoint;
+use WP_Error;
+
+/**
+ * Class for the compatibility-check datapoint.
+ *
+ * @since n.e.x.t
+ * @access private
+ * @ignore
+ */
+class Compatibility_Checks extends Datapoint implements Executable_Datapoint {
+
+	/**
+	 * Creates a request object.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data Data request object.
+	 */
+	public function create_request( Data_Request $data ) {
+		if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
+			return new WP_Error( 'rest_forbidden', __( 'Sorry, you are not allowed to access this resource.', 'google-site-kit' ), array( 'status' => 403 ) );
+		}
+
+		$use_long_running = isset( $data['useLongRunning'] ) ? (bool) $data['useLongRunning'] : false;
+
+		return function () use ( $use_long_running ) {
+			// TODO: Replace with actual Compatibility_Checks class once implemented in issue #11458.
+			return array(
+				'checks'          => array(),
+				'usedLongRunning' => $use_long_running,
+				'timestamp'       => time(),
+			);
+		};
+	}
+
+	/**
+	 * Parses a response.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed        $response Request response.
+	 * @param Data_Request $data Data request object.
+	 * @return mixed The original response without any modifications.
+	 */
+	public function parse_response( $response, Data_Request $data ) {
+		return $response;
+	}
+}
