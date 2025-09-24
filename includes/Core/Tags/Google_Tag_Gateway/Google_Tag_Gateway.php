@@ -255,7 +255,7 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_M
 
 		$request_helper = new \Google\GoogleTagGatewayLibrary\RequestHelper();
 
-		$response = $request_helper->sendRequest( $endpoint );
+		$response = $request_helper->sendRequest( 'GET', $endpoint );
 
 		if ( 200 !== $response['statusCode'] ) {
 			return false;
