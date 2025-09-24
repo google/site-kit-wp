@@ -1,5 +1,5 @@
 /**
- * User input.
+ * Key metrics setup.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
