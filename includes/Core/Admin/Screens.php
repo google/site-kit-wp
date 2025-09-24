@@ -503,6 +503,15 @@ final class Screens {
 			)
 		);
 
+		$screens[] = new Screen(
+			self::PREFIX . 'key-metrics-setup',
+			array(
+				'title'       => __( 'Key Metrics Setup', 'google-site-kit' ),
+				'capability'  => Permissions::MANAGE_OPTIONS,
+				'parent_slug' => self::PARENT_SLUG_NULL,
+			)
+		);
+
 		return $screens;
 	}
 }
