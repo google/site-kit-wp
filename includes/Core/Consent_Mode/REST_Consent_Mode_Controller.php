@@ -27,7 +27,7 @@ use WP_REST_Server;
 use WP_Error;
 
 /**
- * Class for handling Consent Mode.
+ * Class for handling consent mode.
  *
  * @since 1.122.0
  * @access private
