@@ -179,6 +179,28 @@ describe( 'core/user proactive user engagement settings', () => {
 		} );
 	} );
 
+	// New action tests for frequency
+	describe( 'setProactiveUserEngagementFrequency', () => {
+		it( 'should set frequency in the store', () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetProactiveUserEngagementSettings( {
+					subscribed: false,
+					frequency: 'monthly',
+				} );
+
+			registry
+				.dispatch( CORE_USER )
+				.setProactiveUserEngagementFrequency( 'quarterly' );
+
+			expect(
+				registry
+					.select( CORE_USER )
+					.getProactiveUserEngagementSettings()
+			).toEqual( { subscribed: false, frequency: 'quarterly' } );
+		} );
+	} );
+
 	describe( 'selectors', () => {
 		describe( 'getProactiveUserEngagementSettings', () => {
 			it( 'should use a resolver to make a network request', async () => {
@@ -377,6 +399,56 @@ describe( 'core/user proactive user engagement settings', () => {
 						.select( CORE_USER )
 						.isSavingProactiveUserEngagementSettings()
 				).toBe( false );
+			} );
+		} );
+
+		describe( 'getProactiveUserEngagementFrequency', () => {
+			it( 'should return undefined by default when frequency is not set', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetProactiveUserEngagementSettings( {
+						subscribed: true,
+					} );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getProactiveUserEngagementFrequency()
+				).toBe( undefined );
+			} );
+
+			it( 'should return the stored frequency when set', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetProactiveUserEngagementSettings( {
+						subscribed: false,
+						frequency: 'monthly',
+					} );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getProactiveUserEngagementFrequency()
+				).toBe( 'monthly' );
+			} );
+
+			it( 'should update after setProactiveUserEngagementFrequency is dispatched', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetProactiveUserEngagementSettings( {
+						subscribed: false,
+						frequency: 'monthly',
+					} );
+
+				registry
+					.dispatch( CORE_USER )
+					.setProactiveUserEngagementFrequency( 'weekly' );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getProactiveUserEngagementFrequency()
+				).toBe( 'weekly' );
 			} );
 		} );
 	} );

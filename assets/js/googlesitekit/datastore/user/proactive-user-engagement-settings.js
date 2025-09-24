@@ -29,7 +29,7 @@ import {
 	commonActions,
 	combineStores,
 } from 'googlesitekit-data';
-import { CORE_USER } from './constants';
+import { CORE_USER, EMAIL_REPORT_FREQUENCY_WEEKLY } from './constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 
@@ -114,6 +114,28 @@ const baseActions = {
 		return {
 			type: SET_PROACTIVE_USER_ENGAGEMENT_SETTINGS,
 			payload: { settings },
+		};
+	},
+
+	/**
+	 * Sets the proactive user engagement frequency.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} frequency Frequency value.
+	 * @return {Object} Redux-style action.
+	 */
+	setProactiveUserEngagementFrequency( frequency ) {
+		invariant(
+			EMAIL_REPORT_FREQUENCY_WEEKLY.includes( frequency ),
+			`frequency should be one of: ${ EMAIL_REPORT_FREQUENCY_WEEKLY.join(
+				', '
+			) }`
+		);
+
+		return {
+			type: SET_PROACTIVE_USER_ENGAGEMENT_SETTINGS,
+			payload: { settings: { frequency } },
 		};
 	},
 
@@ -268,6 +290,31 @@ const baseSelectors = {
 	 */
 	isSavingProactiveUserEngagementSettings( state ) {
 		return !! state.proactiveUserEngagement.isSavingSettings;
+	},
+
+	/**
+	 * Gets the proactive user engagement frequency.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string} Frequency value.
+	 */
+	getProactiveUserEngagementFrequency( state ) {
+		const settings = state?.proactiveUserEngagement?.settings;
+		return settings?.frequency;
+	},
+
+	/**
+	 * Gets the previously-saved frequency.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} Saved frequency or undefined.
+	 */
+	getProactiveUserEngagementSavedFrequency( state ) {
+		return state?.proactiveUserEngagement?.savedSettings?.frequency;
 	},
 };
 
