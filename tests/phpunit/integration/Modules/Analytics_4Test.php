@@ -1155,11 +1155,10 @@ class Analytics_4Test extends TestCase {
 
 	public function data_scope_with_setupRefreshFlow_enabled() {
 		return array(
-			// Unauthenticated (always adds EDIT scope) and not connected by default.
 			'unauthenticated: analytics + tag manager granted' => array(
 				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
-				false, // is_authenticated
-				false, // is_connected
+				false,
+				false,
 				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
 			),
 			'unauthenticated: analytics granted'         => array(
@@ -1174,8 +1173,6 @@ class Analytics_4Test extends TestCase {
 				false,
 				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
 			),
-
-			// Authenticated but NOT connected (still in setup) - EDIT scope added because not connected.
 			'authenticated not connected: analytics + tag manager granted' => array(
 				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
 				true,
@@ -1194,8 +1191,6 @@ class Analytics_4Test extends TestCase {
 				false,
 				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
 			),
-
-			// Authenticated and connected (EDIT scope only added if already granted).
 			'authenticated connected: analytics + tag manager granted (no edit granted)' => array(
 				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
 				true,
