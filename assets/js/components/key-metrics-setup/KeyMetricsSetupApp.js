@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import P from '@/js/components/Typography/P';
 
 export default function KeyMetricsSetupApp() {
