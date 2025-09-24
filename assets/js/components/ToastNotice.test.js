@@ -1,5 +1,5 @@
 /**
- * ToastNotification component tests.
+ * ToastNotice component tests.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -22,7 +22,7 @@
 import { act, render } from '../../../tests/js/test-utils';
 import ToastNotice from './ToastNotice';
 
-describe( 'ToastNotification', () => {
+describe( 'ToastNotice', () => {
 	beforeEach( () => {
 		jest.useFakeTimers();
 	} );

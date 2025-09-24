@@ -1,7 +1,7 @@
 /**
- * VisuallyHidden stories.
+ * ToastNotice stories.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,12 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import ToastNotice from './ToastNotice';
 
 function Template() {
-	return (
-		<ToastNotice
-			title={ __(
-				'Search Console was successfully set up',
-				'google-site-kit'
-			) }
-		/>
-	);
+	return <ToastNotice title="Search Console was successfully set up" />;
 }
 
 export const Default = Template.bind( {} );
