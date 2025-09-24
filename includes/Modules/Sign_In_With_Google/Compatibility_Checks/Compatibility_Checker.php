@@ -1,0 +1,37 @@
+<?php
+/**
+ * Base abstract class for Sign In With Google compatibility checks.
+ *
+ * @package   Google\Site_Kit\Modules\Sign_In_With_Google
+ * @copyright 2025 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
+
+namespace Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks;
+
+/**
+ * Abstract base class for compatibility checks.
+ *
+ * @since n.e.x.t
+ */
+abstract class Compatibility_Checker {
+
+	/**
+	 * Gets the unique slug for this compatibility check.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The unique slug for this compatibility check.
+	 */
+	abstract public function get_slug();
+
+	/**
+	 * Runs the compatibility check.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array The result of the compatibility check.
+	 */
+	abstract public function run();
+}
