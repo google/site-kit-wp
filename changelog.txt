@@ -4,6 +4,7 @@
 
 **Enhanced**
 
+* Update the Google tag gateway `measurement.php` to the latest version. See [#11517](https://github.com/google/site-kit-wp/issues/11517).
 * Use the GTag script via the first-party domain proxy `gtg/measurement.php` for Tag Manager containers when Google tag gateway for advertisers is active. See [#11417](https://github.com/google/site-kit-wp/issues/11417).
 * Display the Google tag gateway for advertisers status in the Tag Manager settings view. See [#11416](https://github.com/google/site-kit-wp/issues/11416).
 * Add Google Tag Gateway toggle to Tag Manager settings edit screen. See [#11415](https://github.com/google/site-kit-wp/issues/11415).
