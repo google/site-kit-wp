@@ -179,7 +179,6 @@ describe( 'core/user proactive user engagement settings', () => {
 		} );
 	} );
 
-	// New action tests for frequency
 	describe( 'setProactiveUserEngagementFrequency', () => {
 		it( 'should set frequency in the store', () => {
 			registry
@@ -450,6 +449,74 @@ describe( 'core/user proactive user engagement settings', () => {
 						.getProactiveUserEngagementFrequency()
 				).toBe( 'weekly' );
 			} );
+		} );
+	} );
+
+	describe( 'getProactiveUserEngagementSavedFrequency', () => {
+		it( 'should return undefined when no saved settings are present', () => {
+			expect(
+				registry
+					.select( CORE_USER )
+					.getProactiveUserEngagementSavedFrequency()
+			).toBe( undefined );
+		} );
+
+		it( 'should return the saved frequency when settings have been received', () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetProactiveUserEngagementSettings( {
+					subscribed: false,
+					frequency: 'monthly',
+				} );
+
+			expect(
+				registry
+					.select( CORE_USER )
+					.getProactiveUserEngagementSavedFrequency()
+			).toBe( 'monthly' );
+		} );
+
+		it( 'should not change when only the current in-store frequency is updated', () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetProactiveUserEngagementSettings( {
+					subscribed: false,
+					frequency: 'monthly',
+				} );
+
+			// Update only the current working settings (not saved).
+			registry
+				.dispatch( CORE_USER )
+				.setProactiveUserEngagementFrequency( 'weekly' );
+
+			// Saved frequency should remain unchanged.
+			expect(
+				registry
+					.select( CORE_USER )
+					.getProactiveUserEngagementSavedFrequency()
+			).toBe( 'monthly' );
+		} );
+
+		it( 'should update after saveProactiveUserEngagementSettings is dispatched', async () => {
+			const newSettings = {
+				subscribed: true,
+				frequency: 'weekly',
+			};
+
+			fetchMock.postOnce( proactiveUserEngagementSettingsEndpoint, {
+				body: newSettings,
+				status: 200,
+			} );
+
+			await registry
+				.dispatch( CORE_USER )
+				.saveProactiveUserEngagementSettings( newSettings );
+
+			expect(
+				registry
+					.select( CORE_USER )
+					.getProactiveUserEngagementSavedFrequency()
+			).toBe( 'weekly' );
 		} );
 	} );
 } );
