@@ -724,8 +724,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'service'   => 'analyticsdata',
 				'shareable' => true,
 			),
-			'GET:non-shareable-report'                  => array( 'service' => 'analyticsdata' ),
-
 			'GET:webdatastreams'                        => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'                  => array( 'service' => 'analyticsadmin' ),
 			'GET:enhanced-measurement-settings'         => array( 'service' => 'analyticsenhancedmeasurement' ),
@@ -1337,7 +1335,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 				return $this->get_analyticsdata_service()->properties->runReport( $property_id, $request );
 			case 'GET:report':
-			case 'GET:non-shareable-report':
 				if ( empty( $data['metrics'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
@@ -1880,7 +1877,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			case 'GET:key-events':
 				return (array) $response->getKeyEvents();
 			case 'GET:report':
-			case 'GET:non-shareable-report':
 				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );
 			case 'POST:sync-audiences':
