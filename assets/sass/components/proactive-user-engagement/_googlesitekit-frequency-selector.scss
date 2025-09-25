@@ -22,14 +22,14 @@ h3.googlesitekit-frequency-selector-title {
 
 .googlesitekit-frequency-selector {
 	display: grid;
-	gap: 16px;
+	gap: $grid-gap-phone;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 
 	.googlesitekit-frequency-selector__card {
 		background: $c-surfaces-surface-1;
 		border-radius: 8px;
 		cursor: pointer;
-		padding: 12px 16px;
+		padding: $grid-gap-phone - 4px $grid-gap-phone;
 
 		// Apply system default focus styles for accessibility.
 		&:focus-visible {

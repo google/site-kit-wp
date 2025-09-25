@@ -29,11 +29,7 @@ export const FORM_TEMPORARY_PERSIST_PERMISSION_ERROR =
 export const ERROR_CODE_ADBLOCKER_ACTIVE = 'adblocker_active';
 
 // Email Report Frequency options.
-export const EMAIL_REPORT_FREQUENCY_WEEKLY = [
-	'weekly',
-	'monthly',
-	'quarterly',
-];
+export const EMAIL_REPORT_FREQUENCIES = [ 'weekly', 'monthly', 'quarterly' ];
 
 // Permissions list.
 export const PERMISSION_AUTHENTICATE = 'googlesitekit_authenticate';

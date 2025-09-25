@@ -29,7 +29,7 @@ import {
 	commonActions,
 	combineStores,
 } from 'googlesitekit-data';
-import { CORE_USER, EMAIL_REPORT_FREQUENCY_WEEKLY } from './constants';
+import { CORE_USER, EMAIL_REPORT_FREQUENCIES } from './constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 
@@ -127,8 +127,8 @@ const baseActions = {
 	 */
 	setProactiveUserEngagementFrequency( frequency ) {
 		invariant(
-			EMAIL_REPORT_FREQUENCY_WEEKLY.includes( frequency ),
-			`frequency should be one of: ${ EMAIL_REPORT_FREQUENCY_WEEKLY.join(
+			EMAIL_REPORT_FREQUENCIES.includes( frequency ),
+			`frequency should be one of: ${ EMAIL_REPORT_FREQUENCIES.join(
 				', '
 			) }`
 		);

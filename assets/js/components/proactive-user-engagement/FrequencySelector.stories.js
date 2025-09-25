@@ -24,7 +24,7 @@ import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { provideSiteInfo } from '../../../../tests/js/utils';
 import {
 	CORE_USER,
-	EMAIL_REPORT_FREQUENCY_WEEKLY,
+	EMAIL_REPORT_FREQUENCIES,
 } from '@/js/googlesitekit/datastore/user/constants';
 
 export default {
@@ -33,7 +33,7 @@ export default {
 	argTypes: {
 		frequency: {
 			control: { type: 'radio' },
-			options: [ ...EMAIL_REPORT_FREQUENCY_WEEKLY ],
+			options: [ ...EMAIL_REPORT_FREQUENCIES ],
 		},
 		startOfWeek: {
 			control: { type: 'number', min: 0, max: 6, step: 1 },

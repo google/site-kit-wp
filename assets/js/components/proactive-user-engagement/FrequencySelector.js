@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __, _x, sprintf } from '@wordpress/i18n';
+import { useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -28,13 +29,26 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
-	EMAIL_REPORT_FREQUENCY_WEEKLY,
+	EMAIL_REPORT_FREQUENCIES,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { Fragment } from 'react';
 import Typography from '@/js/components/Typography';
 import Tick from '@/svg/icons/tick.svg';
 
 export default function FrequencySelector() {
+	const DAY_NAMES = useMemo(
+		() => [
+			_x( 'Sunday', 'day name', 'google-site-kit' ),
+			_x( 'Monday', 'day name', 'google-site-kit' ),
+			_x( 'Tuesday', 'day name', 'google-site-kit' ),
+			_x( 'Wednesday', 'day name', 'google-site-kit' ),
+			_x( 'Thursday', 'day name', 'google-site-kit' ),
+			_x( 'Friday', 'day name', 'google-site-kit' ),
+			_x( 'Saturday', 'day name', 'google-site-kit' ),
+		],
+		[]
+	);
+
 	/**
 	 * Maps WP start_of_week index to localized day names.
 	 *
@@ -43,20 +57,10 @@ export default function FrequencySelector() {
 	 * @param {number} index Start of week index (0-6).
 	 * @return {string} Localized day name.
 	 */
-	function wpStartOfWeekToDayName( index ) {
-		const names = [
-			_x( 'Sunday', 'day name', 'google-site-kit' ),
-			_x( 'Monday', 'day name', 'google-site-kit' ),
-			_x( 'Tuesday', 'day name', 'google-site-kit' ),
-			_x( 'Wednesday', 'day name', 'google-site-kit' ),
-			_x( 'Thursday', 'day name', 'google-site-kit' ),
-			_x( 'Friday', 'day name', 'google-site-kit' ),
-			_x( 'Saturday', 'day name', 'google-site-kit' ),
-		];
-
+	function dayNameFromIndex( index ) {
 		const i =
 			Number.isInteger( index ) && index >= 0 && index <= 6 ? index : 1;
-		return names[ i ];
+		return DAY_NAMES[ i ];
 	}
 
 	const startOfWeek = useSelect( ( select ) =>
@@ -66,7 +70,7 @@ export default function FrequencySelector() {
 	const frequency =
 		useSelect( ( select ) =>
 			select( CORE_USER ).getProactiveUserEngagementFrequency()
-		) || EMAIL_REPORT_FREQUENCY_WEEKLY[ 0 ];
+		) || EMAIL_REPORT_FREQUENCIES[ 0 ];
 
 	const savedFrequency = useSelect( ( select ) =>
 		select( CORE_USER ).getProactiveUserEngagementSavedFrequency()
@@ -77,7 +81,7 @@ export default function FrequencySelector() {
 	const weeklyDescription = sprintf(
 		/* translators: %s: localized day-of-week name (e.g. Monday). */
 		__( 'Sent every %s', 'google-site-kit' ),
-		wpStartOfWeekToDayName( startOfWeek )
+		dayNameFromIndex( startOfWeek )
 	);
 
 	const frequencyCopy = {
@@ -127,7 +131,7 @@ export default function FrequencySelector() {
 				role="radiogroup"
 				aria-label={ __( 'Frequency', 'google-site-kit' ) }
 			>
-				{ EMAIL_REPORT_FREQUENCY_WEEKLY.map( ( value ) => {
+				{ EMAIL_REPORT_FREQUENCIES.map( ( value ) => {
 					const isSelected = frequency === value;
 					const { label, period, description } =
 						frequencyCopy[ value ] || {};
