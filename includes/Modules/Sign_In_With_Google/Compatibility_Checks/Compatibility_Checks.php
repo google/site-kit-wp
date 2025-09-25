@@ -40,9 +40,9 @@ class Compatibility_Checks {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Compatibility_Checker $check The compatibility check to add.
+	 * @param Compatibility_Check $check The compatibility check to add.
 	 */
-	public function add_check( Compatibility_Checker $check ) {
+	public function add_check( Compatibility_Check $check ) {
 		$this->checks[] = $check;
 	}
 

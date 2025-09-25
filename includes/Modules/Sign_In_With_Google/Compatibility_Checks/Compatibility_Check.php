@@ -15,7 +15,7 @@ namespace Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks;
  *
  * @since n.e.x.t
  */
-abstract class Compatibility_Checker {
+abstract class Compatibility_Check {
 
 	/**
 	 * Gets the unique slug for this compatibility check.

@@ -15,7 +15,7 @@ namespace Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks;
  *
  * @since n.e.x.t
  */
-class WP_Login_Accessible_Check extends Compatibility_Checker {
+class WP_Login_Accessible_Check extends Compatibility_Check {
 
 	/**
 	 * Gets the unique slug for this compatibility check.
