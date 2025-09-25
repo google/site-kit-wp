@@ -1,2 +1,2 @@
 export * from './useShowTooltip';
-export * from './AdminMenuTooltip';
+export * from './AdminScreenTooltip';

@@ -35,7 +35,7 @@ import {
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
 
-export function AdminMenuTooltip() {
+export function AdminScreenTooltip() {
 	const viewContext = useViewContext();
 	const { setValue } = useDispatch( CORE_UI );
 	const breakpoint = useBreakpoint();

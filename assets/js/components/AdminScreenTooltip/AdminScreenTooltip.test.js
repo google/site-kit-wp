@@ -27,7 +27,7 @@ import {
 	waitFor,
 } from '../../../../tests/js/test-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { AdminMenuTooltip } from './AdminMenuTooltip';
+import { AdminScreenTooltip } from './AdminScreenTooltip';
 import * as tracking from '@/js/util/tracking';
 import useViewContext from '@/js/hooks/useViewContext';
 
@@ -59,7 +59,7 @@ describe( 'AdminMenuTooltip', () => {
 						Settings
 					</a>
 				</div>
-				<AdminMenuTooltip />
+				<AdminScreenTooltip />
 			</div>,
 			{ registry }
 		);
@@ -88,7 +88,7 @@ describe( 'AdminMenuTooltip', () => {
 						Settings
 					</a>
 				</div>
-				<AdminMenuTooltip />
+				<AdminScreenTooltip />
 			</div>,
 			{ registry }
 		);
@@ -133,7 +133,7 @@ describe( 'AdminMenuTooltip', () => {
 						Settings
 					</a>
 				</div>
-				<AdminMenuTooltip />
+				<AdminScreenTooltip />
 			</div>,
 			{ registry }
 		);
@@ -191,7 +191,7 @@ describe( 'AdminMenuTooltip', () => {
 						Settings
 					</a>
 				</div>
-				<AdminMenuTooltip />
+				<AdminScreenTooltip />
 			</div>,
 			{ registry }
 		);

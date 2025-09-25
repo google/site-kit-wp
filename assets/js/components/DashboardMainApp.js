@@ -77,7 +77,7 @@ import {
 	NOTIFICATION_GROUPS,
 	NOTIFICATION_AREAS,
 } from '@/js/googlesitekit/notifications/constants';
-import { AdminMenuTooltip } from './AdminScreenTooltip';
+import { AdminScreenTooltip } from './AdminScreenTooltip';
 import useFormValue from '@/js/hooks/useFormValue';
 
 export default function DashboardMainApp() {
@@ -247,7 +247,7 @@ export default function DashboardMainApp() {
 			<ScrollEffect />
 			<ModuleDashboardEffects />
 
-			<AdminMenuTooltip />
+			<AdminScreenTooltip />
 
 			<Header showNavigation>
 				<EntitySearchInput />
