@@ -50,6 +50,8 @@ import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import ScrollEffect from './ScrollEffect';
 import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
+import UserSettingsSelectionPanel from './proactive-user-engagement/UserSettingsSelectionPanel';
+import { useFeature } from '@/js/hooks/useFeature';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_KEY_METRICS,
@@ -226,6 +228,10 @@ export default function DashboardMainApp() {
 		);
 	} );
 
+	const proactiveUserEngagementEnabled = useFeature(
+		'proactiveUserEngagement'
+	);
+
 	useMonitorInternetConnection();
 
 	let lastWidgetAnchor = null;
@@ -327,6 +333,8 @@ export default function DashboardMainApp() {
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
+
+			{ proactiveUserEngagementEnabled && <UserSettingsSelectionPanel /> }
 
 			{ configuredAudiences && <AudienceSelectionPanel /> }
 
