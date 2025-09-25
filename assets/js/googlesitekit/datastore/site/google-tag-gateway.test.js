@@ -38,6 +38,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 describe( 'core/site Google tag gateway', () => {
 	let registry;
+	let store;
 
 	const googleTagGatewaySettingsEndpointRegExp = new RegExp(
 		'^/google-site-kit/v1/core/site/data/gtg-settings'
@@ -49,6 +50,7 @@ describe( 'core/site Google tag gateway', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		store = registry.stores[ CORE_SITE ].store;
 		provideSiteInfo( registry );
 	} );
 
@@ -72,6 +74,7 @@ describe( 'core/site Google tag gateway', () => {
 					isEnabled: true,
 					isGTGHealthy: false,
 					isScriptAccessEnabled: false,
+					isGTGDefault: true,
 				};
 
 				fetchMock.postOnce( googleTagGatewaySettingsEndpointRegExp, {
@@ -85,6 +88,7 @@ describe( 'core/site Google tag gateway', () => {
 						isEnabled: false,
 						isGTGHealthy: false,
 						isScriptAccessEnabled: false,
+						isGTGDefault: true,
 					} );
 
 				registry
@@ -101,8 +105,9 @@ describe( 'core/site Google tag gateway', () => {
 						body: {
 							data: {
 								settings: {
-									// Only the `isEnabled` property is settable, other properties are filtered out of the request payload.
+									// Both `isEnabled` and `isGTGDefault` properties are settable.
 									isEnabled: true,
+									isGTGDefault: true,
 								},
 							},
 						},
@@ -132,6 +137,7 @@ describe( 'core/site Google tag gateway', () => {
 						isEnabled: false,
 						isGTGHealthy: false,
 						isScriptAccessEnabled: false,
+						isGTGDefault: true,
 					} );
 
 				registry
@@ -148,8 +154,9 @@ describe( 'core/site Google tag gateway', () => {
 						body: {
 							data: {
 								settings: {
-									// Only the `isEnabled` property is settable, other properties are filtered out of the request payload.
+									// Both `isEnabled` and `isGTGDefault` properties are settable.
 									isEnabled: true,
+									isGTGDefault: true,
 								},
 							},
 						},
@@ -176,6 +183,7 @@ describe( 'core/site Google tag gateway', () => {
 						isEnabled: true,
 						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
+						isGTGDefault: true,
 					},
 					status: 200,
 				} );
@@ -186,6 +194,7 @@ describe( 'core/site Google tag gateway', () => {
 						isEnabled: false,
 						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
+						isGTGDefault: true,
 					} );
 
 				registry
@@ -212,6 +221,7 @@ describe( 'core/site Google tag gateway', () => {
 						isEnabled: false,
 						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
+						isGTGDefault: true,
 					},
 					status: 200,
 				} );
@@ -222,6 +232,7 @@ describe( 'core/site Google tag gateway', () => {
 						isEnabled: true,
 						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
+						isGTGDefault: true,
 					} );
 
 				registry
@@ -249,6 +260,7 @@ describe( 'core/site Google tag gateway', () => {
 						isEnabled: false,
 						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
+						isGTGDefault: true,
 					} );
 
 				expect(
@@ -273,6 +285,35 @@ describe( 'core/site Google tag gateway', () => {
 			} );
 		} );
 
+		describe( 'setIsGTGDefault', () => {
+			it( 'sets the GTG default status', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetGoogleTagGatewaySettings( {
+						isEnabled: false,
+						isGTGHealthy: true,
+						isScriptAccessEnabled: true,
+						isGTGDefault: true,
+					} );
+
+				expect(
+					store.getState().googleTagGatewaySettings.isGTGDefault
+				).toBe( true );
+
+				registry.dispatch( CORE_SITE ).setIsGTGDefault( false );
+
+				expect(
+					store.getState().googleTagGatewaySettings.isGTGDefault
+				).toBe( false );
+
+				registry.dispatch( CORE_SITE ).setIsGTGDefault( true );
+
+				expect(
+					store.getState().googleTagGatewaySettings.isGTGDefault
+				).toBe( true );
+			} );
+		} );
+
 		describe( 'resetGoogleTagGatewaySettings', () => {
 			it( 'resets the settings', () => {
 				registry
@@ -281,6 +322,7 @@ describe( 'core/site Google tag gateway', () => {
 						isEnabled: true,
 						isGTGHealthy: true,
 						isScriptAccessEnabled: true,
+						isGTGDefault: true,
 					} );
 
 				expect(
@@ -321,6 +363,7 @@ describe( 'core/site Google tag gateway', () => {
 					isEnabled: false,
 					isGTGHealthy: false,
 					isScriptAccessEnabled: false,
+					isGTGDefault: true,
 				};
 
 				fetchMock.getOnce( googleTagGatewaySettingsEndpointRegExp, {
@@ -405,6 +448,7 @@ describe( 'core/site Google tag gateway', () => {
 							isEnabled,
 							isGTGHealthy: false,
 							isScriptAccessEnabled: false,
+							isGTGDefault: true,
 						} );
 
 					expect(
@@ -437,6 +481,7 @@ describe( 'core/site Google tag gateway', () => {
 							isEnabled: false,
 							isGTGHealthy,
 							isScriptAccessEnabled: false,
+							isGTGDefault: true,
 						} );
 
 					expect( registry.select( CORE_SITE ).isGTGHealthy() ).toBe(
@@ -469,11 +514,45 @@ describe( 'core/site Google tag gateway', () => {
 							isEnabled: false,
 							isGTGHealthy: false,
 							isScriptAccessEnabled,
+							isGTGDefault: true,
 						} );
 
 					expect(
 						registry.select( CORE_SITE ).isScriptAccessEnabled()
 					).toBe( isScriptAccessEnabled );
+				}
+			);
+		} );
+
+		describe( 'isGTGDefault', () => {
+			it( 'returns undefined if the state is not loaded', async () => {
+				muteFetch( googleTagGatewaySettingsEndpointRegExp );
+
+				expect(
+					registry.select( CORE_SITE ).isGTGDefault()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getGoogleTagGatewaySettings();
+			} );
+
+			it.each( [ true, false ] )(
+				'returns the GTG default status: %s',
+				( isGTGDefault ) => {
+					registry
+						.dispatch( CORE_SITE )
+						.receiveGetGoogleTagGatewaySettings( {
+							isEnabled: false,
+							isGTGHealthy: false,
+							isScriptAccessEnabled: false,
+							isGTGDefault,
+						} );
+
+					expect( registry.select( CORE_SITE ).isGTGDefault() ).toBe(
+						isGTGDefault
+					);
 				}
 			);
 		} );
@@ -484,6 +563,7 @@ describe( 'core/site Google tag gateway', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
+						isGTGDefault: true,
 					} );
 
 				// Initially false.
