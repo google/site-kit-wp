@@ -79,6 +79,10 @@ use Google\Site_Kit\Modules\Analytics_4\Tag_Interface;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportRequest as Google_Service_AnalyticsData_RunReportRequest;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Google_Service_AnalyticsData_DateRange;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension as Google_Service_AnalyticsData_Dimension;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Metric as Google_Service_AnalyticsData_Metric;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaAudience;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaAccount;
@@ -1317,23 +1321,26 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					);
 				}
 
-				$minimal_data = array(
-					'dimensions' => array( 'date' ),
-					'metrics'    => array( 'sessions' ),
-					'startDate'  => 'yesterday',
-					'endDate'    => 'today',
-					'limit'      => 0,
+				// A simple way to check for property access is to attempt a minimal report request.
+				// If the user does not have access, this will return a 403 error which should be caught
+				// and handled by the caller of this datapoint.
+				$request = new Google_Service_AnalyticsData_RunReportRequest();
+				$request->setProperty( self::normalize_property_id( $data['propertyID'] ) );
+				$request->setDimensions( array( new Google_Service_AnalyticsData_Dimension( array( 'name' => 'date' ) ) ) );
+				$request->setMetrics( array( new Google_Service_AnalyticsData_Metric( array( 'name' => 'sessions' ) ) ) );
+				$request->setDateRanges(
+					array(
+						new Google_Service_AnalyticsData_DateRange(
+							array(
+								'start_date' => 'yesterday',
+								'end_date'   => 'today',
+							)
+						),
+					)
 				);
+				$request->setLimit( 1 );
 
-				$data_request = new Data_Request( 'GET', 'modules', $this->slug, 'report', $minimal_data );
-
-				$report  = new Analytics_4_Report_Request( $this->context );
-				$request = $report->create_request( $data_request, false );
-
-				$property_id = self::normalize_property_id( $data['propertyID'] );
-				$request->setProperty( $property_id );
-
-				return $this->get_analyticsdata_service()->properties->runReport( $property_id, $request );
+				return $this->get_analyticsdata_service()->properties->runReport( $data['propertyID'], $request );
 			case 'GET:report':
 				if ( empty( $data['metrics'] ) ) {
 					return new WP_Error(
