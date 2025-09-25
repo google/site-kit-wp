@@ -36,12 +36,11 @@ class Web_TagTest extends TestCase {
 	 * @var array
 	 */
 	private $siwg_settings = array(
-		'clientID'         => 'test-client-id.app.googleusercontent.com',
-		'text'             => Settings::TEXT_SIGN_IN_WITH_GOOGLE['value'],
-		'theme'            => Settings::THEME_LIGHT['value'],
-		'shape'            => 'rectangular',
-		'oneTapEnabled'    => false,
-		'oneTapOnAllPages' => false,
+		'clientID'      => 'test-client-id.app.googleusercontent.com',
+		'text'          => Settings::TEXT_SIGN_IN_WITH_GOOGLE['value'],
+		'theme'         => Settings::THEME_LIGHT['value'],
+		'shape'         => 'rectangular',
+		'oneTapEnabled' => false,
 	);
 
 	/**
@@ -116,15 +115,14 @@ class Web_TagTest extends TestCase {
 		// The button shouldn't be rendered on a non-login page.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Footer should still include SIWG marker on front page (script-only).' );
 
-		// Enable the Sign in with Google One Tap on all pages.
+		// Enable Sign in with Google One Tap.
 		$this->web_tag->set_settings(
 			array(
-				'clientID'         => '1234567890.googleusercontent.com',
-				'text'             => Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
-				'theme'            => Settings::THEME_LIGHT['value'],
-				'shape'            => Settings::SHAPE_RECTANGULAR['value'],
-				'oneTapEnabled'    => true,
-				'oneTapOnAllPages' => true,
+				'clientID'      => '1234567890.googleusercontent.com',
+				'text'          => Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
+				'theme'         => Settings::THEME_LIGHT['value'],
+				'shape'         => Settings::SHAPE_RECTANGULAR['value'],
+				'oneTapEnabled' => true,
 			)
 		);
 
