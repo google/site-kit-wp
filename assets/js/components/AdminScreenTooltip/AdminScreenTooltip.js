@@ -42,6 +42,7 @@ export function AdminScreenTooltip() {
 
 	const {
 		isTooltipVisible = false,
+		target,
 		tooltipSlug,
 		title,
 		content,
@@ -73,18 +74,24 @@ export function AdminScreenTooltip() {
 		return null;
 	}
 
-	const defaultTarget = '#adminmenu [href*="page=googlesitekit-settings"]';
 	const isMobileTablet =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
+	const desktopTarget =
+		target ?? '#adminmenu [href*="page=googlesitekit-settings"]';
+
+	const desktopClassName = target
+		? 'googlesitekit-tour-tooltip__fixed-settings-tooltip'
+		: undefined;
+
 	return (
 		<JoyrideTooltip
-			target={ isMobileTablet ? 'body' : defaultTarget }
+			target={ isMobileTablet ? 'body' : desktopTarget }
 			placement={ isMobileTablet ? 'center' : 'right' }
 			className={
 				isMobileTablet
 					? 'googlesitekit-tour-tooltip__modal_step'
-					: 'googlesitekit-tour-tooltip__fixed-settings-tooltip'
+					: desktopClassName
 			}
 			disableOverlay={ ! isMobileTablet }
 			slug="admin-screen-tooltip"
