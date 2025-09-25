@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { createInterpolateElement } from '@wordpress/element';
@@ -34,19 +39,19 @@ import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/d
 import { Cell, Row } from '@/js/material-components';
 import SetupFlowSVG from './SetupFlowSVG';
 
-export default function LegacySplash( {
+export default function LegacySplashContent( {
 	analyticsModuleActive,
 	analyticsModuleAvailable,
 	children,
 	connectedProxyURL,
 	description,
 	disconnectedReason,
+	getHelpURL,
 	homeURL,
 	secondAdminLearnMoreLink,
 	title,
 } ) {
 	const showLearnMoreLink = false;
-	const getHelpURL = null;
 
 	const cellDetailsProp = analyticsModuleActive
 		? { smSize: 4, mdSize: 8, lgSize: 6 }
@@ -138,3 +143,16 @@ export default function LegacySplash( {
 		</Row>
 	);
 }
+
+LegacySplashContent.propTypes = {
+	analyticsModuleActive: PropTypes.bool,
+	analyticsModuleAvailable: PropTypes.bool,
+	children: PropTypes.func,
+	connectedProxyURL: PropTypes.string,
+	description: PropTypes.string,
+	disconnectedReason: PropTypes.string,
+	getHelpURL: PropTypes.string,
+	homeURL: PropTypes.string,
+	secondAdminLearnMoreLink: PropTypes.string,
+	title: PropTypes.string.isRequired,
+};

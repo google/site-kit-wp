@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { createInterpolateElement } from '@wordpress/element';
@@ -37,13 +42,14 @@ import SplashGraphic from '@/svg/graphics/splash-graphic.svg';
 import SetupFlowSVG from './SetupFlowSVG';
 import { useBreakpoint, BREAKPOINT_XLARGE } from '@/js/hooks/useBreakpoint';
 
-export default function RefreshedSplash( {
+export default function SplashContent( {
 	analyticsModuleActive,
 	analyticsModuleAvailable,
 	children,
 	connectedProxyURL,
 	description,
 	disconnectedReason,
+	getHelpURL,
 	homeURL,
 	secondAdminLearnMoreLink,
 	showLearnMoreLink,
@@ -115,6 +121,30 @@ export default function RefreshedSplash( {
 						) }
 				</p>
 
+				{ getHelpURL && (
+					<Link href={ getHelpURL } external>
+						{ __( 'Get help', 'google-site-kit' ) }
+					</Link>
+				) }
+
+				{ DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ===
+					disconnectedReason &&
+					connectedProxyURL !== homeURL && (
+						<P>
+							{ sprintf(
+								/* translators: %s: Previous Connected Proxy URL */
+								__( '— Old URL: %s', 'google-site-kit' ),
+								connectedProxyURL
+							) }
+							<br />
+							{ sprintf(
+								/* translators: %s: Connected Proxy URL */
+								__( '— New URL: %s', 'google-site-kit' ),
+								homeURL
+							) }
+						</P>
+					) }
+
 				{ analyticsModuleAvailable && ! analyticsModuleActive && (
 					<div className="googlesitekit-setup__analytics-opt-in-wrapper">
 						<Checkbox
@@ -136,26 +166,22 @@ export default function RefreshedSplash( {
 					</div>
 				) }
 
-				{ DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ===
-					disconnectedReason &&
-					connectedProxyURL !== homeURL && (
-						<P>
-							{ sprintf(
-								/* translators: %s: Previous Connected Proxy URL */
-								__( '— Old URL: %s', 'google-site-kit' ),
-								connectedProxyURL
-							) }
-							<br />
-							{ sprintf(
-								/* translators: %s: Connected Proxy URL */
-								__( '— New URL: %s', 'google-site-kit' ),
-								homeURL
-							) }
-						</P>
-					) }
-
 				<CompatibilityChecks>{ children }</CompatibilityChecks>
 			</Cell>
 		</Row>
 	);
 }
+
+SplashContent.propTypes = {
+	analyticsModuleActive: PropTypes.bool,
+	analyticsModuleAvailable: PropTypes.bool,
+	children: PropTypes.func,
+	connectedProxyURL: PropTypes.string,
+	description: PropTypes.string,
+	disconnectedReason: PropTypes.string,
+	getHelpURL: PropTypes.string,
+	homeURL: PropTypes.string,
+	secondAdminLearnMoreLink: PropTypes.string,
+	showLearnMoreLink: PropTypes.bool,
+	title: PropTypes.string.isRequired,
+};

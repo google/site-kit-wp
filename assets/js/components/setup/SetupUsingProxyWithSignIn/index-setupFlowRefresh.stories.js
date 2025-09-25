@@ -1,7 +1,7 @@
 /**
  * SetupUsingProxyWithSignIn Component Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,9 +53,9 @@ function Template() {
 	);
 }
 
-export const Default = Template.bind( {} );
-Default.storyName = 'Default';
-Default.args = {
+export const RefreshedSetupFlow = Template.bind( {} );
+RefreshedSetupFlow.storyName = 'Refreshed setup flow';
+RefreshedSetupFlow.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteConnection( registry, {
 			hasConnectedAdmins: false,
@@ -72,11 +72,16 @@ Default.args = {
 	},
 };
 
-export const DefaultWithStagingEnvironmentWarning = Template.bind( {} );
-DefaultWithStagingEnvironmentWarning.storyName =
-	'Default - Staging environment warning';
-DefaultWithStagingEnvironmentWarning.args = {
+export const RefreshedSetupFlowStagingEnvironmentWarning = Template.bind( {} );
+RefreshedSetupFlowStagingEnvironmentWarning.storyName =
+	'Refreshed setup flow - Staging environment warning';
+RefreshedSetupFlowStagingEnvironmentWarning.args = {
 	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+			resettable: false,
+		} );
+
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
@@ -87,10 +92,10 @@ DefaultWithStagingEnvironmentWarning.args = {
 	},
 };
 
-export const DefaultWithDashboardSharing = Template.bind( {} );
-DefaultWithDashboardSharing.storyName =
-	'Default - with Dashboard Sharing enabled and available';
-DefaultWithDashboardSharing.args = {
+export const RefreshedSetupFlowWithDashboardSharing = Template.bind( {} );
+RefreshedSetupFlowWithDashboardSharing.storyName =
+	'Refreshed setup flow - with Dashboard Sharing enabled and available';
+RefreshedSetupFlowWithDashboardSharing.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteConnection( registry, {
 			hasConnectedAdmins: true,
@@ -114,10 +119,12 @@ DefaultWithDashboardSharing.args = {
 	},
 };
 
-export const DefaultWithDashboardSharingOneAdmin = Template.bind( {} );
-DefaultWithDashboardSharingOneAdmin.storyName =
-	'Default - with Dashboard Sharing enabled and available but there is only one admin';
-DefaultWithDashboardSharingOneAdmin.args = {
+export const RefreshedSetupFlowWithDashboardSharingOneAdmin = Template.bind(
+	{}
+);
+RefreshedSetupFlowWithDashboardSharingOneAdmin.storyName =
+	'Refreshed setup flow - with Dashboard Sharing enabled and available but there is only one admin';
+RefreshedSetupFlowWithDashboardSharingOneAdmin.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteConnection( registry, {
 			hasConnectedAdmins: true,
@@ -141,9 +148,9 @@ DefaultWithDashboardSharingOneAdmin.args = {
 	},
 };
 
-export const Connected = Template.bind( {} );
-Connected.storyName = 'Connected';
-Connected.args = {
+export const RefreshedSetupFlowConnected = Template.bind( {} );
+RefreshedSetupFlowConnected.storyName = 'Refreshed setup flow - Connected';
+RefreshedSetupFlowConnected.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteConnection( registry, {
 			hasConnectedAdmins: false,
@@ -159,9 +166,10 @@ Connected.args = {
 	},
 };
 
-export const DisconnectedURLChanged = Template.bind( {} );
-DisconnectedURLChanged.storyName = 'Disconnected - URL changed';
-DisconnectedURLChanged.args = {
+export const RefreshedSetupFlowDisconnectedURLChanged = Template.bind( {} );
+RefreshedSetupFlowDisconnectedURLChanged.storyName =
+	'Refreshed setup flow - Disconnected - URL changed';
+RefreshedSetupFlowDisconnectedURLChanged.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteConnection( registry, {
 			hasConnectedAdmins: false,
@@ -175,9 +183,10 @@ DisconnectedURLChanged.args = {
 	},
 };
 
-export const RevokedAccess = Template.bind( {} );
-RevokedAccess.storyName = 'Revoked access';
-RevokedAccess.args = {
+export const RefreshedSetupFlowRevokedAccess = Template.bind( {} );
+RefreshedSetupFlowRevokedAccess.storyName =
+	'Refreshed setup flow - Revoked access';
+RefreshedSetupFlowRevokedAccess.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry );
 		provideSiteConnection( registry, {
@@ -193,15 +202,16 @@ RevokedAccess.args = {
 		] );
 	},
 };
-RevokedAccess.parameters = {
+RefreshedSetupFlowRevokedAccess.parameters = {
 	query: {
 		googlesitekit_context: 'revoked',
 	},
 };
 
-export const ResetSuccess = Template.bind( {} );
-ResetSuccess.storyName = 'Reset success';
-ResetSuccess.args = {
+export const RefreshedSetupFlowResetSuccess = Template.bind( {} );
+RefreshedSetupFlowResetSuccess.storyName =
+	'Refreshed setup flow - Reset success';
+RefreshedSetupFlowResetSuccess.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry );
 		provideSiteConnection( registry, {
@@ -217,15 +227,35 @@ ResetSuccess.args = {
 		] );
 	},
 };
-ResetSuccess.parameters = {
+RefreshedSetupFlowResetSuccess.parameters = {
 	query: {
 		googlesitekit_context: '',
 		notification: 'reset_success',
 	},
 };
 
+export const RefreshedSetupFlowWithAnalyticsActive = Template.bind( {} );
+RefreshedSetupFlowWithAnalyticsActive.storyName =
+	'Refreshed setup flow - with Analytics active';
+RefreshedSetupFlowWithAnalyticsActive.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+			resettable: false,
+		} );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: false,
+			},
+		] );
+	},
+};
+
 export default {
-	title: 'Setup / Using Proxy With Sign-in',
+	title: 'Setup / Using Proxy With Sign-in and setupFlowRefresh enabled',
 	decorators: [
 		withQuery,
 		( Story, { args } ) => {
@@ -250,5 +280,6 @@ export default {
 	parameters: {
 		padding: 0,
 		query: { googlesitekit_context: '', notification: '' },
+		features: [ 'setupFlowRefresh' ],
 	},
 };

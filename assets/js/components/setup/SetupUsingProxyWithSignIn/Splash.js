@@ -32,8 +32,8 @@ import { getQueryArg } from '@wordpress/url';
  */
 import { useSelect } from 'googlesitekit-data';
 import { useFeature } from '@/js/hooks/useFeature';
-import LegacySplash from '@/js/components/setup/SetupUsingProxyWithSignIn/LegacySplash';
-import RefreshedSplash from '@/js/components/setup/SetupUsingProxyWithSignIn/RefreshedSplash';
+import LegacySplashContent from '@/js/components/setup/SetupUsingProxyWithSignIn/LegacySplashContent';
+import RefreshedSplashContent from '@/js/components/setup/SetupUsingProxyWithSignIn/SplashContent';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
@@ -52,9 +52,6 @@ export default function Splash( { children } ) {
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
 	);
-	const connectedProxyURL = useSelect( ( select ) =>
-		select( CORE_USER ).getConnectedProxyURL()
-	);
 	const isSecondAdmin = useSelect( ( select ) =>
 		select( CORE_SITE ).hasConnectedAdmins()
 	);
@@ -68,10 +65,17 @@ export default function Splash( { children } ) {
 	const disconnectedReason = useSelect( ( select ) =>
 		select( CORE_USER ).getDisconnectedReason()
 	);
+	const connectedProxyURL = useSelect( ( select ) =>
+		select( CORE_USER ).getConnectedProxyURL()
+	);
+	const changedURLHelpLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'url-has-changed' )
+	);
 
 	let title;
 	let description;
 	let showLearnMoreLink = false;
+	let getHelpURL = null;
 
 	if ( 'revoked' === getQueryArg( location.href, 'googlesitekit_context' ) ) {
 		title = sprintf(
@@ -91,6 +95,8 @@ export default function Splash( { children } ) {
 			'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.',
 			'google-site-kit'
 		);
+
+		getHelpURL = changedURLHelpLink;
 	} else if ( isSecondAdmin ) {
 		title = __(
 			'Connect your Google account to Site Kit',
@@ -101,16 +107,14 @@ export default function Splash( { children } ) {
 			'google-site-kit'
 		);
 		showLearnMoreLink = true;
+	} else if ( setupFlowRefreshEnabled ) {
+		title = __( 'Let’s get started!', 'google-site-kit' );
 	} else {
-		title = setupFlowRefreshEnabled
-			? __( "Let's get started!", 'google-site-kit' )
-			: __( 'Set up Site Kit', 'google-site-kit' );
-		description = ! setupFlowRefreshEnabled
-			? __(
-					'Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard',
-					'google-site-kit'
-			  )
-			: null;
+		title = __( 'Set up Site Kit', 'google-site-kit' );
+		description = __(
+			'Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard',
+			'google-site-kit'
+		);
 	}
 
 	const classname = setupFlowRefreshEnabled
@@ -118,8 +122,8 @@ export default function Splash( { children } ) {
 		: 'googlesitekit-setup__splash';
 
 	const SplashComponent = setupFlowRefreshEnabled
-		? RefreshedSplash
-		: LegacySplash;
+		? RefreshedSplashContent
+		: LegacySplashContent;
 
 	const splashProps = {
 		analyticsModuleActive,
@@ -129,6 +133,7 @@ export default function Splash( { children } ) {
 		disconnectedReason,
 		title,
 		description,
+		getHelpURL,
 		connectedProxyURL,
 		showLearnMoreLink,
 	};
