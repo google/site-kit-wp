@@ -17,28 +17,32 @@
  */
 
 .googlesitekit-progress-segments {
-	background-color: $c-white;
-	border-radius: 4px;
-	display: flex;
-	gap: 4px;
-	height: 8px;
+	background-color: $c-site-kit-sk-100;
+	display: grid;
+	height: 14px;
 	justify-content: space-between;
 	overflow: hidden;
 
 	.googlesitekit-progress-segments__segment {
-		background-color: $c-surfaces-surface-1;
-		height: 8px;
+		background-color: $c-site-kit-sk-400;
+		height: 100%;
+		position: relative;
 		width: 100%;
-	}
 
-	// Custom changing colors which loop for each 3 segments.
-	.googlesitekit-progress-segments__segment--active:nth-child(3n-2) {
-		background-color: $c-site-kit-sk-100;
-	}
-	.googlesitekit-progress-segments__segment--active:nth-child(3n-1) {
-		background-color: $c-site-kit-sk-300;
-	}
-	.googlesitekit-progress-segments__segment--active:nth-child(3n) {
-		background-color: $c-site-kit-sk-500;
+		&:last-child {
+			border-radius: 0 7px 7px 0;
+		}
+
+		// Add white dot to active segments when they are not the only child.
+		&:not(:only-child)::after {
+			background-color: $c-white;
+			border-radius: 50%;
+			content: "";
+			height: 6px;
+			position: absolute;
+			right: 5px;
+			top: 4px;
+			width: 6px;
+		}
 	}
 }
