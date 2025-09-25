@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { _x } from '@wordpress/i18n';
+import { _x, __ } from '@wordpress/i18n';
 import { Fragment, useEffect, useState } from '@wordpress/element';
 
 /**
@@ -149,7 +149,10 @@ export default function SetupMain( { finishSetup } ) {
 			</div>
 			{ showSearchConsoleSetupSuccessToast && (
 				<ToastNotice
-					title="Search Console was successfully set up"
+					title={ __(
+						'Search Console was successfully set up',
+						'google-site-kit'
+					) }
 					onDismiss={ () =>
 						setSearchConsoleSetupSuccess( undefined )
 					}
