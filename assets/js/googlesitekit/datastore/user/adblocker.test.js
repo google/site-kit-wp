@@ -27,7 +27,7 @@ import {
 
 import { detectAnyAdblocker as mockDetectAnyAdblocker } from 'just-detect-adblock';
 import { CORE_USER } from './constants';
-jest.mock( 'just-detect-adblock' );
+vi.mock( 'just-detect-adblock', () => ( { detectAnyAdblocker: vi.fn() } ) );
 
 function stubIsAdBlockerDetected( detected ) {
 	mockDetectAnyAdblocker.mockImplementation(
@@ -43,6 +43,8 @@ describe( 'core/user adblocker', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		// Default adblocker detection to false to avoid calling the real implementation.
+		mockDetectAnyAdblocker.mockResolvedValue( false );
 	} );
 
 	afterEach( () => {

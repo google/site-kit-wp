@@ -38,7 +38,7 @@ function TestComponent( { onKeyCodeInside } ) {
 describe( 'useKeyCodesInside', () => {
 	let getByText;
 	let testComponent;
-	const onKeyCodeInsideMock = jest.fn();
+	const onKeyCodeInsideMock = vi.fn();
 	beforeEach( () => {
 		onKeyCodeInsideMock.mockReset();
 		getByText = render(

@@ -32,8 +32,8 @@ import { waitFor } from '@testing-library/react';
 
 describe( 'RefocusableModalDialog', () => {
 	let registry;
-	const onClose = jest.fn();
-	const onHandleConfirm = jest.fn();
+	const onClose = vi.fn();
+	const onHandleConfirm = vi.fn();
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -42,7 +42,7 @@ describe( 'RefocusableModalDialog', () => {
 	it( 'should refocus the element assigned to refocusQuerySelector on close.', async () => {
 		let dialogActive = true;
 
-		const handleDialog = jest.fn( () => {
+		const handleDialog = vi.fn( () => {
 			dialogActive = ! dialogActive;
 		} );
 

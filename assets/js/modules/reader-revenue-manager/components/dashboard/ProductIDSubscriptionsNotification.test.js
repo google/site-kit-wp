@@ -70,7 +70,7 @@ describe( 'ProductIDSubscriptionsNotification', () => {
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	} );
 
 	it( 'should render correctly', () => {

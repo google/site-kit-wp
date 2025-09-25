@@ -139,7 +139,7 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( publications );
 
-		const onCompleteSetup = jest.fn();
+		const onCompleteSetup = vi.fn();
 
 		const { getByRole, waitForRegistry } = render(
 			<SetupForm onCompleteSetup={ onCompleteSetup } />,
@@ -175,7 +175,7 @@ describe( 'SetupForm', () => {
 				productIDs: [ 'product-1', 'product-2' ],
 			} );
 
-		const onCompleteSetup = jest.fn();
+		const onCompleteSetup = vi.fn();
 
 		const { getByText, waitForRegistry } = render(
 			<SetupForm onCompleteSetup={ onCompleteSetup } />,
