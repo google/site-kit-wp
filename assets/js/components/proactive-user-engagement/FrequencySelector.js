@@ -49,14 +49,6 @@ export default function FrequencySelector() {
 		[]
 	);
 
-	/**
-	 * Maps WP start_of_week index to localized day names.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {number} index Start of week index (0-6).
-	 * @return {string} Localized day name.
-	 */
 	function dayNameFromIndex( index ) {
 		const i =
 			Number.isInteger( index ) && index >= 0 && index <= 6 ? index : 1;
