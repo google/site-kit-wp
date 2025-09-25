@@ -69,7 +69,7 @@ const Header = forwardRef(
 			},
 		];
 
-		if ( recommendations?.length > 0 ) {
+		if ( recommendations.length > 0 ) {
 			tabs.push( {
 				name: DATA_SRC_RECOMMENDATIONS,
 				label: __( 'How to improve', 'google-site-kit' ),
@@ -105,7 +105,6 @@ const Header = forwardRef(
 						{ tabs.map( ( tab ) => (
 							<Tab
 								key={ tab.name }
-								name={ tab.name }
 								focusOnActivate={ false }
 								aria-labelledby={ tab.ariaLabelledby }
 								disabled={ isFetching }
