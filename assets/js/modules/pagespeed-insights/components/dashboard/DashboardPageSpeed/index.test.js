@@ -367,9 +367,6 @@ describe( 'DashboardPageSpeed', () => {
 		const inTheFieldTab = getByRole( 'tab', {
 			name: /In the Field/i,
 		} );
-		const howToImproveTab = getByRole( 'tab', {
-			name: /How to improve/i,
-		} );
 
 		await act( async () => {
 			fireEvent.click( runTestAgainBtn );
@@ -379,8 +376,6 @@ describe( 'DashboardPageSpeed', () => {
 				expect( inTheLabTab ).toBeDisabled();
 				// Verifies the `In the Field` tab is disabled.
 				expect( inTheFieldTab ).toBeDisabled();
-				// Verifies the `How to improve` tab is disabled.
-				expect( howToImproveTab ).toBeDisabled();
 			} );
 		} );
 	} );
@@ -424,5 +419,24 @@ describe( 'DashboardPageSpeed', () => {
 				expect( desktopTab ).toBeDisabled();
 			} );
 		} );
+	} );
+
+	it( 'does not render the `How to improve` tab when there are no recommendations', () => {
+		const { queryByRole } = render( <DashboardPageSpeed />, {
+			registry,
+		} );
+
+		const inTheLabTab = queryByRole( 'tab', {
+			name: /In the Lab/i,
+		} );
+		const inTheFieldTab = queryByRole( 'tab', {
+			name: /In the Field/i,
+		} );
+
+		expect( inTheLabTab ).toBeInTheDocument();
+		expect( inTheFieldTab ).toBeInTheDocument();
+		expect(
+			queryByRole( 'tab', { name: /How to improve/i } )
+		).not.toBeInTheDocument();
 	} );
 } );
