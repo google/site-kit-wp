@@ -77,7 +77,7 @@ import {
 	NOTIFICATION_GROUPS,
 	NOTIFICATION_AREAS,
 } from '@/js/googlesitekit/notifications/constants';
-import { AdminMenuTooltip } from './AdminMenuTooltip';
+import { AdminMenuTooltip } from './AdminScreenTooltip';
 import useFormValue from '@/js/hooks/useFormValue';
 
 export default function DashboardMainApp() {

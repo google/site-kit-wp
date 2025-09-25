@@ -38,7 +38,7 @@ import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import whenActive from '@/js/util/when-active';
-import { useShowTooltip } from '@/js/components/AdminMenuTooltip';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import { trackEvent, WEEK_IN_SECONDS } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
 import useDisplayCTAWidget from './hooks/useDisplayCTAWidget';
