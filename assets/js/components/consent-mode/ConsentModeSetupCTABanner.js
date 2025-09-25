@@ -34,7 +34,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import BannerSVGDesktop from '@/svg/graphics/banner-consent-mode-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-consent-mode-setup-cta-mobile.svg?url';
-import { useShowTooltip } from '@/js/components/AdminMenuTooltip';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import { DAY_IN_SECONDS, WEEK_IN_SECONDS } from '@/js/util';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 import useViewContext from '@/js/hooks/useViewContext';

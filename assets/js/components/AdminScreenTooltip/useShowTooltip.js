@@ -7,7 +7,7 @@ export function useShowTooltip( tooltipSettings ) {
 	const { setValue } = useDispatch( CORE_UI );
 
 	return useCallback( () => {
-		setValue( 'admin-menu-tooltip', {
+		setValue( 'admin-screen-tooltip', {
 			isTooltipVisible: true,
 			...tooltipSettings,
 		} );

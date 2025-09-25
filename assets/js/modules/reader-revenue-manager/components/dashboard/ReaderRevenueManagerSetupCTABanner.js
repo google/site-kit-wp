@@ -34,7 +34,7 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { useShowTooltip } from '@/js/components/AdminMenuTooltip';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { WEEK_IN_SECONDS } from '@/js/util';
 import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
