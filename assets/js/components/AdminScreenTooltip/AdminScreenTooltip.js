@@ -48,7 +48,7 @@ export function AdminScreenTooltip() {
 		dismissLabel,
 	} = useSelect(
 		( select ) =>
-			select( CORE_UI ).getValue( 'admin-menu-tooltip' ) || {
+			select( CORE_UI ).getValue( 'admin-screen-tooltip' ) || {
 				isTooltipVisible: false,
 			}
 	);
@@ -66,7 +66,7 @@ export function AdminScreenTooltip() {
 			);
 		}
 
-		setValue( 'admin-menu-tooltip', undefined );
+		setValue( 'admin-screen-tooltip', undefined );
 	}, [ setValue, tooltipSlug, viewContext ] );
 
 	if ( ! isTooltipVisible ) {
