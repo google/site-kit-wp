@@ -26,6 +26,8 @@ import {
 	muteFetch,
 	act,
 	waitForDefaultTimeouts,
+	fireEvent,
+	waitFor,
 } from '../../../../../tests/js/test-utils';
 import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
@@ -33,6 +35,8 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWithSignIn';
 import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
 
 jest.mock(
 	'../CompatibilityChecks',
@@ -42,6 +46,8 @@ jest.mock(
 );
 
 describe( 'SetupUsingProxyWithSignIn', () => {
+	mockLocation();
+
 	let registry;
 
 	beforeEach( () => {
@@ -105,5 +111,31 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		expect(
 			queryByText( /Connect Google Analytics as part of your setup/ )
 		).not.toBeInTheDocument();
+	} );
+
+	describe( 'Refresh setup flow', () => {
+		it( 'should allow exiting the setup', async () => {
+			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+				adminURL: 'http://example.com/wp-admin/',
+			} );
+
+			const { queryByText } = render( <SetupUsingProxyWithSignIn />, {
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			expect( queryByText( /Exit setup/ ) ).toBeInTheDocument();
+
+			fireEvent.click( queryByText( /Exit setup/ ) );
+
+			await waitFor( () => {
+				expect( global.location.assign ).toHaveBeenCalled();
+			} );
+
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				'http://example.com/wp-admin/plugins.php'
+			);
+		} );
 	} );
 } );
