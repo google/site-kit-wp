@@ -21,7 +21,7 @@ use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 class Consent_Mode_SettingsTest extends SettingsTestCase {
 
 	/**
-	 * Consent Mode Settings instance.
+	 * Consent mode Settings instance.
 	 *
 	 * @var Consent_Mode_Settings
 	 */
