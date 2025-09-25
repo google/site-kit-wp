@@ -68,7 +68,11 @@ class VersionTest extends TestCase {
 			// Using preg_match, not preg_match_all, will only return the first occurrence of
 			// the match which is important for the changelog.txt file which has multiple
 			// version numbers and we only want to check the first.
-			$version_numbers[] = $matches[1];
+			if ( isset( $matches[1] ) ) {
+				$version_numbers[] = $matches[1];
+			} else {
+				$this->fail( "No version number found in $file with pattern $pattern" );
+			}
 		}
 
 		// Verify the number of version numbers found matches the number of version occurrences.

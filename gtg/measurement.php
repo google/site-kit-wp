@@ -7,7 +7,7 @@
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  *
- * @version   72113a8
+ * @version   1bd3cfb
  *
  * NOTICE: This file has been modified from its original version in accordance with the Apache License, Version 2.0.
  */
@@ -82,7 +82,15 @@ final class Measurement
             $requestHeaders[] = "x-forwarded-countryregion: {$geo}";
         }
 
-        $response = $this->helper->sendRequest($fpsUrl, $requestHeaders);
+        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        $body = $this->helper->getRequestBody() ?? '';
+
+        $response = $this->helper->sendRequest(
+            $method,
+            $fpsUrl,
+            $requestHeaders,
+            $body
+        );
 
         if ($useMpath === self::FPS_PATH) {
             $substitutionMpath = $redirectorFile . self::TAG_ID_QUERY . $tagId;
@@ -186,7 +194,7 @@ final class Measurement
         $geo = $get['geo'] ?? '';
         $mpath = $get['mpath'] ?? '';
 
-        // When measurment path is present it might accidently pass an empty
+        // When measurement path is present it might accidentally pass an empty
         // path character depending on how the url rules are processed so as a
         // safety when path is empty we should assume that it is a request to
         // the root.
@@ -299,7 +307,7 @@ class RequestHelper
             }
 
             # PHP defaults to every header key being all capitalized.
-            # Format header key as lowercase with `-` as word seperator.
+            # Format header key as lowercase with `-` as word separator.
             # For example: cache-control
             $headerKey = strtolower(str_replace('_', '-', substr($key, 5)));
 
@@ -349,7 +357,7 @@ class RequestHelper
                 if (array_pop($parts) === null) {
                     // If we try and traverse too far back, outside of the root
                     // directory, this is likely an invalid configuration so
-                    // eturn false to have caller handle this error.
+                    // return false to have caller handle this error.
                     return false;
                 }
             } else {
@@ -365,44 +373,88 @@ class RequestHelper
     }
 
     /**
+     * Fetch the current request's request body.
+     *
+     * @return string The current request body.
+     */
+    public function getRequestBody(): string
+    {
+        return file_get_contents("php://input");
+    }
+
+    /**
      * Helper method to send requests depending on the PHP environment.
      *
+     * @param string $method
      * @param string $url
-     * @param array $headers - as a 2 dimmensional array
+     * @param array $headers
+     * @param string $body
+     *
      * @return array{
      *      body: string,
      *      headers: string[],
      *      statusCode: int,
      * }
      */
-    public function sendRequest(string $url, array $headers = []): array
-    {
+    public function sendRequest(
+        string $method,
+        string $url,
+        array $headers = [],
+        ?string $body = null
+    ): array {
         if ($this->isCurlInstalled()) {
-            $response = $this->sendCurlRequest($url, $headers);
+            $response = $this->sendCurlRequest($method, $url, $headers, $body);
         } else {
-            $response = $this->sendFileGetContents($url, $headers);
+            $response = $this->sendFileGetContents($method, $url, $headers, $body);
         }
         return $response;
     }
 
     /**
+     * Send a request using curl.
+     *
+     * @param string $method
      * @param string $url
      * @param array $headers
+     * @param string $body
+     *
      * @return array{
      *      body: string,
      *      headers: string[],
      *      statusCode: int,
      * }
      */
-    protected function sendCurlRequest(string $url, array $headers): array
-    {
+    protected function sendCurlRequest(
+        string $method,
+        string $url,
+        array $headers = [],
+        ?string $body = null
+    ): array {
         $ch = curl_init();
+
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_URL, $url);
 
+        $method = strtoupper($method);
+        switch ($method) {
+            case 'GET':
+                curl_setopt($ch, CURLOPT_HTTPGET, true);
+                break;
+            case 'POST':
+                curl_setopt($ch, CURLOPT_POST, true);
+                break;
+            default:
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+                break;
+        }
+
         if (!empty($headers)) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        }
+
+        if (!empty($body)) {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
         }
 
         $result = curl_exec($ch);
@@ -426,22 +478,39 @@ class RequestHelper
     }
 
     /**
+     * Send a request using file_get_contents.
+     *
+     * @param string $method
      * @param string $url
      * @param array $headers
+     * @param string $body
+     *
      * @return array{
      *      body: string,
      *      headers: string[],
      *      statusCode: int,
      * }
      */
-    protected function sendFileGetContents(string $url, array $headers): array
-    {
-        $httpContext = array('method' => 'GET');
+    protected function sendFileGetContents(
+        string $method,
+        string $url,
+        array $headers = [],
+        ?string $body = null
+    ): array {
+        $httpContext = [
+            'method' => strtoupper($method),
+            'follow_location' => 0,
+            'max_redirects' => 0,
+            'ignore_errors' => true,
+        ];
         if (!empty($headers)) {
             $httpContext['header'] = implode("\r\n", $headers);
         }
+        if (!empty($body)) {
+            $httpContext['content'] = $body;
+        }
 
-        $streamContext = stream_context_create(array('http' => $httpContext));
+        $streamContext = stream_context_create(['http' => $httpContext]);
 
         // Calling file_get_contents will set the variable $http_response_header
         // within the local scope.

@@ -354,6 +354,10 @@ class Google_Proxy {
 			'service_version'  => 'v2',
 		);
 
+		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			$metadata['service_version'] = 'v3';
+		}
+
 		/**
 		 * Filters the setup mode.
 		 *
