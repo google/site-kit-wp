@@ -89,6 +89,8 @@ module.exports = function ( mode, rules ) {
 			'googlesitekit-components': './js/googlesitekit-components.js',
 			'googlesitekit-metric-selection':
 				'./js/googlesitekit-metric-selection.js',
+			'googlesitekit-key-metrics-setup':
+				'./js/googlesitekit-key-metrics-setup.js',
 			// Old Modules
 			'googlesitekit-activation': './js/googlesitekit-activation.js',
 			'googlesitekit-adminbar': './js/googlesitekit-adminbar.js',

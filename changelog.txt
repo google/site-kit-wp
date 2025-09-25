@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 1.162.1 =
+
+**Fixed**
+
+* Fix the `gtg-server-requirement-status` endpoint, ensuring Google tag gateway health checks can be made successfully. See [#11527](https://github.com/google/site-kit-wp/issues/11527).
+
 = 1.162.0 =
 
 **Enhanced**
