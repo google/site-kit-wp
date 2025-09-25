@@ -87,7 +87,7 @@ export function AdminScreenTooltip() {
 					: 'googlesitekit-tour-tooltip__fixed-settings-tooltip'
 			}
 			disableOverlay={ ! isMobileTablet }
-			slug="ga4-activation-banner-admin-menu-tooltip"
+			slug="admin-screen-tooltip"
 			title={ title }
 			content={ content }
 			dismissLabel={ dismissLabel }
