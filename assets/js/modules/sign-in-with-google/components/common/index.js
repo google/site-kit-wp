@@ -24,5 +24,5 @@ export { default as AnyoneCanRegisterReadOnly } from './AnyoneCanRegisterReadOnl
 export { default as AnyoneCanRegisterDisabledNotice } from './AnyoneCanRegisterDisabledNotice';
 export { default as RegistrationDisabledNotice } from './RegistrationDisabledNotice';
 export { default as SettingsNotice } from './SettingsNotice';
-export { default as OneTapToggles } from './OneTapToggles';
+export { default as OneTapToggle } from './OneTapToggle';
 export { default as Preview } from './Preview';

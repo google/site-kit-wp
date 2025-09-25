@@ -25,7 +25,7 @@ import {
 	ButtonTextSelect,
 	ButtonThemeSelect,
 	ClientIDTextField,
-	OneTapToggles,
+	OneTapToggle,
 	Preview,
 	SettingsNotice,
 } from '@/js/modules/sign-in-with-google/components/common';
@@ -77,7 +77,7 @@ export default function SettingsForm() {
 				</Row>
 				<Row>
 					<Cell size={ 12 }>
-						<OneTapToggles />
+						<OneTapToggle />
 					</Cell>
 					<Cell size={ 12 }>
 						<AnyoneCanRegisterReadOnly />
