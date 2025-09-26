@@ -136,7 +136,7 @@ export default function SetupUsingProxyWithSignIn() {
 			<Header />
 			<div
 				className={ classnames( 'googlesitekit-setup', {
-					'googlesitekit-setup-content-wrapper':
+					'googlesitekit-setup-content--with-background':
 						setupFlowRefreshEnabled,
 				} ) }
 			>

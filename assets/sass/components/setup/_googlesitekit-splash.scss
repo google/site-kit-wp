@@ -33,8 +33,7 @@
 		}
 
 		.googlesitekit-setup__title {
-			color: $c-neutral-n-900;
-			font-size: $fs-headline-md !important;
+			color: $c-surfaces-on-surface;
 			margin-bottom: 42px;
 		}
 
@@ -57,7 +56,7 @@
 				gap: $cta-gap-phone;
 			}
 			.mdc-checkbox__description {
-				color: $c-neutral-n-500;
+				color: $c-surfaces-on-background-variant;
 				font-size: $fs-label-sm;
 			}
 
@@ -73,7 +72,7 @@
 
 		.googlesitekit-opt-in {
 			label {
-				color: $c-neutral-n-500;
+				color: $c-surfaces-on-background-variant;
 
 				span {
 					display: inline;

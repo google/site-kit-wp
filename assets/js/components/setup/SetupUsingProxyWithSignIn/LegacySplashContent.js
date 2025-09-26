@@ -1,5 +1,5 @@
 /**
- * Legacy Splash component for LegacySplash.
+ * LegacySplashContent component.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -30,14 +30,14 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from '@/js/components/Link';
 import ActivateAnalyticsNotice from '@/js/components/setup/ActivateAnalyticsNotice';
 import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
-import Typography from '@/js/components/Typography';
+import Link from '@/js/components/Link';
 import P from '@/js/components/Typography/P';
-import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
-import { Cell, Row } from '@/js/material-components';
 import SetupFlowSVG from './SetupFlowSVG';
+import Typography from '@/js/components/Typography';
+import { Cell, Row } from '@/js/material-components';
+import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
 
 export default function LegacySplashContent( {
 	analyticsModuleActive,

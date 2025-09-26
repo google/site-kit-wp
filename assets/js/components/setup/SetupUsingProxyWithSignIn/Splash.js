@@ -33,7 +33,7 @@ import { getQueryArg } from '@wordpress/url';
 import { useSelect } from 'googlesitekit-data';
 import { useFeature } from '@/js/hooks/useFeature';
 import LegacySplashContent from '@/js/components/setup/SetupUsingProxyWithSignIn/LegacySplashContent';
-import RefreshedSplashContent from '@/js/components/setup/SetupUsingProxyWithSignIn/SplashContent';
+import SplashContent from '@/js/components/setup/SetupUsingProxyWithSignIn/SplashContent';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
@@ -122,7 +122,7 @@ export default function Splash( { children } ) {
 		: 'googlesitekit-setup__splash';
 
 	const SplashComponent = setupFlowRefreshEnabled
-		? RefreshedSplashContent
+		? SplashContent
 		: LegacySplashContent;
 
 	const splashProps = {

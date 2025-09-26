@@ -19,18 +19,38 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { useDispatch } from 'googlesitekit-data';
 import { Checkbox } from 'googlesitekit-components';
+import {
+	ANALYTICS_NOTICE_FORM_NAME,
+	ANALYTICS_NOTICE_CHECKBOX,
+} from './constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import AnalyticsSetupSidekickSVG from '@/svg/graphics/analytics-setup-sidekick.svg';
-import useActivateAnalyticsOptIn from '@/js/hooks/useActivateAnalyticsOptIn';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function ActivateAnalyticsNotice() {
-	const { checked, handleOnChange } = useActivateAnalyticsOptIn();
+	const { setValues } = useDispatch( CORE_FORMS );
+
+	const checked = useFormValue(
+		ANALYTICS_NOTICE_FORM_NAME,
+		ANALYTICS_NOTICE_CHECKBOX
+	);
+
+	const handleOnChange = useCallback(
+		( event ) => {
+			setValues( ANALYTICS_NOTICE_FORM_NAME, {
+				[ ANALYTICS_NOTICE_CHECKBOX ]: event.target.checked,
+			} );
+		},
+		[ setValues ]
+	);
 
 	return (
 		<div className="googlesitekit-setup-analytics-notice">

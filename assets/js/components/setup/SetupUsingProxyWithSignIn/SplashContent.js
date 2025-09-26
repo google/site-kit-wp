@@ -1,5 +1,5 @@
 /**
- * Refreshed Splash component.
+ * SplashContent component.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -24,23 +24,29 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
-import Typography from '@/js/components/Typography';
-import P from '@/js/components/Typography/P';
 import Checkbox from '@/js/googlesitekit/components-gm2/Checkbox';
-import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
+import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
 import Link from '@/js/components/Link';
-import useActivateAnalyticsOptIn from '@/js/hooks/useActivateAnalyticsOptIn';
-import { Cell, Row } from '@/js/material-components';
-import SplashGraphic from '@/svg/graphics/splash-graphic.svg';
+import P from '@/js/components/Typography/P';
 import SetupFlowSVG from './SetupFlowSVG';
-import { useBreakpoint, BREAKPOINT_XLARGE } from '@/js/hooks/useBreakpoint';
+import SplashGraphic from '@/svg/graphics/splash-graphic.svg';
+import Typography from '@/js/components/Typography';
+import useFormValue from '@/js/hooks/useFormValue';
+import {
+	ANALYTICS_NOTICE_CHECKBOX,
+	ANALYTICS_NOTICE_FORM_NAME,
+} from '@/js/components/setup/constants';
+import { BREAKPOINT_XLARGE, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { Cell, Row } from '@/js/material-components';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
+import { useDispatch } from '@/js/googlesitekit-data';
 
 export default function SplashContent( {
 	analyticsModuleActive,
@@ -56,7 +62,21 @@ export default function SplashContent( {
 	title,
 } ) {
 	const breakpoint = useBreakpoint();
-	const { checked, handleOnChange } = useActivateAnalyticsOptIn();
+	const { setValues } = useDispatch( CORE_FORMS );
+
+	const checked = useFormValue(
+		ANALYTICS_NOTICE_FORM_NAME,
+		ANALYTICS_NOTICE_CHECKBOX
+	);
+
+	const handleOnChange = useCallback(
+		( event ) => {
+			setValues( ANALYTICS_NOTICE_FORM_NAME, {
+				[ ANALYTICS_NOTICE_CHECKBOX ]: event.target.checked,
+			} );
+		},
+		[ setValues ]
+	);
 
 	const cellDetailsProp = analyticsModuleActive
 		? { smSize: 4, mdSize: 6, lgSize: 6 }
@@ -90,7 +110,7 @@ export default function SplashContent( {
 				<Typography
 					as="h1"
 					className="googlesitekit-setup__title"
-					size="large"
+					size="medium"
 					type="headline"
 				>
 					{ title }

@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import MediaErrorHandler from '@/js/components/MediaErrorHandler';
 
-export default function SetupFlowSVG( { name, ...props } ) {
+export default function SetupFlowSVG( { name, width, height } ) {
 	const LazySVGComponent = useMemo(
 		() => lazy( () => import( `../../../../svg/graphics/${ name }.svg` ) ),
 		[ name ]
@@ -37,8 +37,6 @@ export default function SetupFlowSVG( { name, ...props } ) {
 	if ( ! name ) {
 		return null;
 	}
-
-	const { width = '400px', height = '500px' } = props;
 
 	return (
 		<Suspense
@@ -50,7 +48,11 @@ export default function SetupFlowSVG( { name, ...props } ) {
 					'google-site-kit'
 				) }
 			>
-				<LazySVGComponent { ...props } />
+				<LazySVGComponent
+					name={ name }
+					width={ width }
+					height={ height }
+				/>
 			</MediaErrorHandler>
 		</Suspense>
 	);

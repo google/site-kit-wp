@@ -33,7 +33,6 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWithSignIn';
 import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { enabledFeatures } from '@/js/features';
 
 jest.mock(
 	'../CompatibilityChecks',
@@ -91,7 +90,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				)
 			);
 
-		const { waitForRegistry, queryByText } = render(
+		const { container, waitForRegistry, queryByText } = render(
 			<SetupUsingProxyWithSignIn />,
 			{
 				registry,
@@ -101,17 +100,30 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 
 		await waitForRegistry();
 
+		expect( container ).toMatchSnapshot();
+
 		expect(
 			queryByText( /Connect Google Analytics as part of your setup/ )
 		).not.toBeInTheDocument();
 	} );
 
-	describe( 'Refresh setup flow', () => {
-		beforeAll( () => {
-			enabledFeatures.add( 'setupFlowRefresh' );
+	describe( 'with the `setupFlowRefresh` feature flag enabled', () => {
+		it( 'should render the setup page with the refreshed layout', async () => {
+			const { container, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( container ).toMatchSnapshot();
 		} );
 
-		it( 'should render the setup page without the Activate Analytics notice when the Analytics module is inactive', async () => {
+		it( 'should render the setup page with Activate Analytics notice when the Analytics module is inactive', async () => {
 			registry.dispatch( CORE_MODULES ).receiveGetModules(
 				coreModulesFixture.map( ( module ) => {
 					if ( MODULE_SLUG_ANALYTICS_4 === module.slug ) {
@@ -124,24 +136,27 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				} )
 			);
 
-			const { waitForRegistry, queryByText } = render(
+			const { container, queryByText, waitForRegistry } = render(
 				<SetupUsingProxyWithSignIn />,
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
 				}
 			);
 
 			await waitForRegistry();
 
+			expect( container ).toMatchSnapshot();
+
 			expect(
 				queryByText(
 					/Get visitor insights by connecting Google Analytics as part of setup/
 				)
-			).not.toBeInTheDocument();
+			).toBeInTheDocument();
 		} );
 
-		it( 'should not render the activate analytics checkbox when the Analytics module is already active', async () => {
+		it( 'should not render the Analytics checkbox when the Analytics module is already active', async () => {
 			registry.dispatch( CORE_MODULES ).receiveGetModules(
 				coreModulesFixture.map( ( module ) => {
 					if ( MODULE_SLUG_ANALYTICS_4 === module.slug ) {
@@ -154,15 +169,18 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				} )
 			);
 
-			const { waitForRegistry, queryByText } = render(
+			const { container, queryByText, waitForRegistry } = render(
 				<SetupUsingProxyWithSignIn />,
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
 				}
 			);
 
 			await waitForRegistry();
+
+			expect( container ).toMatchSnapshot();
 
 			expect(
 				queryByText(
