@@ -107,7 +107,7 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 			<SetupCTA
 				notificationID={ id }
 				title={ __(
-					'Enable Consent Mode to preserve tracking for your Ads campaigns',
+					'Enable consent mode to preserve tracking for your Ads campaigns',
 					'google-site-kit'
 				) }
 				description={ __(

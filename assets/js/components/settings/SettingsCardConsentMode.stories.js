@@ -150,7 +150,7 @@ Loading.decorators = [
 Loading.scenario = {};
 
 export default {
-	title: 'Consent Mode/SettingsCardConsentMode',
+	title: 'Consent mode/SettingsCardConsentMode',
 	decorators: [
 		( Story, { args } ) => {
 			function setupRegistry( registry ) {
