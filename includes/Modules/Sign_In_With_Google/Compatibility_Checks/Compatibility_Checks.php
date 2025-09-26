@@ -27,15 +27,6 @@ class Compatibility_Checks {
 	private $checks = array();
 
 	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function __construct() {
-		$this->register_checks();
-	}
-
-	/**
 	 * Adds a compatibility check to the collection.
 	 *
 	 * @since n.e.x.t
@@ -51,7 +42,7 @@ class Compatibility_Checks {
 	 *
 	 * @since n.e.x.t
 	 */
-	private function register_checks() {
+	public function register_checks() {
 		$this->add_check( new WP_Login_Accessible_Check() );
 		$this->add_check( new WP_COM_Check() );
 		$this->add_check( new Conflicting_Plugins_Check() );
