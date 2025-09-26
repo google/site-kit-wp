@@ -86,6 +86,8 @@ class Sign_In_With_Google_Block {
 			return '';
 		}
 
-		return '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>';
+		ob_start();
+		do_action( 'googlesitekit_render_sign_in_with_google_button' );
+		return ob_get_clean();
 	}
 }

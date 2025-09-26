@@ -152,43 +152,43 @@ class Web_Tag extends Module_Web_Tag {
 
 		?>
 ( () => {
-	async function handleCredentialResponse( response ) {
-		<?php if ( $is_woocommerce && ! $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		response.integration = 'woocommerce';
+async function handleCredentialResponse( response ) {
+<?php if ( $is_woocommerce && ! $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+response.integration = 'woocommerce';
 		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		try {
-			const res = await fetch( '<?php echo esc_js( $login_uri ); ?>', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-				body: new URLSearchParams( response )
-			} );
+try {
+const res = await fetch( '<?php echo esc_js( $login_uri ); ?>', {
+method: 'POST',
+headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+body: new URLSearchParams( response )
+} );
 
-			<?php if ( empty( $this->redirect_to ) && ! $is_login_page && $should_show_one_tap_prompt ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-				location.reload();
-			<?php else : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-				if ( res.ok && res.redirected ) {
-					location.assign( res.url );
-				}
-			<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		} catch( error ) {
-			console.error( error );
-		}
-	}
+<?php if ( empty( $this->redirect_to ) && ! $is_login_page && $should_show_one_tap_prompt ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+location.reload();
+		<?php else : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+if ( res.ok && res.redirected ) {
+location.assign( res.url );
+}
+		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+} catch( error ) {
+console.error( error );
+}
+}
 
-	google.accounts.id.initialize( {
-		client_id: '<?php echo esc_js( $this->settings['clientID'] ); ?>',
-		callback: handleCredentialResponse,
-		library_name: 'Site-Kit'
-	} );
+google.accounts.id.initialize( {
+client_id: '<?php echo esc_js( $this->settings['clientID'] ); ?>',
+callback: handleCredentialResponse,
+library_name: 'Site-Kit'
+} );
 
-	<?php if ( $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		const buttonDivToAddToLoginForm = document.createElement( 'div' );
-		buttonDivToAddToLoginForm.classList.add( 'googlesitekit-sign-in-with-google__frontend-output-button' );
+<?php if ( $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+const buttonDivToAddToLoginForm = document.createElement( 'div' );
+buttonDivToAddToLoginForm.classList.add( 'googlesitekit-sign-in-with-google__frontend-output-button' );
 
-		document.getElementById( 'login' ).insertBefore( buttonDivToAddToLoginForm, document.getElementById( 'loginform' ) );
-	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+document.getElementById( 'login' ).insertBefore( buttonDivToAddToLoginForm, document.getElementById( 'loginform' ) );
+		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-	<?php if ( ! is_user_logged_in() || $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+<?php if ( ! is_user_logged_in() || $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 			<?php
 			/**
 			 * Render SiwG buttons for all `<div>` elements with the "magic
@@ -197,20 +197,41 @@ class Web_Tag extends Module_Web_Tag {
 			 * Mainly used by Gutenberg blocks.
 			 */
 			?>
-		document.querySelectorAll( '.googlesitekit-sign-in-with-google__frontend-output-button' ).forEach( ( siwgButtonDiv ) => {
-			google.accounts.id.renderButton( siwgButtonDiv, <?php echo wp_json_encode( $btn_args ); ?> );
-		});
-	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+const defaultButtonOptions = <?php echo wp_json_encode( $btn_args ); ?>;
+document.querySelectorAll( '.googlesitekit-sign-in-with-google__frontend-output-button' ).forEach( ( siwgButtonDiv ) =>
+{
+const buttonOptions = Object.assign( {}, defaultButtonOptions );
+const textAttribute = siwgButtonDiv.getAttribute( 'data-googlesitekit-siwg-text' );
+const themeAttribute = siwgButtonDiv.getAttribute( 'data-googlesitekit-siwg-theme' );
+const shapeAttribute = siwgButtonDiv.getAttribute( 'data-googlesitekit-siwg-shape' );
 
-	<?php if ( $should_show_one_tap_prompt ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		google.accounts.id.prompt();
-	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+if ( textAttribute ) {
+buttonOptions.text = textAttribute;
+}
 
-	<?php if ( ! empty( $this->redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		const expires = new Date();
-		expires.setTime( expires.getTime() + <?php echo esc_js( $cookie_expire_time ); ?> );
-		document.cookie = "<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $this->redirect_to ); ?>;expires=" + expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
-	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+if ( themeAttribute ) {
+buttonOptions.theme = themeAttribute;
+}
+
+if ( shapeAttribute ) {
+buttonOptions.shape = shapeAttribute;
+}
+
+google.accounts.id.renderButton( siwgButtonDiv, buttonOptions );
+});
+				<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+
+<?php if ( $should_show_one_tap_prompt ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+google.accounts.id.prompt();
+				<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+
+<?php if ( ! empty( $this->redirect_to ) ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+const expires = new Date();
+expires.setTime( expires.getTime() + <?php echo esc_js( $cookie_expire_time ); ?> );
+document.cookie =
+"<?php echo esc_js( Authenticator::COOKIE_REDIRECT_TO ); ?>=<?php echo esc_js( $this->redirect_to ); ?>;expires=" +
+expires.toUTCString() + ";path=<?php echo esc_js( Authenticator::get_cookie_path() ); ?>";
+				<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 } )();
 		<?php
 

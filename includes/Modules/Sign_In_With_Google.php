@@ -139,6 +139,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 
 		add_filter( 'wp_login_errors', array( $this, 'handle_login_errors' ) );
 
+		add_action( 'googlesitekit_render_sign_in_with_google_button', array( $this, 'render_sign_in_with_google_button' ), 10, 1 );
+
 		add_action(
 			'login_form_' . self::ACTION_AUTH,
 			function () {
@@ -384,9 +386,12 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			return;
 		}
 
-		?>
-<div class="googlesitekit-sign-in-with-google__frontend-output-button woocommerce-form-row form-row"></div>
-		<?php
+		do_action(
+			'googlesitekit_render_sign_in_with_google_button',
+			array(
+				'class' => 'woocommerce-form-row form-row',
+			)
+		);
 	}
 
 	/**
@@ -421,9 +426,58 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 */
 	private function render_button_in_wp_login_form( $content ) {
 		if ( $this->can_render_signinwithgoogle() ) {
-			$content .= '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>';
+			ob_start();
+			do_action( 'googlesitekit_render_sign_in_with_google_button' );
+			$content .= ob_get_clean();
 		}
 		return $content;
+	}
+
+		/**
+		 * Renders the Sign in with Google button markup.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param array $args Optional arguments to customise button attributes.
+		 */
+	public function render_sign_in_with_google_button( $args = array() ) {
+		if ( ! is_array( $args ) ) {
+			$args = array();
+		}
+
+		$default_classes = array( 'googlesitekit-sign-in-with-google__frontend-output-button' );
+		$passed_classes  = array();
+		if ( ! empty( $args['class'] ) ) {
+			$passed_classes = is_array( $args['class'] ) ? $args['class'] : preg_split( '/\s+/', (string) $args['class'] );
+		}
+
+		$classes = array_map( 'sanitize_html_class', array_merge( $default_classes, $passed_classes ) );
+		$classes = array_values( array_unique( array_filter( $classes ) ) );
+
+		$attributes = array(
+			'class' => implode( ' ', $classes ),
+		);
+
+		$data_attributes_map = array(
+			'text'  => 'data-googlesitekit-siwg-text',
+			'theme' => 'data-googlesitekit-siwg-theme',
+			'shape' => 'data-googlesitekit-siwg-shape',
+		);
+
+		foreach ( $data_attributes_map as $key => $attribute_name ) {
+			if ( empty( $args[ $key ] ) || ! is_scalar( $args[ $key ] ) ) {
+				continue;
+			}
+
+			$attributes[ $attribute_name ] = strtolower( (string) $args[ $key ] );
+		}
+
+		$attribute_strings = array();
+		foreach ( $attributes as $key => $value ) {
+			$attribute_strings[] = sprintf( '%s="%s"', $key, esc_attr( $value ) );
+		}
+
+		echo '<div ' . implode( ' ', $attribute_strings ) . '></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
