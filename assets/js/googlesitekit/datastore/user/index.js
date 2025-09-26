@@ -41,6 +41,7 @@ import userInfo from './user-info';
 import userInputSettings from './user-input-settings';
 import conversionReportingSettings from './conversion-reporting-settings';
 import proactiveUserEngagementSettings from './proactive-user-engagement-settings';
+import initialSetupSettings from './initial-setup-settings';
 
 const store = combineStores(
 	commonStore,
@@ -63,7 +64,8 @@ const store = combineStores(
 	userInfo,
 	userInputSettings,
 	conversionReportingSettings,
-	proactiveUserEngagementSettings
+	proactiveUserEngagementSettings,
+	initialSetupSettings
 );
 
 export const {

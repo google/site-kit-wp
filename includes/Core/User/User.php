@@ -47,10 +47,19 @@ class User {
 	private $proactive_user_engagement;
 
 	/**
+	 * Initial_Setup instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Initial_Setup
+	 */
+	private $initial_setup;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.134.0
 	 * @since 1.162.0 Added Proactive User Engagement.
+	 * @since n.e.x.t Added Initial Setup.
 	 *
 	 * @param User_Options $user_options User_Options instance.
 	 */
@@ -61,6 +70,10 @@ class User {
 		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) ) {
 			$this->proactive_user_engagement = new Proactive_User_Engagement( $user_options );
 		}
+
+		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			$this->initial_setup = new Initial_Setup( $user_options );
+		}
 	}
 
 	/**
@@ -68,6 +81,7 @@ class User {
 	 *
 	 * @since 1.134.0
 	 * @since 1.162.0 Added Proactive User Engagement.
+	 * @since n.e.x.t Added Initial Setup.
 	 */
 	public function register() {
 		$this->audience_segmentation->register();
@@ -75,6 +89,10 @@ class User {
 
 		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) && $this->proactive_user_engagement ) {
 			$this->proactive_user_engagement->register();
+		}
+
+		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			$this->initial_setup->register();
 		}
 	}
 }
