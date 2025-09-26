@@ -78,7 +78,7 @@ export default function SettingsCardConsentMode() {
 
 	useEffect( () => {
 		if ( inView && ! hasBeenInView ) {
-			// Track an event when the user sees the Consent Mode settings.
+			// Track an event when the user sees the consent mode settings.
 			trackEvent( `${ viewContext }_CoMo`, 'view_requirements' );
 
 			if ( isAdsConnected && isConsentModeEnabled === false ) {
@@ -98,7 +98,7 @@ export default function SettingsCardConsentMode() {
 
 	return (
 		<Layout
-			title={ __( 'Consent Mode', 'google-site-kit' ) }
+			title={ __( 'Consent mode', 'google-site-kit' ) }
 			badge={
 				isAdsConnected ? (
 					<Badge
@@ -133,7 +133,7 @@ export default function SettingsCardConsentMode() {
 										<Notice
 											type={ Notice.TYPES.INFO }
 											description={ __(
-												'If you have Google Ads campaigns for this site, it’s highly recommended to enable Consent mode - otherwise, you won’t be able to collect any metrics on the effectiveness of your campaigns in regions like the European Economic Area.',
+												'If you have Google Ads campaigns for this site, it’s highly recommended to enable consent mode - otherwise, you won’t be able to collect any metrics on the effectiveness of your campaigns in regions like the European Economic Area.',
 												'google-site-kit'
 											) }
 										/>
