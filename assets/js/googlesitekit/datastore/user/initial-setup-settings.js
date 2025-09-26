@@ -116,7 +116,7 @@ const baseActions = {
 	/**
 	 * Sets whether analytics setup is complete.
 	 *
-	 * @since 1.124.0
+	 * @since n.e.x.t
 	 *
 	 * @param {boolean} isAnalyticsSetupComplete Whether or not the analytics setup is complete.
 	 * @return {Object} Redux-style action.
@@ -169,24 +169,24 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Gets the initial setup settings.
+	 * Returns the initial setup settings.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Object|undefined)} Initial setup settings; `undefined` if not loaded.
+	 * @return {(Object|undefined)} Initial setup settings.
 	 */
 	getInitialSetupSettings( state ) {
 		return state.initialSetupSettings;
 	},
 
 	/**
-	 * Gets whether analytics setup is complete from the initial setup settings.
+	 * Returns whether analytics setup is complete from the initial setup settings.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} Whether the analytics setup is complete or not; `undefined` if not loaded.
+	 * @return {(boolean|null|undefined)} Whether the analytics setup is complete or not; `undefined` if not loaded or `null` if not set yet.
 	 */
 	isAnalyticsSetupComplete: createRegistrySelector( ( select ) => () => {
 		const initialSetupSettings =
