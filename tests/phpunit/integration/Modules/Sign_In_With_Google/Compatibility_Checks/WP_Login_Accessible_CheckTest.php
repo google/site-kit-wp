@@ -85,36 +85,43 @@ class WP_Login_Accessible_CheckTest extends TestCase {
 		$this->assertTrue( $result, 'Expected true when login page returns 404' );
 	}
 
-	public function test_run_returns_false_when_login_returns_other_status_codes() {
-		$status_codes = array( 301, 302, 403, 500, 503 );
+	public function status_code_provider() {
+		return array(
+			'301' => array( 301 ),
+			'302' => array( 302 ),
+			'403' => array( 403 ),
+			'500' => array( 500 ),
+			'503' => array( 503 ),
+		);
+	}
 
-		foreach ( $status_codes as $status_code ) {
-			// Mock wp_remote_head to return various status codes
-			add_filter(
-				'pre_http_request',
-				function ( $preempt, $parsed_args, $url ) use ( $status_code ) {
-					if ( strpos( $url, 'wp-login.php' ) !== false ) {
-						return array(
-							'headers'  => array(),
-							'body'     => '',
-							'response' => array(
-								'code'    => $status_code,
-								'message' => 'Status Message',
-							),
-						);
-					}
-					return $preempt;
-				},
-				10,
-				3
-			);
+	/**
+	 * @dataProvider status_code_provider
+	 */
+	public function test_run_returns_false_when_login_returns_other_status_codes( $status_code ) {
+		// Mock wp_remote_head to return various status codes
+		add_filter(
+			'pre_http_request',
+			function ( $preempt, $parsed_args, $url ) use ( $status_code ) {
+				if ( strpos( $url, 'wp-login.php' ) !== false ) {
+					return array(
+						'headers'  => array(),
+						'body'     => '',
+						'response' => array(
+							'code'    => $status_code,
+							'message' => 'Status Message',
+						),
+					);
+				}
+				return $preempt;
+			},
+			10,
+			3
+		);
 
-			$result = $this->check->run();
+		$result = $this->check->run();
 
-			$this->assertFalse( $result, "Status code {$status_code} should return false" );
-
-			remove_all_filters( 'pre_http_request' );
-		}
+		$this->assertFalse( $result, "Status code {$status_code} should return false" );
 	}
 
 	public function test_run_returns_false_on_wp_error() {
