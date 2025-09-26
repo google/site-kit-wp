@@ -115,7 +115,7 @@ class REST_Initial_Setup_Controller {
 										'minProperties' => 1,
 										'additionalProperties' => false,
 										'properties'    => array(
-											'isAnalyticsSetupComplete'                   => array(
+											'isAnalyticsSetupComplete' => array(
 												'type' => 'boolean',
 											),
 										),
