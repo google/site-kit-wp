@@ -34,6 +34,7 @@ import { addQueryArgs } from '@wordpress/url';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
@@ -42,6 +43,7 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 import { DAY_IN_SECONDS } from '@/js/util';
+import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
 import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
 import BannerSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta.svg?url';
 import BannerMobileSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta-mobile.svg?url';
@@ -82,6 +84,7 @@ export default function SetupBanner( props ) {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
+	const { pinNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const handleSubmitChanges = useCallback( async () => {
 		const scopes = [];
@@ -95,6 +98,8 @@ export default function SetupBanner( props ) {
 		// this particular case has some special handling to improve UX.
 		if ( scopes.length > 0 ) {
 			setValues( FORM_SETUP, { autoSubmit: true } );
+
+			await pinNotification( id, NOTIFICATION_GROUPS.SETUP_CTAS );
 
 			setPermissionScopeError( {
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
@@ -115,7 +120,9 @@ export default function SetupBanner( props ) {
 		await onSubmit();
 	}, [
 		hasEditScope,
+		id,
 		onSubmit,
+		pinNotification,
 		redirectURL,
 		setPermissionScopeError,
 		setValues,
