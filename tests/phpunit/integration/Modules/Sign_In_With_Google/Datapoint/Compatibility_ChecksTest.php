@@ -59,6 +59,19 @@ class Compatibility_ChecksTest extends TestCase {
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
 
+		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
+		add_filter(
+			'map_meta_cap',
+			function ( $caps, $cap ) {
+				if ( Permissions::MANAGE_OPTIONS === $cap ) {
+					return array( 'manage_options' );
+				}
+				return $caps;
+			},
+			99,
+			2
+		);
+
 		$data_request = new Data_Request( 'GET', 'modules', 'sign-in-with-google', 'compatibility-checks' );
 
 		$result = $this->datapoint->create_request( $data_request );
