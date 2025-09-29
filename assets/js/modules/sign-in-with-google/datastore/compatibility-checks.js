@@ -19,9 +19,14 @@
 /**
  * Internal dependencies
  */
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { combineStores, createReducer } from 'googlesitekit-data';
 import { get } from 'googlesitekit-api';
+import {
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
 
 const fetchGetCompatibilityChecksStore = createFetchStore( {
 	baseName: 'getCompatibilityChecks',
@@ -47,14 +52,13 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getCompatibilityChecks() {
-		const { select } = yield {
-			type: 'GET_REGISTRY',
-		};
+		const registry = yield commonActions.getRegistry();
 
-		if (
-			select( 'modules/sign-in-with-google' ).getCompatibilityChecks() !==
-			undefined
-		) {
+		const checks = registry
+			.select( MODULES_SIGN_IN_WITH_GOOGLE )
+			.getCompatibilityChecks();
+
+		if ( checks ) {
 			return;
 		}
 
