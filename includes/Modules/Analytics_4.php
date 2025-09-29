@@ -1313,12 +1313,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				return $this->get_service( 'analyticsadmin' )->properties->get( self::normalize_property_id( $data['propertyID'] ) );
 			case 'GET:has-property-access':
 				if ( ! isset( $data['propertyID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
-						array( 'status' => 400 )
-					);
+					throw new Missing_Required_Param_Exception( 'propertyID' );
 				}
 
 				// A simple way to check for property access is to attempt a minimal report request.
