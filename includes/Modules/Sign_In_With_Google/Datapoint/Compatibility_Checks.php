@@ -63,7 +63,7 @@ class Compatibility_Checks extends Datapoint implements Executable_Datapoint {
 
 		return function () {
 			return array(
-				'checks'    => $this->checks->run(),
+				'checks'    => $this->checks->run_checks(),
 				'timestamp' => time(),
 			);
 		};

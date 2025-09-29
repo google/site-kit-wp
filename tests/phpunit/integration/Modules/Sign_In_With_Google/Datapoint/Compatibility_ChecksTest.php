@@ -31,7 +31,7 @@ class Compatibility_ChecksTest extends TestCase {
 		parent::set_up();
 
 		$this->mock_checks = $this->getMockBuilder( Checks::class )
-			->setMethods( array( 'run' ) )
+			->setMethods( array( 'run_checks' ) )
 			->getMock();
 
 		$this->datapoint = new Compatibility_Checks(
@@ -76,7 +76,7 @@ class Compatibility_ChecksTest extends TestCase {
 		);
 
 		$this->mock_checks->expects( $this->once() )
-			->method( 'run' )
+			->method( 'run_checks' )
 			->willReturn( $mock_checks_result );
 
 		$data_request = new Data_Request( 'GET', 'modules', 'sign-in-with-google', 'compatibility-checks' );
@@ -97,7 +97,7 @@ class Compatibility_ChecksTest extends TestCase {
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
 
-		$this->mock_checks->method( 'run' )->willReturn( array() );
+		$this->mock_checks->method( 'run_checks' )->willReturn( array() );
 
 		$data_request = new Data_Request( 'GET', 'modules', 'sign-in-with-google', 'compatibility-checks' );
 
