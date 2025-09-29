@@ -2314,16 +2314,33 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 *
 	 * @since 1.70.0
 	 *
-	 * @return boolean|WP_Error True if the user has access, false if not, or WP_Error on any other error.
+	 * @return boolean|WP_Error
 	 */
 	public function check_service_entity_access() {
-		if ( ! $this->is_connected() ) {
-			return false;
-		}
-
 		$settings = $this->get_settings()->get();
 
-		$request = $this->get_data( 'has-property-access', array( 'propertyID' => $settings['propertyID'] ) );
+		if ( empty( $settings['propertyID'] ) ) {
+			return new WP_Error(
+				'missing_required_setting',
+				__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
+				array( 'status' => 500 )
+			);
+		}
+
+		return $this->has_property_access( $settings['propertyID'] );
+	}
+
+	/**
+	 * Checks if the current user has access to the given property ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $property_id Property ID to check access for.
+	 * @return boolean|WP_Error True if the user has access, false if not, or WP_Error on any other error.
+	 */
+	public function has_property_access( $property_id ) {
+		$request = $this->get_data( 'has-property-access', array( 'propertyID' => $property_id ) );
+
 		if ( is_wp_error( $request ) ) {
 			// A 403 error implies that the user does not have access to the service entity.
 			if ( $request->get_error_code() === 403 ) {
