@@ -777,16 +777,10 @@ const baseResolvers = {
 		}
 	},
 	*getProperty( propertyID ) {
-		const { select, resolveSelect } = yield commonActions.getRegistry();
-		const { hasModuleAccess } = resolveSelect( CORE_MODULES );
-		const hasAccess = yield commonActions.await(
-			hasModuleAccess( MODULE_SLUG_ANALYTICS_4 )
-		);
-		if ( ! hasAccess ) {
-			return;
-		}
-		const property =
-			select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+		const registry = yield commonActions.getRegistry();
+		const property = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getProperty( propertyID );
 		if ( property === undefined ) {
 			yield fetchGetPropertyStore.actions.fetchGetProperty( propertyID );
 		}
