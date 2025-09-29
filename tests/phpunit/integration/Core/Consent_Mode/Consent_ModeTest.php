@@ -71,7 +71,7 @@ class Consent_ModeTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_head' );
 
-		$this->assertStringContainsString( 'Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', $output );
+		$this->assertStringContainsString( 'Google tag (gtag.js) consent mode dataLayer added by Site Kit', $output );
 	}
 
 	public function test_does_not_render_consent_mode_snippet_when_disabled() {
@@ -81,7 +81,7 @@ class Consent_ModeTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_head' );
 
-		$this->assertStringNotContainsString( 'Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', $output );
+		$this->assertStringNotContainsString( 'Google tag (gtag.js) consent mode dataLayer added by Site Kit', $output );
 	}
 
 	public function test_register__googlesitekit_consent_mode_status() {
