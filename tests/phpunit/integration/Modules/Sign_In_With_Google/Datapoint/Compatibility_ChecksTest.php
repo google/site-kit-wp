@@ -66,7 +66,7 @@ class Compatibility_ChecksTest extends TestCase {
 		$this->assertIsCallable( $result, 'Result should be callable for admin user' );
 	}
 
-	public function test_create_request_executes_checks_without_long_running() {
+	public function test_create_request_executes_checks() {
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
 
@@ -77,7 +77,6 @@ class Compatibility_ChecksTest extends TestCase {
 
 		$this->mock_checks->expects( $this->once() )
 			->method( 'run' )
-			->with( false )
 			->willReturn( $mock_checks_result );
 
 		$data_request = new Data_Request( 'GET', 'modules', 'sign-in-with-google', 'compatibility-checks' );
@@ -87,59 +86,12 @@ class Compatibility_ChecksTest extends TestCase {
 
 		$this->assertIsArray( $result, 'Result should be an array' );
 		$this->assertArrayHasKey( 'checks', $result, 'Result should have checks key' );
-		$this->assertArrayHasKey( 'usedLongRunning', $result, 'Result should have usedLongRunning key' );
 		$this->assertArrayHasKey( 'timestamp', $result, 'Result should have timestamp key' );
 
 		$this->assertEquals( $mock_checks_result, $result['checks'], 'Checks result should match mock result' );
-		$this->assertFalse( $result['usedLongRunning'], 'Should not use long running checks' );
 		$this->assertIsInt( $result['timestamp'], 'Timestamp should be an integer' );
 	}
 
-	public function test_create_request_executes_checks_with_long_running() {
-		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin_id );
-
-		$mock_checks_result = array(
-			'wp_login_inaccessible' => true,
-		);
-
-		$this->mock_checks->expects( $this->once() )
-			->method( 'run' )
-			->with( true )
-			->willReturn( $mock_checks_result );
-
-		$data_request = new Data_Request(
-			'GET',
-			'modules',
-			'sign-in-with-google',
-			'compatibility-checks',
-			array( 'useLongRunning' => true )
-		);
-
-		$request = $this->datapoint->create_request( $data_request );
-		$result  = $request();
-
-		$this->assertIsArray( $result, 'Result should be an array' );
-		$this->assertEquals( $mock_checks_result, $result['checks'], 'Checks result should match mock result' );
-		$this->assertTrue( $result['usedLongRunning'], 'Should use long running checks' );
-	}
-
-	public function test_create_request_without_use_long_running_defaults_to_false() {
-		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin_id );
-
-		$this->mock_checks->expects( $this->once() )
-			->method( 'run' )
-			->with( false )
-			->willReturn( array() );
-
-		$data_request = new Data_Request( 'GET', 'modules', 'sign-in-with-google', 'compatibility-checks' );
-
-		$request = $this->datapoint->create_request( $data_request );
-		$result  = $request();
-
-		$this->assertFalse( $result['usedLongRunning'], 'Should default to not using long running checks' );
-	}
 
 	public function test_create_request_timestamp_is_current_time() {
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
@@ -160,9 +112,8 @@ class Compatibility_ChecksTest extends TestCase {
 
 	public function test_parse_response_returns_response_unchanged() {
 		$test_response = array(
-			'checks'          => array( 'test_check' => true ),
-			'usedLongRunning' => false,
-			'timestamp'       => 1234567890,
+			'checks'    => array( 'test_check' => true ),
+			'timestamp' => 1234567890,
 		);
 
 		$data_request = new Data_Request( 'GET', 'modules', 'sign-in-with-google', 'compatibility-checks' );

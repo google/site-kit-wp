@@ -42,10 +42,9 @@ class Compatibility_Checks {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param bool $use_long_running Whether to use long running tasks or not.
 	 * @return array Results of the compatibility checks.
 	 */
-	public function run_checks( $use_long_running = false ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
+	public function run_checks() {
 		$results = array();
 
 		foreach ( $this->checks as $check ) {

@@ -61,13 +61,10 @@ class Compatibility_Checks extends Datapoint implements Executable_Datapoint {
 			return new WP_Error( 'rest_forbidden', __( 'You are not allowed to access this resource.', 'google-site-kit' ), array( 'status' => 403 ) );
 		}
 
-		$use_long_running = isset( $data['useLongRunning'] ) ? (bool) $data['useLongRunning'] : false;
-
-		return function () use ( $use_long_running ) {
+		return function () {
 			return array(
-				'checks'          => $this->checks->run( $use_long_running ),
-				'usedLongRunning' => $use_long_running,
-				'timestamp'       => time(),
+				'checks'    => $this->checks->run(),
+				'timestamp' => time(),
 			);
 		};
 	}
