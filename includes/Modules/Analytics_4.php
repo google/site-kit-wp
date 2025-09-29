@@ -1332,7 +1332,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 						),
 					)
 				);
-				$request->setLimit( 1 );
+				$request->setLimit( 0 );
 
 				return $this->get_analyticsdata_service()->properties->runReport( $data['propertyID'], $request );
 			case 'GET:report':
