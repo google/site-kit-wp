@@ -25,33 +25,26 @@ function Template( args ) {
 	return <ProgressSegments { ...args } />;
 }
 
-export const Initial = Template.bind( {} );
-Initial.storyName = '1. Initial state';
-Initial.args = {};
-Initial.scenario = {};
-
-export const Started = Template.bind( {} );
-Started.storyName = '2. Started';
-Started.args = {
-	currentSegment: 0,
-	totalSegments: 3,
-};
-Started.scenario = {};
-
-export const Progressing = Template.bind( {} );
-Progressing.storyName = '3. Progressing';
-Progressing.args = {
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.args = {
 	currentSegment: 1,
 	totalSegments: 3,
 };
 
-export const Completed = Template.bind( {} );
-Completed.storyName = '4. Completed';
-Completed.args = {
-	currentSegment: 2,
+export const DefaultProgressed = Template.bind( {} );
+DefaultProgressed.storyName = 'Default progressed';
+DefaultProgressed.args = {
+	currentSegment: 3,
 	totalSegments: 3,
 };
-Completed.scenario = {};
+
+export const DefaultSixSegments = Template.bind( {} );
+DefaultSixSegments.storyName = 'Default six segments';
+DefaultSixSegments.args = {
+	currentSegment: 6,
+	totalSegments: 6,
+};
 
 export default {
 	title: 'Components/ProgressSegments',
