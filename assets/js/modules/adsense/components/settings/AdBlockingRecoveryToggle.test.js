@@ -39,7 +39,7 @@ import {
 } from '@/js/modules/adsense/util';
 import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AdBlockingRecoveryToggle', () => {

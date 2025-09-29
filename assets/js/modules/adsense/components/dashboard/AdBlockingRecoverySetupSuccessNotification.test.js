@@ -45,11 +45,11 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { ADSENSE_NOTIFICATIONS } from '@/js/modules/adsense';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
+vi.mock( 'react-use', () => ( {
+	...vi.requireActual( 'react-use' ),
 	useIntersection: () => ( {
 		isIntersecting: true,
 	} ),

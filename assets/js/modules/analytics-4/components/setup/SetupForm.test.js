@@ -169,7 +169,7 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		const finishSetup = jest.fn();
+		const finishSetup = vi.fn();
 		const { getByRole, waitForRegistry } = render(
 			<SetupForm finishSetup={ finishSetup } />,
 			{
@@ -292,7 +292,7 @@ describe( 'SetupForm', () => {
 
 		muteFetch( REGEX_REST_GA4_SETTINGS );
 
-		const finishSetup = jest.fn();
+		const finishSetup = vi.fn();
 		const { getByRole, waitForRegistry } = render(
 			<SetupForm finishSetup={ finishSetup } />,
 			{
@@ -374,7 +374,7 @@ describe( 'SetupForm', () => {
 			},
 		} );
 
-		const finishSetup = jest.fn();
+		const finishSetup = vi.fn();
 		const { getByRole, waitForRegistry } = render(
 			<SetupForm finishSetup={ finishSetup } />,
 			{

@@ -34,7 +34,7 @@ import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWith
 import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
-jest.mock(
+vi.mock(
 	'../CompatibilityChecks',
 	() =>
 		( { children } ) =>

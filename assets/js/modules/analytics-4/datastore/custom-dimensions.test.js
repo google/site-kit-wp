@@ -281,7 +281,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 		describe( 'scheduleSyncAvailableCustomDimensions', () => {
 			beforeEach( () => {
-				jest.useFakeTimers();
+				vi.useFakeTimers();
 			} );
 
 			it( 'schedules a sync request to run after two seconds', async () => {
@@ -303,7 +303,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.scheduleSyncAvailableCustomDimensions();
 
-				jest.runAllTimers();
+				vi.runAllTimers();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock ).toHaveFetched(
@@ -335,7 +335,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 						.scheduleSyncAvailableCustomDimensions();
 				} );
 
-				jest.runAllTimers();
+				vi.runAllTimers();
 
 				// Verify that it only fetched once.
 				expect( fetchMock ).toHaveFetchedTimes( 1 );

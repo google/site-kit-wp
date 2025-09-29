@@ -24,7 +24,7 @@ import useQueryArg from './useQueryArg';
 
 describe( 'useQueryArg', () => {
 	let mockGlobal;
-	const historyReplaceStateMock = jest.fn();
+	const historyReplaceStateMock = vi.fn();
 
 	beforeAll( () => {
 		mockGlobal = {

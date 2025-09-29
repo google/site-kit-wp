@@ -39,8 +39,8 @@ describe( 'core/modules settings', () => {
 	let validateCanSubmitChangesError = false;
 
 	beforeEach( () => {
-		areSettingsEditDependenciesLoaded = jest.fn();
-		submitChanges = jest.fn();
+		areSettingsEditDependenciesLoaded = vi.fn();
+		submitChanges = vi.fn();
 
 		registry = createTestRegistry();
 

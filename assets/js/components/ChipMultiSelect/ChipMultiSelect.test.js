@@ -41,7 +41,7 @@ describe( 'ChipMultiSelect', () => {
 	} );
 
 	it( 'calls `onToggleChip()` when a chip is selected', () => {
-		const onToggleChip = jest.fn();
+		const onToggleChip = vi.fn();
 
 		const { getByText } = render(
 			<ChipMultiSelect onToggleChip={ onToggleChip }>
@@ -61,7 +61,7 @@ describe( 'ChipMultiSelect', () => {
 	} );
 
 	it( 'calls `onToggleChip()` when a chip is unselected', () => {
-		const onToggleChip = jest.fn();
+		const onToggleChip = vi.fn();
 
 		const { getByText } = render(
 			<ChipMultiSelect onToggleChip={ onToggleChip }>

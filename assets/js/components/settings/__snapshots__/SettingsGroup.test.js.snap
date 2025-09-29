@@ -1,4 +1,24 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SettingsGroup > renders correctly 1`] = `
+<div>
+  <div
+    class="googlesitekit-module-settings-group"
+  >
+    <h4
+      class="googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--medium"
+    >
+      Test Title
+    </h4>
+    <div>
+      Test Child 1
+    </div>
+    <div>
+      Test Child 2
+    </div>
+  </div>
+</div>
+`;
 
 exports[`SettingsGroup renders correctly 1`] = `
 <div>

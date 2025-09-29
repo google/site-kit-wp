@@ -114,7 +114,7 @@ describe( 'numberFormat', () => {
 		let NumberFormatSpy;
 
 		beforeEach( () => {
-			NumberFormatSpy = jest.spyOn( global.Intl, 'NumberFormat' );
+			NumberFormatSpy = vi.spyOn( global.Intl, 'NumberFormat' );
 		} );
 
 		afterEach( () => {
