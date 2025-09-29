@@ -1291,25 +1291,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					);
 				}
 
-				$has_property_access = $this->get_data(
-					'has-property-access',
-					array(
-						'propertyID' => $data['propertyID'],
-					)
-				);
-
-				if ( is_wp_error( $has_property_access ) ) {
-					return $has_property_access;
-				}
-
-				if ( false === $has_property_access ) {
-					return new WP_Error(
-						'no_property_access',
-						__( 'You do not have access to this property.', 'google-site-kit' ),
-						array( 'status' => 403 )
-					);
-				}
-
 				return $this->get_service( 'analyticsadmin' )->properties->get( self::normalize_property_id( $data['propertyID'] ) );
 			case 'GET:has-property-access':
 				if ( ! isset( $data['propertyID'] ) ) {
