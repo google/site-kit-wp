@@ -88,8 +88,14 @@ jobs:
         run: npm i -w assets -w storybook -w tests/js --include-workspace-root
       - name: Jest Tests
         id: test-js
-        run: npm run test:js
+        run: npm run test:js -- -- --json --outputFile=jest-results.json
         continue-on-error: true
+      - name: Check for catastrophic failure
+        run: |
+          if [ ! -f jest-results.json ]; then
+            echo "❌ Catastrophic failure: no jest-results.json produced."
+            exit 1
+          fi
       - name: Jest Tests (Retry Failures 1)
         id: test-js-retry-1
         run: npm run test:js -- -- --onlyFailures
@@ -103,3 +109,8 @@ jobs:
       - name: Jest Tests (Retry Failures 3)
         run: npm run test:js -- -- --onlyFailures
         if: steps.test-js-retry-2.outcome == 'failure'
+      - name: Clean up jest-results.json
+        run: |
+          if [ -f jest-results.json ]; then
+            rm -f jest-results.json
+          fi
