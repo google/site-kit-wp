@@ -55,8 +55,6 @@ export default function ProgressIndicator( {
 							className={ classnames(
 								'googlesitekit-progress-indicator__segment',
 								{
-									// 'googlesitekit-progress-indicator__segment--in-progress':
-									// 	currentSegment + 1 !== totalSegments,
 									'googlesitekit-progress-indicator__segment--final':
 										currentSegment + 1 === totalSegments,
 								}
