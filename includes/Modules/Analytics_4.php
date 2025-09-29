@@ -1317,8 +1317,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				}
 
 				// A simple way to check for property access is to attempt a minimal report request.
-				// If the user does not have access, this will return a 403 error which should be caught
-				// and handled by the caller of this datapoint.
+				// If the user does not have access, this will return a 403 error.
 				$request = new Google_Service_AnalyticsData_RunReportRequest();
 				$request->setProperty( self::normalize_property_id( $data['propertyID'] ) );
 				$request->setDimensions( array( new Google_Service_AnalyticsData_Dimension( array( 'name' => 'date' ) ) ) );
