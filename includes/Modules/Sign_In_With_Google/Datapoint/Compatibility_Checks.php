@@ -10,9 +10,11 @@
 
 namespace Google\Site_Kit\Modules\Sign_In_With_Google\Datapoint;
 
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
+use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks\Compatibility_Checks as Checks;
 use WP_Error;
 
 /**
@@ -25,6 +27,29 @@ use WP_Error;
 class Compatibility_Checks extends Datapoint implements Executable_Datapoint {
 
 	/**
+	 * Compatibilty checks instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Checks
+	 */
+	private $checks;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $definition Definition fields.
+	 */
+	public function __construct( array $definition ) {
+		parent::__construct( $definition );
+
+		if ( isset( $definition['checks'] ) ) {
+			$this->checks = $definition['checks'];
+		}
+	}
+
+	/**
 	 * Creates a request object.
 	 *
 	 * @since n.e.x.t
@@ -33,15 +58,14 @@ class Compatibility_Checks extends Datapoint implements Executable_Datapoint {
 	 */
 	public function create_request( Data_Request $data ) {
 		if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
-			return new WP_Error( 'rest_forbidden', __( 'Sorry, you are not allowed to access this resource.', 'google-site-kit' ), array( 'status' => 403 ) );
+			return new WP_Error( 'rest_forbidden', __( 'You are not allowed to access this resource.', 'google-site-kit' ), array( 'status' => 403 ) );
 		}
 
 		$use_long_running = isset( $data['useLongRunning'] ) ? (bool) $data['useLongRunning'] : false;
 
 		return function () use ( $use_long_running ) {
-			// TODO: Replace with actual Compatibility_Checks class once implemented in issue #11458.
 			return array(
-				'checks'          => array(),
+				'checks'          => $this->checks->run( $use_long_running ),
 				'usedLongRunning' => $use_long_running,
 				'timestamp'       => time(),
 			);

@@ -38,24 +38,14 @@ class Compatibility_Checks {
 	}
 
 	/**
-	 * Registers all compatibility checks.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function register_checks() {
-		$this->add_check( new WP_Login_Accessible_Check() );
-		$this->add_check( new WP_COM_Check() );
-		$this->add_check( new Conflicting_Plugins_Check() );
-	}
-
-	/**
 	 * Runs all compatibility checks.
 	 *
 	 * @since n.e.x.t
 	 *
+	 * @param bool $use_long_running Whether to use long running tasks or not.
 	 * @return array Results of the compatibility checks.
 	 */
-	public function run_checks() {
+	public function run_checks( $use_long_running = false ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		$results = array();
 
 		foreach ( $this->checks as $check ) {
