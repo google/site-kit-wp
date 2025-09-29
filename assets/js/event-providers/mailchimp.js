@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { classifyPII, getUserData } from './utils';
 
 ( ( mc4wp ) => {
@@ -53,8 +56,9 @@ function getUserDataFromForm( form, data ) {
 	const detectedFields = Object.entries( data )
 		.map( ( [ name, value ] ) => {
 			// Mailchimp joins the individual name fields into a single field "NAME",
-			// but still provides the individual values in the data object, so we skip them.
-			if ( 'NAME' in data && ( name === 'FNAME' || name === 'LNAME' ) ) {
+			// but still provides the individual values in the data object.
+			// We only rely on "NAME" when neither "FNAME" nor "LNAME" are available.
+			if ( name === 'NAME' && ( 'FNAME' in data || 'LNAME' in data ) ) {
 				return null;
 			}
 
