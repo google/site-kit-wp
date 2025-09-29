@@ -42,6 +42,7 @@ import {
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as fixtures from './__fixtures__';
 import { getItem, setItem } from '@/js/googlesitekit/api/cache';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 describe( 'modules/analytics-4 properties', () => {
 	let registry;
@@ -96,6 +97,12 @@ describe( 'modules/analytics-4 properties', () => {
 
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		registry.dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+			{ access: true },
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+			}
+		);
 	} );
 
 	afterAll( () => {
@@ -1610,6 +1617,22 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( property ).toEqual( fixtures.properties[ 1 ] );
 				expect( fetchMock ).not.toHaveFetched( propertyEndpoint );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should not make a request to fetch the property if the user does not have access', async () => {
+				registry.dispatch( CORE_MODULES ).receiveCheckModuleAccess(
+					{ access: false },
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+					}
+				);
+				const propertyID = fixtures.properties[ 1 ]._id;
+
+				await registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getProperty( propertyID );
+
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'should dispatch an error if the request fails', async () => {
