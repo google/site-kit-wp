@@ -88,7 +88,7 @@ jobs:
         run: npm i -w assets -w storybook -w tests/js --include-workspace-root
       - name: Jest Tests
         id: test-js
-        run: npm run test:js -- -- --json --outputFile=jest-results.json
+        run: npm run test:js -- -- --json --outputFile=../../jest-results.json
         continue-on-error: true
       - name: Check for catastrophic failure
         run: |
