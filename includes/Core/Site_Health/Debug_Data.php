@@ -607,7 +607,7 @@ class Debug_Data {
 
 		return array(
 			'consent_mode' => array(
-				'label' => __( 'Consent Mode', 'google-site-kit' ),
+				'label' => __( 'Consent mode', 'google-site-kit' ),
 				'value' => 'enabled' === $consent_mode_status ? __( 'Enabled', 'google-site-kit' ) : __( 'Disabled', 'google-site-kit' ),
 				'debug' => $consent_mode_status,
 			),

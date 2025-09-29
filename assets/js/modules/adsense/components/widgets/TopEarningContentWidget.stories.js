@@ -23,8 +23,7 @@ import {
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -41,6 +40,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
 const adSenseAccountID = 'pub-1234567890';
 

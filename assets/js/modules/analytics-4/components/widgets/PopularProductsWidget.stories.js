@@ -41,7 +41,7 @@ import {
 	STRATEGY_ZIP,
 	getAnalytics4MockResponse,
 } from '@/js/modules/analytics-4/utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../tests/js/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import {

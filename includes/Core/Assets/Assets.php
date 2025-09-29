@@ -608,6 +608,13 @@ final class Assets {
 					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
 				)
 			),
+			new Script(
+				'googlesitekit-key-metrics-setup',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-key-metrics-setup.js',
+					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
+				)
+			),
 			// End JSR Assets.
 			new Script(
 				'googlesitekit-splash',
