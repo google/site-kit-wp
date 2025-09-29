@@ -45,9 +45,9 @@ exports[`GoogleTagGatewayToggle should render in default state 1`] = `
         class="googlesitekit-google-tag-gateway-toggle__switch-badge"
       >
         <span
-          class="googlesitekit-badge googlesitekit-new-badge googlesitekit-badge--has-left-spacing"
+          class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
         >
-          New
+          Beta
         </span>
       </div>
     </div>
@@ -58,7 +58,7 @@ exports[`GoogleTagGatewayToggle should render in default state 1`] = `
       <a
         aria-label="Learn more about Google tag gateway for advertisers (opens in a new tab)"
         class="googlesitekit-cta-link"
-        href="https://sitekit.withgoogle.com/support/?doc=google-tag-gateway-introduction"
+        href="undefined?doc=google-tag-gateway-introduction"
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -125,9 +125,9 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
         class="googlesitekit-google-tag-gateway-toggle__switch-badge"
       >
         <span
-          class="googlesitekit-badge googlesitekit-new-badge googlesitekit-badge--has-left-spacing"
+          class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
         >
-          New
+          Beta
         </span>
       </div>
     </div>
@@ -138,7 +138,7 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
       <a
         aria-label="Learn more about Google tag gateway for advertisers (opens in a new tab)"
         class="googlesitekit-cta-link"
-        href="https://sitekit.withgoogle.com/support/?doc=google-tag-gateway-introduction"
+        href="undefined?doc=google-tag-gateway-introduction"
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -173,7 +173,7 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
           <a
             aria-label="Learn more about Google tag gateway for advertisers server requirements (opens in a new tab)"
             class="googlesitekit-cta-link"
-            href="https://sitekit.withgoogle.com/support/?doc=google-tag-gateway-server-requirements"
+            href="undefined?doc=google-tag-gateway-server-requirements"
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -234,7 +234,7 @@ exports[`GoogleTagGatewayToggle should render in loading state if the server req
       <a
         aria-label="Learn more about Google tag gateway for advertisers (opens in a new tab)"
         class="googlesitekit-cta-link"
-        href="https://sitekit.withgoogle.com/support/?doc=google-tag-gateway-introduction"
+        href="undefined?doc=google-tag-gateway-introduction"
         rel="noopener noreferrer"
         target="_blank"
       >

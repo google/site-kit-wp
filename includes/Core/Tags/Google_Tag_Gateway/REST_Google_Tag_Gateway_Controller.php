@@ -127,12 +127,9 @@ class REST_Google_Tag_Gateway_Controller {
 										'minProperties' => 1,
 										'additionalProperties' => false,
 										'properties'    => array(
-											'isEnabled'    => array(
+											'isEnabled' => array(
 												'type'     => 'boolean',
 												'required' => true,
-											),
-											'isGTGDefault' => array(
-												'type' => 'boolean',
 											),
 										),
 									),

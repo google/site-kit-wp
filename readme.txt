@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.8
 Requires PHP:      7.4
-Stable tag:        1.162.0
+Stable tag:        1.162.1
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,12 +109,17 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
+= 1.162.1 =
+
+**Fixed**
+
+* Fix the `gtg-server-requirement-status` endpoint, ensuring Google tag gateway health checks can be made successfully. See [#11527](https://github.com/google/site-kit-wp/issues/11527).
+
 = 1.162.0 =
 
 **Enhanced**
 
-* Update Google Tag Gateway toggle badge from "Beta" to "New" and remove setup notifications. See [#11450](https://github.com/google/site-kit-wp/issues/11450).
-* Add Google tag gateway automatic enablement notification. See [#11449](https://github.com/google/site-kit-wp/issues/11449).
+* Update the Google tag gateway `measurement.php` to the latest version. See [#11517](https://github.com/google/site-kit-wp/issues/11517).
 * Use the GTag script via the first-party domain proxy `gtg/measurement.php` for Tag Manager containers when Google tag gateway for advertisers is active. See [#11417](https://github.com/google/site-kit-wp/issues/11417).
 * Display the Google tag gateway for advertisers status in the Tag Manager settings view. See [#11416](https://github.com/google/site-kit-wp/issues/11416).
 * Add Google Tag Gateway toggle to Tag Manager settings edit screen. See [#11415](https://github.com/google/site-kit-wp/issues/11415).
