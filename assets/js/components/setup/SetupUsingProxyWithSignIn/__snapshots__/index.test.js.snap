@@ -586,13 +586,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                   <div
                     class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
                   >
-                    <div
-                      class="googlesitekit-preview-block"
-                    >
-                      <div
-                        class="googlesitekit-preview-block__wrapper"
-                      />
-                    </div>
+                    <svg />
                   </div>
                   <div
                     class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
@@ -995,9 +989,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     >
                       Let’s get started!
                     </h1>
-                    <p
-                      class="googlesitekit-setup__description"
-                    />
                     <div
                       class="googlesitekit-opt-in"
                     >
@@ -1071,7 +1062,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
 </div>
 `;
 
-exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag enabled should render the setup page with Activate Analytics notice when the Analytics module is inactive 1`] = `
+exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag enabled should render the setup page correctly 1`] = `
 <div>
   <header
     class="googlesitekit-header"
@@ -1331,9 +1322,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     >
                       Let’s get started!
                     </h1>
-                    <p
-                      class="googlesitekit-setup__description"
-                    />
                     <div
                       class="googlesitekit-setup__analytics-opt-in-wrapper"
                     >
@@ -1380,7 +1368,26 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                           <div
                             class="mdc-checkbox__description"
                           >
-                            To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. Learn more
+                            To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
+                            <a
+                              aria-label="Learn more (opens in a new tab)"
+                              class="googlesitekit-cta-link"
+                              href="#"
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              <span
+                                class="googlesitekit-cta-link__contents"
+                              >
+                                Learn more
+                              </span>
+                              <span
+                                class="googlesitekit-icon-wrapper"
+                                style="margin-left: 5px;"
+                              >
+                                <svg />
+                              </span>
+                            </a>
                           </div>
                         </div>
                       </div>
@@ -1458,7 +1465,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
 </div>
 `;
 
-exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag enabled should render the setup page with the refreshed layout 1`] = `
+exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag enabled should render the setup page with the Analytics checkbox when the Analytics module is inactive 1`] = `
 <div>
   <header
     class="googlesitekit-header"
@@ -1718,9 +1725,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     >
                       Let’s get started!
                     </h1>
-                    <p
-                      class="googlesitekit-setup__description"
-                    />
                     <div
                       class="googlesitekit-setup__analytics-opt-in-wrapper"
                     >
@@ -1767,7 +1771,26 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                           <div
                             class="mdc-checkbox__description"
                           >
-                            To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. Learn more
+                            To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
+                            <a
+                              aria-label="Learn more (opens in a new tab)"
+                              class="googlesitekit-cta-link"
+                              href="#"
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              <span
+                                class="googlesitekit-cta-link__contents"
+                              >
+                                Learn more
+                              </span>
+                              <span
+                                class="googlesitekit-icon-wrapper"
+                                style="margin-left: 5px;"
+                              >
+                                <svg />
+                              </span>
+                            </a>
                           </div>
                         </div>
                       </div>

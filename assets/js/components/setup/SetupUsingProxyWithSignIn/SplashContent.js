@@ -116,30 +116,32 @@ export default function SplashContent( {
 					{ title }
 				</Typography>
 
-				<p className="googlesitekit-setup__description">
-					{ ! showLearnMoreLink && description }
+				{ ( showLearnMoreLink || description ) && (
+					<p className="googlesitekit-setup__description">
+						{ ! showLearnMoreLink && description }
 
-					{ showLearnMoreLink &&
-						createInterpolateElement(
-							sprintf(
-								/* translators: 1: The description. 2: The learn more link. */
-								__(
-									'%1$s <Link>%2$s</Link>',
-									'google-site-kit'
+						{ showLearnMoreLink &&
+							createInterpolateElement(
+								sprintf(
+									/* translators: 1: The description. 2: The learn more link. */
+									__(
+										'%1$s <Link>%2$s</Link>',
+										'google-site-kit'
+									),
+									description,
+									__( 'Learn more', 'google-site-kit' )
 								),
-								description,
-								__( 'Learn more', 'google-site-kit' )
-							),
-							{
-								Link: (
-									<Link
-										href={ secondAdminLearnMoreLink }
-										external
-									/>
-								),
-							}
-						) }
-				</p>
+								{
+									Link: (
+										<Link
+											href={ secondAdminLearnMoreLink }
+											external
+										/>
+									),
+								}
+							) }
+					</p>
+				) }
 
 				{ getHelpURL && (
 					<Link href={ getHelpURL } external>
@@ -170,9 +172,21 @@ export default function SplashContent( {
 						<Checkbox
 							id="googlesitekit-analytics-setup-opt-in"
 							name="googlesitekit-analytics-setup-opt-in"
-							description={ __(
-								'To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. Learn more',
-								'google-site-kit'
+							description={ createInterpolateElement(
+								__(
+									'To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. <LearnMoreLink />',
+									'google-site-kit'
+								),
+								{
+									LearnMoreLink: (
+										<Link href="#" external>
+											{ __(
+												'Learn more',
+												'google-site-kit'
+											) }
+										</Link>
+									),
+								}
 							) }
 							checked={ checked }
 							onChange={ handleOnChange }

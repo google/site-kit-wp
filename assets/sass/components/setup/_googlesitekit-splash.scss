@@ -34,27 +34,28 @@
 
 		.googlesitekit-setup__title {
 			color: $c-surfaces-on-surface;
-			margin-bottom: 42px;
 		}
 
 		.googlesitekit-setup__description {
-			margin-bottom: 42px;
+			margin-top: 24px;
 		}
 
 		.mdc-form-field {
 			align-items: flex-start;
-
 			.mdc-checkbox {
-				margin-top: -8px;
+				margin-top: -10px;
 			}
 		}
 
 		.googlesitekit-setup__analytics-opt-in-wrapper {
+			margin-top: 24px;
+
 			.mdc-checkbox__content {
 				display: flex;
 				flex-direction: column;
 				gap: $cta-gap-phone;
 			}
+
 			.mdc-checkbox__description {
 				color: $c-surfaces-on-background-variant;
 				font-size: $fs-label-sm;
@@ -66,7 +67,6 @@
 				display: block;
 				height: 1px;
 				margin: $grid-gap-desktop 0;
-				width: 90%;
 			}
 		}
 

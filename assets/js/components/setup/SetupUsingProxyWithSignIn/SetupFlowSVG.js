@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { lazy, Suspense, useMemo } from '@wordpress/element';
@@ -57,3 +62,9 @@ export default function SetupFlowSVG( { name, width, height } ) {
 		</Suspense>
 	);
 }
+
+SetupFlowSVG.propTypes = {
+	name: PropTypes.string.isRequired,
+	width: PropTypes.string,
+	height: PropTypes.string,
+};
