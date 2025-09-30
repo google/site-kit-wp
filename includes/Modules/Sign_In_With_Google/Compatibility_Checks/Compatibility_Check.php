@@ -1,6 +1,6 @@
 <?php
 /**
- * Base abstract class for Sign In With Google compatibility checks.
+ * Class Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks\Compatibility_Check
  *
  * @package   Google\Site_Kit\Modules\Sign_In_With_Google
  * @copyright 2025 Google LLC

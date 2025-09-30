@@ -1,6 +1,6 @@
 <?php
 /**
- * Conflicting plugins compatibility check.
+ * Class Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks\Conflicting_Plugins_Check
  *
  * @package   Google\Site_Kit\Modules\Sign_In_With_Google
  * @copyright 2025 Google LLC
