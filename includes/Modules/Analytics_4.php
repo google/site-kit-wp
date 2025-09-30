@@ -657,7 +657,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	/**
 	 * Gets an array of internal feature metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 *
 	 * @return array
 	 */
@@ -2333,7 +2333,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	/**
 	 * Checks if the current user has access to the given property ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 *
 	 * @param string $property_id Property ID to check access for.
 	 * @return boolean|WP_Error True if the user has access, false if not, or WP_Error on any other error.
@@ -2739,7 +2739,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * or if they are authenticated and have already granted the scope, or if the module
 	 * is not yet connected (i.e. during setup).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 *
 	 * @param string[] $scopes Array of requested scopes.
 	 * @return string[] Refined array of requested scopes.

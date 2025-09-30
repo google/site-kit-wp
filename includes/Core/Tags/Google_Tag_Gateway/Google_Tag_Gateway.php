@@ -239,7 +239,7 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_M
 	 * @since 1.141.0
 	 * @since 1.142.0 Relocated from REST_Google_Tag_Gateway_Controller.
 	 * @since 1.144.0 Uses Google\GoogleTagGatewayLibrary\RequestHelper to send requests.
-	 * @since n.e.x.t Uses Google\GoogleTagGatewayLibrary\Http\RequestHelper to send requests.
+	 * @since 1.163.0 Uses Google\GoogleTagGatewayLibrary\Http\RequestHelper to send requests.
 	 *
 	 * @param string $endpoint The endpoint to check.
 	 * @return bool True if the endpoint is healthy, false otherwise.
