@@ -439,4 +439,42 @@ describe( 'DashboardPageSpeed', () => {
 			queryByRole( 'tab', { name: /How to improve/i } )
 		).not.toBeInTheDocument();
 	} );
+
+	it( 'renders the `How to improve` tab when recommendations exist', () => {
+		registry = createTestRegistry();
+		const { dispatch } = registry;
+
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+			fixtures.pagespeedMobile,
+			{
+				url,
+				strategy: STRATEGY_MOBILE,
+			}
+		);
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+			fixtures.pagespeedDesktop,
+			{
+				url,
+				strategy: STRATEGY_DESKTOP,
+			}
+		);
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
+			url,
+			STRATEGY_MOBILE,
+		] );
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
+			url,
+			STRATEGY_DESKTOP,
+		] );
+		dispatch( CORE_SITE ).receiveSiteInfo( {
+			referenceSiteURL: url,
+			currentEntityURL: null,
+		} );
+
+		const { getByRole } = render( <DashboardPageSpeed />, { registry } );
+
+		expect(
+			getByRole( 'tab', { name: /How to improve/i } )
+		).toBeInTheDocument();
+	} );
 } );
