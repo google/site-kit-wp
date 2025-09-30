@@ -19,6 +19,20 @@
 // phpcs:disable PSR1.Files.SideEffects.FoundWithSymbols
 // phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses
 
+/* Start of Site Kit modified code. */
+namespace {
+    if ( isset( $_GET['healthCheck'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+        echo 'ok';
+        exit;
+    }
+    // Return early when including to use in external health check.
+    // All classes will be defined but no further statements will be executed.
+    if ( defined( 'GOOGLESITEKIT_GTG_ENDPOINT_HEALTH_CHECK' ) ) {
+        return;
+    }
+}
+/* End of Site Kit modified code. */
+
 namespace Google\GoogleTagGatewayLibrary\Proxy {
 use Google\GoogleTagGatewayLibrary\Http\RequestHelper;
 use Google\GoogleTagGatewayLibrary\Http\ServerRequestContext;
@@ -596,14 +610,5 @@ final class Measurement
 
 namespace {
 use Google\GoogleTagGatewayLibrary\Proxy\Runner;
-/* Start of Site Kit modified code. */
-if ( isset( $_GET['healthCheck'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
-	echo 'ok';
-	exit;
-}
-// Skip initial run for testing
-if (!defined('GOOGLESITEKIT_GTG_ENDPOINT_HEALTH_CHECK')) {
-    Runner::create()->run();
-}
-/* End of Site Kit modified code. */
+Runner::create()->run();
 }
