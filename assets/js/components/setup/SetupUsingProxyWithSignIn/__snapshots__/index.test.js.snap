@@ -952,7 +952,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
     class="googlesitekit-subheader"
   />
   <div
-    class="googlesitekit-setup googlesitekit-setup-content--with-background"
+    class="googlesitekit-setup"
   >
     <div
       class="mdc-layout-grid mdc-layout-grid--collapsed"
@@ -1285,7 +1285,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
     class="googlesitekit-subheader"
   />
   <div
-    class="googlesitekit-setup googlesitekit-setup-content--with-background"
+    class="googlesitekit-setup"
   >
     <div
       class="mdc-layout-grid mdc-layout-grid--collapsed"
@@ -1688,7 +1688,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
     class="googlesitekit-subheader"
   />
   <div
-    class="googlesitekit-setup googlesitekit-setup-content--with-background"
+    class="googlesitekit-setup"
   >
     <div
       class="mdc-layout-grid mdc-layout-grid--collapsed"
