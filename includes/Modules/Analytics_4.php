@@ -79,6 +79,10 @@ use Google\Site_Kit\Modules\Analytics_4\Tag_Interface;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportRequest as Google_Service_AnalyticsData_RunReportRequest;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Google_Service_AnalyticsData_DateRange;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension as Google_Service_AnalyticsData_Dimension;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Metric as Google_Service_AnalyticsData_Metric;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaAudience;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaAccount;
@@ -719,12 +723,11 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			),
 			'GET:properties'                            => array( 'service' => 'analyticsadmin' ),
 			'GET:property'                              => array( 'service' => 'analyticsadmin' ),
+			'GET:has-property-access'                   => array( 'service' => 'analyticsdata' ),
 			'GET:report'                                => array(
 				'service'   => 'analyticsdata',
 				'shareable' => true,
 			),
-			'GET:non-shareable-report'                  => array( 'service' => 'analyticsdata' ),
-
 			'GET:webdatastreams'                        => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'                  => array( 'service' => 'analyticsadmin' ),
 			'GET:enhanced-measurement-settings'         => array( 'service' => 'analyticsenhancedmeasurement' ),
@@ -1289,8 +1292,30 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				}
 
 				return $this->get_service( 'analyticsadmin' )->properties->get( self::normalize_property_id( $data['propertyID'] ) );
+			case 'GET:has-property-access':
+				if ( ! isset( $data['propertyID'] ) ) {
+					throw new Missing_Required_Param_Exception( 'propertyID' );
+				}
+
+				// A simple way to check for property access is to attempt a minimal report request.
+				// If the user does not have access, this will return a 403 error.
+				$request = new Google_Service_AnalyticsData_RunReportRequest();
+				$request->setDimensions( array( new Google_Service_AnalyticsData_Dimension( array( 'name' => 'date' ) ) ) );
+				$request->setMetrics( array( new Google_Service_AnalyticsData_Metric( array( 'name' => 'sessions' ) ) ) );
+				$request->setDateRanges(
+					array(
+						new Google_Service_AnalyticsData_DateRange(
+							array(
+								'start_date' => 'yesterday',
+								'end_date'   => 'today',
+							)
+						),
+					)
+				);
+				$request->setLimit( 0 );
+
+				return $this->get_analyticsdata_service()->properties->runReport( $data['propertyID'], $request );
 			case 'GET:report':
-			case 'GET:non-shareable-report':
 				if ( empty( $data['metrics'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
@@ -1833,7 +1858,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			case 'GET:key-events':
 				return (array) $response->getKeyEvents();
 			case 'GET:report':
-			case 'GET:non-shareable-report':
 				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );
 			case 'POST:sync-audiences':
@@ -2293,18 +2317,29 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return boolean|WP_Error
 	 */
 	public function check_service_entity_access() {
-		// Create a basic report request with minimal parameters to test access.
-		$data = array(
-			'dimensions' => array( 'date' ),
-			'metrics'    => array( 'sessions' ),
-			'startDate'  => 'yesterday',
-			'endDate'    => 'today',
-			'limit'      => 0,
-		);
+		$settings = $this->get_settings()->get();
 
-		// Use the 'non-shareable-report' datapoint to prevent user access assumption
-		// when using dashboard sharing.
-		$request = $this->get_data( 'non-shareable-report', $data );
+		if ( empty( $settings['propertyID'] ) ) {
+			return new WP_Error(
+				'missing_required_setting',
+				__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
+				array( 'status' => 500 )
+			);
+		}
+
+		return $this->has_property_access( $settings['propertyID'] );
+	}
+
+	/**
+	 * Checks if the current user has access to the given property ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $property_id Property ID to check access for.
+	 * @return boolean|WP_Error True if the user has access, false if not, or WP_Error on any other error.
+	 */
+	public function has_property_access( $property_id ) {
+		$request = $this->get_data( 'has-property-access', array( 'propertyID' => $property_id ) );
 
 		if ( is_wp_error( $request ) ) {
 			// A 403 error implies that the user does not have access to the service entity.
