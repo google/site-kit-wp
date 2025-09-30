@@ -15,13 +15,13 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
 
 /**
- * Class Migration_N_E_X_T
+ * Class Migration_1_163_0
  *
- * @since n.e.x.t
+ * @since 1.163.0
  * @access private
  * @ignore
  */
-class Migration_N_E_X_T {
+class Migration_1_163_0 {
 	/**
 	 * Target DB version.
 	 */
@@ -35,7 +35,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 * @var Context
 	 */
 	protected $context;
@@ -43,7 +43,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 * @var Options
 	 */
 	protected $options;
@@ -51,7 +51,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Sign_In_With_Google_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 * @var Sign_In_With_Google_Settings
 	 */
 	protected $sign_in_with_google_settings;
@@ -59,7 +59,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 *
 	 * @param Context $context Plugin context instance.
 	 * @param Options $options Optional. Options instance.
@@ -76,7 +76,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Registers hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 */
 	public function register() {
 		add_action( 'admin_init', array( $this, 'migrate' ) );
@@ -85,7 +85,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Migrates the DB.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 */
 	public function migrate() {
 		$db_version = $this->options->get( self::DB_VERSION_OPTION );
@@ -105,7 +105,7 @@ class Migration_N_E_X_T {
 	 * "One Tap on all pages", we only set One Tap to be enabled if
 	 * the no-longer-used "One Tap on all pages" setting was set to true.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 */
 	protected function migrate_one_tap_enabled_setting() {
 		if ( ! $this->sign_in_with_google_settings->has() ) {
