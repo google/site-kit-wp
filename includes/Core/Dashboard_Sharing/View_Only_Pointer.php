@@ -98,7 +98,7 @@ final class View_Only_Pointer {
 						};
 						jQuery("body").on("click", ".googlesitekit-pointer-cta", onClick);
 
-						return jQuery(\'<a class="googlesitekit-pointer-cta">Setup</a>\');
+						return jQuery(\'<a class="googlesitekit-pointer-cta button-primary">Setup</a>\');
 					}
 					', self::SLUG),
 			)
