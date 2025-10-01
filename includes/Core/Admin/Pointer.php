@@ -102,6 +102,28 @@ final class Pointer {
 	}
 
 	/**
+	 * Gets the pointer title icon.
+	 *
+	 * @since 1.83.0
+	 *
+	 * @return string|array Pointer title icon.
+	 */
+	public function get_with_title_icon() {
+		return $this->args['with_title_icon'];
+	}
+
+	/**
+	 * Gets the pointer custom class.
+	 *
+	 * @since 1.83.0
+	 *
+	 * @return string|array Pointer custom class.
+	 */
+	public function get_class() {
+		return $this->args['class'];
+	}
+
+	/**
 	 * Gets the pointer content.
 	 *
 	 * @since 1.83.0

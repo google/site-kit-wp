@@ -51,7 +51,12 @@ final class View_Only_Pointer {
 		return new Pointer(
 			self::SLUG,
 			array(
-				'title'           => __( 'You now have access to Site Kit', 'google-site-kit' ),
+				'title'           => sprintf( '%s %s',
+					__( 'You now have access to Site Kit', 'google-site-kit' ),
+					"<button type='button-link' class='googlesitekit-pointer-cta--dismiss dashicons dashicons-no'> \
+						<span class='screen-reader-text'>Dismiss this notice.</span> \
+					</button>"
+				),
 				// 'content'         => __( 'Check Site Kit’s dashboard to find out how much traffic your site is getting, your most popular pages, top keywords people use to find your site on Search, and more.', 'google-site-kit' ),
 				'content'		  => function() {
 					return sprintf(
@@ -82,21 +87,19 @@ final class View_Only_Pointer {
 
 					return true;
 				},
-				'buttons' =>
+				'with_title_icon' => true,
+				'class'           => 'googlesitekit-email-pointer',
+				'buttons'         =>
 					sprintf('
-					 function(event, t) {
-					    const onClick = function() {
-							jQuery.post(
-								window.ajaxurl,
-								{
-									pointer: "%s",
-									action:  "dismiss-wp-pointer",
-								}
-							);
+					 function(event, container) {
+						jQuery("body").on("click", ".googlesitekit-pointer-cta--dismiss", function() {
+							 container.element.pointer("close");
+						});
+						jQuery("body").on("click", ".googlesitekit-pointer-cta", function() {
+							container.element.pointer("close");
 
 							window.location = "admin.php?page=googlesitekit-dashboard";
-						};
-						jQuery("body").on("click", ".googlesitekit-pointer-cta", onClick);
+						});
 
 						return jQuery(\'<button class="googlesitekit-pointer-cta button-primary">Setup</button>\');
 					}

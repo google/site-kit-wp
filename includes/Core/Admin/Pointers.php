@@ -114,6 +114,13 @@ class Pointers {
 
 		$slug    = $pointer->get_slug();
 		$buttons = $pointer->get_buttons();
+		$class   = array( 'wp-pointer' );
+		if ( $pointer->get_with_title_icon() ) {
+			$class[] = 'googlesitekit-pointer-with-dismiss-icon';
+		}
+		if ( $pointer->get_class() ) {
+			$class[] = $pointer->get_class();
+		}
 
 		BC_Functions::wp_print_inline_script_tag(
 			sprintf(
@@ -132,16 +139,24 @@ class Pointers {
 								}
 							);
 						},
+						pointerClass: "%s",
 						%s
 					};
 
 					jQuery( "#%s" ).pointer( options ).pointer( "open" );
 				} );
 				',
-				esc_js( $pointer->get_title() ),
+				wp_kses(
+					$pointer->get_title(),
+					array(
+						'span'   => array( 'class' => array() ),
+						'button' => array( 'class' => array() ),
+					)
+				),
 				$content,
 				wp_json_encode( $pointer->get_position() ),
 				esc_js( $slug ),
+				implode( ' ', $class ),
 				$buttons ? 'buttons: ' . $buttons : null,
 				esc_js( $pointer->get_target_id() )
 			),
