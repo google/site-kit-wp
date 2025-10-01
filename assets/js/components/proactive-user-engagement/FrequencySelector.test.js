@@ -57,11 +57,11 @@ function renderSelector( registry ) {
 		{ registry }
 	);
 
-	const containerEl = document.querySelector(
+	const containerElement = document.querySelector(
 		'.googlesitekit-frequency-selector'
 	);
 
-	return { ...view, containerEl };
+	return { ...view, containerElement };
 }
 
 describe( 'FrequencySelector', () => {
@@ -75,19 +75,19 @@ describe( 'FrequencySelector', () => {
 		it( 'Weekly selected (default Monday) renders and matches snapshot', () => {
 			setupRegistry( registry, { startOfWeek: 1, frequency: 'weekly' } );
 
-			const { containerEl } = renderSelector( registry );
-			expect( containerEl ).toBeInTheDocument();
+			const { containerElement } = renderSelector( registry );
+			expect( containerElement ).toBeInTheDocument();
 
-			expect( containerEl ).toMatchSnapshot();
+			expect( containerElement ).toMatchSnapshot();
 		} );
 
 		it( 'Monthly selected renders and matches snapshot', () => {
 			setupRegistry( registry, { startOfWeek: 1, frequency: 'monthly' } );
 
-			const { containerEl } = renderSelector( registry );
-			expect( containerEl ).toBeInTheDocument();
+			const { containerElement } = renderSelector( registry );
+			expect( containerElement ).toBeInTheDocument();
 
-			expect( containerEl ).toMatchSnapshot();
+			expect( containerElement ).toMatchSnapshot();
 		} );
 
 		it( 'Quarterly selected renders and matches snapshot', () => {
@@ -96,20 +96,20 @@ describe( 'FrequencySelector', () => {
 				frequency: 'quarterly',
 			} );
 
-			const { containerEl } = renderSelector( registry );
-			expect( containerEl ).toBeInTheDocument();
+			const { containerElement } = renderSelector( registry );
+			expect( containerElement ).toBeInTheDocument();
 
-			expect( containerEl ).toMatchSnapshot();
+			expect( containerElement ).toMatchSnapshot();
 		} );
 
 		it( 'Weekly selected with Sunday start shows "Sent every Sunday" and matches snapshot', () => {
 			setupRegistry( registry, { startOfWeek: 0, frequency: 'weekly' } );
 
-			const { containerEl, getByText } = renderSelector( registry );
+			const { containerElement, getByText } = renderSelector( registry );
 
 			expect( getByText( /Sent every Sunday/i ) ).toBeInTheDocument();
 
-			expect( containerEl ).toMatchSnapshot();
+			expect( containerElement ).toMatchSnapshot();
 		} );
 
 		it( 'Previously saved frequency (saved monthly, current weekly) indicates saved on monthly only and matches snapshot', () => {
@@ -119,9 +119,9 @@ describe( 'FrequencySelector', () => {
 				savedFrequency: 'monthly',
 			} );
 
-			const { containerEl, getByText } = renderSelector( registry );
+			const { containerElement, getByText } = renderSelector( registry );
 
-			const indicators = containerEl.querySelectorAll(
+			const indicators = containerElement.querySelectorAll(
 				'.googlesitekit-frequency-selector__saved-indicator'
 			);
 			expect( indicators.length ).toBe( 1 );
@@ -157,7 +157,7 @@ describe( 'FrequencySelector', () => {
 				)
 			).not.toBeInTheDocument();
 
-			expect( containerEl ).toMatchSnapshot();
+			expect( containerElement ).toMatchSnapshot();
 		} );
 
 		it( 'Previously saved frequency (same as the current frequency) shows saved indicator on selected card and matches snapshot', () => {
@@ -167,7 +167,7 @@ describe( 'FrequencySelector', () => {
 				savedFrequency: 'monthly',
 			} );
 
-			const { containerEl, getByText } = renderSelector( registry );
+			const { containerElement, getByText } = renderSelector( registry );
 
 			const monthlyLabel = getByText( 'Monthly' );
 			const monthlyCard = monthlyLabel.closest(
@@ -188,7 +188,7 @@ describe( 'FrequencySelector', () => {
 			).toBe( true );
 			expect( monthlyCard.getAttribute( 'aria-checked' ) ).toBe( 'true' );
 
-			expect( containerEl ).toMatchSnapshot();
+			expect( containerElement ).toMatchSnapshot();
 		} );
 	} );
 

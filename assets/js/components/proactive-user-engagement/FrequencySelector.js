@@ -100,11 +100,16 @@ export default function FrequencySelector() {
 		},
 	};
 
-	// Add keyboard accessibility.
-	function handleKeyDown( e, value ) {
-		if ( e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter' ) {
-			e.preventDefault();
-			setProactiveUserEngagementFrequency( value );
+	// Allow keyboard users to open the frequency selector
+	// using Enter or Space keys.
+	function handleKeyDown( event, reportFrequency ) {
+		if (
+			event.key === ' ' ||
+			event.key === 'Spacebar' ||
+			event.key === 'Enter'
+		) {
+			event.preventDefault();
+			setProactiveUserEngagementFrequency( reportFrequency );
 		}
 	}
 
@@ -123,14 +128,14 @@ export default function FrequencySelector() {
 				role="radiogroup"
 				aria-label={ __( 'Frequency', 'google-site-kit' ) }
 			>
-				{ EMAIL_REPORT_FREQUENCIES.map( ( value ) => {
-					const isSelected = frequency === value;
+				{ EMAIL_REPORT_FREQUENCIES.map( ( reportFrequency ) => {
+					const isSelected = frequency === reportFrequency;
 					const { label, period, description } =
-						frequencyCopy[ value ] || {};
+						frequencyCopy[ reportFrequency ] || {};
 
 					return (
 						<div
-							key={ value }
+							key={ reportFrequency }
 							className={
 								'googlesitekit-frequency-selector__card' +
 								( isSelected
@@ -141,9 +146,13 @@ export default function FrequencySelector() {
 							aria-checked={ isSelected }
 							tabIndex={ 0 }
 							onClick={ () =>
-								setProactiveUserEngagementFrequency( value )
+								setProactiveUserEngagementFrequency(
+									reportFrequency
+								)
 							}
-							onKeyDown={ ( e ) => handleKeyDown( e, value ) }
+							onKeyDown={ ( event ) =>
+								handleKeyDown( event, reportFrequency )
+							}
 						>
 							<div className="googlesitekit-frequency-selector__label-row">
 								<Typography
@@ -154,7 +163,7 @@ export default function FrequencySelector() {
 								>
 									{ label }
 								</Typography>
-								{ savedFrequency === value && (
+								{ savedFrequency === reportFrequency && (
 									<div className="googlesitekit-frequency-selector__saved-indicator">
 										<Tick
 											className="googlesitekit-frequency-selector__label-tick"

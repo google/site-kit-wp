@@ -41,7 +41,7 @@ export default {
 	},
 	args: {
 		frequency: 'weekly',
-		startOfWeek: 1, // Monday default
+		startOfWeek: 1, // Week starts on Monday; used in places like the UK.
 		savedFrequency: undefined,
 	},
 };
