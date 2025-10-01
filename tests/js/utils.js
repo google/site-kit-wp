@@ -678,7 +678,7 @@ export function waitForTimeouts( timeout ) {
 /**
  * Checks if fake timers are currently active.
  *
- * @since n.e.x.t
+ * @since 1.163.0
  *
  * @return {boolean} Whether fake timers are active.
  */
