@@ -21,25 +21,3 @@ exports[`core/widgets Widgets > selectors > getWidget > returns a widget if one 
   "wrapWidget": true,
 }
 `;
-
-exports[`core/widgets Widgets actions registerWidget should register the component with the given settings and component 1`] = `
-<div>
-  Hello 
-  world
-  !
-</div>
-`;
-
-exports[`core/widgets Widgets selectors getWidget returns a widget if one exists 1`] = `
-{
-  "Component": [Function],
-  "hideOnBreakpoints": undefined,
-  "isActive": undefined,
-  "isPreloaded": undefined,
-  "modules": [],
-  "priority": 10,
-  "slug": "TestWidget",
-  "width": "quarter",
-  "wrapWidget": true,
-}
-`;

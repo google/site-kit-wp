@@ -1,36 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`AccountCreate renders correctly in a loading state 1`] = `
-<div>
-  <div
-    class="mdc-linear-progress mdc-linear-progress--indeterminate"
-    role="progressbar"
-    style="height: 4px;"
-  >
-    <div
-      class="mdc-linear-progress__buffering-dots"
-    />
-    <div
-      class="mdc-linear-progress__buffer"
-    />
-    <div
-      class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"
-    >
-      <span
-        class="mdc-linear-progress__bar-inner"
-      />
-    </div>
-    <div
-      class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar"
-    >
-      <span
-        class="mdc-linear-progress__bar-inner"
-      />
-    </div>
-  </div>
-</div>
-`;
-
 exports[`AccountCreate renders correctly when data has loaded 1`] = `
 <div>
   <div>

@@ -7,11 +7,3 @@ exports[`core/notifications Notifications > actions > registerNotification > sho
   !
 </div>
 `;
-
-exports[`core/notifications Notifications actions registerNotification should register the notification with the given settings and component 1`] = `
-<div>
-  Hello 
-  world
-  !
-</div>
-`;
