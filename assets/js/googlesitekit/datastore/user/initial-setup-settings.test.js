@@ -24,7 +24,6 @@ import { CORE_USER } from './constants';
 import {
 	createTestRegistry,
 	freezeFetch,
-	muteFetch,
 	provideModules,
 	untilResolved,
 	waitForDefaultTimeouts,
@@ -120,9 +119,9 @@ describe( 'core/user initial setup settings', () => {
 					}
 				);
 
-				expect(
-					registry.select( CORE_USER ).getInitialSetupSettings()
-				).toEqual( expectedSettings );
+				expect( store.getState().initialSetupSettings ).toEqual(
+					expectedSettings
+				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -220,7 +219,8 @@ describe( 'core/user initial setup settings', () => {
 					.setIsAnalyticsSetupComplete( true );
 
 				expect(
-					registry.select( CORE_USER ).isAnalyticsSetupComplete()
+					store.getState().initialSetupSettings
+						.isAnalyticsSetupComplete
 				).toBe( true );
 			} );
 		} );
@@ -319,41 +319,9 @@ describe( 'core/user initial setup settings', () => {
 						initialSetupSettingsResponse
 					);
 
-				registry
-					.dispatch( CORE_USER )
-					.finishResolution( 'getInitialSetupSettings', [] );
-
 				expect(
 					registry.select( CORE_USER ).isAnalyticsSetupComplete()
 				).toBe( true );
-			} );
-		} );
-
-		describe( 'isSavingInitialSetupSettings', () => {
-			it( 'should return false when settings are not being saved', () => {
-				expect(
-					registry.select( CORE_USER ).isSavingInitialSetupSettings()
-				).toBe( false );
-			} );
-
-			it( 'should return true while settings are being saved', async () => {
-				muteFetch( initialSetupSettingsEndpoint );
-
-				const promise = registry
-					.dispatch( CORE_USER )
-					.fetchSaveInitialSetupSettings(
-						initialSetupSettingsResponse
-					);
-
-				expect(
-					registry.select( CORE_USER ).isSavingInitialSetupSettings()
-				).toBe( true );
-
-				await promise;
-
-				expect(
-					registry.select( CORE_USER ).isSavingInitialSetupSettings()
-				).toBe( false );
 			} );
 		} );
 	} );

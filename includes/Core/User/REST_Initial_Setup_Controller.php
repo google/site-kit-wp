@@ -79,8 +79,8 @@ class REST_Initial_Setup_Controller {
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
-		$can_view_dashboard = function () {
-			return current_user_can( Permissions::VIEW_DASHBOARD );
+		$can_setup = function () {
+			return current_user_can( Permissions::SETUP );
 		};
 
 		return array(
@@ -92,7 +92,7 @@ class REST_Initial_Setup_Controller {
 						'callback'            => function () {
 							return new WP_REST_Response( $this->initial_setup_settings->get() );
 						},
-						'permission_callback' => $can_view_dashboard,
+						'permission_callback' => $can_setup,
 					),
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
@@ -103,7 +103,7 @@ class REST_Initial_Setup_Controller {
 
 							return new WP_REST_Response( $this->initial_setup_settings->get() );
 						},
-						'permission_callback' => $can_view_dashboard,
+						'permission_callback' => $can_setup,
 						'args'                => array(
 							'data' => array(
 								'type'       => 'object',

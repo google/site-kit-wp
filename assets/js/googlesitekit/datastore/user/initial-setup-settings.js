@@ -114,11 +114,11 @@ const baseActions = {
 
 	/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
 	/**
-	 * Sets whether analytics setup is complete.
+	 * Sets whether Analytics setup is complete.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {boolean} isAnalyticsSetupComplete Whether or not the analytics setup is complete.
+	 * @param {boolean} isAnalyticsSetupComplete Whether or not the Analytics setup is complete.
 	 * @return {Object} Redux-style action.
 	 */
 	setIsAnalyticsSetupComplete( isAnalyticsSetupComplete ) {
@@ -181,12 +181,12 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Returns whether analytics setup is complete from the initial setup settings.
+	 * Returns whether Analytics setup is complete from the initial setup settings.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(boolean|null|undefined)} Whether the analytics setup is complete or not; `undefined` if not loaded or `null` if not set yet.
+	 * @return {(boolean|null|undefined)} Whether the Analytics setup is complete or not; `undefined` if not loaded or `null` if not set yet.
 	 */
 	isAnalyticsSetupComplete: createRegistrySelector( ( select ) => () => {
 		const initialSetupSettings =
@@ -194,22 +194,6 @@ const baseSelectors = {
 
 		return initialSetupSettings?.isAnalyticsSetupComplete;
 	} ),
-
-	/**
-	 * Determines whether the initial setup settings are being saved or not.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean} TRUE if the initial setup settings are being saved, otherwise FALSE.
-	 */
-	isSavingInitialSetupSettings( state ) {
-		// Since isFetchingSaveInitialSetupSettings holds information based on specific values but we only need
-		// generic information here, we need to check whether ANY such request is in progress.
-		return Object.values( state.isFetchingSaveInitialSetupSettings ).some(
-			Boolean
-		);
-	},
 };
 
 const store = combineStores(
