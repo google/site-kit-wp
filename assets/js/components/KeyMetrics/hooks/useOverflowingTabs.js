@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useMount, useUnmount } from 'react-use';
+import { useEvent } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -116,13 +116,7 @@ export default function useOverflowingTabs( {
 		50
 	);
 
-	useMount( () => {
-		global.addEventListener( 'resize', debouncedMaybeCutOffLastTabItem );
-	} );
-
-	useUnmount( () =>
-		global.removeEventListener( 'resize', debouncedMaybeCutOffLastTabItem )
-	);
+	useEvent( 'resize', debouncedMaybeCutOffLastTabItem );
 
 	useEffect( () => {
 		if ( ! isSelectionPanelOpenPrevious && isSelectionPanelOpen ) {
