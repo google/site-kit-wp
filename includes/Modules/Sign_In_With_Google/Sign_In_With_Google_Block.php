@@ -87,6 +87,13 @@ class Sign_In_With_Google_Block {
 		}
 
 		ob_start();
+		/**
+		 * Display the Sign in with Google button.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param array $args Optional arguments to customize button attributes.
+		 */
 		do_action( 'googlesitekit_render_sign_in_with_google_button' );
 		return ob_get_clean();
 	}

@@ -386,6 +386,13 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			return;
 		}
 
+		/**
+		 * Display the Sign in with Google button.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param array $args Optional arguments to customize button attributes.
+		 */
 		do_action(
 			'googlesitekit_render_sign_in_with_google_button',
 			array(
@@ -427,6 +434,13 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	private function render_button_in_wp_login_form( $content ) {
 		if ( $this->can_render_signinwithgoogle() ) {
 			ob_start();
+			/**
+			 * Display the Sign in with Google button.
+			 *
+			 * @since n.e.x.t
+			 *
+			 * @param array $args Optional arguments to customize button attributes.
+			 */
 			do_action( 'googlesitekit_render_sign_in_with_google_button' );
 			$content .= ob_get_clean();
 		}
@@ -438,7 +452,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param array $args Optional arguments to customise button attributes.
+		 * @param array $args Optional arguments to customize button attributes.
 		 */
 	public function render_sign_in_with_google_button( $args = array() ) {
 		if ( ! is_array( $args ) ) {
@@ -458,18 +472,13 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			'class' => implode( ' ', $classes ),
 		);
 
-		$data_attributes_map = array(
-			'text'  => 'data-googlesitekit-siwg-text',
-			'theme' => 'data-googlesitekit-siwg-theme',
-			'shape' => 'data-googlesitekit-siwg-shape',
-		);
-
-		foreach ( $data_attributes_map as $key => $attribute_name ) {
-			if ( empty( $args[ $key ] ) || ! is_scalar( $args[ $key ] ) ) {
+		$data_attributes = array( 'shape', 'text', 'theme' );
+		foreach ( $data_attributes as $attribute ) {
+			if ( empty( $args[ $attribute ] ) || ! is_scalar( $args[ $attribute ] ) ) {
 				continue;
 			}
 
-			$attributes[ $attribute_name ] = strtolower( (string) $args[ $key ] );
+			$attributes[ "data-googlesitekit-siwg-{$attribute}" ] = strtolower( (string) $args[ $attribute ] );
 		}
 
 		$attribute_strings = array();
