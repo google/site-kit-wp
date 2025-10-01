@@ -106,4 +106,14 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			queryByText( /Connect Google Analytics as part of your setup/ )
 		).not.toBeInTheDocument();
 	} );
+
+	it( 'should render a "Why is this required?" information tooltip', () => {
+		const { getByText } = render( <SetupUsingProxyWithSignIn />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SPLASH,
+			features: [ 'setupFlowRefresh' ],
+		} );
+
+		expect( getByText( /Why is this required?/ ) ).toBeInTheDocument();
+	} );
 } );
