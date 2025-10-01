@@ -111,7 +111,7 @@ class Key_Metrics implements Provides_Feature_Metrics {
 	/**
 	 * Gets an array of internal feature metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 *
 	 * @return array
 	 */

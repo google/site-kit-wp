@@ -27,7 +27,7 @@ import {
 	waitFor,
 } from '../../../../tests/js/test-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { AdminMenuTooltip } from './AdminMenuTooltip';
+import { AdminScreenTooltip } from './AdminScreenTooltip';
 import * as tracking from '@/js/util/tracking';
 import useViewContext from '@/js/hooks/useViewContext';
 
@@ -48,7 +48,7 @@ describe( 'AdminMenuTooltip', () => {
 	} );
 
 	it( 'should not render when isTooltipVisible is false', async () => {
-		registry.dispatch( CORE_UI ).setValue( 'admin-menu-tooltip', {
+		registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
 			isTooltipVisible: false,
 		} );
 
@@ -59,7 +59,7 @@ describe( 'AdminMenuTooltip', () => {
 						Settings
 					</a>
 				</div>
-				<AdminMenuTooltip />
+				<AdminScreenTooltip />
 			</div>,
 			{ registry }
 		);
@@ -73,7 +73,7 @@ describe( 'AdminMenuTooltip', () => {
 
 	it( 'should render when isTooltipVisible is true and track view event', async () => {
 		const tooltipSlug = 'test-tooltip-slug';
-		await registry.dispatch( CORE_UI ).setValue( 'admin-menu-tooltip', {
+		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
 			isTooltipVisible: true,
 			title: 'Test Title',
 			content: 'Test Content',
@@ -88,7 +88,7 @@ describe( 'AdminMenuTooltip', () => {
 						Settings
 					</a>
 				</div>
-				<AdminMenuTooltip />
+				<AdminScreenTooltip />
 			</div>,
 			{ registry }
 		);
@@ -118,7 +118,7 @@ describe( 'AdminMenuTooltip', () => {
 
 	it( 'should close the tooltip on clicking the `X` button and track dismiss event', async () => {
 		const tooltipSlug = 'test-tooltip-slug';
-		await registry.dispatch( CORE_UI ).setValue( 'admin-menu-tooltip', {
+		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
 			isTooltipVisible: true,
 			title: 'Test Title',
 			content: 'Test Content',
@@ -133,7 +133,7 @@ describe( 'AdminMenuTooltip', () => {
 						Settings
 					</a>
 				</div>
-				<AdminMenuTooltip />
+				<AdminScreenTooltip />
 			</div>,
 			{ registry }
 		);
@@ -165,7 +165,7 @@ describe( 'AdminMenuTooltip', () => {
 		} );
 
 		expect(
-			registry.select( CORE_UI ).getValue( 'admin-menu-tooltip' )
+			registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
 		).toBeUndefined();
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -176,7 +176,7 @@ describe( 'AdminMenuTooltip', () => {
 
 	it( 'should close the tooltip on clicking the `Got it` button and track dismiss event', async () => {
 		const tooltipSlug = 'test-tooltip-slug';
-		await registry.dispatch( CORE_UI ).setValue( 'admin-menu-tooltip', {
+		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
 			isTooltipVisible: true,
 			title: 'Test Title',
 			content: 'Test Content',
@@ -191,7 +191,7 @@ describe( 'AdminMenuTooltip', () => {
 						Settings
 					</a>
 				</div>
-				<AdminMenuTooltip />
+				<AdminScreenTooltip />
 			</div>,
 			{ registry }
 		);
@@ -224,7 +224,7 @@ describe( 'AdminMenuTooltip', () => {
 		} );
 
 		expect(
-			registry.select( CORE_UI ).getValue( 'admin-menu-tooltip' )
+			registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
 		).toBeUndefined();
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
