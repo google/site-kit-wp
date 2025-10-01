@@ -40,10 +40,6 @@ final class View_Only_Pointer {
 		);
 	}
 
-	function get_callback() {
-
-	}
-
 	/**
 	 * Gets the view-only pointer.
 	 *
