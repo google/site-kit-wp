@@ -39,7 +39,7 @@ const SET_STATE_FROM_SNAPSHOT = 'SET_STATE_FROM_SNAPSHOT';
  * Creates a store object that includes actions and controls for restoring/creating state snapshots.
  *
  * @since 1.9.0
- * @since n.e.x.t Added the ability to pick specific parts of the state to save in the snapshot.
+ * @since 1.163.0 Added the ability to pick specific parts of the state to save in the snapshot.
  * @private
  *
  * @param {string}          storeName                The name of the store to snapshot in the cache.
