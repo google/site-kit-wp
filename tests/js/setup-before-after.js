@@ -22,7 +22,7 @@
 import faker from 'faker';
 import { vi } from 'vitest';
 // Required to bring matchers like toBeInTheDocument into scope.
-import '@testing-library/jest-dom';
+// import '@testing-library/jest-dom'; // TODO: vitest alternative.
 import fetchMock from '@fetch-mock/vitest';
 
 /**

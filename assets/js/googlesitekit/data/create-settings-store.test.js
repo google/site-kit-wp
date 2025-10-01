@@ -156,9 +156,7 @@ describe( 'createSettingsStore store', () => {
 			it( 'updates settings from server', async () => {
 				const response = { isSkyBlue: 'yes' };
 				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/settings'
-					),
+					new RegExp( '/google-site-kit/v1/core/site/data/settings' ),
 					{ body: response, status: 200 }
 				);
 
@@ -178,9 +176,7 @@ describe( 'createSettingsStore store', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock ).toHaveFetched(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/settings'
-					),
+					new RegExp( '/google-site-kit/v1/core/site/data/settings' ),
 					{
 						body: { data: { isSkyBlue: 'no' } },
 					}
