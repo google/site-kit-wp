@@ -521,6 +521,7 @@ final class Assets {
 						'googlesitekit-data',
 						'googlesitekit-api',
 						'googlesitekit-user-data',
+						'googlesitekit-datastore-site',
 					),
 				)
 			),
@@ -604,6 +605,13 @@ final class Assets {
 				'googlesitekit-user-input',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-user-input.js',
+					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
+				)
+			),
+			new Script(
+				'googlesitekit-key-metrics-setup',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-key-metrics-setup.js',
 					'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
 				)
 			),

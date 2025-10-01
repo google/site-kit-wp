@@ -71,7 +71,7 @@ class Enhanced_Conversions {
 	 * Conditionally enqueues the necessary script for Enhanced Conversions.
 	 *
 	 * @since 1.159.0
-	 * @since n.e.x.t Add the hashed user data to the GTag if it exists.
+	 * @since 1.160.0 Add the hashed user data to the GTag if it exists.
 	 *
 	 * @param GTag $gtag GTag instance.
 	 */
@@ -88,7 +88,7 @@ class Enhanced_Conversions {
 	/**
 	 * Gets the formatted value for Enhanced Conversions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.160.0
 	 *
 	 * @param string $value The value to format.
 	 * @return string Formatted value.
@@ -102,7 +102,7 @@ class Enhanced_Conversions {
 	/**
 	 * Gets the formatted email for Enhanced Conversions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.160.0
 	 *
 	 * @param string $email The email address to format.
 	 * @return string Formatted email address.
@@ -116,7 +116,7 @@ class Enhanced_Conversions {
 	/**
 	 * Normalizes a value for Enhanced Conversions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.160.0
 	 *
 	 * @param string $value The value to normalize.
 	 * @return string Normalized value.
@@ -128,7 +128,7 @@ class Enhanced_Conversions {
 	/**
 	 * Normalizes an email address for Enhanced Conversions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.160.0
 	 *
 	 * @param string $email The email address to normalize.
 	 * @return string Normalized email address.
@@ -161,7 +161,7 @@ class Enhanced_Conversions {
 	/**
 	 * Hashes a value for Enhanced Conversions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.160.0
 	 *
 	 * @param string $value The value to hash.
 	 * @return string Hashed value.

@@ -26,28 +26,28 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
-import Link from '../../../../../components/Link';
-import PageHeader from '../../../../../components/PageHeader';
-import P from '../../../../../components/Typography/P';
-import Stepper from '../../../../../components/Stepper';
-import Step from '../../../../../components/Stepper/Step';
-import Layout from '../../../../../components/layout/Layout';
-import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import useViewContext from '../../../../../hooks/useViewContext';
-import { Cell, Grid, Row } from '../../../../../material-components';
-import { trackEvent } from '../../../../../util';
+import Link from '@/js/components/Link';
+import PageHeader from '@/js/components/PageHeader';
+import P from '@/js/components/Typography/P';
+import Stepper from '@/js/components/Stepper';
+import Step from '@/js/components/Stepper/Step';
+import Layout from '@/js/components/layout/Layout';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
 import {
 	AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP,
 	MODULES_ADSENSE,
-} from '../../../datastore/constants';
+} from '@/js/modules/adsense/datastore/constants';
 import Content from './Content';
 import CreateMessageStep from './steps/CreateMessageStep';
 import PlaceTagsStep from './steps/PlaceTagsStep';
-import { MODULE_SLUG_ADSENSE } from '../../../constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 
 export default function SetupMain() {
 	const viewContext = useViewContext();
@@ -154,6 +154,7 @@ export default function SetupMain() {
 				navigateTo( dashboardURL );
 			}
 		}
+		return null;
 	}, [
 		activeStep,
 		adSenseSettingsURL,

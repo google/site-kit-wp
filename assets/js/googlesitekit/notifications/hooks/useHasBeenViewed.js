@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_UI } from '../../datastore/ui/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
 function getKey( id ) {
 	return `notification/${ id }/viewed`;

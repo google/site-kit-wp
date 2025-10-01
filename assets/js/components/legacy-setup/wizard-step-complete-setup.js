@@ -31,10 +31,10 @@ import { Component } from '@wordpress/element';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { Cell, Grid, Row } from '../../material-components';
-import { trackEvent } from '../../util';
-import Typography from '../Typography';
-import P from '../Typography/P';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 class WizardStepCompleteSetup extends Component {
 	constructor( props ) {

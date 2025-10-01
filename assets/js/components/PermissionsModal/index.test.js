@@ -25,7 +25,7 @@ import {
 	createTestRegistry,
 	provideUserAuthentication,
 } from '../../../../tests/js/test-utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 describe( 'PermissionsModal', () => {
 	let registry;

@@ -35,19 +35,19 @@ import { Fragment } from '@wordpress/element';
 import { useSelect } from 'googlesitekit-data';
 import Logo from './Logo';
 import UserMenu from './UserMenu';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import { Grid, Row, Cell } from '../material-components';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Grid, Row, Cell } from '@/js/material-components';
 import DashboardNavigation from './DashboardNavigation';
 import EntityHeader from './EntityHeader';
 import ViewOnlyMenu from './ViewOnlyMenu';
-import useViewOnly from '../hooks/useViewOnly';
-import useDashboardType from '../hooks/useDashboardType';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import useDashboardType from '@/js/hooks/useDashboardType';
 import Link from './Link';
 import LegacyNotifications from './notifications/LegacyNotifications';
 import Notifications from './notifications/Notifications';
-import { NOTIFICATION_AREAS } from '../googlesitekit/notifications/constants';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { useGlobalTrackingEffect } from '../hooks/useGlobalTrackingEffect';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { useGlobalTrackingEffect } from '@/js/hooks/useGlobalTrackingEffect';
 
 function Header( { children, subHeader, showNavigation } ) {
 	const isDashboard = !! useDashboardType();

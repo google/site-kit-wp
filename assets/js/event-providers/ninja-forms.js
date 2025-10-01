@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { classifyPII, getUserData } from './utils';
+
 ( ( jQuery, Marionette, Backbone ) => {
 	// eslint-disable-next-line no-undef
 	if ( ! jQuery || ! Marionette || ! Backbone ) {
@@ -31,8 +36,17 @@
 			);
 		},
 
-		actionSubmit() {
-			global._googlesitekit?.gtagEvent?.( 'submit_lead_form' );
+		actionSubmit( event ) {
+			const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
+
+			const userData = gtagUserDataEnabled
+				? getUserDataFromNinjaFormFields( event.data.fields )
+				: undefined;
+
+			global._googlesitekit?.gtagEvent?.(
+				'submit_lead_form',
+				userData ? { user_data: userData } : undefined
+			);
 		},
 	} );
 
@@ -40,3 +54,36 @@
 		new ninjaFormEventController();
 	} );
 } )( global.jQuery, global.Marionette, global.Backbone );
+
+const NINJA_FORMS_TYPES = {
+	phone: 'tel',
+	textbox: 'text',
+};
+
+/**
+ * Extracts and classifies user data from a Ninja Forms form submission.
+ *
+ * @since 1.162.0 Renamed to `getUserDataFromNinjaFormFields` because `getUserData` was extracted into a generic utility function.
+ *
+ * @param {Object<string, Object>} fields The submitted Ninja Form fields.
+ * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
+ */
+function getUserDataFromNinjaFormFields( fields ) {
+	const detectedFields = Object.values( fields )
+		.map( ( field ) => {
+			const { label, type: nfType, value, key: name } = field;
+
+			// Ninja Forms types are not standard HTML input types, so we map them before calling classifyPII, which relies on standard HTML types.
+			const type = NINJA_FORMS_TYPES[ nfType ] ?? nfType;
+
+			return classifyPII( {
+				label,
+				type,
+				value,
+				name,
+			} );
+		} )
+		.filter( Boolean );
+
+	return getUserData( detectedFields );
+}

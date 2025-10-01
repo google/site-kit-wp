@@ -22,10 +22,10 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULES_ADS } from '../../modules/ads/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import SettingsCardConsentMode from './SettingsCardConsentMode';
@@ -150,7 +150,7 @@ Loading.decorators = [
 Loading.scenario = {};
 
 export default {
-	title: 'Consent Mode/SettingsCardConsentMode',
+	title: 'Consent mode/SettingsCardConsentMode',
 	decorators: [
 		( Story, { args } ) => {
 			function setupRegistry( registry ) {

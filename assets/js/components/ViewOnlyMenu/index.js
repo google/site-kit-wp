@@ -33,10 +33,11 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import { Button, Menu } from 'googlesitekit-components';
-import useViewContext from '../../hooks/useViewContext';
-import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
-import { trackEvent } from '../../util';
-import ViewIcon from '../../../svg/icons/view.svg';
+import useViewContext from '@/js/hooks/useViewContext';
+import { useFeature } from '@/js/hooks/useFeature';
+import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
+import { trackEvent } from '@/js/util';
+import ViewIcon from '@/svg/icons/view.svg';
 import Description from './Description';
 import SharedServices from './SharedServices';
 import Tracking from './Tracking';
@@ -44,9 +45,14 @@ import { useSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	PERMISSION_AUTHENTICATE,
-} from '../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
+import ManageEmailReports from '@/js/components/ViewOnlyMenu/ManageEmailReports';
 
 export default function ViewOnlyMenu() {
+	const proactiveUserEngagementEnabled = useFeature(
+		'proactiveUserEngagement'
+	);
+
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
 	const viewContext = useViewContext();
@@ -108,6 +114,7 @@ export default function ViewOnlyMenu() {
 			>
 				<Description />
 				<SharedServices />
+				{ proactiveUserEngagementEnabled && <ManageEmailReports /> }
 				<li className="mdc-list-divider" role="separator"></li>
 				<Tracking />
 			</Menu>

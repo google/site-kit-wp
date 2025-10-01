@@ -30,7 +30,7 @@ import {
 	trackingExclusionLabels,
 	AUTO_ADS_LOGGED_IN_USERS,
 	AUTO_ADS_CONTENT_CREATORS,
-} from '../common/AutoAdExclusionSwitches';
+} from '@/js/modules/adsense/components/common/AutoAdExclusionSwitches';
 import {
 	ACCOUNT_STATUS_DISAPPROVED,
 	ACCOUNT_STATUS_GRAYLISTED,
@@ -46,7 +46,7 @@ import {
 	SITE_STATUS_GETTING_READY,
 	SITE_STATUS_READY,
 	SITE_STATUS_READY_NO_AUTO_ADS,
-} from '../../util/status';
+} from '@/js/modules/adsense/util/status';
 
 /**
  * Returns translatable account status label.

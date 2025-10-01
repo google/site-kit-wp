@@ -20,15 +20,16 @@
  * Internal dependencies
  */
 import SettingsView from './SettingsView';
-import { Cell, Grid, Row } from '../../../../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import { MODULE_SLUG_TAGMANAGER } from '../../constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 const defaultSettings = {
 	accountID: '',
@@ -60,34 +61,30 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.args = {
-	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {
-			...defaultSettings,
-			accountID: '123456789',
-			containerID: 'GTM-S1T3K1T',
-			internalContainerID: '54321',
-			useSnippet: true,
-		} );
-	},
-};
 
 export const ExistingTag = Template.bind( {} );
 ExistingTag.storyName = 'Existing Tag';
 ExistingTag.args = {
 	setupRegistry: ( registry ) => {
-		const accountID = '123456789';
-		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {
-			...defaultSettings,
-			accountID,
-			containerID: 'GTM-S1T3K1T',
-			internalContainerID: '54321',
-			useSnippet: true,
-		} );
 		registry
 			.dispatch( MODULES_TAGMANAGER )
 			.receiveGetExistingTag( 'GTM-G000GL3' );
 	},
+};
+
+export const GTGEnabled = Template.bind( {} );
+GTGEnabled.storyName = 'Google tag gateway enabled';
+GTGEnabled.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
+			isEnabled: true,
+			isGTGHealthy: true,
+			isScriptAccessEnabled: true,
+		} );
+	},
+};
+GTGEnabled.parameters = {
+	features: [ 'googleTagGateway' ],
 };
 
 export default {
@@ -96,9 +93,14 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			function setupRegistry( registry ) {
-				registry
-					.dispatch( MODULES_TAGMANAGER )
-					.receiveGetSettings( {} );
+				registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {
+					...defaultSettings,
+					accountID: '123456789',
+					containerID: 'GTM-S1T3K1T',
+					internalContainerID: '54321',
+					useSnippet: true,
+				} );
+
 				registry
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetExistingTag( null );

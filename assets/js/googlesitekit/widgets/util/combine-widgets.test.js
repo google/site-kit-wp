@@ -21,10 +21,10 @@
  */
 import { combineWidgets } from './combine-widgets';
 import { getWidgetLayout } from './get-widget-layout';
-import { WIDGET_WIDTHS } from '../datastore/constants';
-import ReportZero from '../../../components/ReportZero';
-import Null from '../../../components/Null';
-import RecoverableModules from '../../../components/RecoverableModules';
+import { WIDGET_WIDTHS } from '@/js/googlesitekit/widgets/datastore/constants';
+import ReportZero from '@/js/components/ReportZero';
+import Null from '@/js/components/Null';
+import RecoverableModules from '@/js/components/RecoverableModules';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 

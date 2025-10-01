@@ -54,12 +54,12 @@ import {
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-} from '../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
-} from '../../modules/analytics-4/datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import { shouldDisplayWidgetWithConversionEvent } from './shouldDisplayWidgetWithConversionEvent';
 import {
 	KEY_METRICS_GROUP_CONTENT_PERFORMANCE,

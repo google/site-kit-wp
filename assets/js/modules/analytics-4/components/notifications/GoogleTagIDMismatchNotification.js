@@ -26,11 +26,11 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
-import { isValidMeasurementID } from '../../utils/validation';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { getBestTagID } from '../../utils/google-tag';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { isValidMeasurementID } from '@/js/modules/analytics-4/utils/validation';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { getBestTagID } from '@/js/modules/analytics-4/utils/google-tag';
 import BannerNotification, {
 	TYPES,
 } from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
@@ -103,6 +103,7 @@ export default function GoogleTagIDMismatchNotification( {
 		if ( Array.isArray( tagIDs ) ) {
 			return getBestTagID( tagIDs, currentAnalyticsConfig.measurementID );
 		}
+		return null;
 	} );
 
 	const isDoingSubmitChanges = useSelect( ( select ) =>

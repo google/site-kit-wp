@@ -34,33 +34,35 @@ import { ReactNode } from '@wordpress/element';
  */
 import BannerNotification, {
 	TYPES,
-} from '../googlesitekit/notifications/components/layout/BannerNotification';
-import { HOUR_IN_SECONDS } from '../util';
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import { HOUR_IN_SECONDS } from '@/js/util';
 
 /**
  * Maps props received from the server (e.g. from a `select( CORE_SITE ).getNotifications()`
  * selector call) to the props expected by the new BannerNotification component.
- * .
  *
  * @since 1.157.0
  *
- * @param {Object}     props                Component props.
- * @param {string}     props.id             Notification ID/slug.
- * @param {string}     props.title          Notification title/heading.
- * @param {?ReactNode} props.content        Description for notification.
- * @param {string}     props.ctaLabel       Label for the call-to-action button.
- * @param {?string}    props.ctaTarget      `target` for the call-to-action link, e.g. `_blank`. Optional.
- * @param {?string}    props.ctaURL         URL for the call-to-action link.
- * @param {?boolean}   props.dismissible    Whether the notification is dismissible. Optional.
- * @param {?string}    props.dismissLabel   Label for the dismiss button. Optional.
- * @param {?string}    props.learnMoreLabel Label for the "Learn More" link. Optional.
- * @param {?string}    props.learnMoreURL   URL for the "Learn More" link. Optional.
- * @param {?Function}  props.onCTAClick     Callback to run when CTA is clicked. Optional.
- * @param {?Function}  props.onDismissClick Callback to run when the Dismiss button is clicked. Optional.
+ * @param {Object}     props                     Component props.
+ * @param {string}     props.id                  Notification ID/slug.
+ * @param {?ReactNode} props.titleIcon           Icon to display above the title.
+ * @param {string}     props.title               Notification title/heading.
+ * @param {?ReactNode} props.content             Description for notification.
+ * @param {string}     props.ctaLabel            Label for the call-to-action button.
+ * @param {?string}    props.ctaTarget           `target` for the call-to-action link, e.g. `_blank`. Optional.
+ * @param {?string}    props.ctaURL              URL for the call-to-action link.
+ * @param {?boolean}   props.dismissible         Whether the notification is dismissible. Optional.
+ * @param {?string}    props.dismissLabel        Label for the dismiss button. Optional.
+ * @param {?string}    props.learnMoreLabel      Label for the "Learn More" link. Optional.
+ * @param {?string}    props.learnMoreURL        URL for the "Learn More" link. Optional.
+ * @param {?Function}  props.onCTAClick          Callback to run when CTA is clicked. Optional.
+ * @param {?Function}  props.onDismissClick      Callback to run when the Dismiss button is clicked. Optional.
+ * @param {?Object}    props.gaTrackingEventArgs Custom GA tracking event category and label options. Optional.
  * @return {JSX.Element} Notification component.
  */
 function NotificationFromServer( {
 	id,
+	titleIcon,
 	title,
 	content,
 	ctaLabel,
@@ -72,6 +74,7 @@ function NotificationFromServer( {
 	learnMoreURL,
 	onCTAClick,
 	onDismissClick,
+	gaTrackingEventArgs,
 } ) {
 	// Notifications from the server should not be dismissed permanently in the database.
 	// CoreSiteBannerNotifications are "marked as accepted/dismissed" on the server.
@@ -87,12 +90,17 @@ function NotificationFromServer( {
 		<BannerNotification
 			notificationID={ id }
 			type={ TYPES.WARNING }
+			titleIcon={ titleIcon ? titleIcon : undefined }
 			title={ title }
 			description={ content }
-			learnMoreLink={ {
-				label: learnMoreLabel,
-				href: learnMoreURL,
-			} }
+			learnMoreLink={
+				learnMoreURL
+					? {
+							label: learnMoreLabel,
+							href: learnMoreURL,
+					  }
+					: undefined
+			}
 			ctaButton={ {
 				label: ctaLabel,
 				href: ctaURL,
@@ -109,6 +117,7 @@ function NotificationFromServer( {
 					  }
 					: undefined
 			}
+			gaTrackingEventArgs={ gaTrackingEventArgs }
 		/>
 	);
 }
@@ -126,6 +135,7 @@ NotificationFromServer.propTypes = {
 	learnMoreURL: PropTypes.string,
 	onCTAClick: PropTypes.func,
 	onDismissClick: PropTypes.func,
+	gaTrackingEventArgs: PropTypes.object,
 };
 
 export default NotificationFromServer;

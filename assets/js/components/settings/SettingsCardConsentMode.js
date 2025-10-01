@@ -30,16 +30,16 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { Grid, Cell, Row } from '../../material-components';
-import Badge from '../../components/Badge';
-import ConsentModeSwitch from '../consent-mode/ConsentModeSwitch';
-import WPConsentAPIRequirements from '../consent-mode/WPConsentAPIRequirements';
-import Layout from '../layout/Layout';
-import { DAY_IN_SECONDS, trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
-import Notice from '../Notice';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Grid, Cell, Row } from '@/js/material-components';
+import Badge from '@/js/components/Badge';
+import ConsentModeSwitch from '@/js/components/consent-mode/ConsentModeSwitch';
+import WPConsentAPIRequirements from '@/js/components/consent-mode/WPConsentAPIRequirements';
+import Layout from '@/js/components/layout/Layout';
+import { DAY_IN_SECONDS, trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import Notice from '@/js/components/Notice';
 
 export default function SettingsCardConsentMode() {
 	const viewContext = useViewContext();
@@ -74,21 +74,14 @@ export default function SettingsCardConsentMode() {
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
 	const inView = !! intersectionEntry?.intersectionRatio;
 
-	const usingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	useEffect( () => {
 		if ( inView && ! hasBeenInView ) {
-			// Track an event when the user sees the Consent Mode settings.
+			// Track an event when the user sees the consent mode settings.
 			trackEvent( `${ viewContext }_CoMo`, 'view_requirements' );
 
-			if (
-				isAdsConnected &&
-				isConsentModeEnabled === false &&
-				usingProxy
-			) {
+			if ( isAdsConnected && isConsentModeEnabled === false ) {
 				triggerSurvey( 'view_como_setup_cta', { ttl: DAY_IN_SECONDS } );
 			}
 
@@ -98,7 +91,6 @@ export default function SettingsCardConsentMode() {
 		inView,
 		hasBeenInView,
 		viewContext,
-		usingProxy,
 		triggerSurvey,
 		isAdsConnected,
 		isConsentModeEnabled,
@@ -106,7 +98,7 @@ export default function SettingsCardConsentMode() {
 
 	return (
 		<Layout
-			title={ __( 'Consent Mode', 'google-site-kit' ) }
+			title={ __( 'Consent mode', 'google-site-kit' ) }
 			badge={
 				isAdsConnected ? (
 					<Badge
@@ -141,7 +133,7 @@ export default function SettingsCardConsentMode() {
 										<Notice
 											type={ Notice.TYPES.INFO }
 											description={ __(
-												'If you have Google Ads campaigns for this site, it’s highly recommended to enable Consent mode - otherwise, you won’t be able to collect any metrics on the effectiveness of your campaigns in regions like the European Economic Area.',
+												'If you have Google Ads campaigns for this site, it’s highly recommended to enable consent mode - otherwise, you won’t be able to collect any metrics on the effectiveness of your campaigns in regions like the European Economic Area.',
 												'google-site-kit'
 											) }
 										/>

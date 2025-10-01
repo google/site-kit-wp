@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { MODULES_TAGMANAGER } from '../constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 import {
 	buildLiveContainerVersionWeb,
 	buildLiveContainerVersionAMP,

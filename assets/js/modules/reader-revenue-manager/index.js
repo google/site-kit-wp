@@ -25,7 +25,7 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	ERROR_CODE_NON_HTTPS_SITE,
@@ -34,8 +34,8 @@ import {
 } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
-import ReaderRevenueManagerIcon from '../../../svg/graphics/reader-revenue-manager.svg';
-import { isURLUsingHTTPS } from '../../util/is-url-using-https';
+import ReaderRevenueManagerIcon from '@/svg/graphics/reader-revenue-manager.svg';
+import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
 import {
 	ReaderRevenueManagerSetupCTABanner,
 	RRMSetupSuccessSubtleNotification,
@@ -44,10 +44,10 @@ import {
 	NOTIFICATION_GROUPS,
 	NOTIFICATION_AREAS,
 	PRIORITY,
-} from '../../googlesitekit/notifications/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/notifications/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import ProductIDContributionsNotification from './components/dashboard/ProductIDContributionsNotification';
 import {
 	RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID,
@@ -105,6 +105,14 @@ async function checkRequirementsForProductIDNotification(
 	{ select, resolveSelect },
 	requiredPaymentOption
 ) {
+	const readerRevenueManagerActive = select( CORE_MODULES ).isModuleActive(
+		MODULE_SLUG_READER_REVENUE_MANAGER
+	);
+
+	if ( ! readerRevenueManagerActive ) {
+		return false;
+	}
+
 	await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
 
 	const publicationOnboardingState = select(

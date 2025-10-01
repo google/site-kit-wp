@@ -31,21 +31,21 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	RESET_PUBLICATIONS,
 	SHOW_PUBLICATION_CREATE,
-} from '../../datastore/constants';
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { useRefocus } from '../../../../hooks/useRefocus';
+import { useRefocus } from '@/js/hooks/useRefocus';
 import { ProgressBar } from 'googlesitekit-components';
-import { PublicationCreate } from '../common';
-import ReaderRevenueManagerIcon from '../../../../../svg/graphics/reader-revenue-manager.svg';
+import { PublicationCreate } from '@/js/modules/reader-revenue-manager/components/common';
+import ReaderRevenueManagerIcon from '@/svg/graphics/reader-revenue-manager.svg';
 import SetupForm from './SetupForm';
-import Typography from '../../../../components/Typography';
-import useFormValue from '../../../../hooks/useFormValue';
+import Typography from '@/js/components/Typography';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function SetupMain( { finishSetup = () => {} } ) {
 	const publications = useSelect( ( select ) =>

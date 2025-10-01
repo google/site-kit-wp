@@ -25,13 +25,13 @@ import {
 	ButtonTextSelect,
 	ButtonThemeSelect,
 	ClientIDTextField,
-	OneTapToggles,
+	OneTapToggle,
 	Preview,
 	SettingsNotice,
-} from '../common';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { Cell, Grid, Row } from '../../../../material-components';
+} from '@/js/modules/sign-in-with-google/components/common';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { Cell, Grid, Row } from '@/js/material-components';
 
 export default function SettingsForm() {
 	return (
@@ -77,7 +77,7 @@ export default function SettingsForm() {
 				</Row>
 				<Row>
 					<Cell size={ 12 }>
-						<OneTapToggles />
+						<OneTapToggle />
 					</Cell>
 					<Cell size={ 12 }>
 						<AnyoneCanRegisterReadOnly />

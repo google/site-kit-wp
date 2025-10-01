@@ -19,7 +19,7 @@
 	"jest.pathToConfig": "./tests/js/jest.config.js",
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"[javascript]": {
-		"editor.formatOnSave": true
+		"editor.formatOnSave": true,
 	},
 	"[scss]": {
 		"editor.formatOnSave": true,
@@ -35,5 +35,5 @@
 		"css",
 		"scss"
 	],
-	 "javascript.preferences.importModuleSpecifier": "relative"
+	 "javascript.preferences.importModuleSpecifier": "non-relative"
 }

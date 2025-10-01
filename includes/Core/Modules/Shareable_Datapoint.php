@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Modules;
 /**
  * Class representing a shareable datapoint definition.
  *
- * @since n.e.x.t
+ * @since 1.160.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Shareable_Datapoint extends Datapoint {
 	/**
 	 * Checks if the datapoint is shareable.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.160.0
 	 *
 	 * @return bool
 	 */

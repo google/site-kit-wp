@@ -26,12 +26,15 @@ import {
 } from '../../../../../tests/js/utils';
 import { render, waitFor } from '../../../../../tests/js/test-utils';
 import { CORE_NOTIFICATIONS } from './constants';
-import { NOTIFICATION_GROUPS, NOTIFICATION_AREAS } from '../constants';
+import {
+	NOTIFICATION_GROUPS,
+	NOTIFICATION_AREAS,
+} from '@/js/googlesitekit/notifications/constants';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
-} from '../../constants';
-import { CORE_USER } from '../../datastore/user/constants';
+} from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { dismissedPromptsEndpoint } from '../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
 describe( 'core/notifications Notifications', () => {
@@ -226,8 +229,8 @@ describe( 'core/notifications Notifications', () => {
 						NOTIFICATION_GROUPS.DEFAULT
 					)
 				).toMatchInlineSnapshot( `
-			Array [
-			  Object {
+			[
+			  {
 			    "Component": [Function],
 			    "areaSlug": "notification-area-header",
 			    "checkRequirements": [Function],
@@ -237,7 +240,7 @@ describe( 'core/notifications Notifications', () => {
 			    "id": "test-notification-id",
 			    "isDismissible": false,
 			    "priority": 11,
-			    "viewContexts": Array [
+			    "viewContexts": [
 			      "mainDashboard",
 			    ],
 			  },
@@ -305,8 +308,8 @@ describe( 'core/notifications Notifications', () => {
 						NOTIFICATION_GROUPS.DEFAULT
 					)
 				).toMatchInlineSnapshot( `
-			Array [
-			  Object {
+			[
+			  {
 			    "Component": [Function],
 			    "areaSlug": "notification-area-header",
 			    "check": [Function],
@@ -317,12 +320,12 @@ describe( 'core/notifications Notifications', () => {
 			    "id": "first",
 			    "isDismissible": false,
 			    "priority": 5,
-			    "viewContexts": Array [
+			    "viewContexts": [
 			      "mainDashboard",
 			    ],
 			    "viewCount": 0,
 			  },
-			  Object {
+			  {
 			    "Component": [Function],
 			    "areaSlug": "notification-area-header",
 			    "check": [Function],
@@ -333,12 +336,12 @@ describe( 'core/notifications Notifications', () => {
 			    "id": "second",
 			    "isDismissible": false,
 			    "priority": 10,
-			    "viewContexts": Array [
+			    "viewContexts": [
 			      "mainDashboard",
 			    ],
 			    "viewCount": 0,
 			  },
-			  Object {
+			  {
 			    "Component": [Function],
 			    "areaSlug": "notification-area-header",
 			    "check": [Function],
@@ -349,7 +352,7 @@ describe( 'core/notifications Notifications', () => {
 			    "id": "test-notification-id",
 			    "isDismissible": false,
 			    "priority": 20,
-			    "viewContexts": Array [
+			    "viewContexts": [
 			      "mainDashboard",
 			    ],
 			    "viewCount": 0,
@@ -418,8 +421,8 @@ describe( 'core/notifications Notifications', () => {
 						NOTIFICATION_GROUPS.DEFAULT
 					)
 				).toMatchInlineSnapshot( `
-			Array [
-			  Object {
+			[
+			  {
 			    "Component": [Function],
 			    "areaSlug": "notification-area-header",
 			    "check": [Function],
@@ -430,12 +433,12 @@ describe( 'core/notifications Notifications', () => {
 			    "id": "first",
 			    "isDismissible": false,
 			    "priority": 5,
-			    "viewContexts": Array [
+			    "viewContexts": [
 			      "mainDashboard",
 			    ],
 			    "viewCount": 0,
 			  },
-			  Object {
+			  {
 			    "Component": [Function],
 			    "areaSlug": "notification-area-header",
 			    "check": [Function],
@@ -446,12 +449,12 @@ describe( 'core/notifications Notifications', () => {
 			    "id": "in-between",
 			    "isDismissible": false,
 			    "priority": 6,
-			    "viewContexts": Array [
+			    "viewContexts": [
 			      "mainDashboard",
 			    ],
 			    "viewCount": 0,
 			  },
-			  Object {
+			  {
 			    "Component": [Function],
 			    "areaSlug": "notification-area-header",
 			    "check": [Function],
@@ -462,7 +465,7 @@ describe( 'core/notifications Notifications', () => {
 			    "id": "second",
 			    "isDismissible": false,
 			    "priority": 10,
-			    "viewContexts": Array [
+			    "viewContexts": [
 			      "mainDashboard",
 			    ],
 			    "viewCount": 0,
@@ -531,8 +534,8 @@ describe( 'core/notifications Notifications', () => {
 						NOTIFICATION_GROUPS.DEFAULT
 					)
 				).toMatchInlineSnapshot( `
-			Array [
-			  Object {
+			[
+			  {
 			    "Component": [Function],
 			    "areaSlug": "notification-area-header",
 			    "check": [Function],
@@ -543,12 +546,12 @@ describe( 'core/notifications Notifications', () => {
 			    "id": "in-between",
 			    "isDismissible": false,
 			    "priority": 1,
-			    "viewContexts": Array [
+			    "viewContexts": [
 			      "mainDashboard",
 			    ],
 			    "viewCount": 0,
 			  },
-			  Object {
+			  {
 			    "Component": [Function],
 			    "areaSlug": "notification-area-header",
 			    "check": [Function],
@@ -559,12 +562,12 @@ describe( 'core/notifications Notifications', () => {
 			    "id": "first",
 			    "isDismissible": false,
 			    "priority": 5,
-			    "viewContexts": Array [
+			    "viewContexts": [
 			      "mainDashboard",
 			    ],
 			    "viewCount": 0,
 			  },
-			  Object {
+			  {
 			    "Component": [Function],
 			    "areaSlug": "notification-area-header",
 			    "check": [Function],
@@ -575,7 +578,7 @@ describe( 'core/notifications Notifications', () => {
 			    "id": "second",
 			    "isDismissible": false,
 			    "priority": 10,
-			    "viewContexts": Array [
+			    "viewContexts": [
 			      "mainDashboard",
 			    ],
 			    "viewCount": 0,

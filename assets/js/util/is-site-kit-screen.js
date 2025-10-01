@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { SITE_KIT_VIEW_CONTEXTS } from '../googlesitekit/constants';
+import { SITE_KIT_VIEW_CONTEXTS } from '@/js/googlesitekit/constants';
 
 /**
  * Checks whether or not the current viewContext is a Site Kit screen.

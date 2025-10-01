@@ -24,21 +24,30 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { _x } from '@wordpress/i18n';
-import { useEffect, useState } from '@wordpress/element';
+import { _x, __ } from '@wordpress/i18n';
+import { Fragment, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import AnalyticsIcon from '../../../../../svg/graphics/analytics.svg';
+import AnalyticsIcon from '@/svg/graphics/analytics.svg';
 import SetupForm from './SetupForm';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
-import useExistingTagEffect from '../../hooks/useExistingTagEffect';
-import { AccountCreate, AccountCreateLegacy } from '../common';
-import Typography from '../../../../components/Typography';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	MODULES_ANALYTICS_4,
+	ACCOUNT_CREATE,
+} from '@/js/modules/analytics-4/datastore/constants';
+import useExistingTagEffect from '@/js/modules/analytics-4/hooks/useExistingTagEffect';
+import {
+	AccountCreate,
+	AccountCreateLegacy,
+} from '@/js/modules/analytics-4/components/common';
+import ToastNotice from '@/js/components/ToastNotice';
+import Typography from '@/js/components/Typography';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) =>
@@ -91,6 +100,14 @@ export default function SetupMain( { finishSetup } ) {
 
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
+	const [ searchConsoleSetupSuccess, setSearchConsoleSetupSuccess ] =
+		useQueryArg( 'searchConsoleSetupSuccess' );
+
+	const showSearchConsoleSetupSuccessToast =
+		!! searchConsoleSetupSuccess && setupFlowRefreshEnabled;
+
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
@@ -110,25 +127,38 @@ export default function SetupMain( { finishSetup } ) {
 	}
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
-			<div className="googlesitekit-setup-module__step">
-				<div className="googlesitekit-setup-module__logo">
-					<AnalyticsIcon width="40" height="40" />
-				</div>
+		<Fragment>
+			<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
+				<div className="googlesitekit-setup-module__step">
+					<div className="googlesitekit-setup-module__logo">
+						<AnalyticsIcon width="40" height="40" />
+					</div>
 
-				<Typography
-					as="h3"
-					className="googlesitekit-setup-module__title"
-					size="small"
-					type="headline"
-				>
-					{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-				</Typography>
+					<Typography
+						as="h3"
+						className="googlesitekit-setup-module__title"
+						size="small"
+						type="headline"
+					>
+						{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+					</Typography>
+				</div>
+				<div className="googlesitekit-setup-module__step">
+					{ viewComponent }
+				</div>
 			</div>
-			<div className="googlesitekit-setup-module__step">
-				{ viewComponent }
-			</div>
-		</div>
+			{ showSearchConsoleSetupSuccessToast && (
+				<ToastNotice
+					title={ __(
+						'Search Console was successfully set up',
+						'google-site-kit'
+					) }
+					onDismiss={ () =>
+						setSearchConsoleSetupSuccess( undefined )
+					}
+				/>
+			) }
+		</Fragment>
 	);
 }
 

@@ -40,23 +40,23 @@ import {
 	SpinnerButton,
 } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_QUESTIONS_PURPOSE,
-} from '../user-input/util/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+} from '@/js/components/user-input/util/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
-import Typography from '../Typography';
-import useFormValue from '../../hooks/useFormValue';
-import P from '../Typography/P';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import Typography from '@/js/components/Typography';
+import useFormValue from '@/js/hooks/useFormValue';
+import P from '@/js/components/Typography/P';
 
 function ConfirmSitePurposeChangeModal( {
 	dialogActive = false,

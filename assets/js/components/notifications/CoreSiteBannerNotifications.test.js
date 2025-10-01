@@ -26,13 +26,12 @@ import {
 	provideModules,
 	provideSiteInfo,
 	act,
-	waitFor,
 } from '../../../../tests/js/test-utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { NOTIFICATION_GROUPS } from '../../googlesitekit/notifications/constants';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 
 describe( 'CoreSiteBannerNotifications', () => {
@@ -40,7 +39,6 @@ describe( 'CoreSiteBannerNotifications', () => {
 
 	beforeEach( () => {
 		jest.useFakeTimers();
-		jest.spyOn( global, 'setTimeout' );
 
 		registry = createTestRegistry();
 
@@ -86,17 +84,17 @@ describe( 'CoreSiteBannerNotifications', () => {
 		// This component does not render anything directly,
 		expect( container.childElementCount ).toBe( undefined );
 
-		const { getQueuedNotifications } =
-			registry.select( CORE_NOTIFICATIONS );
+		// Switch to real timers for the async resolver.
+		jest.useRealTimers();
 
-		await waitFor( () => {
-			expect(
-				getQueuedNotifications(
-					VIEW_CONTEXT_MAIN_DASHBOARD,
-					NOTIFICATION_GROUPS.DEFAULT
-				).length
-			).toBe( 1 );
-		} );
+		const queuedNotifications = await registry
+			.resolveSelect( CORE_NOTIFICATIONS )
+			.getQueuedNotifications(
+				VIEW_CONTEXT_MAIN_DASHBOARD,
+				NOTIFICATION_GROUPS.DEFAULT
+			);
+
+		expect( queuedNotifications.length ).toBe( 1 );
 	} );
 
 	it( 'does not render notification with survey', () => {

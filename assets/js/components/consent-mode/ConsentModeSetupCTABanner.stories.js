@@ -26,16 +26,16 @@ import fetchMock from 'fetch-mock';
  */
 import { provideModules } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ADS } from '../../modules/ads/datastore/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import { WEEK_IN_SECONDS } from '../../util';
+import { WEEK_IN_SECONDS } from '@/js/util';
 import ConsentModeSetupCTABanner from './ConsentModeSetupCTABanner';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	CONSENT_MODE_SETUP_CTA_WIDGET_SLUG
@@ -50,7 +50,7 @@ Default.storyName = 'Default';
 Default.scenario = {};
 
 export default {
-	title: 'Consent Mode/ConsentModeSetupCTABanner',
+	title: 'Consent mode/ConsentModeSetupCTABanner',
 	decorators: [
 		( Story ) => {
 			function setupRegistry( registry ) {

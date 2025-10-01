@@ -27,12 +27,12 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import P from '../../../../components/Typography/P';
-import { trackEvent } from '../../../../util/tracking';
-import useViewContext from '../../../../hooks/useViewContext';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import P from '@/js/components/Typography/P';
+import { trackEvent } from '@/js/util/tracking';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function AccountCreate() {
 	const viewContext = useViewContext();

@@ -32,16 +32,16 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	isInsufficientPermissionsError,
 	getReportErrorMessage,
-} from '../util/errors';
-import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
-import { purify } from '../util/purify';
+} from '@/js/util/errors';
+import { getInsufficientPermissionsErrorDescription } from '@/js/util/insufficient-permissions-error-description';
+import { purify } from '@/js/util/purify';
 import CTA from './notifications/CTA';
 import ReportErrorActions from './ReportErrorActions';
-import useViewOnly from '../hooks/useViewOnly';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import ErrorNotice from './ErrorNotice';
 
 export default function ReportError( { moduleSlug, error } ) {

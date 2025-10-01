@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
@@ -20,6 +18,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
+use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
@@ -58,7 +58,8 @@ class Tag_ManagerTest extends TestCase {
 
 		$this->assertEqualSets(
 			$tagmanager->get_scopes(),
-			apply_filters( 'googlesitekit_auth_scopes', array() )
+			apply_filters( 'googlesitekit_auth_scopes', array() ),
+			'Tag Manager scopes should be registered with the auth scopes filter.'
 		);
 	}
 
@@ -72,7 +73,8 @@ class Tag_ManagerTest extends TestCase {
 			array(
 				array( $tagmanager, 'check_ads_measurement_connection' ),
 			),
-			apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() )
+			apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() ),
+			'Tag Manager should register its ads measurement connection check method.'
 		);
 	}
 
@@ -89,10 +91,10 @@ class Tag_ManagerTest extends TestCase {
 		remove_all_filters( 'amp_post_template_data' );
 
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'amp_print_analytics' ) );
-		$this->assertFalse( has_action( 'wp_footer' ) );
-		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
-		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+		$this->assertFalse( has_action( 'amp_print_analytics' ), 'AMP analytics action should not be hooked when module is not connected.' );
+		$this->assertFalse( has_action( 'wp_footer' ), 'WP footer action should not be hooked when module is not connected.' );
+		$this->assertFalse( has_action( 'amp_post_template_footer' ), 'AMP post template footer action should not be hooked when module is not connected.' );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should not be hooked when module is not connected.' );
 
 		$tagmanager->get_settings()->merge(
 			array(
@@ -102,10 +104,10 @@ class Tag_ManagerTest extends TestCase {
 		);
 
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'amp_print_analytics' ) );
-		$this->assertTrue( has_action( 'wp_footer' ) );
-		$this->assertTrue( has_action( 'amp_post_template_footer' ) );
-		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+		$this->assertTrue( has_action( 'amp_print_analytics' ), 'AMP analytics action should be hooked when module is connected.' );
+		$this->assertTrue( has_action( 'wp_footer' ), 'WP footer action should be hooked when module is connected.' );
+		$this->assertTrue( has_action( 'amp_post_template_footer' ), 'AMP post template footer action should be hooked when module is connected.' );
+		$this->assertTrue( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should be hooked when module is connected.' );
 
 		remove_all_actions( 'amp_print_analytics' );
 		remove_all_actions( 'wp_footer' );
@@ -116,20 +118,20 @@ class Tag_ManagerTest extends TestCase {
 		add_filter( 'googlesitekit_tagmanager_tag_amp_blocked', '__return_true' );
 		do_action( 'template_redirect' );
 
-		$this->assertFalse( has_action( 'amp_print_analytics' ) );
-		$this->assertFalse( has_action( 'wp_footer' ) );
-		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
-		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+		$this->assertFalse( has_action( 'amp_print_analytics' ), 'AMP analytics action should not be hooked when tag is blocked.' );
+		$this->assertFalse( has_action( 'wp_footer' ), 'WP footer action should not be hooked when tag is blocked.' );
+		$this->assertFalse( has_action( 'amp_post_template_footer' ), 'AMP post template footer action should not be hooked when tag is blocked.' );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should not be hooked when tag is blocked.' );
 
 		// Tag not hooked when only AMP blocked
 		add_filter( 'googlesitekit_tagmanager_tag_blocked', '__return_false' );
 		add_filter( 'googlesitekit_tagmanager_tag_amp_blocked', '__return_true' );
 		do_action( 'template_redirect' );
 
-		$this->assertFalse( has_action( 'amp_print_analytics' ) );
-		$this->assertFalse( has_action( 'wp_footer' ) );
-		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
-		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+		$this->assertFalse( has_action( 'amp_print_analytics' ), 'AMP analytics action should not be hooked when only AMP is blocked.' );
+		$this->assertFalse( has_action( 'wp_footer' ), 'WP footer action should not be hooked when only AMP is blocked.' );
+		$this->assertFalse( has_action( 'amp_post_template_footer' ), 'AMP post template footer action should not be hooked when only AMP is blocked.' );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should not be hooked when only AMP is blocked.' );
 	}
 
 	public function test_register__template_redirect_non_amp() {
@@ -144,9 +146,9 @@ class Tag_ManagerTest extends TestCase {
 		remove_all_actions( 'wp_footer' );
 
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'wp_head' ) );
-		$this->assertFalse( has_action( 'wp_body_open' ) );
-		$this->assertFalse( has_action( 'wp_footer' ) );
+		$this->assertFalse( has_action( 'wp_head' ), 'WP head action should not be hooked when module is not connected.' );
+		$this->assertFalse( has_action( 'wp_body_open' ), 'WP body open action should not be hooked when module is not connected.' );
+		$this->assertFalse( has_action( 'wp_footer' ), 'WP footer action should not be hooked when module is not connected.' );
 
 		$tagmanager->get_settings()->merge(
 			array(
@@ -156,9 +158,9 @@ class Tag_ManagerTest extends TestCase {
 		);
 
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'wp_head' ) );
-		$this->assertTrue( has_action( 'wp_body_open' ) );
-		$this->assertTrue( has_action( 'wp_footer' ) );
+		$this->assertTrue( has_action( 'wp_head' ), 'WP head action should be hooked when module is connected.' );
+		$this->assertTrue( has_action( 'wp_body_open' ), 'WP body open action should be hooked when module is connected.' );
+		$this->assertTrue( has_action( 'wp_footer' ), 'WP footer action should be hooked when module is connected.' );
 
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'wp_body_open' );
@@ -168,18 +170,114 @@ class Tag_ManagerTest extends TestCase {
 		add_filter( 'googlesitekit_tagmanager_tag_blocked', '__return_true' );
 		do_action( 'template_redirect' );
 
-		$this->assertFalse( has_action( 'wp_head' ) );
-		$this->assertFalse( has_action( 'wp_body_open' ) );
-		$this->assertFalse( has_action( 'wp_footer' ) );
+		$this->assertFalse( has_action( 'wp_head' ), 'WP head action should not be hooked when tag is blocked.' );
+		$this->assertFalse( has_action( 'wp_body_open' ), 'WP body open action should not be hooked when tag is blocked.' );
+		$this->assertFalse( has_action( 'wp_footer' ), 'WP footer action should not be hooked when tag is blocked.' );
 
 		// Tag hooked when only AMP blocked.
 		add_filter( 'googlesitekit_tagmanager_tag_blocked', '__return_false' );
 		add_filter( 'googlesitekit_tagmanager_tag_amp_blocked', '__return_true' );
 		do_action( 'template_redirect' );
 
-		$this->assertTrue( has_action( 'wp_head' ) );
-		$this->assertTrue( has_action( 'wp_body_open' ) );
-		$this->assertTrue( has_action( 'wp_footer' ) );
+		$this->assertTrue( has_action( 'wp_head' ), 'WP head action should be hooked when only AMP is blocked.' );
+		$this->assertTrue( has_action( 'wp_body_open' ), 'WP body open action should be hooked when only AMP is blocked.' );
+		$this->assertTrue( has_action( 'wp_footer' ), 'WP footer action should be hooked when only AMP is blocked.' );
+	}
+
+	/**
+	 * @dataProvider gtg_status_provider
+	 * @param array $gtg_settings
+	 */
+	public function test_register__template_redirect_non_amp_google_tag_gateway( array $gtg_settings ) {
+		self::enable_feature( 'googleTagGateway' );
+
+		// Prevent test from failing in CI with deprecation notice.
+		remove_action( 'wp_print_styles', 'print_emoji_styles' );
+
+		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options    = new Options( $context );
+		$gtag       = new GTag( $options );
+		$tagmanager = new Tag_Manager( $context, $options );
+
+		remove_all_actions( 'template_redirect' );
+		$gtag->register();
+		$tagmanager->register();
+
+		// Configure module as connected.
+		$tagmanager->get_settings()->merge(
+			array(
+				'useSnippet'  => true,
+				'containerID' => 'GTM-999999',
+			)
+		);
+
+		// Configure GTG status.
+		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $options );
+		$google_tag_gateway_settings->register();
+		$google_tag_gateway_settings->set( $gtg_settings );
+
+		do_action( 'template_redirect' );
+
+		$head_html = $this->capture_action( 'wp_head' );
+
+		if ( $google_tag_gateway_settings->is_google_tag_gateway_active() ) {
+			$this->assertTrue(
+				has_action( 'googlesitekit_setup_gtag' ),
+				'gtag setup action should be present when Google tag gateway is active.'
+			);
+
+			$this->assertStringContainsString(
+				'gtag("config", "GTM-999999")',
+				$head_html,
+				'Head output should contain gtag config when Google tag gateway is active.'
+			);
+		} else {
+			$this->assertFalse(
+				has_action( 'googlesitekit_setup_gtag' ),
+				'gtag setup action should not be present when Google tag gateway is not active.'
+			);
+
+			$expected = "
+			( function( w, d, s, l, i ) {
+				w[l] = w[l] || [];
+				w[l].push( {'gtm.start': new Date().getTime(), event: 'gtm.js'} );
+				var f = d.getElementsByTagName( s )[0],
+					j = d.createElement( s ), dl = l != 'dataLayer' ? '&l=' + l : '';
+				j.async = true;
+				j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+				f.parentNode.insertBefore( j, f );
+			} )( window, document, 'script', 'dataLayer', 'GTM-999999' );
+			";
+
+			// Normalize whitespace in both strings.
+			$normalized_expected = preg_replace( '/\s+/', ' ', trim( $expected ) );
+			$normalized_actual   = preg_replace( '/\s+/', ' ', trim( $head_html ) );
+
+			$this->assertStringContainsString(
+				$normalized_expected,
+				$normalized_actual,
+				'Head output should contain Tag Manager script when Google tag gateway is not active.'
+			);
+		}
+	}
+
+	public function gtg_status_provider() {
+		return array(
+			'Google tag gateway active'     => array(
+				array(
+					'isEnabled'             => true,
+					'isGTGHealthy'          => true,
+					'isScriptAccessEnabled' => true,
+				),
+			),
+			'Google tag gateway not active' => array(
+				array(
+					'isEnabled'             => false,
+					'isGTGHealthy'          => false,
+					'isScriptAccessEnabled' => false,
+				),
+			),
+		);
 	}
 
 	/**
@@ -208,12 +306,12 @@ class Tag_ManagerTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_footer' );
 
-		$this->assertStringContainsString( 'Google Tag Manager AMP snippet added by Site Kit', $output );
+		$this->assertStringContainsString( 'Google Tag Manager AMP snippet added by Site Kit', $output, 'Output should contain the Google Tag Manager AMP snippet.' );
 
 		if ( $enabled ) {
-			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output, 'Output should contain block-on-consent attribute when enabled.' );
 		} else {
-			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output, 'Output should not contain block-on-consent attribute when disabled.' );
 		}
 	}
 
@@ -245,15 +343,15 @@ class Tag_ManagerTest extends TestCase {
 		$header = $this->capture_action( 'wp_head' );
 		$footer = $this->capture_action( 'wp_footer' );
 
-		$this->assertStringContainsString( 'Google Tag Manager snippet added by Site Kit', $header );
+		$this->assertStringContainsString( 'Google Tag Manager snippet added by Site Kit', $header, 'Header should contain the Google Tag Manager snippet.' );
 
 		if ( $enabled ) {
-			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $header );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $header, 'Header should contain block-on-consent attribute when enabled.' );
 			// If enabled, the no-JS fallback must not be output.
-			$this->assertStringNotContainsString( '<noscript>', $footer );
+			$this->assertStringNotContainsString( '<noscript>', $footer, 'Footer should not contain noscript fallback when block-on-consent is enabled.' );
 		} else {
-			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $header );
-			$this->assertStringContainsString( '<noscript>', $footer );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $header, 'Header should not contain block-on-consent attribute when disabled.' );
+			$this->assertStringContainsString( '<noscript>', $footer, 'Footer should contain noscript fallback when block-on-consent is disabled.' );
 		}
 	}
 
@@ -271,7 +369,7 @@ class Tag_ManagerTest extends TestCase {
 	public function test_is_connected_web() {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertFalse( $tagmanager->is_connected() );
+		$this->assertFalse( $tagmanager->is_connected(), 'Tag Manager should not be connected initially.' );
 
 		$tagmanager->get_settings()->merge(
 			array(
@@ -279,14 +377,14 @@ class Tag_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->assertTrue( $tagmanager->is_connected() );
+		$this->assertTrue( $tagmanager->is_connected(), 'Tag Manager should be connected when container ID is set.' );
 	}
 
 	public function test_is_connected_primary_amp() {
 		$context    = $this->get_amp_primary_context();
 		$tagmanager = new Tag_Manager( $context );
 
-		$this->assertFalse( $tagmanager->is_connected() );
+		$this->assertFalse( $tagmanager->is_connected(), 'Tag Manager should not be connected initially in primary AMP context.' );
 
 		$tagmanager->get_settings()->merge(
 			array(
@@ -294,14 +392,14 @@ class Tag_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->assertTrue( $tagmanager->is_connected() );
+		$this->assertTrue( $tagmanager->is_connected(), 'Tag Manager should be connected when AMP container ID is set in primary AMP context.' );
 	}
 
 	public function test_is_connected_secondary_amp() {
 		$context    = $this->get_amp_secondary_context();
 		$tagmanager = new Tag_Manager( $context );
 
-		$this->assertFalse( $tagmanager->is_connected() );
+		$this->assertFalse( $tagmanager->is_connected(), 'Tag Manager should not be connected initially.' );
 
 		$tagmanager->get_settings()->merge(
 			array(
@@ -310,7 +408,7 @@ class Tag_ManagerTest extends TestCase {
 		);
 
 		// Should still fail because both 'web' and 'amp' containers are required.
-		$this->assertFalse( $tagmanager->is_connected() );
+		$this->assertFalse( $tagmanager->is_connected(), 'Tag Manager should not be connected with only web container ID in secondary AMP context.' );
 
 		$tagmanager->get_settings()->merge(
 			array(
@@ -318,7 +416,7 @@ class Tag_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->assertTrue( $tagmanager->is_connected() );
+		$this->assertTrue( $tagmanager->is_connected(), 'Tag Manager should be connected when both container IDs are set.' );
 	}
 
 	public function test_on_deactivation() {
@@ -328,7 +426,7 @@ class Tag_ManagerTest extends TestCase {
 
 		$tagmanager->on_deactivation();
 
-		$this->assertOptionNotExists( Settings::OPTION );
+		$this->assertOptionNotExists( Settings::OPTION, 'Tag Manager settings should be removed on deactivation.' );
 	}
 
 	public function test_scopes() {
@@ -338,7 +436,8 @@ class Tag_ManagerTest extends TestCase {
 			array(
 				'https://www.googleapis.com/auth/tagmanager.readonly',
 			),
-			$tagmanager->get_scopes()
+			$tagmanager->get_scopes(),
+			'Tag Manager should have the correct readonly scope.'
 		);
 	}
 
@@ -353,7 +452,8 @@ class Tag_ManagerTest extends TestCase {
 				'create-container',
 				'live-container-version',
 			),
-			$tagmanager->get_datapoints()
+			$tagmanager->get_datapoints(),
+			'Tag Manager should have the correct datapoints.'
 		);
 	}
 
@@ -363,14 +463,14 @@ class Tag_ManagerTest extends TestCase {
 
 		$assets = $tagmanager->get_assets();
 
-		$this->assertCount( 1, $assets );
+		$this->assertCount( 1, $assets, 'Tag Manager should have exactly one asset.' );
 
 		$script = $assets[0];
 		$script->register( $context );
 
 		$dependency = wp_scripts()->registered['googlesitekit-modules-tagmanager'];
 
-		$this->assertEquals( $context->url( 'dist/assets/' ) . 'js/googlesitekit-modules-tagmanager.js', $dependency->src );
+		$this->assertEquals( $context->url( 'dist/assets/' ) . 'js/googlesitekit-modules-tagmanager.js', $dependency->src, 'Tag Manager script should have the correct source URL.' );
 		$this->assertEqualSets(
 			array(
 				'googlesitekit-api',
@@ -381,7 +481,8 @@ class Tag_ManagerTest extends TestCase {
 				'googlesitekit-modules-analytics-4',
 				'googlesitekit-components',
 			),
-			$dependency->deps
+			$dependency->deps,
+			'Tag Manager script should have the correct dependencies.'
 		);
 	}
 
@@ -402,14 +503,14 @@ class Tag_ManagerTest extends TestCase {
 
 		$assets = $tagmanager->get_assets();
 
-		$this->assertCount( 1, $assets );
+		$this->assertCount( 1, $assets, 'Tag Manager should have exactly one asset when Analytics module is not available.' );
 
 		$script = $assets[0];
 		$script->register( $context );
 
 		$dependency = wp_scripts()->registered['googlesitekit-modules-tagmanager'];
 
-		$this->assertEquals( $context->url( 'dist/assets/' ) . 'js/googlesitekit-modules-tagmanager.js', $dependency->src );
+		$this->assertEquals( $context->url( 'dist/assets/' ) . 'js/googlesitekit-modules-tagmanager.js', $dependency->src, 'Tag Manager script should have the correct source URL when Analytics module is not available.' );
 
 		$this->assertEqualSets(
 			array(
@@ -420,13 +521,15 @@ class Tag_ManagerTest extends TestCase {
 				'googlesitekit-vendor',
 				'googlesitekit-components',
 			),
-			$dependency->deps
+			$dependency->deps,
+			'Tag Manager script should have the correct dependencies when Analytics module is not available.'
 		);
 
 		// This is implied from the above assertion, but let's be explicit about what we are trying to test.
 		$this->assertNotContains(
 			'googlesitekit-module-analytics-4',
-			$dependency->deps
+			$dependency->deps,
+			'Tag Manager script should not depend on Analytics module when it is not available.'
 		);
 	}
 
@@ -438,7 +541,8 @@ class Tag_ManagerTest extends TestCase {
 	public function test_sanitize_container_name( $input, $expected ) {
 		$this->assertEquals(
 			$expected,
-			Tag_Manager::sanitize_container_name( $input )
+			Tag_Manager::sanitize_container_name( $input ),
+			'Container name should be sanitized correctly.'
 		);
 	}
 
@@ -495,7 +599,7 @@ class Tag_ManagerTest extends TestCase {
 			}
 		);
 
-		$this->assertSame( $expected_result, $tagmanager->check_ads_measurement_connection() );
+		$this->assertSame( $expected_result, $tagmanager->check_ads_measurement_connection(), 'Ads measurement connection check should return expected result based on container tags.' );
 	}
 
 	public function data_ads_measurement_data() {
@@ -650,8 +754,8 @@ class Tag_ManagerTest extends TestCase {
 
 		$access = $module->check_service_entity_access();
 
-		$this->assertNotWPError( $access );
-		$this->assertEquals( $expected, $access );
+		$this->assertNotWPError( $access, 'Service entity access check should not return an error.' );
+		$this->assertEquals( $expected, $access, 'Service entity access should match expected result.' );
 	}
 
 	public function check_service_entity_access_provider() {

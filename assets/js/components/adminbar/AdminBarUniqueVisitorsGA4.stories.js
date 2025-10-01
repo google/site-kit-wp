@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	setupAnalytics4GatheringData,
 	setupAnalytics4MockReports,
@@ -28,7 +28,7 @@ import {
 	setupAnalytics4Error,
 	widgetDecorators,
 	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
-} from './common-GA4.stories';
+} from './common-GA4-stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarUniqueVisitorsGA4 from './AdminBarUniqueVisitorsGA4';
 

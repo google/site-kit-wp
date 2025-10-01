@@ -30,12 +30,12 @@ import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import useViewContext from '../../hooks/useViewContext';
+import useViewContext from '@/js/hooks/useViewContext';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import Notice from '../Notice';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import Notice from '@/js/components/Notice';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { USER_INPUT_LEGACY_SITE_PURPOSE_DISMISSED_ITEM_KEY } from './util/constants';
-import { trackEvent } from '../../util';
+import { trackEvent } from '@/js/util';
 
 export default function KeyMetricsSettingsSellProductsSubtleNotification() {
 	const viewContext = useViewContext();

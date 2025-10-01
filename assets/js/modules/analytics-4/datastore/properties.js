@@ -38,26 +38,26 @@ import {
 	combineStores,
 	createReducer,
 } from 'googlesitekit-data';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '../../tagmanager/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '@/js/modules/tagmanager/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	MAX_WEBDATASTREAMS_PER_BATCH,
 	WEBDATASTREAM_CREATE,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
-import { HOUR_IN_SECONDS, normalizeURL } from '../../../util';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { HOUR_IN_SECONDS, normalizeURL } from '@/js/util';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import {
 	isValidAccountID,
 	isValidPropertyID,
 	isValidPropertySelection,
-} from '../utils/validation';
-import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { getItem, setItem } from '../../../googlesitekit/api/cache';
+} from '@/js/modules/analytics-4/utils/validation';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { getItem, setItem } from '@/js/googlesitekit/api/cache';
 
 const fetchGetPropertyStore = createFetchStore( {
 	baseName: 'getProperty',
@@ -851,7 +851,7 @@ const baseResolvers = {
 	},
 	*getGoogleTagSettings( measurementID ) {
 		if ( ! measurementID ) {
-			return;
+			return null;
 		}
 
 		const registry = yield commonActions.getRegistry();
@@ -863,7 +863,7 @@ const baseResolvers = {
 			return googleTagSettings;
 		}
 
-		yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
+		return yield fetchGetGoogleTagSettingsStore.actions.fetchGetGoogleTagSettings(
 			measurementID
 		);
 	},

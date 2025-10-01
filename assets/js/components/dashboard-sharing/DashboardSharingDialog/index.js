@@ -31,6 +31,7 @@ import {
 	useEffect,
 	useCallback,
 	useState,
+	useRef,
 } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
 import { arrowLeft, Icon } from '@wordpress/icons';
@@ -40,31 +41,27 @@ import { arrowLeft, Icon } from '@wordpress/icons';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	EDITING_USER_ROLE_SELECT_SLUG_KEY,
 	RESET_SETTINGS_DIALOG,
 	SETTINGS_DIALOG,
-} from '../DashboardSharingSettings/constants';
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../../hooks/useBreakpoint';
-import Portal from '../../Portal';
-import {
-	Dialog,
-	DialogContent,
-	DialogFooter,
-} from '../../../material-components';
-import ShareIcon from '../../../../svg/icons/share.svg';
-import Link from '../../Link';
-import DashboardSharingSettings from '../DashboardSharingSettings';
+} from '@/js/components/dashboard-sharing/DashboardSharingSettings/constants';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import Portal from '@/js/components/Portal';
+import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
+import ShareIcon from '@/svg/icons/share.svg';
+import Link from '@/js/components/Link';
+import DashboardSharingSettings from '@/js/components/dashboard-sharing/DashboardSharingSettings';
 import Footer from './Footer';
-import Typography from '../../Typography';
+import Typography from '@/js/components/Typography';
 
 export default function DashboardSharingDialog() {
 	const [ shouldFocusResetButton, setShouldFocusResetButton ] =
 		useState( false );
-
+	const ref = useRef( undefined );
 	const breakpoint = useBreakpoint();
 	const { y } = useWindowScroll();
 
@@ -140,7 +137,7 @@ export default function DashboardSharingDialog() {
 	const closeDialog = useCallback( () => {
 		if ( resetDialogOpen ) {
 			closeResetDialog();
-			return null;
+			return;
 		}
 
 		closeSettingsDialog();
@@ -148,9 +145,13 @@ export default function DashboardSharingDialog() {
 
 	// Handle scrim click for reset dialog.
 	useEffect( () => {
-		if ( ! resetDialogOpen ) {
-			return;
+		if ( ! resetDialogOpen || ! ref.current ) {
+			return () => {};
 		}
+
+		const {
+			current: { ownerDocument },
+		} = ref;
 
 		function handleScrimClick( event ) {
 			if ( event.target.classList.contains( 'mdc-dialog__scrim' ) ) {
@@ -158,12 +159,12 @@ export default function DashboardSharingDialog() {
 			}
 		}
 
-		document.addEventListener( 'click', handleScrimClick );
+		ownerDocument.addEventListener( 'click', handleScrimClick );
 
 		return () => {
-			document.removeEventListener( 'click', handleScrimClick );
+			ownerDocument.removeEventListener( 'click', handleScrimClick );
 		};
-	}, [ resetDialogOpen, closeResetDialog ] );
+	}, [ ref, resetDialogOpen, closeResetDialog ] );
 
 	// Pressing the Escape key should close the reset dialog.
 	useKey(
@@ -193,6 +194,7 @@ export default function DashboardSharingDialog() {
 				<div
 					className="googlesitekit-dialog__back-wrapper"
 					aria-hidden={ breakpoint !== BREAKPOINT_SMALL }
+					ref={ ref }
 				>
 					<Button
 						aria-label={ __( 'Back', 'google-site-kit' ) }

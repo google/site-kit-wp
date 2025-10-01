@@ -25,12 +25,12 @@ import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 	AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED,
-} from '../../../datastore/constants';
-import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+} from '@/js/modules/adsense/datastore/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import AdBlockingRecoveryApp from '.';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { Provider as ViewContextProvider } from '../../../../../components/Root/ViewContextContext';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 
 function Template() {
 	return (

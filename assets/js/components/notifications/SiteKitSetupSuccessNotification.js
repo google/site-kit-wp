@@ -31,9 +31,9 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import useQueryArg from '../../hooks/useQueryArg';
-import BannerNotification from '../../googlesitekit/notifications/components/layout/BannerNotification';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import SuccessSetupSVG from '@/svg/graphics/banner-site-kit-setup-success.svg?url';
 
 export default function SiteKitSetupSuccessNotification( {
@@ -59,7 +59,7 @@ export default function SiteKitSetupSuccessNotification( {
 					'google-site-kit'
 				) }
 				description={ __(
-					'Connect more services to see more stats.',
+					'Connect more services or edit connected services from the settings screen.',
 					'google-site-kit'
 				) }
 				learnMoreLink={ {

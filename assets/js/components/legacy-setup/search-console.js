@@ -40,9 +40,9 @@ import {
 	TextField,
 } from 'googlesitekit-components';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { trackEvent } from '../../util';
-import Typography from '../Typography';
-import P from '../Typography/P';
+import { trackEvent } from '@/js/util';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 class SearchConsole extends Component {
 	constructor( props ) {

@@ -27,7 +27,7 @@ import {
 	untilResolved,
 } from '../../../../tests/js/utils';
 import { createExistingTagStore } from './create-existing-tag-store';
-import { CORE_SITE } from '../datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 const TEST_STORE = 'test/store';
 const tagMatchers = [ new RegExp( '<test-store-tag value="([^"]+)" />' ) ];

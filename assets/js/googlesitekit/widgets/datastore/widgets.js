@@ -27,7 +27,10 @@ import { original } from 'immer';
  * Internal dependencies
  */
 import { createRegistrySelector, createReducer } from 'googlesitekit-data';
-import { isInactiveWidgetState, normalizeWidgetModules } from '../util';
+import {
+	isInactiveWidgetState,
+	normalizeWidgetModules,
+} from '@/js/googlesitekit/widgets/util';
 import { CORE_WIDGETS, WIDGET_WIDTHS } from './constants';
 
 const ASSIGN_WIDGET = 'ASSIGN_WIDGET';

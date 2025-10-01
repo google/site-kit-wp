@@ -109,6 +109,20 @@ class Google_ProxyTest extends TestCase {
 		}
 	}
 
+	public function test_setup_url__with_setup_flow_refresh_feature_flag_enabled() {
+		$this->enable_feature( 'setupFlowRefresh' );
+
+		$url = $this->google_proxy->setup_url(
+			array(
+				'code'    => 'code-123',
+				'site_id' => 'site_id-456',
+				'foo'     => 'foo-789',
+			)
+		);
+
+		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789', 'Setup URL should use the v3 route and  match the expected format with query parameters.' );
+	}
+
 	public function test_add_setup_step_from_error_code() {
 		// Ensure the `step` query param is correctly added according to the error code.
 		$params = $this->google_proxy->add_setup_step_from_error_code( array(), 'missing_verification' );
@@ -386,6 +400,9 @@ class Google_ProxyTest extends TestCase {
 	public function test_get_features() {
 		global $wp_version;
 
+		// Remove the filter being added by Modules::register() or any other class during bootstrap.
+		remove_all_filters( 'googlesitekit_feature_metrics' );
+
 		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
 
 		// Create one more administrator and 3 non-administrators.
@@ -417,6 +434,7 @@ class Google_ProxyTest extends TestCase {
 				'active_modules'         => 'site-verification search-console pagespeed-insights',
 				'connected_modules'      => 'site-verification search-console pagespeed-insights',
 				'php_version'            => phpversion(),
+				'feature_metrics'        => array(),
 			),
 			$this->request_args['body'],
 			'Get features request body should contain site credentials and platform information.'

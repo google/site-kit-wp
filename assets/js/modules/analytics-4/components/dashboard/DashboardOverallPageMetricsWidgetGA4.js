@@ -29,21 +29,21 @@ import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { Grid, Cell } from '../../../../material-components/layout';
-import PreviewBlock from '../../../../components/PreviewBlock';
-import DataBlock from '../../../../components/DataBlock';
-import Sparkline from '../../../../components/Sparkline';
-import SourceLink from '../../../../components/SourceLink';
-import whenActive from '../../../../util/when-active';
-import { calculateOverallPageMetricsData } from '../../utils/overall-page-metrics';
-import { getURLPath } from '../../../../util';
-import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
-import useViewOnly from '../../../../hooks/useViewOnly';
-import DataBlockGroup from '../../../../components/DataBlockGroup';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { Grid, Cell } from '@/js/material-components/layout';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import DataBlock from '@/js/components/DataBlock';
+import Sparkline from '@/js/components/Sparkline';
+import SourceLink from '@/js/components/SourceLink';
+import whenActive from '@/js/util/when-active';
+import { calculateOverallPageMetricsData } from '@/js/modules/analytics-4/utils/overall-page-metrics';
+import { getURLPath } from '@/js/util';
+import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import DataBlockGroup from '@/js/components/DataBlockGroup';
 
 function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>

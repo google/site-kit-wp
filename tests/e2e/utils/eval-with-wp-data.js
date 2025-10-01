@@ -19,7 +19,7 @@ export async function evalWithWPData( callback, ...args ) {
 	const { major } = await getWPVersion();
 
 	if ( major < 5 ) {
-		return;
+		return undefined;
 	}
 
 	await page.waitForFunction( () => window.wp !== undefined );

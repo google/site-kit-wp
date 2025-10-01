@@ -33,20 +33,20 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
-import { sortByProperty } from '../../../util/sort-by-property';
-import { convertArrayListToKeyedObjectMap } from '../../../util/convert-array-to-keyed-object-map';
+import { sortByProperty } from '@/js/util/sort-by-property';
+import { convertArrayListToKeyedObjectMap } from '@/js/util/convert-array-to-keyed-object-map';
 import {
 	CORE_MODULES,
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
 } from './constants';
 import FIXTURES, { withActive } from './__fixtures__';
-import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { CORE_USER } from '../../datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import * as analytics4fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
+import * as analytics4fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 
 describe( 'core/modules modules', () => {
@@ -1037,6 +1037,36 @@ describe( 'core/modules modules', () => {
 
 				expect( store.getState().sharedOwnershipModules ).toMatchObject(
 					sharedOwnershipModulesList.sharedOwnershipModules
+				);
+			} );
+		} );
+
+		describe( 'receiveInlineModulesData', () => {
+			it( 'requires the inlineModulesData param', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_MODULES )
+						.receiveInlineModulesData();
+				} ).toThrow( 'inlineModulesData is required' );
+			} );
+
+			it( 'receives inlineModulesData and sets it to the state', () => {
+				const mockInlineData = {
+					[ MODULE_SLUG_ANALYTICS_4 ]: {
+						newEvents: [ 'contact' ],
+						lostEvents: [ 'add_to_cart' ],
+					},
+					ads: {
+						supportedConversionEvents: [ 'purchase' ],
+					},
+				};
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveInlineModulesData( mockInlineData );
+
+				expect( store.getState().inlineModulesData ).toEqual(
+					mockInlineData
 				);
 			} );
 		} );
@@ -2383,6 +2413,94 @@ describe( 'core/modules modules', () => {
 				expect(
 					registry.select( CORE_MODULES ).getDetailsLinkURL( slug )
 				).toBe( 'https://example.com/custom-link' );
+			} );
+		} );
+
+		describe( 'getInlineModulesData', () => {
+			const inlineModulesDataVar = '_googlesitekitModulesData';
+
+			afterEach( () => {
+				delete global[ inlineModulesDataVar ];
+			} );
+
+			it( 'should return undefined when the global variable is not set', () => {
+				const inlineData = registry
+					.select( CORE_MODULES )
+					.getInlineModulesData();
+
+				expect( inlineData ).toBeUndefined();
+			} );
+
+			it( 'should return the inline modules data when set via action', () => {
+				const mockData = {
+					[ MODULE_SLUG_ANALYTICS_4 ]: { test: 'data' },
+				};
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveInlineModulesData( mockData );
+
+				const inlineData = registry
+					.select( CORE_MODULES )
+					.getInlineModulesData();
+
+				expect( inlineData ).toEqual( mockData );
+			} );
+		} );
+
+		describe( 'getModuleInlineData', () => {
+			it( 'should return undefined when inline modules data is not loaded', () => {
+				const moduleData = registry
+					.select( CORE_MODULES )
+					.getModuleInlineData( MODULE_SLUG_ANALYTICS_4 );
+
+				expect( moduleData ).toBeUndefined();
+			} );
+
+			it( 'should return module specific data when inline modules data is loaded', () => {
+				const mockData = {
+					[ MODULE_SLUG_ANALYTICS_4 ]: {
+						newEvents: [ 'contact' ],
+						lostEvents: [ 'add_to_cart' ],
+					},
+					ads: {
+						supportedConversionEvents: [ 'purchase' ],
+					},
+				};
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveInlineModulesData( mockData );
+
+				const analyticsData = registry
+					.select( CORE_MODULES )
+					.getModuleInlineData( MODULE_SLUG_ANALYTICS_4 );
+
+				expect( analyticsData ).toEqual(
+					mockData[ MODULE_SLUG_ANALYTICS_4 ]
+				);
+
+				const adsData = registry
+					.select( CORE_MODULES )
+					.getModuleInlineData( 'ads' );
+
+				expect( adsData ).toEqual( mockData.ads );
+			} );
+
+			it( 'should return undefined for non-existent module', () => {
+				const mockData = {
+					[ MODULE_SLUG_ANALYTICS_4 ]: { test: 'data' },
+				};
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveInlineModulesData( mockData );
+
+				const moduleData = registry
+					.select( CORE_MODULES )
+					.getModuleInlineData( 'non-existent-module' );
+
+				expect( moduleData ).toBeUndefined();
 			} );
 		} );
 	} );

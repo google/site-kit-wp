@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Ads;
 
 use Google\Site_Kit\Context;
@@ -40,7 +38,7 @@ class PAX_ConfigTest extends TestCase {
 
 	public function test_get() {
 		$config = new PAX_Config( $this->context, $this->token );
-		$this->assertFalse( $this->token->has() );
+		$this->assertFalse( $this->token->has(), 'Token should not exist before fetching config.' );
 
 		$data = $config->get();
 
@@ -56,7 +54,8 @@ class PAX_ConfigTest extends TestCase {
 				),
 				'locale'          => 'en',
 			),
-			$data
+			$data,
+			'Config should return default structure with empty token and PROD env.'
 		);
 	}
 
@@ -68,7 +67,7 @@ class PAX_ConfigTest extends TestCase {
 
 		$data = $config->get();
 
-		$this->assertEquals( 'test-access-token', $data['authAccess']['oauthTokenAccess']['token'] );
+		$this->assertEquals( 'test-access-token', $data['authAccess']['oauthTokenAccess']['token'], 'Config should expose the current user access token.' );
 	}
 
 	/**
@@ -83,7 +82,7 @@ class PAX_ConfigTest extends TestCase {
 
 		$data = $config->get();
 
-		$this->assertEquals( $expected, $data['debuggingConfig']['env'] );
+		$this->assertEquals( $expected, $data['debuggingConfig']['env'], 'Env in config should match expected for given constant.' );
 	}
 
 	public function data_envs() {

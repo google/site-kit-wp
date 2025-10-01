@@ -28,8 +28,8 @@ import {
 	combineStores,
 } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
-import { createFetchStore } from '../../data/create-fetch-store';
-import { actions as errorStoreActions } from '../../data/create-error-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 const { receiveError, clearError } = errorStoreActions;
 
 const fetchStoreReducerCallback = createReducer( ( state, tracking ) => {

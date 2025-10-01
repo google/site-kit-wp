@@ -30,11 +30,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { isInsufficientPermissionsError } from '../../../../../../../../util/errors';
-import AudienceTileErrorImage from '../../../../../../../../../svg/graphics/analytics-audience-segmentation-tile-error.svg';
-import ReportErrorActions from '../../../../../../../../components/ReportErrorActions';
-import GetHelpLink from '../../../GetHelpLink';
-import Typography from '../../../../../../../../components/Typography';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
+import AudienceTileErrorImage from '@/svg/graphics/analytics-audience-segmentation-tile-error.svg';
+import ReportErrorActions from '@/js/components/ReportErrorActions';
+import GetHelpLink from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/GetHelpLink';
+import Typography from '@/js/components/Typography';
 
 const TileErrorContent = forwardRef(
 	( { errors, onRetry, onRequestAccess }, ref ) => {

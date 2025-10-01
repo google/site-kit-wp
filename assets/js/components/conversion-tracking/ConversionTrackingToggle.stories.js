@@ -21,7 +21,7 @@
  */
 import ConversionTrackingToggle from './ConversionTrackingToggle';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import fetchMock from 'fetch-mock';
 
 function Template() {

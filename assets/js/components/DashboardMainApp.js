@@ -37,12 +37,12 @@ import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
-} from '../googlesitekit/widgets/default-contexts';
-import { DAY_IN_SECONDS } from '../util';
+} from '@/js/googlesitekit/widgets/default-contexts';
+import { DAY_IN_SECONDS } from '@/js/util';
 import Header from './Header';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
-import WidgetContextRenderer from '../googlesitekit/widgets/components/WidgetContextRenderer';
-import { AudienceSelectionPanel } from '../modules/analytics-4/components/audience-segmentation/dashboard';
+import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
+import { AudienceSelectionPanel } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
@@ -56,29 +56,29 @@ import {
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
-} from '../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-} from '../googlesitekit/datastore/user/constants';
-import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
-import useViewOnly from '../hooks/useViewOnly';
-import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import OfflineNotification from './notifications/OfflineNotification';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
-import { useBreakpoint } from '../hooks/useBreakpoint';
-import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
-import useQueryArg from '../hooks/useQueryArg';
-import { getNavigationalScrollTop } from '../util/scroll';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import { getNavigationalScrollTop } from '@/js/util/scroll';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
 import Notifications from './notifications/Notifications';
 import {
 	NOTIFICATION_GROUPS,
 	NOTIFICATION_AREAS,
-} from '../googlesitekit/notifications/constants';
-import { AdminMenuTooltip } from './AdminMenuTooltip';
-import useFormValue from '../hooks/useFormValue';
+} from '@/js/googlesitekit/notifications/constants';
+import { AdminScreenTooltip } from './AdminScreenTooltip';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
@@ -247,7 +247,7 @@ export default function DashboardMainApp() {
 			<ScrollEffect />
 			<ModuleDashboardEffects />
 
-			<AdminMenuTooltip />
+			<AdminScreenTooltip />
 
 			<Header showNavigation>
 				<EntitySearchInput />

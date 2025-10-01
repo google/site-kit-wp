@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Tracking;
 
@@ -32,11 +30,11 @@ class Tracking_ConsentTest extends TestCase {
 	public function test_register() {
 		$user_options     = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$tracking_consent = new Tracking_Consent( $user_options );
-		$this->assertArrayNotHasKey( $user_options->get_meta_key( Tracking_Consent::OPTION ), get_registered_meta_keys( 'user' ) );
+		$this->assertArrayNotHasKey( $user_options->get_meta_key( Tracking_Consent::OPTION ), get_registered_meta_keys( 'user' ), 'Tracking consent meta should not be registered before register().' );
 
 		$tracking_consent->register();
 
-		$this->assertArrayHasKey( $user_options->get_meta_key( Tracking_Consent::OPTION ), get_registered_meta_keys( 'user' ) );
+		$this->assertArrayHasKey( $user_options->get_meta_key( Tracking_Consent::OPTION ), get_registered_meta_keys( 'user' ), 'Tracking consent meta should be registered after register().' );
 	}
 
 	public function test_get() {
@@ -45,11 +43,11 @@ class Tracking_ConsentTest extends TestCase {
 		$tracking_consent = new Tracking_Consent( new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 		$this->opt_out_from_tracking();
 
-		$this->assertFalse( $tracking_consent->get() );
+		$this->assertFalse( $tracking_consent->get(), 'Tracking consent should be false when user opted out.' );
 
 		$this->opt_in_to_tracking();
 
-		$this->assertTrue( $tracking_consent->get() );
+		$this->assertTrue( $tracking_consent->get(), 'Tracking consent should be true when user opted in.' );
 	}
 
 	protected function opt_in_to_tracking( $network_wide = false ) {

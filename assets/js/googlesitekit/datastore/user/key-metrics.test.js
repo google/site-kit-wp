@@ -29,7 +29,7 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
-import { provideKeyMetricsWidgetRegistrations } from '../../../components/KeyMetrics/test-utils';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -58,13 +58,13 @@ import {
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 } from './constants';
-import { CORE_SITE } from '../site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
-} from '../../../modules/analytics-4/datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import * as analytics4Fixtures from '../../../modules/analytics-4/datastore/__fixtures__';
+import * as analytics4Fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 
 describe( 'core/user key metrics', () => {
 	let registry;

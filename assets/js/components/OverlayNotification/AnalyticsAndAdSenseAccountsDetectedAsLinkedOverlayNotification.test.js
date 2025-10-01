@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../tests/js/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import {
 	act,
 	createTestRegistry,
@@ -33,30 +33,30 @@ import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../googlesitekit/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../modules/adsense/constants';
+} from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../modules/analytics-4/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
-} from '../../modules/analytics-4/utils/data-mock';
+} from '@/js/modules/analytics-4/utils/data-mock';
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
 	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
 } from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
-import { DEFAULT_NOTIFICATIONS } from '../../googlesitekit/notifications/register-defaults';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/constants';
-import Notifications from '../notifications/Notifications';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
+} from '@/js/googlesitekit/notifications/constants';
+import Notifications from '@/js/components/notifications/Notifications';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () => {
 	const AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotificationComponent =

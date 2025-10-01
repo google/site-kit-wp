@@ -24,7 +24,7 @@ import { set, unset } from 'lodash';
 /**
  * Internal dependencies
  */
-import { numFmt } from '../';
+import { numFmt } from '@/js/util';
 
 function setupGoogleSiteKit( langCode ) {
 	set( global._googlesitekitLegacyData, 'locale', langCode );
@@ -46,7 +46,7 @@ describe( 'numFmt', () => {
 		[ 'fr', 1.238725, '%', `123,87${ NO_BREAK_SPACE }%` ],
 		[ 'en_US', 1.238725, '%', '123.87%' ],
 		[ 'en_US', 123.87, 'USD', '$123.87' ],
-		[ 'ur', 123.87, 'USD', `$${ NO_BREAK_SPACE }123.87` ],
+		[ 'ur', 123.87, 'USD', '$123.87' ],
 		[ 'en_US', 12, 's', '12s' ],
 		[ 'en_US', 123, 's', '2m 3s' ],
 		[ 'en_US', 10000000, '', '10M' ],

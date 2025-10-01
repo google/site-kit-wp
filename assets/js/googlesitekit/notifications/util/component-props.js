@@ -22,7 +22,7 @@ import memize from 'memize';
 /**
  * Internal dependencies
  */
-import Notification from '../components/Notification';
+import Notification from '@/js/googlesitekit/notifications/components/Notification';
 
 /**
  * Gets the props to pass to a Notification's component.

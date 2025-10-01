@@ -28,19 +28,19 @@ import {
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 	RESOURCE_TYPE_AUDIENCE,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	combineStores,
 	createReducer,
 	createRegistrySelector,
 	commonActions,
 } from 'googlesitekit-data';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { getPreviousDate } from '../../../util';
-import { isInsufficientPermissionsError } from '../../../util/errors';
-import { validateAudience } from '../utils/validation';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getPreviousDate } from '@/js/util';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
+import { validateAudience } from '@/js/modules/analytics-4/utils/validation';
 
 const MAX_INITIAL_AUDIENCES = 2;
 const START_AUDIENCES_SETUP = 'START_AUDIENCES_SETUP';

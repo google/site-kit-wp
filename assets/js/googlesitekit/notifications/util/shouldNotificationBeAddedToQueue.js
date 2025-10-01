@@ -17,7 +17,7 @@
 /**
  * Internal dependencies
  */
-import { isFeatureEnabled } from '../../../features';
+import { isFeatureEnabled } from '@/js/features';
 
 /**
  * Checks if a notification should be added to the queue based on

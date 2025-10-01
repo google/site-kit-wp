@@ -28,7 +28,7 @@ import { getQueryArg } from '@wordpress/url';
 import {
 	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
-} from '../../googlesitekit/widgets/default-areas';
+} from '@/js/googlesitekit/widgets/default-areas';
 import { SetupMain } from './components/setup';
 import {
 	SettingsEdit,
@@ -42,7 +42,7 @@ import {
 	DashboardTopEarningPagesWidgetGA4,
 } from './components/dashboard';
 import { ModuleOverviewWidget } from './components/module';
-import AdSenseIcon from '../../../svg/graphics/adsense.svg';
+import AdSenseIcon from '@/svg/graphics/adsense.svg';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
@@ -53,13 +53,13 @@ import {
 	CORE_USER,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-} from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../analytics-4/constants';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import AdBlockingRecoverySetupSuccessNotification from './components/dashboard/AdBlockingRecoverySetupSuccessNotification';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 export { registerStore } from './datastore';
 

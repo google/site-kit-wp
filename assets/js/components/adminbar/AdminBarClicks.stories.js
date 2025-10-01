@@ -19,13 +19,13 @@
 /**
  * Internal dependencies
  */
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	setupSearchConsoleAnalytics4ZeroData,
 	setupSearchConsoleGatheringData,
 	setupSearchConsoleMockReports,
 	widgetDecorators,
-} from './common-GA4.stories';
+} from './common-GA4-stories';
 import AdminBarClicks from './AdminBarClicks';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 

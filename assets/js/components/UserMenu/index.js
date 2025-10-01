@@ -39,23 +39,29 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, Menu } from 'googlesitekit-components';
-import ModalDialog from '../ModalDialog';
-import { trackEvent } from '../../util';
-import { clearCache } from '../../googlesitekit/api/cache';
-import Portal from '../Portal';
+import ModalDialog from '@/js/components/ModalDialog';
+import { trackEvent } from '@/js/util';
+import { clearCache } from '@/js/googlesitekit/api/cache';
+import Portal from '@/js/components/Portal';
 import Details from './Details';
 import Item from './Item';
-import DisconnectIcon from '../../../svg/icons/disconnect.svg';
-import ManageSitesIcon from '../../../svg/icons/manage-sites.svg';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '../../modules/analytics-4/datastore/constants';
-import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
-import useViewContext from '../../hooks/useViewContext';
-import useFormValue from '../../hooks/useFormValue';
+import DisconnectIcon from '@/svg/icons/disconnect.svg';
+import ManageSitesIcon from '@/svg/icons/manage-sites.svg';
+import ManageEmailReportsIcon from '@/svg/icons/manage-email-reports.svg';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '@/js/modules/analytics-4/datastore/constants';
+import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
+import useViewContext from '@/js/hooks/useViewContext';
+import useFormValue from '@/js/hooks/useFormValue';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function UserMenu() {
+	const proactiveUserEngagementEnabled = useFeature(
+		'proactiveUserEngagement'
+	);
+
 	const proxyPermissionsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxyPermissionsURL()
 	);
@@ -269,6 +275,21 @@ export default function UserMenu() {
 					<li>
 						<Details />
 					</li>
+					{ proactiveUserEngagementEnabled && (
+						<li
+							id="manage-email-reports"
+							className="mdc-list-item"
+							role="menuitem"
+						>
+							<Item
+								icon={ <ManageEmailReportsIcon width="24" /> }
+								label={ __(
+									'Manage email reports',
+									'google-site-kit'
+								) }
+							/>
+						</li>
+					) }
 					{ !! proxyPermissionsURL && (
 						<li
 							id="manage-sites"
@@ -276,7 +297,7 @@ export default function UserMenu() {
 							role="menuitem"
 						>
 							<Item
-								icon={ <ManageSitesIcon width="22" /> }
+								icon={ <ManageSitesIcon width="24" /> }
 								label={ __(
 									'Manage Sites',
 									'google-site-kit'
@@ -290,7 +311,7 @@ export default function UserMenu() {
 						role="menuitem"
 					>
 						<Item
-							icon={ <DisconnectIcon width="22" /> }
+							icon={ <DisconnectIcon width="24" /> }
 							label={ __( 'Disconnect', 'google-site-kit' ) }
 						/>
 					</li>

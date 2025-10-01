@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Sign_In_With_Google;
 
 use Google\Site_Kit\Context;
@@ -38,12 +36,11 @@ class Web_TagTest extends TestCase {
 	 * @var array
 	 */
 	private $siwg_settings = array(
-		'clientID'         => 'test-client-id.app.googleusercontent.com',
-		'text'             => Settings::TEXT_SIGN_IN_WITH_GOOGLE['value'],
-		'theme'            => Settings::THEME_LIGHT['value'],
-		'shape'            => 'rectangular',
-		'oneTapEnabled'    => false,
-		'oneTapOnAllPages' => false,
+		'clientID'      => 'test-client-id.app.googleusercontent.com',
+		'text'          => Settings::TEXT_SIGN_IN_WITH_GOOGLE['value'],
+		'theme'         => Settings::THEME_LIGHT['value'],
+		'shape'         => 'rectangular',
+		'oneTapEnabled' => false,
 	);
 
 	/**
@@ -83,9 +80,9 @@ class Web_TagTest extends TestCase {
 		$output = $this->capture_action( 'wp_footer' );
 
 		// Check that the Sign in with Google script is rendered.
-		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
-		$this->assertStringContainsString( 'google.accounts.id.initialize', $output );
-		$this->assertStringContainsString( 'test-client-id.app.googleusercontent.com', $output );
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Footer should include SIWG marker text.' );
+		$this->assertStringContainsString( 'google.accounts.id.initialize', $output, 'Footer should include Google accounts initialization.' );
+		$this->assertStringContainsString( 'test-client-id.app.googleusercontent.com', $output, 'Footer should include configured client ID.' );
 
 		// Renders the button with the correct clientID and redirect_uri.
 		$this->web_tag->set_settings(
@@ -101,14 +98,14 @@ class Web_TagTest extends TestCase {
 		$output = $this->capture_action( 'wp_footer' );
 
 		// Check the rendered button contains the expected data.
-		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Footer should include SIWG marker text for custom settings.' );
 
-		$this->assertStringContainsString( "client_id:'1234567890.googleusercontent.com'", $output );
-		$this->assertStringContainsString( "fetch('http://example.org/wp-login.php?action=googlesitekit_auth'", $output );
+		$this->assertStringContainsString( "client_id:'1234567890.googleusercontent.com'", $output, 'Footer should include client_id config.' );
+		$this->assertStringContainsString( "fetch('http://example.org/wp-login.php?action=googlesitekit_auth'", $output, 'Footer should include login fetch URL.' );
 
-		$this->assertStringContainsString( sprintf( '"text":"%s"', Settings::TEXT_CONTINUE_WITH_GOOGLE['value'] ), $output );
-		$this->assertStringContainsString( sprintf( '"theme":"%s"', Settings::THEME_LIGHT['value'] ), $output );
-		$this->assertStringContainsString( sprintf( '"shape":"%s"', Settings::SHAPE_RECTANGULAR['value'] ), $output );
+		$this->assertStringContainsString( sprintf( '"text":"%s"', Settings::TEXT_CONTINUE_WITH_GOOGLE['value'] ), $output, 'Footer should include text config.' );
+		$this->assertStringContainsString( sprintf( '"theme":"%s"', Settings::THEME_LIGHT['value'] ), $output, 'Footer should include theme config.' );
+		$this->assertStringContainsString( sprintf( '"shape":"%s"', Settings::SHAPE_RECTANGULAR['value'] ), $output, 'Footer should include shape config.' );
 
 		// The Sign in with Google JS should always render, even on the front
 		// page.
@@ -116,17 +113,16 @@ class Web_TagTest extends TestCase {
 		$output                 = $this->capture_action( 'wp_footer' );
 
 		// The button shouldn't be rendered on a non-login page.
-		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Footer should still include SIWG marker on front page (script-only).' );
 
-		// Enable the Sign in with Google One Tap on all pages.
+		// Enable Sign in with Google One Tap.
 		$this->web_tag->set_settings(
 			array(
-				'clientID'         => '1234567890.googleusercontent.com',
-				'text'             => Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
-				'theme'            => Settings::THEME_LIGHT['value'],
-				'shape'            => Settings::SHAPE_RECTANGULAR['value'],
-				'oneTapEnabled'    => true,
-				'oneTapOnAllPages' => true,
+				'clientID'      => '1234567890.googleusercontent.com',
+				'text'          => Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
+				'theme'         => Settings::THEME_LIGHT['value'],
+				'shape'         => Settings::SHAPE_RECTANGULAR['value'],
+				'oneTapEnabled' => true,
 			)
 		);
 
@@ -134,7 +130,7 @@ class Web_TagTest extends TestCase {
 		$output = $this->capture_action( 'wp_footer' );
 
 		// Check the rendered button contains the expected data.
-		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Footer should include SIWG marker when One Tap enabled on all pages.' );
 	}
 
 	public function test_render_on_login_footer() {
@@ -145,9 +141,9 @@ class Web_TagTest extends TestCase {
 		$output = $this->capture_action( 'login_footer' );
 
 		// Check that the Sign in with Google script is rendered.
-		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output );
-		$this->assertStringContainsString( 'google.accounts.id.initialize', $output );
-		$this->assertStringContainsString( 'test-client-id.app.googleusercontent.com', $output );
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Login footer should include SIWG marker text.' );
+		$this->assertStringContainsString( 'google.accounts.id.initialize', $output, 'Login footer should include Google accounts initialization.' );
+		$this->assertStringContainsString( 'test-client-id.app.googleusercontent.com', $output, 'Login footer should include configured client ID.' );
 	}
 
 	public function test_register() {
@@ -157,7 +153,7 @@ class Web_TagTest extends TestCase {
 		$this->web_tag->register();
 
 		// Verify that the hooks are registered.
-		$this->assertTrue( has_action( 'wp_footer' ) );
-		$this->assertTrue( has_action( 'login_footer' ) );
+		$this->assertTrue( has_action( 'wp_footer' ), 'wp_footer action should be registered.' );
+		$this->assertTrue( has_action( 'login_footer' ), 'login_footer action should be registered.' );
 	}
 }

@@ -34,16 +34,16 @@ import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
-import { MetricTileText } from '../../../../components/KeyMetrics';
-import { numFmt } from '../../../../util';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MetricTileText } from '@/js/components/KeyMetrics';
+import { numFmt } from '@/js/util';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import whenActive from '../../../../util/when-active';
+import whenActive from '@/js/util/when-active';
 
 function EngagedTrafficSourceWidget( props ) {
 	const { Widget } = props;

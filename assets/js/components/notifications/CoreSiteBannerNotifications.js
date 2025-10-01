@@ -25,10 +25,11 @@ import { useEffect, useState, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_NOTIFICATIONS } from '../../googlesitekit/notifications/datastore/constants';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import CoreSiteBannerNotification from './CoreSiteBannerNotification';
 
 const MAX_SECONDS_FOR_SURVEY = 5;
@@ -43,6 +44,8 @@ const MAX_SECONDS_FOR_SURVEY = 5;
  * @return {null} Returns null as this component does not render anything directly.
  */
 function CoreSiteBannerNotifications() {
+	const viewContext = useViewContext();
+
 	const [ surveysHaveLoaded, setSurveysHaveLoaded ] = useState( false );
 	const [ hasSurveys, setHasSurveys ] = useState( false );
 
@@ -109,11 +112,25 @@ function CoreSiteBannerNotifications() {
 				return;
 			}
 
+			// Before refactoring our Banner Notifications, `CoreSiteBannerNotification` added the
+			// constant GA event category (initalised below) but the notification ID from the server
+			// was passed as the event label to differentiate multiple notifications from
+			// the server. So we continue to do that here for consistency with historical events.
+			const gaTrackingEventArgs = {
+				category: `${ viewContext }_remote-site-notification`,
+				label: notification.id,
+			};
+
 			registerNotification( notification.id, {
 				Component( { Notification } ) {
 					return (
-						<Notification>
-							<CoreSiteBannerNotification { ...notification } />
+						<Notification
+							gaTrackingEventArgs={ gaTrackingEventArgs }
+						>
+							<CoreSiteBannerNotification
+								{ ...notification }
+								gaTrackingEventArgs={ gaTrackingEventArgs }
+							/>
 						</Notification>
 					);
 				},
@@ -129,6 +146,7 @@ function CoreSiteBannerNotifications() {
 			} );
 		} );
 	}, [
+		viewContext,
 		hasSurveys,
 		notifications,
 		registerNotification,

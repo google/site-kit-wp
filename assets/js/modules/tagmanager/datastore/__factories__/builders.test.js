@@ -19,8 +19,11 @@
 /**
  * Internal dependencies
  */
-import * as factories from '../../datastore/__factories__';
-import { CONTEXT_AMP, CONTEXT_WEB } from '../constants';
+import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
+import {
+	CONTEXT_AMP,
+	CONTEXT_WEB,
+} from '@/js/modules/tagmanager/datastore/constants';
 
 describe( 'Google Tag Manager Builder fake data test', () => {
 	it( 'should create the same data from factory builders on each test run', () => {

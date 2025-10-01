@@ -80,8 +80,14 @@
 			color: $c-surfaces-on-surface-variant;
 
 			&:hover {
+				background-color: $c-interactive-tertiary-hover;
 				color: $c-surfaces-on-background;
 				text-decoration: none;
+
+				&::before {
+					background-color: $c-interactive-tertiary-hover;
+					opacity: 1;
+				}
 			}
 		}
 

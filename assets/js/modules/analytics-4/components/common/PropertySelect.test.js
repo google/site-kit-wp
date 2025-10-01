@@ -20,9 +20,12 @@
  * Internal dependencies
  */
 import PropertySelect from './PropertySelect';
-import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import * as fixtures from '../../datastore/__fixtures__';
+import {
+	MODULES_ANALYTICS_4,
+	ACCOUNT_CREATE,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	fireEvent,
 	act,

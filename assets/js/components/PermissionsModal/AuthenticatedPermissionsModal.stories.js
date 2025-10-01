@@ -22,7 +22,7 @@
 import AuthenticatedPermissionsModal from './AuthenticatedPermissionsModal';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { provideUserAuthentication } from '../../../../tests/js/utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 function Template() {
 	return <AuthenticatedPermissionsModal />;

@@ -25,10 +25,10 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useViewContext from './useViewContext';
-import { deleteItem, getItem } from '../googlesitekit/api/cache';
-import { trackEvent } from '../util';
+import { deleteItem, getItem } from '@/js/googlesitekit/api/cache';
+import { trackEvent } from '@/js/util';
 
 /**
  * Tracks the successful user and site setup.

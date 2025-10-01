@@ -17,17 +17,22 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
-import * as fixtures from '../../datastore/__fixtures__';
+import * as fixtures from '@/js/modules/tagmanager/datastore/__fixtures__';
 import SettingsEdit from './SettingsEdit';
-import { Cell, Grid, Row } from '../../../../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 import {
 	CONTAINER_CREATE,
 	FORM_SETUP,
 	MODULES_TAGMANAGER,
-} from '../../datastore/constants';
-import { MODULE_SLUG_TAGMANAGER } from '../../constants';
+} from '@/js/modules/tagmanager/datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -35,12 +40,13 @@ import {
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	AMP_MODE_PRIMARY,
 	AMP_MODE_SECONDARY,
-} from '../../../../googlesitekit/datastore/site/constants';
+	CORE_SITE,
+} from '@/js/googlesitekit/datastore/site/constants';
 
 const defaultSettings = {
 	accountID: '',
@@ -51,6 +57,38 @@ const defaultSettings = {
 	useSnippet: true,
 	ownerID: 0,
 };
+
+const gtgServerRequirementsEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
+);
+
+function setupRegistryWithDefaultSettings( registry ) {
+	// eslint-disable-next-line sitekit/acronym-case
+	const accountID = fixtures.accounts[ 0 ].accountId;
+	registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+	registry
+		.dispatch( MODULES_TAGMANAGER )
+		.receiveGetAccounts( fixtures.accounts );
+	registry
+		.dispatch( MODULES_TAGMANAGER )
+		.receiveGetContainers( fixtures.getContainers.all, {
+			accountID,
+		} );
+	const [ container ] = registry
+		.select( MODULES_TAGMANAGER )
+		.getWebContainers( accountID );
+	registry
+		.dispatch( MODULES_TAGMANAGER )
+		// eslint-disable-next-line sitekit/acronym-case
+		.setContainerID( container.publicId );
+	registry
+		.dispatch( MODULES_TAGMANAGER )
+		// eslint-disable-next-line sitekit/acronym-case
+		.setInternalContainerID( container.containerId );
+	registry
+		.dispatch( MODULES_TAGMANAGER )
+		.receiveGetSettings( defaultSettings );
+}
 
 function Template( args ) {
 	return (
@@ -75,33 +113,7 @@ function Template( args ) {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.args = {
-	setupRegistry: ( registry ) => {
-		// eslint-disable-next-line sitekit/acronym-case
-		const accountID = fixtures.accounts[ 0 ].accountId;
-		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			.receiveGetAccounts( fixtures.accounts );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			.receiveGetContainers( fixtures.getContainers.all, {
-				accountID,
-			} );
-		const [ container ] = registry
-			.select( MODULES_TAGMANAGER )
-			.getWebContainers( accountID );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			// eslint-disable-next-line sitekit/acronym-case
-			.setContainerID( container.publicId );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			// eslint-disable-next-line sitekit/acronym-case
-			.setInternalContainerID( container.containerId );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			.receiveGetSettings( defaultSettings );
-	},
+	setupRegistry: setupRegistryWithDefaultSettings,
 };
 
 export const NoAccounts = Template.bind( {} );
@@ -407,6 +419,81 @@ SecondaryAMPNonUniqueContainer.args = {
 	},
 	ampMode: AMP_MODE_SECONDARY,
 };
+
+export const GTGEnabled = Template.bind( null );
+GTGEnabled.storyName = 'With Google tag gateway enabled';
+GTGEnabled.parameters = {
+	features: [ 'googleTagGateway' ],
+};
+GTGEnabled.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			setupRegistryWithDefaultSettings( registry );
+
+			const gtgSettings = {
+				isEnabled: true,
+				isGTGHealthy: true,
+				isScriptAccessEnabled: true,
+			};
+
+			fetchMock.getOnce(
+				gtgServerRequirementsEndpoint,
+				{
+					body: gtgSettings,
+				},
+				{ overwriteRoutes: true }
+			);
+
+			registry
+				.dispatch( CORE_SITE )
+				.receiveGetGoogleTagGatewaySettings( gtgSettings );
+		}
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const GTGDisabledWithWarning = Template.bind( null );
+GTGDisabledWithWarning.storyName =
+	'With Google tag gateway disabled with warning';
+GTGDisabledWithWarning.parameters = {
+	features: [ 'googleTagGateway' ],
+};
+GTGDisabledWithWarning.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			setupRegistryWithDefaultSettings( registry );
+
+			const gtgSettings = {
+				isEnabled: true,
+				isGTGHealthy: false,
+				isScriptAccessEnabled: false,
+			};
+
+			fetchMock.getOnce(
+				gtgServerRequirementsEndpoint,
+				{
+					body: gtgSettings,
+				},
+				{ overwriteRoutes: true }
+			);
+
+			registry
+				.dispatch( CORE_SITE )
+				.receiveGetGoogleTagGatewaySettings( gtgSettings );
+		}
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
 
 export default {
 	title: 'Modules/TagManager/Settings/SettingsEdit',
