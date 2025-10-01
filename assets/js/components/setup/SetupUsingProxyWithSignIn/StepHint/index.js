@@ -39,6 +39,8 @@ export default function StepHint( { leadingText, tooltipText } ) {
 }
 
 StepHint.propTypes = {
-	leadingText: PropTypes.string.isRequired,
-	tooltipText: PropTypes.string.isRequired,
+	leadingText: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] )
+		.isRequired,
+	tooltipText: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] )
+		.isRequired,
 };
