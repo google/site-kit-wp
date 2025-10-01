@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
  * @access private
  * @ignore
  */
+// phpcs:ignoreFile
 final class View_Only_Pointer {
 
 	const SLUG = 'googlesitekit-view-only-pointer';
@@ -39,6 +40,10 @@ final class View_Only_Pointer {
 		);
 	}
 
+	function get_callback() {
+
+	}
+
 	/**
 	 * Gets the view-only pointer.
 	 *
@@ -51,29 +56,55 @@ final class View_Only_Pointer {
 			self::SLUG,
 			array(
 				'title'           => __( 'You now have access to Site Kit', 'google-site-kit' ),
-				'content'         => __( 'Check Site Kit’s dashboard to find out how much traffic your site is getting, your most popular pages, top keywords people use to find your site on Search, and more.', 'google-site-kit' ),
+				// 'content'         => __( 'Check Site Kit’s dashboard to find out how much traffic your site is getting, your most popular pages, top keywords people use to find your site on Search, and more.', 'google-site-kit' ),
+				'content'		  => function() {
+					return sprintf(
+						'<h4>%s</h4><p>%s</p>',
+						__( 'Subtitle text', 'google-site-kit' ),
+						__( 'Check Site Kit’s dashboard to find out how much traffic your site is getting, your most popular pages, top keywords people use to find your site on Search, and more.', 'google-site-kit' )
+					);
+				},
 				'target_id'       => 'toplevel_page_googlesitekit-dashboard',
 				'active_callback' => function ( $hook_suffix ) {
-					if ( 'index.php' !== $hook_suffix
-						|| current_user_can( Permissions::AUTHENTICATE )
-						|| ! current_user_can( Permissions::VIEW_SPLASH )
+					// if ( 'index.php' !== $hook_suffix
+					// 	|| current_user_can( Permissions::AUTHENTICATE )
+					// 	|| ! current_user_can( Permissions::VIEW_SPLASH )
 
-					) {
-						return false;
-					}
+					// ) {
+					// 	return false;
+					// }
 
-					$dismissed_wp_pointers = get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true );
-					if ( ! $dismissed_wp_pointers ) {
-						return true;
-					}
+					// $dismissed_wp_pointers = get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true );
+					// if ( ! $dismissed_wp_pointers ) {
+					// 	return true;
+					// }
 
-					$dismissed_wp_pointers = explode( ',', $dismissed_wp_pointers );
-					if ( in_array( self::SLUG, $dismissed_wp_pointers, true ) ) {
-						return false;
-					}
+					// $dismissed_wp_pointers = explode( ',', $dismissed_wp_pointers );
+					// if ( in_array( self::SLUG, $dismissed_wp_pointers, true ) ) {
+					// 	return false;
+					// }
 
 					return true;
 				},
+				'buttons' =>
+					sprintf('
+					 function(event, t) {
+					    const onClick = function() {
+							jQuery.post(
+								window.ajaxurl,
+								{
+									pointer: "%s",
+									action:  "dismiss-wp-pointer",
+								}
+							);
+
+							window.location = "admin.php?page=googlesitekit-dashboard";
+						};
+						jQuery("body").on("click", ".googlesitekit-pointer-cta", onClick);
+
+						return jQuery(\'<a class="googlesitekit-pointer-cta">Setup</a>\');
+					}
+					', self::SLUG),
 			)
 		);
 	}

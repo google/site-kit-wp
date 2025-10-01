@@ -91,6 +91,17 @@ final class Pointer {
 	}
 
 	/**
+	 * Gets the pointer buttons.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Pointer buttons.
+	 */
+	public function get_buttons() {
+		return $this->args['buttons'];
+	}
+
+	/**
 	 * Gets the pointer content.
 	 *
 	 * @since 1.83.0

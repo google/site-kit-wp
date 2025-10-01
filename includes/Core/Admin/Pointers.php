@@ -112,7 +112,8 @@ class Pointers {
 			return;
 		}
 
-		$slug = $pointer->get_slug();
+		$slug    = $pointer->get_slug();
+		$buttons = $pointer->get_buttons();
 
 		BC_Functions::wp_print_inline_script_tag(
 			sprintf(
@@ -130,7 +131,8 @@ class Pointers {
 									action:  "dismiss-wp-pointer",
 								}
 							);
-						}
+						},
+						%s
 					};
 
 					jQuery( "#%s" ).pointer( options ).pointer( "open" );
@@ -140,6 +142,7 @@ class Pointers {
 				$content,
 				wp_json_encode( $pointer->get_position() ),
 				esc_js( $slug ),
+				$buttons ? 'buttons: ' . $buttons : null,
 				esc_js( $pointer->get_target_id() )
 			),
 			array(
