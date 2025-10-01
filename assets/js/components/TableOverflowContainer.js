@@ -22,6 +22,7 @@
 import PropTypes from 'prop-types';
 import { debounce } from 'lodash';
 import classnames from 'classnames';
+import { useEvent } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -32,14 +33,12 @@ function TableOverflowContainer( { children } ) {
 	const [ isScrolling, setScrolling ] = useState( false );
 	const scrollRef = useRef();
 
+	const debouncedScrollCheck = debounce( setIsScrolling, 100 );
+
+	useEvent( 'resize', debouncedScrollCheck );
+
 	useEffect( () => {
 		setIsScrolling();
-
-		const resize = debounce( setIsScrolling, 100 );
-
-		global.addEventListener( 'resize', resize );
-
-		return () => global.removeEventListener( 'resize', resize );
 	}, [] );
 
 	function setIsScrolling() {

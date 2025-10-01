@@ -20,14 +20,14 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { useMount } from 'react-use';
+import { useEvent, useMount } from 'react-use';
 import { Chip } from '@material/react-chips';
 
 /**
  * WordPress dependencies
  */
 import { useThrottle } from '@wordpress/compose';
-import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
+import { useState, useCallback, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -227,13 +227,7 @@ export default function Navigation() {
 	const throttledOnScroll = useThrottle( onScroll, 150 );
 
 	// Handle scroll events to update sticky state and selected chip.
-	useEffect( () => {
-		global.addEventListener( 'scroll', throttledOnScroll );
-
-		return () => {
-			global.removeEventListener( 'scroll', throttledOnScroll );
-		};
-	}, [ throttledOnScroll ] );
+	useEvent( 'scroll', throttledOnScroll );
 
 	const chips = {
 		[ ANCHOR_ID_KEY_METRICS ]: {
