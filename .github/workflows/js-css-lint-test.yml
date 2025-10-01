@@ -90,12 +90,28 @@ jobs:
         id: test-js
         run: npm run test:js -- -- --json --outputFile=../../jest-results.json
         continue-on-error: true
-      - name: Check for catastrophic failure
+      - name: Check for catastrophic suite failures
+        id: check-catastrophic
         run: |
+          # Ensure the Jest results file exists (the test script writes it two directories up from its working dir).
           if [ ! -f jest-results.json ]; then
-            echo "❌ Catastrophic failure: no jest-results.json produced."
+            echo "❌ Catastrophic Jest failure: no jest-results.json produced (possible crash or misconfiguration)." >&2
             exit 1
           fi
+
+          if command -v jq >/dev/null 2>&1; then
+            NUM_RUNTIME_ERRORS=$(jq -r '.numRuntimeErrorTestSuites // 0' jest-results.json)
+          else
+            NUM_RUNTIME_ERRORS=$(node -e "const f=require('./jest-results.json');console.log(f.numRuntimeErrorTestSuites||0);")
+          fi
+
+          echo "Detected numRuntimeErrorTestSuites=$NUM_RUNTIME_ERRORS"
+          if [ "${NUM_RUNTIME_ERRORS}" -gt 0 ]; then
+            echo "❌ Catastrophic Jest failure: ${NUM_RUNTIME_ERRORS} test suite(s) had runtime errors (syntax/dependency issues). Aborting without retries." >&2
+            # Fail immediately so the job stops here.
+            exit 1
+          fi
+          echo "No catastrophic suite failures detected. Proceeding to potential retries for normal test failures."
       - name: Jest Tests (Retry Failures 1)
         id: test-js-retry-1
         run: npm run test:js -- -- --onlyFailures
