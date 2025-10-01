@@ -29,8 +29,12 @@
 	> button {
 		background: none;
 		border: none;
-		color: $c-surfaces-inverse-on-surface;
 		padding-right: 0;
+	}
+
+	> a,
+	> button {
+		color: $c-surfaces-inverse-on-surface;
 		text-decoration: underline;
 	}
 }
