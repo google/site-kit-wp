@@ -225,7 +225,7 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	/**
 	 * Returns events supported by active providers from the conversion tracking infrastructure.
 	 *
-	 * @since n.e.x.t Moved this method here from the Ads class.
+	 * @since 1.163.0 Moved this method here from the Ads class.
 	 *
 	 * @return array Array of supported conversion events, or empty array.
 	 */
@@ -248,7 +248,7 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	/**
 	 * Gets an array of internal feature metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 *
 	 * @return array
 	 */

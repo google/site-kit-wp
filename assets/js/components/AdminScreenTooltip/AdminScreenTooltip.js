@@ -35,20 +35,23 @@ import {
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
 
-export function AdminMenuTooltip() {
+export function AdminScreenTooltip() {
 	const viewContext = useViewContext();
 	const { setValue } = useDispatch( CORE_UI );
 	const breakpoint = useBreakpoint();
 
 	const {
 		isTooltipVisible = false,
+		target,
+		placement,
+		className,
 		tooltipSlug,
 		title,
 		content,
 		dismissLabel,
 	} = useSelect(
 		( select ) =>
-			select( CORE_UI ).getValue( 'admin-menu-tooltip' ) || {
+			select( CORE_UI ).getValue( 'admin-screen-tooltip' ) || {
 				isTooltipVisible: false,
 			}
 	);
@@ -66,28 +69,41 @@ export function AdminMenuTooltip() {
 			);
 		}
 
-		setValue( 'admin-menu-tooltip', undefined );
+		setValue( 'admin-screen-tooltip', undefined );
 	}, [ setValue, tooltipSlug, viewContext ] );
 
 	if ( ! isTooltipVisible ) {
 		return null;
 	}
 
-	const defaultTarget = '#adminmenu [href*="page=googlesitekit-settings"]';
 	const isMobileTablet =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
+	const desktopTarget =
+		target ?? '#adminmenu [href*="page=googlesitekit-settings"]';
+
+	const desktopPlacement = placement ?? 'right';
+
+	function desktopClassName() {
+		if ( className ) {
+			return className;
+		}
+		return ! target
+			? 'googlesitekit-tour-tooltip__fixed-settings-tooltip'
+			: undefined;
+	}
+
 	return (
 		<JoyrideTooltip
-			target={ isMobileTablet ? 'body' : defaultTarget }
-			placement={ isMobileTablet ? 'center' : 'right' }
+			target={ isMobileTablet ? 'body' : desktopTarget }
+			placement={ isMobileTablet ? 'center' : desktopPlacement }
 			className={
 				isMobileTablet
 					? 'googlesitekit-tour-tooltip__modal_step'
-					: 'googlesitekit-tour-tooltip__fixed-settings-tooltip'
+					: desktopClassName()
 			}
 			disableOverlay={ ! isMobileTablet }
-			slug="ga4-activation-banner-admin-menu-tooltip"
+			slug="admin-screen-tooltip"
 			title={ title }
 			content={ content }
 			dismissLabel={ dismissLabel }

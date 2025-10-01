@@ -35,7 +35,7 @@ import { useDebounce } from '@/js/hooks/useDebounce';
  * Ensures that on small screens the last tab is visually cut off to imply
  * scroll, and wires up resize handling and open transitions.
  *
- * @since n.e.x.t
+ * @since 1.163.0
  *
  * @param {Object}  args                              Arguments.
  * @param {Object}  args.containerRef                 Ref to the container element.
