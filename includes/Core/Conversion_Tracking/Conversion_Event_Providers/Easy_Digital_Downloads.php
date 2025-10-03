@@ -99,7 +99,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	 * @since n.e.x.t
 	 */
 	protected function maybe_add_purchase_data_from_session() {
-		if ( ! edd_is_success_page() ) {
+		if ( ! function_exists( 'edd_get_purchase_session' ) || ! function_exists( 'edd_is_success_page' ) || ! edd_is_success_page() ) {
 			return;
 		}
 
@@ -125,16 +125,16 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param mixed|array|null $session An array containing EDD purchase session data.
+	 * @param mixed|array|null $session_data An array containing EDD purchase session data.
 	 *
 	 * @return array
 	 */
-	protected function get_enhanced_conversions_data_from_session( $session ) {
-		if ( ! is_array( $session ) ) {
+	protected function get_enhanced_conversions_data_from_session( $session_data ) {
+		if ( ! is_array( $session_data ) ) {
 			return array();
 		}
 
-		$user_data = $this->extract_user_data_from_session( $session );
+		$user_data = $this->extract_user_data_from_session( $session_data );
 
 		if ( empty( $user_data ) ) {
 			return array();
@@ -151,69 +151,62 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $session An array containing EDD purchase session data.
+	 * @param array $session_data An array containing EDD purchase session data.
 	 *
 	 * @return array
 	 */
-	protected function extract_user_data_from_session( $session ) {
-		if ( isset( $session['user_info'] ) ) {
-			$session_info = $session['user_info'];
-
-			$email      = $session_info['email'] ?? $session['user_email'];
-			$first_name = $session_info['first_name'];
-			$last_name  = $session_info['last_name'];
-
-			if ( isset( $session['user_info']['address'] ) ) {
-				$session_address = $session_info['address'];
-
-				$phone_number = $session_address['phone'];
-				$street       = $session_address['line1'];
-				$city         = $session_address['city'];
-				$region       = $session_address['state'];
-				$postal_code  = $session_address['zip'];
-				$country      = $session_address['country'];
-			}
-		}
-
+	protected function extract_user_data_from_session( $session_data ) {
 		$user_data    = array();
 		$address_data = array();
 
-		if ( ! empty( $email ) ) {
-			$user_data['email'] = Enhanced_Conversions::get_normalized_email( $email );
-		}
+		if ( isset( $session_data['user_info'] ) ) {
+			$email = $session_data['user_info']['email'] ?? $session['user_email'] ?? '';
 
-		if ( ! empty( $phone_number ) ) {
-			$user_data['phone_number'] = Enhanced_Conversions::get_normalized_value( $phone_number );
-		}
+			if ( ! empty( $email ) ) {
+				$user_data['email'] = Enhanced_Conversions::get_normalized_email( $email );
+			}
 
-		if ( ! empty( $first_name ) ) {
-			$address_data['first_name'] = Enhanced_Conversions::get_normalized_value( $first_name );
-		}
+			if ( ! empty( $session_data['user_info']['first_name'] ) ) {
+				$address_data['first_name'] = Enhanced_Conversions::get_normalized_value( $session_data['user_info']['first_name'] );
+			}
 
-		if ( ! empty( $last_name ) ) {
-			$address_data['last_name'] = Enhanced_Conversions::get_normalized_value( $last_name );
-		}
+			if ( ! empty( $session_data['user_info']['last_name'] ) ) {
+				$address_data['last_name'] = Enhanced_Conversions::get_normalized_value( $session_data['user_info']['last_name'] );
+			}
 
-		if ( ! empty( $street ) ) {
-			$address_data['street'] = Enhanced_Conversions::get_normalized_value( $street );
-		}
+			if ( isset( $session_data['user_info']['address'] ) ) {
 
-		if ( ! empty( $city ) ) {
-			$address_data['city'] = Enhanced_Conversions::get_normalized_value( $city );
-		}
+				if ( ! empty( $session_data['user_info']['address']['phone'] ) ) {
+					$user_data['phone_number'] = Enhanced_Conversions::get_normalized_value( $session_data['user_info']['address']['phone'] );
+				}
 
-		if ( ! empty( $region ) ) {
-			// Attempt to get full region name.
-			$region                 = edd_get_state_name( $user_data['address']['country'], $region );
-			$address_data['region'] = Enhanced_Conversions::get_normalized_value( $region );
-		}
+				if ( ! empty( $session_data['user_info']['address']['line1'] ) ) {
+					$address_data['street'] = Enhanced_Conversions::get_normalized_value( $session_data['user_info']['address']['line1'] );
+				}
 
-		if ( ! empty( $postal_code ) ) {
-			$address_data['postal_code'] = Enhanced_Conversions::get_normalized_value( $postal_code );
-		}
+				if ( ! empty( $session_data['user_info']['address']['city'] ) ) {
+					$address_data['city'] = Enhanced_Conversions::get_normalized_value( $session_data['user_info']['address']['city'] );
+				}
 
-		if ( ! empty( $country ) ) {
-			$address_data['country'] = $country;
+				if ( ! empty( $session_data['user_info']['address']['state'] ) ) {
+					$region = $session_data['user_info']['address']['state'];
+
+					// Attempt to get full region name.
+					if ( function_exists( 'edd_get_state_name' ) && ! empty( $user_data['address']['country'] ) ) {
+						$region = edd_get_state_name( $user_data['address']['country'], $region );
+					}
+
+					$address_data['region'] = Enhanced_Conversions::get_normalized_value( $region );
+				}
+
+				if ( ! empty( $session_data['user_info']['address']['zip'] ) ) {
+					$address_data['postal_code'] = Enhanced_Conversions::get_normalized_value( $session_data['user_info']['address']['zip'] );
+				}
+
+				if ( ! empty( $session_data['user_info']['address']['country'] ) ) {
+					$address_data['country'] = $session_data['user_info']['address']['country'];
+				}
+			}
 		}
 
 		if ( ! empty( $address_data ) ) {
