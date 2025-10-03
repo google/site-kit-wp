@@ -302,8 +302,15 @@ const baseSelectors = {
 	 */
 	getProactiveUserEngagementFrequency( state ) {
 		const settings = state?.proactiveUserEngagement?.settings;
-		// Default to the first frequency option if not set.
-		return settings?.frequency || EMAIL_REPORT_FREQUENCIES[ 0 ];
+		// If the settings haven't loaded at all, return `undefined` to signify
+		// we're still loading this value.
+		if ( settings === undefined ) {
+			return undefined;
+		}
+		
+		// Default to the first frequency option if settings have loaded
+		// but the frequency is not set.
+		return settings.frequency || EMAIL_REPORT_FREQUENCIES[ 0 ];
 	},
 
 	/**
