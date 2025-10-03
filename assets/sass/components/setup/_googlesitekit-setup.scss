@@ -26,6 +26,10 @@
 		.googlesitekit-opt-in {
 			margin-bottom: 8px;
 			margin-top: 8px;
+
+			.mdc-form-field .mdc-checkbox {
+				margin-top: -13px;
+			}
 		}
 
 		.googlesitekit-setup__step {
