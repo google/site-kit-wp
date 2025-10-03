@@ -40,31 +40,33 @@ export default {
 		},
 	},
 	args: {
-		frequency: 'weekly',
-		startOfWeek: 1, // Week starts on Monday; used in places like the UK.
-		savedFrequency: undefined,
+		savedSettings: {},
+		clientSettings: {
+			frequency: 'weekly',
+			startOfWeek: 1, // Week starts on Monday; used in places like the UK.
+			savedFrequency: undefined,
+		},
 	},
 };
 
-function Template( args ) {
-	const { startOfWeek, frequency, savedFrequency } = args;
+function Template( { savedSettings, clientSettings } ) {
+	// const { startOfWeek, frequency, savedFrequency } = args;
 
 	function setupRegistry( registry ) {
-		provideSiteInfo( registry, { startOfWeek } );
+		provideSiteInfo( registry, {
+			startOfWeek: savedSettings?.startOfWeek,
+		} );
 
-		if ( savedFrequency ) {
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetProactiveUserEngagementSettings( {
-					frequency: savedFrequency,
-				} );
-		}
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetProactiveUserEngagementSettings( savedSettings );
 
-		if ( frequency ) {
-			registry
-				.dispatch( CORE_USER )
-				.setProactiveUserEngagementFrequency( frequency );
-		}
+		registry
+			.dispatch( CORE_USER )
+			.setProactiveUserEngagementSettings( clientSettings );
+		// registry
+		// 	.dispatch( CORE_USER )
+		// 	.setProactiveUserEngagementFrequency( frequency );
 	}
 
 	return (
@@ -75,44 +77,59 @@ function Template( args ) {
 		</WithRegistrySetup>
 	);
 }
-
 export const NoSavedFrequencyDefaultWeekSelection = Template.bind( {} );
 NoSavedFrequencyDefaultWeekSelection.args = {
-	frequency: undefined,
+	savedSettings: {},
 };
 
 export const WeeklySelected = Template.bind( {} );
 WeeklySelected.args = {
-	frequency: 'weekly',
+	clientSettings: {
+		frequency: 'weekly',
+	},
 };
 
 export const MonthlySelected = Template.bind( {} );
 MonthlySelected.args = {
-	frequency: 'monthly',
+	clientSettings: {
+		frequency: 'monthly',
+	},
 };
 
 export const QuarterlySelected = Template.bind( {} );
 QuarterlySelected.args = {
-	frequency: 'quarterly',
+	clientSettings: {
+		frequency: 'quarterly',
+	},
 };
 
 export const WeeklySelectedSundayStartOfTheWeek = Template.bind( {} );
 WeeklySelectedSundayStartOfTheWeek.args = {
-	frequency: 'weekly',
-	startOfWeek: 0, // Sunday
+	savedSettings: {
+		frequency: 'weekly',
+		startOfWeek: 0, // Sunday
+	},
 };
 WeeklySelectedSundayStartOfTheWeek.scenario = {};
 
 export const PreviouslySavedFrequency = Template.bind( {} );
 PreviouslySavedFrequency.args = {
-	frequency: 'weekly',
-	savedFrequency: 'monthly',
+	savedSettings: {
+		frequency: 'weekly',
+	},
+	clientSettings: {
+		frequency: 'monthly',
+	},
 };
 PreviouslySavedFrequency.scenario = {};
 
 export const PreviouslySavedFrequencySameAsCurrent = Template.bind( {} );
 PreviouslySavedFrequencySameAsCurrent.args = {
-	frequency: 'monthly',
-	savedFrequency: 'monthly',
+	savedSettings: {
+		frequency: 'monthly',
+	},
+	clientSettings: {
+		frequency: 'monthly',
+	},
 };
 PreviouslySavedFrequencySameAsCurrent.scenario = {};
