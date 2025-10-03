@@ -39,7 +39,7 @@ import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/c
 import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '@/js/modules/analytics-4/datastore/constants';
 import useViewContext from '@/js/hooks/useViewContext';
-import { useShowTooltip } from '@/js/components/AdminMenuTooltip';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import { WEEK_IN_SECONDS } from '@/js/util';
 import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudienceGroup';
 import AudienceErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceErrorModal';

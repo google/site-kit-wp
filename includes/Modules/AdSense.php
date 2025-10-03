@@ -1158,7 +1158,7 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 	/**
 	 * Gets an array of internal feature metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 *
 	 * @return array
 	 */

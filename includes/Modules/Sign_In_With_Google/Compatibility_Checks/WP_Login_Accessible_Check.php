@@ -1,6 +1,6 @@
 <?php
 /**
- * WordPress login accessibility compatibility check.
+ * Class Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks\WP_Login_Accessible_Check
  *
  * @package   Google\Site_Kit\Modules\Sign_In_With_Google
  * @copyright 2025 Google LLC

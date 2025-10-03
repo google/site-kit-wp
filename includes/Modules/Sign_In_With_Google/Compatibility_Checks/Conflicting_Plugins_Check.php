@@ -1,6 +1,6 @@
 <?php
 /**
- * Conflicting plugins compatibility check.
+ * Class Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks\Conflicting_Plugins_Check
  *
  * @package   Google\Site_Kit\Modules\Sign_In_With_Google
  * @copyright 2025 Google LLC
@@ -59,7 +59,7 @@ class Conflicting_Plugins_Check extends Compatibility_Check {
 					'pluginName'      => $plugin_name,
 					'conflictMessage' => sprintf(
 						/* translators: %s: plugin name */
-						__( '%s may prevent Google Sign-In from working. Common issues: blocked authentication cookies, restricted popups/iframes, hidden login URLs, or blocked Google API requests.', 'google-site-kit' ),
+						__( '%s may prevent Sign in with Google from working properly.', 'google-site-kit' ),
 						$plugin_name
 					),
 				);

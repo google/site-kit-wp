@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.8
 Requires PHP:      7.4
-Stable tag:        1.162.1
+Stable tag:        1.163.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,35 +109,30 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.162.1 =
-
-**Fixed**
-
-* Fix the `gtg-server-requirement-status` endpoint, ensuring Google tag gateway health checks can be made successfully. See [#11527](https://github.com/google/site-kit-wp/issues/11527).
-
-= 1.162.0 =
+= 1.163.0 =
 
 **Enhanced**
 
-* Update the Google tag gateway `measurement.php` to the latest version. See [#11517](https://github.com/google/site-kit-wp/issues/11517).
-* Use the GTag script via the first-party domain proxy `gtg/measurement.php` for Tag Manager containers when Google tag gateway for advertisers is active. See [#11417](https://github.com/google/site-kit-wp/issues/11417).
-* Display the Google tag gateway for advertisers status in the Tag Manager settings view. See [#11416](https://github.com/google/site-kit-wp/issues/11416).
-* Add Google Tag Gateway toggle to Tag Manager settings edit screen. See [#11415](https://github.com/google/site-kit-wp/issues/11415).
-* Improved phone number detection for Enhanced Conversions to avoid mistakenly identifying hidden form tokens or hashes as valid phone numbers. See [#11357](https://github.com/google/site-kit-wp/issues/11357).
-* Update the redirect URL to the setup flow pages to use the 3rd version when the `setupFlowRefresh` feature flag is enabled. See [#11340](https://github.com/google/site-kit-wp/issues/11340).
-* Add integration for Popup Maker with Enhanced Conversions. See [#11187](https://github.com/google/site-kit-wp/issues/11187).
-* Add the base class for PUE integration. See [#11153](https://github.com/google/site-kit-wp/issues/11153).
-* Implement PUE REST controller classes. See [#11151](https://github.com/google/site-kit-wp/issues/11151).
-* Add Enhanced Conversions support for Ninja Forms by capturing and sending user data. See [#11009](https://github.com/google/site-kit-wp/issues/11009).
-* Add Enhanced Conversions support for Contact Form 7 by capturing and sending user data. See [#11008](https://github.com/google/site-kit-wp/issues/11008).
-* Add Enhanced Conversions support for WPForms by capturing and sending user data. See [#11007](https://github.com/google/site-kit-wp/issues/11007).
+* Update `service_version` to `v3` in proxy metadata when the `setupFlowRefresh` feature flag is enabled. See [#11488](https://github.com/google/site-kit-wp/issues/11488).
+* Add "manage email reports" link for Proactive User Engagement feature. See [#11423](https://github.com/google/site-kit-wp/issues/11423).
+* Implement Conversion Events, ABR, Consent Mode, SiwG and Key Metrics feature metrics tracking. See [#11422](https://github.com/google/site-kit-wp/issues/11422).
+* Implement Audience Segmentation, AdSense reporting, Dashboard Sharing and RRM feature metrics tracking. See [#11421](https://github.com/google/site-kit-wp/issues/11421).
+* Add the `googlesitekit-key-metrics-setup` screen, with stub content. See [#11373](https://github.com/google/site-kit-wp/issues/11373).
+* Ensure the `analytics.edit` scope is included in the set of required scopes for the Analytics module when the `setupFlowRefresh` feature flag is enabled. See [#11372](https://github.com/google/site-kit-wp/issues/11372).
+* Conditionally display a “Search Console was successfully set up” toast notification on the Analytics setup screen. See [#11339](https://github.com/google/site-kit-wp/issues/11339).
+* Create `ToastNotice`, a generic component for displaying short-lived "toast" messages. See [#11338](https://github.com/google/site-kit-wp/issues/11338).
+* Ensure all occurrences of the term "consent mode" have the correct casing. Props cnaples79. See [#11076](https://github.com/google/site-kit-wp/issues/11076).
+* Revise the wording on the "Congrats on completing the setup for Site Kit!" banner. See [#9001](https://github.com/google/site-kit-wp/issues/9001).
+
+**Changed**
+
+* Consolidate One-tap settings to a single setting. See [#11466](https://github.com/google/site-kit-wp/issues/11466).
+* Update version of NodeJS used to build Site Kit. See [#6026](https://github.com/google/site-kit-wp/issues/6026).
 
 **Fixed**
 
-* Ensure Google tag gateway debug information appears in Site Health when either Analytics, Ads, or Tag Manager is connected. See [#11467](https://github.com/google/site-kit-wp/issues/11467).
-* Prevent requests to the Reader Revenue Manager settings endpoint from being triggered when the Reader Revenue Manager module is inactive. See [#11346](https://github.com/google/site-kit-wp/issues/11346).
-* Fix tracking opt-in checkbox losing focus when actioned. See [#11291](https://github.com/google/site-kit-wp/issues/11291).
-* Fix KMW widget errors that appeared when chrome translation is used. See [#11232](https://github.com/google/site-kit-wp/issues/11232).
-* Fix bug that could make tooltips unreadable during page scroll. See [#7321](https://github.com/google/site-kit-wp/issues/7321).
+* Fix bug that caused sites that may be unable to install Site Kit from seeing a warning message during plugin setup. See [#11574](https://github.com/google/site-kit-wp/issues/11574).
+* Prevent the checkbox hover/focus state from being clipped on the Ad Blocking Recovery screen. See [#11309](https://github.com/google/site-kit-wp/issues/11309).
+* Fix bug that could cause Enhanced Conversion Tracking to be enabled when it shouldn't be after OAuth login. See [#11196](https://github.com/google/site-kit-wp/issues/11196).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

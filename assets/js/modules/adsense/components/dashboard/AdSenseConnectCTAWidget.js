@@ -40,7 +40,7 @@ import {
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
-import { useShowTooltip } from '@/js/components/AdminMenuTooltip';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 
 function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 	const { dismissItem } = useDispatch( CORE_USER );

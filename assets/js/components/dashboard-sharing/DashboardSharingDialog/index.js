@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useKey, useWindowScroll } from 'react-use';
+import { useEvent, useKey, useWindowScroll } from 'react-use';
 import classnames from 'classnames';
 
 /**
@@ -143,28 +143,19 @@ export default function DashboardSharingDialog() {
 		closeSettingsDialog();
 	}, [ closeResetDialog, closeSettingsDialog, resetDialogOpen ] );
 
-	// Handle scrim click for reset dialog.
-	useEffect( () => {
-		if ( ! resetDialogOpen || ! ref.current ) {
-			return () => {};
-		}
-
-		const {
-			current: { ownerDocument },
-		} = ref;
-
-		function handleScrimClick( event ) {
+	const handleScrimClick = useCallback(
+		( event ) => {
+			if ( ! resetDialogOpen ) {
+				return;
+			}
 			if ( event.target.classList.contains( 'mdc-dialog__scrim' ) ) {
 				closeResetDialog();
 			}
-		}
+		},
+		[ resetDialogOpen, closeResetDialog ]
+	);
 
-		ownerDocument.addEventListener( 'click', handleScrimClick );
-
-		return () => {
-			ownerDocument.removeEventListener( 'click', handleScrimClick );
-		};
-	}, [ ref, resetDialogOpen, closeResetDialog ] );
+	useEvent( 'click', handleScrimClick );
 
 	// Pressing the Escape key should close the reset dialog.
 	useKey(
