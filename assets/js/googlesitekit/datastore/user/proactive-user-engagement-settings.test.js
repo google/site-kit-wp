@@ -402,7 +402,7 @@ describe( 'core/user proactive user engagement settings', () => {
 		} );
 
 		describe( 'getProactiveUserEngagementFrequency', () => {
-			it( 'should return undefined by default when frequency is not set', () => {
+			it( 'should return weekly by default when frequency is not previously set', () => {
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetProactiveUserEngagementSettings( {
@@ -413,7 +413,7 @@ describe( 'core/user proactive user engagement settings', () => {
 					registry
 						.select( CORE_USER )
 						.getProactiveUserEngagementFrequency()
-				).toBe( undefined );
+				).toBe( 'weekly' );
 			} );
 
 			it( 'should return the stored frequency when set', () => {
