@@ -50,8 +50,6 @@ export default {
 };
 
 function Template( { savedSettings, clientSettings } ) {
-	// const { startOfWeek, frequency, savedFrequency } = args;
-
 	function setupRegistry( registry ) {
 		provideSiteInfo( registry, {
 			startOfWeek: savedSettings?.startOfWeek,
@@ -64,9 +62,6 @@ function Template( { savedSettings, clientSettings } ) {
 		registry
 			.dispatch( CORE_USER )
 			.setProactiveUserEngagementSettings( clientSettings );
-		// registry
-		// 	.dispatch( CORE_USER )
-		// 	.setProactiveUserEngagementFrequency( frequency );
 	}
 
 	return (
