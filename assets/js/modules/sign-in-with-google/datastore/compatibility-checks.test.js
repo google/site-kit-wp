@@ -125,15 +125,26 @@ describe( 'modules/sign-in-with-google compatibility-checks', () => {
 				expect( console ).toHaveErrored();
 			} );
 
-			it( 'returns undefined when no compatibility checks data is available', () => {
+			it( 'returns undefined when no compatibility checks data is available', async () => {
+				fetchMock.getOnce( endpoint, {
+					body: compatibilityChecksFixture,
+					status: 200,
+				} );
+
 				const compatibilityChecks = registry
 					.select( MODULES_SIGN_IN_WITH_GOOGLE )
 					.getCompatibilityChecks();
 
 				expect( compatibilityChecks ).toBeUndefined();
+
+				// Wait for the resolver to complete to avoid interfering with subsequent tests.
+				await untilResolved(
+					registry,
+					MODULES_SIGN_IN_WITH_GOOGLE
+				).getCompatibilityChecks();
 			} );
 
-			it( 'returns the compatibility checks data when available', () => {
+			it( 'returns the compatibility checks data when available', async () => {
 				registry
 					.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
 					.receiveGetCompatibilityChecks(
@@ -144,6 +155,12 @@ describe( 'modules/sign-in-with-google compatibility-checks', () => {
 					.select( MODULES_SIGN_IN_WITH_GOOGLE )
 					.getCompatibilityChecks();
 
+				await untilResolved(
+					registry,
+					MODULES_SIGN_IN_WITH_GOOGLE
+				).getCompatibilityChecks();
+
+				expect( fetchMock ).not.toHaveFetched();
 				expect( compatibilityChecks ).toEqual(
 					compatibilityChecksFixture
 				);
