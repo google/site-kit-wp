@@ -59,10 +59,9 @@ export default function FrequencySelector() {
 		select( CORE_SITE ).getStartOfWeek()
 	);
 
-	const frequency =
-		useSelect( ( select ) =>
-			select( CORE_USER ).getProactiveUserEngagementFrequency()
-		) || EMAIL_REPORT_FREQUENCIES[ 0 ];
+	const frequency = useSelect( ( select ) =>
+		select( CORE_USER ).getProactiveUserEngagementFrequency()
+	);
 
 	const savedFrequency = useSelect( ( select ) =>
 		select( CORE_USER ).getProactiveUserEngagementSavedFrequency()

@@ -84,10 +84,10 @@ const fetchSaveProactiveUserEngagementSettingsStore = createFetchStore( {
 				'frequency should be a string.'
 			);
 			invariant(
-				[ 'weekly', 'monthly', 'quarterly' ].includes(
-					settings.frequency
-				),
-				'frequency should be one of: weekly, monthly, quarterly.'
+				EMAIL_REPORT_FREQUENCIES.includes( settings.frequency ),
+				`frequency should be one of: ${ EMAIL_REPORT_FREQUENCIES.join(
+					', '
+				) }`
 			);
 		}
 	},
@@ -302,7 +302,8 @@ const baseSelectors = {
 	 */
 	getProactiveUserEngagementFrequency( state ) {
 		const settings = state?.proactiveUserEngagement?.settings;
-		return settings?.frequency;
+		// Default to the first frequency option if not set.
+		return settings?.frequency || EMAIL_REPORT_FREQUENCIES[ 0 ];
 	},
 
 	/**

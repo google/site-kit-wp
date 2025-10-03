@@ -60,9 +60,11 @@ function Template( args ) {
 				} );
 		}
 
-		registry
-			.dispatch( CORE_USER )
-			.setProactiveUserEngagementFrequency( frequency );
+		if ( frequency ) {
+			registry
+				.dispatch( CORE_USER )
+				.setProactiveUserEngagementFrequency( frequency );
+		}
 	}
 
 	return (
@@ -73,6 +75,11 @@ function Template( args ) {
 		</WithRegistrySetup>
 	);
 }
+
+export const NoSavedFrequencyDefaultWeekSelection = Template.bind( {} );
+NoSavedFrequencyDefaultWeekSelection.args = {
+	frequency: undefined,
+};
 
 export const WeeklySelected = Template.bind( {} );
 WeeklySelected.args = {
