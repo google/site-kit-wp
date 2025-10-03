@@ -37,6 +37,30 @@
 			],
 		} );
 	} );
+
+	const edddata = global._googlesitekit?.edddata;
+
+	// Handle Enhanced Conversions user data (only when purchase data available)
+	const { purchase } = edddata || {};
+
+	if ( purchase && global._googlesitekit?.gtagUserData ) {
+		const { user_data: userData } = purchase;
+
+		if ( userData ) {
+			// Send purchase event with Enhanced Conversions user data.
+			global._googlesitekit?.gtagEvent?.( 'purchase', {
+				user_data: userData,
+			} );
+
+			global.console.log(
+				'✅ EDD Enhanced Conversions Purchase Event Sent:',
+				{
+					userData,
+					note: 'Sent purchase event with user data for Enhanced Conversions',
+				}
+			);
+		}
+	}
 } )( global.jQuery );
 
 /**
