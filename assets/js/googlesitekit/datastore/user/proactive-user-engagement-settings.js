@@ -307,7 +307,7 @@ const baseSelectors = {
 		if ( settings === undefined ) {
 			return undefined;
 		}
-		
+
 		// Default to the first frequency option if settings have loaded
 		// but the frequency is not set.
 		return settings.frequency || EMAIL_REPORT_FREQUENCIES[ 0 ];
