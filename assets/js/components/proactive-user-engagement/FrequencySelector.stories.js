@@ -106,8 +106,10 @@ QuarterlySelected.args = {
 export const WeeklySelectedSundayStartOfTheWeek = Template.bind( {} );
 WeeklySelectedSundayStartOfTheWeek.args = {
 	savedSettings: {
-		frequency: 'weekly',
 		startOfWeek: 0, // Sunday
+	},
+	clientSettings: {
+		frequency: 'weekly',
 	},
 };
 WeeklySelectedSundayStartOfTheWeek.scenario = {};
@@ -115,10 +117,10 @@ WeeklySelectedSundayStartOfTheWeek.scenario = {};
 export const PreviouslySavedFrequency = Template.bind( {} );
 PreviouslySavedFrequency.args = {
 	savedSettings: {
-		frequency: 'weekly',
+		frequency: 'monthly',
 	},
 	clientSettings: {
-		frequency: 'monthly',
+		frequency: 'weekly',
 	},
 };
 PreviouslySavedFrequency.scenario = {};
