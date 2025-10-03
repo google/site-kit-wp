@@ -46,6 +46,11 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Guard;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Matchers;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Web_Tag;
 use Google\Site_Kit\Modules\Sign_In_With_Google\WooCommerce_Authenticator;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks\Compatibility_Checks;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks\WP_Login_Accessible_Check;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks\WP_COM_Check;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks\Conflicting_Plugins_Check;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Datapoint\Compatibility_Checks as Compatibility_Checks_Datapoint;
 use WP_Error;
 use WP_User;
 
@@ -365,6 +370,24 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		}
 
 		return parent::is_connected();
+	}
+
+	/**
+	 * Gets the datapoint definitions for the module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of datapoint definitions.
+	 */
+	protected function get_datapoint_definitions() {
+		$checks = new Compatibility_Checks();
+		$checks->add_check( new WP_Login_Accessible_Check() );
+		$checks->add_check( new WP_COM_Check() );
+		$checks->add_check( new Conflicting_Plugins_Check() );
+
+		return array(
+			'GET:compatibility-checks' => new Compatibility_Checks_Datapoint( array( 'checks' => $checks ) ),
+		);
 	}
 
 	/**
