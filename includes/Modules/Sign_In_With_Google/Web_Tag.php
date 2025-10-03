@@ -190,9 +190,16 @@ class Web_Tag extends Module_Web_Tag {
 			 * Mainly used by Gutenberg blocks.
 			 */
 			?>
-		document.querySelectorAll( '.googlesitekit-sign-in-with-google__frontend-output-button' ).forEach( ( siwgButtonDiv ) => {
-			google.accounts.id.renderButton( siwgButtonDiv, <?php echo wp_json_encode( $btn_args ); ?> );
-		});
+	const defaultButtonOptions = <?php echo wp_json_encode( $btn_args ); ?>;
+	document.querySelectorAll( '.googlesitekit-sign-in-with-google__frontend-output-button' ).forEach( ( siwgButtonDiv ) => {
+		const buttonOptions = {
+			shape: siwgButtonDiv.getAttribute( 'data-googlesitekit-siwg-shape' ) || defaultButtonOptions.shape,
+			text: siwgButtonDiv.getAttribute( 'data-googlesitekit-siwg-text' ) || defaultButtonOptions.text,
+			theme: siwgButtonDiv.getAttribute( 'data-googlesitekit-siwg-theme' ) || defaultButtonOptions.theme,
+		};
+
+		google.accounts.id.renderButton( siwgButtonDiv, buttonOptions );
+	});
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
 	<?php if ( $should_show_one_tap_prompt ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
