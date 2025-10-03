@@ -60,4 +60,19 @@ class Easy_Digital_DownloadsTest extends TestCase {
 		$this->assertInstanceOf( Script::class, $script );
 		$this->assertTrue( wp_script_is( $handle, 'registered' ) );
 	}
+
+	public function test_register_hooks_without_feature_flag() {
+		remove_all_actions( 'wp_footer' );
+
+		$this->edd->register_hooks();
+		$this->assertFalse( has_action( 'wp_footer' ), 'Expected wp_footer action to not be registered.' );
+	}
+
+	public function test_register_hooks_with_feature_flag() {
+		$this->enable_feature( 'gtagUserData' );
+		remove_all_actions( 'wp_footer' );
+
+		$this->edd->register_hooks();
+		$this->assertTrue( has_action( 'wp_footer' ), 'Expected wp_footer action to be registered.' );
+	}
 }
