@@ -92,6 +92,19 @@ class Compatibility_ChecksTest extends TestCase {
 			->method( 'run_checks' )
 			->willReturn( $mock_checks_result );
 
+		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
+		add_filter(
+			'map_meta_cap',
+			function ( $caps, $cap ) {
+				if ( Permissions::MANAGE_OPTIONS === $cap ) {
+					return array( 'manage_options' );
+				}
+				return $caps;
+			},
+			99,
+			2
+		);
+
 		$data_request = new Data_Request( 'GET', 'modules', 'sign-in-with-google', 'compatibility-checks' );
 
 		$request = $this->datapoint->create_request( $data_request );
@@ -109,6 +122,19 @@ class Compatibility_ChecksTest extends TestCase {
 	public function test_create_request_timestamp_is_current_time() {
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
+
+		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
+		add_filter(
+			'map_meta_cap',
+			function ( $caps, $cap ) {
+				if ( Permissions::MANAGE_OPTIONS === $cap ) {
+					return array( 'manage_options' );
+				}
+				return $caps;
+			},
+			99,
+			2
+		);
 
 		$this->mock_checks->method( 'run_checks' )->willReturn( array() );
 
