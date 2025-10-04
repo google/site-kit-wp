@@ -4,5 +4,6 @@
 	"gtagUserData",
 	"privacySandboxModule",
 	"proactiveUserEngagement",
-	"setupFlowRefresh"
+	"setupFlowRefresh",
+	"publicDashboard"
 ]
