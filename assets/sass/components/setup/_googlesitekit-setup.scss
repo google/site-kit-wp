@@ -73,6 +73,26 @@
 			padding-left: 10px;
 			padding-right: 10px;
 		}
+
+		.googlesitekit-setup__step-hint {
+			display: flex;
+			gap: 4px;
+			margin: 12px 0;
+			padding: 0 8px;
+
+			p {
+				color: $c-surfaces-on-background-variant;
+				font-size: $fs-body-sm;
+				letter-spacing: $ls-xs;
+				line-height: $lh-body-sm;
+				margin: 0;
+			}
+
+			.googlesitekit-info-tooltip {
+				color: $c-content-secondary;
+				display: flex;
+			}
+		}
 	}
 
 	.googlesitekit-setup-compat {
@@ -204,4 +224,8 @@
 			}
 		}
 	}
+}
+
+.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-setup__step-hint-tooltip {
+	max-width: 220px;
 }
