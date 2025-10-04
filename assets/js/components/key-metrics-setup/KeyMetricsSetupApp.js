@@ -17,10 +17,230 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+} from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { ProgressBar, SpinnerButton } from 'googlesitekit-components';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { Grid, Row, Cell } from '@/js/material-components';
+import Header from '@/js/components/Header';
+import HelpMenu from '@/js/components/help/HelpMenu';
+import Layout from '@/js/components/layout/Layout';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import UserInputSelectOptions from '@/js/components/user-input/UserInputSelectOptions';
+import { hasErrorForAnswer } from '@/js/components/user-input/util/validation';
+import {
+	getUserInputAnswers,
+	getUserInputAnswersDescription,
+	USER_INPUT_MAX_ANSWERS,
+	USER_INPUT_QUESTIONS_PURPOSE,
+} from '@/js/components/user-input/util/constants';
+import WarningSVG from '@/svg/icons/warning.svg';
 
 export default function KeyMetricsSetupApp() {
-	return <P>The Key Metrics Setup screen does not have any content yet.</P>;
+	const dashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
+
+	const settings = useSelect( ( select ) =>
+		select( CORE_USER ).getUserInputSettings()
+	);
+	const isSavingSettings = useSelect( ( select ) =>
+		select( CORE_USER ).isSavingUserInputSettings( settings )
+	);
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigating()
+	);
+
+	// User input settings are not cleared when Analytics is disconnected, so we may have an existing answer.
+	const hasFinishedGettingInputSettings = useSelect( ( select ) =>
+		select( CORE_USER ).hasFinishedResolution( 'getUserInputSettings' )
+	);
+
+	const error = useSelect( ( select ) =>
+		select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] )
+	);
+
+	const values = useSelect(
+		( select ) =>
+			select( CORE_USER ).getUserInputSetting(
+				USER_INPUT_QUESTIONS_PURPOSE
+			) || []
+	);
+
+	const userInputPurposeConversionEvents = useSelect( ( select ) => {
+		const isGA4Connected = select( CORE_MODULES ).isModuleConnected(
+			MODULE_SLUG_ANALYTICS_4
+		);
+
+		if ( ! isGA4Connected ) {
+			return [];
+		}
+
+		return select(
+			MODULES_ANALYTICS_4
+		).getUserInputPurposeConversionEvents();
+	} );
+
+	const { setUserInputSetting, saveUserInputSettings } =
+		useDispatch( CORE_USER );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	const submitChanges = useCallback( async () => {
+		// trackEvent( gaEventCategory, 'summary_submit' );
+
+		// Update 'includeConversionEvents' setting with included conversion events,
+		// to mark that their respective metrics should be included in the
+		// list of tailored metrics and persist on the dashboard in case events are lost.
+		setUserInputSetting(
+			'includeConversionEvents',
+			userInputPurposeConversionEvents
+		);
+
+		const response = await saveUserInputSettings();
+		if ( ! response.error ) {
+			const url = new URL( dashboardURL );
+			navigateTo( url.toString() );
+		}
+	}, [
+		// gaEventCategory,
+		saveUserInputSettings,
+		userInputPurposeConversionEvents,
+		dashboardURL,
+		setUserInputSetting,
+		navigateTo,
+	] );
+
+	const isScreenLoading = isSavingSettings || isNavigating;
+
+	const onSaveClick = useCallback( () => {
+		if ( isScreenLoading ) {
+			return;
+		}
+
+		submitChanges();
+	}, [ isScreenLoading, submitChanges ] );
+
+	const { USER_INPUT_ANSWERS_PURPOSE } = getUserInputAnswers();
+
+	const {
+		USER_INPUT_ANSWERS_PURPOSE: USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS,
+	} = getUserInputAnswersDescription();
+
+	return (
+		<Fragment>
+			<Header>
+				<HelpMenu />
+			</Header>
+			<div className="googlesitekit-key-metrics-setup">
+				{ ! hasFinishedGettingInputSettings && (
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
+								<ProgressBar />
+							</Cell>
+						</Row>
+					</Grid>
+				) }
+				{ hasFinishedGettingInputSettings && (
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
+								<Layout rounded>
+									<Typography
+										as="h1"
+										type="headline"
+										size="medium"
+									>
+										{ __(
+											'Tell us your main goal to get tailored metrics',
+											'google-site-kit'
+										) }
+									</Typography>
+									<Typography
+										as="h2"
+										type="body"
+										size="large"
+									>
+										{ __(
+											'Which option most closely matches the purpose of your site?',
+											'google-site-kit'
+										) }
+									</Typography>
+									<P
+										className="googlesitekit-key-metrics-setup__description"
+										type="body"
+										size="small"
+									>
+										{ __(
+											'Even if multiple options apply to your site, select the one that applies the most. You can also answer or edit your response later in Settings.',
+											'google-site-kit'
+										) }
+									</P>
+
+									<UserInputSelectOptions
+										slug={ USER_INPUT_QUESTIONS_PURPOSE }
+										max={
+											USER_INPUT_MAX_ANSWERS[
+												USER_INPUT_QUESTIONS_PURPOSE
+											]
+										}
+										options={ USER_INPUT_ANSWERS_PURPOSE }
+										descriptions={
+											USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS
+										}
+									/>
+
+									{ error && (
+										<div className="googlesitekit-user-input__error">
+											<ErrorNotice
+												error={ error }
+												Icon={ WarningSVG }
+											/>
+										</div>
+									) }
+
+									<SpinnerButton
+										className="googlesitekit-user-input__buttons--complete"
+										onClick={ onSaveClick }
+										isSaving={ isScreenLoading }
+										disabled={ hasErrorForAnswer( values ) }
+									>
+										{ createInterpolateElement(
+											__(
+												'Complete<span> setup</span>',
+												'google-site-kit'
+											),
+											{
+												span: (
+													<span className="googlesitekit-user-input__responsive-text" />
+												),
+											}
+										) }
+									</SpinnerButton>
+								</Layout>
+							</Cell>
+						</Row>
+					</Grid>
+				) }
+			</div>
+		</Fragment>
+	);
 }
