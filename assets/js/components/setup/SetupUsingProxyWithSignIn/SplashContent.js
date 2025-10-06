@@ -210,7 +210,10 @@ SplashContent.propTypes = {
 	analyticsModuleActive: PropTypes.bool,
 	analyticsModuleAvailable: PropTypes.bool,
 	children: PropTypes.func,
-	connectedProxyURL: PropTypes.string,
+	connectedProxyURL: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.bool,
+	] ),
 	description: PropTypes.string,
 	disconnectedReason: PropTypes.string,
 	getHelpURL: PropTypes.string,

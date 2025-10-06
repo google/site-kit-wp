@@ -49,10 +49,9 @@ export default function LegacySplashContent( {
 	getHelpURL,
 	homeURL,
 	secondAdminLearnMoreLink,
+	showLearnMoreLink,
 	title,
 } ) {
-	const showLearnMoreLink = false;
-
 	const cellDetailsProp = analyticsModuleActive
 		? { smSize: 4, mdSize: 8, lgSize: 6 }
 		: { smSize: 4, mdSize: 8, lgSize: 8 };
@@ -148,7 +147,10 @@ LegacySplashContent.propTypes = {
 	analyticsModuleActive: PropTypes.bool,
 	analyticsModuleAvailable: PropTypes.bool,
 	children: PropTypes.func,
-	connectedProxyURL: PropTypes.string,
+	connectedProxyURL: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.bool,
+	] ),
 	description: PropTypes.string,
 	disconnectedReason: PropTypes.string,
 	getHelpURL: PropTypes.string,

@@ -71,6 +71,7 @@ Default.args = {
 		] );
 	},
 };
+Default.scenario = {};
 
 export const DefaultWithStagingEnvironmentWarning = Template.bind( {} );
 DefaultWithStagingEnvironmentWarning.storyName =
@@ -91,6 +92,7 @@ DefaultWithStagingEnvironmentWarning.args = {
 		] );
 	},
 };
+DefaultWithStagingEnvironmentWarning.scenario = {};
 
 export const DefaultWithDashboardSharing = Template.bind( {} );
 DefaultWithDashboardSharing.storyName =
@@ -118,6 +120,7 @@ DefaultWithDashboardSharing.args = {
 		] );
 	},
 };
+DefaultWithDashboardSharing.scenario = {};
 
 export const DefaultWithDashboardSharingOneAdmin = Template.bind( {} );
 DefaultWithDashboardSharingOneAdmin.storyName =
@@ -145,6 +148,7 @@ DefaultWithDashboardSharingOneAdmin.args = {
 		] );
 	},
 };
+DefaultWithDashboardSharingOneAdmin.scenario = {};
 
 export const Connected = Template.bind( {} );
 Connected.storyName = 'Connected';
@@ -163,6 +167,7 @@ Connected.args = {
 		] );
 	},
 };
+Connected.scenario = {};
 
 export const DisconnectedURLChanged = Template.bind( {} );
 DisconnectedURLChanged.storyName = 'Disconnected - URL changed';
@@ -179,6 +184,7 @@ DisconnectedURLChanged.args = {
 		} );
 	},
 };
+DisconnectedURLChanged.scenario = {};
 
 export const RevokedAccess = Template.bind( {} );
 RevokedAccess.storyName = 'Revoked access';
@@ -203,6 +209,7 @@ RevokedAccess.parameters = {
 		googlesitekit_context: 'revoked',
 	},
 };
+RevokedAccess.scenario = {};
 
 export const ResetSuccess = Template.bind( {} );
 ResetSuccess.storyName = 'Reset success';
@@ -228,6 +235,7 @@ ResetSuccess.parameters = {
 		notification: 'reset_success',
 	},
 };
+ResetSuccess.scenario = {};
 
 export const WithAnalyticsActive = Template.bind( {} );
 WithAnalyticsActive.storyName = 'With Analytics active';
@@ -247,6 +255,7 @@ WithAnalyticsActive.args = {
 		] );
 	},
 };
+WithAnalyticsActive.scenario = {};
 
 export default {
 	title: 'Setup / Using Proxy With Sign-in and setupFlowRefresh enabled',
