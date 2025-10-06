@@ -26,6 +26,10 @@
 			padding-bottom: 0;
 			padding-right: 0;
 
+			.googlesitekit-layout {
+				overflow: hidden;
+			}
+
 			& > .mdc-layout-grid {
 				padding-bottom: 0;
 				padding-right: 0;
