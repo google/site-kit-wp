@@ -51,6 +51,7 @@ import { trackEvent } from '@/js/util';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import SetupEnhancedConversionTrackingNotice from '@/js/components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
 import useFormValue from '@/js/hooks/useFormValue';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SetupForm( { finishSetup } ) {
 	const hasEditScope = useSelect( ( select ) =>
@@ -66,6 +67,17 @@ export default function SetupForm( { finishSetup } ) {
 			select( CORE_LOCATION ).isNavigating()
 	);
 	const viewContext = useViewContext();
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
+	const keyMetricsSetupURL = useSelect( ( select ) => {
+		if ( ! setupFlowRefreshEnabled ) {
+			return undefined;
+		}
+
+		return select( CORE_SITE ).getAdminURL(
+			'googlesitekit-key-metrics-setup'
+		);
+	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
@@ -100,11 +112,12 @@ export default function SetupForm( { finishSetup } ) {
 						'ga4_setup_enhanced_measurement_enabled'
 					);
 				}
-				finishSetup();
+				finishSetup( keyMetricsSetupURL );
 			}
 		},
 		[
 			finishSetup,
+			keyMetricsSetupURL,
 			isEnhancedMeasurementEnabled,
 			setConversionTrackingEnabled,
 			saveConversionTrackingSettings,
