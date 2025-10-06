@@ -843,7 +843,7 @@ final class Modules implements Provides_Feature_Metrics {
 	/**
 	 * Lists connected modules that have a shared role.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 *
 	 * @return array Array of module slugs.
 	 */
@@ -1002,7 +1002,7 @@ final class Modules implements Provides_Feature_Metrics {
 	/**
 	 * Gets feature metrics for the modules.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 *
 	 * @return array Feature metrics data.
 	 */

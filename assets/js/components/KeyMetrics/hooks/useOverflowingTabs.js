@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useMount, useUnmount } from 'react-use';
+import { useEvent } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -35,7 +35,7 @@ import { useDebounce } from '@/js/hooks/useDebounce';
  * Ensures that on small screens the last tab is visually cut off to imply
  * scroll, and wires up resize handling and open transitions.
  *
- * @since n.e.x.t
+ * @since 1.163.0
  *
  * @param {Object}  args                              Arguments.
  * @param {Object}  args.containerRef                 Ref to the container element.
@@ -116,13 +116,7 @@ export default function useOverflowingTabs( {
 		50
 	);
 
-	useMount( () => {
-		global.addEventListener( 'resize', debouncedMaybeCutOffLastTabItem );
-	} );
-
-	useUnmount( () =>
-		global.removeEventListener( 'resize', debouncedMaybeCutOffLastTabItem )
-	);
+	useEvent( 'resize', debouncedMaybeCutOffLastTabItem );
 
 	useEffect( () => {
 		if ( ! isSelectionPanelOpenPrevious && isSelectionPanelOpen ) {

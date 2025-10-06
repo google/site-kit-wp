@@ -149,7 +149,11 @@ export default function SetupUsingProxyWithSignIn() {
 							) }
 							<Layout rounded>
 								<Splash>
-									{ ( { complete, inProgressFeedback } ) => (
+									{ ( {
+										complete,
+										inProgressFeedback,
+										ctaFeedback,
+									} ) => (
 										<Actions
 											proxySetupURL={ proxySetupURL }
 											onButtonClick={ onButtonClick }
@@ -157,6 +161,7 @@ export default function SetupUsingProxyWithSignIn() {
 											inProgressFeedback={
 												inProgressFeedback
 											}
+											ctaFeedback={ ctaFeedback }
 										/>
 									) }
 								</Splash>
