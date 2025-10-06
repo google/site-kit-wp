@@ -92,15 +92,15 @@ export default function KeyMetricsSetupApp() {
 		}
 	}, [ saveUserInputSettings, dashboardURL, navigateTo ] );
 
-	const isScreenLoading = isSavingSettings || isNavigating;
+	const isBusy = isSavingSettings || isNavigating;
 
 	const onSaveClick = useCallback( () => {
-		if ( isScreenLoading ) {
+		if ( isBusy ) {
 			return;
 		}
 
 		submitChanges();
-	}, [ isScreenLoading, submitChanges ] );
+	}, [ isBusy, submitChanges ] );
 
 	const { USER_INPUT_ANSWERS_PURPOSE } = getUserInputAnswers();
 
@@ -173,7 +173,7 @@ export default function KeyMetricsSetupApp() {
 
 								<SpinnerButton
 									onClick={ onSaveClick }
-									isSaving={ isScreenLoading }
+									isSaving={ isBusy }
 									disabled={ hasErrorForAnswer( values ) }
 								>
 									{ __(
