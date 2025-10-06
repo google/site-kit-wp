@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Core\User\Proactive_User_Engagement_SettingsTest
+ * Class Google\Site_Kit\Tests\Core\User\Email_Reporting_SettingsTest
  *
  * @package   Google\Site_Kit\Tests\Core\User
  * @copyright 2025 Google LLC
@@ -12,15 +12,15 @@ namespace Google\Site_Kit\Tests\Core\User;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\User\Proactive_User_Engagement_Settings;
+use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 use Google\Site_Kit\Tests\TestCase;
 
-class Proactive_User_Engagement_SettingsTest extends TestCase {
+class Email_Reporting_SettingsTest extends TestCase {
 
 	/**
-	 * Proactive_User_Engagement_Settings instance.
+	 * Email_Reporting_Settings instance.
 	 *
-	 * @var Proactive_User_Engagement_Settings
+	 * @var Email_Reporting_Settings
 	 */
 	private $settings;
 
@@ -29,13 +29,13 @@ class Proactive_User_Engagement_SettingsTest extends TestCase {
 		$user_id      = $this->factory()->user->create();
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$user_options = new User_Options( $context, $user_id );
-		$meta_key     = $user_options->get_meta_key( Proactive_User_Engagement_Settings::OPTION );
+		$meta_key     = $user_options->get_meta_key( Email_Reporting_Settings::OPTION );
 
 		unregister_meta_key( 'user', $meta_key );
 		// Needed to unregister the instance registered during plugin bootstrap.
 		remove_all_filters( "sanitize_user_meta_{$meta_key}" );
 
-		$this->settings = new Proactive_User_Engagement_Settings( $user_options );
+		$this->settings = new Email_Reporting_Settings( $user_options );
 
 		$this->settings->register();
 	}
