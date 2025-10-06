@@ -52,9 +52,7 @@ import useFormValue from '@/js/hooks/useFormValue';
 import { useFeature } from '@/js/hooks/useFeature';
 
 export default function UserMenu() {
-	const proactiveUserEngagementEnabled = useFeature(
-		'proactiveUserEngagement'
-	);
+	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
 
 	const proxyPermissionsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxyPermissionsURL()
@@ -266,7 +264,7 @@ export default function UserMenu() {
 					<li>
 						<Details />
 					</li>
-					{ proactiveUserEngagementEnabled && (
+					{ emailReportingEnabled && (
 						<li
 							id="manage-email-reports"
 							className="mdc-list-item"

@@ -28,7 +28,7 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 
 export default {
-	title: 'Components/ProactiveUserEngagement/FrequencySelector',
+	title: 'Components/EmailReporting/FrequencySelector',
 	component: FrequencySelector,
 	argTypes: {
 		frequency: {
@@ -57,11 +57,11 @@ function Template( { savedSettings, clientSettings } ) {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetProactiveUserEngagementSettings( savedSettings );
+			.receiveGetEmailReportingSettings( savedSettings );
 
 		registry
 			.dispatch( CORE_USER )
-			.setProactiveUserEngagementSettings( clientSettings );
+			.setEmailReportingSettings( clientSettings );
 	}
 
 	return (

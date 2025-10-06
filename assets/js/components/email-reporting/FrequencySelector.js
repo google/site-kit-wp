@@ -60,14 +60,14 @@ export default function FrequencySelector() {
 	);
 
 	const frequency = useSelect( ( select ) =>
-		select( CORE_USER ).getProactiveUserEngagementFrequency()
+		select( CORE_USER ).getEmailReportingFrequency()
 	);
 
 	const savedFrequency = useSelect( ( select ) =>
-		select( CORE_USER ).getProactiveUserEngagementSavedFrequency()
+		select( CORE_USER ).getEmailReportingSavedFrequency()
 	);
 
-	const { setProactiveUserEngagementFrequency } = useDispatch( CORE_USER );
+	const { setEmailReportingFrequency } = useDispatch( CORE_USER );
 
 	const weeklyDescription = sprintf(
 		/* translators: %s: localized day-of-week name (e.g. Monday). */
@@ -108,7 +108,7 @@ export default function FrequencySelector() {
 			event.key === 'Enter'
 		) {
 			event.preventDefault();
-			setProactiveUserEngagementFrequency( reportFrequency );
+			setEmailReportingFrequency( reportFrequency );
 		}
 	}
 
@@ -145,9 +145,7 @@ export default function FrequencySelector() {
 							aria-checked={ isSelected }
 							tabIndex={ 0 }
 							onClick={ () =>
-								setProactiveUserEngagementFrequency(
-									reportFrequency
-								)
+								setEmailReportingFrequency( reportFrequency )
 							}
 							onKeyDown={ ( event ) =>
 								handleKeyDown( event, reportFrequency )
