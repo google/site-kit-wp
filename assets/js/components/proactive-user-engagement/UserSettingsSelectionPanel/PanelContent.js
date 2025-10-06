@@ -36,13 +36,15 @@ import Header from './Header';
 import SelectionPanelFooter from './SelectionPanelFooter';
 import P from '@/js/components/Typography/P';
 import Typography from '@/js/components/Typography';
+import FrequencySelector from '@/js/components/proactive-user-engagement/FrequencySelector';
+import SubscribeActions from '@/js/components/proactive-user-engagement/UserSettingsSelectionPanel/SubscribeActions';
 
-// @TODO remove eslint disable
-/* eslint-disable */
 export default function PanelContent( {
-	savedFrequency,
 	notice,
+	isUserSubscribed,
+	isSavingSettings,
 	onSaveCallback,
+	onSubscribe,
 	onUnsubscribe,
 	onNoticeDismiss,
 	closePanel,
@@ -52,22 +54,33 @@ export default function PanelContent( {
 
 	return (
 		<Fragment>
-			<Header closePanel={ closePanel } />
+			<div className="googlesitekit-user-settings-selection__panel-content">
+				<Header closePanel={ closePanel } />
 
-			<div className="googlesitekit-user-settings-selection__panel-description">
-				<P type="body" size="small">
-					{ __(
-						"You'll receive the report to your WordPress user email",
-						'google-site-kit'
-					) }
-					<Typography type="body" size="medium">
-						{ email ?? null }
-					</Typography>
-				</P>
+				<div className="googlesitekit-user-settings-selection__panel-description">
+					<P type="body" size="small">
+						{ __(
+							"You'll receive the report to your WordPress user email",
+							'google-site-kit'
+						) }
+						{ email && (
+							<Typography type="body" size="medium">
+								{ email }
+							</Typography>
+						) }
+					</P>
+				</div>
+
+				<FrequencySelector isUserSubscribed={ isUserSubscribed } />
+
+				<SubscribeActions
+					onSubscribe={ onSubscribe }
+					onUnsubscribe={ onUnsubscribe }
+					updateSettings={ onSaveCallback }
+					isSubscribed={ isUserSubscribed }
+					isLoading={ isSavingSettings }
+				/>
 			</div>
-
-			{ /* TODO: Render FrequencySelector component here when available. */ }
-			{ /* <FrequencySelector onSaveCallback={ onSaveCallback } savedFrequency={ savedFrequency } /> */ }
 			<SelectionPanelFooter
 				notice={ notice }
 				onNoticeDismiss={ onNoticeDismiss }
