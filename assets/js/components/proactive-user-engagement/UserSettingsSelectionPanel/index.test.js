@@ -25,8 +25,10 @@ import {
 	fireEvent,
 	provideUserInfo,
 	render,
+	waitFor,
 } from '../../../../../tests/js/test-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/proactive-user-engagement/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -47,6 +49,10 @@ describe( 'UserSettingsSelectionPanel', () => {
 		registry
 			.dispatch( CORE_UI )
 			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+	} );
+
+	afterEach( () => {
+		jest.restoreAllMocks();
 	} );
 
 	it( 'renders header subheading in admin view', () => {
@@ -115,6 +121,66 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		const dialog = getByRole( 'dialog' );
 		expect( dialog ).toHaveAttribute( 'aria-hidden', 'false' );
+	} );
+
+	it( 'calls saveProactiveUserEngagementSettings with subscribed true when subscribing', async () => {
+		const coreUserDispatch = registry.dispatch( CORE_USER );
+		const saveSpy = jest
+			.spyOn( coreUserDispatch, 'saveProactiveUserEngagementSettings' )
+			.mockResolvedValue( { error: null } );
+
+		const { getByRole } = render( <UserSettingsSelectionPanel />, {
+			registry,
+			features,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: 'Subscribe' } ) );
+
+		await waitFor( () => expect( saveSpy ).toHaveBeenCalledTimes( 1 ) );
+		expect( saveSpy ).toHaveBeenCalledWith( { subscribed: true } );
+	} );
+
+	it( 'calls saveProactiveUserEngagementSettings with subscribed false when unsubscribing', async () => {
+		const coreUserDispatch = registry.dispatch( CORE_USER );
+		coreUserDispatch.setProactiveUserEngagementSettings( {
+			subscribed: true,
+		} );
+		const saveSpy = jest
+			.spyOn( coreUserDispatch, 'saveProactiveUserEngagementSettings' )
+			.mockResolvedValue( { error: null } );
+
+		const { getByRole } = render( <UserSettingsSelectionPanel />, {
+			registry,
+			features,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: 'Unsubscribe' } ) );
+
+		await waitFor( () => expect( saveSpy ).toHaveBeenCalledTimes( 1 ) );
+		expect( saveSpy ).toHaveBeenCalledWith( { subscribed: false } );
+	} );
+
+	it( 'calls saveProactiveUserEngagementSettings without arguments when updating settings', async () => {
+		const coreUserDispatch = registry.dispatch( CORE_USER );
+		coreUserDispatch.setProactiveUserEngagementSettings( {
+			subscribed: true,
+		} );
+		const saveSpy = jest
+			.spyOn( coreUserDispatch, 'saveProactiveUserEngagementSettings' )
+			.mockResolvedValue( { error: null } );
+
+		const { getByRole } = render( <UserSettingsSelectionPanel />, {
+			registry,
+			features,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: 'Update Settings' } ) );
+
+		await waitFor( () => expect( saveSpy ).toHaveBeenCalledTimes( 1 ) );
+		expect( saveSpy.mock.calls[ 0 ] ).toHaveLength( 0 );
 	} );
 } );
 
