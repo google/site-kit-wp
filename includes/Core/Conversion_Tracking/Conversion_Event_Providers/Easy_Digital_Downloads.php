@@ -160,7 +160,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 		$address_data = array();
 
 		if ( isset( $session_data['user_info'] ) ) {
-			$email = $session_data['user_info']['email'] ?? $session['user_email'] ?? '';
+			$email = $session_data['user_info']['email'] ?? $session_data['user_email'] ?? '';
 
 			if ( ! empty( $email ) ) {
 				$user_data['email'] = Enhanced_Conversions::get_normalized_email( $email );
@@ -192,8 +192,8 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 					$region = $session_data['user_info']['address']['state'];
 
 					// Attempt to get full region name.
-					if ( function_exists( 'edd_get_state_name' ) && ! empty( $user_data['address']['country'] ) ) {
-						$region = edd_get_state_name( $user_data['address']['country'], $region );
+					if ( function_exists( 'edd_get_state_name' ) && ! empty( $session_data['user_info']['address']['country'] ) ) {
+						$region = edd_get_state_name( $session_data['user_info']['address']['country'], $region );
 					}
 
 					$address_data['region'] = Enhanced_Conversions::get_normalized_value( $region );
