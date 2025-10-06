@@ -88,7 +88,7 @@
 		"glob-to-regexp": "^0.4.1",
 		"husky": "^3.1.0",
 		"lint-staged": "^10.2.11",
-		"patch-package": "^8.0.0",
+		"patch-package": "^8.0.1",
 		"prettier": "npm:wp-prettier@2.6.2",
 		"sanitize-filename": "^1.6.3",
 		"semver-compare": "^1.0.0",
