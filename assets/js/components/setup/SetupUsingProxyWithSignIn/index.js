@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import classNames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
@@ -129,7 +134,11 @@ export default function SetupUsingProxyWithSignIn() {
 	return (
 		<Fragment>
 			<Header />
-			<div className="googlesitekit-setup">
+			<div
+				className={ classNames( 'googlesitekit-setup', {
+					'googlesitekit-setup--enhanced': setupFlowRefreshEnabled,
+				} ) }
+			>
 				<Grid collapsed={ setupFlowRefreshEnabled }>
 					<Row>
 						<Cell size={ 12 }>

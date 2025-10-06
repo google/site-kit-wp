@@ -95,10 +95,14 @@
 			}
 
 			svg:last-child {
-				left: 0;
+				left: 20px;
 				position: relative;
 				top: 30px;
 				z-index: 11;
+
+				@media (max-width: $bp-desktop) {
+					left: 0;
+				}
 			}
 
 			@media (max-width: $bp-desktop) {
@@ -106,16 +110,12 @@
 				display: flex;
 				margin-bottom: $grid-gap-desktop;
 				overflow: hidden;
-
-				svg:last-child {
-					left: 0;
-				}
 			}
+		}
 
-			@media (min-width: $bp-xlarge) {
-				svg:last-child {
-					left: 0;
-				}
+		@media (max-width: $bp-mobileOnly) {
+			.googlesitekit-setup__content {
+				padding: 0;
 			}
 		}
 	}
