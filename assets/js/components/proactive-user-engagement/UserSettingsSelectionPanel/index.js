@@ -53,16 +53,22 @@ export default function UserSettingsSelectionPanel() {
 	} );
 
 	const { setValue } = useDispatch( CORE_UI );
+	const {
+		saveProactiveUserEngagementSettings,
+		resetProactiveUserEngagementSettings,
+	} = useDispatch( CORE_USER );
 
 	const closePanel = useCallback( () => {
 		if ( isOpen ) {
+			setTimeout( () => {
+				// Clear state to ensure settings are re-fetched when opening the panel next time.
+				resetProactiveUserEngagementSettings();
+			}, 310 ); // Wait until after the panel close animation.
 			setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
 		}
-	}, [ isOpen, setValue ] );
+	}, [ isOpen, resetProactiveUserEngagementSettings, setValue ] );
 
 	const [ notice, setNotice ] = useState( null );
-
-	const { saveProactiveUserEngagementSettings } = useDispatch( CORE_USER );
 
 	const onSaveCallback = useCallback( async () => {
 		const { error } = await saveProactiveUserEngagementSettings();
