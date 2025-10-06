@@ -46,7 +46,7 @@ import {
 	ACTIVATION_STEP_SUCCESS,
 	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
 } from '@/js/modules/analytics-4/constants';
-import { useShowTooltip } from '@/js/components/AdminMenuTooltip/useShowTooltip';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip/useShowTooltip';
 import ProcessingBanner from './ProcessingBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';

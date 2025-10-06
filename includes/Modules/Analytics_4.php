@@ -79,6 +79,10 @@ use Google\Site_Kit\Modules\Analytics_4\Tag_Interface;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportRequest as Google_Service_AnalyticsData_RunReportRequest;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Google_Service_AnalyticsData_DateRange;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension as Google_Service_AnalyticsData_Dimension;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Metric as Google_Service_AnalyticsData_Metric;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaAudience;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaAccount;
@@ -93,6 +97,7 @@ use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
@@ -374,10 +379,14 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 				$needs_tagmanager_scope = false;
 
+				$refined_scopes = $this->get_refined_scopes( $scopes );
+
 				if ( $oauth_client->has_sufficient_scopes(
-					array(
-						self::READONLY_SCOPE,
-						'https://www.googleapis.com/auth/tagmanager.readonly',
+					array_merge(
+						$refined_scopes,
+						array(
+							'https://www.googleapis.com/auth/tagmanager.readonly',
+						),
 					)
 				) ) {
 					$needs_tagmanager_scope = true;
@@ -387,18 +396,16 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					// Unsatisfied Scopes notification to be displayed without the Additional Permissions Required
 					// modal also appearing.
 				} elseif ( ! $oauth_client->has_sufficient_scopes(
-					array(
-						self::READONLY_SCOPE,
-					)
+					$refined_scopes
 				) ) {
 					$needs_tagmanager_scope = true;
 				}
 
 				if ( $needs_tagmanager_scope ) {
-					$scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
+					$refined_scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
 				}
 
-				return $scopes;
+				return $refined_scopes;
 			}
 		);
 
@@ -650,7 +657,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	/**
 	 * Gets an array of internal feature metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 *
 	 * @return array
 	 */
@@ -716,12 +723,11 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			),
 			'GET:properties'                            => array( 'service' => 'analyticsadmin' ),
 			'GET:property'                              => array( 'service' => 'analyticsadmin' ),
+			'GET:has-property-access'                   => array( 'service' => 'analyticsdata' ),
 			'GET:report'                                => array(
 				'service'   => 'analyticsdata',
 				'shareable' => true,
 			),
-			'GET:non-shareable-report'                  => array( 'service' => 'analyticsdata' ),
-
 			'GET:webdatastreams'                        => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'                  => array( 'service' => 'analyticsadmin' ),
 			'GET:enhanced-measurement-settings'         => array( 'service' => 'analyticsenhancedmeasurement' ),
@@ -1286,8 +1292,30 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				}
 
 				return $this->get_service( 'analyticsadmin' )->properties->get( self::normalize_property_id( $data['propertyID'] ) );
+			case 'GET:has-property-access':
+				if ( ! isset( $data['propertyID'] ) ) {
+					throw new Missing_Required_Param_Exception( 'propertyID' );
+				}
+
+				// A simple way to check for property access is to attempt a minimal report request.
+				// If the user does not have access, this will return a 403 error.
+				$request = new Google_Service_AnalyticsData_RunReportRequest();
+				$request->setDimensions( array( new Google_Service_AnalyticsData_Dimension( array( 'name' => 'date' ) ) ) );
+				$request->setMetrics( array( new Google_Service_AnalyticsData_Metric( array( 'name' => 'sessions' ) ) ) );
+				$request->setDateRanges(
+					array(
+						new Google_Service_AnalyticsData_DateRange(
+							array(
+								'start_date' => 'yesterday',
+								'end_date'   => 'today',
+							)
+						),
+					)
+				);
+				$request->setLimit( 0 );
+
+				return $this->get_analyticsdata_service()->properties->runReport( $data['propertyID'], $request );
 			case 'GET:report':
-			case 'GET:non-shareable-report':
 				if ( empty( $data['metrics'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
@@ -1830,7 +1858,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			case 'GET:key-events':
 				return (array) $response->getKeyEvents();
 			case 'GET:report':
-			case 'GET:non-shareable-report':
 				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );
 			case 'POST:sync-audiences':
@@ -2290,18 +2317,29 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return boolean|WP_Error
 	 */
 	public function check_service_entity_access() {
-		// Create a basic report request with minimal parameters to test access.
-		$data = array(
-			'dimensions' => array( 'date' ),
-			'metrics'    => array( 'sessions' ),
-			'startDate'  => 'yesterday',
-			'endDate'    => 'today',
-			'limit'      => 0,
-		);
+		$settings = $this->get_settings()->get();
 
-		// Use the 'non-shareable-report' datapoint to prevent user access assumption
-		// when using dashboard sharing.
-		$request = $this->get_data( 'non-shareable-report', $data );
+		if ( empty( $settings['propertyID'] ) ) {
+			return new WP_Error(
+				'missing_required_setting',
+				__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
+				array( 'status' => 500 )
+			);
+		}
+
+		return $this->has_property_access( $settings['propertyID'] );
+	}
+
+	/**
+	 * Checks if the current user has access to the given property ID.
+	 *
+	 * @since 1.163.0
+	 *
+	 * @param string $property_id Property ID to check access for.
+	 * @return boolean|WP_Error True if the user has access, false if not, or WP_Error on any other error.
+	 */
+	public function has_property_access( $property_id ) {
+		$request = $this->get_data( 'has-property-access', array( 'propertyID' => $property_id ) );
 
 		if ( is_wp_error( $request ) ) {
 			// A 403 error implies that the user does not have access to the service entity.
@@ -2692,6 +2730,39 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			'lostEvents'     => is_array( $lost_events ) ? $lost_events : array(),
 			'newBadgeEvents' => is_array( $new_events_badge ) ? $new_events_badge['events'] : array(),
 		);
+	}
+
+	/**
+	 * Refines the requested scopes based on the current authentication and connection state.
+	 *
+	 * Specifically, the `EDIT_SCOPE` is only added if the user is not yet authenticated,
+	 * or if they are authenticated and have already granted the scope, or if the module
+	 * is not yet connected (i.e. during setup).
+	 *
+	 * @since 1.163.0
+	 *
+	 * @param string[] $scopes Array of requested scopes.
+	 * @return string[] Refined array of requested scopes.
+	 */
+	private function get_refined_scopes( $scopes = array() ) {
+		if ( ! Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			return $scopes;
+		}
+
+		if ( ! $this->authentication->is_authenticated() ) {
+			$scopes[] = self::EDIT_SCOPE;
+			return $scopes;
+		}
+
+		$oauth_client        = $this->authentication->get_oauth_client();
+		$granted_scopes      = $oauth_client->get_granted_scopes();
+		$is_in_setup_process = ! $this->is_connected();
+
+		if ( in_array( self::EDIT_SCOPE, $granted_scopes, true ) || $is_in_setup_process ) {
+			$scopes[] = self::EDIT_SCOPE;
+		}
+
+		return $scopes;
 	}
 
 	/**

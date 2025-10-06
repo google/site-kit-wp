@@ -22,7 +22,7 @@ use Plugin_Upgrader;
 use Plugin_Installer_Skin;
 
 /**
- * Class for handling Consent Mode.
+ * Class for handling consent mode.
  *
  * @since 1.122.0
  * @access private
@@ -245,9 +245,9 @@ class Consent_Mode implements Provides_Feature_Metrics {
 			)
 		);
 
-		// The core Consent Mode code is in assets/js/consent-mode/consent-mode.js.
+		// The core consent mode code is in assets/js/consent-mode/consent-mode.js.
 		// Only code that passes data from PHP to JS should be in this file.
-		printf( "<!-- %s -->\n", esc_html__( 'Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', 'google-site-kit' ) );
+		printf( "<!-- %s -->\n", esc_html__( 'Google tag (gtag.js) consent mode dataLayer added by Site Kit', 'google-site-kit' ) );
 		BC_Functions::wp_print_inline_script_tag(
 			join(
 				"\n",
@@ -260,7 +260,7 @@ class Consent_Mode implements Provides_Feature_Metrics {
 			),
 			array( 'id' => 'google_gtagjs-js-consent-mode-data-layer' )
 		);
-		printf( "<!-- %s -->\n", esc_html__( 'End Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', 'google-site-kit' ) );
+		printf( "<!-- %s -->\n", esc_html__( 'End Google tag (gtag.js) consent mode dataLayer added by Site Kit', 'google-site-kit' ) );
 	}
 
 	/**
@@ -280,7 +280,7 @@ class Consent_Mode implements Provides_Feature_Metrics {
 	/**
 	 * Gets an array of internal feature metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 *
 	 * @return array
 	 */

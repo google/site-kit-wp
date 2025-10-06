@@ -48,7 +48,7 @@ import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import { WooCommerceRedirectModal } from '@/js/modules/ads/components/common';
 import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
-import { useShowTooltip } from '@/js/components/AdminMenuTooltip';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
 import BannerSVGDesktop from '@/svg/graphics/banner-ads-setup-cta.svg?url';
