@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Proactive_User_Engagement\Proactive_User_Engagement_Settings
+ * Class Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Settings
  *
  * @package   Google\Site_Kit
  * @copyright 2025 Google LLC
@@ -8,23 +8,23 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Proactive_User_Engagement;
+namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Core\Storage\Setting;
 
 /**
- * Class for Proactive User Engagement settings.
+ * Class for Email Reporting settings.
  *
  * @since 1.161.0
  * @access private
  * @ignore
  */
-class Proactive_User_Engagement_Settings extends Setting {
+class Email_Reporting_Settings extends Setting {
 
 	/**
 	 * The option name for this setting.
 	 */
-	const OPTION = 'googlesitekit_proactive_user_engagement';
+	const OPTION = 'googlesitekit_email_reporting';
 
 	/**
 	 * Returns the expected value type.
@@ -70,13 +70,13 @@ class Proactive_User_Engagement_Settings extends Setting {
 	}
 
 	/**
-	 * Checks if proactive user engagement is enabled.
+	 * Checks if email reporting is enabled.
 	 *
 	 * @since 1.161.0
 	 *
-	 * @return bool True if proactive user engagement is enabled, false otherwise.
+	 * @return bool True if email reporting is enabled, false otherwise.
 	 */
-	public function is_proactive_user_engagement_enabled() {
+	public function is_email_reporting_enabled() {
 		$settings = $this->get();
 		return $settings['enabled'];
 	}

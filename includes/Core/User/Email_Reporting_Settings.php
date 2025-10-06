@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\User\Proactive_User_Engagement_Settings
+ * Class Google\Site_Kit\Core\User\Email_Reporting_Settings
  *
  * @package   Google\Site_Kit\Core\User
  * @copyright 2025 Google LLC
@@ -13,18 +13,18 @@ namespace Google\Site_Kit\Core\User;
 use Google\Site_Kit\Core\Storage\User_Setting;
 
 /**
- * Class for proactive user engagement settings.
+ * Class for email reporting settings.
  *
  * @since 1.161.0
  * @access private
  * @ignore
  */
-class Proactive_User_Engagement_Settings extends User_Setting {
+class Email_Reporting_Settings extends User_Setting {
 
 	/**
-	 * The user option name for proactive user engagement setting.
+	 * The user option name for email reporting setting.
 	 */
-	const OPTION = 'googlesitekit_proactive_user_engagement_settings';
+	const OPTION = 'googlesitekit_email_reporting_settings';
 
 	/**
 	 * Gets the expected value type.
