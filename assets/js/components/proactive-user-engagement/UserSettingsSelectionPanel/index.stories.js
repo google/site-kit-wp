@@ -30,9 +30,10 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/proactive-user-engagement/constants';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
-import UserSettingsSelectionPanel from './';
+import UserSettingsSelectionPanel from '.';
 
 function Template( { viewContext } ) {
 	return (
@@ -54,11 +55,23 @@ ViewOnly.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 
+export const Subscribed = Template.bind( {} );
+Subscribed.storyName = 'Subscribed';
+Subscribed.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetProactiveUserEngagementSettings( {
+				subscribed: true,
+			} );
+	},
+};
+
 export default {
 	title: 'ProactiveUserEngagement/UserSettingsSelectionPanel',
 	component: UserSettingsSelectionPanel,
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			function setupRegistry( registry ) {
 				provideUserAuthentication( registry );
 				provideSiteInfo( registry );
@@ -69,6 +82,10 @@ export default {
 				registry
 					.dispatch( CORE_UI )
 					.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
 			}
 
 			return (
