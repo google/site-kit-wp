@@ -47,6 +47,13 @@ describe( 'UserSettingsSelectionPanel', () => {
 		provideUserInfo( registry, { email: 'someone@anybusiness.com' } );
 
 		registry
+			.dispatch( CORE_USER )
+			.receiveGetProactiveUserEngagementSettings( {
+				subscribed: false,
+				frequency: 'monthly',
+			} );
+
+		registry
 			.dispatch( CORE_UI )
 			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
 	} );
@@ -181,6 +188,59 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		await waitFor( () => expect( saveSpy ).toHaveBeenCalledTimes( 1 ) );
 		expect( saveSpy.mock.calls[ 0 ] ).toHaveLength( 0 );
+	} );
+
+	it( 'resets proactive user engagement settings when the panel closes', async () => {
+		const coreUserDispatch = registry.dispatch( CORE_USER );
+		coreUserDispatch.receiveGetProactiveUserEngagementSettings( {
+			subscribed: true,
+			frequency: 'weekly',
+		} );
+		coreUserDispatch.setProactiveUserEngagementSettings( {
+			subscribed: false,
+		} );
+		expect(
+			registry
+				.select( CORE_USER )
+				.haveProactiveUserEngagementSettingsChanged()
+		).toBe( true );
+
+		const resetSpy = jest.spyOn(
+			coreUserDispatch,
+			'resetProactiveUserEngagementSettings'
+		);
+
+		render( <UserSettingsSelectionPanel />, {
+			registry,
+			features,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitFor( () =>
+			expect(
+				document.querySelector(
+					'.googlesitekit-selection-panel-header__close'
+				)
+			).toBeInTheDocument()
+		);
+
+		const closeButton = document.querySelector(
+			'.googlesitekit-selection-panel-header__close'
+		);
+		fireEvent.click( closeButton );
+
+		await waitFor( () => expect( resetSpy ).toHaveBeenCalledTimes( 1 ) );
+		expect(
+			registry.select( CORE_USER ).getProactiveUserEngagementSettings()
+		).toEqual( {
+			subscribed: true,
+			frequency: 'weekly',
+		} );
+		expect(
+			registry
+				.select( CORE_USER )
+				.haveProactiveUserEngagementSettingsChanged()
+		).toBe( false );
 	} );
 } );
 
