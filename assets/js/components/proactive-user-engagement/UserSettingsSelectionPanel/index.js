@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
 import { useCallback, useState } from '@wordpress/element';
 
 /**
@@ -26,16 +27,30 @@ import { useCallback, useState } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/proactive-user-engagement/constants';
 import SelectionPanel from '@/js/components/SelectionPanel';
 import PanelContent from './PanelContent';
 
-// @TODO remove eslint disable rule
-/* eslint-disable */
 export default function UserSettingsSelectionPanel() {
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
 	);
+
+	const settings = useSelect( ( select ) => {
+		if ( ! isOpen ) {
+			return {};
+		}
+
+		return select( CORE_USER ).getProactiveUserEngagementSettings();
+	} );
+	const isSavingSettings = useSelect( ( select ) => {
+		if ( ! isOpen ) {
+			return false;
+		}
+
+		return select( CORE_USER ).isSavingProactiveUserEngagementSettings();
+	} );
 
 	const { setValue } = useDispatch( CORE_UI );
 
@@ -47,17 +62,35 @@ export default function UserSettingsSelectionPanel() {
 
 	const [ notice, setNotice ] = useState( null );
 
-	const onOpen = useCallback( () => {
-		// TODO: Fetch settings only when opened if needed.
-		// select( CORE_USER ).getProactiveUserEngagementSettings();
-	}, [] );
+	const { saveProactiveUserEngagementSettings } = useDispatch( CORE_USER );
 
-	const onSaveCallback = useCallback(
-		async (/* setting */) => {
-			// TODO: Invoke saveProactiveUserEngagementSettings action with provided setting.
-			// const { error } = await dispatch( CORE_USER ).saveProactiveUserEngagementSettings( setting );
-			// if ( ! error ) setNotice( { type: 'success', text} );
-			// else setNotice( { type: 'error', text: error?.message || __( 'An error occurred.', 'google-site-kit' ) } );
+	const onSaveCallback = useCallback( async () => {
+		const { error } = await saveProactiveUserEngagementSettings();
+
+		if ( ! error ) {
+			setNotice( {
+				type: 'success',
+				text: __(
+					'You’ve successfully updated frequency settings!',
+					'google-site-kit'
+				),
+			} );
+		} else {
+			setNotice( {
+				type: 'error',
+				text:
+					error?.message ||
+					__( 'An error occurred.', 'google-site-kit' ),
+			} );
+		}
+	}, [ saveProactiveUserEngagementSettings ] );
+
+	const onSubscribe = useCallback( async () => {
+		const { error } = await saveProactiveUserEngagementSettings( {
+			subscribed: true,
+		} );
+
+		if ( ! error ) {
 			setNotice( {
 				type: 'success',
 				text: __(
@@ -65,20 +98,38 @@ export default function UserSettingsSelectionPanel() {
 					'google-site-kit'
 				),
 			} );
-		},
-		[]
-	);
+		} else {
+			setNotice( {
+				type: 'error',
+				text:
+					error?.message ||
+					__( 'An error occurred.', 'google-site-kit' ),
+			} );
+		}
+	}, [ saveProactiveUserEngagementSettings ] );
 
 	const onUnsubscribe = useCallback( async () => {
-		// TODO: Call saveProactiveUserEngagementSettings( { subscribed: false } ) and set info/error notices accordingly.
-		setNotice( {
-			type: 'info',
-			text: __(
-				'You’ve unsubscribed from email reports',
-				'google-site-kit'
-			),
+		const { error } = await saveProactiveUserEngagementSettings( {
+			subscribed: false,
 		} );
-	}, [] );
+
+		if ( ! error ) {
+			setNotice( {
+				type: 'info',
+				text: __(
+					'You’ve unsubscribed from email reports',
+					'google-site-kit'
+				),
+			} );
+		} else {
+			setNotice( {
+				type: 'error',
+				text:
+					error?.message ||
+					__( 'An error occurred.', 'google-site-kit' ),
+			} );
+		}
+	}, [ saveProactiveUserEngagementSettings ] );
 
 	const onNoticeDismiss = useCallback( () => setNotice( null ), [] );
 
@@ -86,15 +137,14 @@ export default function UserSettingsSelectionPanel() {
 		<SelectionPanel
 			className="googlesitekit-user-settings-selection-panel"
 			isOpen={ !! isOpen }
-			onOpen={ onOpen }
 			closePanel={ closePanel }
 		>
 			<PanelContent
-				savedFrequency={
-					undefined /* TODO: pass value from settings */
-				}
 				notice={ notice }
+				isUserSubscribed={ settings?.subscribed }
+				isSavingSettings={ isSavingSettings }
 				onSaveCallback={ onSaveCallback }
+				onSubscribe={ onSubscribe }
 				onUnsubscribe={ onUnsubscribe }
 				onNoticeDismiss={ onNoticeDismiss }
 				closePanel={ closePanel }
