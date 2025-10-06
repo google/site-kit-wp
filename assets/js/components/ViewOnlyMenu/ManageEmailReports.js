@@ -25,21 +25,42 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useDispatch } from '@/js/googlesitekit-data';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/proactive-user-engagement/constants';
 import ManageEmailReportsIcon from '@/svg/icons/manage-email-reports.svg';
+import { Button } from '@/js/googlesitekit-components';
 
 export default function ManageEmailReports() {
+	const { setValue } = useDispatch( CORE_UI );
+
 	return (
 		<Fragment>
 			<li className="mdc-list-divider" role="separator"></li>
-			<li className="googlesitekit-view-only-menu__list-item">
+			<li className="googlesitekit-view-only-menu__list-item googlesitekit-view-only-menu__email-reporting">
 				<ul className="googlesitekit-view-only-menu">
-					<li className="googlesitekit-view-only-menu__service googlesitekit-view-only-menu__service--standard-item">
-						<span className="googlesitekit-view-only-menu__service--icon">
-							<ManageEmailReportsIcon width="24" />
-						</span>
-						<span className="googlesitekit-view-only-menu__service--name">
-							{ __( 'Manage email reports', 'google-site-kit' ) }
-						</span>
+					<li className="googlesitekit-view-only-menu__email-reporting-item">
+						<Button
+							onClick={ () =>
+								setValue(
+									USER_SETTINGS_SELECTION_PANEL_OPENED_KEY,
+									true
+								)
+							}
+							icon={
+								<span className="googlesitekit-view-only-menu__email-reporting-item--icon">
+									<ManageEmailReportsIcon width="24" />
+								</span>
+							}
+							tertiary
+						>
+							<span className="googlesitekit-view-only-menu__email-reporting-item--name">
+								{ __(
+									'Manage email reports',
+									'google-site-kit'
+								) }
+							</span>
+						</Button>
 					</li>
 				</ul>
 			</li>
