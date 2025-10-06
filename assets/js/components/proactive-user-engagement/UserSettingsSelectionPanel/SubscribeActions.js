@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -92,3 +97,11 @@ export default function SubscribeActions( {
 		</div>
 	);
 }
+
+SubscribeActions.propTypes = {
+	isSubscribed: PropTypes.bool,
+	onSubscribe: PropTypes.func.isRequired,
+	onUnsubscribe: PropTypes.func.isRequired,
+	updateSettings: PropTypes.func.isRequired,
+	isLoading: PropTypes.bool,
+};
