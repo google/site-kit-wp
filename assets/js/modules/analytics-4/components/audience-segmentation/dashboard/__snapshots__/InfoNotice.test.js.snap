@@ -1,0 +1,30 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`InfoNotice > should render correctly in the default state 1`] = `
+<div>
+  <div
+    class="googlesitekit-audience-segmentation-info-notice"
+  >
+    <svg />
+    <div
+      class="googlesitekit-audience-segmentation-info-notice__body"
+    >
+      <p
+        class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+      >
+        Test content
+      </p>
+      <button
+        class="mdc-button googlesitekit-audience-segmentation-info-notice__dismiss mdc-button--tertiary"
+        target="_self"
+      >
+        <span
+          class="mdc-button__label"
+        >
+          Test dismiss label
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;

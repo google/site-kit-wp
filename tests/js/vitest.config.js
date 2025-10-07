@@ -2,9 +2,10 @@ import { defineConfig } from 'vitest/config';
 // eslint-disable-next-line import/default
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import mockAssetsPlugin from './mock-assets-plugin.js';
 
 export default defineConfig( {
-	plugins: [ react() ],
+	plugins: [ mockAssetsPlugin(), react() ],
 	// TODO: Rename any files which use JSX to .jsx in #11442
 	// This is a temporary workaround to allow JSX in .js files but this adds overhead
 	// as every js file is interpreted as a JSX file evn if it doesn't contain JSX.

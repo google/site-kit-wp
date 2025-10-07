@@ -14,6 +14,7 @@
 		"@babel/preset-env": "^7.27.2",
 		"@fetch-mock/vitest": "^0.2.13",
 		"@jackfranklin/test-data-bot": "^2.0.0",
+		"@testing-library/jest-dom": "^5.17.0",
 		"@testing-library/react": "^10.4.9",
 		"@testing-library/react-hooks": "^3.7.0",
 		"@vitejs/plugin-react": "^4.5.0",
