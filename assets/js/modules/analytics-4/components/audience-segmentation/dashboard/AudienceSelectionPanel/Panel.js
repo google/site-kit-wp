@@ -47,6 +47,7 @@ import LearnMoreLink from './LearnMoreLink';
 import SelectionPanel from '@/js/components/SelectionPanel';
 import AudienceCreationSuccessNotice from './AudienceCreationSuccessNotice';
 import useFormValue from '@/js/hooks/useFormValue';
+import SelectedItemCountError from './SelectedItemCountError';
 
 export default function Panel() {
 	const viewContext = useViewContext();
@@ -112,6 +113,7 @@ export default function Panel() {
 			<Header closePanel={ closePanel } />
 			<AudienceItems savedItemSlugs={ savedItemSlugs } />
 			<LearnMoreLink />
+			<SelectedItemCountError />
 			<ErrorNotice />
 			<AudienceCreationSuccessNotice />
 			<Footer
