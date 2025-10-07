@@ -447,13 +447,13 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		return $content;
 	}
 
-		/**
-		 * Renders the Sign in with Google button markup.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param array $args Optional arguments to customize button attributes.
-		 */
+	/**
+	 * Renders the Sign in with Google button markup.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $args Optional arguments to customize button attributes.
+	 */
 	public function render_sign_in_with_google_button( $args = array() ) {
 		if ( ! is_array( $args ) ) {
 			$args = array();
@@ -465,7 +465,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			$classes_from_args = is_array( $args['class'] ) ? $args['class'] : preg_split( '/\s+/', (string) $args['class'] );
 		}
 
-		// Merge default and passed classes, then sanitize each class name.
+		// Merge default HTML class names and class names passed as arguments
+		// to the action, then sanitize each class name.
 		$merged_classes    = array_merge( $default_classes, $classes_from_args );
 		$sanitized_classes = array_map( 'sanitize_html_class', $merged_classes );
 
@@ -473,6 +474,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		$classes = array_values( array_unique( array_filter( $sanitized_classes ) ) );
 
 		$attributes = array(
+			// HTML class attribute should be a string.
 			'class' => implode( ' ', $classes ),
 		);
 
