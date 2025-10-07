@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classNames from 'classnames';
-
-/**
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
@@ -51,11 +46,9 @@ import Actions from './Actions';
 import Notice from '@/js/components/Notice';
 import { TYPES } from '@/js/components/Notice/constants';
 import useFormValue from '@/js/hooks/useFormValue';
-import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { activateModule } = useDispatch( CORE_MODULES );
 
@@ -134,12 +127,8 @@ export default function SetupUsingProxyWithSignIn() {
 	return (
 		<Fragment>
 			<Header />
-			<div
-				className={ classNames( 'googlesitekit-setup', {
-					'googlesitekit-setup--enhanced': setupFlowRefreshEnabled,
-				} ) }
-			>
-				<Grid collapsed={ setupFlowRefreshEnabled }>
+			<div className="googlesitekit-setup">
+				<Grid>
 					<Row>
 						<Cell size={ 12 }>
 							{ getQueryArg( location.href, 'notification' ) ===

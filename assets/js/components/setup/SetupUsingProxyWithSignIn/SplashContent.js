@@ -42,7 +42,6 @@ import {
 	ANALYTICS_NOTICE_CHECKBOX,
 	ANALYTICS_NOTICE_FORM_NAME,
 } from '@/js/components/setup/constants';
-import { BREAKPOINT_XLARGE, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { Cell, Row } from '@/js/material-components';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
@@ -61,7 +60,6 @@ export default function SplashContent( {
 	showLearnMoreLink,
 	title,
 } ) {
-	const breakpoint = useBreakpoint();
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const checked = useFormValue(
@@ -90,20 +88,14 @@ export default function SplashContent( {
 				lgSize={ 6 }
 				className="googlesitekit-setup__icon"
 			>
-				<SplashGraphic width="508" height="466" />
-				{ breakpoint !== BREAKPOINT_XLARGE ? (
-					<SetupFlowSVG
-						name="splash-screenshot"
-						width="459"
-						height="511"
-					/>
-				) : (
-					<SetupFlowSVG
-						name="splash-screenshot-wide-viewport"
-						width="642"
-						height="916"
-					/>
-				) }
+				<SplashGraphic
+					className="googlesitekit-setup__splash-graphic-background"
+					width="508"
+					height="466"
+				/>
+				<div className="googlesitekit-setup__splash-graphic-screenshot">
+					<SetupFlowSVG />
+				</div>
 			</Cell>
 
 			<Cell { ...cellDetailsProp }>

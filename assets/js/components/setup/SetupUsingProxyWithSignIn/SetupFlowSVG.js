@@ -1,7 +1,7 @@
 /**
  * SetupFlowSVG component.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,9 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
-import { lazy, Suspense, useMemo } from '@wordpress/element';
+import { lazy, Suspense } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,38 +28,21 @@ import { __ } from '@wordpress/i18n';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import MediaErrorHandler from '@/js/components/MediaErrorHandler';
 
-export default function SetupFlowSVG( { name, width, height } ) {
-	const LazySVGComponent = useMemo(
-		() => lazy( () => import( `../../../../svg/graphics/${ name }.svg` ) ),
-		[ name ]
-	);
+const LazySVGComponent = lazy( () =>
+	import( '../../../../svg/graphics/splash-screenshot.svg' )
+);
 
-	if ( ! name ) {
-		return null;
-	}
-
+export default function SetupFlowSVG() {
 	return (
-		<Suspense
-			fallback={ <PreviewBlock width={ width } height={ height } /> }
-		>
+		<Suspense fallback={ <PreviewBlock width="100%" height="100%" /> }>
 			<MediaErrorHandler
 				errorMessage={ __(
 					'Failed to load graphic',
 					'google-site-kit'
 				) }
 			>
-				<LazySVGComponent
-					name={ name }
-					width={ width }
-					height={ height }
-				/>
+				<LazySVGComponent />
 			</MediaErrorHandler>
 		</Suspense>
 	);
 }
-
-SetupFlowSVG.propTypes = {
-	name: PropTypes.string.isRequired,
-	width: PropTypes.string,
-	height: PropTypes.string,
-};
