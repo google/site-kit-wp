@@ -25,7 +25,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useCallback, useState } from '@wordpress/element';
-import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -80,30 +79,6 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 		useDispatch( CORE_USER );
 
 	const { getConfiguredAudiences } = useSelect( CORE_USER );
-
-	const selectedItemsCount = selectedItems?.length || 0;
-	let itemLimitError;
-
-	if ( selectedItemsCount < MIN_SELECTED_AUDIENCES_COUNT ) {
-		itemLimitError = sprintf(
-			/* translators: 1: Minimum number of groups that can be selected. 2: Number of selected groups. */
-			_n(
-				'Select at least %1$d group (%2$d selected)',
-				'Select at least %1$d groups (%2$d selected)',
-				MIN_SELECTED_AUDIENCES_COUNT,
-				'google-site-kit'
-			),
-			MIN_SELECTED_AUDIENCES_COUNT,
-			selectedItemsCount
-		);
-	} else if ( selectedItemsCount > MAX_SELECTED_AUDIENCES_COUNT ) {
-		itemLimitError = sprintf(
-			/* translators: 1: Maximum number of groups that can be selected. 2: Number of selected groups. */
-			__( 'Select up to %1$d groups (%2$d selected)', 'google-site-kit' ),
-			MAX_SELECTED_AUDIENCES_COUNT,
-			selectedItemsCount
-		);
-	}
 
 	const [ dismissedItemsError, setDismissedItemsError ] = useState( null );
 
@@ -208,7 +183,6 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 			selectedItemSlugs={ selectedItems }
 			saveSettings={ saveSettings }
 			saveError={ saveError || dismissedItemsError }
-			itemLimitError={ itemLimitError }
 			minSelectedItemCount={ MIN_SELECTED_AUDIENCES_COUNT }
 			maxSelectedItemCount={ MAX_SELECTED_AUDIENCES_COUNT }
 			isBusy={ isSavingSettings }
