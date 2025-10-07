@@ -33,7 +33,7 @@ jest.mock( 'googlesitekit-data', () => ( {
 	subscribe: jest.fn(),
 } ) );
 
-jest.mock( './create-get-blocks-titles', () => ( {
+jest.mock( '../../create-get-blocks-titles', () => ( {
 	createGetBlockTitle: jest.fn( () =>
 		jest.fn( ( name ) => {
 			const constants = jest.requireActual(
