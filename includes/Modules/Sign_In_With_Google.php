@@ -459,14 +459,18 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			$args = array();
 		}
 
-		$default_classes = array( 'googlesitekit-sign-in-with-google__frontend-output-button' );
-		$passed_classes  = array();
+		$default_classes   = array( 'googlesitekit-sign-in-with-google__frontend-output-button' );
+		$classes_from_args = array();
 		if ( ! empty( $args['class'] ) ) {
-			$passed_classes = is_array( $args['class'] ) ? $args['class'] : preg_split( '/\s+/', (string) $args['class'] );
+			$classes_from_args = is_array( $args['class'] ) ? $args['class'] : preg_split( '/\s+/', (string) $args['class'] );
 		}
 
-		$classes = array_map( 'sanitize_html_class', array_merge( $default_classes, $passed_classes ) );
-		$classes = array_values( array_unique( array_filter( $classes ) ) );
+		// Merge default and passed classes, then sanitize each class name.
+		$merged_classes    = array_merge( $default_classes, $classes_from_args );
+		$sanitized_classes = array_map( 'sanitize_html_class', $merged_classes );
+
+		// Remove duplicates, empty values, and reindex array.
+		$classes = array_values( array_unique( array_filter( $sanitized_classes ) ) );
 
 		$attributes = array(
 			'class' => implode( ' ', $classes ),
@@ -478,7 +482,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 				continue;
 			}
 
-			$attributes[ "data-googlesitekit-siwg-{$attribute}" ] = strtolower( (string) $args[ $attribute ] );
+			$attributes[ 'data-googlesitekit-siwg-' . strtolower( $attribute ) ] = (string) $args[ $attribute ];
 		}
 
 		$attribute_strings = array();
