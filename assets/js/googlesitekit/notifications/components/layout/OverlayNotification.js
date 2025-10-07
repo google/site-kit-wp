@@ -64,6 +64,12 @@ export default function OverlayNotification( {
 			gaTrackingEventArgs?.value
 		);
 		await ctaButton?.onClick?.( event );
+
+		if ( ctaButton?.dismissOnClick ) {
+			dismissNotification( notificationID, {
+				...ctaButton?.dismissOptions,
+			} );
+		}
 	}
 
 	return (
