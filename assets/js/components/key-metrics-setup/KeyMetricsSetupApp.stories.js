@@ -26,16 +26,12 @@ import { withQuery } from '@storybook/addon-queryparams';
  */
 import KeyMetricsSetupApp from './KeyMetricsSetupApp';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import { VIEW_CONTEXT_KEY_METRICS_SETUP } from '@/js/googlesitekit/constants';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 
 function Template() {
-	return (
-		<ViewContextProvider value={ VIEW_CONTEXT_KEY_METRICS_SETUP }>
-			<KeyMetricsSetupApp />
-		</ViewContextProvider>
-	);
+	return <KeyMetricsSetupApp />;
 }
 
 export const Default = Template.bind( {} );
@@ -73,7 +69,11 @@ export default {
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
+					<ViewContextProvider
+						value={ VIEW_CONTEXT_KEY_METRICS_SETUP }
+					>
+						<Story />
+					</ViewContextProvider>
 				</WithRegistrySetup>
 			);
 		},
