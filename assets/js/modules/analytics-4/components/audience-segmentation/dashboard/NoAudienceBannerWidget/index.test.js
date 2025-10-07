@@ -66,7 +66,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	)( NoAudienceBannerWidget );
 
 	const audienceSettingsRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/audience-settings'
+		'/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
 	beforeEach( () => {

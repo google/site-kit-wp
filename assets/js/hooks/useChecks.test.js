@@ -56,7 +56,7 @@ describe( 'useChecks', () => {
 
 	it( 'returns the first error thrown by a check', async () => {
 		muteFetch(
-			new RegExp( '^/google-site-kit/v1/core/site/data/connection' )
+			new RegExp( '/google-site-kit/v1/core/site/data/connection' )
 		);
 		const checks = [
 			() => true,

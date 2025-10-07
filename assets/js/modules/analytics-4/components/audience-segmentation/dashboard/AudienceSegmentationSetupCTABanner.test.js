@@ -96,23 +96,23 @@ describe( 'AudienceSegmentationSetupCTABanner', () => {
 		)( AudienceSegmentationSetupCTABanner );
 
 	const audienceSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/audience-settings'
+		'/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
 	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
+		'/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
 	const syncAvailableAudiencesEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+		'/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
 
 	const createAudienceEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/create-audience'
+		'/google-site-kit/v1/modules/analytics-4/data/create-audience'
 	);
 
 	const expirableItemEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
+		'/google-site-kit/v1/core/user/data/set-expirable-item-timers'
 	);
 
 	const testPropertyID = propertiesFixture[ 0 ]._id;
@@ -418,7 +418,7 @@ describe( 'AudienceSegmentationSetupCTABanner', () => {
 
 			fetchMock.postOnce(
 				new RegExp(
-					'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					'/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 				),
 				{
 					body: [ 'googlesitekit_post_type' ],
@@ -601,7 +601,7 @@ describe( 'AudienceSegmentationSetupCTABanner', () => {
 
 			fetchMock.postOnce(
 				new RegExp(
-					'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					'/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 				),
 				{
 					body: [ 'googlesitekit_post_type' ],

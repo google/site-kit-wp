@@ -48,7 +48,7 @@ describe( 'SettingsEdit', () => {
 	let registry;
 
 	const settingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+		'/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
 	);
 
 	const publication = publications[ 2 ];

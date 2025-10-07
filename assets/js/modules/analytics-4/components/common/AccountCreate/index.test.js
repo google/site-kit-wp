@@ -46,7 +46,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 const REGEX_REST_CONVERSION_TRACKING_SETTINGS = new RegExp(
-	'^/google-site-kit/v1/core/site/data/conversion-tracking'
+	'/google-site-kit/v1/core/site/data/conversion-tracking'
 );
 
 describe( 'AccountCreate', () => {
@@ -136,7 +136,7 @@ describe( 'AccountCreate', () => {
 
 			fetchMock.post(
 				new RegExp(
-					'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+					'/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
 				),
 				{
 					// eslint-disable-next-line sitekit/acronym-case

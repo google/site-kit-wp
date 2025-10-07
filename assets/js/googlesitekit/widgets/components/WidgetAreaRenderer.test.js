@@ -107,7 +107,7 @@ describe( 'WidgetAreaRenderer', () => {
 		await registry.dispatch( CORE_SITE ).receiveGetConnection( connection );
 
 		const fetchGetExpiredItems = new RegExp(
-			'^/google-site-kit/v1/core/user/data/expirable-items'
+			'/google-site-kit/v1/core/user/data/expirable-items'
 		);
 		muteFetch( fetchGetExpiredItems );
 	} );

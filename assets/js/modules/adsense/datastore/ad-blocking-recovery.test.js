@@ -103,7 +103,7 @@ describe( 'Ad Blocking Recovery Existing Tag store', () => {
 
 				fetchMock.postOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
+						'/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
 					),
 					{ body: errorResponse, status: 500 }
 				);
@@ -124,7 +124,7 @@ describe( 'Ad Blocking Recovery Existing Tag store', () => {
 
 				fetchMock.postOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
+						'/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
 					),
 					{
 						body: syncSyncAdBlockingRecoveryTagssResponse,

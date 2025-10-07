@@ -89,16 +89,16 @@ describe( 'AudienceSelectionPanel', () => {
 	];
 
 	const expirableItemEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
+		'/google-site-kit/v1/core/user/data/set-expirable-item-timers'
 	);
 	const syncAvailableAudiencesEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+		'/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
 	const audienceSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/audience-settings'
+		'/google-site-kit/v1/core/user/data/audience-settings'
 	);
 	const dismissedItemsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismissed-items'
+		'/google-site-kit/v1/core/user/data/dismissed-items'
 	);
 
 	beforeEach( () => {
@@ -1397,7 +1397,7 @@ describe( 'AudienceSelectionPanel', () => {
 
 		describe( 'AudienceCreationErrorNotice', () => {
 			const createAudienceEndpoint = new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/create-audience'
+				'/google-site-kit/v1/modules/analytics-4/data/create-audience'
 			);
 
 			const nonSiteKitAvailableAudiences = availableAudiences.filter(

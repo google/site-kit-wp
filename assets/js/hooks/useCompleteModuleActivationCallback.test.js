@@ -56,7 +56,7 @@ describe( 'useCompleteModuleActivationCallback', () => {
 
 	it( 'should navigate to the module reauthentication URL', async () => {
 		fetchMock.getOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			RegExp( '/google-site-kit/v1/core/user/data/authentication' ),
 			{ body: { needsReauthentication: false } }
 		);
 
@@ -92,7 +92,7 @@ describe( 'useCompleteModuleActivationCallback', () => {
 
 	it( 'should return null when the user cannot manage options', async () => {
 		fetchMock.getOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			RegExp( '/google-site-kit/v1/core/user/data/authentication' ),
 			{ body: { needsReauthentication: false } }
 		);
 

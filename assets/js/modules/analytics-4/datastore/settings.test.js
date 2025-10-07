@@ -65,13 +65,13 @@ describe( 'modules/analytics-4 settings', () => {
 	};
 
 	const createPropertyEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/create-property'
+		'/google-site-kit/v1/modules/analytics-4/data/create-property'
 	);
 	const createWebDataStreamsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/create-webdatastream'
+		'/google-site-kit/v1/modules/analytics-4/data/create-webdatastream'
 	);
 	const propertyEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/property'
+		'/google-site-kit/v1/modules/analytics-4/data/property'
 	);
 
 	beforeAll( () => {
@@ -90,13 +90,13 @@ describe( 'modules/analytics-4 settings', () => {
 	describe( 'actions', () => {
 		describe( 'submitChanges', () => {
 			const settingsEndpoint = new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/settings'
+				'/google-site-kit/v1/modules/analytics-4/data/settings'
 			);
 			const gtgSettingsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/gtg-settings'
+				'/google-site-kit/v1/core/site/data/gtg-settings'
 			);
 			const dismissItemEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/user/data/dismiss-item'
+				'/google-site-kit/v1/core/user/data/dismiss-item'
 			);
 
 			beforeEach( () => {
@@ -140,7 +140,7 @@ describe( 'modules/analytics-4 settings', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+						'/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 					),
 					{
 						body: {
@@ -299,7 +299,7 @@ describe( 'modules/analytics-4 settings', () => {
 				const accountID = fixtures.createProperty._accountID;
 
 				const enhancedMeasurementSettingsEndpoint = new RegExp(
-					'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+					'/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
 				);
 
 				const enabledSettingsMock = {
@@ -893,7 +893,7 @@ describe( 'modules/analytics-4 settings', () => {
 				// this is covered in the test for `resetUserAudienceSettings()`.
 				muteFetch(
 					new RegExp(
-						'^/google-site-kit/v1/core/user/data/audience-settings'
+						'/google-site-kit/v1/core/user/data/audience-settings'
 					)
 				);
 

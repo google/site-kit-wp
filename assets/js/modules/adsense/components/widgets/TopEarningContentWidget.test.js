@@ -58,7 +58,7 @@ describe( 'TopEarningContentWidget', () => {
 		KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT
 	);
 	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
+		'/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
 	beforeEach( () => {

@@ -28,7 +28,7 @@ describe( 'core/site notifications', () => {
 	let registry;
 
 	const markNotificationsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/site/data/mark-notification'
+		'/google-site-kit/v1/core/site/data/mark-notification'
 	);
 
 	beforeEach( () => {

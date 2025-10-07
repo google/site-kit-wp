@@ -48,7 +48,7 @@ describe( 'VisitLengthWidget', () => {
 	let registry;
 	const widgetProps = getWidgetComponentProps( KM_ANALYTICS_VISIT_LENGTH );
 	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
+		'/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
 	beforeEach( () => {

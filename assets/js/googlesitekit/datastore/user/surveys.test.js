@@ -124,7 +124,7 @@ describe( 'core/user surveys', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/user/data/authentication'
+						'/google-site-kit/v1/core/user/data/authentication'
 					),
 					{
 						authenticated: true,

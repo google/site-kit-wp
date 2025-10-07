@@ -43,7 +43,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 	let registry;
 
 	const syncOnboardingStateEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/sync-publication-onboarding-state'
+		'/google-site-kit/v1/modules/reader-revenue-manager/data/sync-publication-onboarding-state'
 	);
 
 	const {

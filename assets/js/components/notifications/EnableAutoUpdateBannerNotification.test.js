@@ -166,7 +166,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 
 		it( 'is not active and dismisses the notification temporarily when Site Kit is set up', async () => {
 			const dismissItemEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/user/data/dismiss-item'
+				'/google-site-kit/v1/core/user/data/dismiss-item'
 			);
 			fetchMock.post( dismissItemEndpoint, {
 				body: JSON.stringify( [ ENABLE_AUTO_UPDATES_BANNER_SLUG ] ),

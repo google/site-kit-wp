@@ -54,7 +54,7 @@ describe( 'LeastEngagingPagesWidget', () => {
 		KM_ANALYTICS_LEAST_ENGAGING_PAGES
 	);
 	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
+		'/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
 	beforeEach( () => {

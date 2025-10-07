@@ -59,26 +59,26 @@ describe( 'modules/analytics-4 audiences', () => {
 	let registry;
 
 	const createAudienceEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/create-audience'
+		'/google-site-kit/v1/modules/analytics-4/data/create-audience'
 	);
 	const syncAvailableAudiencesEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+		'/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
 	const audienceUserSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/audience-settings'
+		'/google-site-kit/v1/core/user/data/audience-settings'
 	);
 	const audienceSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/save-audience-settings'
+		'/google-site-kit/v1/modules/analytics-4/data/save-audience-settings'
 	);
 	const analyticsSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/settings'
+		'/google-site-kit/v1/modules/analytics-4/data/settings'
 	);
 	const expirableItemEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
+		'/google-site-kit/v1/core/user/data/set-expirable-item-timers'
 	);
 
 	const syncAvailableCustomDimensionsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+		'/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 	);
 
 	const audience = {
@@ -1269,7 +1269,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 			describe( 'custom dimension handling', () => {
 				const createCustomDimensionEndpoint = new RegExp(
-					'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+					'/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
 				);
 
 				beforeEach( () => {

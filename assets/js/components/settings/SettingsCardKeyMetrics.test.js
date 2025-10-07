@@ -50,11 +50,11 @@ describe( 'SettingsCardKeyMetrics', () => {
 
 		muteFetch(
 			new RegExp(
-				'^/google-site-kit/v1/core/user/data/user-input-settings'
+				'/google-site-kit/v1/core/user/data/user-input-settings'
 			)
 		);
 		muteFetch(
-			new RegExp( '^/google-site-kit/v1/core/user/data/key-metrics' )
+			new RegExp( '/google-site-kit/v1/core/user/data/key-metrics' )
 		);
 	} );
 

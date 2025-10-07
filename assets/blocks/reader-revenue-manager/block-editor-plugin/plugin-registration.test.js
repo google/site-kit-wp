@@ -102,7 +102,7 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 		} );
 
 		fetchMock.postOnce(
-			new RegExp( '^/google-site-kit/v1/core/modules/data/check-access' ),
+			new RegExp( '/google-site-kit/v1/core/modules/data/check-access' ),
 			{ body: { access: true } }
 		);
 
@@ -126,7 +126,7 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 		} );
 
 		fetchMock.postOnce(
-			new RegExp( '^/google-site-kit/v1/core/modules/data/check-access' ),
+			new RegExp( '/google-site-kit/v1/core/modules/data/check-access' ),
 			{ body: { access: false } }
 		);
 

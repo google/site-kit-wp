@@ -91,12 +91,12 @@ describe( 'AccountSelect', () => {
 	it( 'should render a loading state when accounts are undefined', async () => {
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+				'/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 			)
 		);
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+				'/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 			)
 		);
 		const { queryAllByRole, queryByRole } = render( <AccountSelect />, {

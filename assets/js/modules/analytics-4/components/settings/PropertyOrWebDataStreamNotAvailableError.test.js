@@ -75,7 +75,7 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 		 */
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+				'/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 			),
 			{ repeat: 2 }
 		);
@@ -102,7 +102,7 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 	it( 'should not render when Web Data Streams are not loaded yet', async () => {
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams'
+				'/google-site-kit/v1/modules/analytics-4/data/webdatastreams'
 			)
 		);
 

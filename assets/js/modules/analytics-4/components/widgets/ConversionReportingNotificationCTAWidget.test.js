@@ -74,10 +74,10 @@ describe( 'ConversionReportingNotificationCTAWidget', () => {
 	);
 
 	const fetchDismissNotification = new RegExp(
-		'^/google-site-kit/v1/core/user/data/conversion-reporting-settings'
+		'/google-site-kit/v1/core/user/data/conversion-reporting-settings'
 	);
 	const userInputSettingsEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/user-input-settings'
+		'/google-site-kit/v1/core/user/data/user-input-settings'
 	);
 
 	beforeEach( () => {

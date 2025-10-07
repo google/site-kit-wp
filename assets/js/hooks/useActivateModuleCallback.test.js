@@ -72,7 +72,7 @@ describe( 'useActivateModuleCallback', () => {
 			{ body: { success: true } }
 		);
 		fetchMock.getOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			RegExp( '/google-site-kit/v1/core/user/data/authentication' ),
 			{ body: { needsReauthentication: false } }
 		);
 
@@ -104,7 +104,7 @@ describe( 'useActivateModuleCallback', () => {
 			{ body: { success: true } }
 		);
 		fetchMock.getOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			RegExp( '/google-site-kit/v1/core/user/data/authentication' ),
 			{ body: { needsReauthentication: false } }
 		);
 
@@ -137,7 +137,7 @@ describe( 'useActivateModuleCallback', () => {
 			{ body: { success: true } }
 		);
 		fetchMock.getOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			RegExp( '/google-site-kit/v1/core/user/data/authentication' ),
 			{ body: { needsReauthentication: false } }
 		);
 

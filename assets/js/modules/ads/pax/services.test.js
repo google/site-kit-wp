@@ -33,7 +33,7 @@ import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import { createPaxServices } from './services';
 
 const getTokenEndpoint = new RegExp(
-	'^/google-site-kit/v1/core/user/data/get-token'
+	'/google-site-kit/v1/core/user/data/get-token'
 );
 
 describe( 'PAX partner services', () => {

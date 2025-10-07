@@ -50,7 +50,7 @@ describe( 'VisitsPerVisitorWidget', () => {
 		KM_ANALYTICS_VISITS_PER_VISITOR
 	);
 	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
+		'/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
 	beforeEach( () => {

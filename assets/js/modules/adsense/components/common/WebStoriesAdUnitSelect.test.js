@@ -76,7 +76,7 @@ describe( 'WebStoriesAdUnitSelect', () => {
 			] );
 
 		freezeFetch(
-			new RegExp( '^/google-site-kit/v1/modules/adsense/data/adunits' )
+			new RegExp( '/google-site-kit/v1/modules/adsense/data/adunits' )
 		);
 
 		const { queryAllByRole, queryByRole } = render(

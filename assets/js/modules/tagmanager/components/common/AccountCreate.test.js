@@ -76,7 +76,7 @@ describe( 'AccountCreate', () => {
 			.finishResolution( 'getAccounts', [] );
 		fetchMock.getOnce(
 			new RegExp(
-				'^/google-site-kit/v1/modules/tagmanager/data/accounts'
+				'/google-site-kit/v1/modules/tagmanager/data/accounts'
 			),
 			{ body: [ accountA, accountB ], status: 200 }
 		);
@@ -88,7 +88,7 @@ describe( 'AccountCreate', () => {
 
 		muteFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/tagmanager/data/containers'
+				'/google-site-kit/v1/modules/tagmanager/data/containers'
 			),
 			[]
 		);
@@ -98,9 +98,7 @@ describe( 'AccountCreate', () => {
 			() => registry.select( MODULES_TAGMANAGER ).getAccounts().length > 1
 		);
 		expect( fetchMock ).toHaveFetched(
-			new RegExp(
-				'^/google-site-kit/v1/modules/tagmanager/data/accounts'
-			)
+			new RegExp( '/google-site-kit/v1/modules/tagmanager/data/accounts' )
 		);
 	} );
 

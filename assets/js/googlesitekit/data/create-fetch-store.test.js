@@ -206,7 +206,7 @@ describe( 'createFetchStore store', () => {
 				const expectedResponse = 'response-value';
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/test/data/some-data'
+						'/google-site-kit/v1/core/test/data/some-data'
 					),
 					{ body: JSON.stringify( expectedResponse ), status: 200 }
 				);
@@ -245,7 +245,7 @@ describe( 'createFetchStore store', () => {
 					};
 					fetchMock.getOnce(
 						new RegExp(
-							'^/google-site-kit/v1/core/test/data/some-data'
+							'/google-site-kit/v1/core/test/data/some-data'
 						),
 						{ body: errorResponse, status: 500 }
 					);
@@ -275,7 +275,7 @@ describe( 'createFetchStore store', () => {
 					};
 					fetchMock.getOnce(
 						new RegExp(
-							'^/google-site-kit/v1/core/test/data/some-data'
+							'/google-site-kit/v1/core/test/data/some-data'
 						),
 						{ body: errorResponse, status: 500 }
 					);
@@ -293,7 +293,7 @@ describe( 'createFetchStore store', () => {
 
 					fetchMock.getOnce(
 						new RegExp(
-							'^/google-site-kit/v1/core/test/data/some-data'
+							'/google-site-kit/v1/core/test/data/some-data'
 						),
 						{
 							body: {},
@@ -313,7 +313,7 @@ describe( 'createFetchStore store', () => {
 			it( 'sets flag for request being in progress', async () => {
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/test/data/some-data'
+						'/google-site-kit/v1/core/test/data/some-data'
 					),
 					{ body: { someValue: 42 }, status: 200 }
 				);

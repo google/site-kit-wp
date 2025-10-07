@@ -69,7 +69,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		fetchMock.getOnce(
-			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			new RegExp( '/google-site-kit/v1/core/user/data/authentication' ),
 			{
 				authenticated: true,
 			}
@@ -77,13 +77,13 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 
 		muteFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+				'/google-site-kit/v1/modules/analytics-4/data/data-available'
 			)
 		);
 
 		muteFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/search-console/data/data-available'
+				'/google-site-kit/v1/modules/search-console/data/data-available'
 			)
 		);
 	} );

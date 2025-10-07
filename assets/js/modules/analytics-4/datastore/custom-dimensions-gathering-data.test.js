@@ -133,7 +133,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 		const accountID = '100';
 
 		const customDimensionDataAvailableEndpoint = new RegExp(
-			'^/google-site-kit/v1/modules/analytics-4/data/custom-dimension-data-available'
+			'/google-site-kit/v1/modules/analytics-4/data/custom-dimension-data-available'
 		);
 
 		const dataAvailabilityReportWithData = {
@@ -385,7 +385,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 
 						muteFetch(
 							new RegExp(
-								'^/google-site-kit/v1/modules/analytics-4/data/report'
+								'/google-site-kit/v1/modules/analytics-4/data/report'
 							)
 						);
 					},

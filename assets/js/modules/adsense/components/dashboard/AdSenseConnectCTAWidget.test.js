@@ -67,7 +67,7 @@ describe( 'AdSenseConnectCTA', () => {
 		let container;
 		beforeEach( async () => {
 			fetchMock.postOnce(
-				RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+				RegExp( '/google-site-kit/v1/core/user/data/dismiss-item' ),
 				{
 					body: JSON.stringify( [
 						ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY,

@@ -76,7 +76,7 @@ describe( 'core/user feature-tours', () => {
 	describe( 'actions', () => {
 		describe( 'dismissTour', () => {
 			const fetchDismissTourRegExp = new RegExp(
-				'^/google-site-kit/v1/core/user/data/dismiss-tour'
+				'/google-site-kit/v1/core/user/data/dismiss-tour'
 			);
 
 			it( 'requires a slug parameter', () => {
@@ -423,7 +423,7 @@ describe( 'core/user feature-tours', () => {
 
 	describe( 'selectors', () => {
 		const fetchGetDismissedToursRegExp = new RegExp(
-			'^/google-site-kit/v1/core/user/data/dismissed-tours'
+			'/google-site-kit/v1/core/user/data/dismissed-tours'
 		);
 
 		describe( 'getDismissedFeatureTourSlugs', () => {

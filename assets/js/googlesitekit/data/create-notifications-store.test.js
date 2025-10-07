@@ -73,7 +73,7 @@ describe( 'createNotificationsStore store', () => {
 			it( 'does not require any params', () => {
 				muteFetch(
 					new RegExp(
-						'^/google-site-kit/v1/core/site/data/notifications'
+						'/google-site-kit/v1/core/site/data/notifications'
 					),
 					[]
 				);
@@ -109,7 +109,7 @@ describe( 'createNotificationsStore store', () => {
 				const response = [ { id: 'test_notification' } ];
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/site/data/notifications'
+						'/google-site-kit/v1/core/site/data/notifications'
 					),
 					{ body: response, status: 200 }
 				);
@@ -140,7 +140,7 @@ describe( 'createNotificationsStore store', () => {
 				};
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/site/data/notifications'
+						'/google-site-kit/v1/core/site/data/notifications'
 					),
 					{ body: response, status: 500 }
 				);

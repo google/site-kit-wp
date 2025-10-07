@@ -29,7 +29,7 @@ describe( 'core/user proactive user engagement settings', () => {
 	let registry;
 
 	const proactiveUserEngagementSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/proactive-user-engagement-settings'
+		'/google-site-kit/v1/core/user/data/proactive-user-engagement-settings'
 	);
 
 	let proactiveUserEngagementSettingsResponse;

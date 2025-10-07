@@ -60,11 +60,11 @@ describe( 'GoogleTagGatewaySetupBanner', () => {
 	)( GoogleTagGatewaySetupBanner );
 
 	const gtgSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/site/data/gtg-settings'
+		'/google-site-kit/v1/core/site/data/gtg-settings'
 	);
 
 	const dismissItemEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-item'
+		'/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
 	beforeEach( () => {

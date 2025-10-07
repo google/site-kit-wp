@@ -31,7 +31,7 @@ describe( 'core/user tracking settings', () => {
 	let registry;
 
 	const coreUserTrackingSettingsEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/tracking'
+		'/google-site-kit/v1/core/user/data/tracking'
 	);
 
 	beforeAll( () => {

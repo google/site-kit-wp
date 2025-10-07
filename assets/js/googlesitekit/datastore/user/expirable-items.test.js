@@ -29,11 +29,11 @@ import fetchMock from 'fetch-mock';
 
 describe( 'core/user expirable-items', () => {
 	const fetchGetExpiredItems = new RegExp(
-		'^/google-site-kit/v1/core/user/data/expirable-items'
+		'/google-site-kit/v1/core/user/data/expirable-items'
 	);
 
 	const fetchExpirableItem = new RegExp(
-		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
+		'/google-site-kit/v1/core/user/data/set-expirable-item-timers'
 	);
 
 	let registry;

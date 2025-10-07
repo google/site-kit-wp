@@ -50,7 +50,7 @@ describe( 'modules/adsense clients', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/adsense/data/clients'
+						'/google-site-kit/v1/modules/adsense/data/clients'
 					),
 					{ body: fixtures.clients, status: 200 }
 				);
@@ -109,7 +109,7 @@ describe( 'modules/adsense clients', () => {
 				};
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/adsense/data/clients'
+						'/google-site-kit/v1/modules/adsense/data/clients'
 					),
 					{ body: response, status: 500 }
 				);
@@ -142,7 +142,7 @@ describe( 'modules/adsense clients', () => {
 			it( 'returns undefined if clients are not yet resolved', async () => {
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/adsense/data/clients'
+						'/google-site-kit/v1/modules/adsense/data/clients'
 					),
 					{ body: fixtures.clients, status: 200 }
 				);

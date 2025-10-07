@@ -226,7 +226,7 @@ describe( 'core/modules settings', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/test-module/data/settings'
+						'/google-site-kit/v1/modules/test-module/data/settings'
 					),
 					{ body: serverValues, status: 200 }
 				);
@@ -260,7 +260,7 @@ describe( 'core/modules settings', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/test-module/data/settings'
+						'/google-site-kit/v1/modules/test-module/data/settings'
 					),
 					{ body: serverValues, status: 200 }
 				);

@@ -99,7 +99,7 @@ describe( 'createSettingsStore store', () => {
 				expect( () => {
 					muteFetch(
 						new RegExp(
-							'^/google-site-kit/v1/core/site/data/settings'
+							'/google-site-kit/v1/core/site/data/settings'
 						)
 					);
 					dispatch.fetchGetSettings();
@@ -135,9 +135,7 @@ describe( 'createSettingsStore store', () => {
 		describe( 'saveSettings', () => {
 			it( 'does not require any params', () => {
 				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/settings'
-					),
+					new RegExp( '/google-site-kit/v1/core/site/data/settings' ),
 					{ body: {}, status: 200 }
 				);
 				const values = { setting1: 'serverside' };
@@ -145,7 +143,7 @@ describe( 'createSettingsStore store', () => {
 				expect( async () => {
 					fetchMock.postOnce(
 						new RegExp(
-							'^/google-site-kit/v1/core/site/data/settings'
+							'/google-site-kit/v1/core/site/data/settings'
 						),
 						{ body: values, status: 200 }
 					);
@@ -195,9 +193,7 @@ describe( 'createSettingsStore store', () => {
 
 			it( 'sets isDoingSaveSettings', () => {
 				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/settings'
-					),
+					new RegExp( '/google-site-kit/v1/core/site/data/settings' ),
 					{ body: { setting1: true }, status: 200 }
 				);
 
@@ -325,9 +321,7 @@ describe( 'createSettingsStore store', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const response = { setting1: 'value' };
 				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/settings'
-					),
+					new RegExp( '/google-site-kit/v1/core/site/data/settings' ),
 					{ body: response, status: 200 }
 				);
 
@@ -369,7 +363,7 @@ describe( 'createSettingsStore store', () => {
 				// If settings are set on the client, they must be available even
 				// if settings have not been loaded from the server yet.
 				muteFetch(
-					new RegExp( '^/google-site-kit/v1/core/site/data/settings' )
+					new RegExp( '/google-site-kit/v1/core/site/data/settings' )
 				);
 				expect( select.getSettings() ).toEqual( values );
 			} );
@@ -381,9 +375,7 @@ describe( 'createSettingsStore store', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/settings'
-					),
+					new RegExp( '/google-site-kit/v1/core/site/data/settings' ),
 					{ body: response, status: 500 }
 				);
 
@@ -467,9 +459,7 @@ describe( 'createSettingsStore store', () => {
 				const clientValues = { setting1: 'clientside' };
 
 				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/settings'
-					),
+					new RegExp( '/google-site-kit/v1/core/site/data/settings' ),
 					{ body: serverValues, status: 200 }
 				);
 
@@ -502,9 +492,7 @@ describe( 'createSettingsStore store', () => {
 				};
 
 				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/settings'
-					),
+					new RegExp( '/google-site-kit/v1/core/site/data/settings' ),
 					{ body: serverValues, status: 200 }
 				);
 
@@ -531,9 +519,7 @@ describe( 'createSettingsStore store', () => {
 				};
 
 				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/settings'
-					),
+					new RegExp( '/google-site-kit/v1/core/site/data/settings' ),
 					{ body: serverValues, status: 200 }
 				);
 
@@ -612,9 +598,7 @@ describe( 'createSettingsStore store', () => {
 				};
 
 				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/settings'
-					),
+					new RegExp( '/google-site-kit/v1/core/site/data/settings' ),
 					{ body: serverValues, status: 200 }
 				);
 
@@ -647,9 +631,7 @@ describe( 'createSettingsStore store', () => {
 				const clientValues = { setting1: 'clientside' };
 
 				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/settings'
-					),
+					new RegExp( '/google-site-kit/v1/core/site/data/settings' ),
 					{ body: serverValues, status: 200 }
 				);
 
@@ -690,9 +672,7 @@ describe( 'createSettingsStore store', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const value = 'serverside';
 				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/settings'
-					),
+					new RegExp( '/google-site-kit/v1/core/site/data/settings' ),
 					{
 						body: {
 							otherSetting: 'other-value',

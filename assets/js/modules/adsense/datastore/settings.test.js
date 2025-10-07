@@ -73,7 +73,7 @@ describe( 'modules/adsense settings', () => {
 					.setSettings( validSettings );
 				fetchMock.postOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/adsense/data/settings'
+						'/google-site-kit/v1/modules/adsense/data/settings'
 					),
 					{ body: validSettings, status: 200 }
 				);
@@ -83,7 +83,7 @@ describe( 'modules/adsense settings', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
-						'^/google-site-kit/v1/modules/adsense/data/settings'
+						'/google-site-kit/v1/modules/adsense/data/settings'
 					),
 					{
 						body: {
@@ -103,7 +103,7 @@ describe( 'modules/adsense settings', () => {
 
 				fetchMock.postOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/adsense/data/settings'
+						'/google-site-kit/v1/modules/adsense/data/settings'
 					),
 					{ body: wpError, status: 500 }
 				);
@@ -127,7 +127,7 @@ describe( 'modules/adsense settings', () => {
 
 				fetchMock.postOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/adsense/data/settings'
+						'/google-site-kit/v1/modules/adsense/data/settings'
 					),
 					{ body: validSettings, status: 200 }
 				);
@@ -262,7 +262,7 @@ describe( 'modules/adsense settings', () => {
 				const response = { useSnippet: false };
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/adsense/data/settings'
+						'/google-site-kit/v1/modules/adsense/data/settings'
 					),
 					{ body: response, status: 200 }
 				);

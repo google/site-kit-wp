@@ -46,7 +46,7 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 	let registry;
 
 	const dismissItemEndpoint = RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-item'
+		'/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
 	const notification = ADS_NOTIFICATIONS[ NOTIFICATION_ID ];
@@ -81,7 +81,7 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 			}
 		);
 		fetchMock.getOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			RegExp( '/google-site-kit/v1/core/user/data/authentication' ),
 			{
 				body: { needsReauthentication: false },
 			}

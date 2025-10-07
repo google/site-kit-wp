@@ -48,7 +48,7 @@ const STRING_210_CHARACTERS = `${ STRING_200_CHARACTERS } rhoncus n`;
 
 describe( 'CurrentSurvey', () => {
 	const surveyEventRegexp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/survey-event'
+		'/google-site-kit/v1/core/user/data/survey-event'
 	);
 
 	let registry;

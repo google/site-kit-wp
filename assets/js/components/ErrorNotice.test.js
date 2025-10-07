@@ -59,7 +59,7 @@ describe( 'ErrorNotice', () => {
 	} ) {
 		fetchMock.get(
 			new RegExp(
-				'^/google-site-kit/v1/modules/tagmanager/data/accounts'
+				'/google-site-kit/v1/modules/tagmanager/data/accounts'
 			),
 			{
 				body: error,

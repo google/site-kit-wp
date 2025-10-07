@@ -282,7 +282,7 @@ describe( 'AudienceTilesWidget', () => {
 	let originalViewportWidth;
 
 	const syncAvailableAudiencesEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+		'/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
 
 	const WidgetWithComponentProps = withWidgetComponentProps(
@@ -332,7 +332,7 @@ describe( 'AudienceTilesWidget', () => {
 
 		muteFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+				'/google-site-kit/v1/modules/analytics-4/data/data-available'
 			)
 		);
 

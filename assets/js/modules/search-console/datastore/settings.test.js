@@ -45,7 +45,7 @@ describe( 'modules/search-console settings', () => {
 
 	describe( 'submitChanges', () => {
 		const settingsEndpoint = new RegExp(
-			'^/google-site-kit/v1/modules/search-console/data/settings'
+			'/google-site-kit/v1/modules/search-console/data/settings'
 		);
 
 		beforeEach( () => {

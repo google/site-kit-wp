@@ -48,31 +48,31 @@ describe( 'modules/analytics-4 properties', () => {
 	let store;
 
 	const createPropertyEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/create-property'
+		'/google-site-kit/v1/modules/analytics-4/data/create-property'
 	);
 	const propertiesEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/properties'
+		'/google-site-kit/v1/modules/analytics-4/data/properties'
 	);
 	const propertyEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/property'
+		'/google-site-kit/v1/modules/analytics-4/data/property'
 	);
 	const googleTagSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/google-tag-settings'
+		'/google-site-kit/v1/modules/analytics-4/data/google-tag-settings'
 	);
 	const ga4SettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/settings'
+		'/google-site-kit/v1/modules/analytics-4/data/settings'
 	);
 	const containerLookupEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/container-lookup'
+		'/google-site-kit/v1/modules/analytics-4/data/container-lookup'
 	);
 	const containerDestinationsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/container-destinations'
+		'/google-site-kit/v1/modules/analytics-4/data/container-destinations'
 	);
 	const setGoogleTagIDMismatchEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/set-google-tag-id-mismatch'
+		'/google-site-kit/v1/modules/analytics-4/data/set-google-tag-id-mismatch'
 	);
 	const setWebDataStreamUnavailabilityEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/set-is-web-data-stream-unavailable'
+		'/google-site-kit/v1/modules/analytics-4/data/set-is-web-data-stream-unavailable'
 	);
 
 	const gtmAccountID = '6065484567';
@@ -114,7 +114,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+						'/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 					),
 					{
 						body: {
@@ -369,7 +369,7 @@ describe( 'modules/analytics-4 properties', () => {
 				} );
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams'
+						'/google-site-kit/v1/modules/analytics-4/data/webdatastreams'
 					),
 					responsePromise
 				);
@@ -403,7 +403,7 @@ describe( 'modules/analytics-4 properties', () => {
 
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams'
+						'/google-site-kit/v1/modules/analytics-4/data/webdatastreams'
 					)
 				);
 
@@ -1482,7 +1482,7 @@ describe( 'modules/analytics-4 properties', () => {
 		describe( 'getPropertySummaries', () => {
 			it( 'should use a resolver to make a network request', async () => {
 				const accountSummariesEndpoint = new RegExp(
-					'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+					'/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 				);
 
 				fetchMock.get( accountSummariesEndpoint, {

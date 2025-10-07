@@ -43,10 +43,10 @@ describe( 'ChangeMetricsLink', () => {
 	let registry;
 
 	const coreKeyMetricsEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/key-metrics'
+		'/google-site-kit/v1/core/user/data/key-metrics'
 	);
 	const coreUserInputSettingsEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/user-input-settings'
+		'/google-site-kit/v1/core/user/data/user-input-settings'
 	);
 
 	beforeEach( () => {

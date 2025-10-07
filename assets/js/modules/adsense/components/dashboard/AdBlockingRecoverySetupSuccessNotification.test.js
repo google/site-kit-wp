@@ -81,13 +81,13 @@ describe( 'AdBlockingRecoverySetupSuccessNotification', () => {
 
 	it( 'should render notification and trigger tracking events and ACR survey', async () => {
 		fetchMock.getOnce(
-			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			new RegExp( '/google-site-kit/v1/core/user/data/authentication' ),
 			{
 				authenticated: true,
 			}
 		);
 		fetchMock.postOnce(
-			new RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+			new RegExp( '/google-site-kit/v1/core/user/data/dismiss-item' ),
 			{ body: {} }
 		);
 

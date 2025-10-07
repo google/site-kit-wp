@@ -240,7 +240,7 @@ describe( 'core/modules sharing-settings', () => {
 
 					fetchMock.postOnce(
 						new RegExp(
-							'^/google-site-kit/v1/core/modules/data/sharing-settings'
+							'/google-site-kit/v1/core/modules/data/sharing-settings'
 						),
 						{
 							body: {
@@ -261,7 +261,7 @@ describe( 'core/modules sharing-settings', () => {
 					// Ensure the API call was made.
 					expect( fetchMock ).toHaveFetched(
 						new RegExp(
-							'^/google-site-kit/v1/core/modules/data/sharing-settings'
+							'/google-site-kit/v1/core/modules/data/sharing-settings'
 						)
 					);
 
@@ -718,7 +718,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				freezeFetch(
 					new RegExp(
-						'^/google-site-kit/v1/core/modules/data/sharing-settings'
+						'/google-site-kit/v1/core/modules/data/sharing-settings'
 					)
 				);
 
@@ -739,7 +739,7 @@ describe( 'core/modules sharing-settings', () => {
 
 				fetchMock.postOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/modules/data/sharing-settings'
+						'/google-site-kit/v1/core/modules/data/sharing-settings'
 					),
 					{
 						body: {

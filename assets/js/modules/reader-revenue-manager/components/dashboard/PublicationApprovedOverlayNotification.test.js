@@ -55,11 +55,11 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 	let registry;
 
 	const dismissItemsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-item'
+		'/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
 	const settingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+		'/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
 	);
 
 	beforeEach( () => {

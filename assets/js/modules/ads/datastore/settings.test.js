@@ -50,13 +50,13 @@ describe( 'modules/ads settings', () => {
 
 	describe( 'submitChanges', () => {
 		const settingsEndpoint = new RegExp(
-			'^/google-site-kit/v1/modules/ads/data/settings'
+			'/google-site-kit/v1/modules/ads/data/settings'
 		);
 		const gtgSettingsEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/site/data/gtg-settings'
+			'/google-site-kit/v1/core/site/data/gtg-settings'
 		);
 		const dismissItemEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/user/data/dismiss-item'
+			'/google-site-kit/v1/core/user/data/dismiss-item'
 		);
 
 		const error = {

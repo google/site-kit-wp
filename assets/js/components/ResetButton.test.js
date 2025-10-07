@@ -156,7 +156,7 @@ describe( 'ResetButton', () => {
 		it( 'should reset the plugin, delete local and session storage', async () => {
 			const response = true;
 			fetchMock.postOnce(
-				new RegExp( '^/google-site-kit/v1/core/site/data/reset' ),
+				new RegExp( '/google-site-kit/v1/core/site/data/reset' ),
 				{ body: JSON.stringify( response ), status: 200 }
 			);
 

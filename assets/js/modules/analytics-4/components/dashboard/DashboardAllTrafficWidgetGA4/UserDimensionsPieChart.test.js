@@ -56,7 +56,7 @@ describe( 'UserDimensionsPieChart', () => {
 		],
 	};
 	const analytics4ReportRegexp = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
+		'/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
 	beforeEach( () => {

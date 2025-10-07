@@ -38,7 +38,7 @@ describe( 'SetupMain', () => {
 	let registry;
 
 	const publicationsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
+		'/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
 	);
 	const rrmSettingsRegExp = new RegExp(
 		'/reader-revenue-manager/data/settings'

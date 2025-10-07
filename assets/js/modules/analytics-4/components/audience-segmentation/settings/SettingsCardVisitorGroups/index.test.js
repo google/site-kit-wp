@@ -125,7 +125,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 
 	describe( 'the "Display visitor groups in dashboard" switch', () => {
 		const audienceSettingsEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/user/data/audience-settings'
+			'/google-site-kit/v1/core/user/data/audience-settings'
 		);
 
 		beforeEach( () => {

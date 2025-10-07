@@ -63,7 +63,7 @@ describe( 'PopularProductsWidget', () => {
 		KM_ANALYTICS_POPULAR_PRODUCTS
 	);
 	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
+		'/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 	const accountID = '12345';
 	const propertyID = '34567';

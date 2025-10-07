@@ -72,10 +72,10 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 	const adSenseAccountID = 'pub-1234567890';
 
 	const fetchGetDismissedItemsRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismissed-items'
+		'/google-site-kit/v1/core/user/data/dismissed-items'
 	);
 	const fetchDismissItemRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-item'
+		'/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
 	const capabilitiesAdSenseNoAccess = {

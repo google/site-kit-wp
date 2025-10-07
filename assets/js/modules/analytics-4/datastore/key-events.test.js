@@ -47,7 +47,7 @@ describe( 'modules/analytics-4 key-events', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/key-events'
+						'/google-site-kit/v1/modules/analytics-4/data/key-events'
 					),
 					{ body: fixtures.keyEvents }
 				);
@@ -96,7 +96,7 @@ describe( 'modules/analytics-4 key-events', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/key-events'
+						'/google-site-kit/v1/modules/analytics-4/data/key-events'
 					),
 					{ body: response, status: 500 }
 				);

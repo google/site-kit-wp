@@ -77,7 +77,7 @@ describe( 'Footer', () => {
 
 		expect( fetchMock ).not.toHaveFetched(
 			new RegExp(
-				'^/google-site-kit/v1/modules/search-console/data/settings'
+				'/google-site-kit/v1/modules/search-console/data/settings'
 			)
 		);
 		expect( container ).not.toHaveTextContent( 'Search Console' );
@@ -100,7 +100,7 @@ describe( 'Footer', () => {
 
 		expect( fetchMock ).not.toHaveFetched(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/settings'
+				'/google-site-kit/v1/modules/analytics-4/data/settings'
 			)
 		);
 		expect( container ).not.toHaveTextContent( 'Analytics' );
@@ -109,7 +109,7 @@ describe( 'Footer', () => {
 
 	it( 'should make a search console settings request normally when the view context is NOT "view only"', async () => {
 		const searchConsoleRegExp = new RegExp(
-			'^/google-site-kit/v1/modules/search-console/data/settings'
+			'/google-site-kit/v1/modules/search-console/data/settings'
 		);
 		fetchMock.getOnce( searchConsoleRegExp, { body: {}, status: 200 } );
 
@@ -130,7 +130,7 @@ describe( 'Footer', () => {
 
 	it( 'should make a analytics settings request normally when the view context is NOT "view only"', async () => {
 		const analyticsSettingsRegExp = new RegExp(
-			'^/google-site-kit/v1/modules/analytics-4/data/settings'
+			'/google-site-kit/v1/modules/analytics-4/data/settings'
 		);
 		fetchMock.getOnce( analyticsSettingsRegExp, { body: {}, status: 200 } );
 

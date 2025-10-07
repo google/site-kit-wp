@@ -36,7 +36,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 	let store;
 
 	const audienceSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/audience-settings'
+		'/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
 	let audienceSettingsResponse;

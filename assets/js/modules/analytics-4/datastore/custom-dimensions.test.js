@@ -108,7 +108,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 			it( 'creates a custom dimension for the provided property with valid parameters', async () => {
 				fetchMock.postOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+						'/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
 					),
 					{
 						body: customDimension,
@@ -122,7 +122,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+						'/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
 					),
 					{
 						body: {
@@ -144,7 +144,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 				fetchMock.postOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+						'/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 					),
 					{
 						body: customDimensionNames,
@@ -159,7 +159,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+						'/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 					)
 				);
 				expect( response ).toEqual( customDimensionNames );
@@ -226,7 +226,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				// Mock the network requests for creating custom dimension and syncing
 				fetchMock.postOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+						'/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
 					),
 					{
 						body: customDimension,
@@ -235,7 +235,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				);
 				fetchMock.postOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+						'/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
 					),
 					{
 						body: {
@@ -247,7 +247,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				);
 				fetchMock.postOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+						'/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 					),
 					{
 						body: customDimensionNames,
@@ -291,7 +291,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 				fetchMock.postOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+						'/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 					),
 					{
 						body: customDimensionNames,
@@ -308,7 +308,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+						'/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 					)
 				);
 			} );
@@ -320,7 +320,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 				fetchMock.postOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+						'/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 					),
 					{
 						body: customDimensionNames,
@@ -341,7 +341,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+						'/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 					)
 				);
 			} );
@@ -432,7 +432,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 				fetchMock.postOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+						'/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 					),
 					{
 						body: customDimensionNames,

@@ -159,7 +159,7 @@ describe( 'modules/analytics tags', () => {
 
 			describe( 'GTE support', () => {
 				const containerLookupEndpoint = new RegExp(
-					'^/google-site-kit/v1/modules/analytics-4/data/container-lookup'
+					'/google-site-kit/v1/modules/analytics-4/data/container-lookup'
 				);
 				const containerMock = fixtures.container[ expectedTag ];
 

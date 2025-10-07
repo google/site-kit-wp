@@ -82,11 +82,11 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	const userAudienceSettingsRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/audience-settings'
+		'/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
 	const analyticsAudienceSettingsRegExp = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+		'/google-site-kit/v1/modules/analytics-4/data/audience-settings'
 	);
 
 	const WidgetWithComponentProps = withWidgetComponentProps(

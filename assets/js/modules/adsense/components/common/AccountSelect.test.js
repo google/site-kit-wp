@@ -57,7 +57,7 @@ describe( 'AccountSelect', () => {
 			.startResolution( 'getAccounts', [] );
 
 		freezeFetch(
-			new RegExp( '^/google-site-kit/v1/modules/adsense/data/accounts' )
+			new RegExp( '/google-site-kit/v1/modules/adsense/data/accounts' )
 		);
 
 		const { queryAllByRole, queryByRole } = render( <AccountSelect />, {

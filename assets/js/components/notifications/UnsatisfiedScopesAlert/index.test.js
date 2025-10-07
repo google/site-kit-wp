@@ -51,7 +51,7 @@ describe( 'UnsatisfiedScopesAlert', () => {
 		'google-site-kit/v1/core/modules/data/activation'
 	);
 	const userAuthenticationEndpoint = RegExp(
-		'^/google-site-kit/v1/core/user/data/authentication'
+		'/google-site-kit/v1/core/user/data/authentication'
 	);
 
 	const notification = DEFAULT_NOTIFICATIONS[ 'authentication-error' ];

@@ -35,10 +35,10 @@ import * as fixtures from './__fixtures__';
 
 describe( 'modules/search-console report', () => {
 	const searchAnalyticsRegexp = new RegExp(
-		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+		'/google-site-kit/v1/modules/search-console/data/searchanalytics'
 	);
 	const dataAvailableRegexp = new RegExp(
-		'^/google-site-kit/v1/modules/search-console/data/data-available'
+		'/google-site-kit/v1/modules/search-console/data/data-available'
 	);
 	const errorResponse = {
 		status: 403,

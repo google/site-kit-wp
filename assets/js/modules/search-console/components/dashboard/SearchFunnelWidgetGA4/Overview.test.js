@@ -77,7 +77,7 @@ describe( 'Overview', () => {
 
 		fetchMock.getOnce(
 			new RegExp(
-				'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+				'/google-site-kit/v1/modules/search-console/data/searchanalytics'
 			),
 			{
 				body: searchConsoleData,
@@ -86,7 +86,7 @@ describe( 'Overview', () => {
 
 		muteFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/search-console/data/data-available'
+				'/google-site-kit/v1/modules/search-console/data/data-available'
 			)
 		);
 

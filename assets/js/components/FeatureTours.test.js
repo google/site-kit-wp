@@ -112,7 +112,7 @@ describe( 'FeatureTours', () => {
 
 	it( 'cleans up ResizeObserver on unmount', async () => {
 		const fetchDismissTourRegExp = new RegExp(
-			'^/google-site-kit/v1/core/user/data/dismiss-tour'
+			'/google-site-kit/v1/core/user/data/dismiss-tour'
 		);
 
 		muteFetch( fetchDismissTourRegExp, [] );

@@ -56,10 +56,10 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
 		muteFetch(
-			new RegExp( '^/google-site-kit/v1/core/site/data/connection' )
+			new RegExp( '/google-site-kit/v1/core/site/data/connection' )
 		);
 		muteFetch(
-			new RegExp( '^/google-site-kit/v1/core/user/data/tracking' )
+			new RegExp( '/google-site-kit/v1/core/user/data/tracking' )
 		);
 	} );
 

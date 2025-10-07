@@ -65,7 +65,7 @@ describe( 'CoreSiteBannerNotifications', () => {
 
 	it( 'does register server notification after surveys have loaded', async () => {
 		const fetchGetDismissedItems = new RegExp(
-			'^/google-site-kit/v1/core/user/data/dismissed-items'
+			'/google-site-kit/v1/core/user/data/dismissed-items'
 		);
 		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 		fetchMock.getOnce( dismissedPromptsEndpoint, { body: [] } );

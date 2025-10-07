@@ -42,9 +42,8 @@ export default defineConfig( {
 			path.resolve( __dirname, './setup-globals.js' ),
 			path.resolve( __dirname, './vitest-localstorage-mock.js' ),
 			path.resolve( __dirname, './setup-before-after.js' ),
+			path.resolve( __dirname, './vitest-console-matchers.js' ),
 		],
-		// TODO: jest matchers are not compatible with Vitest, so we need to find replacements for these.
-		// setupFilesAfterEnv: [ path.resolve( __dirname, './jest-matchers.js' ) ],
 		transformMode: {
 			web: [ /\.[jt]sx?$/ ],
 		},

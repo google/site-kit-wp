@@ -255,7 +255,7 @@ describe( 'createGatheringDataStore', () => {
 
 				fetchMock.postOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/test-slug/data/data-available'
+						'/google-site-kit/v1/modules/test-slug/data/data-available'
 					),
 					{
 						body: { dataAvailable: true },

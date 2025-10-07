@@ -215,13 +215,11 @@ describe( 'AMPContainerSelect', () => {
 
 	it( 'should render a loading state while accounts have not been loaded', () => {
 		freezeFetch(
-			new RegExp(
-				'^/google-site-kit/v1/modules/tagmanager/data/accounts'
-			)
+			new RegExp( '/google-site-kit/v1/modules/tagmanager/data/accounts' )
 		);
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/tagmanager/data/containers'
+				'/google-site-kit/v1/modules/tagmanager/data/containers'
 			)
 		);
 		const account = factories.accountBuilder();
@@ -239,7 +237,7 @@ describe( 'AMPContainerSelect', () => {
 	it( 'should render a loading state while containers are loading', () => {
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/tagmanager/data/containers'
+				'/google-site-kit/v1/modules/tagmanager/data/containers'
 			)
 		);
 		const account = factories.accountBuilder();

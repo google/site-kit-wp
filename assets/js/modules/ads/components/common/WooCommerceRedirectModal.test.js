@@ -70,10 +70,10 @@ describe( 'WooCommerceRedirectModal', () => {
 		'google-site-kit/v1/core/modules/data/activation'
 	);
 	const userAuthenticationEndpoint = RegExp(
-		'^/google-site-kit/v1/core/user/data/authentication'
+		'/google-site-kit/v1/core/user/data/authentication'
 	);
 	const dismissItemEndpoint = RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-item'
+		'/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
 	beforeEach( () => {

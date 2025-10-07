@@ -50,7 +50,7 @@ describe( 'modules/adsense accounts', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/adsense/data/accounts'
+						'/google-site-kit/v1/modules/adsense/data/accounts'
 					),
 					{ body: fixtures.accounts, status: 200 }
 				);
@@ -102,7 +102,7 @@ describe( 'modules/adsense accounts', () => {
 				};
 				fetchMock.get(
 					new RegExp(
-						'^/google-site-kit/v1/modules/adsense/data/accounts'
+						'/google-site-kit/v1/modules/adsense/data/accounts'
 					),
 					{ body: response, status: 500 }
 				);

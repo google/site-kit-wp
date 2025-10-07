@@ -57,7 +57,7 @@ describe( 'TopRecentTrendingPagesWidget', () => {
 		KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
 	);
 	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
+		'/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 	const propertyID = '12345';
 	const referenceDate = '2024-05-07';
