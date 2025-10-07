@@ -126,6 +126,72 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertStringContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output, 'Button should render when HTTPS and clientID set.' );
 	}
 
+	/**
+	 * @dataProvider provide_button_markup_data
+	 */
+	public function test_render_sign_in_with_google_button( $args, $expected_strings ) {
+		$this->module->register();
+
+		ob_start();
+		do_action( 'googlesitekit_render_sign_in_with_google_button', $args );
+		$output = ob_get_clean();
+
+		foreach ( $expected_strings as $expected_string ) {
+			$this->assertStringContainsString( $expected_string, $output, 'Expected string not found in output.' );
+		}
+	}
+
+	public function provide_button_markup_data() {
+		return array(
+			'default markup'                       => array(
+				array(),
+				array( 'class="googlesitekit-sign-in-with-google__frontend-output-button"' ),
+			),
+			'with extra class'                     => array(
+				array( 'class' => 'extra-class' ),
+				array( 'class="googlesitekit-sign-in-with-google__frontend-output-button extra-class"' ),
+			),
+			'with valid data attributes'           => array(
+				array(
+					'text'  => 'continue_with',
+					'theme' => 'filled_blue',
+					'shape' => 'pill',
+				),
+				array(
+					'data-googlesitekit-siwg-text="continue_with"',
+					'data-googlesitekit-siwg-theme="filled_blue"',
+					'data-googlesitekit-siwg-shape="pill"',
+				),
+			),
+			'with class and valid data attributes' => array(
+				array(
+					'class' => 'extra-class',
+					'text'  => 'continue_with',
+					'theme' => 'filled_blue',
+					'shape' => 'pill',
+				),
+				array(
+					'class="googlesitekit-sign-in-with-google__frontend-output-button extra-class"',
+					'data-googlesitekit-siwg-text="continue_with"',
+					'data-googlesitekit-siwg-theme="filled_blue"',
+					'data-googlesitekit-siwg-shape="pill"',
+				),
+			),
+			'does not omit invalid values'         => array(
+				array(
+					'text'  => 'invalid value',
+					'theme' => 'filled@blue',
+					'shape' => 'pill',
+				),
+				array(
+					'data-googlesitekit-siwg-text="invalid value"',
+					'data-googlesitekit-siwg-theme="filled@blue"',
+					'data-googlesitekit-siwg-shape="pill"',
+				),
+			),
+		);
+	}
+
 	public function test_handle_disconnect_user__bad_nonce() {
 		$this->module->register();
 

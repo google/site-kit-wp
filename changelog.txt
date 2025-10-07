@@ -22,6 +22,7 @@
 
 **Fixed**
 
+* Fix bug that caused sites that may be unable to install Site Kit from seeing a warning message during plugin setup. See [#11574](https://github.com/google/site-kit-wp/issues/11574).
 * Prevent the checkbox hover/focus state from being clipped on the Ad Blocking Recovery screen. See [#11309](https://github.com/google/site-kit-wp/issues/11309).
 * Fix bug that could cause Enhanced Conversion Tracking to be enabled when it shouldn't be after OAuth login. See [#11196](https://github.com/google/site-kit-wp/issues/11196).
 
