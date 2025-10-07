@@ -32,7 +32,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 	let registry;
 
 	const enhancedMeasurementSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+		'/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
 	);
 
 	const propertyID = '12345';

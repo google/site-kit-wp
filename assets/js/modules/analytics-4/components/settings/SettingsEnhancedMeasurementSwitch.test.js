@@ -516,7 +516,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 
 	describe( 'synchronization of enhanced measurement settings retrieval with loading states', () => {
 		const enhancedMeasurementSettingsEndpoint = new RegExp(
-			'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+			'/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
 		);
 
 		beforeEach( () => {

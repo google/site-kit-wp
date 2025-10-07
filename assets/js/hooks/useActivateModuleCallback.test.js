@@ -41,7 +41,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import useActivateModuleCallback from './useActivateModuleCallback';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'useActivateModuleCallback', () => {
@@ -72,7 +72,7 @@ describe( 'useActivateModuleCallback', () => {
 			{ body: { success: true } }
 		);
 		fetchMock.getOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			RegExp( '/google-site-kit/v1/core/user/data/authentication' ),
 			{ body: { needsReauthentication: false } }
 		);
 
@@ -104,7 +104,7 @@ describe( 'useActivateModuleCallback', () => {
 			{ body: { success: true } }
 		);
 		fetchMock.getOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			RegExp( '/google-site-kit/v1/core/user/data/authentication' ),
 			{ body: { needsReauthentication: false } }
 		);
 
@@ -137,7 +137,7 @@ describe( 'useActivateModuleCallback', () => {
 			{ body: { success: true } }
 		);
 		fetchMock.getOnce(
-			RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			RegExp( '/google-site-kit/v1/core/user/data/authentication' ),
 			{ body: { needsReauthentication: false } }
 		);
 

@@ -50,7 +50,7 @@ describe( 'PopularKeywordsWidget', () => {
 		KM_SEARCH_CONSOLE_POPULAR_KEYWORDS
 	);
 	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+		'/google-site-kit/v1/modules/search-console/data/searchanalytics'
 	);
 
 	beforeEach( () => {

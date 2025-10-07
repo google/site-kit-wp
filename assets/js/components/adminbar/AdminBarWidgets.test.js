@@ -52,7 +52,7 @@ describe( 'AdminBarWidgets', () => {
 
 		fetchMock.get(
 			new RegExp(
-				'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+				'/google-site-kit/v1/modules/search-console/data/searchanalytics'
 			),
 			{
 				body: [
@@ -68,7 +68,7 @@ describe( 'AdminBarWidgets', () => {
 
 		muteFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/search-console/data/data-available'
+				'/google-site-kit/v1/modules/search-console/data/data-available'
 			)
 		);
 	} );

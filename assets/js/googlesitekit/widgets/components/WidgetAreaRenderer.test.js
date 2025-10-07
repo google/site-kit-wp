@@ -107,7 +107,7 @@ describe( 'WidgetAreaRenderer', () => {
 		await registry.dispatch( CORE_SITE ).receiveGetConnection( connection );
 
 		const fetchGetExpiredItems = new RegExp(
-			'^/google-site-kit/v1/core/user/data/expirable-items'
+			'/google-site-kit/v1/core/user/data/expirable-items'
 		);
 		muteFetch( fetchGetExpiredItems );
 	} );
@@ -813,7 +813,7 @@ describe( 'WidgetAreaRenderer', () => {
 	} );
 
 	describe( 'Error handling', () => {
-		const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+		const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 		mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 		it( 'should display the error using `WidgetErrorHandler` component within a widget', async () => {

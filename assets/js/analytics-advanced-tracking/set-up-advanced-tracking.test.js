@@ -53,7 +53,7 @@ describe( 'setUpAdvancedTracking', () => {
 	let destroyAdvancedTracking;
 
 	beforeEach( () => {
-		sendEvent = jest.fn();
+		sendEvent = vi.fn();
 	} );
 
 	afterEach( () => {

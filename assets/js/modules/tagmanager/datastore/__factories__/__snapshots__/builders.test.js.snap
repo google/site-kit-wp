@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Google Tag Manager Builder fake data test should create the same data from factory builders on each test run 1`] = `
+exports[`Google Tag Manager Builder fake data test > should create the same data from factory builders on each test run 1`] = `
 {
   "account": {
     "accountId": "101",

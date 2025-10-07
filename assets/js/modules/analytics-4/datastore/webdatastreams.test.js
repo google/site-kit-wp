@@ -42,13 +42,13 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 	let registry;
 
 	const createWebDataStreamsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/create-webdatastream'
+		'/google-site-kit/v1/modules/analytics-4/data/create-webdatastream'
 	);
 	const webDataStreamsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams'
+		'/google-site-kit/v1/modules/analytics-4/data/webdatastreams'
 	);
 	const webDataStreamsBatchEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
+		'/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
 	);
 
 	const webDataStreamDotCom = {
@@ -133,7 +133,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			} );
 
 			it( 'should dispatch an error if the request fails', async () => {
-				jest.useFakeTimers();
+				vi.useFakeTimers();
 
 				const propertyID = '12345';
 				const displayName = 'New GA4 WebDataStream';
@@ -438,7 +438,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			} );
 
 			it( 'should return undefined if web data streams arent loaded yet', () => {
-				jest.useFakeTimers();
+				vi.useFakeTimers();
 
 				freezeFetch( webDataStreamsEndpoint );
 
@@ -983,7 +983,7 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			} );
 
 			it( 'should return undefined if web data streams are not loaded yet', () => {
-				jest.useFakeTimers();
+				vi.useFakeTimers();
 
 				freezeFetch( webDataStreamsEndpoint );
 

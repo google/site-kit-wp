@@ -37,19 +37,19 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import * as tracking from '@/js/util/tracking';
 import GoogleTagGatewayToggle from './GoogleTagGatewayToggle';
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
+vi.mock( 'react-use', () => ( {
+	...vi.requireActual( 'react-use' ),
+	useIntersection: vi.fn(),
 } ) );
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'GoogleTagGatewayToggle', () => {
 	let registry;
 
 	const serverRequirementStatusEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
+		'/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 	);
 
 	beforeEach( () => {
@@ -68,7 +68,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	} );
 
 	it( 'should make a request to fetch the server requirement status', async () => {

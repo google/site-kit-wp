@@ -38,7 +38,7 @@ describe( 'modules/analytics-4 accounts', () => {
 	let store;
 
 	const accountSummariesEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+		'/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 	);
 
 	const accountName = 'Test Account';
@@ -69,7 +69,7 @@ describe( 'modules/analytics-4 accounts', () => {
 			it( 'creates an account ticket and sets the account ticket ID', async () => {
 				fetchMock.post(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+						'/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
 					),
 					{
 						// eslint-disable-next-line sitekit/acronym-case
@@ -93,7 +93,7 @@ describe( 'modules/analytics-4 accounts', () => {
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+						'/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
 					),
 					{
 						body: {
@@ -116,7 +116,7 @@ describe( 'modules/analytics-4 accounts', () => {
 			it( 'sets isDoingCreateAccount ', () => {
 				fetchMock.post(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+						'/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
 					),
 					// eslint-disable-next-line sitekit/acronym-case
 					{ body: { accountTicketId: accountTicketID }, status: 200 }
@@ -139,7 +139,7 @@ describe( 'modules/analytics-4 accounts', () => {
 				};
 				fetchMock.post(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+						'/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
 					),
 					{ body: response, status: 500 }
 				);
@@ -173,20 +173,20 @@ describe( 'modules/analytics-4 accounts', () => {
 				[
 					[
 						new RegExp(
-							'^/google-site-kit/v1/modules/analytics-4/data/account-summaries'
+							'/google-site-kit/v1/modules/analytics-4/data/account-summaries'
 						),
 						fixtures.accountSummaries,
 					],
 					[
 						new RegExp(
-							'^/google-site-kit/v1/modules/analytics-4/data/property?'
+							'/google-site-kit/v1/modules/analytics-4/data/property?'
 						),
 						fixtures.accountSummaries.accountSummaries[ 1 ]
 							.propertySummaries[ 0 ],
 					],
 					[
 						new RegExp(
-							'^/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
+							'/google-site-kit/v1/modules/analytics-4/data/webdatastreams-batch'
 						),
 						fixtures.webDataStreamsBatch,
 					],
@@ -398,7 +398,7 @@ describe( 'modules/analytics-4 accounts', () => {
 				} );
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/account-summaries\\?pageToken=token1.*'
+						'/google-site-kit/v1/modules/analytics-4/data/account-summaries\\?pageToken=token1.*'
 					),
 					{
 						body: secondResponse,
@@ -407,7 +407,7 @@ describe( 'modules/analytics-4 accounts', () => {
 				);
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/account-summaries\\?pageToken=token2.*'
+						'/google-site-kit/v1/modules/analytics-4/data/account-summaries\\?pageToken=token2.*'
 					),
 					{
 						body: thirdResponse,

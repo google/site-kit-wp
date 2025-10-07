@@ -240,7 +240,7 @@ describe( 'core/widgets Widget areas', () => {
 					.registerWidgetArea( slug, settings );
 
 				// Expect console warning about duplicate slug.
-				const consoleWarnSpy = jest.spyOn( global.console, 'warn' );
+				const consoleWarnSpy = vi.spyOn( global.console, 'warn' );
 				registry
 					.dispatch( CORE_WIDGETS )
 					.registerWidgetArea( slug, differentSettings );
@@ -262,7 +262,7 @@ describe( 'core/widgets Widget areas', () => {
 
 			it( 'should register a widget area with a `filterActiveWidgets` function', () => {
 				const slug = 'filtered-widgets';
-				const filterActiveWidgetsMock = jest.fn();
+				const filterActiveWidgetsMock = vi.fn();
 				const settings = {
 					priority: 10,
 					title: 'Filtered Widgets',

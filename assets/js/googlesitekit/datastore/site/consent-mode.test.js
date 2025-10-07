@@ -29,7 +29,7 @@ describe( 'core/site consent mode', () => {
 	let registry;
 
 	const consentModeSettingsEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/site/data/consent-mode'
+		'/google-site-kit/v1/core/site/data/consent-mode'
 	);
 
 	beforeAll( () => {
@@ -226,7 +226,7 @@ describe( 'core/site consent mode', () => {
 
 		describe( 'getConsentAPIInfo', () => {
 			const consentAPIInfoEndpointRegExp = new RegExp(
-				'^/google-site-kit/v1/core/site/data/consent-api-info'
+				'/google-site-kit/v1/core/site/data/consent-api-info'
 			);
 
 			it( 'uses a resolver to make a network request', async () => {
@@ -296,7 +296,7 @@ describe( 'core/site consent mode', () => {
 
 		describe( 'isAdsConnected', () => {
 			const adsMeasurementStatusEndpointRegExp = new RegExp(
-				'^/google-site-kit/v1/core/site/data/ads-measurement-status'
+				'/google-site-kit/v1/core/site/data/ads-measurement-status'
 			);
 
 			it( 'uses a resolver to make a network request', async () => {
@@ -357,7 +357,7 @@ describe( 'core/site consent mode', () => {
 
 		describe( 'isAdsConnectedUncached', () => {
 			const adsMeasurementStatusEndpointRegExp = new RegExp(
-				'^/google-site-kit/v1/core/site/data/ads-measurement-status'
+				'/google-site-kit/v1/core/site/data/ads-measurement-status'
 			);
 
 			it( 'uses a resolver to make a network request with useCache', async () => {

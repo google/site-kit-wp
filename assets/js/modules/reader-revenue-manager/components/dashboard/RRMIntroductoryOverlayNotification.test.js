@@ -56,7 +56,7 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 	let registry;
 
 	const dismissItemsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-item'
+		'/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
 	beforeEach( () => {

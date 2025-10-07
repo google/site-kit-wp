@@ -33,7 +33,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 	let registry;
 
 	const saveAudienceSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/save-audience-settings'
+		'/google-site-kit/v1/modules/analytics-4/data/save-audience-settings'
 	);
 
 	beforeEach( () => {
@@ -126,12 +126,12 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 	describe( 'selectors', () => {
 		const audienceSettingsEndpoint = new RegExp(
-			'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+			'/google-site-kit/v1/modules/analytics-4/data/audience-settings'
 		);
 
 		describe( 'getOrSyncAvailableAudiences', () => {
 			const syncAvailableAudiences = new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+				'/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 			);
 
 			it( 'should make a network request via the getAudienceSettings resolver', async () => {
@@ -316,7 +316,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 			it( 'should return undefined if getAudienceSegmentationSetupCompletedBy is not loaded', async () => {
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+						'/google-site-kit/v1/modules/analytics-4/data/audience-settings'
 					),
 					{
 						body: {

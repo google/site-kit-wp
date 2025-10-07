@@ -41,7 +41,7 @@ import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constant
 
 describe( 'googlesitekit.api', () => {
 	// We import the entire caching module so we can use
-	// `jest.spyOn(CacheModule, 'getItem')` to monitor caching calls.
+	// `vi.spyOn(CacheModule, 'getItem')` to monitor caching calls.
 	const { getItem, setItem, setSelectedStorageBackend } = CacheModule;
 	let storageMechanism;
 	let dataLayerPushSpy;
@@ -49,11 +49,11 @@ describe( 'googlesitekit.api', () => {
 	let getItemSpy;
 	let setItemSpy;
 	beforeEach( () => {
-		getItemSpy = jest.spyOn( CacheModule, 'getItem' );
-		setItemSpy = jest.spyOn( CacheModule, 'setItem' );
+		getItemSpy = vi.spyOn( CacheModule, 'getItem' );
+		setItemSpy = vi.spyOn( CacheModule, 'setItem' );
 		enableTracking();
 		global[ DATA_LAYER ] = [];
-		dataLayerPushSpy = jest.spyOn( global[ DATA_LAYER ], 'push' );
+		dataLayerPushSpy = vi.spyOn( global[ DATA_LAYER ], 'push' );
 	} );
 
 	beforeAll( () => {
@@ -121,7 +121,7 @@ describe( 'googlesitekit.api', () => {
 			// mock requests.
 			fetchMock.getOnce(
 				new RegExp(
-					'^/google-site-kit/v1/core/search-console/data/users'
+					'/google-site-kit/v1/core/search-console/data/users'
 				),
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -139,7 +139,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should send query string params from data params', async () => {
 			fetchMock.get(
 				new RegExp(
-					'^/google-site-kit/v1/core/search-console/data/search'
+					'/google-site-kit/v1/core/search-console/data/search'
 				),
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -173,7 +173,7 @@ describe( 'googlesitekit.api', () => {
 
 			fetchMock.getOnce(
 				new RegExp(
-					'^/google-site-kit/v1/core/search-console/data/other'
+					'/google-site-kit/v1/core/search-console/data/other'
 				),
 				{ body: errorResponse, status: 404 }
 			);
@@ -195,7 +195,7 @@ describe( 'googlesitekit.api', () => {
 
 			fetchMock.getOnce(
 				new RegExp(
-					'^/google-site-kit/v1/core/search-console/data/users'
+					'/google-site-kit/v1/core/search-console/data/users'
 				),
 				{ body: errorResponse, status: 500 }
 			);
@@ -213,7 +213,7 @@ describe( 'googlesitekit.api', () => {
 
 			fetchMock.get(
 				new RegExp(
-					'^/google-site-kit/v1/core/search-console/data/users'
+					'/google-site-kit/v1/core/search-console/data/users'
 				),
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -253,7 +253,7 @@ describe( 'googlesitekit.api', () => {
 
 			fetchMock.get(
 				new RegExp(
-					'^/google-site-kit/v1/core/search-console/data/notifications'
+					'/google-site-kit/v1/core/search-console/data/notifications'
 				),
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -290,7 +290,7 @@ describe( 'googlesitekit.api', () => {
 
 			fetchMock.get(
 				new RegExp(
-					'^/google-site-kit/v1/core/search-console/data/other'
+					'/google-site-kit/v1/core/search-console/data/other'
 				),
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -320,7 +320,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should not use cache even if cached values exist', async () => {
 			fetchMock.get(
 				new RegExp(
-					'^/google-site-kit/v1/core/search-console/data/cached'
+					'/google-site-kit/v1/core/search-console/data/cached'
 				),
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -362,7 +362,7 @@ describe( 'googlesitekit.api', () => {
 
 			fetchMock.getOnce(
 				new RegExp(
-					'^/google-site-kit/v1/test-type/test-identifier/data/test-datapoint'
+					'/google-site-kit/v1/test-type/test-identifier/data/test-datapoint'
 				),
 				{ body: errorResponse, status: 500 }
 			);
@@ -425,7 +425,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should send request body data from data params', async () => {
 			fetchMock.post(
 				new RegExp(
-					'^/google-site-kit/v1/core/search-console/data/settings'
+					'/google-site-kit/v1/core/search-console/data/settings'
 				),
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -458,7 +458,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should send request body data from data params and query params if set', async () => {
 			fetchMock.post(
 				new RegExp(
-					'^/google-site-kit/v1/core/search-console/data/settings'
+					'/google-site-kit/v1/core/search-console/data/settings'
 				),
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -495,7 +495,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should never use the cache for set requests', async () => {
 			fetchMock.post(
 				new RegExp(
-					'^/google-site-kit/v1/core/search-console/data/settings'
+					'/google-site-kit/v1/core/search-console/data/settings'
 				),
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -520,7 +520,7 @@ describe( 'googlesitekit.api', () => {
 			// Mock all requests for this URL.
 			fetchMock.mock(
 				new RegExp(
-					'^/google-site-kit/v1/core/search-console/data/will-cache'
+					'/google-site-kit/v1/core/search-console/data/will-cache'
 				),
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -567,7 +567,7 @@ describe( 'googlesitekit.api', () => {
 			// Mock all requests for this URL.
 			fetchMock.mock(
 				new RegExp(
-					'^/google-site-kit/v1/core/search-console/data/will-cache'
+					'/google-site-kit/v1/core/search-console/data/will-cache'
 				),
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -629,7 +629,7 @@ describe( 'googlesitekit.api', () => {
 
 			fetchMock.postOnce(
 				new RegExp(
-					'^/google-site-kit/v1/test-type/test-identifier/data/test-datapoint'
+					'/google-site-kit/v1/test-type/test-identifier/data/test-datapoint'
 				),
 				{ body: errorResponse, status: 500 }
 			);
@@ -903,7 +903,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should send a request using fetch', async () => {
 			fetchMock.get(
 				new RegExp(
-					'^/google-site-kit/v1/core/search-console/data/settings'
+					'/google-site-kit/v1/core/search-console/data/settings'
 				),
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -931,7 +931,7 @@ describe( 'googlesitekit.api', () => {
 			const controller = new AbortController();
 
 			freezeFetch(
-				new RegExp( '^/google-site-kit/v1/test/frozen/data/request' )
+				new RegExp( '/google-site-kit/v1/test/frozen/data/request' )
 			);
 
 			try {

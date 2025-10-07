@@ -108,7 +108,7 @@ describe( 'useDisplayCTAWidget hook', () => {
 
 		muteFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+				'/google-site-kit/v1/modules/analytics-4/data/data-available'
 			)
 		);
 
@@ -131,7 +131,7 @@ describe( 'useDisplayCTAWidget hook', () => {
 
 		muteFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/search-console/data/data-available'
+				'/google-site-kit/v1/modules/search-console/data/data-available'
 			)
 		);
 

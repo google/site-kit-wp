@@ -76,7 +76,7 @@ describe( 'AccountCreate', () => {
 			.finishResolution( 'getAccounts', [] );
 		fetchMock.getOnce(
 			new RegExp(
-				'^/google-site-kit/v1/modules/tagmanager/data/accounts'
+				'/google-site-kit/v1/modules/tagmanager/data/accounts'
 			),
 			{ body: [ accountA, accountB ], status: 200 }
 		);
@@ -88,7 +88,7 @@ describe( 'AccountCreate', () => {
 
 		muteFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/tagmanager/data/containers'
+				'/google-site-kit/v1/modules/tagmanager/data/containers'
 			),
 			[]
 		);
@@ -98,16 +98,14 @@ describe( 'AccountCreate', () => {
 			() => registry.select( MODULES_TAGMANAGER ).getAccounts().length > 1
 		);
 		expect( fetchMock ).toHaveFetched(
-			new RegExp(
-				'^/google-site-kit/v1/modules/tagmanager/data/accounts'
-			)
+			new RegExp( '/google-site-kit/v1/modules/tagmanager/data/accounts' )
 		);
 	} );
 
 	describe( '"Create an account" button', () => {
 		let openSpy;
 		beforeEach( () => {
-			openSpy = jest.spyOn( global, 'open' );
+			openSpy = vi.spyOn( global, 'open' );
 			// Need to set a placeholder implementation here to prevent JSDOM from raising a "Error: Not implemented" error.
 			openSpy.mockImplementation( () => {} );
 		} );

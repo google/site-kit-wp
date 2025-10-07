@@ -46,7 +46,7 @@ import { withNotificationComponentProps } from '@/js/googlesitekit/notifications
 import { enabledFeatures } from '@/js/features';
 import GoogleTagGatewayWarningNotification from './GoogleTagGatewayWarningNotification';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'GoogleTagGatewayWarningNotification', () => {
@@ -66,7 +66,7 @@ describe( 'GoogleTagGatewayWarningNotification', () => {
 	)( GoogleTagGatewayWarningNotification );
 
 	const dismissItemEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-item'
+		'/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
 	beforeEach( () => {
@@ -104,7 +104,7 @@ describe( 'GoogleTagGatewayWarningNotification', () => {
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	} );
 
 	describe( 'checkRequirements', () => {

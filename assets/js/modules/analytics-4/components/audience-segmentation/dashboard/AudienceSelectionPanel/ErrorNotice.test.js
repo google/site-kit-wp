@@ -43,7 +43,7 @@ import {
 import * as tracking from '@/js/util/tracking';
 import ErrorNotice from './ErrorNotice';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'ErrorNotice', () => {
@@ -51,10 +51,10 @@ describe( 'ErrorNotice', () => {
 	let invalidateResolutionSpy;
 
 	const syncAvailableAudiencesEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+		'/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
 	const audienceSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/audience-settings'
+		'/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
 	const baseReportOptions = {
@@ -121,7 +121,7 @@ describe( 'ErrorNotice', () => {
 			.dispatch( CORE_UI )
 			.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
 
-		invalidateResolutionSpy = jest.spyOn(
+		invalidateResolutionSpy = vi.spyOn(
 			registry.dispatch( MODULES_ANALYTICS_4 ),
 			'invalidateResolution'
 		);

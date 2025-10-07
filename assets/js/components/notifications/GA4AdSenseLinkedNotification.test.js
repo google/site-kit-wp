@@ -40,11 +40,11 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 	let registry;
 
 	const analyticsReport = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
+		'/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
 	const fetchDismissItem = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-item'
+		'/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
 	const notification =

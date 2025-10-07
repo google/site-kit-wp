@@ -43,12 +43,12 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { AUDIENCE_INFO_NOTICES, AUDIENCE_INFO_NOTICE_SLUG } from './constants';
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
+vi.mock( 'react-use', () => ( {
+	...vi.requireActual( 'react-use' ),
+	useIntersection: vi.fn(),
 } ) );
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'InfoNoticeWidget', () => {
@@ -71,7 +71,7 @@ describe( 'InfoNoticeWidget', () => {
 			},
 		] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-		dismissPromptSpy = jest.spyOn(
+		dismissPromptSpy = vi.spyOn(
 			registry.dispatch( CORE_USER ),
 			'dismissPrompt'
 		);
@@ -82,11 +82,11 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	const userAudienceSettingsRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/audience-settings'
+		'/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
 	const analyticsAudienceSettingsRegExp = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+		'/google-site-kit/v1/modules/analytics-4/data/audience-settings'
 	);
 
 	const WidgetWithComponentProps = withWidgetComponentProps(
@@ -291,7 +291,7 @@ describe( 'InfoNoticeWidget', () => {
 		} );
 
 		// We do not need to test anything for dismiss prompt handler.
-		dismissPromptSpy.mockImplementation( jest.fn() );
+		dismissPromptSpy.mockImplementation( vi.fn() );
 
 		const { getByRole, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
@@ -339,7 +339,7 @@ describe( 'InfoNoticeWidget', () => {
 		} );
 
 		// We do not need to test anything for dismiss prompt handler.
-		dismissPromptSpy.mockImplementation( jest.fn() );
+		dismissPromptSpy.mockImplementation( vi.fn() );
 
 		const { getByRole, waitForRegistry } = render(
 			<WidgetWithComponentProps />,
@@ -431,7 +431,7 @@ describe( 'InfoNoticeWidget', () => {
 
 			it( 'should track an event when the notice is dismissed', async () => {
 				// We do not need to test anything for dismiss prompt handler.
-				dismissPromptSpy.mockImplementation( jest.fn() );
+				dismissPromptSpy.mockImplementation( vi.fn() );
 
 				fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
 

@@ -113,7 +113,7 @@ describe( 'core/user authentication', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/user/data/permissions'
+						'/google-site-kit/v1/core/user/data/permissions'
 					),
 					{
 						body: updatedCapabilities,
@@ -146,7 +146,7 @@ describe( 'core/user authentication', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/user/data/permissions'
+						'/google-site-kit/v1/core/user/data/permissions'
 					),
 					{
 						body: error,
@@ -200,7 +200,7 @@ describe( 'core/user authentication', () => {
 			it( 'should return undefined if capabilities cannot be loaded', async () => {
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/user/data/permissions'
+						'/google-site-kit/v1/core/user/data/permissions'
 					),
 					{
 						body: capabilities.permissions,
@@ -246,7 +246,7 @@ describe( 'core/user authentication', () => {
 					.dispatch( CORE_USER )
 					.receiveGetCapabilities( capabilities.permissions );
 
-				const stringifySpy = jest.spyOn( JSON, 'stringify' );
+				const stringifySpy = vi.spyOn( JSON, 'stringify' );
 
 				const hasCapability = registry
 					.select( CORE_USER )
@@ -266,7 +266,7 @@ describe( 'core/user authentication', () => {
 					.dispatch( CORE_USER )
 					.receiveGetCapabilities( capabilities.permissions );
 
-				const stringifySpy = jest.spyOn( JSON, 'stringify' );
+				const stringifySpy = vi.spyOn( JSON, 'stringify' );
 
 				const hasCapability = registry
 					.select( CORE_USER )
@@ -285,7 +285,7 @@ describe( 'core/user authentication', () => {
 		describe( 'getViewableModules', () => {
 			it( 'should return undefined if modules are not loaded', async () => {
 				fetchMock.getOnce(
-					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					new RegExp( '/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 
@@ -304,7 +304,7 @@ describe( 'core/user authentication', () => {
 					.receiveGetCapabilities( capabilities.permissions );
 
 				fetchMock.getOnce(
-					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					new RegExp( '/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 
@@ -336,7 +336,7 @@ describe( 'core/user authentication', () => {
 					);
 
 				fetchMock.getOnce(
-					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					new RegExp( '/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 
@@ -367,7 +367,7 @@ describe( 'core/user authentication', () => {
 		describe( 'canViewSharedModule', () => {
 			it( 'should return undefined if modules are not loaded', async () => {
 				fetchMock.getOnce(
-					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					new RegExp( '/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 
@@ -414,7 +414,7 @@ describe( 'core/user authentication', () => {
 			it( 'should return undefined if the capabilities are not loaded', async () => {
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/user/data/permissions'
+						'/google-site-kit/v1/core/user/data/permissions'
 					),
 					{
 						body: capabilities.permissions,
@@ -485,7 +485,7 @@ describe( 'core/user authentication', () => {
 		describe( 'hasAccessToShareableModule', () => {
 			it( 'should return undefined if modules are not loaded', async () => {
 				fetchMock.getOnce(
-					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					new RegExp( '/google-site-kit/v1/core/modules/data/list' ),
 					{ body: FIXTURES, status: 200 }
 				);
 

@@ -39,10 +39,10 @@ import { dismissedPromptsEndpoint } from '../../../../../tests/js/mock-dismiss-p
 
 describe( 'core/notifications Notifications', () => {
 	const fetchGetDismissedItems = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismissed-items'
+		'/google-site-kit/v1/core/user/data/dismissed-items'
 	);
 	const fetchDismissItem = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-item'
+		'/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
 	let registry;

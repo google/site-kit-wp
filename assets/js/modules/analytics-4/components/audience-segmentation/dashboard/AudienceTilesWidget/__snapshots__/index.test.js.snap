@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`AudienceTilesWidget should not render audiences that are not available (archived) 1`] = `
+exports[`AudienceTilesWidget > should not render audiences that are not available (archived) 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding googlesitekit-widget-audience-tiles"
@@ -360,7 +360,7 @@ exports[`AudienceTilesWidget should not render audiences that are not available 
 </div>
 `;
 
-exports[`AudienceTilesWidget should render correctly when there is partial data for Site Kit audiences 1`] = `
+exports[`AudienceTilesWidget > should render correctly when there is partial data for Site Kit audiences 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding googlesitekit-widget-audience-tiles"
@@ -748,7 +748,7 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
 </div>
 `;
 
-exports[`AudienceTilesWidget should render loading tiles when audiences are not syncing 1`] = `
+exports[`AudienceTilesWidget > should render loading tiles when audiences are not syncing 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding googlesitekit-widget-audience-tiles"
@@ -901,7 +901,7 @@ exports[`AudienceTilesWidget should render loading tiles when audiences are not 
 </div>
 `;
 
-exports[`AudienceTilesWidget should render when all configured audiences are matching available audiences 1`] = `
+exports[`AudienceTilesWidget > should render when all configured audiences are matching available audiences 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding googlesitekit-widget-audience-tiles"
@@ -1289,7 +1289,7 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
 </div>
 `;
 
-exports[`AudienceTilesWidget should render when configured audience is matching available audiences 1`] = `
+exports[`AudienceTilesWidget > should render when configured audience is matching available audiences 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding googlesitekit-widget-audience-tiles"
@@ -1649,7 +1649,7 @@ exports[`AudienceTilesWidget should render when configured audience is matching 
 </div>
 `;
 
-exports[`AudienceTilesWidget should render with no data in the comparison date range 1`] = `
+exports[`AudienceTilesWidget > should render with no data in the comparison date range 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding googlesitekit-widget-audience-tiles"
@@ -2013,7 +2013,7 @@ exports[`AudienceTilesWidget should render with no data in the comparison date r
 </div>
 `;
 
-exports[`AudienceTilesWidget should render with no data in the comparison date range and partial data 1`] = `
+exports[`AudienceTilesWidget > should render with no data in the comparison date range and partial data 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding googlesitekit-widget-audience-tiles"
@@ -2377,7 +2377,7 @@ exports[`AudienceTilesWidget should render with no data in the comparison date r
 </div>
 `;
 
-exports[`AudienceTilesWidget should show the "no audiences" banner when there is no matching audience 1`] = `
+exports[`AudienceTilesWidget > should show the "no audiences" banner when there is no matching audience 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-widget--no-padding"

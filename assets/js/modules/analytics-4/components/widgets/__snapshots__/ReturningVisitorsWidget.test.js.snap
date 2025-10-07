@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`ReturningVisitorsWidget should render correctly with the expected metrics 1`] = `
+exports[`ReturningVisitorsWidget > should render correctly with the expected metrics 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsReturningVisitors googlesitekit-widget--no-padding"
@@ -59,7 +59,7 @@ exports[`ReturningVisitorsWidget should render correctly with the expected metri
 </div>
 `;
 
-exports[`ReturningVisitorsWidget should render the generic error variant when the report fetch fails 1`] = `
+exports[`ReturningVisitorsWidget > should render the generic error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -121,7 +121,7 @@ exports[`ReturningVisitorsWidget should render the generic error variant when th
 </div>
 `;
 
-exports[`ReturningVisitorsWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
+exports[`ReturningVisitorsWidget > should render the insufficient permissions error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -184,7 +184,7 @@ exports[`ReturningVisitorsWidget should render the insufficient permissions erro
 </div>
 `;
 
-exports[`ReturningVisitorsWidget should render the loading state while resolving the report 1`] = `
+exports[`ReturningVisitorsWidget > should render the loading state while resolving the report 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsReturningVisitors googlesitekit-widget--no-padding"

@@ -31,7 +31,7 @@ describe( 'core/site urls', () => {
 	let registry;
 
 	const adminBarSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/site/data/admin-bar-settings'
+		'/google-site-kit/v1/core/site/data/admin-bar-settings'
 	);
 
 	beforeEach( () => {

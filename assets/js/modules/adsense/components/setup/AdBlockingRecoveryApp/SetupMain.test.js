@@ -43,7 +43,7 @@ import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import SetupMain from './SetupMain';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
@@ -122,13 +122,13 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 		it( 'should render the `Create message` step when `Enable message` button is clicked', async () => {
 			muteFetch(
 				new RegExp(
-					'^/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
+					'/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
 				)
 			);
 
 			fetchMock.postOnce(
 				new RegExp(
-					'^/google-site-kit/v1/modules/adsense/data/settings'
+					'/google-site-kit/v1/modules/adsense/data/settings'
 				),
 				{ body: { success: true }, status: 200 }
 			);
@@ -227,13 +227,13 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 		beforeEach( async () => {
 			muteFetch(
 				new RegExp(
-					'^/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
+					'/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
 				)
 			);
 
 			muteFetch(
 				new RegExp(
-					'^/google-site-kit/v1/modules/adsense/data/settings'
+					'/google-site-kit/v1/modules/adsense/data/settings'
 				)
 			);
 
@@ -377,13 +377,13 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 		beforeEach( async () => {
 			muteFetch(
 				new RegExp(
-					'^/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
+					'/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
 				)
 			);
 
 			muteFetch(
 				new RegExp(
-					'^/google-site-kit/v1/modules/adsense/data/settings'
+					'/google-site-kit/v1/modules/adsense/data/settings'
 				)
 			);
 
@@ -406,7 +406,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 
 			fetchMock.postOnce(
 				new RegExp(
-					'^/google-site-kit/v1/modules/adsense/data/settings'
+					'/google-site-kit/v1/modules/adsense/data/settings'
 				),
 				{ body: { success: true }, status: 200 }
 			);
@@ -443,7 +443,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 		it( 'should fire the tracking event for `I published my message` when it is clicked', async () => {
 			fetchMock.postOnce(
 				new RegExp(
-					'^/google-site-kit/v1/modules/adsense/data/settings'
+					'/google-site-kit/v1/modules/adsense/data/settings'
 				),
 				{ body: { success: true }, status: 200 }
 			);
@@ -466,13 +466,13 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 		beforeEach( async () => {
 			muteFetch(
 				new RegExp(
-					'^/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
+					'/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
 				)
 			);
 
 			muteFetch(
 				new RegExp(
-					'^/google-site-kit/v1/modules/adsense/data/settings'
+					'/google-site-kit/v1/modules/adsense/data/settings'
 				)
 			);
 
@@ -513,7 +513,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 
 			fetchMock.postOnce(
 				new RegExp(
-					'^/google-site-kit/v1/modules/adsense/data/settings'
+					'/google-site-kit/v1/modules/adsense/data/settings'
 				),
 				{ body: { success: true }, status: 200 }
 			);

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`SetupBanner should render correctly when the user does have the edit scope granted 1`] = `
+exports[`SetupBanner > should render correctly when the user does have the edit scope granted 1`] = `
 <div>
   <section
     id="enhanced-measurement-notification"
@@ -98,7 +98,7 @@ exports[`SetupBanner should render correctly when the user does have the edit sc
 </div>
 `;
 
-exports[`SetupBanner should render correctly when the user does not have the edit scope granted 1`] = `
+exports[`SetupBanner > should render correctly when the user does not have the edit scope granted 1`] = `
 <div>
   <section
     id="enhanced-measurement-notification"

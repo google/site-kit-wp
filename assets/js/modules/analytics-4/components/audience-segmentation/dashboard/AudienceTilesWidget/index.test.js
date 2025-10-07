@@ -58,7 +58,7 @@ import {
 } from '../../../../../../../../tests/js/viewport-width-utils';
 import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '@/js/util/zero-reports';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 /**
@@ -282,7 +282,7 @@ describe( 'AudienceTilesWidget', () => {
 	let originalViewportWidth;
 
 	const syncAvailableAudiencesEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+		'/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
 
 	const WidgetWithComponentProps = withWidgetComponentProps(
@@ -332,7 +332,7 @@ describe( 'AudienceTilesWidget', () => {
 
 		muteFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+				'/google-site-kit/v1/modules/analytics-4/data/data-available'
 			)
 		);
 
@@ -341,7 +341,7 @@ describe( 'AudienceTilesWidget', () => {
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 		setViewportWidth( originalViewportWidth );
 	} );
 

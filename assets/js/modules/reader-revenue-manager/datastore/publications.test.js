@@ -46,15 +46,15 @@ describe( 'modules/reader-revenue-manager publications', () => {
 	let registry;
 
 	const getModulesEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/modules/data/list'
+		'/google-site-kit/v1/core/modules/data/list'
 	);
 
 	const publicationsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
+		'/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
 	);
 
 	const syncOnboardingStateEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/sync-publication-onboarding-state'
+		'/google-site-kit/v1/modules/reader-revenue-manager/data/sync-publication-onboarding-state'
 	);
 
 	beforeAll( () => {

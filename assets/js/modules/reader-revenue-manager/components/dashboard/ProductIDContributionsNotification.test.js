@@ -70,7 +70,7 @@ describe( 'ProductIDContributionsNotification', () => {
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	} );
 
 	it( 'should render correctly', () => {
@@ -131,7 +131,7 @@ describe( 'ProductIDContributionsNotification', () => {
 			] );
 
 			const settingsEndpoint = new RegExp(
-				'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+				'/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
 			);
 
 			fetchMock.get( settingsEndpoint, {

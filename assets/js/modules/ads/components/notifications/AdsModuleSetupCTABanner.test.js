@@ -23,11 +23,11 @@
 /**
  * Internal dependencies
  */
-const mockShowTooltip = jest.fn();
-jest.mock( '../../../../components/AdminMenuTooltip', () => ( {
+const mockShowTooltip = vi.fn();
+vi.mock( '../../../../components/AdminMenuTooltip', () => ( {
 	__esModule: true,
-	default: jest.fn(),
-	useShowTooltip: jest.fn( () => mockShowTooltip ),
+	default: vi.fn(),
+	useShowTooltip: vi.fn( () => mockShowTooltip ),
 } ) );
 
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
@@ -189,7 +189,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 			provideModuleRegistrations( registry );
 
 			fetchMock.getOnce(
-				RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+				RegExp( '/google-site-kit/v1/core/user/data/authentication' ),
 				{
 					body: { needsReauthentication: false },
 				}

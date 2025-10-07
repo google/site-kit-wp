@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`PopularProductsWidget should render correctly with the expected metrics 1`] = `
+exports[`PopularProductsWidget > should render correctly with the expected metrics 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsPopularProducts googlesitekit-widget--no-padding"
@@ -126,7 +126,7 @@ exports[`PopularProductsWidget should render correctly with the expected metrics
 </div>
 `;
 
-exports[`PopularProductsWidget should render the custom dimension error when there is an error creating the custom dimension 1`] = `
+exports[`PopularProductsWidget > should render the custom dimension error when there is an error creating the custom dimension 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -203,7 +203,7 @@ exports[`PopularProductsWidget should render the custom dimension error when the
 </div>
 `;
 
-exports[`PopularProductsWidget should render the generic error variant when the report fetch fails 1`] = `
+exports[`PopularProductsWidget > should render the generic error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -264,7 +264,7 @@ exports[`PopularProductsWidget should render the generic error variant when the 
 </div>
 `;
 
-exports[`PopularProductsWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
+exports[`PopularProductsWidget > should render the insufficient permissions error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -326,7 +326,7 @@ exports[`PopularProductsWidget should render the insufficient permissions error 
 </div>
 `;
 
-exports[`PopularProductsWidget should render the loading state while resolving the report 1`] = `
+exports[`PopularProductsWidget > should render the loading state while resolving the report 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsPopularProducts googlesitekit-widget--no-padding"
@@ -385,7 +385,7 @@ exports[`PopularProductsWidget should render the loading state while resolving t
 </div>
 `;
 
-exports[`PopularProductsWidget should render the missing custom dimension error when the required custom dimension is not available 1`] = `
+exports[`PopularProductsWidget > should render the missing custom dimension error when the required custom dimension is not available 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"

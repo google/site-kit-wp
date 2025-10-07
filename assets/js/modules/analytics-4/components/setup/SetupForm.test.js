@@ -53,7 +53,7 @@ const propertyID = properties[ 0 ]._id;
 const webDataStreamID = webDataStreamsBatch[ propertyID ][ 0 ]._id;
 const REGEX_REST_GA4_SETTINGS = new RegExp( '/analytics-4/data/settings' );
 const REGEX_REST_DISMISS_ITEM = new RegExp(
-	'^/google-site-kit/v1/core/user/data/dismiss-item'
+	'/google-site-kit/v1/core/user/data/dismiss-item'
 );
 const REGEX_REST_GA4_CREATE_PROPERTY = new RegExp(
 	'/analytics-4/data/create-property'
@@ -65,7 +65,7 @@ const REGEX_REST_GA4_ACCOUNT_SUMMARIES = new RegExp(
 	'/analytics-4/data/account-summaries'
 );
 const REGEX_REST_CONVERSION_TRACKING_SETTINGS = new RegExp(
-	'^/google-site-kit/v1/core/site/data/conversion-tracking'
+	'/google-site-kit/v1/core/site/data/conversion-tracking'
 );
 
 describe( 'SetupForm', () => {
@@ -169,7 +169,7 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.selectAccount( accountID );
 
-		const finishSetup = jest.fn();
+		const finishSetup = vi.fn();
 		const { getByRole, waitForRegistry } = render(
 			<SetupForm finishSetup={ finishSetup } />,
 			{
@@ -250,7 +250,7 @@ describe( 'SetupForm', () => {
 
 		fetchMock.post(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+				'/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
 			),
 			{
 				status: 200,
@@ -292,7 +292,7 @@ describe( 'SetupForm', () => {
 
 		muteFetch( REGEX_REST_GA4_SETTINGS );
 
-		const finishSetup = jest.fn();
+		const finishSetup = vi.fn();
 		const { getByRole, waitForRegistry } = render(
 			<SetupForm finishSetup={ finishSetup } />,
 			{
@@ -374,7 +374,7 @@ describe( 'SetupForm', () => {
 			},
 		} );
 
-		const finishSetup = jest.fn();
+		const finishSetup = vi.fn();
 		const { getByRole, waitForRegistry } = render(
 			<SetupForm finishSetup={ finishSetup } />,
 			{

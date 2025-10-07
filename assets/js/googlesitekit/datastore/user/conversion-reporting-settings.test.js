@@ -35,7 +35,7 @@ describe( 'core/user conversion reporting settings', () => {
 	let store;
 
 	const conversionReportingSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/conversion-reporting-settings'
+		'/google-site-kit/v1/core/user/data/conversion-reporting-settings'
 	);
 
 	let conversionReportingSettingsResponse;

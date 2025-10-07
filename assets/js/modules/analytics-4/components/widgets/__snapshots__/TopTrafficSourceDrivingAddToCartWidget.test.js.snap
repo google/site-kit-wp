@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`TopTrafficSourceDrivingAddToCartWidget should render correctly with the expected metrics 1`] = `
+exports[`TopTrafficSourceDrivingAddToCartWidget > should render correctly with the expected metrics 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopTrafficSourceDrivingAddToCart googlesitekit-widget--no-padding"
@@ -59,7 +59,7 @@ exports[`TopTrafficSourceDrivingAddToCartWidget should render correctly with the
 </div>
 `;
 
-exports[`TopTrafficSourceDrivingAddToCartWidget should render the generic error variant when the report fetch fails 1`] = `
+exports[`TopTrafficSourceDrivingAddToCartWidget > should render the generic error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -121,7 +121,7 @@ exports[`TopTrafficSourceDrivingAddToCartWidget should render the generic error 
 </div>
 `;
 
-exports[`TopTrafficSourceDrivingAddToCartWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
+exports[`TopTrafficSourceDrivingAddToCartWidget > should render the insufficient permissions error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -184,7 +184,7 @@ exports[`TopTrafficSourceDrivingAddToCartWidget should render the insufficient p
 </div>
 `;
 
-exports[`TopTrafficSourceDrivingAddToCartWidget should render the loading state while resolving the report 1`] = `
+exports[`TopTrafficSourceDrivingAddToCartWidget > should render the loading state while resolving the report 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopTrafficSourceDrivingAddToCart googlesitekit-widget--no-padding"

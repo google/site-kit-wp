@@ -124,7 +124,7 @@ describe( 'core/user surveys', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/user/data/authentication'
+						'/google-site-kit/v1/core/user/data/authentication'
 					),
 					{
 						authenticated: true,
@@ -228,13 +228,13 @@ describe( 'core/user surveys', () => {
 				await registry.resolveSelect( CORE_USER ).getSurveyTimeouts();
 				await registry.resolveSelect( CORE_SITE ).getSiteInfo();
 
-				jest.useFakeTimers();
+				vi.useFakeTimers();
 
 				await registry
 					.dispatch( CORE_USER )
 					.triggerSurvey( triggerID, { ttl: 500 } );
 
-				jest.advanceTimersByTime( 45000 );
+				vi.advanceTimersByTime( 45000 );
 
 				// Wait one tick for async storage functions.
 				await new Promise( ( resolve ) => resolve() );

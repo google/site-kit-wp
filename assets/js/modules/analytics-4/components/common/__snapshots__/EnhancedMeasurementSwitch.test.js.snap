@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`EnhancedMeasurementSwitch should render correctly in the already enabled state 1`] = `
+exports[`EnhancedMeasurementSwitch > should render correctly in the already enabled state 1`] = `
 <div>
   <div
     class="googlesitekit-analytics-enable-enhanced-measurement"
@@ -38,7 +38,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the already enable
 </div>
 `;
 
-exports[`EnhancedMeasurementSwitch should render correctly in the default state 1`] = `
+exports[`EnhancedMeasurementSwitch > should render correctly in the default state 1`] = `
 <div>
   <div
     class="googlesitekit-analytics-enable-enhanced-measurement"
@@ -104,7 +104,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the default state 
 </div>
 `;
 
-exports[`EnhancedMeasurementSwitch should render correctly in the disabled state 1`] = `
+exports[`EnhancedMeasurementSwitch > should render correctly in the disabled state 1`] = `
 <div>
   <div
     class="googlesitekit-analytics-enable-enhanced-measurement"
@@ -171,7 +171,7 @@ exports[`EnhancedMeasurementSwitch should render correctly in the disabled state
 </div>
 `;
 
-exports[`EnhancedMeasurementSwitch should render correctly in the loading state 1`] = `
+exports[`EnhancedMeasurementSwitch > should render correctly in the loading state 1`] = `
 <div>
   <div
     class="googlesitekit-analytics-enable-enhanced-measurement googlesitekit-analytics-enable-enhanced-measurement--loading"

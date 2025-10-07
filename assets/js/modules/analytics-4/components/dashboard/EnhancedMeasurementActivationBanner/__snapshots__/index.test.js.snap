@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`EnhancedMeasurementActivationBanner should render the in progress step when enhanced measurement is being enabled after the user returns from the OAuth flow 1`] = `
+exports[`EnhancedMeasurementActivationBanner > should render the in progress step when enhanced measurement is being enabled after the user returns from the OAuth flow 1`] = `
 <div>
   <section
     id="enhanced-measurement-notification"
@@ -125,7 +125,7 @@ exports[`EnhancedMeasurementActivationBanner should render the in progress step 
 </div>
 `;
 
-exports[`EnhancedMeasurementActivationBanner should render the setup step when enhanced measurement is initially false and the banner is not dismissed 1`] = `
+exports[`EnhancedMeasurementActivationBanner > should render the setup step when enhanced measurement is initially false and the banner is not dismissed 1`] = `
 <div>
   <section
     id="enhanced-measurement-notification"
@@ -214,83 +214,6 @@ exports[`EnhancedMeasurementActivationBanner should render the setup step when e
                 class="googlesitekit-banner__svg-wrapper googlesitekit-banner__svg-wrapper--center"
                 style="background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+);"
               />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
-`;
-
-exports[`EnhancedMeasurementActivationBanner should render the success step when the the setup form is successfully submitted 1`] = `
-<div>
-  <section
-    id="enhanced-measurement-notification"
-  >
-    <div
-      class="mdc-layout-grid"
-    >
-      <div
-        class="mdc-layout-grid__inner"
-      >
-        <div
-          class="mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
-        >
-          <div
-            class="googlesitekit-notice googlesitekit-notice--success"
-          >
-            <div
-              class="googlesitekit-notice__icon"
-            >
-              <svg />
-            </div>
-            <div
-              class="googlesitekit-notice__content"
-            >
-              <p
-                class="googlesitekit-notice__title"
-              >
-                You successfully enabled enhanced measurement for your site
-              </p>
-              <p
-                class="googlesitekit-notice__description"
-              >
-                Your configured Analytics web data stream will now automatically measure interactions on your site in addition to standard page views measurement. 
-                <a
-                  aria-label="Learn more (opens in a new tab)"
-                  class="googlesitekit-cta-link"
-                  href="https://support.google.com/analytics/answer/9216061?hl=en-US"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <span
-                    class="googlesitekit-cta-link__contents"
-                  >
-                    Learn more
-                  </span>
-                  <span
-                    class="googlesitekit-icon-wrapper"
-                    style="margin-left: 5px;"
-                  >
-                    <svg />
-                  </span>
-                </a>
-              </p>
-            </div>
-            <div
-              class="googlesitekit-notice__action"
-            >
-              <button
-                class="mdc-button mdc-button--tertiary"
-                target="_self"
-              >
-                <span
-                  class="mdc-button__label"
-                >
-                  Got it
-                </span>
-              </button>
             </div>
           </div>
         </div>

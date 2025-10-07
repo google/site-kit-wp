@@ -20,7 +20,10 @@
  * External dependencies
  */
 import faker from 'faker';
-import fetchMockJest from 'fetch-mock-jest';
+import { vi } from 'vitest';
+
+import '@testing-library/jest-dom';
+import fetchMock from '@fetch-mock/vitest';
 
 /**
  * Internal dependencies
@@ -29,17 +32,16 @@ import { enabledFeatures } from '../../assets/js/features';
 
 // Set fetchMock global so we don't have to import fetchMock in every test.
 // This global is instantiated in tests/js/setup-globals.js.
-// It is re-set here since fetch-mock-jest must be imported during Jest's `setupFilesAfterEnv` or later.
-global.fetchMock = fetchMockJest;
-// https://www.wheresrhys.co.uk/fetch-mock/docs/legacy-api/Usage/configuration/#overwriteroutes
-global.fetchMock.config.overwriteRoutes = false; // Appends the new route to the list of routes.
+global.fetchMock = fetchMock;
+// And replace the native fetch with fetchMock implementation.
+fetchMock.mockGlobal();
 
 beforeEach( () => {
 	// Use real timers in order to be able to wait for them. This was introduced to support the changes introduced in @wordpress/data 4.23.0
 	// which adds a resolver cache and a related call to setTimeout to each resolver, and these timeouts often need to be waited for in tests.
 	// See https://github.com/WordPress/gutenberg/blob/07baf5a12007d31bbd4ee22113b07952f7eacc26/packages/data/src/namespace-store/index.js#L294-L310.
 	// Using real timers, rather than fake timers here ensures that we don't need to manually advance timers for every resolver call.
-	jest.useRealTimers();
+	vi.useRealTimers();
 
 	localStorage.clear();
 	sessionStorage.clear();
@@ -64,10 +66,10 @@ afterEach( async () => {
 	// In order to catch (most) unhandled promise rejections
 	// we need to wait at least one more event cycle.
 	// To do this, we need to switch back to real timers if we're currently using fake timers.
-	// We can check for jest.getTimerCount() which only exists when fake timers are active.
-	const isUsingFakeTimers = typeof jest.getTimerCount === 'function';
+	// We can check for vi.getTimerCount() which only exists when fake timers are active.
+	const isUsingFakeTimers = typeof vi.getTimerCount === 'function';
 	if ( isUsingFakeTimers ) {
-		jest.useRealTimers();
+		vi.useRealTimers();
 	}
 
 	function nextTick() {

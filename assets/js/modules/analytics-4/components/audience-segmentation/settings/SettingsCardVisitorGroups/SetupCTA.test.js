@@ -46,23 +46,23 @@ import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
 import SetupCTA from './SetupCTA';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 	let registry;
 
 	const audienceSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/audience-settings'
+		'/google-site-kit/v1/core/user/data/audience-settings'
 	);
 	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
+		'/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 	const syncAvailableAudiencesEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+		'/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
 	const syncAvailableCustomDimensionsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+		'/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 	);
 
 	beforeEach( () => {
@@ -93,7 +93,7 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	} );
 
 	it( 'should render the setup CTA', () => {
@@ -131,7 +131,7 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 
 		fetchMock.postOnce(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+				'/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 			),
 			{
 				body: [ 'googlesitekit_post_type' ],

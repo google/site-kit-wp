@@ -45,8 +45,8 @@ import useQueryArg from '@/js/hooks/useQueryArg';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
-jest.mock( '../../../../hooks/useQueryArg' );
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+vi.mock( '../../../../hooks/useQueryArg' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 const {
@@ -89,14 +89,14 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	];
 
 	const publicationsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
+		'/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
 	);
 
 	const syncOnboardingStateEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/sync-publication-onboarding-state'
+		'/google-site-kit/v1/modules/reader-revenue-manager/data/sync-publication-onboarding-state'
 	);
 
-	const setValueMock = jest.fn();
+	const setValueMock = vi.fn();
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -121,7 +121,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		} );
 
 		// Provide fallback for `window.open`.
-		global.open = jest.fn();
+		global.open = vi.fn();
 	} );
 
 	afterEach( () => {
@@ -228,7 +228,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	);
 
 	it( 'should sync onboarding state when the window is refocused 15 seconds after clicking the CTA', async () => {
-		jest.useFakeTimers( 'modern' );
+		vi.useFakeTimers( 'modern' );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -286,7 +286,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		} );
 
 		act( () => {
-			jest.advanceTimersByTime( 15000 );
+			vi.advanceTimersByTime( 15000 );
 		} );
 
 		act( () => {
@@ -295,7 +295,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 		// Allow microtasks to flush after triggering the focus event
 		await act( async () => {
-			await jest.runAllTimersAsync();
+			await vi.runAllTimersAsync();
 		} );
 
 		await waitFor( () => {

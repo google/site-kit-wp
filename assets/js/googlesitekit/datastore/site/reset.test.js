@@ -37,7 +37,7 @@ describe( 'core/site reset', () => {
 			it( 'sets isDoingReset ', () => {
 				const response = true;
 				fetchMock.postOnce(
-					new RegExp( '^/google-site-kit/v1/core/site/data/reset' ),
+					new RegExp( '/google-site-kit/v1/core/site/data/reset' ),
 					{ body: JSON.stringify( response ), status: 200 }
 				);
 
@@ -54,7 +54,7 @@ describe( 'core/site reset', () => {
 					const response = true;
 					fetchMock.postOnce(
 						new RegExp(
-							'^/google-site-kit/v1/core/site/data/reset'
+							'/google-site-kit/v1/core/site/data/reset'
 						),
 						{ body: JSON.stringify( response ), status: 200 }
 					);
@@ -66,7 +66,7 @@ describe( 'core/site reset', () => {
 			it( 'resets connection on server only', async () => {
 				const response = true;
 				fetchMock.postOnce(
-					new RegExp( '^/google-site-kit/v1/core/site/data/reset' ),
+					new RegExp( '/google-site-kit/v1/core/site/data/reset' ),
 					{ body: JSON.stringify( response ), status: 200 }
 				);
 
@@ -82,7 +82,7 @@ describe( 'core/site reset', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/site/data/connection'
+						'/google-site-kit/v1/core/site/data/connection'
 					),
 					{
 						body: { connected: false, resettable: false },
@@ -116,7 +116,7 @@ describe( 'core/site reset', () => {
 					data: { status: 500 },
 				};
 				fetchMock.postOnce(
-					new RegExp( '^/google-site-kit/v1/core/site/data/reset' ),
+					new RegExp( '/google-site-kit/v1/core/site/data/reset' ),
 					{ body: JSON.stringify( response ), status: 500 }
 				);
 

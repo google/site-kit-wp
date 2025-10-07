@@ -42,7 +42,7 @@ describe( 'ErrorNotice', () => {
 		provideModules( registry, [
 			{ slug: moduleName, name: 'Test Module' },
 		] );
-		invalidateResolutionSpy = jest.spyOn(
+		invalidateResolutionSpy = vi.spyOn(
 			registry.dispatch( MODULES_TAGMANAGER ),
 			'invalidateResolution'
 		);
@@ -59,7 +59,7 @@ describe( 'ErrorNotice', () => {
 	} ) {
 		fetchMock.get(
 			new RegExp(
-				'^/google-site-kit/v1/modules/tagmanager/data/accounts'
+				'/google-site-kit/v1/modules/tagmanager/data/accounts'
 			),
 			{
 				body: error,

@@ -61,7 +61,7 @@ describe( 'core/site connection', () => {
 				expect( () => {
 					muteFetch(
 						new RegExp(
-							'^/google-site-kit/v1/core/site/data/connection'
+							'/google-site-kit/v1/core/site/data/connection'
 						)
 					);
 					registry.dispatch( CORE_SITE ).fetchGetConnection();
@@ -94,7 +94,7 @@ describe( 'core/site connection', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/site/data/connection'
+						'/google-site-kit/v1/core/site/data/connection'
 					),
 					{ body: responseConnected, status: 200 }
 				);
@@ -144,7 +144,7 @@ describe( 'core/site connection', () => {
 				};
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/site/data/connection'
+						'/google-site-kit/v1/core/site/data/connection'
 					),
 					{ body: response, status: 500 }
 				);
@@ -187,7 +187,7 @@ describe( 'core/site connection', () => {
 			it( 'depends on the getConnection selector and resolver', async () => {
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/site/data/connection'
+						'/google-site-kit/v1/core/site/data/connection'
 					),
 					{ body: responseConnected, status: 200 }
 				);
@@ -209,7 +209,7 @@ describe( 'core/site connection', () => {
 				};
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/site/data/connection'
+						'/google-site-kit/v1/core/site/data/connection'
 					),
 					{ body: response, status: 500 }
 				);
@@ -225,7 +225,7 @@ describe( 'core/site connection', () => {
 			it( 'returns undefined if connection info is not available', async () => {
 				muteFetch(
 					new RegExp(
-						'^/google-site-kit/v1/core/site/data/connection'
+						'/google-site-kit/v1/core/site/data/connection'
 					)
 				);
 				expect( select[ selector ]() ).toBeUndefined();

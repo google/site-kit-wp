@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`TopDeviceDrivingPurchasesWidget should render correctly with the expected metrics 1`] = `
+exports[`TopDeviceDrivingPurchasesWidget > should render correctly with the expected metrics 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopDeviceDrivingPurchases googlesitekit-widget--no-padding"
@@ -59,7 +59,7 @@ exports[`TopDeviceDrivingPurchasesWidget should render correctly with the expect
 </div>
 `;
 
-exports[`TopDeviceDrivingPurchasesWidget should render the generic error variant when the report fetch fails 1`] = `
+exports[`TopDeviceDrivingPurchasesWidget > should render the generic error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -121,7 +121,7 @@ exports[`TopDeviceDrivingPurchasesWidget should render the generic error variant
 </div>
 `;
 
-exports[`TopDeviceDrivingPurchasesWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
+exports[`TopDeviceDrivingPurchasesWidget > should render the insufficient permissions error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"

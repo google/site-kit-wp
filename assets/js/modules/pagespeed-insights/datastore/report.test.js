@@ -51,7 +51,7 @@ describe( 'modules/pagespeed-insights report', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+						'/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 					),
 					{ body: fixtures.pagespeedDesktop, status: 200 }
 				);
@@ -70,7 +70,7 @@ describe( 'modules/pagespeed-insights report', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+						'/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 					),
 					{ body: fixtures.pagespeedDesktop, status: 200 }
 				);
@@ -91,7 +91,7 @@ describe( 'modules/pagespeed-insights report', () => {
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
-						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+						'/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 					),
 					{
 						query: {
@@ -117,7 +117,7 @@ describe( 'modules/pagespeed-insights report', () => {
 				};
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+						'/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 					),
 					{ body: response, status: 500 }
 				);

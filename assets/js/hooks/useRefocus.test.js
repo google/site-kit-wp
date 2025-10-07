@@ -24,18 +24,18 @@ import { useRefocus } from './useRefocus';
 
 describe( 'useRefocus', () => {
 	beforeEach( () => {
-		jest.useFakeTimers();
+		vi.useFakeTimers();
 	} );
 
 	it( 'should invoke the reset handler when the window is blurred and then refocused after the specified delay', () => {
-		const resetSpy = jest.fn();
+		const resetSpy = vi.fn();
 
 		renderHook( () => useRefocus( resetSpy, 1000 ) );
 
 		act( () => {
 			global.window.dispatchEvent( new Event( 'blur' ) );
 		} );
-		act( () => jest.advanceTimersByTime( 1000 ) );
+		act( () => vi.advanceTimersByTime( 1000 ) );
 
 		expect( resetSpy ).toHaveBeenCalledTimes( 0 );
 
@@ -47,7 +47,7 @@ describe( 'useRefocus', () => {
 	} );
 
 	it( 'should invoke the reset handler when the window is blurred and then refocused when no delay is specified', () => {
-		const resetSpy = jest.fn();
+		const resetSpy = vi.fn();
 
 		renderHook( () => useRefocus( resetSpy ) );
 
@@ -56,7 +56,7 @@ describe( 'useRefocus', () => {
 		} );
 
 		// The default delay is 0 milliseconds
-		act( () => jest.advanceTimersByTime( 0 ) );
+		act( () => vi.advanceTimersByTime( 0 ) );
 
 		expect( resetSpy ).toHaveBeenCalledTimes( 0 );
 
@@ -68,14 +68,14 @@ describe( 'useRefocus', () => {
 	} );
 
 	it( 'should not invoke the reset handler when the window is blurred and then refocused before the specified delay', () => {
-		const resetSpy = jest.fn();
+		const resetSpy = vi.fn();
 
 		renderHook( () => useRefocus( resetSpy, 1000 ) );
 
 		act( () => {
 			global.window.dispatchEvent( new Event( 'blur' ) );
 		} );
-		act( () => jest.advanceTimersByTime( 999 ) );
+		act( () => vi.advanceTimersByTime( 999 ) );
 
 		expect( resetSpy ).toHaveBeenCalledTimes( 0 );
 
@@ -87,7 +87,7 @@ describe( 'useRefocus', () => {
 	} );
 
 	it( 'should continue to invoke the reset handler as the window is blurred and then refocused repeatedly', () => {
-		const resetSpy = jest.fn();
+		const resetSpy = vi.fn();
 
 		renderHook( () => useRefocus( resetSpy, 1000 ) );
 
@@ -97,7 +97,7 @@ describe( 'useRefocus', () => {
 			act( () => {
 				global.window.dispatchEvent( new Event( 'blur' ) );
 			} );
-			act( () => jest.advanceTimersByTime( 1000 ) );
+			act( () => vi.advanceTimersByTime( 1000 ) );
 			act( () => {
 				global.window.dispatchEvent( new Event( 'focus' ) );
 			} );

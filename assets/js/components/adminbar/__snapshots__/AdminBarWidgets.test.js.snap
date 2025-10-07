@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`AdminBarWidgets should not render the Activate Analytics CTA when the Analytics module is not available 1`] = `
+exports[`AdminBarWidgets > should not render the Activate Analytics CTA when the Analytics module is not available 1`] = `
 <div>
   <div
     class="mdc-layout-grid__inner"
@@ -16,7 +16,10 @@ exports[`AdminBarWidgets should not render the Activate Analytics CTA when the A
           class="googlesitekit-data-block__title-datapoint-wrapper"
         >
           <h3
-            class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
+            class="googlesitekit-typography 
+						googlesitekit-subheading-1
+						googlesitekit-data-block__title
+					 googlesitekit-typography--title googlesitekit-typography--small"
           >
             <span
               class="googlesitekit-data-block__title-inner"
@@ -60,7 +63,10 @@ exports[`AdminBarWidgets should not render the Activate Analytics CTA when the A
           class="googlesitekit-data-block__title-datapoint-wrapper"
         >
           <h3
-            class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
+            class="googlesitekit-typography 
+						googlesitekit-subheading-1
+						googlesitekit-data-block__title
+					 googlesitekit-typography--title googlesitekit-typography--small"
           >
             <span
               class="googlesitekit-data-block__title-inner"
@@ -97,7 +103,7 @@ exports[`AdminBarWidgets should not render the Activate Analytics CTA when the A
 </div>
 `;
 
-exports[`AdminBarWidgets should render the Admin Bar Widgets, including the Activate Analytics CTA 1`] = `
+exports[`AdminBarWidgets > should render the Admin Bar Widgets, including the Activate Analytics CTA 1`] = `
 <div>
   <div
     class="mdc-layout-grid__inner"
@@ -113,7 +119,10 @@ exports[`AdminBarWidgets should render the Admin Bar Widgets, including the Acti
           class="googlesitekit-data-block__title-datapoint-wrapper"
         >
           <h3
-            class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
+            class="googlesitekit-typography 
+						googlesitekit-subheading-1
+						googlesitekit-data-block__title
+					 googlesitekit-typography--title googlesitekit-typography--small"
           >
             <span
               class="googlesitekit-data-block__title-inner"
@@ -157,7 +166,10 @@ exports[`AdminBarWidgets should render the Admin Bar Widgets, including the Acti
           class="googlesitekit-data-block__title-datapoint-wrapper"
         >
           <h3
-            class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
+            class="googlesitekit-typography 
+						googlesitekit-subheading-1
+						googlesitekit-data-block__title
+					 googlesitekit-typography--title googlesitekit-typography--small"
           >
             <span
               class="googlesitekit-data-block__title-inner"

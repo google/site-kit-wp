@@ -39,7 +39,7 @@ describe( 'whenScopesGranted', () => {
 
 	async function loadScopes( registryReference, scopes = [] ) {
 		const coreUserDataEndpointRegExp = new RegExp(
-			'^/google-site-kit/v1/core/user/data/authentication'
+			'/google-site-kit/v1/core/user/data/authentication'
 		);
 
 		fetchMock.getOnce( coreUserDataEndpointRegExp, {

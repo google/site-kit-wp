@@ -48,12 +48,12 @@ import * as tracking from '@/js/util/tracking';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
 import { mockLocation } from '../../../../../../../../tests/js/mock-browser-utils';
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
+vi.mock( 'react-use', () => ( {
+	...vi.requireActual( 'react-use' ),
+	useIntersection: vi.fn(),
 } ) );
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'NoAudienceBannerWidget', () => {
@@ -66,7 +66,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	)( NoAudienceBannerWidget );
 
 	const audienceSettingsRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/audience-settings'
+		'/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
 	beforeEach( () => {
@@ -88,7 +88,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	} );
 
 	it( 'should not render when configuredAudiences is not loaded', () => {

@@ -75,7 +75,7 @@ describe( 'MetricsSelectionPanel', () => {
 	let registry;
 
 	const coreKeyMetricsEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/key-metrics'
+		'/google-site-kit/v1/core/user/data/key-metrics'
 	);
 
 	beforeEach( () => {
@@ -109,7 +109,7 @@ describe( 'MetricsSelectionPanel', () => {
 		// jsdom does not support scrollIntoView which is used by the last metric item
 		// to prevent it from hiding underneath the Custom Dimensions warning notice.
 		// See: https://github.com/jsdom/jsdom/issues/1695.
-		Element.prototype.scrollIntoView = jest.fn();
+		Element.prototype.scrollIntoView = vi.fn();
 	} );
 
 	describe( 'Header', () => {

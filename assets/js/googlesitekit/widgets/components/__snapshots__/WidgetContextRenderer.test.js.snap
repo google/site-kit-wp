@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`WidgetContextRenderer should render the registered widget area with a subtitle component 1`] = `
+exports[`WidgetContextRenderer > should render the registered widget area with a subtitle component 1`] = `
 <div
   class="googlesitekit-widget-context"
 >
@@ -74,7 +74,7 @@ exports[`WidgetContextRenderer should render the registered widget area with a s
 </div>
 `;
 
-exports[`WidgetContextRenderer should render the registered widget areas 1`] = `
+exports[`WidgetContextRenderer > should render the registered widget areas 1`] = `
 <div
   class="googlesitekit-widget-context"
 >

@@ -47,7 +47,7 @@ describe( 'modules/adsense Ad Units', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/adsense/data/adunits'
+						'/google-site-kit/v1/modules/adsense/data/adunits'
 					),
 					{ body: fixtures.adunits, status: 200 }
 				);
@@ -107,7 +107,7 @@ describe( 'modules/adsense Ad Units', () => {
 				};
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/adsense/data/adunits'
+						'/google-site-kit/v1/modules/adsense/data/adunits'
 					),
 					{ body: response, status: 500 }
 				);

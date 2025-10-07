@@ -39,7 +39,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 describe( 'UserMenu', () => {
 	let registry;
 	let oldLocation;
-	const locationAssignMock = jest.fn();
+	const locationAssignMock = vi.fn();
 
 	beforeAll( () => {
 		registry = createTestRegistry();

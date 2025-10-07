@@ -55,10 +55,10 @@ describe( 'modules/analytics-4 report', () => {
 	describe( 'selectors', () => {
 		const zeroDataReport = { totals: [ {} ] };
 		const analytics4ReportRegexp = new RegExp(
-			'^/google-site-kit/v1/modules/analytics-4/data/report'
+			'/google-site-kit/v1/modules/analytics-4/data/report'
 		);
 		const dataAvailableRegexp = new RegExp(
-			'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+			'/google-site-kit/v1/modules/analytics-4/data/data-available'
 		);
 
 		describe( 'getReport', () => {
@@ -328,7 +328,7 @@ describe( 'modules/analytics-4 report', () => {
 
 					freezeFetch(
 						new RegExp(
-							'^/google-site-kit/v1/modules/analytics-4/data/settings'
+							'/google-site-kit/v1/modules/analytics-4/data/settings'
 						)
 					);
 
@@ -458,7 +458,7 @@ describe( 'modules/analytics-4 report', () => {
 				it( 'should return undefined if getAuthentication is not resolved yet', async () => {
 					fetchMock.getOnce(
 						new RegExp(
-							'^/google-site-kit/v1/core/user/data/authentication'
+							'/google-site-kit/v1/core/user/data/authentication'
 						),
 						{
 							authenticated: false,
@@ -664,7 +664,7 @@ describe( 'modules/analytics-4 report', () => {
 
 		describe( 'getReportForAllAudiences', () => {
 			const getAudiencesEndpoint = new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/audiences'
+				'/google-site-kit/v1/modules/analytics-4/data/audiences'
 			);
 
 			const audiences = fixtures.audiences.map( ( { name } ) => name );

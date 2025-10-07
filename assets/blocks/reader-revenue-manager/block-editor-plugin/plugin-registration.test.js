@@ -16,28 +16,28 @@
  * limitations under the License.
  */
 
-jest.mock(
+vi.mock(
 	'@wordpress-core/plugins',
 	() => ( {
-		registerPlugin: jest.fn(),
+		registerPlugin: vi.fn(),
 	} ),
 	{
 		virtual: true,
 	}
 );
 
-jest.mock( '@wordpress-core/edit-post', () => ( {} ), {
+vi.mock( '@wordpress-core/edit-post', () => ( {} ), {
 	virtual: true,
 } );
-jest.mock( '@wordpress-core/editor', () => ( {} ), {
+vi.mock( '@wordpress-core/editor', () => ( {} ), {
 	virtual: true,
 } );
-jest.mock( '@wordpress-core/components', () => ( {} ), {
+vi.mock( '@wordpress-core/components', () => ( {} ), {
 	virtual: true,
 } );
-jest.mock( '@wordpress-core/element', () => ( {} ), { virtual: true } );
-jest.mock( './tracking', () => ( {
-	initializeTracking: jest.fn(),
+vi.mock( '@wordpress-core/element', () => ( {} ), { virtual: true } );
+vi.mock( './tracking', () => ( {
+	initializeTracking: vi.fn(),
 } ) );
 
 import Data from 'googlesitekit-data';
@@ -74,7 +74,7 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	} );
 
 	it( 'should register the plugin if the user has ownership', async () => {
@@ -102,7 +102,7 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 		} );
 
 		fetchMock.postOnce(
-			new RegExp( '^/google-site-kit/v1/core/modules/data/check-access' ),
+			new RegExp( '/google-site-kit/v1/core/modules/data/check-access' ),
 			{ body: { access: true } }
 		);
 
@@ -126,7 +126,7 @@ describe( 'registerReaderRevenueManagerPlugin', () => {
 		} );
 
 		fetchMock.postOnce(
-			new RegExp( '^/google-site-kit/v1/core/modules/data/check-access' ),
+			new RegExp( '/google-site-kit/v1/core/modules/data/check-access' ),
 			{ body: { access: false } }
 		);
 

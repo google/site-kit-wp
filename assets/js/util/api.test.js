@@ -29,7 +29,7 @@ describe( 'trackAPIError', () => {
 	beforeEach( () => {
 		enableTracking();
 		global[ DATA_LAYER ] = [];
-		dataLayerPushSpy = jest.spyOn( global[ DATA_LAYER ], 'push' );
+		dataLayerPushSpy = vi.spyOn( global[ DATA_LAYER ], 'push' );
 	} );
 
 	it( 'should track API error message, code and reasons', () => {

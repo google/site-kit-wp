@@ -70,10 +70,10 @@ describe( 'FeatureTours', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 		registry.dispatch( CORE_USER ).receiveCurrentTour( testTour );
 
-		observeMock = jest.fn();
-		disconnectMock = jest.fn();
+		observeMock = vi.fn();
+		disconnectMock = vi.fn();
 
-		global.ResizeObserver = jest.fn( function () {
+		global.ResizeObserver = vi.fn( function () {
 			this.observe = observeMock;
 			this.disconnect = disconnectMock;
 		} );
@@ -112,7 +112,7 @@ describe( 'FeatureTours', () => {
 
 	it( 'cleans up ResizeObserver on unmount', async () => {
 		const fetchDismissTourRegExp = new RegExp(
-			'^/google-site-kit/v1/core/user/data/dismiss-tour'
+			'/google-site-kit/v1/core/user/data/dismiss-tour'
 		);
 
 		muteFetch( fetchDismissTourRegExp, [] );

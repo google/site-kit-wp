@@ -45,11 +45,11 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { ADSENSE_NOTIFICATIONS } from '@/js/modules/adsense';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
+vi.mock( 'react-use', () => ( {
+	...vi.requireActual( 'react-use' ),
 	useIntersection: () => ( {
 		isIntersecting: true,
 	} ),
@@ -81,13 +81,13 @@ describe( 'AdBlockingRecoverySetupSuccessNotification', () => {
 
 	it( 'should render notification and trigger tracking events and ACR survey', async () => {
 		fetchMock.getOnce(
-			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			new RegExp( '/google-site-kit/v1/core/user/data/authentication' ),
 			{
 				authenticated: true,
 			}
 		);
 		fetchMock.postOnce(
-			new RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+			new RegExp( '/google-site-kit/v1/core/user/data/dismiss-item' ),
 			{ body: {} }
 		);
 

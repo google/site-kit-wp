@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`core/widgets Widgets actions registerWidget should register the component with the given settings and component 1`] = `
+exports[`core/widgets Widgets > actions > registerWidget > should register the component with the given settings and component 1`] = `
 <div>
   Hello 
   world
@@ -8,7 +8,7 @@ exports[`core/widgets Widgets actions registerWidget should register the compone
 </div>
 `;
 
-exports[`core/widgets Widgets selectors getWidget returns a widget if one exists 1`] = `
+exports[`core/widgets Widgets > selectors > getWidget > returns a widget if one exists 1`] = `
 {
   "Component": [Function],
   "hideOnBreakpoints": undefined,

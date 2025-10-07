@@ -28,7 +28,7 @@ import Footer from './Footer';
 
 describe( 'Footer', () => {
 	beforeEach( () => {
-		jest.useFakeTimers();
+		vi.useFakeTimers();
 	} );
 
 	it( 'should not make a adsense settings requests when the view context is "view only"', () => {
@@ -36,10 +36,10 @@ describe( 'Footer', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		} );
 
-		jest.runAllTimers();
+		vi.runAllTimers();
 
 		expect( fetchMock ).not.toHaveFetched(
-			new RegExp( '^/google-site-kit/v1/modules/adsense/data/settings' )
+			new RegExp( '/google-site-kit/v1/modules/adsense/data/settings' )
 		);
 		expect( container ).not.toHaveTextContent( 'AdSense' );
 		expect( container.firstChild ).toBeNull();
@@ -47,7 +47,7 @@ describe( 'Footer', () => {
 
 	it( 'should make a adsense settings request normally when the view context is NOT "view only"', () => {
 		fetchMock.getOnce(
-			new RegExp( '^/google-site-kit/v1/modules/adsense/data/settings' ),
+			new RegExp( '/google-site-kit/v1/modules/adsense/data/settings' ),
 			{ body: {}, status: 200 }
 		);
 
@@ -55,10 +55,10 @@ describe( 'Footer', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		jest.runAllTimers();
+		vi.runAllTimers();
 
 		expect( fetchMock ).toHaveFetched(
-			new RegExp( '^/google-site-kit/v1/modules/adsense/data/settings' )
+			new RegExp( '/google-site-kit/v1/modules/adsense/data/settings' )
 		);
 		expect( container ).toHaveTextContent( 'AdSense' );
 		expect( container.firstChild ).not.toBeNull();

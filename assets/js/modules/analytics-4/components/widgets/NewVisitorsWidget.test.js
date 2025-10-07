@@ -47,7 +47,7 @@ describe( 'NewVisitorsWidget', () => {
 		KM_ANALYTICS_NEW_VISITORS
 	);
 	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
+		'/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
 	beforeEach( () => {

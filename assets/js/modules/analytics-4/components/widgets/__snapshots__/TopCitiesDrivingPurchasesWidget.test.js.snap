@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`TopCitiesDrivingPurchasesWidget should render correctly with the expected metrics 1`] = `
+exports[`TopCitiesDrivingPurchasesWidget > should render correctly with the expected metrics 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopCitiesDrivingPurchases googlesitekit-widget--no-padding"
@@ -100,7 +100,7 @@ exports[`TopCitiesDrivingPurchasesWidget should render correctly with the expect
 </div>
 `;
 
-exports[`TopCitiesDrivingPurchasesWidget should render the generic error variant when the report fetch fails 1`] = `
+exports[`TopCitiesDrivingPurchasesWidget > should render the generic error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -162,7 +162,7 @@ exports[`TopCitiesDrivingPurchasesWidget should render the generic error variant
 </div>
 `;
 
-exports[`TopCitiesDrivingPurchasesWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
+exports[`TopCitiesDrivingPurchasesWidget > should render the insufficient permissions error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -225,7 +225,7 @@ exports[`TopCitiesDrivingPurchasesWidget should render the insufficient permissi
 </div>
 `;
 
-exports[`TopCitiesDrivingPurchasesWidget should render the loading state while resolving the report 1`] = `
+exports[`TopCitiesDrivingPurchasesWidget > should render the loading state while resolving the report 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopCitiesDrivingPurchases googlesitekit-widget--no-padding"

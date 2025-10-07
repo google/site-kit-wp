@@ -58,7 +58,7 @@ describe( 'TopTrafficSourceWidget', () => {
 		KM_ANALYTICS_TOP_TRAFFIC_SOURCE
 	);
 	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
+		'/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
 	let registry;
@@ -190,7 +190,7 @@ describe( 'TopTrafficSourceWidget', () => {
 	it( 'should retry both reports when an error is encountered', async () => {
 		fetchMock.getOnce(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/report.*sessionDefaultChannelGroup.*'
+				'/google-site-kit/v1/modules/analytics-4/data/report.*sessionDefaultChannelGroup.*'
 			),
 			{
 				body: {
@@ -203,7 +203,7 @@ describe( 'TopTrafficSourceWidget', () => {
 		);
 		fetchMock.getOnce(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/report((?!sessionDefaultChannelGroup).)*'
+				'/google-site-kit/v1/modules/analytics-4/data/report((?!sessionDefaultChannelGroup).)*'
 			),
 			{
 				body: {
@@ -233,7 +233,7 @@ describe( 'TopTrafficSourceWidget', () => {
 
 		fetchMock.getOnce(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/report.*sessionDefaultChannelGroup.*'
+				'/google-site-kit/v1/modules/analytics-4/data/report.*sessionDefaultChannelGroup.*'
 			),
 			{
 				body: getAnalytics4MockResponse( {
@@ -253,7 +253,7 @@ describe( 'TopTrafficSourceWidget', () => {
 
 		fetchMock.getOnce(
 			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/report((?!sessionDefaultChannelGroup).)*'
+				'/google-site-kit/v1/modules/analytics-4/data/report((?!sessionDefaultChannelGroup).)*'
 			),
 			{
 				body: getAnalytics4MockResponse( {

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`GoogleTagIDMismatchNotification should render the "alternative GA4 Config found" notification variation 1`] = `
+exports[`GoogleTagIDMismatchNotification > should render the "alternative GA4 Config found" notification variation 1`] = `
 <div>
   <section
     id="google-tag-id-mismatch"
@@ -74,7 +74,7 @@ exports[`GoogleTagIDMismatchNotification should render the "alternative GA4 Conf
 </div>
 `;
 
-exports[`GoogleTagIDMismatchNotification should render the "alternative GA4 Config not found" notification variation 1`] = `
+exports[`GoogleTagIDMismatchNotification > should render the "alternative GA4 Config not found" notification variation 1`] = `
 <div>
   <section
     id="google-tag-id-mismatch"

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`SettingsGroup renders correctly 1`] = `
+exports[`SettingsGroup > renders correctly 1`] = `
 <div>
   <div
     class="googlesitekit-module-settings-group"

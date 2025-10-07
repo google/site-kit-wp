@@ -30,7 +30,7 @@ describe( 'modules/reader-revenue-manager base data store', () => {
 	let store;
 
 	beforeEach( () => {
-		jest.resetModules();
+		vi.resetModules();
 
 		registry = createTestRegistry();
 		provideSiteInfo( registry );

@@ -103,7 +103,7 @@ describe( 'PublicationCreate', () => {
 	} );
 
 	it( 'should set publication in state and call onCompleteSetup when clicking the "Complete setup" button', async () => {
-		const onCompleteSetupMock = jest.fn();
+		const onCompleteSetupMock = vi.fn();
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )

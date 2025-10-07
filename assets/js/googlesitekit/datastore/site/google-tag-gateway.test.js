@@ -40,7 +40,7 @@ describe( 'core/site Google tag gateway', () => {
 	let registry;
 
 	const googleTagGatewaySettingsEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/site/data/gtg-settings'
+		'/google-site-kit/v1/core/site/data/gtg-settings'
 	);
 
 	beforeAll( () => {

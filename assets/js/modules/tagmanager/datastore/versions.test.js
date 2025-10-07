@@ -167,7 +167,7 @@ describe( 'modules/tagmanager versions', () => {
 
 				muteFetch(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+						'/google-site-kit/v1/modules/tagmanager/data/live-container-version'
 					)
 				);
 				const variableObject = registry
@@ -193,7 +193,7 @@ describe( 'modules/tagmanager versions', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+						'/google-site-kit/v1/modules/tagmanager/data/live-container-version'
 					),
 					{ body: liveContainerVersion, status: 200 }
 				);
@@ -260,7 +260,7 @@ describe( 'modules/tagmanager versions', () => {
 				};
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+						'/google-site-kit/v1/modules/tagmanager/data/live-container-version'
 					),
 					{ body: errorResponse, status: 500 }
 				);
@@ -307,7 +307,7 @@ describe( 'modules/tagmanager versions', () => {
 				};
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+						'/google-site-kit/v1/modules/tagmanager/data/live-container-version'
 					),
 					{ body: permissionDeniedResponse, status: 404 }
 				);
@@ -355,7 +355,7 @@ describe( 'modules/tagmanager versions', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+						'/google-site-kit/v1/modules/tagmanager/data/live-container-version'
 					),
 					{ body: notFoundResponse, status: 404 }
 				);
@@ -393,14 +393,14 @@ describe( 'modules/tagmanager versions', () => {
 
 		describe( 'isDoingGetLiveContainerVersion', () => {
 			it( 'returns true while the live container version fetch is in progress', async () => {
-				jest.useFakeTimers();
+				vi.useFakeTimers();
 
 				const accountID = '100';
 				const internalContainerID = '200';
 
 				muteFetch(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+						'/google-site-kit/v1/modules/tagmanager/data/live-container-version'
 					)
 				);
 				expect(
@@ -416,7 +416,7 @@ describe( 'modules/tagmanager versions', () => {
 					.select( MODULES_TAGMANAGER )
 					.getLiveContainerVersion( accountID, internalContainerID );
 
-				jest.runAllTimers();
+				vi.runAllTimers();
 
 				expect(
 					registry
@@ -521,7 +521,7 @@ describe( 'modules/tagmanager versions', () => {
 
 				muteFetch(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+						'/google-site-kit/v1/modules/tagmanager/data/live-container-version'
 					)
 				);
 				const tagObject = registry
@@ -593,7 +593,7 @@ describe( 'modules/tagmanager versions', () => {
 
 				muteFetch(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/live-container-version'
+						'/google-site-kit/v1/modules/tagmanager/data/live-container-version'
 					)
 				);
 				const googleTagID = registry

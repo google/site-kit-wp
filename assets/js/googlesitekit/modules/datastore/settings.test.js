@@ -39,8 +39,8 @@ describe( 'core/modules settings', () => {
 	let validateCanSubmitChangesError = false;
 
 	beforeEach( () => {
-		areSettingsEditDependenciesLoaded = jest.fn();
-		submitChanges = jest.fn();
+		areSettingsEditDependenciesLoaded = vi.fn();
+		submitChanges = vi.fn();
 
 		registry = createTestRegistry();
 
@@ -226,7 +226,7 @@ describe( 'core/modules settings', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/test-module/data/settings'
+						'/google-site-kit/v1/modules/test-module/data/settings'
 					),
 					{ body: serverValues, status: 200 }
 				);
@@ -260,7 +260,7 @@ describe( 'core/modules settings', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/test-module/data/settings'
+						'/google-site-kit/v1/modules/test-module/data/settings'
 					),
 					{ body: serverValues, status: 200 }
 				);

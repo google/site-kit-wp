@@ -54,7 +54,7 @@ import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/c
 import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager';
 import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
-jest.mock( '../../../../hooks/useActivateModuleCallback' );
+vi.mock( '../../../../hooks/useActivateModuleCallback' );
 
 describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	let registry;
@@ -70,8 +70,8 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		activateModuleCallbackMock = jest.fn();
-		activateModuleMock = jest.fn( () => activateModuleCallbackMock );
+		activateModuleCallbackMock = vi.fn();
+		activateModuleMock = vi.fn( () => activateModuleCallbackMock );
 
 		provideUserAuthentication( registry );
 		provideSiteInfo( registry );

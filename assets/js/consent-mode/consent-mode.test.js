@@ -22,7 +22,7 @@
 import './consent-mode';
 
 describe( 'Consent mode', () => {
-	const gtagMock = jest.fn();
+	const gtagMock = vi.fn();
 
 	beforeEach( () => {
 		global.gtag = gtagMock;

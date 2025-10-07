@@ -11,13 +11,17 @@
 		"es6": true
 	},
 	"globals": {
-		"fetchMock": false
+		"fetchMock": false,
+    "vi": false
 	},
 	"rules": {
 		"import/no-unresolved": [
 			"error",
 			{
-				"ignore": [ "^@wordpress-core/?.*" ]
+				"ignore": [
+          "^@wordpress-core/?.*",
+          "^fetch-mock\/?.*"
+        ]
 			}
 		],
 		"jsdoc/check-tag-names": "error",

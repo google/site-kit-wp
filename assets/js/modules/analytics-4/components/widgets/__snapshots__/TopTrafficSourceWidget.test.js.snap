@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`TopTrafficSourceWidget renders correctly with no data in comparison date range 1`] = `
+exports[`TopTrafficSourceWidget > renders correctly with no data in comparison date range 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopTrafficSource googlesitekit-widget--no-padding"
@@ -59,7 +59,7 @@ exports[`TopTrafficSourceWidget renders correctly with no data in comparison dat
 </div>
 `;
 
-exports[`TopTrafficSourceWidget should render correctly with the expected metrics 1`] = `
+exports[`TopTrafficSourceWidget > should render correctly with the expected metrics 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopTrafficSource googlesitekit-widget--no-padding"
@@ -118,7 +118,7 @@ exports[`TopTrafficSourceWidget should render correctly with the expected metric
 </div>
 `;
 
-exports[`TopTrafficSourceWidget should render the generic error variant when the report fetch fails 1`] = `
+exports[`TopTrafficSourceWidget > should render the generic error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -180,7 +180,7 @@ exports[`TopTrafficSourceWidget should render the generic error variant when the
 </div>
 `;
 
-exports[`TopTrafficSourceWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
+exports[`TopTrafficSourceWidget > should render the insufficient permissions error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -243,7 +243,7 @@ exports[`TopTrafficSourceWidget should render the insufficient permissions error
 </div>
 `;
 
-exports[`TopTrafficSourceWidget should retry both reports when an error is encountered 1`] = `
+exports[`TopTrafficSourceWidget > should retry both reports when an error is encountered 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -316,7 +316,7 @@ exports[`TopTrafficSourceWidget should retry both reports when an error is encou
 </div>
 `;
 
-exports[`TopTrafficSourceWidget should retry both reports when an error is encountered 2`] = `
+exports[`TopTrafficSourceWidget > should retry both reports when an error is encountered 2`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopTrafficSource googlesitekit-widget--no-padding"

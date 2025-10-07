@@ -39,9 +39,9 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '@/js/googlesitekit/datastore/user/constants';
 import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
 
-jest.mock( '../../googlesitekit/data/create-snapshot-store', () => ( {
-	...jest.requireActual( '../../googlesitekit/data/create-snapshot-store' ),
-	snapshotAllStores: jest.fn(),
+vi.mock( '../../googlesitekit/data/create-snapshot-store', () => ( {
+	...vi.requireActual( '../../googlesitekit/data/create-snapshot-store' ),
+	snapshotAllStores: vi.fn(),
 } ) );
 
 const SETUP_ERROR_NOTIFICATION = 'setup_plugin_error';
@@ -194,7 +194,7 @@ describe( 'SetupErrorMessageNotification', () => {
 
 		// Prevent navigation by intercepting the click.
 		// This is to prevent the leaking after the test cleanup.
-		const handleClick = jest.fn( ( event ) => {
+		const handleClick = vi.fn( ( event ) => {
 			event.preventDefault();
 		} );
 		ctaButton.addEventListener( 'click', handleClick );

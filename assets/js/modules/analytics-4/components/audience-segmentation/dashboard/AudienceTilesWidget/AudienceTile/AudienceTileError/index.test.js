@@ -44,12 +44,12 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
+vi.mock( 'react-use', () => ( {
+	...vi.requireActual( 'react-use' ),
+	useIntersection: vi.fn(),
 } ) );
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceTileError', () => {

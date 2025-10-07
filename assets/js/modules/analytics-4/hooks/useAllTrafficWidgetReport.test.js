@@ -30,7 +30,7 @@ describe( 'useAllTrafficWidgetReport', () => {
 	let registry;
 
 	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
+		'/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
 	beforeEach( () => {

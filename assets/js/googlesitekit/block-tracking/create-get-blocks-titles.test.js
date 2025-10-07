@@ -26,9 +26,9 @@ import {
 	SUBSCRIBE_WITH_GOOGLE_BLOCK,
 } from '@/blocks/reader-revenue-manager/common/constants';
 
-jest.mock( 'googlesitekit-data', () => ( {
-	select: jest.fn(),
-	subscribe: jest.fn(),
+vi.mock( 'googlesitekit-data', () => ( {
+	select: vi.fn(),
+	subscribe: vi.fn(),
 } ) );
 
 describe( 'getBlocksTitles', () => {
@@ -37,12 +37,12 @@ describe( 'getBlocksTitles', () => {
 	let unsubscribeMock;
 
 	beforeEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 
-		unsubscribeMock = jest.fn();
+		unsubscribeMock = vi.fn();
 
 		mockSelectReturnValue = {
-			getInserterItems: jest.fn(),
+			getInserterItems: vi.fn(),
 		};
 		select.mockImplementation( ( store ) => {
 			if ( store === 'core/block-editor' ) {

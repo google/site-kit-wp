@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`PopularKeywordsWidget should render correctly with the expected metrics 1`] = `
+exports[`PopularKeywordsWidget > should render correctly with the expected metrics 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmSearchConsolePopularKeywords googlesitekit-widget--no-padding"
@@ -124,7 +124,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
 </div>
 `;
 
-exports[`PopularKeywordsWidget should render the generic error variant when the report fetch fails 1`] = `
+exports[`PopularKeywordsWidget > should render the generic error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -186,7 +186,7 @@ exports[`PopularKeywordsWidget should render the generic error variant when the 
 </div>
 `;
 
-exports[`PopularKeywordsWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
+exports[`PopularKeywordsWidget > should render the insufficient permissions error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -249,7 +249,7 @@ exports[`PopularKeywordsWidget should render the insufficient permissions error 
 </div>
 `;
 
-exports[`PopularKeywordsWidget should render the loading state while resolving the report 1`] = `
+exports[`PopularKeywordsWidget > should render the loading state while resolving the report 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmSearchConsolePopularKeywords googlesitekit-widget--no-padding"

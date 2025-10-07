@@ -68,11 +68,11 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 	const webDataStreamID = '2000';
 
 	const enhancedMeasurementSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
+		'/google-site-kit/v1/modules/analytics-4/data/enhanced-measurement-settings'
 	);
 
 	const fetchDismissItem = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-item'
+		'/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
 	let enhancedMeasurementSettingsMock;

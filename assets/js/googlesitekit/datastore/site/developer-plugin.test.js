@@ -55,7 +55,7 @@ describe( 'core/site developer plugin state', () => {
 			expect( () => {
 				muteFetch(
 					new RegExp(
-						'^/google-site-kit/v1/core/site/data/developer-plugin'
+						'/google-site-kit/v1/core/site/data/developer-plugin'
 					)
 				);
 				registry.dispatch( CORE_SITE ).fetchGetDeveloperPluginState();
@@ -93,7 +93,7 @@ describe( 'core/site developer plugin state', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/site/data/developer-plugin'
+						'/google-site-kit/v1/core/site/data/developer-plugin'
 					),
 					{ body: responseDeveloperPluginState, status: 200 }
 				);
@@ -149,7 +149,7 @@ describe( 'core/site developer plugin state', () => {
 				};
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/site/data/developer-plugin'
+						'/google-site-kit/v1/core/site/data/developer-plugin'
 					),
 					{ body: response, status: 500 }
 				);

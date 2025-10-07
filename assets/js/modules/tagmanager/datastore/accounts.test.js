@@ -109,7 +109,7 @@ describe( 'modules/tagmanager accounts', () => {
 				// getAccounts() will trigger a network request as resolver is invalidated.
 				muteFetch(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/accounts'
+						'/google-site-kit/v1/modules/tagmanager/data/accounts'
 					),
 					[]
 				);
@@ -135,7 +135,7 @@ describe( 'modules/tagmanager accounts', () => {
 
 				muteFetch(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+						'/google-site-kit/v1/modules/tagmanager/data/containers'
 					),
 					[]
 				);
@@ -244,7 +244,7 @@ describe( 'modules/tagmanager accounts', () => {
 				} );
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+						'/google-site-kit/v1/modules/tagmanager/data/containers'
 					),
 					responsePromise
 				);
@@ -258,7 +258,7 @@ describe( 'modules/tagmanager accounts', () => {
 
 				expect( fetchMock ).toHaveFetched(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+						'/google-site-kit/v1/modules/tagmanager/data/containers'
 					)
 				);
 				expect(
@@ -662,14 +662,14 @@ describe( 'modules/tagmanager accounts', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.get(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/accounts'
+						'/google-site-kit/v1/modules/tagmanager/data/accounts'
 					),
 					{ body: fixtures.accounts, status: 200 }
 				);
 				// Mute fetch for containers request triggered in the resolver from auto-selecting first account.
 				muteFetch(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+						'/google-site-kit/v1/modules/tagmanager/data/containers'
 					),
 					[]
 				);
@@ -689,7 +689,7 @@ describe( 'modules/tagmanager accounts', () => {
 				expect( fetchMock ).toHaveFetchedTimes(
 					1,
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/accounts'
+						'/google-site-kit/v1/modules/tagmanager/data/accounts'
 					)
 				);
 				expect( accounts ).toEqual( fixtures.accounts );
@@ -703,7 +703,7 @@ describe( 'modules/tagmanager accounts', () => {
 				// Mute fetch for containers request triggered in the resolver from auto-selecting first account.
 				muteFetch(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/containers'
+						'/google-site-kit/v1/modules/tagmanager/data/containers'
 					),
 					[]
 				);
@@ -719,7 +719,7 @@ describe( 'modules/tagmanager accounts', () => {
 				expect( accounts ).toEqual( fixtures.accounts );
 				expect( fetchMock ).not.toHaveFetched(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/accounts'
+						'/google-site-kit/v1/modules/tagmanager/data/accounts'
 					)
 				);
 			} );
@@ -750,7 +750,7 @@ describe( 'modules/tagmanager accounts', () => {
 				};
 				fetchMock.get(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/accounts'
+						'/google-site-kit/v1/modules/tagmanager/data/accounts'
 					),
 					{ body: response, status: 500 }
 				);
@@ -774,11 +774,11 @@ describe( 'modules/tagmanager accounts', () => {
 
 		describe( 'isDoingGetAccounts', () => {
 			it( 'returns true while the request is in progress', async () => {
-				jest.useFakeTimers();
+				vi.useFakeTimers();
 
 				muteFetch(
 					new RegExp(
-						'^/google-site-kit/v1/modules/tagmanager/data/accounts'
+						'/google-site-kit/v1/modules/tagmanager/data/accounts'
 					),
 					[]
 				);
@@ -788,7 +788,7 @@ describe( 'modules/tagmanager accounts', () => {
 
 				registry.select( MODULES_TAGMANAGER ).getAccounts();
 
-				jest.runAllTimers();
+				vi.runAllTimers();
 
 				expect(
 					registry.select( MODULES_TAGMANAGER ).isDoingGetAccounts()

@@ -38,7 +38,7 @@ describe( 'InfoNotice', () => {
 	} );
 
 	it( 'should invoke the onDismiss callback when clicked', () => {
-		const onClick = jest.fn();
+		const onClick = vi.fn();
 
 		const { getByText } = render(
 			<InfoNotice

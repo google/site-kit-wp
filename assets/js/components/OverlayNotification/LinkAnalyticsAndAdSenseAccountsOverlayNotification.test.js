@@ -60,10 +60,10 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 	let registry;
 
 	const fetchGetDismissedItems = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismissed-items'
+		'/google-site-kit/v1/core/user/data/dismissed-items'
 	);
 	const fetchDismissItem = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-item'
+		'/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
 	beforeEach( () => {

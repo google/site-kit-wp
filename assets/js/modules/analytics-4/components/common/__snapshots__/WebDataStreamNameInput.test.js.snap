@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`WebDataStreamNameInput should render when option to create a new web data stream is chosen 1`] = `
+exports[`WebDataStreamNameInput > should render when option to create a new web data stream is chosen 1`] = `
 <div>
   <div
     class="googlesitekit-analytics-webdatastreamname"
@@ -39,7 +39,7 @@ exports[`WebDataStreamNameInput should render when option to create a new web da
 </div>
 `;
 
-exports[`WebDataStreamNameInput should show error state if web data stream name already exists 1`] = `
+exports[`WebDataStreamNameInput > should show error state if web data stream name already exists 1`] = `
 <div>
   <div
     class="googlesitekit-analytics-webdatastreamname"
@@ -99,7 +99,7 @@ exports[`WebDataStreamNameInput should show error state if web data stream name 
 </div>
 `;
 
-exports[`WebDataStreamNameInput should show error state if web data stream name is not set 1`] = `
+exports[`WebDataStreamNameInput > should show error state if web data stream name is not set 1`] = `
 <div>
   <div
     class="googlesitekit-analytics-webdatastreamname"

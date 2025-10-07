@@ -83,7 +83,7 @@ describe( 'DataBlock', () => {
 	} );
 
 	it( 'should handle click events when in button context', () => {
-		const handleStatSelection = jest.fn();
+		const handleStatSelection = vi.fn();
 		const stat = 1;
 		const { getByRole } = render(
 			<DataBlock
@@ -98,7 +98,7 @@ describe( 'DataBlock', () => {
 	} );
 
 	it( 'should not handle click events when gathering data', () => {
-		const handleStatSelection = jest.fn();
+		const handleStatSelection = vi.fn();
 		const { getByRole } = render(
 			<DataBlock
 				context="button"
@@ -112,7 +112,7 @@ describe( 'DataBlock', () => {
 	} );
 
 	it( 'should handle keyboard events when in button context', () => {
-		const handleStatSelection = jest.fn();
+		const handleStatSelection = vi.fn();
 		const stat = 1;
 		const { getByRole } = render(
 			<DataBlock

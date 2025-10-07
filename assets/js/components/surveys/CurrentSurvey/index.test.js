@@ -48,7 +48,7 @@ const STRING_210_CHARACTERS = `${ STRING_200_CHARACTERS } rhoncus n`;
 
 describe( 'CurrentSurvey', () => {
 	const surveyEventRegexp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/survey-event'
+		'/google-site-kit/v1/core/user/data/survey-event'
 	);
 
 	let registry;
@@ -827,7 +827,7 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( 'should render nothing if the survey is dismissed', () => {
-		jest.useFakeTimers();
+		vi.useFakeTimers();
 
 		provideCurrentSurvey( registry );
 
@@ -841,7 +841,7 @@ describe( 'CurrentSurvey', () => {
 			expect( container ).toBeEmptyDOMElement();
 		}, 1000 );
 
-		jest.runAllTimers();
+		vi.runAllTimers();
 	} );
 
 	it( 'should render the completed survey component if all questions have been answered', () => {

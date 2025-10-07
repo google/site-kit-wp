@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`CurrentSurvey should render a rating question when the \`question_type\` is 'rating' 1`] = `
+exports[`CurrentSurvey > should render a rating question when the \`question_type\` is 'rating' 1`] = `
 <div>
   <div
     class="googlesitekit-survey"
@@ -145,7 +145,7 @@ exports[`CurrentSurvey should render a rating question when the \`question_type\
 </div>
 `;
 
-exports[`CurrentSurvey should render a survey when one exists in the datastore 1`] = `
+exports[`CurrentSurvey > should render a survey when one exists in the datastore 1`] = `
 <div>
   <div
     class="googlesitekit-survey"
@@ -290,7 +290,7 @@ exports[`CurrentSurvey should render a survey when one exists in the datastore 1
 </div>
 `;
 
-exports[`CurrentSurvey should render the completed survey component if all questions have been answered 1`] = `
+exports[`CurrentSurvey > should render the completed survey component if all questions have been answered 1`] = `
 <div>
   <div
     class="googlesitekit-survey"
@@ -364,7 +364,7 @@ exports[`CurrentSurvey should render the completed survey component if all quest
 </div>
 `;
 
-exports[`CurrentSurvey should trigger the first completion when no matching trigger_conditions are met 1`] = `
+exports[`CurrentSurvey > should trigger the first completion when no matching trigger_conditions are met 1`] = `
 <div>
   <div
     class="googlesitekit-survey"

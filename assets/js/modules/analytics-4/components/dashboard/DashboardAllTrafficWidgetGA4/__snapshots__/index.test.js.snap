@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`DashboardAllTrafficWidgetGA4 should render an error state if there is a report error 1`] = `
+exports[`DashboardAllTrafficWidgetGA4 > should render an error state if there is a report error 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsAllTrafficGA4"
@@ -55,7 +55,7 @@ exports[`DashboardAllTrafficWidgetGA4 should render an error state if there is a
 </div>
 `;
 
-exports[`DashboardAllTrafficWidgetGA4 should render the widget 1`] = `
+exports[`DashboardAllTrafficWidgetGA4 > should render the widget 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsAllTrafficGA4 googlesitekit-widget--no-padding googlesitekit-widget--footer-v2 googlesitekit-widget__analytics--all-traffic"

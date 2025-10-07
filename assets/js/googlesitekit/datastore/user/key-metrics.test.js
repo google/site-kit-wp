@@ -71,7 +71,7 @@ describe( 'core/user key metrics', () => {
 	let store;
 
 	const coreKeyMetricsEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/key-metrics'
+		'/google-site-kit/v1/core/user/data/key-metrics'
 	);
 	const coreKeyMetricsExpectedResponse = {
 		widgetSlugs: [
@@ -82,10 +82,10 @@ describe( 'core/user key metrics', () => {
 	};
 
 	const coreUserAuthenticationEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/authentication'
+		'/google-site-kit/v1/core/user/data/authentication'
 	);
 	const coreUserInputSettingsEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/user-input-settings'
+		'/google-site-kit/v1/core/user/data/user-input-settings'
 	);
 	const coreUserInputSettingsExpectedResponse = {
 		purpose: {
@@ -130,7 +130,7 @@ describe( 'core/user key metrics', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/core/user/data/user-input-settings'
+						'/google-site-kit/v1/core/user/data/user-input-settings'
 					),
 					{
 						body: {
@@ -217,7 +217,7 @@ describe( 'core/user key metrics', () => {
 			it( 'should return undefined if user input settings are not resolved', async () => {
 				freezeFetch(
 					new RegExp(
-						'^/google-site-kit/v1/core/user/data/user-input-settings'
+						'/google-site-kit/v1/core/user/data/user-input-settings'
 					)
 				);
 

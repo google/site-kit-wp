@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import fetchMock from 'fetch-mock';
+import fetchMock from '@fetch-mock/vitest';
 import { debounce, keyBy, mapValues } from 'lodash';
 
 /**
@@ -545,7 +545,7 @@ export function provideWidgetRegistrations(
  * @param {*}                                   [response] Optional. Response to return.
  */
 export function muteFetch( matcher, response = {} ) {
-	fetchMock.once( matcher, { body: response, status: 200 } );
+	fetchMock.route( matcher, { body: response, status: 200 }, { repeat: 1 } );
 }
 
 /**
@@ -563,7 +563,7 @@ export function muteFetch( matcher, response = {} ) {
  * @param {number}                              [options.repeat] Optional. Number of times to mock the request. Defaults to 1.
  */
 export function freezeFetch( matcher, { repeat = 1 } = {} ) {
-	fetchMock.mock( matcher, new Promise( () => {} ), { repeat } );
+	fetchMock.route( matcher, new Promise( () => {} ), { repeat } );
 }
 
 /**
@@ -684,15 +684,12 @@ export function waitForTimeouts( timeout ) {
  */
 export function isUsingFakeTimers() {
 	// Check if `setTimeout()` is mocked (works in all Jest versions).
-	let fakeTimersActive = jest.isMockFunction( setTimeout );
+	let fakeTimersActive = vi.isMockFunction( setTimeout );
 
 	// Additional check for Jest 29+ - check if advance functions exist.
 	// These functions only exist when fake timers are enabled, and check
 	// the global `setTimeout()` properties without calling warning-generating functions.
-	if (
-		! fakeTimersActive &&
-		typeof jest.advanceTimersByTime === 'function'
-	) {
+	if ( ! fakeTimersActive && typeof vi.advanceTimersByTime === 'function' ) {
 		// In fake timer mode, `setTimeout()` has additional properties.
 		try {
 			fakeTimersActive =
@@ -714,6 +711,7 @@ export function isUsingFakeTimers() {
  *
  * @since 1.39.0
  * @since 1.141.0 Reimplemented using debounced timer for reliability. Not compatible with fake timers.
+ * @deprecated Seems not to be used anywhere and broken with vitest so remove.
  *
  * @param {Object} registry WP data registry instance.
  * @return {Function} Function to await all registry updates since creation.

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`WPDashboardReportError should only render one error per module when there are multiple instances with same error 1`] = `
+exports[`WPDashboardReportError > should only render one error per module when there are multiple instances with same error 1`] = `
 <div>
   <div>
     <div

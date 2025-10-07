@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`SearchFunnelWidgetGA4 should not render the Activate Analytics CTA when the Analytics module is not available 1`] = `
+exports[`SearchFunnelWidgetGA4 > should not render the Activate Analytics CTA when the Analytics module is not available 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--searchFunnel googlesitekit-widget--no-padding googlesitekit-widget--with-header"
@@ -43,7 +43,10 @@ exports[`SearchFunnelWidgetGA4 should not render the Activate Analytics CTA when
                     class="googlesitekit-data-block__title-datapoint-wrapper"
                   >
                     <h3
-                      class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
+                      class="googlesitekit-typography 
+						googlesitekit-subheading-1
+						googlesitekit-data-block__title
+					 googlesitekit-typography--title googlesitekit-typography--small"
                     >
                       <span
                         class="googlesitekit-data-block__title-inner"
@@ -90,7 +93,10 @@ exports[`SearchFunnelWidgetGA4 should not render the Activate Analytics CTA when
                     class="googlesitekit-data-block__title-datapoint-wrapper"
                   >
                     <h3
-                      class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
+                      class="googlesitekit-typography 
+						googlesitekit-subheading-1
+						googlesitekit-data-block__title
+					 googlesitekit-typography--title googlesitekit-typography--small"
                     >
                       <span
                         class="googlesitekit-data-block__title-inner"
@@ -190,7 +196,7 @@ exports[`SearchFunnelWidgetGA4 should not render the Activate Analytics CTA when
 </div>
 `;
 
-exports[`SearchFunnelWidgetGA4 should render the Search Funnel Widget, including the Activate Analytics CTA 1`] = `
+exports[`SearchFunnelWidgetGA4 > should render the Search Funnel Widget, including the Activate Analytics CTA 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--searchFunnel googlesitekit-widget--no-padding googlesitekit-widget--with-header"
@@ -233,7 +239,10 @@ exports[`SearchFunnelWidgetGA4 should render the Search Funnel Widget, including
                     class="googlesitekit-data-block__title-datapoint-wrapper"
                   >
                     <h3
-                      class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
+                      class="googlesitekit-typography 
+						googlesitekit-subheading-1
+						googlesitekit-data-block__title
+					 googlesitekit-typography--title googlesitekit-typography--small"
                     >
                       <span
                         class="googlesitekit-data-block__title-inner"
@@ -280,7 +289,10 @@ exports[`SearchFunnelWidgetGA4 should render the Search Funnel Widget, including
                     class="googlesitekit-data-block__title-datapoint-wrapper"
                   >
                     <h3
-                      class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
+                      class="googlesitekit-typography 
+						googlesitekit-subheading-1
+						googlesitekit-data-block__title
+					 googlesitekit-typography--title googlesitekit-typography--small"
                     >
                       <span
                         class="googlesitekit-data-block__title-inner"

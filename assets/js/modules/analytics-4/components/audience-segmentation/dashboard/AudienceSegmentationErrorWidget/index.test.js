@@ -46,12 +46,12 @@ import {
 	setViewportWidth,
 } from '../../../../../../../../tests/js/viewport-width-utils';
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
+vi.mock( 'react-use', () => ( {
+	...vi.requireActual( 'react-use' ),
+	useIntersection: vi.fn(),
 } ) );
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceSegmentationErrorWidget', () => {
@@ -321,7 +321,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 
 		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
-		const handleRetrySpy = jest.fn();
+		const handleRetrySpy = vi.fn();
 
 		const { container, getByText, getByRole, waitForRegistry } = render(
 			<WidgetWithComponentProps

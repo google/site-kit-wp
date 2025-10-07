@@ -29,7 +29,7 @@ import {
 import * as tracking from '@/js/util/tracking';
 import ChangeGroupsLink from './ChangeGroupsLink';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'ChangeGroupsLink', () => {

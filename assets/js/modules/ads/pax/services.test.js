@@ -33,7 +33,7 @@ import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import { createPaxServices } from './services';
 
 const getTokenEndpoint = new RegExp(
-	'^/google-site-kit/v1/core/user/data/get-token'
+	'/google-site-kit/v1/core/user/data/get-token'
 );
 
 describe( 'PAX partner services', () => {
@@ -47,7 +47,7 @@ describe( 'PAX partner services', () => {
 		} );
 
 		afterEach( () => {
-			jest.useRealTimers();
+			vi.useRealTimers();
 		} );
 
 		it( 'should return object with correct services', () => {
@@ -125,7 +125,7 @@ describe( 'PAX partner services', () => {
 
 				it( 'should fetch again if called again after 30 seconds', async () => {
 					// see https://github.com/jestjs/jest/issues/3465#issuecomment-623393230
-					jest.useFakeTimers( 'modern' );
+					vi.useFakeTimers( 'modern' );
 					fetchMock.post( getTokenEndpoint, {
 						body: { token: '1234567890' },
 					} );
@@ -134,7 +134,7 @@ describe( 'PAX partner services', () => {
 
 					expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-					jest.advanceTimersByTime( 31_000 );
+					vi.advanceTimersByTime( 31_000 );
 
 					await services.authenticationService.get();
 
@@ -201,7 +201,7 @@ describe( 'PAX partner services', () => {
 		describe( 'campaignService', () => {
 			describe( 'notifyNewCampaignCreated', () => {
 				it( 'calls the given function when provided', async () => {
-					const onCampaignCreated = jest.fn();
+					const onCampaignCreated = vi.fn();
 					services = createPaxServices( registry, {
 						onCampaignCreated,
 					} );
@@ -377,7 +377,7 @@ describe( 'PAX partner services', () => {
 		describe( 'userActionService', () => {
 			describe( 'finishAndCloseSignUpFlow', () => {
 				it( 'calls the given function when provided', async () => {
-					const onFinishAndCloseSignUpFlow = jest.fn();
+					const onFinishAndCloseSignUpFlow = vi.fn();
 					services = createPaxServices( registry, {
 						onFinishAndCloseSignUpFlow,
 					} );

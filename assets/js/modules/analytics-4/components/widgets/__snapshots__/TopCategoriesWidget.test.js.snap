@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`TopCategoriesWidget should render correctly with the expected metrics 1`] = `
+exports[`TopCategoriesWidget > should render correctly with the expected metrics 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopCategories googlesitekit-widget--no-padding"
@@ -100,7 +100,7 @@ exports[`TopCategoriesWidget should render correctly with the expected metrics 1
 </div>
 `;
 
-exports[`TopCategoriesWidget should render the custom dimension error when there is an error creating the custom dimension 1`] = `
+exports[`TopCategoriesWidget > should render the custom dimension error when there is an error creating the custom dimension 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -177,7 +177,7 @@ exports[`TopCategoriesWidget should render the custom dimension error when there
 </div>
 `;
 
-exports[`TopCategoriesWidget should render the generic error variant when the report fetch fails 1`] = `
+exports[`TopCategoriesWidget > should render the generic error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -239,7 +239,7 @@ exports[`TopCategoriesWidget should render the generic error variant when the re
 </div>
 `;
 
-exports[`TopCategoriesWidget should render the insufficient permissions error variant when the report fetch fails 1`] = `
+exports[`TopCategoriesWidget > should render the insufficient permissions error variant when the report fetch fails 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"
@@ -302,7 +302,7 @@ exports[`TopCategoriesWidget should render the insufficient permissions error va
 </div>
 `;
 
-exports[`TopCategoriesWidget should render the loading state while resolving the report 1`] = `
+exports[`TopCategoriesWidget > should render the loading state while resolving the report 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopCategories googlesitekit-widget--no-padding"
@@ -362,7 +362,7 @@ exports[`TopCategoriesWidget should render the loading state while resolving the
 </div>
 `;
 
-exports[`TopCategoriesWidget should render the missing custom dimension error when the required custom dimension is not available 1`] = `
+exports[`TopCategoriesWidget > should render the missing custom dimension error when the required custom dimension is not available 1`] = `
 <div>
   <div
     class="googlesitekit-km-widget-tile--error"

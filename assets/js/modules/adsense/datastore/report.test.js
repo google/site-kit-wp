@@ -59,7 +59,7 @@ describe( 'modules/adsense report', () => {
 
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/adsense/data/report'
+						'/google-site-kit/v1/modules/adsense/data/report'
 					),
 					{ body: report }
 				);
@@ -111,7 +111,7 @@ describe( 'modules/adsense report', () => {
 				};
 				fetchMock.getOnce(
 					new RegExp(
-						'^/google-site-kit/v1/modules/adsense/data/report'
+						'/google-site-kit/v1/modules/adsense/data/report'
 					),
 					{ body: response, status: 500 }
 				);

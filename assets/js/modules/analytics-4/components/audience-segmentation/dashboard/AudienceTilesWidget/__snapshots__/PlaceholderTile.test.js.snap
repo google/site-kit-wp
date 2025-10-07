@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`PlaceholderTile should render correctly when there are no configurable non default audiences available 1`] = `
+exports[`PlaceholderTile > should render correctly when there are no configurable non default audiences available 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-audience-segmentation-tile-placeholder"
@@ -51,7 +51,7 @@ exports[`PlaceholderTile should render correctly when there are no configurable 
 </div>
 `;
 
-exports[`PlaceholderTile when there are configurable non default audiences available should render correctly 1`] = `
+exports[`PlaceholderTile > when there are configurable non default audiences available > should render correctly 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsAudienceTiles googlesitekit-audience-segmentation-tile-placeholder"

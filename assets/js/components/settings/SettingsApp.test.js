@@ -43,7 +43,7 @@ import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 
 const coreUserTrackingSettingsEndpointRegExp = new RegExp(
-	'^/google-site-kit/v1/core/user/data/tracking'
+	'/google-site-kit/v1/core/user/data/tracking'
 );
 const coreUserTrackingResponse = { status: 200, body: { enabled: false } };
 
@@ -121,10 +121,10 @@ describe( 'SettingsApp', () => {
 		);
 
 		muteFetch(
-			new RegExp( '^/google-site-kit/v1/modules/search-console/data' )
+			new RegExp( '/google-site-kit/v1/modules/search-console/data' )
 		);
 		muteFetch(
-			new RegExp( '^/google-site-kit/v1/modules/analytics-4/data' )
+			new RegExp( '/google-site-kit/v1/modules/analytics-4/data' )
 		);
 
 		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
@@ -175,10 +175,10 @@ describe( 'SettingsApp', () => {
 		);
 
 		muteFetch(
-			new RegExp( '^/google-site-kit/v1/modules/search-console/data' )
+			new RegExp( '/google-site-kit/v1/modules/search-console/data' )
 		);
 		muteFetch(
-			new RegExp( '^/google-site-kit/v1/modules/analytics-4/data' )
+			new RegExp( '/google-site-kit/v1/modules/analytics-4/data' )
 		);
 
 		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {

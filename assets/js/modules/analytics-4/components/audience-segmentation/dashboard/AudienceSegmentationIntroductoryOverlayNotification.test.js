@@ -51,11 +51,11 @@ import { withNotificationComponentProps } from '@/js/googlesitekit/notifications
 import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
-const getNavigationalScrollTopSpy = jest.spyOn(
+const getNavigationalScrollTopSpy = vi.spyOn(
 	scrollUtils,
 	'getNavigationalScrollTop'
 );
-const scrollToSpy = jest.spyOn( global, 'scrollTo' );
+const scrollToSpy = vi.spyOn( global, 'scrollTo' );
 
 describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 	const AudienceSegmentationIntroductoryOverlayNotificationComponent =
@@ -72,7 +72,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 	let originalViewportWidth;
 
 	const dismissItemEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/dismiss-item'
+		'/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
 	beforeEach( () => {

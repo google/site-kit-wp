@@ -32,7 +32,7 @@ import * as tracking from '@/js/util/tracking';
 import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
 import SettingsCardVisitorGroups from './';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'SettingsCardVisitorGroups', () => {
@@ -125,7 +125,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 
 	describe( 'the "Display visitor groups in dashboard" switch', () => {
 		const audienceSettingsEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/user/data/audience-settings'
+			'/google-site-kit/v1/core/user/data/audience-settings'
 		);
 
 		beforeEach( () => {

@@ -81,11 +81,11 @@ describe( 'SettingsModules', () => {
 
 	it( 'should redirect from #admin to #/admin-settings', async () => {
 		const coreUserTrackingSettingsEndpointRegExp = new RegExp(
-			'^/google-site-kit/v1/core/user/data/tracking'
+			'/google-site-kit/v1/core/user/data/tracking'
 		);
 
 		muteFetch(
-			new RegExp( '^/google-site-kit/v1/modules/search-console/data' )
+			new RegExp( '/google-site-kit/v1/modules/search-console/data' )
 		);
 		const coreUserTrackingResponse = {
 			status: 200,

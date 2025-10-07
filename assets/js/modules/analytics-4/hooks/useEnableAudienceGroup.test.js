@@ -45,29 +45,29 @@ describe( 'useEnableAudienceGroup', () => {
 	let enableAudienceGroupSpy;
 
 	const audienceUserSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/audience-settings'
+		'/google-site-kit/v1/core/user/data/audience-settings'
 	);
 	const audienceSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/save-audience-settings'
+		'/google-site-kit/v1/modules/analytics-4/data/save-audience-settings'
 	);
 	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
+		'/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 	const syncAvailableAudiencesEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+		'/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
 	const expirableItemEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
+		'/google-site-kit/v1/core/user/data/set-expirable-item-timers'
 	);
 
 	const syncAvailableCustomDimensionsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+		'/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 
-		enableAudienceGroupSpy = jest.spyOn(
+		enableAudienceGroupSpy = vi.spyOn(
 			registry.dispatch( MODULES_ANALYTICS_4 ),
 			'enableAudienceGroup'
 		);

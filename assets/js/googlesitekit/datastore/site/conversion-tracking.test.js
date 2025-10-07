@@ -30,7 +30,7 @@ describe( 'core/site Conversion Tracking', () => {
 	let registry;
 
 	const conversionTrackingSettingsEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/site/data/conversion-tracking'
+		'/google-site-kit/v1/core/site/data/conversion-tracking'
 	);
 
 	beforeAll( () => {

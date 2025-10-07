@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`ConsentModeSetupCTABanner should render the banner 1`] = `
+exports[`ConsentModeSetupCTABanner > should render the banner 1`] = `
 <div>
   <section
     id="consent-mode-setup-cta-widget"

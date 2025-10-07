@@ -61,7 +61,7 @@ describe( 'FullScreenMetricSelectionApp', () => {
 	let registry;
 
 	const coreKeyMetricsEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/user/data/key-metrics'
+		'/google-site-kit/v1/core/user/data/key-metrics'
 	);
 
 	const coreUserInputSettingsExpectedResponse = {

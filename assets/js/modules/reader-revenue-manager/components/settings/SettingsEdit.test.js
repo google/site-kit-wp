@@ -41,14 +41,14 @@ import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-mana
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'SettingsEdit', () => {
 	let registry;
 
 	const settingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+		'/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
 	);
 
 	const publication = publications[ 2 ];

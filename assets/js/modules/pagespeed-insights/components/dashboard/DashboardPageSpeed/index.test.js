@@ -127,13 +127,13 @@ describe( 'DashboardPageSpeed', () => {
 
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+				'/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 			)
 		);
 		// Needs second freezeFetch call, as one is for desktop and the other for mobile.
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+				'/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 			)
 		);
 		const { container } = render( <DashboardPageSpeed />, {
@@ -225,13 +225,13 @@ describe( 'DashboardPageSpeed', () => {
 
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+				'/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 			)
 		);
 		// Needs second freezeFetch call, as one is for desktop and the other for mobile.
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+				'/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 			)
 		);
 		const { container, getByRole, queryByRole } = render(
@@ -309,13 +309,13 @@ describe( 'DashboardPageSpeed', () => {
 
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+				'/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 			)
 		);
 		// Needs second freezeFetch call, as one is for desktop and the other for mobile.
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+				'/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 			)
 		);
 		const { getByRole } = render( <DashboardPageSpeed />, {
@@ -344,13 +344,13 @@ describe( 'DashboardPageSpeed', () => {
 
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+				'/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 			)
 		);
 		// Needs second freezeFetch call, as one is for desktop and the other for mobile.
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+				'/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 			)
 		);
 		const { getByRole } = render( <DashboardPageSpeed />, {
@@ -385,13 +385,13 @@ describe( 'DashboardPageSpeed', () => {
 
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+				'/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 			)
 		);
 		// Needs second freezeFetch call, as one is for desktop and the other for mobile.
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+				'/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 			)
 		);
 		const { getByRole } = render( <DashboardPageSpeed />, {

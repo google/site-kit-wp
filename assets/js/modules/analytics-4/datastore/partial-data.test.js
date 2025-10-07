@@ -66,7 +66,7 @@ const resourceAvailabilityDates = {
 };
 
 const saveResourceDataAvailabilityDate = new RegExp(
-	'^/google-site-kit/v1/modules/analytics-4/data/save-resource-data-availability-date'
+	'/google-site-kit/v1/modules/analytics-4/data/save-resource-data-availability-date'
 );
 
 // TODO: use `replaceAll` instead of `replace` across the file when we upgrade our Node version.

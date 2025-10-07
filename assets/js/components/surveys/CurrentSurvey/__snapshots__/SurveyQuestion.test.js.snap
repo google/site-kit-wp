@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`SurveyQuestion should render a multi select question correctly 1`] = `
+exports[`SurveyQuestion > should render a multi select question correctly 1`] = `
 <div>
   <div
     class="googlesitekit-survey__multi-select"
@@ -352,7 +352,7 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
 </div>
 `;
 
-exports[`SurveyQuestion should render a rating question correctly 1`] = `
+exports[`SurveyQuestion > should render a rating question correctly 1`] = `
 <div>
   <div
     class="googlesitekit-survey__question-rating"
@@ -492,7 +492,7 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
 </div>
 `;
 
-exports[`SurveyQuestion should render a single select question correctly 1`] = `
+exports[`SurveyQuestion > should render a single select question correctly 1`] = `
 <div>
   <div
     class="googlesitekit-single-select"
@@ -790,7 +790,7 @@ exports[`SurveyQuestion should render a single select question correctly 1`] = `
 </div>
 `;
 
-exports[`SurveyQuestion should render an open text question correctly 1`] = `
+exports[`SurveyQuestion > should render an open text question correctly 1`] = `
 <div>
   <div
     class="googlesitekit-survey__open-text"

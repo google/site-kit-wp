@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`UserDimensionsPieChart should render the pie chart with data 1`] = `
+exports[`UserDimensionsPieChart > should render the pie chart with data 1`] = `
 <div>
   <div
     class="googlesitekit-widget--analyticsAllTraffic__dimensions-container"
@@ -154,7 +154,7 @@ exports[`UserDimensionsPieChart should render the pie chart with data 1`] = `
 </div>
 `;
 
-exports[`UserDimensionsPieChart should render the zero data state when all metrics in the report are zero 1`] = `
+exports[`UserDimensionsPieChart > should render the zero data state when all metrics in the report are zero 1`] = `
 <div>
   <div
     class="googlesitekit-widget--analyticsAllTraffic__dimensions-container"
@@ -176,7 +176,7 @@ exports[`UserDimensionsPieChart should render the zero data state when all metri
 </div>
 `;
 
-exports[`UserDimensionsPieChart should render the zero data state when the \`dataMap\` has less than 2 items 1`] = `
+exports[`UserDimensionsPieChart > should render the zero data state when the \`dataMap\` has less than 2 items 1`] = `
 <div>
   <div
     class="googlesitekit-widget--analyticsAllTraffic__dimensions-container"

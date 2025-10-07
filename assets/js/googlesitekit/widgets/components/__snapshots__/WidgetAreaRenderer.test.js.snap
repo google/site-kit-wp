@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`WidgetAreaRenderer should combine multiple widgets in RecoverableModules state with the same metadata into a single widget 1`] = `
+exports[`WidgetAreaRenderer > should combine multiple widgets in RecoverableModules state with the same metadata into a single widget 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"
 >
@@ -102,7 +102,7 @@ exports[`WidgetAreaRenderer should combine multiple widgets in RecoverableModule
 </div>
 `;
 
-exports[`WidgetAreaRenderer should not resize widgets in a row that is smaller than 9 columns (3, 12, 3-3) 1`] = `
+exports[`WidgetAreaRenderer > should not resize widgets in a row that is smaller than 9 columns (3, 12, 3-3) 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"
 >
@@ -181,7 +181,7 @@ exports[`WidgetAreaRenderer should not resize widgets in a row that is smaller t
 </div>
 `;
 
-exports[`WidgetAreaRenderer should not resize widgets in a row that is smaller than 9 columns (3-3) 1`] = `
+exports[`WidgetAreaRenderer > should not resize widgets in a row that is smaller than 9 columns (3-3) 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"
 >
@@ -226,7 +226,7 @@ exports[`WidgetAreaRenderer should not resize widgets in a row that is smaller t
 </div>
 `;
 
-exports[`WidgetAreaRenderer should not resize widgets in a row that is smaller than 9 columns (6) 1`] = `
+exports[`WidgetAreaRenderer > should not resize widgets in a row that is smaller than 9 columns (6) 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"
 >
@@ -254,7 +254,7 @@ exports[`WidgetAreaRenderer should not resize widgets in a row that is smaller t
 </div>
 `;
 
-exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column grid (3-3-3-3) 1`] = `
+exports[`WidgetAreaRenderer > should not resize widgets that fit into a 12-column grid (3-3-3-3) 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"
 >
@@ -333,7 +333,7 @@ exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column 
 </div>
 `;
 
-exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column grid (3-3-6) 1`] = `
+exports[`WidgetAreaRenderer > should not resize widgets that fit into a 12-column grid (3-3-6) 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"
 >
@@ -395,7 +395,7 @@ exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column 
 </div>
 `;
 
-exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column grid (3-6-3) 1`] = `
+exports[`WidgetAreaRenderer > should not resize widgets that fit into a 12-column grid (3-6-3) 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"
 >
@@ -457,7 +457,7 @@ exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column 
 </div>
 `;
 
-exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column grid (6-6) 1`] = `
+exports[`WidgetAreaRenderer > should not resize widgets that fit into a 12-column grid (6-6) 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"
 >
@@ -502,7 +502,7 @@ exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column 
 </div>
 `;
 
-exports[`WidgetAreaRenderer should render a hidden widget area when it has no active widget 1`] = `
+exports[`WidgetAreaRenderer > should render a hidden widget area when it has no active widget 1`] = `
 NodeList [
   <div
     class="mdc-layout-grid googlesitekit-hidden googlesitekit-widget-area googlesitekit-widget-area--gridcell-test googlesitekit-widget-area--boxes"
@@ -522,7 +522,7 @@ NodeList [
 ]
 `;
 
-exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns to fill the full 12 columns (3, 12, 3-6, 6 -> 3, 12, 4-8, 6) 1`] = `
+exports[`WidgetAreaRenderer > should resize widgets in a row that spans 9 columns to fill the full 12 columns (3, 12, 3-6, 6 -> 3, 12, 4-8, 6) 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"
 >
@@ -618,7 +618,7 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
 </div>
 `;
 
-exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns to fill the full 12 columns (3-3-3, 6 -> 4-4-4, 6) 1`] = `
+exports[`WidgetAreaRenderer > should resize widgets in a row that spans 9 columns to fill the full 12 columns (3-3-3, 6 -> 4-4-4, 6) 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"
 >
@@ -697,7 +697,7 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
 </div>
 `;
 
-exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns to fill the full 12 columns (3-3-3, 12 -> 4-4-4, 12) 1`] = `
+exports[`WidgetAreaRenderer > should resize widgets in a row that spans 9 columns to fill the full 12 columns (3-3-3, 12 -> 4-4-4, 12) 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"
 >
@@ -776,7 +776,7 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
 </div>
 `;
 
-exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns to fill the full 12 columns (3-3-3, 12, 3-3-3 -> 4-4-4, 12, 4-4-4) 1`] = `
+exports[`WidgetAreaRenderer > should resize widgets in a row that spans 9 columns to fill the full 12 columns (3-3-3, 12, 3-3-3 -> 4-4-4, 12, 4-4-4) 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"
 >
@@ -906,7 +906,7 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
 </div>
 `;
 
-exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns to fill the full 12 columns (12, 3-6 -> 12, 4-8) 1`] = `
+exports[`WidgetAreaRenderer > should resize widgets in a row that spans 9 columns to fill the full 12 columns (12, 3-6 -> 12, 4-8) 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"
 >
@@ -968,7 +968,7 @@ exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns 
 </div>
 `;
 
-exports[`WidgetAreaRenderer should treat widgets that render no content as zero-width (ignoring them) 1`] = `
+exports[`WidgetAreaRenderer > should treat widgets that render no content as zero-width (ignoring them) 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"
 >

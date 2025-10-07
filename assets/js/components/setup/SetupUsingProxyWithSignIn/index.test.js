@@ -34,7 +34,7 @@ import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWith
 import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
-jest.mock(
+vi.mock(
 	'../CompatibilityChecks',
 	() =>
 		( { children } ) =>
@@ -56,10 +56,10 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
 		muteFetch(
-			new RegExp( '^/google-site-kit/v1/core/site/data/connection' )
+			new RegExp( '/google-site-kit/v1/core/site/data/connection' )
 		);
 		muteFetch(
-			new RegExp( '^/google-site-kit/v1/core/user/data/tracking' )
+			new RegExp( '/google-site-kit/v1/core/user/data/tracking' )
 		);
 	} );
 

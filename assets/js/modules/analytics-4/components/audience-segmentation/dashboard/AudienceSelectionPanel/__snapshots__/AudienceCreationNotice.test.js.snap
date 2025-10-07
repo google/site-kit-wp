@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`AudienceCreationNotice should not render the missing scope notice if the user does not have the edit scope but the notice has been dismissed 1`] = `
+exports[`AudienceCreationNotice > should not render the missing scope notice if the user does not have the edit scope but the notice has been dismissed 1`] = `
 <div>
   <div
     class="googlesitekit-audience-selection-panel__audience-creation-notice"
@@ -95,7 +95,7 @@ exports[`AudienceCreationNotice should not render the missing scope notice if th
 </div>
 `;
 
-exports[`AudienceCreationNotice should render the missing scope notice if the user does not have the edit scope 1`] = `
+exports[`AudienceCreationNotice > should render the missing scope notice if the user does not have the edit scope 1`] = `
 <div>
   <div
     class="googlesitekit-audience-selection-panel__audience-creation-notice"
@@ -217,7 +217,7 @@ exports[`AudienceCreationNotice should render the missing scope notice if the us
 </div>
 `;
 
-exports[`AudienceCreationNotice should render the notice if the user has not dismissed the notice and there are 2 available audiences 1`] = `
+exports[`AudienceCreationNotice > should render the notice if the user has not dismissed the notice and there are 2 available audiences 1`] = `
 <div>
   <div
     class="googlesitekit-audience-selection-panel__audience-creation-notice"
@@ -312,7 +312,7 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
 </div>
 `;
 
-exports[`AudienceCreationNotice should render the notice if the user has not dismissed the notice and there is 1 available audience 1`] = `
+exports[`AudienceCreationNotice > should render the notice if the user has not dismissed the notice and there is 1 available audience 1`] = `
 <div>
   <div
     class="googlesitekit-audience-selection-panel__audience-creation-notice"

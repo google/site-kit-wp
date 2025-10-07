@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`ConnectAdSenseCTATileWidget should render a title when only a single Connect AdSense CTA is present 1`] = `
+exports[`ConnectAdSenseCTATileWidget > should render a title when only a single Connect AdSense CTA is present 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--keyMetricsConnectAdSenseCTATile"
@@ -58,7 +58,7 @@ exports[`ConnectAdSenseCTATileWidget should render a title when only a single Co
 </div>
 `;
 
-exports[`ConnectAdSenseCTATileWidget should render the Connect AdSense CTA tile 1`] = `
+exports[`ConnectAdSenseCTATileWidget > should render the Connect AdSense CTA tile 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--keyMetricsConnectAdSenseCTATile"
