@@ -239,21 +239,22 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_M
 	 * @since 1.141.0
 	 * @since 1.142.0 Relocated from REST_Google_Tag_Gateway_Controller.
 	 * @since 1.144.0 Uses Google\GoogleTagGatewayLibrary\RequestHelper to send requests.
+	 * @since 1.163.0 Uses Google\GoogleTagGatewayLibrary\Http\RequestHelper to send requests.
 	 *
 	 * @param string $endpoint The endpoint to check.
 	 * @return bool True if the endpoint is healthy, false otherwise.
 	 */
 	protected function is_endpoint_healthy( $endpoint ) {
-		if ( ! defined( 'IS_GOOGLE_TAG_GATEWAY_TEST' ) ) {
+		if ( ! defined( 'GOOGLESITEKIT_GTG_ENDPOINT_HEALTH_CHECK' ) ) {
 			// TODO: This is a workaround to allow the measurement.php file to be loaded without making a
 			// request, in order to use the RequestHelper class that it defines. We should find a better
 			// solution in the future, but this will involve changes to the measurement.php file.
-			define( 'IS_GOOGLE_TAG_GATEWAY_TEST', true );
+			define( 'GOOGLESITEKIT_GTG_ENDPOINT_HEALTH_CHECK', true );
 		}
 
 		require_once GOOGLESITEKIT_PLUGIN_DIR_PATH . 'gtg/measurement.php';
 
-		$request_helper = new \Google\GoogleTagGatewayLibrary\RequestHelper();
+		$request_helper = new \Google\GoogleTagGatewayLibrary\Http\RequestHelper();
 
 		$response = $request_helper->sendRequest( 'GET', $endpoint );
 
