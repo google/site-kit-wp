@@ -78,6 +78,8 @@ jobs:
     name: JS Tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      JEST_RESULTS_FILE: jest-results.json
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -88,11 +90,11 @@ jobs:
         run: npm i -w assets -w storybook -w tests/js --include-workspace-root
       - name: Jest Tests
         id: test-js
-        run: npm run test:js -- -- --json --outputFile=../../jest-results.json
+        run: npm run test:js -- -- --json --outputFile=../../${{ env.JEST_RESULTS_FILE }}
         continue-on-error: true
       - name: Check for catastrophic suite failures
         id: check-catastrophic
-        run: bash bin/check-catastrophic-jest-failures.sh jest-results.json
+        run: bash tests/js/bin/check-catastrophic-jest-failures.sh "${{ env.JEST_RESULTS_FILE }}"
       - name: Jest Tests (Retry Failures 1)
         id: test-js-retry-1
         run: npm run test:js -- -- --onlyFailures
@@ -106,8 +108,8 @@ jobs:
       - name: Jest Tests (Retry Failures 3)
         run: npm run test:js -- -- --onlyFailures
         if: steps.test-js-retry-2.outcome == 'failure'
-      - name: Clean up jest-results.json
+      - name: Clean up Jest results file
         run: |
-          if [ -f jest-results.json ]; then
-            rm -f jest-results.json
+          if [ -f ${{ env.JEST_RESULTS_FILE }} ]; then
+            rm -f ${{ env.JEST_RESULTS_FILE }}
           fi
