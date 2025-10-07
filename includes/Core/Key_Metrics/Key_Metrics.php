@@ -14,6 +14,8 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
+use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -23,9 +25,10 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * @access private
  * @ignore
  */
-class Key_Metrics {
+class Key_Metrics implements Provides_Feature_Metrics {
 
 	use Method_Proxy_Trait;
+	use Feature_Metrics_Trait;
 
 	/**
 	 * Key_Metrics_Settings instance.
@@ -85,6 +88,7 @@ class Key_Metrics {
 		$this->key_metrics_setup_completed_by->register();
 		$this->key_metrics_setup_new->register();
 		$this->rest_controller->register();
+		$this->register_feature_metrics();
 
 		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
 	}
@@ -102,5 +106,18 @@ class Key_Metrics {
 		$data['keyMetricsSetupCompletedBy'] = (int) $this->key_metrics_setup_completed_by->get();
 
 		return $data;
+	}
+
+	/**
+	 * Gets an array of internal feature metrics.
+	 *
+	 * @since 1.163.0
+	 *
+	 * @return array
+	 */
+	public function get_feature_metrics() {
+		return array(
+			'km_setup' => (bool) $this->key_metrics_setup_completed_by->get(),
+		);
 	}
 }

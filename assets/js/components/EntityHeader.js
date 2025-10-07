@@ -21,7 +21,12 @@
  */
 import { useThrottle } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
-import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import { useCallback, useRef, useState } from '@wordpress/element';
+
+/**
+ * External dependencies
+ */
+import { useEvent } from 'react-use';
 
 /**
  * Internal dependencies
@@ -75,13 +80,7 @@ function EntityHeader() {
 
 	const throttledShortenEntityURL = useThrottle( shortenEntityURL, 150 );
 
-	useEffect( () => {
-		global.addEventListener( 'resize', throttledShortenEntityURL );
-
-		return () => {
-			global.removeEventListener( 'resize', throttledShortenEntityURL );
-		};
-	}, [ throttledShortenEntityURL ] );
+	useEvent( 'resize', throttledShortenEntityURL );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const returnURL = useSelect( ( select ) =>

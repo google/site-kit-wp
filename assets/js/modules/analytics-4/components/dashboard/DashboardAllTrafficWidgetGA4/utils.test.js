@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { withNoHooksAllowed } from '../../../../../../../tests/js/utils/withNoHooksAllowed';
+import { withNoHooksAllowed } from '@/js/util/withNoHooksAllowed';
 import { createZeroDataRow, getTooltipHelp } from './utils';
 
 describe( 'createZeroDataRow', () => {

@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.8
 Requires PHP:      7.4
-Stable tag:        1.161.0
+Stable tag:        1.163.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,28 +109,30 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.161.0 =
+= 1.163.0 =
 
 **Enhanced**
 
-* Add GTG key metrics tracking. See [#11412](https://github.com/google/site-kit-wp/issues/11412).
-* Update Partner Ads Experience to `1.1.10` and add `'site-kit'` identifier. See [#11399](https://github.com/google/site-kit-wp/issues/11399).
-* Add logo and GA events tracking to the AdSense server notifications. See [#11214](https://github.com/google/site-kit-wp/issues/11214).
-* Add integration for WooCommerce with Enhanced Conversions. See [#11006](https://github.com/google/site-kit-wp/issues/11006).
-* Update background colors of various UI elements to use a consistent, lighter gray. Props 10upsimon. See [#5579](https://github.com/google/site-kit-wp/issues/5579).
+* Update `service_version` to `v3` in proxy metadata when the `setupFlowRefresh` feature flag is enabled. See [#11488](https://github.com/google/site-kit-wp/issues/11488).
+* Add "manage email reports" link for Proactive User Engagement feature. See [#11423](https://github.com/google/site-kit-wp/issues/11423).
+* Implement Conversion Events, ABR, Consent Mode, SiwG and Key Metrics feature metrics tracking. See [#11422](https://github.com/google/site-kit-wp/issues/11422).
+* Implement Audience Segmentation, AdSense reporting, Dashboard Sharing and RRM feature metrics tracking. See [#11421](https://github.com/google/site-kit-wp/issues/11421).
+* Add the `googlesitekit-key-metrics-setup` screen, with stub content. See [#11373](https://github.com/google/site-kit-wp/issues/11373).
+* Ensure the `analytics.edit` scope is included in the set of required scopes for the Analytics module when the `setupFlowRefresh` feature flag is enabled. See [#11372](https://github.com/google/site-kit-wp/issues/11372).
+* Conditionally display a “Search Console was successfully set up” toast notification on the Analytics setup screen. See [#11339](https://github.com/google/site-kit-wp/issues/11339).
+* Create `ToastNotice`, a generic component for displaying short-lived "toast" messages. See [#11338](https://github.com/google/site-kit-wp/issues/11338).
+* Ensure all occurrences of the term "consent mode" have the correct casing. Props cnaples79. See [#11076](https://github.com/google/site-kit-wp/issues/11076).
+* Revise the wording on the "Congrats on completing the setup for Site Kit!" banner. See [#9001](https://github.com/google/site-kit-wp/issues/9001).
 
 **Changed**
 
-* Remove support for Analytics Pivot reports. Props 10upsimon. See [#10298](https://github.com/google/site-kit-wp/issues/10298).
+* Consolidate One-tap settings to a single setting. See [#11466](https://github.com/google/site-kit-wp/issues/11466).
+* Update version of NodeJS used to build Site Kit. See [#6026](https://github.com/google/site-kit-wp/issues/6026).
 
 **Fixed**
 
-* Update the Google tag gateway for advertisers `measurement.php` proxy script to the latest version. See [#11389](https://github.com/google/site-kit-wp/issues/11389).
-* Update notification priorities to have more important permission-related notifications have higher priority. See [#11206](https://github.com/google/site-kit-wp/issues/11206).
-* Fix color issues for hX tags created by the `Typography` component. See [#11159](https://github.com/google/site-kit-wp/issues/11159).
-* Fix bug that caused the "Grant permission" button not to appear during failed plugin setup. See [#11063](https://github.com/google/site-kit-wp/issues/11063).
-* Fix a regression that caused the font size of the admin bar data block to appear too small. Props sudhanshugaikwad. See [#11041](https://github.com/google/site-kit-wp/issues/11041).
-* Fix bug that could cause odd error state when answering Key Metrics question about site goals. See [#10645](https://github.com/google/site-kit-wp/issues/10645).
-* Improve/consolidate permissions errors UI when setting up Site Kit. See [#10118](https://github.com/google/site-kit-wp/issues/10118).
+* Fix bug that caused sites that may be unable to install Site Kit from seeing a warning message during plugin setup. See [#11574](https://github.com/google/site-kit-wp/issues/11574).
+* Prevent the checkbox hover/focus state from being clipped on the Ad Blocking Recovery screen. See [#11309](https://github.com/google/site-kit-wp/issues/11309).
+* Fix bug that could cause Enhanced Conversion Tracking to be enabled when it shouldn't be after OAuth login. See [#11196](https://github.com/google/site-kit-wp/issues/11196).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

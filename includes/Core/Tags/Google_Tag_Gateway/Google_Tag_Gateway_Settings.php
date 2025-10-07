@@ -111,7 +111,7 @@ class Google_Tag_Gateway_Settings extends Setting {
 	/**
 	 * Checks if Google tag gateway is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.162.0
 	 *
 	 * @return bool True if Google tag gateway is active, false otherwise.
 	 */

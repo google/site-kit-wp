@@ -22,10 +22,6 @@ fi
 status_message "Stopping Docker containers..."
 dc down --remove-orphans
 
-# Download image updates.
-status_message "Downloading Docker image updates..."
-dc pull --quiet
-
 # Launch the containers.
 status_message "Starting Docker containers..."
 dc up -d

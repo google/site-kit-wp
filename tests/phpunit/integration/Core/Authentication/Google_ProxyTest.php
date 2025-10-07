@@ -400,6 +400,9 @@ class Google_ProxyTest extends TestCase {
 	public function test_get_features() {
 		global $wp_version;
 
+		// Remove the filter being added by Modules::register() or any other class during bootstrap.
+		remove_all_filters( 'googlesitekit_feature_metrics' );
+
 		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
 
 		// Create one more administrator and 3 non-administrators.
@@ -431,6 +434,7 @@ class Google_ProxyTest extends TestCase {
 				'active_modules'         => 'site-verification search-console pagespeed-insights',
 				'connected_modules'      => 'site-verification search-console pagespeed-insights',
 				'php_version'            => phpversion(),
+				'feature_metrics'        => array(),
 			),
 			$this->request_args['body'],
 			'Get features request body should contain site credentials and platform information.'

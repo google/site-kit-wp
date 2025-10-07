@@ -944,6 +944,19 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
+	public function test_get_feature_metrics() {
+		update_site_option( 'auto_update_plugins', array( 'other-plugin.php', GOOGLESITEKIT_PLUGIN_BASENAME ) );
+
+		$authentication  = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$feature_metrics = $authentication->get_feature_metrics();
+
+		$this->assertEquals(
+			array( 'auto_updates_enabled' => true ),
+			$feature_metrics,
+			'Feature metrics should indicate that auto-updates are enabled when Site Kit is in the list of auto-update plugins.'
+		);
+	}
+
 	protected function get_user_option_keys() {
 		return array(
 			OAuth_Client::OPTION_ACCESS_TOKEN,
