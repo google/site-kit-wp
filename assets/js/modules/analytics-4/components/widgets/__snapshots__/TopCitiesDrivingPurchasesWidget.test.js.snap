@@ -224,3 +224,63 @@ exports[`TopCitiesDrivingPurchasesWidget > should render the insufficient permis
   </div>
 </div>
 `;
+
+exports[`TopCitiesDrivingPurchasesWidget > should render the loading state while resolving the report 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopCitiesDrivingPurchases googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--table"
+      >
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
+        >
+          <h3
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
+          >
+            Top cities driving purchases
+          </h3>
+          <span
+            class="screen-reader-text"
+          >
+            <span
+              class="googlesitekit-info-tooltip"
+              title="Cities driving the most purchases"
+            >
+              <svg />
+            </span>
+          </span>
+        </div>
+        <div
+          class="googlesitekit-km-widget-tile__body"
+        >
+          <div
+            class="googlesitekit-km-widget-tile__loading"
+          >
+            <div
+              class="googlesitekit-preview-block googlesitekit-km-widget-tile__loading-header"
+              style="width: 100%; height: 14px;"
+            >
+              <div
+                class="googlesitekit-preview-block__wrapper"
+              />
+            </div>
+            <div
+              class="googlesitekit-preview-block googlesitekit-km-widget-tile__loading-body"
+              style="width: 100%; height: 53px;"
+            >
+              <div
+                class="googlesitekit-preview-block__wrapper"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

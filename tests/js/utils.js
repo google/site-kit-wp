@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import fetchMock from 'fetch-mock';
+import fetchMock from '@fetch-mock/vitest';
 import { debounce, keyBy, mapValues } from 'lodash';
 
 /**
@@ -545,7 +545,7 @@ export function provideWidgetRegistrations(
  * @param {*}                                   [response] Optional. Response to return.
  */
 export function muteFetch( matcher, response = {} ) {
-	fetchMock.once( matcher, { body: response, status: 200 } );
+	fetchMock.route( matcher, { body: response, status: 200 }, { repeat: 1 } );
 }
 
 /**
@@ -563,7 +563,7 @@ export function muteFetch( matcher, response = {} ) {
  * @param {number}                              [options.repeat] Optional. Number of times to mock the request. Defaults to 1.
  */
 export function freezeFetch( matcher, { repeat = 1 } = {} ) {
-	fetchMock.mock( matcher, new Promise( () => {} ), { repeat } );
+	fetchMock.route( matcher, new Promise( () => {} ), { repeat } );
 }
 
 /**
