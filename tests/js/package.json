@@ -2,7 +2,7 @@
 	"scripts": {
 		"test": "npm run test:js:watch",
 		"test:js": "cross-env BABEL_ENV=test NODE_ENV=test vitest run --config=./vitest.config.js --passWithNoTests",
-		"test:js:watch": "cross-env BABEL_ENV=test NODE_ENV=test vitest watch"
+		"test:js:watch": "cross-env BABEL_ENV=test NODE_ENV=test vitest watch --bail=1"
 	},
 	"dependencies": {
 		"@wordpress/element": "^2.20.3",

@@ -43,7 +43,7 @@ export default defineConfig( {
 			path.resolve( __dirname, './setup-globals.js' ),
 			path.resolve( __dirname, './vitest-localstorage-mock.js' ),
 			path.resolve( __dirname, './setup-before-after.js' ),
-			path.resolve( __dirname, './vitest-console-matchers.js' ),
+			path.resolve( __dirname, './matchers/matchers.js' ),
 		],
 		transformMode: {
 			web: [ /\.[jt]sx?$/ ],
