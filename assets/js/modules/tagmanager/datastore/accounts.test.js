@@ -774,7 +774,7 @@ describe( 'modules/tagmanager accounts', () => {
 
 		describe( 'isDoingGetAccounts', () => {
 			it( 'returns true while the request is in progress', async () => {
-				jest.useFakeTimers();
+				vi.useFakeTimers();
 
 				muteFetch(
 					new RegExp(
@@ -788,7 +788,7 @@ describe( 'modules/tagmanager accounts', () => {
 
 				registry.select( MODULES_TAGMANAGER ).getAccounts();
 
-				jest.runAllTimers();
+				vi.runAllTimers();
 
 				expect(
 					registry.select( MODULES_TAGMANAGER ).isDoingGetAccounts()

@@ -46,7 +46,7 @@ import { withNotificationComponentProps } from '@/js/googlesitekit/notifications
 import * as tracking from '@/js/util/tracking';
 import { enabledFeatures } from '@/js/features';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'GoogleTagGatewaySetupBanner', () => {
@@ -105,7 +105,7 @@ describe( 'GoogleTagGatewaySetupBanner', () => {
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	} );
 
 	describe( 'checkRequirements', () => {

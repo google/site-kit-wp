@@ -34,7 +34,7 @@ describe( 'core/user initial setup settings', () => {
 	let store;
 
 	const initialSetupSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/initial-setup-settings'
+		'/google-site-kit/v1/core/user/data/initial-setup-settings'
 	);
 
 	let initialSetupSettingsResponse;

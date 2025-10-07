@@ -208,7 +208,7 @@ describe( 'AMPContainerSelect', () => {
 		).toBe( ampContainer.containerId ); // eslint-disable-line sitekit/acronym-case
 
 		// Ensure any pending async updates from the enhanced Select finish before unmount,
-		// preventing setState on unmounted component warnings in Jest.
+		// preventing setState on unmounted component warnings in vi.
 		await waitForRegistry();
 		await waitForDefaultTimeouts();
 	} );

@@ -46,7 +46,7 @@ import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
 import SetupCTA from './SetupCTA';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'SettingsCardVisitorGroups SetupCTA', () => {
@@ -93,7 +93,7 @@ describe( 'SettingsCardVisitorGroups SetupCTA', () => {
 	} );
 
 	afterEach( () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	} );
 
 	it( 'should render the setup CTA', () => {

@@ -41,7 +41,7 @@ describe( 'UserInputEditModeContent', () => {
 	} );
 
 	const defaultProps = {
-		onChange: jest.fn(),
+		onChange: vi.fn(),
 		options: {
 			option1: 'Option 1',
 			option2: 'Option 2',

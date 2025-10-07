@@ -24,7 +24,7 @@ import ToastNotice from './ToastNotice';
 
 describe( 'ToastNotice', () => {
 	beforeEach( () => {
-		jest.useFakeTimers();
+		vi.useFakeTimers();
 	} );
 
 	it( 'should disappear after 5500ms', () => {
@@ -34,7 +34,7 @@ describe( 'ToastNotice', () => {
 		expect( toast ).toBeInTheDocument();
 
 		act( () => {
-			jest.advanceTimersByTime( 5500 );
+			vi.advanceTimersByTime( 5500 );
 		} );
 
 		expect( toast ).not.toBeInTheDocument();
