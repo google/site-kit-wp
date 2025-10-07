@@ -26,8 +26,8 @@ import { omit } from 'lodash';
  */
 import {
 	createInterpolateElement,
-	Fragment,
 	useCallback,
+	Fragment,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
