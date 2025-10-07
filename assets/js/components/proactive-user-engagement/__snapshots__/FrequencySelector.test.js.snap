@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`FrequencySelector Story states (visual + DOM) Monthly selected renders and matches snapshot 1`] = `
+exports[`FrequencySelector > Story states (visual + DOM) > Monthly selected renders and matches snapshot 1`] = `
 <div
   aria-label="Frequency"
   class="googlesitekit-frequency-selector"
@@ -87,7 +87,7 @@ exports[`FrequencySelector Story states (visual + DOM) Monthly selected renders 
 </div>
 `;
 
-exports[`FrequencySelector Story states (visual + DOM) Previously saved frequency (same as the current frequency) shows saved indicator on selected card and matches snapshot 1`] = `
+exports[`FrequencySelector > Story states (visual + DOM) > Previously saved frequency (same as the current frequency) shows saved indicator on selected card and matches snapshot 1`] = `
 <div
   aria-label="Frequency"
   class="googlesitekit-frequency-selector"
@@ -179,7 +179,7 @@ exports[`FrequencySelector Story states (visual + DOM) Previously saved frequenc
 </div>
 `;
 
-exports[`FrequencySelector Story states (visual + DOM) Previously saved frequency (saved monthly, current weekly) indicates saved on monthly only and matches snapshot 1`] = `
+exports[`FrequencySelector > Story states (visual + DOM) > Previously saved frequency (saved monthly, current weekly) indicates saved on monthly only and matches snapshot 1`] = `
 <div
   aria-label="Frequency"
   class="googlesitekit-frequency-selector"
@@ -271,7 +271,7 @@ exports[`FrequencySelector Story states (visual + DOM) Previously saved frequenc
 </div>
 `;
 
-exports[`FrequencySelector Story states (visual + DOM) Quarterly selected renders and matches snapshot 1`] = `
+exports[`FrequencySelector > Story states (visual + DOM) > Quarterly selected renders and matches snapshot 1`] = `
 <div
   aria-label="Frequency"
   class="googlesitekit-frequency-selector"
@@ -358,7 +358,7 @@ exports[`FrequencySelector Story states (visual + DOM) Quarterly selected render
 </div>
 `;
 
-exports[`FrequencySelector Story states (visual + DOM) Weekly selected (default Monday) renders and matches snapshot 1`] = `
+exports[`FrequencySelector > Story states (visual + DOM) > Weekly selected (default Monday) renders and matches snapshot 1`] = `
 <div
   aria-label="Frequency"
   class="googlesitekit-frequency-selector"
@@ -445,7 +445,7 @@ exports[`FrequencySelector Story states (visual + DOM) Weekly selected (default 
 </div>
 `;
 
-exports[`FrequencySelector Story states (visual + DOM) Weekly selected with Sunday start shows "Sent every Sunday" and matches snapshot 1`] = `
+exports[`FrequencySelector > Story states (visual + DOM) > Weekly selected with Sunday start shows "Sent every Sunday" and matches snapshot 1`] = `
 <div
   aria-label="Frequency"
   class="googlesitekit-frequency-selector"

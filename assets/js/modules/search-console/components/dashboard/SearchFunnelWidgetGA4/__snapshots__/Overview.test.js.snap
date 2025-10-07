@@ -18,12 +18,11 @@ exports[`Overview > should not render the Activate Analytics CTA when the Analyt
             class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
           >
             <div
-              aria-disabled="true"
               aria-label="Total Impressions"
               aria-pressed="true"
-              class="googlesitekit-data-block googlesitekit-data-block--impressions googlesitekit-data-block--button-1 googlesitekit-data-block--button googlesitekit-data-block--selected googlesitekit-data-block--is-gathering-data"
+              class="googlesitekit-data-block googlesitekit-data-block--impressions googlesitekit-data-block--button-1 googlesitekit-data-block--button googlesitekit-data-block--selected"
               role="button"
-              tabindex="-1"
+              tabindex="0"
             >
               <div
                 class="googlesitekit-data-block__title-datapoint-wrapper"
@@ -40,13 +39,28 @@ exports[`Overview > should not render the Activate Analytics CTA when the Analyt
                     Total Impressions
                   </span>
                 </h3>
+                <div
+                  class="googlesitekit-data-block__datapoint"
+                >
+                  <span
+                    class="googlesitekit-data-block__datapoint--resize"
+                  >
+                    7.9K
+                  </span>
+                </div>
               </div>
               <div
-                class="googlesitekit-gathering-data-notice googlesitekit-gathering-data-notice--has-style-default"
+                class="googlesitekit-data-block__change-source-wrapper"
               >
-                <span>
-                  Gathering data…
-                </span>
+                <div
+                  class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
+                >
+                  <span
+                    class="googlesitekit-data-block__value"
+                  >
+                    0%
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -54,12 +68,11 @@ exports[`Overview > should not render the Activate Analytics CTA when the Analyt
             class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
           >
             <div
-              aria-disabled="true"
               aria-label="Total Clicks"
               aria-pressed="false"
-              class="googlesitekit-data-block googlesitekit-data-block--clicks googlesitekit-data-block--button-2 googlesitekit-data-block--button googlesitekit-data-block--is-gathering-data"
+              class="googlesitekit-data-block googlesitekit-data-block--clicks googlesitekit-data-block--button-2 googlesitekit-data-block--button"
               role="button"
-              tabindex="-1"
+              tabindex="0"
             >
               <div
                 class="googlesitekit-data-block__title-datapoint-wrapper"
@@ -76,13 +89,28 @@ exports[`Overview > should not render the Activate Analytics CTA when the Analyt
                     Total Clicks
                   </span>
                 </h3>
+                <div
+                  class="googlesitekit-data-block__datapoint"
+                >
+                  <span
+                    class="googlesitekit-data-block__datapoint--resize"
+                  >
+                    123
+                  </span>
+                </div>
               </div>
               <div
-                class="googlesitekit-gathering-data-notice googlesitekit-gathering-data-notice--has-style-default"
+                class="googlesitekit-data-block__change-source-wrapper"
               >
-                <span>
-                  Gathering data…
-                </span>
+                <div
+                  class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
+                >
+                  <span
+                    class="googlesitekit-data-block__value"
+                  >
+                    0%
+                  </span>
+                </div>
               </div>
             </div>
           </div>

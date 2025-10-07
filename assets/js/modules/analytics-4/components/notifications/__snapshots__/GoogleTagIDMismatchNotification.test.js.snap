@@ -63,6 +63,7 @@ exports[`GoogleTagIDMismatchNotification > should render the "alternative GA4 Co
               </div>
               <div
                 class="googlesitekit-banner__svg-wrapper googlesitekit-banner__svg-wrapper--center"
+                style="background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+);"
               />
             </div>
           </div>
@@ -126,6 +127,7 @@ exports[`GoogleTagIDMismatchNotification > should render the "alternative GA4 Co
               </div>
               <div
                 class="googlesitekit-banner__svg-wrapper googlesitekit-banner__svg-wrapper--center"
+                style="background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+);"
               />
             </div>
           </div>
