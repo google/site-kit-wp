@@ -29,7 +29,7 @@ import { useDispatch } from '@/js/googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/proactive-user-engagement/constants';
 import ManageEmailReportsIcon from '@/svg/icons/manage-email-reports.svg';
-import { Button } from '@/js/googlesitekit-components';
+import { Button } from 'googlesitekit-components';
 
 export default function ManageEmailReports() {
 	const { setValue } = useDispatch( CORE_UI );
