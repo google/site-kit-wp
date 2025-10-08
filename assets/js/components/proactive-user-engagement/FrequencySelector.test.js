@@ -49,10 +49,10 @@ function setupRegistry(
 	}
 }
 
-function renderSelector( registry ) {
+function renderSelector( registry, props = {} ) {
 	const view = render(
 		<div style={ { maxWidth: 920 } }>
-			<FrequencySelector />
+			<FrequencySelector { ...props } />
 		</div>,
 		{ registry }
 	);
@@ -119,7 +119,9 @@ describe( 'FrequencySelector', () => {
 				savedFrequency: 'monthly',
 			} );
 
-			const { containerElement, getByText } = renderSelector( registry );
+			const { containerElement, getByText } = renderSelector( registry, {
+				isUserSubscribed: true,
+			} );
 
 			const indicators = containerElement.querySelectorAll(
 				'.googlesitekit-frequency-selector__saved-indicator'
@@ -167,7 +169,9 @@ describe( 'FrequencySelector', () => {
 				savedFrequency: 'monthly',
 			} );
 
-			const { containerElement, getByText } = renderSelector( registry );
+			const { containerElement, getByText } = renderSelector( registry, {
+				isUserSubscribed: true,
+			} );
 
 			const monthlyLabel = getByText( 'Monthly' );
 			const monthlyCard = monthlyLabel.closest(
