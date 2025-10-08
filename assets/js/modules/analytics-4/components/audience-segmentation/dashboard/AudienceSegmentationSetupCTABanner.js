@@ -128,6 +128,10 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 		select( CORE_SITE ).getSetupErrorCode()
 	);
 
+	const learnMoreLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'visitor-groups' )
+	);
+
 	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
 
 	const gaTrackingProps = {
@@ -149,6 +153,9 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 						'Understand what brings new visitors to your site and keeps them coming back. Site Kit can now group your site visitors into relevant segments like "new" and "returning". To set up these new groups, Site Kit needs to update your Google Analytics property.',
 						'google-site-kit'
 					) }
+					learnMoreLink={ {
+						href: learnMoreLink,
+					} }
 					ctaButton={ {
 						label: isSaving
 							? __( 'Enabling groups', 'google-site-kit' )
