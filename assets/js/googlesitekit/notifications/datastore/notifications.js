@@ -54,8 +54,10 @@ const UNPIN_NOTIFICATION = 'UNPIN_NOTIFICATION';
 // Controls.
 const POPULATE_QUEUE = 'POPULATE_QUEUE';
 const PERSIST_SEEN_NOTIFICATIONS = 'PERSIST_SEEN_NOTIFICATIONS';
+const PERSIST_PINNED_NOTIFICATIONS = 'PERSIST_PINNED_NOTIFICATIONS';
 
 const NOTIFICATION_SEEN_STORAGE_KEY = 'googlesitekit_notification_seen';
+const NOTIFICATION_PINNED_STORAGE_KEY = 'googlesitekit_notification_pinned';
 
 const storage = getStorage();
 
@@ -69,7 +71,9 @@ export const initialState = {
 	seenNotifications: JSON.parse(
 		storage.getItem( NOTIFICATION_SEEN_STORAGE_KEY ) || '{}'
 	),
-	pinnedNotification: {},
+	pinnedNotification: JSON.parse(
+		storage.getItem( NOTIFICATION_PINNED_STORAGE_KEY ) || '{}'
+	),
 };
 
 export const actions = {
@@ -481,10 +485,14 @@ export const actions = {
 				'A groupID is required to pin a notification to a specific group.'
 			);
 		},
-		( id, groupID ) => {
-			return {
+		function* ( id, groupID ) {
+			yield {
 				type: PIN_NOTIFICATION,
 				payload: { id, groupID },
+			};
+
+			yield {
+				type: PERSIST_PINNED_NOTIFICATIONS,
 			};
 		}
 	),
@@ -510,10 +518,14 @@ export const actions = {
 				'A groupID is required to unpin notification from a specific group.'
 			);
 		},
-		( id, groupID ) => {
-			return {
+		function* ( id, groupID ) {
+			yield {
 				type: UNPIN_NOTIFICATION,
 				payload: { id, groupID },
+			};
+
+			yield {
+				type: PERSIST_PINNED_NOTIFICATIONS,
 			};
 		}
 	),
@@ -635,6 +647,18 @@ export const controls = {
 			storage.setItem(
 				NOTIFICATION_SEEN_STORAGE_KEY,
 				JSON.stringify( seenNotifications )
+			);
+		}
+	),
+	[ PERSIST_PINNED_NOTIFICATIONS ]: createRegistryControl(
+		( registry ) => () => {
+			const pinnedNotifications = registry
+				.select( CORE_NOTIFICATIONS )
+				.getPinnedNotificationIDs();
+
+			storage.setItem(
+				NOTIFICATION_PINNED_STORAGE_KEY,
+				JSON.stringify( pinnedNotifications )
 			);
 		}
 	),
@@ -992,6 +1016,18 @@ export const selectors = {
 			return false;
 		}
 	),
+
+	/**
+	 * Gets all pinned notification IDs, keyed by group ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Object} Object with group IDs as keys and pinned notification ID as the value.
+	 */
+	getPinnedNotificationIDs: ( state ) => {
+		return state.pinnedNotification;
+	},
 
 	/**
 	 * Gets the ID of the pinned notification for a specific group, if any.
