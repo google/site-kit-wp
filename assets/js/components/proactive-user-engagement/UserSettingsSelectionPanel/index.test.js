@@ -110,7 +110,7 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		expect(
 			getByText(
-				"You'll receive the report to your WordPress user email",
+				'You’ll receive the report to your WordPress user email',
 				{ exact: false }
 			)
 		).toBeInTheDocument();
