@@ -60,7 +60,7 @@ export async function registerReaderRevenueManagerPlugin() {
 	}
 
 	if ( ! hasModuleOwnershipOrAccess ) {
-		return null;
+		return;
 	}
 
 	registerPlugin( 'googlesitekit-rrm-plugin', {

@@ -128,17 +128,10 @@ class Web_Tag extends Module_Web_Tag {
 
 		// Check to see if we should show the One Tap prompt on this page.
 		//
-		// If this is not the WordPress or WooCommerce login page, check to
-		// see if "One Tap enabled on all pages" is set first. If it isnt:
-		// don't render the Sign in with Google JS.
-		$should_show_one_tap_prompt = ! empty( $this->settings['oneTapEnabled'] ) && (
-			// If One Tap is enabled at all, it should always appear on a login
-			// page.
-			$is_login_page ||
-			// Only show the prompt on other pages if the setting is enabled and
-			// the user isn't already signed in.
-			( $this->settings['oneTapOnAllPages'] && ! is_user_logged_in() )
-		);
+		// Show the One Tap prompt if:
+		// 1. One Tap is enabled in settings.
+		// 2. The user is not logged in.
+		$should_show_one_tap_prompt = ! empty( $this->settings['oneTapEnabled'] ) && ! is_user_logged_in();
 
 		// Set the cookie time to live to 5 minutes. If the redirect_to is
 		// empty, set the cookie to expire immediately.
@@ -197,9 +190,16 @@ class Web_Tag extends Module_Web_Tag {
 			 * Mainly used by Gutenberg blocks.
 			 */
 			?>
-		document.querySelectorAll( '.googlesitekit-sign-in-with-google__frontend-output-button' ).forEach( ( siwgButtonDiv ) => {
-			google.accounts.id.renderButton( siwgButtonDiv, <?php echo wp_json_encode( $btn_args ); ?> );
-		});
+	const defaultButtonOptions = <?php echo wp_json_encode( $btn_args ); ?>;
+	document.querySelectorAll( '.googlesitekit-sign-in-with-google__frontend-output-button' ).forEach( ( siwgButtonDiv ) => {
+		const buttonOptions = {
+			shape: siwgButtonDiv.getAttribute( 'data-googlesitekit-siwg-shape' ) || defaultButtonOptions.shape,
+			text: siwgButtonDiv.getAttribute( 'data-googlesitekit-siwg-text' ) || defaultButtonOptions.text,
+			theme: siwgButtonDiv.getAttribute( 'data-googlesitekit-siwg-theme' ) || defaultButtonOptions.theme,
+		};
+
+		google.accounts.id.renderButton( siwgButtonDiv, buttonOptions );
+	});
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
 	<?php if ( $should_show_one_tap_prompt ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>

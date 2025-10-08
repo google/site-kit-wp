@@ -39,7 +39,7 @@ export default function createTrackEvent(
 
 		if ( ! trackingEnabled ) {
 			// Resolve immediately if tracking is disabled.
-			return;
+			return null;
 		}
 
 		initializeSnippet();

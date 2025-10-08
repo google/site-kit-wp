@@ -430,7 +430,7 @@ export const actions = {
 
 			// Skip persisting notification dismissal in database if the notification is not dismissible.
 			if ( notification.isDismissible !== true ) {
-				return;
+				return null;
 			}
 
 			// Use prompts if a notification should be shown again until it

@@ -69,18 +69,18 @@ final class Plugin {
 				'network_admin_notices',
 				function () {
 					?>
-					<div class="notice notice-warning">
-						<p>
-							<?php
+<div class="notice notice-warning">
+	<p>
+					<?php
 							echo wp_kses(
 								__( 'The Site Kit by Google plugin does <strong>not yet offer</strong> a network mode, but we&#8217;re actively working on that.', 'google-site-kit' ),
 								array(
 									'strong' => array(),
 								)
 							);
-							?>
-						</p>
-					</div>
+					?>
+	</p>
+</div>
 					<?php
 				}
 			);
@@ -221,15 +221,20 @@ final class Plugin {
 				( new Core\Util\Migration_1_123_0( $this->context, $options ) )->register();
 				( new Core\Util\Migration_1_129_0( $this->context, $options ) )->register();
 				( new Core\Util\Migration_1_150_0( $this->context, $options ) )->register();
+				( new Core\Util\Migration_1_163_0( $this->context, $options ) )->register();
 				( new Core\Dashboard_Sharing\Dashboard_Sharing() )->register();
 				( new Core\Key_Metrics\Key_Metrics( $this->context, $user_options, $options ) )->register();
 				( new Core\Prompts\Prompts( $this->context, $user_options ) )->register();
 				( new Core\Consent_Mode\Consent_Mode( $this->context, $modules, $options ) )->register();
 				( new Core\Tags\GTag( $options ) )->register();
 				( new Core\Conversion_Tracking\Conversion_Tracking( $this->context, $options ) )->register();
+				if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) ) {
+					( new Core\Proactive_User_Engagement\Proactive_User_Engagement( $this->context, $options ) )->register();
+				}
 				if ( Feature_Flags::enabled( 'googleTagGateway' ) ) {
 					( new Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway( $this->context, $options ) )->register();
 				}
+				( new Core\Tracking\Feature_Metrics() )->register();
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(

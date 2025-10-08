@@ -61,9 +61,6 @@ export default function ConsentModeSwitch( { loading } ) {
 	const { setConsentModeEnabled, saveConsentModeSettings } =
 		useDispatch( CORE_SITE );
 
-	const usingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
 	const { dismissPrompt, triggerSurvey } = useDispatch( CORE_USER );
 
 	const isDismissed = useSelect( ( select ) =>
@@ -75,13 +72,10 @@ export default function ConsentModeSwitch( { loading } ) {
 	async function saveSettings() {
 		setSaveError( null );
 
-		const promises = [ saveConsentModeSettings() ];
-
-		if ( usingProxy ) {
-			promises.push(
-				triggerSurvey( 'enable_como', { ttl: DAY_IN_SECONDS } )
-			);
-		}
+		const promises = [
+			saveConsentModeSettings(),
+			triggerSurvey( 'enable_como', { ttl: DAY_IN_SECONDS } ),
+		];
 
 		const [ { error } ] = await Promise.all( promises );
 
@@ -112,7 +106,7 @@ export default function ConsentModeSwitch( { loading } ) {
 							checked={ isConsentModeEnabled }
 							disabled={ loading || isSaving }
 							onClick={ () => {
-								// If Consent Mode is currently enabled, show a confirmation
+								// If consent mode is currently enabled, show a confirmation
 								// dialog warning users about the impact of disabling it.
 								if ( isConsentModeEnabled ) {
 									trackEvent(
@@ -127,7 +121,7 @@ export default function ConsentModeSwitch( { loading } ) {
 										'como_enable'
 									);
 
-									// Consent Mode is not currently enabled, so this toggle
+									// Consent mode is not currently enabled, so this toggle
 									// enables it.
 									setConsentModeEnabled( true );
 									saveSettings();
@@ -141,7 +135,7 @@ export default function ConsentModeSwitch( { loading } ) {
 				{ ! loading && isConsentModeEnabled && (
 					<p className="googlesitekit-settings-consent-mode-switch__enabled-notice">
 						{ __(
-							'Site Kit added the necessary code to your tag to comply with Consent Mode.',
+							'Site Kit added the necessary code to your tag to comply with consent mode.',
 							'google-site-kit'
 						) }
 					</p>

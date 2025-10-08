@@ -41,7 +41,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           # Update the version number here when updating the Backstop version within the Dockerfile.
-          tags: ghcr.io/google/site-kit-wp/vrt:6.3.25
+          tags: ghcr.io/google/site-kit-wp/vrt:6.3.25-node22
           context: ./tests/backstop
           push: true
           platforms: linux/amd64,linux/arm64

@@ -41,6 +41,7 @@ export default function Actions( {
 	onButtonClick,
 	complete,
 	inProgressFeedback,
+	ctaFeedback,
 } ) {
 	const viewContext = useViewContext();
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -73,6 +74,8 @@ export default function Actions( {
 
 	return (
 		<Fragment>
+			{ ctaFeedback }
+
 			<OptIn />
 
 			<div className="googlesitekit-start-setup-wrap">

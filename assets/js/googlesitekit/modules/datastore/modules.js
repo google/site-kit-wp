@@ -64,6 +64,7 @@ const RECEIVE_CHECK_REQUIREMENTS_SUCCESS = 'RECEIVE_CHECK_REQUIREMENTS_SUCCESS';
 const RECEIVE_RECOVERABLE_MODULES = 'RECEIVE_RECOVERABLE_MODULES';
 const RECEIVE_SHARED_OWNERSHIP_MODULES = 'RECEIVE_SHARED_OWNERSHIP_MODULES';
 const CLEAR_RECOVERED_MODULES = 'CLEAR_RECOVERED_MODULES';
+const RECEIVE_INLINE_MODULES_DATA = 'RECEIVE_INLINE_MODULES_DATA';
 
 const moduleDefaults = {
 	slug: '',
@@ -217,6 +218,7 @@ const baseInitialState = {
 	recoverableModules: undefined,
 	sharedOwnershipModules: undefined,
 	recoveredModules: undefined,
+	inlineModulesData: undefined,
 };
 
 const baseActions = {
@@ -558,6 +560,32 @@ const baseActions = {
 			type: CLEAR_RECOVERED_MODULES,
 		};
 	},
+
+	/**
+	 * Receives inline modules data.
+	 * Stores inline modules data in the datastore.
+	 *
+	 * Because this is frequently-accessed data, this is usually sourced
+	 * from a global variable (`_googlesitekitModulesData`), set by PHP
+	 * in the `before_print` callback for `googlesitekit-modules`.
+	 *
+	 * @since 1.162.0
+	 * @private
+	 *
+	 * @param {Object} inlineModulesData Inline modules data, usually supplied via a global variable from PHP.
+	 * @return {Object} Action for RECEIVE_INLINE_MODULES_DATA.
+	 */
+	receiveInlineModulesData: createValidatedAction(
+		( inlineModulesData ) => {
+			invariant( inlineModulesData, 'inlineModulesData is required' );
+		},
+		( inlineModulesData ) => {
+			return {
+				payload: { inlineModulesData },
+				type: RECEIVE_INLINE_MODULES_DATA,
+			};
+		}
+	),
 };
 
 export const baseControls = {
@@ -579,7 +607,7 @@ export const baseControls = {
 
 				// If a storeName wasn't specified on registerModule we assume there is no store for this module
 				if ( ! storeName ) {
-					return;
+					return null;
 				}
 
 				if ( select( storeName )?.getAdminReauthURL ) {
@@ -641,6 +669,13 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 			break;
 		}
 
+		case RECEIVE_INLINE_MODULES_DATA: {
+			const { inlineModulesData } = payload;
+
+			state.inlineModulesData = inlineModulesData;
+			break;
+		}
+
 		default:
 			break;
 	}
@@ -650,6 +685,14 @@ function* waitForModules() {
 	const { resolveSelect } = yield commonActions.getRegistry();
 
 	yield commonActions.await( resolveSelect( CORE_MODULES ).getModules() );
+}
+
+function* waitForModulesInlineData() {
+	const { resolveSelect } = yield commonActions.getRegistry();
+
+	yield commonActions.await(
+		resolveSelect( CORE_MODULES ).getInlineModulesData()
+	);
 }
 
 const baseResolvers = {
@@ -771,7 +814,25 @@ const baseResolvers = {
 		);
 	},
 
+	*getInlineModulesData() {
+		const registry = yield commonActions.getRegistry();
+
+		if ( registry.select( CORE_MODULES ).getInlineModulesData() ) {
+			return;
+		}
+
+		if ( ! global._googlesitekitModulesData ) {
+			return;
+		}
+
+		yield baseActions.receiveInlineModulesData(
+			global._googlesitekitModulesData
+		);
+	},
+
 	getModule: waitForModules,
+
+	getModuleInlineData: waitForModulesInlineData,
 
 	isModuleActive: waitForModules,
 
@@ -1543,6 +1604,44 @@ const baseSelectors = {
 			}
 
 			return select( CORE_USER ).getAccountChooserURL( module.homepage );
+		}
+	),
+
+	/**
+	 * Gets inline modules data.
+	 *
+	 * Returns all inline modules data that was loaded from the global variable.
+	 *
+	 * @since 1.162.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Inline modules data object; `undefined` if not loaded.
+	 */
+	getInlineModulesData: ( state ) => {
+		return state.inlineModulesData;
+	},
+
+	/**
+	 * Gets inline data for a specific module.
+	 *
+	 * Returns inline data for the specified module slug.
+	 *
+	 * @since 1.162.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(Object|undefined)} Module inline data object; `undefined` if not loaded.
+	 */
+	getModuleInlineData: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const inlineModulesData =
+				select( CORE_MODULES ).getInlineModulesData();
+
+			if ( inlineModulesData === undefined ) {
+				return undefined;
+			}
+
+			return inlineModulesData[ slug ];
 		}
 	),
 };

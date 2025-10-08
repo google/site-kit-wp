@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { pick } from 'lodash';
 
 /**
  * Internal dependencies
@@ -38,12 +39,15 @@ const SET_STATE_FROM_SNAPSHOT = 'SET_STATE_FROM_SNAPSHOT';
  * Creates a store object that includes actions and controls for restoring/creating state snapshots.
  *
  * @since 1.9.0
+ * @since 1.163.0 Added the ability to pick specific parts of the state to save in the snapshot.
  * @private
  *
- * @param {string} storeName The name of the store to snapshot in the cache.
+ * @param {string}          storeName                The name of the store to snapshot in the cache.
+ * @param {Object}          [options]                Optional configuration object.
+ * @param {string|string[]} [options.keysToSnapshot] Property path(s) to pick from state when creating snapshots.
  * @return {Object} The snapshot store object.
  */
-export function createSnapshotStore( storeName ) {
+export function createSnapshotStore( storeName, { keysToSnapshot } = {} ) {
 	invariant( storeName, 'storeName is required to create a snapshot store.' );
 
 	const initialState = {};
@@ -123,9 +127,15 @@ export function createSnapshotStore( storeName ) {
 			return deleteItem( `datastore::cache::${ storeName }` );
 		},
 		[ CREATE_SNAPSHOT ]: createRegistryControl( ( registry ) => () => {
+			const state = registry.stores[ storeName ].store.getState();
+			const stateToSnapshot =
+				keysToSnapshot?.length > 0
+					? pick( state, keysToSnapshot )
+					: state;
+
 			return setItem(
 				`datastore::cache::${ storeName }`,
-				registry.stores[ storeName ].store.getState()
+				stateToSnapshot
 			);
 		} ),
 		[ RESTORE_SNAPSHOT ]: () => {
@@ -145,6 +155,13 @@ export function createSnapshotStore( storeName ) {
 				// Exclude any top-level errors from the restored state.
 				// eslint-disable-next-line no-unused-vars
 				const { error, ...newState } = snapshot;
+
+				// If only a part of the state has been added to the snapshot, then
+				// we should update the initial state with partial data restored
+				// from the snapshot.
+				if ( keysToSnapshot?.length > 0 ) {
+					return { ...state, ...newState };
+				}
 
 				return newState;
 			}

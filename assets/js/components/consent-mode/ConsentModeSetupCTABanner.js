@@ -34,7 +34,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import BannerSVGDesktop from '@/svg/graphics/banner-consent-mode-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-consent-mode-setup-cta-mobile.svg?url';
-import { useShowTooltip } from '@/js/components/AdminMenuTooltip';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import { DAY_IN_SECONDS, WEEK_IN_SECONDS } from '@/js/util';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -73,32 +73,23 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
 
-	const usingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
-
 	const { setConsentModeEnabled, saveConsentModeSettings } =
 		useDispatch( CORE_SITE );
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	useEffect( () => {
-		if ( usingProxy ) {
-			triggerSurvey( 'view_como_setup_cta', { ttl: DAY_IN_SECONDS } );
-		}
-	}, [ triggerSurvey, usingProxy ] );
+		triggerSurvey( 'view_como_setup_cta', { ttl: DAY_IN_SECONDS } );
+	}, [ triggerSurvey ] );
 
 	async function handleCTAClick() {
 		setSaveError( null );
 		setConsentModeEnabled( true );
 		setIsSaving( true );
 
-		const promises = [ saveConsentModeSettings() ];
-
-		if ( usingProxy ) {
-			promises.push(
-				triggerSurvey( 'enable_como', { ttl: DAY_IN_SECONDS } )
-			);
-		}
+		const promises = [
+			saveConsentModeSettings(),
+			triggerSurvey( 'enable_como', { ttl: DAY_IN_SECONDS } ),
+		];
 
 		const [ { error } ] = await Promise.all( promises );
 
@@ -116,7 +107,7 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 			<SetupCTA
 				notificationID={ id }
 				title={ __(
-					'Enable Consent Mode to preserve tracking for your Ads campaigns',
+					'Enable consent mode to preserve tracking for your Ads campaigns',
 					'google-site-kit'
 				) }
 				description={ __(

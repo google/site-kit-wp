@@ -35,6 +35,8 @@ import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants'
 import { escapeURI } from '@/js/util/escape-uri';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import SettingsStatuses from '@/js/components/settings/SettingsStatuses';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>
@@ -72,6 +74,31 @@ export default function SettingsView() {
 			path: escapeURI`/container/accounts/${ accountID }/containers/${ internalAMPContainerID }`,
 		} )
 	);
+
+	const googleTagGatewayEnabled = useFeature( 'googleTagGateway' );
+	const googleTagGatewayStatuses = useSelect( ( select ) => {
+		if ( ! googleTagGatewayEnabled ) {
+			return [];
+		}
+		const {
+			isGoogleTagGatewayEnabled,
+			isGTGHealthy,
+			isScriptAccessEnabled,
+		} = select( CORE_SITE );
+		const status =
+			isGoogleTagGatewayEnabled() &&
+			isGTGHealthy() &&
+			isScriptAccessEnabled();
+		return [
+			{
+				label: __(
+					'Google tag gateway for advertisers',
+					'google-site-kit'
+				),
+				status,
+			},
+		];
+	} );
 
 	return (
 		<Fragment>
@@ -255,7 +282,7 @@ export default function SettingsView() {
 					</p>
 
 					{ hasExistingTag && (
-						<P>
+						<P className="googlesitekit-margin-bottom-0">
 							{ __(
 								'Placing two tags at the same time is not recommended.',
 								'google-site-kit'
@@ -264,6 +291,8 @@ export default function SettingsView() {
 					) }
 				</div>
 			</div>
+
+			<SettingsStatuses statuses={ googleTagGatewayStatuses } />
 		</Fragment>
 	);
 }

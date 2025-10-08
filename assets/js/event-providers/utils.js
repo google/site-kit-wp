@@ -38,28 +38,39 @@ export const PII_INDICATORS = {
 		'name',
 		'full-name',
 		'full name',
+		'full_name',
 		'fullname',
 		'first-name',
 		'first name',
+		'first_name',
 		'firstname',
 		'last-name',
 		'last name',
+		'last_name',
 		'lastname',
 		'given-name',
 		'given name',
+		'given_name',
 		'givenname',
 		'family-name',
 		'family name',
+		'family_name',
 		'familyname',
 		'fname',
 		'lname',
+		'first',
+		'last',
+		'your-name',
+		'your name',
 	],
 };
+
+const PHONE_MIN_DIGIT_COUNT = 7;
 
 /**
  * Normalizes a value for use in conversion tracking.
  *
- * @since n.e.x.t
+ * @since 1.161.0
  *
  * @param {string} value The value to normalize.
  * @return {string} The normalized value.
@@ -73,9 +84,34 @@ export function normalizeValue( value ) {
 }
 
 /**
+ * Normalizes a label by removing common form suffixes and prefixes.
+ *
+ * @since 1.162.0
+ *
+ * @param {string} label The label to normalize.
+ * @return {string} The normalized label.
+ */
+export function normalizeLabel( label ) {
+	if ( ! label || typeof label !== 'string' ) {
+		return '';
+	}
+
+	return (
+		label
+			.trim()
+			.toLowerCase()
+			// Remove common required field indicators
+			.replace( /\s*\*+\s*$/, '' ) // "Name *" → "Name"
+			.replace( /\s*\(required\)\s*$/i, '' ) // "Name (Required)" → "Name"
+			.replace( /\s*:\s*$/, '' ) // "Name:" → "Name"
+			.trim()
+	);
+}
+
+/**
  * Normalizes an email address for conversion tracking.
  *
- * @since n.e.x.t
+ * @since 1.161.0
  *
  * @param {string} email The email address to normalize.
  * @return {string} The normalized email address.
@@ -106,9 +142,31 @@ export function normalizeEmail( email ) {
 }
 
 /**
+ * Determines if a string has a phone-like pattern.
+ *
+ * @since 1.162.0
+ *
+ * @param {string} value The string to validate.
+ * @return {boolean} Whether the string passed has a phone-like pattern or not.
+ */
+export function hasPhoneLikePattern( value ) {
+	const digits = value.replace( /\D/g, '' );
+
+	if (
+		digits.length < PHONE_MIN_DIGIT_COUNT ||
+		digits.length < value.length / 2
+	) {
+		return false;
+	}
+
+	// Ensure the string only contains digits and phone-like separators, such as spaces, dashes, parentheses, plus signs, and dots.
+	return /^[\s\-()+.\d]*$/.test( value );
+}
+
+/**
  * Normalizes a phone number for conversion tracking.
  *
- * @since n.e.x.t
+ * @since 1.161.0
  *
  * @param {string} phone The phone number to normalize.
  * @return {string} The normalized phone number.
@@ -130,7 +188,7 @@ export function normalizePhone( phone ) {
 /**
  * Checks if a value is likely an email address.
  *
- * @since n.e.x.t
+ * @since 1.161.0
  *
  * @param {string} value The value to check.
  * @return {boolean} True if the value is likely an email address, false otherwise.
@@ -150,13 +208,17 @@ export function isLikelyEmail( value ) {
 /**
  * Checks if a value is likely a phone number.
  *
- * @since n.e.x.t
+ * @since 1.161.0
  *
  * @param {string} value The value to check.
  * @return {boolean} True if the value is likely a phone number, false otherwise.
  */
 export function isLikelyPhone( value ) {
 	if ( ! value ) {
+		return false;
+	}
+
+	if ( ! hasPhoneLikePattern( value ) ) {
 		return false;
 	}
 
@@ -170,7 +232,7 @@ export function isLikelyPhone( value ) {
 /**
  * Classifies a field as PII based on its metadata.
  *
- * @since n.e.x.t
+ * @since 1.161.0
  *
  * @param {Object} fieldMeta The metadata of the field to classify.
  * @return {Object|null} An object containing the PII type and value, or null if not classified.
@@ -181,7 +243,7 @@ export function classifyPII( fieldMeta ) {
 	type = normalizeValue( type );
 	name = normalizeValue( name );
 	value = normalizeValue( value );
-	label = normalizeValue( label );
+	label = normalizeLabel( label );
 
 	switch ( type ) {
 		case 'email':
@@ -241,4 +303,78 @@ export function classifyPII( fieldMeta ) {
 	}
 
 	return null;
+}
+
+/**
+ * Extracts and formats name fields for Google Tag's user_data address object.
+ *
+ * @since 1.162.0
+ *
+ * @param {Array<Object>} fields An array of detected PII fields.
+ * @return {Object|undefined} An object containing normalized first_name and optionally last_name, or undefined if no names found.
+ */
+export function getAddress( fields ) {
+	const names = fields
+		.filter( ( { type } ) => type === PII_TYPE.NAME )
+		.map( ( { value } ) => value );
+
+	if ( ! names.length ) {
+		return undefined;
+	}
+
+	const [ firstName, ...lastNames ] =
+		names.length === 1 ? names[ 0 ].split( ' ' ) : names;
+
+	return {
+		first_name: normalizeValue( firstName ),
+		...( lastNames?.length > 0
+			? { last_name: normalizeValue( lastNames.join( ' ' ) ) }
+			: {} ),
+	};
+}
+
+/**
+ * Extracts the email address from detected PII fields.
+ *
+ * @since 1.162.0
+ *
+ * @param {Array<Object>} fields An array of detected PII fields.
+ * @return {string|undefined} The email address if found, undefined otherwise.
+ */
+export function getEmail( fields ) {
+	return fields.find( ( { type } ) => type === PII_TYPE.EMAIL )?.value;
+}
+
+/**
+ * Extracts the phone number from detected PII fields.
+ *
+ * @since 1.162.0
+ *
+ * @param {Array<Object>} fields An array of detected PII fields.
+ * @return {string|undefined} The phone number if found, undefined otherwise.
+ */
+export function getPhoneNumber( fields ) {
+	return fields.find( ( { type } ) => type === PII_TYPE.PHONE )?.value;
+}
+
+/**
+ * Extracts and classifies user data from a WPForms form submission.
+ *
+ * @since 1.162.0
+ *
+ * @param {Array<Object>} fields An array of detected PII fields.
+ * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
+ */
+export function getUserData( fields ) {
+	const userDataFields = [
+		[ 'address', getAddress( fields ) ],
+		[ 'email', getEmail( fields ) ],
+		[ 'phone_number', getPhoneNumber( fields ) ],
+	].filter( ( [ , value ] ) => value );
+
+	if ( userDataFields.length === 0 ) {
+		return undefined;
+	}
+
+	return Object.fromEntries( userDataFields );
 }

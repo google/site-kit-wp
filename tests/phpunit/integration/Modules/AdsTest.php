@@ -60,12 +60,14 @@ class AdsTest extends TestCase {
 		remove_all_actions( 'template_redirect' );
 		remove_all_filters( 'googlesitekit_inline_modules_data' );
 		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
+		remove_all_filters( 'googlesitekit_feature_metrics' );
 
 		$this->ads->register();
 
 		$this->assertTrue( has_action( 'template_redirect' ), 'template_redirect action should be registered.' );
 		$this->assertTrue( has_filter( 'googlesitekit_inline_modules_data' ), 'inline_modules_data filter should be registered.' );
 		$this->assertTrue( has_filter( 'googlesitekit_ads_measurement_connection_checks' ), 'ads_measurement_connection_checks filter should be registered.' );
+		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'googlesitekit_feature_metrics filter should be registered.' );
 	}
 
 	public function test_register__googlesitekit_ads_measurement_connection_checks() {
@@ -425,5 +427,50 @@ class AdsTest extends TestCase {
 
 	protected function get_module_with_settings() {
 		return $this->ads;
+	}
+
+	/**
+	 * @dataProvider data_get_feature_metrics
+	 */
+	public function test_get_feature_metrics( $settings, $feature_flag, $expected_feature_metrics, $message ) {
+		if ( $feature_flag ) {
+			self::enable_feature( $feature_flag );
+		}
+
+		if ( ! empty( $settings ) ) {
+			$this->ads->get_settings()->merge( $settings );
+		}
+
+		$feature_metrics = $this->ads->get_feature_metrics();
+		$this->assertEquals( $expected_feature_metrics, $feature_metrics, $message );
+	}
+
+	public function data_get_feature_metrics() {
+		return array(
+			'not connected' => array(
+				array(), // settings
+				false,    // feature_flag
+				array(
+					'ads_connection' => '',
+				),
+				'Feature metric for ads_connection should be blank when Ads is not connected.',
+			),
+			'manual'        => array(
+				array( 'conversionID' => 'AW-123456789' ),
+				false,
+				array(
+					'ads_connection' => 'manual',
+				),
+				'Feature metric for ads_connection should be manual when conversionID is set.',
+			),
+			'pax'           => array(
+				array( 'paxConversionID' => 'AW-123456789' ),
+				'adsPax',
+				array(
+					'ads_connection' => 'pax',
+				),
+				'Feature metric for ads_connection should be pax when paxConversionID is set.',
+			),
+		);
 	}
 }

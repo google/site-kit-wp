@@ -42,7 +42,7 @@ import {
 } from '@/js/googlesitekit/notifications/constants';
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '@/js/modules/analytics-4/datastore/constants';
 import useViewContext from '@/js/hooks/useViewContext';
-import { useShowTooltip } from '@/js/components/AdminMenuTooltip';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import { WEEK_IN_SECONDS } from '@/js/util';
 import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudienceGroup';
 import AudienceErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceErrorModal';
@@ -136,6 +136,10 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 		select( CORE_SITE ).getSetupErrorCode()
 	);
 
+	const learnMoreLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'visitor-groups' )
+	);
+
 	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
 
 	const gaTrackingProps = {
@@ -157,6 +161,9 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 						'Understand what brings new visitors to your site and keeps them coming back. Site Kit can now group your site visitors into relevant segments like "new" and "returning". To set up these new groups, Site Kit needs to update your Google Analytics property.',
 						'google-site-kit'
 					) }
+					learnMoreLink={ {
+						href: learnMoreLink,
+					} }
 					ctaButton={ {
 						label: isSaving
 							? __( 'Enabling groups', 'google-site-kit' )

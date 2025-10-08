@@ -19,18 +19,12 @@
 /**
  * External dependencies
  */
-import { useClickAway } from 'react-use';
+import { useClickAway, useEvent } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import {
-	Fragment,
-	useState,
-	useRef,
-	useEffect,
-	useCallback,
-} from '@wordpress/element';
+import { Fragment, useState, useRef, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
 
@@ -47,6 +41,7 @@ import Details from './Details';
 import Item from './Item';
 import DisconnectIcon from '@/svg/icons/disconnect.svg';
 import ManageSitesIcon from '@/svg/icons/manage-sites.svg';
+import ManageEmailReportsIcon from '@/svg/icons/manage-email-reports.svg';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
@@ -54,8 +49,13 @@ import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '@/js/modules/analytics-4/
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
 import useViewContext from '@/js/hooks/useViewContext';
 import useFormValue from '@/js/hooks/useFormValue';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function UserMenu() {
+	const proactiveUserEngagementEnabled = useFeature(
+		'proactiveUserEngagement'
+	);
+
 	const proxyPermissionsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxyPermissionsURL()
 	);
@@ -90,25 +90,22 @@ export default function UserMenu() {
 		menuButtonRef.current?.focus();
 	} );
 
-	function handleClose() {
+	const handleClose = useCallback( () => {
 		toggleDialog( false );
 		setMenuOpen( false );
-	}
+	}, [ toggleDialog, setMenuOpen ] );
 
-	useEffect( () => {
-		function handleEscapeKeyPress( e ) {
+	const handleEscapeKeyPress = useCallback(
+		( e ) => {
 			// Close if Escape key is pressed.
 			if ( ESCAPE === e.keyCode ) {
 				handleClose();
 			}
-		}
+		},
+		[ handleClose ]
+	);
 
-		global.addEventListener( 'keyup', handleEscapeKeyPress );
-
-		return () => {
-			global.removeEventListener( 'keyup', handleEscapeKeyPress );
-		};
-	}, [] );
+	useEvent( 'keyup', handleEscapeKeyPress );
 
 	const handleMenu = useCallback( () => {
 		if ( ! menuOpen ) {
@@ -269,6 +266,21 @@ export default function UserMenu() {
 					<li>
 						<Details />
 					</li>
+					{ proactiveUserEngagementEnabled && (
+						<li
+							id="manage-email-reports"
+							className="mdc-list-item"
+							role="menuitem"
+						>
+							<Item
+								icon={ <ManageEmailReportsIcon width="24" /> }
+								label={ __(
+									'Manage email reports',
+									'google-site-kit'
+								) }
+							/>
+						</li>
+					) }
 					{ !! proxyPermissionsURL && (
 						<li
 							id="manage-sites"
@@ -276,7 +288,7 @@ export default function UserMenu() {
 							role="menuitem"
 						>
 							<Item
-								icon={ <ManageSitesIcon width="22" /> }
+								icon={ <ManageSitesIcon width="24" /> }
 								label={ __(
 									'Manage Sites',
 									'google-site-kit'
@@ -290,7 +302,7 @@ export default function UserMenu() {
 						role="menuitem"
 					>
 						<Item
-							icon={ <DisconnectIcon width="22" /> }
+							icon={ <DisconnectIcon width="24" /> }
 							label={ __( 'Disconnect', 'google-site-kit' ) }
 						/>
 					</li>

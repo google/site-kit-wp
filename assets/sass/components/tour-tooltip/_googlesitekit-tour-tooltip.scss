@@ -184,3 +184,26 @@
 		padding: 0 16px;
 	}
 }
+
+// Fix AdminMenuTooltip jumping on scroll by using fixed positioning.
+// !important is required to override Joyride's inline styles.
+#react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) > div.__floater {
+	left: 170px !important;
+	position: fixed !important;
+	top: 113px !important;
+	transform: none !important;
+}
+
+// !important is required to override Joyride's inline styles.
+.folded #react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) > div.__floater {
+	left: 46px !important;
+	top: 46px !important;
+}
+
+// Fix the arrow alignment to make it consistent to allow fixed positioning
+// to align reliably.
+// !important is required to override Joyride's inline styles.
+#react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) div.__floater__arrow > span {
+	margin-top: 42px !important;
+	top: 0 !important;
+}

@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useMount, useUnmount } from 'react-use';
+import { useEvent, useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -105,15 +105,11 @@ export default function DataBlockGroup( { className, children } ) {
 	// Debounce the adjustFontSize function to prevent excessive calls on resize.
 	const debouncedAdjustFontSize = useDebounce( adjustFontSize, 50 );
 
+	useEvent( 'resize', debouncedAdjustFontSize );
+
 	useMount( () => {
 		debouncedAdjustFontSize();
-
-		global.addEventListener( 'resize', debouncedAdjustFontSize );
 	} );
-
-	useUnmount( () =>
-		global.removeEventListener( 'resize', debouncedAdjustFontSize )
-	);
 
 	return (
 		<div ref={ ref } className={ className }>
