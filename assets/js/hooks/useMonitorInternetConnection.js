@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useLifecycles, useInterval } from 'react-use';
+import { useInterval, useEvent } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -65,16 +65,8 @@ export function useMonitorInternetConnection() {
 		setIsOnline( true );
 	}, [ setIsOnline ] );
 
-	useLifecycles(
-		() => {
-			global.addEventListener( 'online', checkInternetConnection );
-			global.addEventListener( 'offline', checkInternetConnection );
-		},
-		() => {
-			global.removeEventListener( 'online', checkInternetConnection );
-			global.removeEventListener( 'offline', checkInternetConnection );
-		}
-	);
+	useEvent( 'online', checkInternetConnection );
+	useEvent( 'offline', checkInternetConnection );
 
 	useInterval( checkInternetConnection, isOnline ? 120000 : 15000 );
 }

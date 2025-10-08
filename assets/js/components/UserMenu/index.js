@@ -19,18 +19,12 @@
 /**
  * External dependencies
  */
-import { useClickAway } from 'react-use';
+import { useClickAway, useEvent } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import {
-	Fragment,
-	useState,
-	useRef,
-	useEffect,
-	useCallback,
-} from '@wordpress/element';
+import { Fragment, useState, useRef, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
 
@@ -96,25 +90,22 @@ export default function UserMenu() {
 		menuButtonRef.current?.focus();
 	} );
 
-	function handleClose() {
+	const handleClose = useCallback( () => {
 		toggleDialog( false );
 		setMenuOpen( false );
-	}
+	}, [ toggleDialog, setMenuOpen ] );
 
-	useEffect( () => {
-		function handleEscapeKeyPress( e ) {
+	const handleEscapeKeyPress = useCallback(
+		( e ) => {
 			// Close if Escape key is pressed.
 			if ( ESCAPE === e.keyCode ) {
 				handleClose();
 			}
-		}
+		},
+		[ handleClose ]
+	);
 
-		global.addEventListener( 'keyup', handleEscapeKeyPress );
-
-		return () => {
-			global.removeEventListener( 'keyup', handleEscapeKeyPress );
-		};
-	}, [] );
+	useEvent( 'keyup', handleEscapeKeyPress );
 
 	const handleMenu = useCallback( () => {
 		if ( ! menuOpen ) {

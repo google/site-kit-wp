@@ -48,6 +48,7 @@ export default function Actions( {
 	onButtonClick,
 	complete,
 	inProgressFeedback,
+	ctaFeedback,
 } ) {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
@@ -82,6 +83,8 @@ export default function Actions( {
 
 	return (
 		<Fragment>
+			{ ctaFeedback }
+
 			<OptIn />
 
 			<div className="googlesitekit-start-setup-wrap">

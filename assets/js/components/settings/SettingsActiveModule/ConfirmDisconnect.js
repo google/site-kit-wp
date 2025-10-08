@@ -20,12 +20,13 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useEvent } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { useState, useEffect, useCallback } from '@wordpress/element';
+import { useState, useCallback } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
 
 /**
@@ -69,18 +70,16 @@ export default function ConfirmDisconnect( { slug } ) {
 		setValue( dialogActiveKey, false );
 	}, [ dialogActiveKey, setValue ] );
 
-	useEffect( () => {
-		function onKeyPress( event ) {
+	const onKeyPress = useCallback(
+		( event ) => {
 			if ( ESCAPE === event.keyCode && dialogActive ) {
 				onClose();
 			}
-		}
+		},
+		[ dialogActive, onClose ]
+	);
 
-		global.addEventListener( 'keydown', onKeyPress );
-		return () => {
-			global.removeEventListener( 'keydown', onKeyPress );
-		};
-	}, [ dialogActive, onClose ] );
+	useEvent( 'keydown', onKeyPress );
 
 	const { deactivateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
