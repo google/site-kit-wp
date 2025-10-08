@@ -34,7 +34,8 @@ import ActivateAnalyticsNotice from '@/js/components/setup/ActivateAnalyticsNoti
 import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
 import Link from '@/js/components/Link';
 import P from '@/js/components/Typography/P';
-import SetupFlowSVG from './SetupFlowSVG';
+import WelcomeSVG from '@/svg/graphics/welcome.svg';
+import WelcomeAnalyticsSVG from '@/svg/graphics/welcome-analytics.svg';
 import Typography from '@/js/components/Typography';
 import { Cell, Row } from '@/js/material-components';
 import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
@@ -65,14 +66,10 @@ export default function LegacySplashContent( {
 				className="googlesitekit-setup__icon"
 			>
 				{ analyticsModuleActive && (
-					<SetupFlowSVG name="welcome" width="570" height="336" />
+					<WelcomeSVG width="570" height="336" />
 				) }
 				{ ! analyticsModuleActive && (
-					<SetupFlowSVG
-						name="welcome-analytics"
-						height="167"
-						width="175"
-					/>
+					<WelcomeAnalyticsSVG height="167" width="175" />
 				) }
 			</Cell>
 
