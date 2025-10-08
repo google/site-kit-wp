@@ -60,7 +60,7 @@ export default function PanelContent( {
 				<div className="googlesitekit-user-settings-selection__panel-description">
 					<P type="body" size="small">
 						{ __(
-							"You’ll receive the report to your WordPress user email",
+							'You’ll receive the report to your WordPress user email',
 							'google-site-kit'
 						) }
 						{ email && (
