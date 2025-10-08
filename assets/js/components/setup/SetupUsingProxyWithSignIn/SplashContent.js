@@ -34,8 +34,8 @@ import Checkbox from '@/js/googlesitekit/components-gm2/Checkbox';
 import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
 import Link from '@/js/components/Link';
 import P from '@/js/components/Typography/P';
-import SetupFlowSVG from './SetupFlowSVG';
-import SplashGraphic from '@/svg/graphics/splash-graphic.svg';
+import SplashScreenshotSVG from './SetupFlowSVG';
+import SplashBackground from '@/svg/graphics/splash-graphic.svg';
 import Typography from '@/js/components/Typography';
 import useFormValue from '@/js/hooks/useFormValue';
 import {
@@ -88,13 +88,13 @@ export default function SplashContent( {
 				lgSize={ 6 }
 				className="googlesitekit-setup__icon"
 			>
-				<SplashGraphic
+				<SplashBackground
 					className="googlesitekit-setup__splash-graphic-background"
 					width="508"
 					height="466"
 				/>
 				<div className="googlesitekit-setup__splash-graphic-screenshot">
-					<SetupFlowSVG />
+					<SplashScreenshotSVG />
 				</div>
 			</Cell>
 
