@@ -18,15 +18,10 @@
  * Internal dependencies
  */
 import { combineStores, commonStore } from 'googlesitekit-data';
-import { createSnapshotStore } from '@/js/googlesitekit/data/create-snapshot-store';
 import { CORE_NOTIFICATIONS } from './constants';
 import notifications from './notifications';
 
-const store = combineStores(
-	commonStore,
-	notifications,
-	createSnapshotStore( CORE_NOTIFICATIONS )
-);
+const store = combineStores( commonStore, notifications );
 
 export function registerStore( registry ) {
 	registry.registerStore( CORE_NOTIFICATIONS, store );
