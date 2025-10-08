@@ -109,9 +109,10 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 		setShowErrorModal( true );
 	}, [ setShowErrorModal ] );
 
-	const onOAuthNavigation = useCallback( async () => {
-		await pinNotification( id, NOTIFICATION_GROUPS.SETUP_CTAS );
-	}, [ id, pinNotification ] );
+	const onOAuthNavigation = useCallback(
+		() => pinNotification( id, NOTIFICATION_GROUPS.SETUP_CTAS ),
+		[ id, pinNotification ]
+	);
 
 	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
 		useEnableAudienceGroup( {

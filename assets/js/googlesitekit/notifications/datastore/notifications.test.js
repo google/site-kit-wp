@@ -849,7 +849,7 @@ describe( 'core/notifications Notifications', () => {
 				const { pinNotification } =
 					registry.dispatch( CORE_NOTIFICATIONS );
 
-				expect( () => pinNotification() ).toThrow(
+				expect( pinNotification ).toThrow(
 					'A notification id is required to pin a notification.'
 				);
 			} );
@@ -955,7 +955,7 @@ describe( 'core/notifications Notifications', () => {
 				const { unpinNotification } =
 					registry.dispatch( CORE_NOTIFICATIONS );
 
-				expect( () => unpinNotification() ).toThrow(
+				expect( unpinNotification ).toThrow(
 					'A notification id is required to unpin a notification.'
 				);
 			} );
@@ -1638,7 +1638,7 @@ describe( 'core/notifications Notifications', () => {
 				const { getPinnedNotificationID } =
 					registry.select( CORE_NOTIFICATIONS );
 
-				expect( () => getPinnedNotificationID() ).toThrow(
+				expect( getPinnedNotificationID ).toThrow(
 					'groupID is required.'
 				);
 			} );
