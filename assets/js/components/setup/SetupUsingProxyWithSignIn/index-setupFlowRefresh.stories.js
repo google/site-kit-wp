@@ -78,11 +78,6 @@ DefaultWithStagingEnvironmentWarning.storyName =
 	'Default - Staging environment warning';
 DefaultWithStagingEnvironmentWarning.args = {
 	setupRegistry: ( registry ) => {
-		provideSiteConnection( registry, {
-			hasConnectedAdmins: false,
-			resettable: false,
-		} );
-
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
