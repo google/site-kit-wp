@@ -1234,6 +1234,12 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                                 <svg />
                               </span>
                             </a>
+                             
+                            <span
+                              class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                            >
+                              Recommended
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -1560,6 +1566,12 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                                 <svg />
                               </span>
                             </a>
+                             
+                            <span
+                              class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                            >
+                              Recommended
+                            </span>
                           </div>
                         </div>
                       </div>
