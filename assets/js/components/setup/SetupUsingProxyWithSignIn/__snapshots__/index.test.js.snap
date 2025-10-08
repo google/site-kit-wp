@@ -955,7 +955,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
     class="googlesitekit-setup"
   >
     <div
-      class="mdc-layout-grid mdc-layout-grid--collapsed"
+      class="mdc-layout-grid"
     >
       <div
         class="mdc-layout-grid__inner"
@@ -979,7 +979,11 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
                   >
                     <svg />
-                    <svg />
+                    <div
+                      class="googlesitekit-setup__splash-graphic-screenshot"
+                    >
+                      <svg />
+                    </div>
                   </div>
                   <div
                     class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-4-phone"
@@ -1288,7 +1292,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
     class="googlesitekit-setup"
   >
     <div
-      class="mdc-layout-grid mdc-layout-grid--collapsed"
+      class="mdc-layout-grid"
     >
       <div
         class="mdc-layout-grid__inner"
@@ -1312,7 +1316,11 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
                   >
                     <svg />
-                    <svg />
+                    <div
+                      class="googlesitekit-setup__splash-graphic-screenshot"
+                    >
+                      <svg />
+                    </div>
                   </div>
                   <div
                     class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
@@ -1691,7 +1699,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
     class="googlesitekit-setup"
   >
     <div
-      class="mdc-layout-grid mdc-layout-grid--collapsed"
+      class="mdc-layout-grid"
     >
       <div
         class="mdc-layout-grid__inner"
@@ -1715,7 +1723,11 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
                   >
                     <svg />
-                    <svg />
+                    <div
+                      class="googlesitekit-setup__splash-graphic-screenshot"
+                    >
+                      <svg />
+                    </div>
                   </div>
                   <div
                     class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
