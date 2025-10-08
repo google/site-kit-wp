@@ -1,5 +1,5 @@
 /**
- * Proactive User Engagement constants
+ * Email Reporting constants
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -17,4 +17,4 @@
  */
 
 export const USER_SETTINGS_SELECTION_PANEL_OPENED_KEY =
-	'proactiveUserEngagementUserSettingsSelectionPanelOpened';
+	'emailReportingUserSettingsSelectionPanelOpened';

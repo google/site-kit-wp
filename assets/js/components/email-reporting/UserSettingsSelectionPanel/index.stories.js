@@ -31,7 +31,7 @@ import {
 } from '@/js/googlesitekit/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/proactive-user-engagement/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import UserSettingsSelectionPanel from '.';
 
@@ -59,16 +59,14 @@ export const Subscribed = Template.bind( {} );
 Subscribed.storyName = 'Subscribed';
 Subscribed.args = {
 	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetProactiveUserEngagementSettings( {
-				subscribed: true,
-			} );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: true,
+		} );
 	},
 };
 
 export default {
-	title: 'ProactiveUserEngagement/UserSettingsSelectionPanel',
+	title: 'EmailReporting/UserSettingsSelectionPanel',
 	component: UserSettingsSelectionPanel,
 	decorators: [
 		( Story, { args } ) => {
