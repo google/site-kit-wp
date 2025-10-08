@@ -46,14 +46,14 @@
 
 		.mdc-form-field {
 			align-items: flex-start;
-
-			.mdc-checkbox {
-				margin-top: -13px;
-			}
 		}
 
 		.googlesitekit-setup__analytics-opt-in-wrapper {
 			margin-top: 24px;
+
+			.mdc-checkbox {
+				margin-top: -10px;
+			}
 
 			.mdc-checkbox__content {
 				display: flex;
@@ -83,19 +83,28 @@
 					display: inline;
 				}
 			}
+
+			.mdc-checkbox {
+				margin-top: -13px;
+			}
 		}
 
-		.googlesitekit-setup__icon {
-			position: relative;
+		.googlesitekit-setup__splash-graphic-background {
+			position: absolute;
+			right: 0;
+			z-index: 10;
+		}
 
-			svg:first-child {
-				position: absolute;
-				right: 0;
-				z-index: 10;
+		.googlesitekit-setup__splash-graphic-screenshot {
+			height: 100%;
+			width: 100%;
+
+			@media (max-width: $bp-desktop) {
+				max-height: 511px;
 			}
 
-			svg:last-child {
-				left: 20px;
+			svg {
+				margin: 0 4%;
 				position: relative;
 				top: 30px;
 				z-index: 11;
@@ -104,6 +113,10 @@
 					left: 0;
 				}
 			}
+		}
+
+		.googlesitekit-setup__icon {
+			position: relative;
 
 			@media (max-width: $bp-desktop) {
 				align-items: center;
