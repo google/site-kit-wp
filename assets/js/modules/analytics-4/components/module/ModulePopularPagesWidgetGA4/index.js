@@ -145,8 +145,12 @@ function ModulePopularPagesWidgetGA4( props ) {
 		);
 	}
 
+	const columnClassName =
+		'googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small';
+
 	const tableColumns = [
 		{
+			columnHeaderClassName: columnClassName,
 			title: __( 'Title', 'google-site-kit' ),
 			description: __( 'Page Title', 'google-site-kit' ),
 			primary: true,
@@ -177,6 +181,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			},
 		},
 		{
+			columnHeaderClassName: columnClassName,
 			title: __( 'Pageviews', 'google-site-kit' ),
 			description: __( 'Pageviews', 'google-site-kit' ),
 			field: 'metricValues.0.value',
@@ -187,6 +192,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			},
 		},
 		{
+			columnHeaderClassName: columnClassName,
 			title: __( 'Sessions', 'google-site-kit' ),
 			description: __( 'Sessions', 'google-site-kit' ),
 			field: 'metricValues.1.value',
@@ -198,6 +204,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			},
 		},
 		{
+			columnHeaderClassName: columnClassName,
 			title: __( 'Engagement Rate', 'google-site-kit' ),
 			description: __( 'Engagement Rate', 'google-site-kit' ),
 			field: 'metricValues.2.value',
@@ -207,6 +214,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			},
 		},
 		{
+			columnHeaderClassName: columnClassName,
 			title: __( 'Session Duration', 'google-site-kit' ),
 			description: __( 'Session Duration', 'google-site-kit' ),
 			field: 'metricValues.3.value',
