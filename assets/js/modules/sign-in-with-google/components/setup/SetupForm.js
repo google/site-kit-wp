@@ -29,18 +29,20 @@ import {
 	Suspense,
 	createInterpolateElement,
 	useState,
+	useEffect,
 } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useRegistry, useSelect } from 'googlesitekit-data';
+import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 import ClientIDTextField from '@/js/modules/sign-in-with-google/components/common/ClientIDTextField';
+import OneTapToggle from '@/js/modules/sign-in-with-google/components/common/OneTapToggle';
 import { Button } from 'googlesitekit-components';
 import Link from '@/js/components/Link';
 import ExternalIcon from '@/svg/icons/external.svg';
@@ -65,6 +67,12 @@ export default function SetupForm() {
 			MODULES_SIGN_IN_WITH_GOOGLE
 		).getServiceClientIDProvisioningURL()
 	);
+
+	const anyoneCanRegister = useSelect( ( select ) =>
+		select( CORE_SITE ).getAnyoneCanRegister()
+	);
+
+	const { setOneTapEnabled } = useDispatch( MODULES_SIGN_IN_WITH_GOOGLE );
 
 	// Prefill the clientID field with a value from a previous module connection, if it exists.
 	useMount( async () => {
@@ -92,6 +100,12 @@ export default function SetupForm() {
 			setExistingClientID( existingID );
 		}
 	} );
+
+	useEffect( () => {
+		if ( anyoneCanRegister ) {
+			setOneTapEnabled( true );
+		}
+	}, [ anyoneCanRegister, setOneTapEnabled ] );
 
 	return (
 		<div className="googlesitekit-sign-in-with-google-setup__form">
@@ -137,6 +151,11 @@ export default function SetupForm() {
 				>
 					{ __( 'Get your client ID', 'google-site-kit' ) }
 				</Button>
+				{ anyoneCanRegister && (
+					<div className="googlesitekit-setup-module__inputs">
+						<OneTapToggle />
+					</div>
+				) }
 			</div>
 
 			<div className="googlesitekit-setup-module__panel-item googlesitekit-setup-module__panel-item--with-svg">
