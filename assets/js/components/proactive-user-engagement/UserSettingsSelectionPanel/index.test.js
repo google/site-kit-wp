@@ -44,7 +44,7 @@ describe( 'UserSettingsSelectionPanel', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
-		provideUserInfo( registry, { email: 'someone@anybusiness.com' } );
+		provideUserInfo( registry, { wpEmail: 'someone@anybusiness.com' } );
 
 		registry
 			.dispatch( CORE_USER )
@@ -83,7 +83,7 @@ describe( 'UserSettingsSelectionPanel', () => {
 	} );
 
 	it( 'does not render header subheading in view-only', () => {
-		provideUserInfo( registry, { email: 'viewer@example.com' } );
+		provideUserInfo( registry, { wpEmail: 'viewer@example.com' } );
 
 		const { getByText, queryByText } = render(
 			<UserSettingsSelectionPanel />,
@@ -118,7 +118,7 @@ describe( 'UserSettingsSelectionPanel', () => {
 	} );
 
 	it( 'opens the side sheet when the UI key is true', () => {
-		provideUserInfo( registry, { email: 'open@example.com' } );
+		provideUserInfo( registry, { wpEmail: 'open@example.com' } );
 
 		const { getByRole } = render( <UserSettingsSelectionPanel />, {
 			registry,
