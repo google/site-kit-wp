@@ -21,11 +21,15 @@
  */
 import MainHeader from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
+import ExitSetup from './ExitSetup';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function Header() {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	return (
 		<MainHeader>
-			<HelpMenu />
+			{ setupFlowRefreshEnabled ? <ExitSetup /> : <HelpMenu /> }
 		</MainHeader>
 	);
 }

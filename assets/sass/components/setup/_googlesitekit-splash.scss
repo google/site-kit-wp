@@ -73,6 +73,15 @@
 				height: 1px;
 				margin: $grid-gap-desktop 0;
 			}
+
+			.googlesitekit-splash__analytics-recommended-badge {
+				background-color: $c-splash-analytics-recommended-badge-bg;
+				border-radius: 4px;
+				color: $c-content-primary;
+				display: block;
+				margin-top: 14px;
+				width: fit-content;
+			}
 		}
 
 		.googlesitekit-opt-in {

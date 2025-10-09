@@ -34,6 +34,7 @@ import Checkbox from '@/js/googlesitekit/components-gm2/Checkbox';
 import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
 import Link from '@/js/components/Link';
 import P from '@/js/components/Typography/P';
+import Badge from '@/js/components/Badge';
 import SplashScreenshotSVG from './SetupFlowSVG';
 import SplashBackground from '@/svg/graphics/splash-graphic.svg';
 import Typography from '@/js/components/Typography';
@@ -166,7 +167,7 @@ export default function SplashContent( {
 							name="googlesitekit-analytics-setup-opt-in"
 							description={ createInterpolateElement(
 								__(
-									'To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. <LearnMoreLink />',
+									'To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. <LearnMoreLink /> <RecommendedBadge />',
 									'google-site-kit'
 								),
 								{
@@ -177,6 +178,15 @@ export default function SplashContent( {
 												'google-site-kit'
 											) }
 										</Link>
+									),
+									RecommendedBadge: (
+										<Badge
+											className="googlesitekit-splash__analytics-recommended-badge"
+											label={ __(
+												'Recommended',
+												'google-site-kit'
+											) }
+										/>
 									),
 								}
 							) }
