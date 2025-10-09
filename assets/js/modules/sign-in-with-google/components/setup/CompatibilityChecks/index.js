@@ -22,37 +22,24 @@
 import { __ } from '@wordpress/i18n';
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * Internal dependencies
  */
-import { useRegistry } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import { useChecks } from '@/js/hooks/useChecks';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 import CompatibilityErrorNotice from './CompatibilityErrorNotice';
-import { runChecks } from './checks';
 
-function createCompatibilityChecks( registry ) {
-	return [ runChecks( registry ) ];
-}
-
-export default function CompatibilityChecks( { className, ...props } ) {
-	const registry = useRegistry();
-	const { complete, error } = useChecks(
-		createCompatibilityChecks( registry )
+export default function CompatibilityChecks() {
+	const compatibilityChecks = useSelect( ( select ) =>
+		select( MODULES_SIGN_IN_WITH_GOOGLE ).getCompatibilityChecks()
 	);
 
-	if ( ! complete ) {
+	const errors = compatibilityChecks?.checks || {};
+	const hasErrors = Object.keys( errors ).length > 0;
+
+	if ( compatibilityChecks === undefined ) {
 		return (
-			<div
-				className={ `googlesitekit-margin-bottom-1rem${
-					className ? ` ${ className }` : ''
-				}` }
-				{ ...props }
-			>
+			<div className="googlesitekit-margin-bottom-1rem${ additionalClassName">
 				<small>
 					{ __( 'Checking Compatibility…', 'google-site-kit' ) }
 				</small>
@@ -61,13 +48,9 @@ export default function CompatibilityChecks( { className, ...props } ) {
 		);
 	}
 
-	if ( error ) {
-		return <CompatibilityErrorNotice error={ error } />;
+	if ( hasErrors ) {
+		return <CompatibilityErrorNotice errors={ errors } />;
 	}
 
 	return null;
 }
-
-CompatibilityChecks.propTypes = {
-	className: PropTypes.string,
-};
