@@ -113,10 +113,6 @@ export function registerNotifications( notifications ) {
 				resolveSelect( CORE_MODULES ).getModules(),
 				// Ensure the site info is resolved to get the home URL.
 				resolveSelect( CORE_SITE ).getSiteInfo(),
-				// Ensure the compatibility checks are resolved.
-				resolveSelect(
-					MODULES_SIGN_IN_WITH_GOOGLE
-				).getCompatibilityChecks(),
 			] );
 
 			const isConnected = select( CORE_MODULES ).isModuleConnected(
