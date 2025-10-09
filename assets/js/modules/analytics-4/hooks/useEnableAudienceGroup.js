@@ -46,6 +46,7 @@ export default function useEnableAudienceGroup( {
 	redirectURL,
 	onSuccess,
 	onError,
+	onOAuthNavigation,
 } = {} ) {
 	const isMounted = useMountedState();
 
@@ -130,6 +131,8 @@ export default function useEnableAudienceGroup( {
 				autoSubmit: true,
 			} );
 
+			await onOAuthNavigation?.();
+
 			setPermissionScopeError( {
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 				message: __(
@@ -180,6 +183,7 @@ export default function useEnableAudienceGroup( {
 		maybeEnableAudienceGroup,
 		isMounted,
 		setValues,
+		onOAuthNavigation,
 		setPermissionScopeError,
 		redirectURL,
 		onError,
