@@ -161,9 +161,12 @@ const baseActions = {
 			const currentSettings = registry
 				.select( CORE_USER )
 				.getProactiveUserEngagementSettings();
+			const defaultSettings = currentSettings || {};
 
 			const settingsToSave =
-				Object.keys( settings ).length > 0 ? settings : currentSettings;
+				Object.keys( settings ).length > 0
+					? { ...defaultSettings, ...settings }
+					: currentSettings;
 
 			yield {
 				type: SET_PROACTIVE_USER_ENGAGEMENT_SETTINGS_SAVING_FLAG,
