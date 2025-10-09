@@ -29,6 +29,7 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 
 function Template( { setupRegistry = () => {} } ) {
 	return (
@@ -49,6 +50,26 @@ WithHTTPSWarning.storyName = 'With HTTPS Warning';
 WithHTTPSWarning.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry );
+	},
+};
+
+export const WithCompatibilityChecksWarning = Template.bind( {} );
+WithCompatibilityChecksWarning.storyName = 'With Compatibility Checks Warning';
+WithCompatibilityChecksWarning.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
+			.receiveGetCompatibilityChecks( {
+				checks: {
+					conflicting_plugins: {
+						'hide-login/hide-login.php': {
+							pluginName: 'Hide Login',
+							conflictMessage: null,
+						},
+					},
+				},
+				timestamp: Date.now(),
+			} );
 	},
 };
 
