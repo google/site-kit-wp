@@ -149,7 +149,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 
 			await waitForRegistry();
 
-			await act( () => {
+			act( () => {
 				fireEvent.click(
 					getByRole( 'button', { name: /maybe later/i } )
 				);
