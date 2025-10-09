@@ -18,7 +18,7 @@
  * WordPress dependencies
  */
 import { createInterpolateElement, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -92,15 +92,21 @@ export default function ShowNextToCommentsToggle() {
 			</HelperText>
 			{ ! anyoneCanRegister && (
 				<HelperText persistent>
-					{ isMultisite
-						? __(
-								'Requires open user registration. Please enable "Allow new registrations" in your WordPress Settings.',
-								'google-site-kit'
-						  )
-						: __(
-								'Requires open user registration. Please enable "Anyone can register" in your WordPress Settings.',
-								'google-site-kit'
-						  ) }
+					{ sprintf(
+						/* translators: %1$s: Setting name, %2$s: Sign in with Google service name */
+						__(
+							'Requires open user registration. Please enable “%1$s” in WordPress settings to use %2$s for comments.',
+							'google-site-kit'
+						),
+						isMultisite
+							? __( 'Allow new registrations', 'google-site-kit' )
+							: __( 'Anyone can register', 'google-site-kit' ),
+						_x(
+							'Sign in with Google',
+							'Service name',
+							'google-site-kit'
+						)
+					) }
 				</HelperText>
 			) }
 		</div>
