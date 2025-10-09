@@ -43,7 +43,6 @@ import {
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import SetupSuccessSubtleNotification from './components/dashboard/SetupSuccessSubtleNotification';
 import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
-import { runChecks as runCompatibilityChecks } from '@/js/modules/sign-in-with-google/components/setup/CompatibilityChecks/checks';
 
 export { registerStore } from './datastore';
 
@@ -107,13 +106,17 @@ export function registerNotifications( notifications ) {
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
+		checkRequirements: async ( { select, resolveSelect } ) => {
 			await Promise.all( [
 				// The isModuleConnected() relies on the resolution
 				// of the getModules() resolver.
 				resolveSelect( CORE_MODULES ).getModules(),
 				// Ensure the site info is resolved to get the home URL.
 				resolveSelect( CORE_SITE ).getSiteInfo(),
+				// Ensure the compatibility checks are resolved.
+				resolveSelect(
+					MODULES_SIGN_IN_WITH_GOOGLE
+				).getCompatibilityChecks(),
 			] );
 
 			const isConnected = select( CORE_MODULES ).isModuleConnected(
@@ -128,13 +131,14 @@ export function registerNotifications( notifications ) {
 				return false;
 			}
 
-			try {
-				await runCompatibilityChecks( {
-					select,
-					resolveSelect,
-					dispatch,
-				} )();
-			} catch ( error ) {
+			const compatibilityChecks = select(
+				MODULES_SIGN_IN_WITH_GOOGLE
+			).getCompatibilityChecks();
+
+			if (
+				compatibilityChecks?.checks &&
+				Object.keys( compatibilityChecks.checks ).length > 0
+			) {
 				return false;
 			}
 
