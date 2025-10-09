@@ -47,9 +47,7 @@ class WP_COM_CheckTest extends TestCase {
 			$this->markTestSkipped( 'IS_WPCOM is already defined, cannot test dynamic definition' );
 		}
 
-		if ( ! defined( 'IS_WPCOM' ) ) {
-			define( 'IS_WPCOM', true );
-		}
+		define( 'IS_WPCOM', true );
 
 		$result = $this->check->run();
 		$this->assertTrue( $result, 'Expected true when IS_WPCOM constant is defined and truthy' );
@@ -69,9 +67,7 @@ class WP_COM_CheckTest extends TestCase {
 			$this->markTestSkipped( 'IS_WPCOM is already defined, cannot test dynamic definition' );
 		}
 
-		if ( ! defined( 'IS_WPCOM' ) ) {
-			define( 'IS_WPCOM', 'yes' );
-		}
+		define( 'IS_WPCOM', 'yes' );
 
 		$check  = new WP_COM_Check();
 		$result = $check->run();
@@ -84,9 +80,7 @@ class WP_COM_CheckTest extends TestCase {
 			$this->markTestSkipped( 'IS_WPCOM is already defined, cannot test dynamic definition' );
 		}
 
-		if ( ! defined( 'IS_WPCOM' ) ) {
-			define( 'IS_WPCOM', false );
-		}
+		define( 'IS_WPCOM', false );
 
 		$check  = new WP_COM_Check();
 		$result = $check->run();
@@ -99,9 +93,7 @@ class WP_COM_CheckTest extends TestCase {
 			$this->markTestSkipped( 'IS_WPCOM is already defined, cannot test dynamic definition' );
 		}
 
-		if ( ! defined( 'IS_WPCOM' ) ) {
-			define( 'IS_WPCOM', '' );
-		}
+		define( 'IS_WPCOM', '' );
 
 		$check  = new WP_COM_Check();
 		$result = $check->run();
@@ -114,9 +106,7 @@ class WP_COM_CheckTest extends TestCase {
 			$this->markTestSkipped( 'IS_WPCOM is already defined, cannot test dynamic definition' );
 		}
 
-		if ( ! defined( 'IS_WPCOM' ) ) {
-			define( 'IS_WPCOM', 0 );
-		}
+		define( 'IS_WPCOM', 0 );
 
 		$check  = new WP_COM_Check();
 		$result = $check->run();
