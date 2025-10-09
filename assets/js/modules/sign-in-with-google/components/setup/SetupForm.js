@@ -72,6 +72,7 @@ export default function SetupForm() {
 		select( CORE_SITE ).getAnyoneCanRegister()
 	);
 
+	const [ hasSetOneTapEnabled, setHasSetOneTapEnabled ] = useState( false );
 	const { setOneTapEnabled } = useDispatch( MODULES_SIGN_IN_WITH_GOOGLE );
 
 	// Prefill the clientID field with a value from a previous module connection, if it exists.
@@ -102,10 +103,11 @@ export default function SetupForm() {
 	} );
 
 	useEffect( () => {
-		if ( anyoneCanRegister ) {
+		if ( anyoneCanRegister && ! hasSetOneTapEnabled ) {
+			setHasSetOneTapEnabled( true );
 			setOneTapEnabled( true );
 		}
-	}, [ anyoneCanRegister, setOneTapEnabled ] );
+	}, [ anyoneCanRegister, hasSetOneTapEnabled, setOneTapEnabled ] );
 
 	return (
 		<div className="googlesitekit-sign-in-with-google-setup__form">
