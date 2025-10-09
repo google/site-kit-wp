@@ -43,6 +43,7 @@ import {
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import SetupSuccessSubtleNotification from './components/dashboard/SetupSuccessSubtleNotification';
 import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
+import { runChecks as runCompatibilityChecks } from '@/js/modules/sign-in-with-google/components/setup/CompatibilityChecks/checks';
 
 export { registerStore } from './datastore';
 
@@ -106,7 +107,7 @@ export function registerNotifications( notifications ) {
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
+		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
 			await Promise.all( [
 				// The isModuleConnected() relies on the resolution
 				// of the getModules() resolver.
@@ -124,6 +125,16 @@ export function registerNotifications( notifications ) {
 
 			const homeURL = select( CORE_SITE ).getHomeURL();
 			if ( ! isURLUsingHTTPS( homeURL ) ) {
+				return false;
+			}
+
+			try {
+				await runCompatibilityChecks( {
+					select,
+					resolveSelect,
+					dispatch,
+				} )();
+			} catch ( error ) {
 				return false;
 			}
 
