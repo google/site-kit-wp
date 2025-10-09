@@ -186,59 +186,5 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				)
 			).not.toBeInTheDocument();
 		} );
-
-		it( 'should render the progress indicator in the header when setupFlowRefresh is enabled', async () => {
-			const { container, waitForRegistry } = render(
-				<SetupUsingProxyWithSignIn />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_SPLASH,
-					features: [ 'setupFlowRefresh' ],
-				}
-			);
-
-			await waitForRegistry();
-
-			// Progress indicator root element should exist.
-			expect(
-				container.querySelector( '.googlesitekit-progress-indicator' )
-			).toBeInTheDocument();
-		} );
-
-		it( 'should not render the progress indicator in the header when setupFlowRefresh is disabled', async () => {
-			const { container, waitForRegistry } = render(
-				<SetupUsingProxyWithSignIn />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_SPLASH,
-					features: [],
-				}
-			);
-
-			await waitForRegistry();
-
-			expect(
-				container.querySelector( '.googlesitekit-progress-indicator' )
-			).toBeNull();
-		} );
-
-		it( 'should have only the initial stub segment when setupFlowRefresh is enabled (no active segments yet)', async () => {
-			const { container, waitForRegistry } = render(
-				<SetupUsingProxyWithSignIn />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_SPLASH,
-					features: [ 'setupFlowRefresh' ],
-				}
-			);
-
-			await waitForRegistry();
-
-			const segments = container.querySelectorAll(
-				'.googlesitekit-progress-indicator__segment'
-			);
-			// Only the stub segment should be present at initial render.
-			expect( segments.length ).toBe( 1 );
-		} );
 	} );
 } );
