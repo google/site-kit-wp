@@ -36,8 +36,9 @@ class Conflicting_Plugins_Check extends Compatibility_Check {
 	 * @return array|false Array of conflicting plugins data if found, false otherwise.
 	 */
 	public function run() {
-		$active_plugins   = get_option( 'active_plugins', array() );
-		$security_plugins = array(
+		$conflicting_plugins = array();
+		$active_plugins      = get_option( 'active_plugins', array() );
+		$security_plugins    = array(
 			'better-wp-security/better-wp-security.php',
 			'security-malware-firewall/security-malware-firewall.php',
 			'sg-security/sg-security.php',
@@ -49,21 +50,22 @@ class Conflicting_Plugins_Check extends Compatibility_Check {
 			'wps-hide-login/wps-hide-login.php',
 		);
 
-		$conflicting_plugins = array();
 		foreach ( $active_plugins as $plugin_slug ) {
-			if ( in_array( $plugin_slug, $security_plugins, true ) ) {
-				$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_slug );
-				$plugin_name = $plugin_data['Name'];
-
-				$conflicting_plugins[ $plugin_slug ] = array(
-					'pluginName'      => $plugin_name,
-					'conflictMessage' => sprintf(
-						/* translators: %s: plugin name */
-						__( '%s may prevent Sign in with Google from working properly.', 'google-site-kit' ),
-						$plugin_name
-					),
-				);
+			if ( ! in_array( $plugin_slug, $security_plugins, true ) ) {
+				continue;
 			}
+
+			$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_slug );
+			$plugin_name = $plugin_data['Name'];
+
+			$conflicting_plugins[ $plugin_slug ] = array(
+				'pluginName'      => $plugin_name,
+				'conflictMessage' => sprintf(
+					/* translators: %s: plugin name */
+					__( '%s may prevent Sign in with Google from working properly.', 'google-site-kit' ),
+					$plugin_name
+				),
+			);
 		}
 
 		return ! empty( $conflicting_plugins ) ? $conflicting_plugins : false;
