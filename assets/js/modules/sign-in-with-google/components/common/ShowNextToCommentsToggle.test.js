@@ -240,7 +240,7 @@ describe( 'ShowNextToCommentsToggle', () => {
 		} );
 
 		expect( container.textContent ).toContain(
-			'Requires open user registration. Please enable "Anyone can register" in your WordPress Settings.'
+			'Requires open user registration. Please enable “Anyone can register” in WordPress settings to use Sign in with Google for comments.'
 		);
 	} );
 
@@ -258,7 +258,7 @@ describe( 'ShowNextToCommentsToggle', () => {
 		} );
 
 		expect( container.textContent ).toContain(
-			'Requires open user registration. Please enable "Allow new registrations" in your WordPress Settings.'
+			'Requires open user registration. Please enable “Allow new registrations” in WordPress settings to use Sign in with Google for comments.'
 		);
 	} );
 
