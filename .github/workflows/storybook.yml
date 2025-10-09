@@ -151,7 +151,7 @@ jobs:
         id: get-comment-body
         # Setting a multi-line output requires escaping line-feeds. See <https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings>.
         run: |
-          body="Storybook for ${{ github.event.pull_request.head.sha }} is ready:
+          body="Storybook is ready:
           - View [Storybook](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/index.html)"
           delimiter="${body//$'\n'/'%0A'}"
           echo "body<<${delimiter}" >> "$GITHUB_OUTPUT"
