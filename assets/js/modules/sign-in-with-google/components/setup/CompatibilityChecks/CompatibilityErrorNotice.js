@@ -66,14 +66,10 @@ function normalizeConflictingPlugins( conflictingPlugins ) {
 	return [];
 }
 
-export default function CompatibilityErrorNotice( { error } ) {
-	if ( ! error || typeof error !== 'object' ) {
-		return null;
-	}
-
+export default function CompatibilityErrorNotice( { errors } ) {
 	const errorMessages = [];
 
-	for ( const [ slug, value ] of Object.entries( error ) ) {
+	for ( const [ slug, value ] of Object.entries( errors ) ) {
 		const errorCode = SLUG_TO_ERROR[ slug ];
 
 		switch ( errorCode ) {
