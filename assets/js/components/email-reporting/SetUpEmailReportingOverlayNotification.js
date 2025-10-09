@@ -86,7 +86,9 @@ export default function SetUpEmailReportingOverlayNotification( {
 			dismissNotification( id );
 
 			if ( ! isUserSubscribed ) {
-				showTooltip();
+				setTimeout( () => {
+					showTooltip();
+				}, 310 ); // Wait until after the panel close animation.
 			}
 		}
 	}, [
