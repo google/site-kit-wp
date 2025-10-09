@@ -131,17 +131,6 @@ export function registerNotifications( notifications ) {
 				return false;
 			}
 
-			const compatibilityChecks = select(
-				MODULES_SIGN_IN_WITH_GOOGLE
-			).getCompatibilityChecks();
-
-			if (
-				compatibilityChecks?.checks &&
-				Object.keys( compatibilityChecks.checks ).length > 0
-			) {
-				return false;
-			}
-
 			return true;
 		},
 		isDismissible: true,
