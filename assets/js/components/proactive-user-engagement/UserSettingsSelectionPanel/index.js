@@ -65,10 +65,9 @@ export default function UserSettingsSelectionPanel() {
 			setTimeout( () => {
 				// Clear state to ensure settings are re-fetched when opening the panel next time.
 				resetProactiveUserEngagementSettings();
+				setNotice( null );
 			}, 310 ); // Wait until after the panel close animation.
 			setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
-		} else {
-			setNotice( null );
 		}
 	}, [ isOpen, resetProactiveUserEngagementSettings, setValue ] );
 
