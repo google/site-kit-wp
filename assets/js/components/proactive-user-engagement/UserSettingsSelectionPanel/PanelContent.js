@@ -50,7 +50,7 @@ export default function PanelContent( {
 	closePanel,
 } ) {
 	const user = useSelect( ( select ) => select( CORE_USER ).getUser() );
-	const email = user?.email;
+	const email = user?.wpEmail;
 
 	return (
 		<Fragment>
