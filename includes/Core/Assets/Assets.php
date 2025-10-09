@@ -875,6 +875,7 @@ final class Assets {
 			'user' => array(
 				'id'      => $current_user->ID,
 				'email'   => $current_user->user_email,
+				'wpEmail' => $current_user->user_email, // Preserved for features that need the original WP email (email gets overridden during proxy auth).
 				'name'    => $current_user->display_name,
 				'picture' => get_avatar_url( $current_user->user_email ),
 			),
