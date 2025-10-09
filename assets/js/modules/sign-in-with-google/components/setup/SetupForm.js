@@ -41,6 +41,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 import ClientIDTextField from '@/js/modules/sign-in-with-google/components/common/ClientIDTextField';
+import CompatibilityChecks from './CompatibilityChecks';
 import { Button } from 'googlesitekit-components';
 import Link from '@/js/components/Link';
 import ExternalIcon from '@/svg/icons/external.svg';
@@ -96,6 +97,7 @@ export default function SetupForm() {
 	return (
 		<div className="googlesitekit-sign-in-with-google-setup__form">
 			<div className="googlesitekit-setup-module__panel-item">
+				<CompatibilityChecks />
 				<StoreErrorNotices
 					moduleSlug={ MODULES_SIGN_IN_WITH_GOOGLE }
 					storeName={ MODULES_SIGN_IN_WITH_GOOGLE }
