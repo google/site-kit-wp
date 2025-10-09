@@ -31,6 +31,35 @@ describe( 'CompatibilityChecks', () => {
 		registry = createTestRegistry();
 	} );
 
+	it( 'displays progress indicator while compatibility checks load', async () => {
+		const endpoint = new RegExp(
+			'^/google-site-kit/v1/modules/sign-in-with-google/data/compatibility-checks'
+		);
+
+		fetchMock.getOnce( endpoint, {
+			body: {
+				checks: {},
+				timestamp: Date.now(),
+			},
+			status: 200,
+		} );
+
+		const { container, waitForRegistry } = render(
+			<CompatibilityChecks />,
+			{ registry }
+		);
+
+		expect( container ).toHaveTextContent( 'Checking Compatibility…' );
+
+		await waitForRegistry();
+
+		await waitFor( () => {
+			expect(
+				container.querySelector( '.mdc-linear-progress' )
+			).not.toBeInTheDocument();
+		} );
+	} );
+
 	it( 'renders fallback warning for conflicting plugins without bespoke message', async () => {
 		registry
 			.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
