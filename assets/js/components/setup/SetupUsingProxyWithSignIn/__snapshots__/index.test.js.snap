@@ -950,7 +950,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
   </header>
   <div
     class="googlesitekit-subheader"
-  />
+  >
+    <div
+      class="googlesitekit-progress-indicator"
+      style="grid-template-columns: 46px repeat(1, 1fr);"
+    >
+      <div
+        class="googlesitekit-progress-indicator__segment"
+      />
+    </div>
+  </div>
   <div
     class="googlesitekit-setup"
   >
@@ -1287,7 +1296,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
   </header>
   <div
     class="googlesitekit-subheader"
-  />
+  >
+    <div
+      class="googlesitekit-progress-indicator"
+      style="grid-template-columns: 46px repeat(1, 1fr);"
+    >
+      <div
+        class="googlesitekit-progress-indicator__segment"
+      />
+    </div>
+  </div>
   <div
     class="googlesitekit-setup"
   >
@@ -1694,7 +1712,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
   </header>
   <div
     class="googlesitekit-subheader"
-  />
+  >
+    <div
+      class="googlesitekit-progress-indicator"
+      style="grid-template-columns: 46px repeat(1, 1fr);"
+    >
+      <div
+        class="googlesitekit-progress-indicator__segment"
+      />
+    </div>
+  </div>
   <div
     class="googlesitekit-setup"
   >
