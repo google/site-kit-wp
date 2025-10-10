@@ -39,9 +39,12 @@ export default function CompatibilityChecks() {
 	const errors = compatibilityChecks?.checks || {};
 	const hasErrors = Object.keys( errors ).length > 0;
 
-	if ( isFetchingGetCompatibilityChecks ) {
+	if (
+		compatibilityChecks === undefined ||
+		isFetchingGetCompatibilityChecks
+	) {
 		return (
-			<div className="googlesitekit-margin-bottom-1rem${ additionalClassName">
+			<div className="googlesitekit-margin-bottom-1rem">
 				<small>
 					{ __( 'Checking Compatibility…', 'google-site-kit' ) }
 				</small>
