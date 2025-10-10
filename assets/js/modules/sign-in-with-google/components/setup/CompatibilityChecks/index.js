@@ -33,11 +33,13 @@ export default function CompatibilityChecks() {
 	const compatibilityChecks = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getCompatibilityChecks()
 	);
-
+	const isFetchingGetCompatibilityChecks = useSelect( ( select ) =>
+		select( MODULES_SIGN_IN_WITH_GOOGLE ).isFetchingGetCompatibilityChecks()
+	);
 	const errors = compatibilityChecks?.checks || {};
 	const hasErrors = Object.keys( errors ).length > 0;
 
-	if ( compatibilityChecks === undefined ) {
+	if ( isFetchingGetCompatibilityChecks ) {
 		return (
 			<div className="googlesitekit-margin-bottom-1rem${ additionalClassName">
 				<small>
