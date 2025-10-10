@@ -84,6 +84,9 @@ import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
 	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
 } from '@/js/components/OverlayNotification/LinkAnalyticsAndAdSenseAccountsOverlayNotification';
+import SetUpEmailReportingOverlayNotification, {
+	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
+} from '@/js/components/email-reporting/SetUpEmailReportingOverlayNotification';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
@@ -811,6 +814,31 @@ export const DEFAULT_NOTIFICATIONS = {
 				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 
 			return isAdSenseLinked === false;
+		},
+	},
+	[ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION ]: {
+		Component: SetUpEmailReportingOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		featureFlag: 'proactiveUserEngagement',
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await resolveSelect(
+				CORE_USER
+			).getProactiveUserEngagementSettings();
+			const settings =
+				select( CORE_USER ).getProactiveUserEngagementSettings();
+
+			if ( settings === undefined || settings?.subscribed ) {
+				return false;
+			}
+
+			return ! select( CORE_USER ).isProactiveUserEngagementSubscribed();
 		},
 	},
 };
