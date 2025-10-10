@@ -52,6 +52,8 @@ export default function UserSettingsSelectionPanel() {
 		return select( CORE_USER ).isSavingProactiveUserEngagementSettings();
 	} );
 
+	const [ notice, setNotice ] = useState( null );
+
 	const { setValue } = useDispatch( CORE_UI );
 	const {
 		saveProactiveUserEngagementSettings,
@@ -63,12 +65,11 @@ export default function UserSettingsSelectionPanel() {
 			setTimeout( () => {
 				// Clear state to ensure settings are re-fetched when opening the panel next time.
 				resetProactiveUserEngagementSettings();
+				setNotice( null );
 			}, 310 ); // Wait until after the panel close animation.
 			setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
 		}
 	}, [ isOpen, resetProactiveUserEngagementSettings, setValue ] );
-
-	const [ notice, setNotice ] = useState( null );
 
 	const onSaveCallback = useCallback( async () => {
 		const { error } = await saveProactiveUserEngagementSettings();

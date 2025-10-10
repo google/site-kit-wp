@@ -76,7 +76,7 @@ export default {
 				provideUserAuthentication( registry );
 				provideSiteInfo( registry );
 				provideUserInfo( registry, {
-					email: 'someone@anybusiness.com',
+					wpEmail: 'someone@anybusiness.com',
 				} );
 
 				registry

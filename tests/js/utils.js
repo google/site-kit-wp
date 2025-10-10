@@ -228,6 +228,7 @@ export function provideUserInfo( registry, extraData = {} ) {
 		name: 'Wapuu WordPress',
 		full_name: 'Wapuu WordPress PhD',
 		email: 'wapuu.wordpress@gmail.com',
+		wpEmail: 'wapuu.wordpress@gmail.com',
 		picture:
 			'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
 	};
