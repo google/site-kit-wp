@@ -23,19 +23,33 @@ import {
 	fireEvent,
 	provideSiteInfo,
 	freezeFetch,
+	muteFetch,
 } from '../../../../tests/js/test-utils';
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_KEY_METRICS_SETUP } from '@/js/googlesitekit/constants';
 import KeyMetricsSetupApp from './KeyMetricsSetupApp';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 describe( 'KeyMetricsSetupApp', () => {
 	mockLocation();
 
 	let registry;
 
+	// Endpoints for syncing audiences and custom dimensions (triggered on mount).
+	const syncAudiencesEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+	);
+	const syncCustomDimensionsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+	);
+
 	const coreUserInputSettingsEndpointRegExp = new RegExp(
 		'^/google-site-kit/v1/core/user/data/user-input-settings'
+	);
+
+	const audienceSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
 	beforeEach( () => {
@@ -47,6 +61,17 @@ describe( 'KeyMetricsSetupApp', () => {
 		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {} );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+		// Provide default successful mocks for sync endpoints so that the
+		// automatic syncing side-effects in the component do not cause
+		// unexpected console errors in tests that are unrelated to syncing.
+		fetchMock.post( syncAudiencesEndpoint, { body: [], status: 200 } );
+		fetchMock.post( syncCustomDimensionsEndpoint, {
+			body: [],
+			status: 200,
+		} );
+
+		muteFetch( audienceSettingsEndpoint );
 	} );
 
 	it( 'should render correctly', async () => {
@@ -218,5 +243,49 @@ describe( 'KeyMetricsSetupApp', () => {
 
 		expect( global.location.assign ).not.toHaveBeenCalled();
 		expect( console ).toHaveErrored();
+	} );
+
+	it( 'should sync audiences and custom dimensions on render', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences: null,
+		} );
+
+		const { waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
+		expect( fetchMock ).toHaveFetched( syncAudiencesEndpoint );
+		expect( fetchMock ).toHaveFetched( syncCustomDimensionsEndpoint );
+	} );
+
+	it( 'should not attempt to sync again while syncing is already in progress', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences: null,
+		} );
+
+		const { rerender, waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
+		expect( fetchMock ).toHaveFetchedTimes( 1, syncAudiencesEndpoint );
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			syncCustomDimensionsEndpoint
+		);
+
+		rerender( <KeyMetricsSetupApp /> );
+		await waitForRegistry();
+
+		expect( fetchMock ).toHaveFetchedTimes( 1, syncAudiencesEndpoint );
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			syncCustomDimensionsEndpoint
+		);
 	} );
 } );
