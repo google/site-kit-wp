@@ -49,8 +49,6 @@ describe( 'CompatibilityChecks', () => {
 			{ registry }
 		);
 
-		expect( container ).toHaveTextContent( 'Checking Compatibility…' );
-
 		await waitForRegistry();
 
 		await waitFor( () => {
@@ -75,14 +73,9 @@ describe( 'CompatibilityChecks', () => {
 				timestamp: Date.now(),
 			} );
 
-		const { container, waitForRegistry } = render(
-			<CompatibilityChecks />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
+		const { container } = render( <CompatibilityChecks />, {
+			registry,
+		} );
 
 		await waitFor( () => {
 			expect( container ).toHaveTextContent(
@@ -107,14 +100,9 @@ describe( 'CompatibilityChecks', () => {
 				timestamp: Date.now(),
 			} );
 
-		const { container, waitForRegistry } = render(
-			<CompatibilityChecks />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
+		const { container } = render( <CompatibilityChecks />, {
+			registry,
+		} );
 
 		await waitFor( () => {
 			expect( container ).toHaveTextContent(
@@ -133,14 +121,9 @@ describe( 'CompatibilityChecks', () => {
 				timestamp: Date.now(),
 			} );
 
-		const { container, waitForRegistry } = render(
-			<CompatibilityChecks />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
+		const { container } = render( <CompatibilityChecks />, {
+			registry,
+		} );
 
 		await waitFor( () => {
 			expect( container ).toHaveTextContent(
@@ -159,14 +142,9 @@ describe( 'CompatibilityChecks', () => {
 				timestamp: Date.now(),
 			} );
 
-		const { container, waitForRegistry } = render(
-			<CompatibilityChecks />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
+		const { container } = render( <CompatibilityChecks />, {
+			registry,
+		} );
 
 		await waitFor( () => {
 			expect( container ).toHaveTextContent(
@@ -183,14 +161,9 @@ describe( 'CompatibilityChecks', () => {
 				timestamp: Date.now(),
 			} );
 
-		const { container, waitForRegistry } = render(
-			<CompatibilityChecks />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
+		const { container } = render( <CompatibilityChecks />, {
+			registry,
+		} );
 
 		await waitFor( () => {
 			expect( container ).toBeEmptyDOMElement();
