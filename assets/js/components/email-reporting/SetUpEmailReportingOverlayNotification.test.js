@@ -78,11 +78,9 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 	describe( 'checkRequirements', () => {
 		it( 'returns false when proactive user engagement is already subscribed', async () => {
 			const registry = createTestRegistry();
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetProactiveUserEngagementSettings( {
-					subscribed: true,
-				} );
+			registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+				subscribed: true,
+			} );
 
 			const result = await notification.checkRequirements( {
 				select: registry.select,
@@ -94,11 +92,9 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 
 		it( 'returns true when proactive user engagement is not yet subscribed', async () => {
 			const registry = createTestRegistry();
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetProactiveUserEngagementSettings( {
-					subscribed: false,
-				} );
+			registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+				subscribed: false,
+			} );
 
 			const result = await notification.checkRequirements( {
 				select: registry.select,
@@ -116,11 +112,9 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			registry = createTestRegistry();
 			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetProactiveUserEngagementSettings( {
-					subscribed: false,
-				} );
+			registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+				subscribed: false,
+			} );
 			registry
 				.dispatch( CORE_NOTIFICATIONS )
 				.registerNotification(

@@ -78,7 +78,7 @@ export default function SetUpEmailReportingOverlayNotification( {
 	}, [ showTooltip ] );
 
 	const isUserSubscribed = useSelect( ( select ) =>
-		select( CORE_USER ).isProactiveUserEngagementSubscribed()
+		select( CORE_USER ).isEmailReportingSubscribed()
 	);
 
 	useEffect( () => {
