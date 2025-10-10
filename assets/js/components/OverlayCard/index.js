@@ -71,6 +71,7 @@ OverlayCard.propTypes = {
 	dismissButton: PropTypes.shape( buttonProps ),
 	GraphicDesktop: PropTypes.elementType,
 	GraphicMobile: PropTypes.elementType,
+	newBadge: PropTypes.bool,
 	visible: PropTypes.bool,
 };
 

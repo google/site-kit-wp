@@ -58,20 +58,33 @@ export default function OverlayNotification( {
 		} );
 	}
 
+	const { dismissOnClick, dismissOptions, ...otherCTAProps } =
+		ctaButton || {};
+
 	async function handleCTAClickWithTrackEvent( event ) {
 		trackEvents.confirm(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
 		await ctaButton?.onClick?.( event );
+
+		if ( dismissOnClick ) {
+			dismissNotification( notificationID, {
+				...dismissOptions,
+			} );
+		}
 	}
+
+	const overlayCTAButton = ctaButton
+		? {
+				...otherCTAProps,
+				onClick: handleCTAClickWithTrackEvent,
+		  }
+		: undefined;
 
 	return (
 		<OverlayCard
-			ctaButton={ {
-				...ctaButton,
-				onClick: handleCTAClickWithTrackEvent,
-			} }
+			ctaButton={ overlayCTAButton }
 			dismissButton={ {
 				...dismissButton,
 				onClick: handleDismissWithTrackEvent,
