@@ -31,10 +31,10 @@ import { __ } from '@wordpress/i18n';
  */
 import Notice from '@/js/components/Notice';
 import Typography from '@/js/components/Typography';
-import { getErrorMessage } from './utils';
+import { getErrorMessages } from './utils';
 
 export default function CompatibilityErrorNotice( { errors } ) {
-	const errorMessages = getErrorMessage( errors );
+	const errorMessages = getErrorMessages( errors );
 
 	if ( errorMessages.length === 0 ) {
 		return null;

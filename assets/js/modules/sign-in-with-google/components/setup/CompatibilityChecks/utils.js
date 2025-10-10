@@ -29,7 +29,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * @param {Object|Array} conflictingPlugins Plugins data keyed by slug or array.
  * @return {Array} Array of plugin info objects.
  */
-function normalizeConflictingPlugins( conflictingPlugins ) {
+export function normalizeConflictingPlugins( conflictingPlugins ) {
 	if ( Array.isArray( conflictingPlugins ) ) {
 		return conflictingPlugins;
 	}
@@ -53,7 +53,11 @@ function normalizeConflictingPlugins( conflictingPlugins ) {
  * @param {*} errors Compatibility errors.
  * @return {Array} Array of error messages.
  */
-export function getErrorMessage( errors ) {
+export function getErrorMessages( errors ) {
+	if ( ! errors || typeof errors !== 'object' ) {
+		return [];
+	}
+
 	const ERROR_WP_LOGIN_INACCESSIBLE = 'ERROR_WP_LOGIN_INACCESSIBLE';
 	const ERROR_WPCOM = 'ERROR_WPCOM';
 	const ERROR_CONFLICTING_PLUGINS = 'ERROR_CONFLICTING_PLUGINS';
