@@ -26,3 +26,4 @@ export { default as RegistrationDisabledNotice } from './RegistrationDisabledNot
 export { default as SettingsNotice } from './SettingsNotice';
 export { default as OneTapToggle } from './OneTapToggle';
 export { default as Preview } from './Preview';
+export { default as ShowNextToCommentsToggle } from './ShowNextToCommentsToggle';
