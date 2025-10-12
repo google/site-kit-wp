@@ -38,7 +38,7 @@ import { useMemo } from '@wordpress/element';
 import { isEqual } from 'lodash';
 import { safelySort } from '@/js/util';
 
-export default function SelectedItemCountError( { savedItemSlugs } ) {
+export default function SaveErrorNotice( { savedItemSlugs } ) {
 	const selectedItems = useFormValue(
 		AUDIENCE_SELECTION_FORM,
 		AUDIENCE_SELECTED
