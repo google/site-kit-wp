@@ -43,7 +43,7 @@ import RequestAccessButton from './RequestAccessButton';
 import RetryButton from './RetryButton';
 import Notice from '@/js/components/Notice';
 
-export default function ErrorNotice() {
+export default function SyncErrorNotice() {
 	const viewContext = useViewContext();
 
 	const syncAvailableAudiencesError = useSelect( ( select ) =>
