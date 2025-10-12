@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __, _x, sprintf } from '@wordpress/i18n';
@@ -35,7 +41,7 @@ import { Fragment } from 'react';
 import Typography from '@/js/components/Typography';
 import Tick from '@/svg/icons/tick.svg';
 
-export default function FrequencySelector() {
+export default function FrequencySelector( { isUserSubscribed } ) {
 	const DAY_NAMES = useMemo(
 		() => [
 			_x( 'Sunday', 'day name', 'google-site-kit' ),
@@ -135,12 +141,13 @@ export default function FrequencySelector() {
 					return (
 						<div
 							key={ reportFrequency }
-							className={
-								'googlesitekit-frequency-selector__card' +
-								( isSelected
-									? ' googlesitekit-frequency-selector__card--selected'
-									: '' )
-							}
+							className={ classnames(
+								'googlesitekit-frequency-selector__card',
+								{
+									'googlesitekit-frequency-selector__card--selected':
+										isSelected,
+								}
+							) }
 							role="radio"
 							aria-checked={ isSelected }
 							tabIndex={ 0 }
@@ -162,14 +169,15 @@ export default function FrequencySelector() {
 								>
 									{ label }
 								</Typography>
-								{ savedFrequency === reportFrequency && (
-									<div className="googlesitekit-frequency-selector__saved-indicator">
-										<Tick
-											className="googlesitekit-frequency-selector__label-tick"
-											aria-hidden="true"
-										/>
-									</div>
-								) }
+								{ savedFrequency === reportFrequency &&
+									isUserSubscribed && (
+										<div className="googlesitekit-frequency-selector__saved-indicator">
+											<Tick
+												className="googlesitekit-frequency-selector__label-tick"
+												aria-hidden="true"
+											/>
+										</div>
+									) }
 							</div>
 
 							<Typography
@@ -196,3 +204,7 @@ export default function FrequencySelector() {
 		</Fragment>
 	);
 }
+
+FrequencySelector.propTypes = {
+	isUserSubscribed: PropTypes.bool,
+};

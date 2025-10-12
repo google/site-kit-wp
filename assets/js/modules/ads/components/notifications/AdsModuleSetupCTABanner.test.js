@@ -24,7 +24,7 @@
  * Internal dependencies
  */
 const mockShowTooltip = jest.fn();
-jest.mock( '../../../../components/AdminMenuTooltip', () => ( {
+jest.mock( '../../../../components/AdminScreenTooltip', () => ( {
 	__esModule: true,
 	default: jest.fn(),
 	useShowTooltip: jest.fn( () => mockShowTooltip ),
