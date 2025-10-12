@@ -24,20 +24,38 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useInViewSelect, useSelect } from '@/js/googlesitekit-data';
 import {
 	AUDIENCE_SELECTED,
 	AUDIENCE_SELECTION_FORM,
 	MAX_SELECTED_AUDIENCES_COUNT,
 	MIN_SELECTED_AUDIENCES_COUNT,
 } from './constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 import SelectionPanelError from '@/js/components/SelectionPanel/SelectionPanelError';
+import { useMemo } from '@wordpress/element';
+import { isEqual } from 'lodash';
+import { safelySort } from '@/js/util';
 
-export default function SelectedItemCountError() {
+export default function SelectedItemCountError( { savedItemSlugs } ) {
 	const selectedItems = useFormValue(
 		AUDIENCE_SELECTION_FORM,
 		AUDIENCE_SELECTED
 	);
+
+	const audienceSettings = useInViewSelect( ( select ) =>
+		select( CORE_USER ).getUserAudienceSettings()
+	);
+	const saveError = useSelect( ( select ) =>
+		select( CORE_USER ).getErrorForAction( 'saveUserAudienceSettings', [
+			{
+				...audienceSettings,
+				configuredAudiences: selectedItems,
+			},
+		] )
+	);
+
 	const selectedItemsCount = selectedItems?.length || 0;
 	let itemLimitError;
 
@@ -62,9 +80,23 @@ export default function SelectedItemCountError() {
 		);
 	}
 
-	if ( ! itemLimitError ) {
+	const haveSettingsChanged = useMemo( () => {
+		// Arrays need to be sorted to match in `isEqual`.
+		return ! isEqual(
+			safelySort( selectedItems ),
+			safelySort( savedItemSlugs )
+		);
+	}, [ selectedItems, savedItemSlugs ] );
+
+	if ( ! itemLimitError && ! saveError ) {
 		return null;
 	}
 
-	return <SelectionPanelError error={ { message: itemLimitError } } />;
+	let error = saveError;
+
+	if ( haveSettingsChanged && itemLimitError ) {
+		error = { message: itemLimitError };
+	}
+
+	return <SelectionPanelError error={ error } />;
 }

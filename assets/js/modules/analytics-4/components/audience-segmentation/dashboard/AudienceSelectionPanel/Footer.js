@@ -50,17 +50,7 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 		AUDIENCE_SELECTION_FORM,
 		AUDIENCE_SELECTED
 	);
-	const audienceSettings = useInViewSelect( ( select ) =>
-		select( CORE_USER ).getUserAudienceSettings()
-	);
-	const saveError = useSelect( ( select ) =>
-		select( CORE_USER ).getErrorForAction( 'saveUserAudienceSettings', [
-			{
-				...audienceSettings,
-				configuredAudiences: selectedItems,
-			},
-		] )
-	);
+
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingUserAudienceSettings()
 	);
@@ -182,7 +172,7 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 			savedItemSlugs={ savedItemSlugs }
 			selectedItemSlugs={ selectedItems }
 			saveSettings={ saveSettings }
-			saveError={ saveError || dismissedItemsError }
+			saveError={ dismissedItemsError }
 			minSelectedItemCount={ MIN_SELECTED_AUDIENCES_COUNT }
 			maxSelectedItemCount={ MAX_SELECTED_AUDIENCES_COUNT }
 			isBusy={ isSavingSettings }

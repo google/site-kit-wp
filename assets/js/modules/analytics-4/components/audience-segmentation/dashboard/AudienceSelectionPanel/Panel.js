@@ -113,7 +113,7 @@ export default function Panel() {
 			<Header closePanel={ closePanel } />
 			<AudienceItems savedItemSlugs={ savedItemSlugs } />
 			<LearnMoreLink />
-			<SelectedItemCountError />
+			<SelectedItemCountError savedItemSlugs={ savedItemSlugs } />
 			<ErrorNotice />
 			<AudienceCreationSuccessNotice />
 			<Footer
