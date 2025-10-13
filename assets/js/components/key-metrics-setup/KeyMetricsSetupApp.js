@@ -47,6 +47,7 @@ import Layout from '@/js/components/layout/Layout';
 import ErrorNotice from '@/js/components/ErrorNotice';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import ProgressIndicator from '@/js/components/ProgressIndicator';
 import UserInputSelectOptions from '@/js/components/user-input/UserInputSelectOptions';
 import ToastNotice from '@/js/components/ToastNotice';
 import { hasErrorForAnswer } from '@/js/components/user-input/util/validation';
@@ -57,6 +58,7 @@ import {
 	USER_INPUT_QUESTIONS_PURPOSE,
 } from '@/js/components/user-input/util/constants';
 import WarningSVG from '@/svg/icons/warning.svg';
+import useQueryArg from '@/js/hooks/useQueryArg';
 
 export default function KeyMetricsSetupApp() {
 	const dashboardURL = useSelect( ( select ) =>
@@ -114,9 +116,15 @@ export default function KeyMetricsSetupApp() {
 		USER_INPUT_ANSWERS_PURPOSE: USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS,
 	} = getUserInputAnswersDescription();
 
+	const [ showProgress ] = useQueryArg( 'showProgress' );
+
+	const subHeader = !! showProgress ? (
+		<ProgressIndicator totalSegments={ 6 } currentSegment={ 4 } />
+	) : null;
+
 	return (
 		<Fragment>
-			<Header />
+			<Header subHeader={ subHeader } />
 			<div className="googlesitekit-key-metrics-setup">
 				<Grid>
 					<Row>
