@@ -462,6 +462,26 @@ class Analytics_4Test extends TestCase {
 			$this->assertEquals( $_GET['accountId'], $settings['accountID'], 'Account ID should be set from GET parameter.' );
 			$this->assertEquals( $admin_id, $settings['ownerID'], 'Owner ID should be set to admin user ID.' );
 		}
+
+		// Results in a redirection to the Key Metrics Setup screen when setupFlowRefresh feature flag is present.
+		$this->enable_feature( 'setupFlowRefresh' );
+		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
+
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected redirect to the Key Metrics Setup screen' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg(
+					array(
+						'page' => 'googlesitekit-key-metrics-setup',
+					),
+					admin_url( 'admin.php' )
+				),
+				$redirect->get_location(),
+				'Should redirect to the Key Metrics Setup screen.'
+			);
+		}
 	}
 
 	public function test_provision_property_webdatastream() {

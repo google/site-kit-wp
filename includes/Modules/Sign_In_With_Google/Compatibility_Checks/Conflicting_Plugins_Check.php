@@ -51,21 +51,24 @@ class Conflicting_Plugins_Check extends Compatibility_Check {
 		);
 
 		foreach ( $active_plugins as $plugin_slug ) {
+      // If the plugin isn't in our array of known plugins with issues,
+      // try the next plugin slug in the list of active plugins 
+      // (eg. "exit early").
 			if ( ! in_array( $plugin_slug, $security_plugins, true ) ) {
-				continue;
-			}
+        continue;
+      }
 
-			$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_slug );
-			$plugin_name = $plugin_data['Name'];
+      $plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_slug );
+      $plugin_name = $plugin_data['Name'];
 
-			$conflicting_plugins[ $plugin_slug ] = array(
-				'pluginName'      => $plugin_name,
-				'conflictMessage' => sprintf(
-					/* translators: %s: plugin name */
-					__( '%s may prevent Sign in with Google from working properly.', 'google-site-kit' ),
-					$plugin_name
-				),
-			);
+      $conflicting_plugins[ $plugin_slug ] = array(
+        'pluginName'      => $plugin_name,
+        'conflictMessage' => sprintf(
+          /* translators: %s: plugin name */
+          __( '%s may prevent Sign in with Google from working properly.', 'google-site-kit' ),
+          $plugin_name
+        ),
+      );
 		}
 
 		return ! empty( $conflicting_plugins ) ? $conflicting_plugins : false;
