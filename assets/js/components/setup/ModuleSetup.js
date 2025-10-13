@@ -36,15 +36,21 @@ import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { deleteItem } from '@/js/googlesitekit/api/cache';
 import { trackEvent } from '@/js/util';
+import { useFeature } from '@/js/hooks/useFeature';
+import useQueryArg from '@/js/hooks/useQueryArg';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import { Cell, Grid, Row } from '@/js/material-components';
 import Header from '@/js/components/Header';
 import ModuleSetupFooter from './ModuleSetupFooter';
+import ProgressIndicator from '@/js/components/ProgressIndicator';
 
 export default function ModuleSetup( { moduleSlug } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const [ showProgress ] = useQueryArg( 'showProgress' );
 
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
@@ -109,9 +115,23 @@ export default function ModuleSetup( { moduleSlug } ) {
 
 	const { SetupComponent } = module;
 
+	const showProgressIndicator =
+		setupFlowRefreshEnabled &&
+		moduleSlug === MODULE_SLUG_ANALYTICS_4 &&
+		showProgress === 'true';
+
 	return (
 		<Fragment>
-			<Header>
+			<Header
+				subHeader={
+					showProgressIndicator ? (
+						<ProgressIndicator
+							currentSegment={ 4 }
+							totalSegments={ 6 }
+						/>
+					) : null
+				}
+			>
 				<HelpMenu />
 			</Header>
 			<div className="googlesitekit-setup">
