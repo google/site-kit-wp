@@ -42,6 +42,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 import ClientIDTextField from '@/js/modules/sign-in-with-google/components/common/ClientIDTextField';
+import CompatibilityChecks from './CompatibilityChecks';
 import OneTapToggle from '@/js/modules/sign-in-with-google/components/common/OneTapToggle';
 import { Button } from 'googlesitekit-components';
 import Link from '@/js/components/Link';
@@ -72,8 +73,37 @@ export default function SetupForm() {
 		select( CORE_SITE ).getAnyoneCanRegister()
 	);
 
-	const [ hasSetOneTapEnabled, setHasSetOneTapEnabled ] = useState( false );
+	// Ensure SiwG settings are resolved so defaults (shape/text/theme) are available.
+	const settingsLoaded = useSelect(
+		( select ) =>
+			select( MODULES_SIGN_IN_WITH_GOOGLE ).getSettings() !== undefined
+	);
+
+	// Read One Tap current value and set a default ON during setup when registration is open,
+	// without breaking canSubmitChanges (wait until settingsLoaded).
+	const oneTapEnabled = useSelect( ( select ) =>
+		select( MODULES_SIGN_IN_WITH_GOOGLE ).getOneTapEnabled()
+	);
+	const [ hasSetDefaultOneTap, setHasSetDefaultOneTap ] = useState( false );
 	const { setOneTapEnabled } = useDispatch( MODULES_SIGN_IN_WITH_GOOGLE );
+
+	useEffect( () => {
+		if (
+			settingsLoaded &&
+			anyoneCanRegister &&
+			! hasSetDefaultOneTap &&
+			oneTapEnabled === false
+		) {
+			setOneTapEnabled( true );
+			setHasSetDefaultOneTap( true );
+		}
+	}, [
+		settingsLoaded,
+		anyoneCanRegister,
+		hasSetDefaultOneTap,
+		oneTapEnabled,
+		setOneTapEnabled,
+	] );
 
 	// Prefill the clientID field with a value from a previous module connection, if it exists.
 	useMount( async () => {
@@ -102,16 +132,10 @@ export default function SetupForm() {
 		}
 	} );
 
-	useEffect( () => {
-		if ( anyoneCanRegister && ! hasSetOneTapEnabled ) {
-			setHasSetOneTapEnabled( true );
-			setOneTapEnabled( true );
-		}
-	}, [ anyoneCanRegister, hasSetOneTapEnabled, setOneTapEnabled ] );
-
 	return (
 		<div className="googlesitekit-sign-in-with-google-setup__form">
 			<div className="googlesitekit-setup-module__panel-item">
+				<CompatibilityChecks />
 				<StoreErrorNotices
 					moduleSlug={ MODULES_SIGN_IN_WITH_GOOGLE }
 					storeName={ MODULES_SIGN_IN_WITH_GOOGLE }

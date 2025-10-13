@@ -39,6 +39,8 @@ import { SpinnerButton } from 'googlesitekit-components';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { Grid, Row, Cell } from '@/js/material-components';
 import Header from '@/js/components/Header';
 import Layout from '@/js/components/layout/Layout';
@@ -46,6 +48,7 @@ import ErrorNotice from '@/js/components/ErrorNotice';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
 import UserInputSelectOptions from '@/js/components/user-input/UserInputSelectOptions';
+import ToastNotice from '@/js/components/ToastNotice';
 import { hasErrorForAnswer } from '@/js/components/user-input/util/validation';
 import {
 	getUserInputAnswers,
@@ -68,6 +71,9 @@ export default function KeyMetricsSetupApp() {
 	);
 	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigating()
+	);
+	const isGA4Connected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const error = useSelect( ( select ) =>
@@ -186,6 +192,14 @@ export default function KeyMetricsSetupApp() {
 					</Row>
 				</Grid>
 			</div>
+			{ isGA4Connected && (
+				<ToastNotice
+					title={ __(
+						'Google Analytics was successfully set up',
+						'google-site-kit'
+					) }
+				/>
+			) }
 		</Fragment>
 	);
 }
