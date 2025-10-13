@@ -73,8 +73,37 @@ export default function SetupForm() {
 		select( CORE_SITE ).getAnyoneCanRegister()
 	);
 
-	const [ hasSetOneTapEnabled, setHasSetOneTapEnabled ] = useState( false );
+	// Ensure SiwG settings are resolved so defaults (shape/text/theme) are available.
+	const settingsLoaded = useSelect(
+		( select ) =>
+			select( MODULES_SIGN_IN_WITH_GOOGLE ).getSettings() !== undefined
+	);
+
+	// Read One Tap current value and set a default ON during setup when registration is open,
+	// without breaking canSubmitChanges (wait until settingsLoaded).
+	const oneTapEnabled = useSelect( ( select ) =>
+		select( MODULES_SIGN_IN_WITH_GOOGLE ).getOneTapEnabled()
+	);
+	const [ hasSetDefaultOneTap, setHasSetDefaultOneTap ] = useState( false );
 	const { setOneTapEnabled } = useDispatch( MODULES_SIGN_IN_WITH_GOOGLE );
+
+	useEffect( () => {
+		if (
+			settingsLoaded &&
+			anyoneCanRegister &&
+			! hasSetDefaultOneTap &&
+			oneTapEnabled === false
+		) {
+			setOneTapEnabled( true );
+			setHasSetDefaultOneTap( true );
+		}
+	}, [
+		settingsLoaded,
+		anyoneCanRegister,
+		hasSetDefaultOneTap,
+		oneTapEnabled,
+		setOneTapEnabled,
+	] );
 
 	// Prefill the clientID field with a value from a previous module connection, if it exists.
 	useMount( async () => {
@@ -102,13 +131,6 @@ export default function SetupForm() {
 			setExistingClientID( existingID );
 		}
 	} );
-
-	useEffect( () => {
-		if ( anyoneCanRegister && ! hasSetOneTapEnabled ) {
-			setHasSetOneTapEnabled( true );
-			setOneTapEnabled( true );
-		}
-	}, [ anyoneCanRegister, hasSetOneTapEnabled, setOneTapEnabled ] );
 
 	return (
 		<div className="googlesitekit-sign-in-with-google-setup__form">
