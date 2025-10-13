@@ -188,7 +188,7 @@ describe( 'UserSettingsSelectionPanel', () => {
 		expect( saveSpy.mock.calls[ 0 ] ).toHaveLength( 0 );
 	} );
 
-	it( 'resets proactive user engagement settings when the panel closes', async () => {
+	it( 'resets email reporting settings when the panel closes', async () => {
 		const coreUserDispatch = registry.dispatch( CORE_USER );
 		coreUserDispatch.receiveGetEmailReportingSettings( {
 			subscribed: true,
