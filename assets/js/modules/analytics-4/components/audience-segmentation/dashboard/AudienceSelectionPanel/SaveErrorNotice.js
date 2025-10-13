@@ -27,6 +27,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { useInViewSelect, useSelect } from '@/js/googlesitekit-data';
 import {
 	AUDIENCE_SELECTED,
+	AUDIENCE_SELECTION_DISMISSED_ITEMS_ERROR_SLUG,
 	AUDIENCE_SELECTION_FORM,
 	MAX_SELECTED_AUDIENCES_COUNT,
 	MIN_SELECTED_AUDIENCES_COUNT,
@@ -42,6 +43,11 @@ export default function SaveErrorNotice( { savedItemSlugs } ) {
 	const selectedItems = useFormValue(
 		AUDIENCE_SELECTION_FORM,
 		AUDIENCE_SELECTED
+	);
+
+	const dismissedItemsError = useFormValue(
+		AUDIENCE_SELECTION_FORM,
+		AUDIENCE_SELECTION_DISMISSED_ITEMS_ERROR_SLUG
 	);
 
 	const audienceSettings = useInViewSelect( ( select ) =>
@@ -88,11 +94,11 @@ export default function SaveErrorNotice( { savedItemSlugs } ) {
 		);
 	}, [ selectedItems, savedItemSlugs ] );
 
-	if ( ! itemLimitError && ! saveError ) {
+	if ( ! itemLimitError && ! saveError && ! dismissedItemsError ) {
 		return null;
 	}
 
-	let error = saveError;
+	let error = saveError || dismissedItemsError;
 
 	if ( haveSettingsChanged && itemLimitError ) {
 		error = { message: itemLimitError };

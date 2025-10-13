@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,11 +34,13 @@ import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 import {
 	AUDIENCE_SELECTED,
+	AUDIENCE_SELECTION_DISMISSED_ITEMS_ERROR_SLUG,
 	AUDIENCE_SELECTION_FORM,
 	MAX_SELECTED_AUDIENCES_COUNT,
 	MIN_SELECTED_AUDIENCES_COUNT,
 } from './constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { SelectionPanelFooter } from '@/js/components/SelectionPanel';
 import useFormValue from '@/js/hooks/useFormValue';
@@ -50,6 +52,8 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 		AUDIENCE_SELECTION_FORM,
 		AUDIENCE_SELECTED
 	);
+
+	const { setValues } = useDispatch( CORE_FORMS );
 
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingUserAudienceSettings()
@@ -70,11 +74,11 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 
 	const { getConfiguredAudiences } = useSelect( CORE_USER );
 
-	const [ dismissedItemsError, setDismissedItemsError ] = useState( null );
-
 	const saveSettings = useCallback(
 		async ( selectedAudiences ) => {
-			setDismissedItemsError( null );
+			setValues( AUDIENCE_SELECTION_FORM, {
+				[ AUDIENCE_SELECTION_DISMISSED_ITEMS_ERROR_SLUG ]: null,
+			} );
 
 			let { error } = await saveUserAudienceSettings( {
 				configuredAudiences: selectedAudiences,
@@ -112,7 +116,10 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 					) );
 
 					if ( error ) {
-						setDismissedItemsError( error );
+						setValues( AUDIENCE_SELECTION_FORM, {
+							[ AUDIENCE_SELECTION_DISMISSED_ITEMS_ERROR_SLUG ]:
+								error,
+						} );
 					}
 				}
 			}
@@ -123,6 +130,7 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 			hiddenTileDismissedItems,
 			removeDismissedItems,
 			saveUserAudienceSettings,
+			setValues,
 		]
 	);
 
@@ -172,7 +180,6 @@ export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 			savedItemSlugs={ savedItemSlugs }
 			selectedItemSlugs={ selectedItems }
 			saveSettings={ saveSettings }
-			saveError={ dismissedItemsError }
 			minSelectedItemCount={ MIN_SELECTED_AUDIENCES_COUNT }
 			maxSelectedItemCount={ MAX_SELECTED_AUDIENCES_COUNT }
 			isBusy={ isSavingSettings }
