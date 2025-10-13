@@ -29,7 +29,7 @@ import {
 	commonActions,
 	combineStores,
 } from 'googlesitekit-data';
-import { CORE_USER } from './constants';
+import { CORE_USER, EMAIL_REPORT_FREQUENCIES } from './constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 
@@ -84,10 +84,10 @@ const fetchSaveProactiveUserEngagementSettingsStore = createFetchStore( {
 				'frequency should be a string.'
 			);
 			invariant(
-				[ 'weekly', 'monthly', 'quarterly' ].includes(
-					settings.frequency
-				),
-				'frequency should be one of: weekly, monthly, quarterly.'
+				EMAIL_REPORT_FREQUENCIES.includes( settings.frequency ),
+				`frequency should be one of: ${ EMAIL_REPORT_FREQUENCIES.join(
+					', '
+				) }`
 			);
 		}
 	},
@@ -118,6 +118,28 @@ const baseActions = {
 	},
 
 	/**
+	 * Sets the proactive user engagement frequency.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} frequency Frequency value.
+	 * @return {Object} Redux-style action.
+	 */
+	setProactiveUserEngagementFrequency( frequency ) {
+		invariant(
+			EMAIL_REPORT_FREQUENCIES.includes( frequency ),
+			`frequency should be one of: ${ EMAIL_REPORT_FREQUENCIES.join(
+				', '
+			) }`
+		);
+
+		return {
+			type: SET_PROACTIVE_USER_ENGAGEMENT_SETTINGS,
+			payload: { settings: { frequency } },
+		};
+	},
+
+	/**
 	 * Saves the proactive user engagement settings.
 	 *
 	 * @since 1.162.0
@@ -139,9 +161,12 @@ const baseActions = {
 			const currentSettings = registry
 				.select( CORE_USER )
 				.getProactiveUserEngagementSettings();
+			const defaultSettings = currentSettings || {};
 
 			const settingsToSave =
-				Object.keys( settings ).length > 0 ? settings : currentSettings;
+				Object.keys( settings ).length > 0
+					? { ...defaultSettings, ...settings }
+					: currentSettings;
 
 			yield {
 				type: SET_PROACTIVE_USER_ENGAGEMENT_SETTINGS_SAVING_FLAG,
@@ -268,6 +293,39 @@ const baseSelectors = {
 	 */
 	isSavingProactiveUserEngagementSettings( state ) {
 		return !! state.proactiveUserEngagement.isSavingSettings;
+	},
+
+	/**
+	 * Gets the proactive user engagement frequency.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string} Frequency value.
+	 */
+	getProactiveUserEngagementFrequency( state ) {
+		const settings = state?.proactiveUserEngagement?.settings;
+		// If the settings haven't loaded at all, return `undefined` to signify
+		// we're still loading this value.
+		if ( settings === undefined ) {
+			return undefined;
+		}
+
+		// Default to the first frequency option if settings have loaded
+		// but the frequency is not set.
+		return settings.frequency || EMAIL_REPORT_FREQUENCIES[ 0 ];
+	},
+
+	/**
+	 * Gets the previously-saved frequency.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} Saved frequency or undefined.
+	 */
+	getProactiveUserEngagementSavedFrequency( state ) {
+		return state?.proactiveUserEngagement?.savedSettings?.frequency;
 	},
 };
 

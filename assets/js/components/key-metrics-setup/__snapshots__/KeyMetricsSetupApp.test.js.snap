@@ -1,0 +1,1181 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`KeyMetricsSetupApp should render correctly 1`] = `
+<div>
+  <header
+    class="googlesitekit-header"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+        >
+          <a
+            aria-label="Go to dashboard"
+            class="googlesitekit-cta-link googlesitekit-header__logo-link"
+            href="http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard"
+          >
+            <span
+              class="googlesitekit-cta-link__contents"
+            >
+              <div
+                aria-hidden="true"
+                class="googlesitekit-logo"
+              >
+                <svg />
+                <svg />
+                <span
+                  class="screen-reader-text"
+                >
+                  Site Kit by Google Logo
+                </span>
+              </div>
+            </span>
+          </a>
+        </div>
+        <div
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+        />
+      </div>
+    </div>
+  </header>
+  <div
+    class="googlesitekit-subheader"
+  />
+  <div
+    class="googlesitekit-key-metrics-setup"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+        >
+          <div
+            class="googlesitekit-layout googlesitekit-layout--rounded"
+          >
+            <h1
+              class="googlesitekit-typography googlesitekit-typography--headline googlesitekit-typography--medium"
+            >
+              Tell us your main goal to get tailored metrics
+            </h1>
+            <h2
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--large"
+            >
+              Which option most closely matches the purpose of your site?
+            </h2>
+            <p
+              class="googlesitekit-typography googlesitekit-key-metrics-setup__description googlesitekit-typography--body googlesitekit-typography--small"
+            >
+              Even if multiple options apply to your site, select the one that applies the most.
+              <br />
+              You can also answer or edit your response later in Settings.
+            </p>
+            <div
+              class="googlesitekit-user-input__select-options-wrapper mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--start-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <div
+                class="googlesitekit-user-input__select-options"
+              >
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio mdc-ripple-upgraded--background-focused"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-sell_products"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="sell_products"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-sell_products"
+                      >
+                        Sell products
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        E.g. selling devices, apparel, equipment, etc.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-provide_services"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="provide_services"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-provide_services"
+                      >
+                        Provide services
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        E.g. offering courses, consulting, tutoring, etc.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-monetize_content"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="monetize_content"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-monetize_content"
+                      >
+                        Monetize content
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        Using display ads, affiliate links, sponsored content, etc.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-publish_blog"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="publish_blog"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-publish_blog"
+                      >
+                        Publish a blog
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        Writing on a topic you’re passionate about, no focus on monetizing content
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-publish_news"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="publish_news"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-publish_news"
+                      >
+                        Publish news content
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        E.g. local news, investigative pieces, interviews, etc.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-share_portfolio"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="share_portfolio"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-share_portfolio"
+                      >
+                        Portfolio or business card
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        My website represents me or my company
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button
+              class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+              disabled=""
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Complete setup
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+  >
+    <div
+      class="googlesitekit-notice__icon"
+    >
+      <svg />
+    </div>
+    <div
+      class="googlesitekit-notice__content"
+    >
+      <p
+        class="googlesitekit-notice__title"
+      >
+        Google Analytics was successfully set up
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`KeyMetricsSetupApp should show an error when the save fails 1`] = `
+<div>
+  <header
+    class="googlesitekit-header"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+        >
+          <a
+            aria-label="Go to dashboard"
+            class="googlesitekit-cta-link googlesitekit-header__logo-link"
+            href="http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard"
+          >
+            <span
+              class="googlesitekit-cta-link__contents"
+            >
+              <div
+                aria-hidden="true"
+                class="googlesitekit-logo"
+              >
+                <svg />
+                <svg />
+                <span
+                  class="screen-reader-text"
+                >
+                  Site Kit by Google Logo
+                </span>
+              </div>
+            </span>
+          </a>
+        </div>
+        <div
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+        />
+      </div>
+    </div>
+  </header>
+  <div
+    class="googlesitekit-subheader"
+  />
+  <div
+    class="googlesitekit-key-metrics-setup"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+        >
+          <div
+            class="googlesitekit-layout googlesitekit-layout--rounded"
+          >
+            <h1
+              class="googlesitekit-typography googlesitekit-typography--headline googlesitekit-typography--medium"
+            >
+              Tell us your main goal to get tailored metrics
+            </h1>
+            <h2
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--large"
+            >
+              Which option most closely matches the purpose of your site?
+            </h2>
+            <p
+              class="googlesitekit-typography googlesitekit-key-metrics-setup__description googlesitekit-typography--body googlesitekit-typography--small"
+            >
+              Even if multiple options apply to your site, select the one that applies the most.
+              <br />
+              You can also answer or edit your response later in Settings.
+            </p>
+            <div
+              class="googlesitekit-user-input__select-options-wrapper mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--start-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <div
+                class="googlesitekit-user-input__select-options"
+              >
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-sell_products"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="sell_products"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-sell_products"
+                      >
+                        Sell products
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        E.g. selling devices, apparel, equipment, etc.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-provide_services"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="provide_services"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-provide_services"
+                      >
+                        Provide services
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        E.g. offering courses, consulting, tutoring, etc.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-monetize_content"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="monetize_content"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-monetize_content"
+                      >
+                        Monetize content
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        Using display ads, affiliate links, sponsored content, etc.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-publish_blog"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="publish_blog"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-publish_blog"
+                      >
+                        Publish a blog
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        Writing on a topic you’re passionate about, no focus on monetizing content
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-publish_news"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="publish_news"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-publish_news"
+                      >
+                        Publish news content
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        E.g. local news, investigative pieces, interviews, etc.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-share_portfolio"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="share_portfolio"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-share_portfolio"
+                      >
+                        Portfolio or business card
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        My website represents me or my company
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-notice googlesitekit-notice--error"
+            >
+              <div
+                class="googlesitekit-notice__icon"
+              >
+                <svg />
+              </div>
+              <div
+                class="googlesitekit-notice__content"
+              >
+                <p
+                  class="googlesitekit-notice__description"
+                >
+                  <span>
+                    Error: Internal server error (Please try again.)
+                  </span>
+                </p>
+              </div>
+            </div>
+            <button
+              class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Complete setup
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+  >
+    <div
+      class="googlesitekit-notice__icon"
+    >
+      <svg />
+    </div>
+    <div
+      class="googlesitekit-notice__content"
+    >
+      <p
+        class="googlesitekit-notice__title"
+      >
+        Google Analytics was successfully set up
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`KeyMetricsSetupApp should show the analytics setup success toast notice 1`] = `
+<div>
+  <header
+    class="googlesitekit-header"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+        >
+          <a
+            aria-label="Go to dashboard"
+            class="googlesitekit-cta-link googlesitekit-header__logo-link"
+            href="http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard"
+          >
+            <span
+              class="googlesitekit-cta-link__contents"
+            >
+              <div
+                aria-hidden="true"
+                class="googlesitekit-logo"
+              >
+                <svg />
+                <svg />
+                <span
+                  class="screen-reader-text"
+                >
+                  Site Kit by Google Logo
+                </span>
+              </div>
+            </span>
+          </a>
+        </div>
+        <div
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+        />
+      </div>
+    </div>
+  </header>
+  <div
+    class="googlesitekit-subheader"
+  />
+  <div
+    class="googlesitekit-key-metrics-setup"
+  >
+    <div
+      class="mdc-layout-grid"
+    >
+      <div
+        class="mdc-layout-grid__inner"
+      >
+        <div
+          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+        >
+          <div
+            class="googlesitekit-layout googlesitekit-layout--rounded"
+          >
+            <h1
+              class="googlesitekit-typography googlesitekit-typography--headline googlesitekit-typography--medium"
+            >
+              Tell us your main goal to get tailored metrics
+            </h1>
+            <h2
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--large"
+            >
+              Which option most closely matches the purpose of your site?
+            </h2>
+            <p
+              class="googlesitekit-typography googlesitekit-key-metrics-setup__description googlesitekit-typography--body googlesitekit-typography--small"
+            >
+              Even if multiple options apply to your site, select the one that applies the most.
+              <br />
+              You can also answer or edit your response later in Settings.
+            </p>
+            <div
+              class="googlesitekit-user-input__select-options-wrapper mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--start-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <div
+                class="googlesitekit-user-input__select-options"
+              >
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio mdc-ripple-upgraded--background-focused"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-sell_products"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="sell_products"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-sell_products"
+                      >
+                        Sell products
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        E.g. selling devices, apparel, equipment, etc.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-provide_services"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="provide_services"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-provide_services"
+                      >
+                        Provide services
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        E.g. offering courses, consulting, tutoring, etc.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-monetize_content"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="monetize_content"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-monetize_content"
+                      >
+                        Monetize content
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        Using display ads, affiliate links, sponsored content, etc.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-publish_blog"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="publish_blog"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-publish_blog"
+                      >
+                        Publish a blog
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        Writing on a topic you’re passionate about, no focus on monetizing content
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-publish_news"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="publish_news"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-publish_news"
+                      >
+                        Publish news content
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        E.g. local news, investigative pieces, interviews, etc.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="googlesitekit-user-input__select-option"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-radio"
+                    >
+                      <input
+                        class="mdc-radio__native-control"
+                        id="purpose-share_portfolio"
+                        name="purpose"
+                        readonly=""
+                        type="radio"
+                        value="share_portfolio"
+                      />
+                      <div
+                        class="mdc-radio__background"
+                      >
+                        <div
+                          class="mdc-radio__outer-circle"
+                        />
+                        <div
+                          class="mdc-radio__inner-circle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-radio__content"
+                    >
+                      <label
+                        for="purpose-share_portfolio"
+                      >
+                        Portfolio or business card
+                      </label>
+                      <div
+                        class="mdc-radio__description"
+                      >
+                        My website represents me or my company
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button
+              class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+              disabled=""
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Complete setup
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+  >
+    <div
+      class="googlesitekit-notice__icon"
+    >
+      <svg />
+    </div>
+    <div
+      class="googlesitekit-notice__content"
+    >
+      <p
+        class="googlesitekit-notice__title"
+      >
+        Google Analytics was successfully set up
+      </p>
+    </div>
+  </div>
+</div>
+`;

@@ -34,6 +34,7 @@ import Title from './Title';
 import Description from './Description';
 import DismissButton, { buttonProps } from './DismissButton';
 import CTAButton from './CTAButton';
+import NewBadge from '@/js/components/NewBadge';
 
 export default function Body( {
 	title,
@@ -42,6 +43,7 @@ export default function Body( {
 	dismissButton,
 	GraphicDesktop,
 	GraphicMobile,
+	newBadge,
 } ) {
 	const breakpoint = useBreakpoint();
 
@@ -54,6 +56,11 @@ export default function Body( {
 			) }
 
 			<div className="googlesitekit-overlay-card__body">
+				{ newBadge && (
+					<div className="googlesitekit-overlay-card__badge">
+						<NewBadge hasNoSpacing />
+					</div>
+				) }
 				{ title && <Title>{ title }</Title> }
 				{ description && <Description>{ description }</Description> }
 			</div>
@@ -86,4 +93,5 @@ Body.propTypes = {
 	} ),
 	GraphicDesktop: PropTypes.elementType,
 	GraphicMobile: PropTypes.elementType,
+	newBadge: PropTypes.bool,
 };

@@ -19,18 +19,12 @@
 /**
  * External dependencies
  */
-import { useClickAway } from 'react-use';
+import { useClickAway, useEvent } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import {
-	Fragment,
-	useState,
-	useRef,
-	useEffect,
-	useCallback,
-} from '@wordpress/element';
+import { Fragment, useState, useRef, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
 
@@ -49,9 +43,11 @@ import DisconnectIcon from '@/svg/icons/disconnect.svg';
 import ManageSitesIcon from '@/svg/icons/manage-sites.svg';
 import ManageEmailReportsIcon from '@/svg/icons/manage-email-reports.svg';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '@/js/modules/analytics-4/datastore/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/proactive-user-engagement/constants';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
 import useViewContext from '@/js/hooks/useViewContext';
 import useFormValue from '@/js/hooks/useFormValue';
@@ -96,25 +92,22 @@ export default function UserMenu() {
 		menuButtonRef.current?.focus();
 	} );
 
-	function handleClose() {
+	const handleClose = useCallback( () => {
 		toggleDialog( false );
 		setMenuOpen( false );
-	}
+	}, [ toggleDialog, setMenuOpen ] );
 
-	useEffect( () => {
-		function handleEscapeKeyPress( e ) {
+	const handleEscapeKeyPress = useCallback(
+		( e ) => {
 			// Close if Escape key is pressed.
 			if ( ESCAPE === e.keyCode ) {
 				handleClose();
 			}
-		}
+		},
+		[ handleClose ]
+	);
 
-		global.addEventListener( 'keyup', handleEscapeKeyPress );
-
-		return () => {
-			global.removeEventListener( 'keyup', handleEscapeKeyPress );
-		};
-	}, [] );
+	useEvent( 'keyup', handleEscapeKeyPress );
 
 	const handleMenu = useCallback( () => {
 		if ( ! menuOpen ) {
@@ -128,6 +121,8 @@ export default function UserMenu() {
 		toggleDialog( ! dialogActive );
 		setMenuOpen( false );
 	}, [ dialogActive ] );
+
+	const { setValue } = useDispatch( CORE_UI );
 
 	const handleMenuItemSelect = useCallback(
 		async ( _index, event ) => {
@@ -148,6 +143,9 @@ export default function UserMenu() {
 				case 'disconnect':
 					handleDialog();
 					break;
+				case 'manage-email-reports':
+					setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+					break;
 				default:
 					handleMenu();
 			}
@@ -157,6 +155,7 @@ export default function UserMenu() {
 			handleMenu,
 			handleDialog,
 			navigateTo,
+			setValue,
 			viewContext,
 		]
 	);
