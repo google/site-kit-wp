@@ -1063,6 +1063,18 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                         </span>
                       </button>
                     </div>
+                    <div
+                      class="googlesitekit-setup__step-hint"
+                    >
+                      <p>
+                        Why is this required?
+                      </p>
+                      <span
+                        class="googlesitekit-info-tooltip"
+                      >
+                        <svg />
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1479,6 +1491,18 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                         </span>
                       </button>
                     </div>
+                    <div
+                      class="googlesitekit-setup__step-hint"
+                    >
+                      <p>
+                        Why is this required?
+                      </p>
+                      <span
+                        class="googlesitekit-info-tooltip"
+                      >
+                        <svg />
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1894,6 +1918,18 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                           Sign in with Google
                         </span>
                       </button>
+                    </div>
+                    <div
+                      class="googlesitekit-setup__step-hint"
+                    >
+                      <p>
+                        Why is this required?
+                      </p>
+                      <span
+                        class="googlesitekit-info-tooltip"
+                      >
+                        <svg />
+                      </span>
                     </div>
                   </div>
                 </div>
