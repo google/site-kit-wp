@@ -1,0 +1,129 @@
+/**
+ * SettingsEmailReporting component.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { Fragment, useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { Switch } from 'googlesitekit-components';
+import { useSelect, useDispatch } from 'googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/proactive-user-engagement/constants';
+import { Cell, Row } from '@/js/material-components';
+import Link from '@/js/components/Link';
+import Typography from '@/js/components/Typography';
+
+export default function SettingsEmailReporting( { loading = false } ) {
+	const isEnabled = useSelect( ( select ) =>
+		select( CORE_SITE ).isEmailReportingEnabled()
+	);
+
+	const settings = useSelect( ( select ) =>
+		select( CORE_SITE ).getEmailReportingSettings()
+	);
+
+	const { setProactiveUserEngagementEnabled, saveEmailReportingSettings } =
+		useDispatch( CORE_SITE );
+
+	const { setValue } = useDispatch( CORE_UI );
+
+	const handleToggle = useCallback( async () => {
+		await setProactiveUserEngagementEnabled( ! isEnabled );
+		await saveEmailReportingSettings();
+	}, [
+		isEnabled,
+		setProactiveUserEngagementEnabled,
+		saveEmailReportingSettings,
+	] );
+
+	const handleManageClick = useCallback( () => {
+		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+	}, [ setValue ] );
+
+	if ( loading || settings === undefined ) {
+		return null;
+	}
+
+	return (
+		<Fragment>
+			<Row>
+				<Cell size={ 12 }>
+					<div className="googlesitekit-settings-email-reporting__switch">
+						<Switch
+							label={
+								<Fragment>
+									<Typography
+										type="body"
+										size="medium"
+										className="googlesitekit-settings-email-reporting__label"
+									>
+										{ __(
+											'Enable email reports',
+											'google-site-kit'
+										) }
+									</Typography>
+									<br />
+									<Typography
+										type="body"
+										size="medium"
+										className="googlesitekit-settings-email-reporting__label-description"
+									>
+										{ __(
+											'This allows you and any dashboard sharing user to subscribe to email reports',
+											'google-site-kit'
+										) }
+									</Typography>
+								</Fragment>
+							}
+							checked={ isEnabled }
+							onClick={ handleToggle }
+							hideLabel={ false }
+						/>
+					</div>
+				</Cell>
+			</Row>
+			{ isEnabled && (
+				<Row className="googlesitekit-settings-email-reporting__manage">
+					<Cell size={ 12 }>
+						<Link onClick={ handleManageClick }>
+							{ __(
+								'Manage email reports subscription',
+								'google-site-kit'
+							) }
+						</Link>
+					</Cell>
+				</Row>
+			) }
+		</Fragment>
+	);
+}
+
+SettingsEmailReporting.propTypes = {
+	loading: PropTypes.bool,
+};

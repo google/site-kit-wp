@@ -64,7 +64,7 @@ class REST_Proactive_User_Engagement_Controller {
 				return array_merge(
 					$paths,
 					array(
-						'/' . REST_Routes::REST_ROOT . '/core/site/data/proactive-user-engagement',
+						'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting',
 					)
 				);
 			}
@@ -85,7 +85,7 @@ class REST_Proactive_User_Engagement_Controller {
 
 		return array(
 			new REST_Route(
-				'core/site/data/proactive-user-engagement',
+				'core/site/data/email-reporting',
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
