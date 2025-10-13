@@ -32,8 +32,11 @@ import { SelectionPanelHeader } from '@/js/components/SelectionPanel';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import Link from '@/js/components/Link';
 import P from '@/js/components/Typography/P';
+import useViewContext from '@/js/hooks/useViewContext';
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
 
 export default function Header( { closePanel } ) {
+	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 
 	const adminSettingsURL = useSelect( ( select ) =>
@@ -41,10 +44,12 @@ export default function Header( { closePanel } ) {
 	);
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const onSettingsClick = useCallback(
-		() => navigateTo( adminSettingsURL ),
-		[ adminSettingsURL, navigateTo ]
-	);
+	const onSettingsClick = useCallback( () => {
+		if ( VIEW_CONTEXT_SETTINGS === viewContext ) {
+			closePanel();
+		}
+		navigateTo( adminSettingsURL );
+	}, [ adminSettingsURL, navigateTo, closePanel, viewContext ] );
 
 	return (
 		<SelectionPanelHeader

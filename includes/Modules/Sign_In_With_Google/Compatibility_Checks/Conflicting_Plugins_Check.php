@@ -51,7 +51,8 @@ class Conflicting_Plugins_Check extends Compatibility_Check {
 
 		$conflicting_plugins = array();
 		foreach ( $active_plugins as $plugin_slug ) {
-			if ( isset( $security_plugins[ $plugin_slug ] ) ) {
+
+			if ( in_array( $plugin_slug, $security_plugins, true ) ) {
 				$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_slug );
 				$plugin_name = $plugin_data['Name'];
 

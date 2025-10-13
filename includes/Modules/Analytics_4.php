@@ -997,6 +997,15 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 		$this->provision_property_webdatastream( $account_id, $account_ticket );
 
+		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			wp_safe_redirect(
+				$this->context->admin_url(
+					'key-metrics-setup',
+				)
+			);
+			exit;
+		}
+
 		wp_safe_redirect(
 			$this->context->admin_url(
 				'dashboard',

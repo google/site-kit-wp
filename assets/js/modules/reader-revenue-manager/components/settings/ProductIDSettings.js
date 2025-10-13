@@ -63,14 +63,6 @@ export default function ProductIDSettings( { hasModuleAccess } ) {
 
 	const hasPaymentSubscription = paymentOption === 'subscriptions';
 
-	const showOpenAccessNotice =
-		hasPaymentSubscription &&
-		productID === 'openaccess' &&
-		! isOpenAccessNoticeDismissed &&
-		hasModuleAccess;
-
-	const showInfoNotice = ! isInfoNoticeDismissed && hasModuleAccess;
-
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { setProductIDs } = useDispatch( MODULES_READER_REVENUE_MANAGER );
 
@@ -84,25 +76,27 @@ export default function ProductIDSettings( { hasModuleAccess } ) {
 					hasModuleAccess={ hasModuleAccess }
 				/>
 			</div>
-			{ showOpenAccessNotice && (
-				<div className="googlesitekit-rrm-settings-edit__product-id-warning-notice">
-					<Notice
-						type={ Notice.TYPES.WARNING }
-						description={ __(
-							'Selecting “open access” will allow your reader to access your content without a subscription',
-							'google-site-kit'
-						) }
-						dismissButton={ {
-							onClick: () =>
-								dismissItem(
-									RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG
-								),
-						} }
-						hideIcon
-					/>
-				</div>
-			) }
-			{ showInfoNotice && (
+			{ hasPaymentSubscription &&
+				productID === 'openaccess' &&
+				! isOpenAccessNoticeDismissed && (
+					<div className="googlesitekit-rrm-settings-edit__product-id-warning-notice">
+						<Notice
+							type={ Notice.TYPES.WARNING }
+							description={ __(
+								'Selecting “open access” will allow your reader to access your content without a subscription',
+								'google-site-kit'
+							) }
+							dismissButton={ {
+								onClick: () =>
+									dismissItem(
+										RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG
+									),
+							} }
+							hideIcon
+						/>
+					</div>
+				) }
+			{ ! isInfoNoticeDismissed && (
 				<div className="googlesitekit-rrm-settings-edit__product-id-info-notice">
 					<Notice
 						type={ Notice.TYPES.INFO }

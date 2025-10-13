@@ -21,10 +21,16 @@
  */
 import MainHeader from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
+import ProgressIndicator from '@/js/components/ProgressIndicator';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function Header() {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	return (
-		<MainHeader>
+		<MainHeader
+			subHeader={ setupFlowRefreshEnabled ? <ProgressIndicator /> : null }
+		>
 			<HelpMenu />
 		</MainHeader>
 	);
