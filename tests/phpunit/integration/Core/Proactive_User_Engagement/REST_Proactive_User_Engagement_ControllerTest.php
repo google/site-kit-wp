@@ -69,11 +69,11 @@ class REST_Proactive_User_Engagement_ControllerTest extends TestCase {
 
 		$server     = rest_get_server();
 		$routes     = array(
-			'/' . REST_Routes::REST_ROOT . '/core/site/data/proactive-user-engagement',
+			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting',
 		);
 		$get_routes = array_intersect( $routes, array_keys( $server->get_routes() ) );
 
-		$this->assertEqualSets( $routes, $get_routes, 'Expected route for site proactive user engagement settings to be registered' );
+		$this->assertEqualSets( $routes, $get_routes, 'Expected route for site email reporting settings to be registered' );
 	}
 
 	public function test_get_settings() {
@@ -88,7 +88,7 @@ class REST_Proactive_User_Engagement_ControllerTest extends TestCase {
 		$this->settings->register();
 		$this->settings->set( $original_settings );
 
-		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/proactive-user-engagement' );
+		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting' );
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEqualSetsWithIndex( $original_settings, $response->get_data(), 'GET should return the current site settings' );
@@ -99,7 +99,7 @@ class REST_Proactive_User_Engagement_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/proactive-user-engagement' );
+		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting' );
 		$request->set_body_params(
 			array(
 				'data' => array(
@@ -123,7 +123,7 @@ class REST_Proactive_User_Engagement_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/proactive-user-engagement' );
+		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting' );
 		$request->set_body_params(
 			array(
 				'data' => array(
