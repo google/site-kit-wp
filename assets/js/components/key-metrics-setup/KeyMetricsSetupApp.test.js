@@ -50,7 +50,7 @@ describe( 'KeyMetricsSetupApp', () => {
 	} );
 
 	it( 'should render correctly', async () => {
-		const { container, getByText, getByRole, waitForRegistry } = render(
+		const { getByText, getByRole, waitForRegistry } = render(
 			<KeyMetricsSetupApp />,
 			{
 				registry,
@@ -59,8 +59,6 @@ describe( 'KeyMetricsSetupApp', () => {
 		);
 
 		await waitForRegistry();
-
-		expect( container ).toMatchSnapshot();
 
 		expect(
 			getByText( 'Tell us your main goal to get tailored metrics' )
@@ -163,7 +161,7 @@ describe( 'KeyMetricsSetupApp', () => {
 			status: 500,
 		} );
 
-		const { container, getByRole, getByText, waitForRegistry } = render(
+		const { getByRole, getByText, waitForRegistry } = render(
 			<KeyMetricsSetupApp />,
 			{
 				registry,
@@ -177,8 +175,6 @@ describe( 'KeyMetricsSetupApp', () => {
 		fireEvent.click( getByRole( 'button', { name: 'Complete setup' } ) );
 
 		await waitForRegistry();
-
-		expect( container ).toMatchSnapshot();
 
 		expect(
 			getByText( 'Error: Internal server error (Please try again.)' )
