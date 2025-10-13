@@ -36,7 +36,6 @@ describe( 'KeyMetricsSetupApp', () => {
 
 	let registry;
 
-	// Endpoints for syncing audiences and custom dimensions (triggered on mount).
 	const syncAudiencesEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
@@ -62,9 +61,6 @@ describe( 'KeyMetricsSetupApp', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 
-		// Provide default successful mocks for sync endpoints so that the
-		// automatic syncing side-effects in the component do not cause
-		// unexpected console errors in tests that are unrelated to syncing.
 		fetchMock.post( syncAudiencesEndpoint, { body: [], status: 200 } );
 		fetchMock.post( syncCustomDimensionsEndpoint, {
 			body: [],
