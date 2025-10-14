@@ -101,8 +101,8 @@
 			height: 100%;
 			width: 100%;
 
-			@media (max-width: $bp-desktop) {
-				max-height: 511px;
+			@media (max-width: $bp-mobileOnly) {
+				max-height: 230px;
 			}
 
 			svg {
