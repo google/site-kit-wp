@@ -108,7 +108,7 @@ const baseActions = {
 	 * @param {*} enabled Whether email reporting is enabled.
 	 * @return {Object} Redux-style action.
 	 */
-	setProactiveUserEngagementEnabled( enabled ) {
+	setEmailReportingEnabled( enabled ) {
 		invariant(
 			typeof enabled === 'boolean',
 			'enabled should be a boolean.'

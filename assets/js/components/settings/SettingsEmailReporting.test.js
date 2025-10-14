@@ -28,7 +28,7 @@ import {
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/proactive-user-engagement/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import SettingsEmailReporting from './SettingsEmailReporting';
 
 describe( 'SettingsEmailReporting', () => {
@@ -43,11 +43,9 @@ describe( 'SettingsEmailReporting', () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: false,
 		} );
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetProactiveUserEngagementSettings( {
-				subscribed: false,
-			} );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: false,
+		} );
 
 		const { getByText } = render( <SettingsEmailReporting />, {
 			registry,
@@ -85,11 +83,9 @@ describe( 'SettingsEmailReporting', () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: false,
 		} );
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetProactiveUserEngagementSettings( {
-				subscribed: false,
-			} );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: false,
+		} );
 
 		// Prevent any GET to email-reporting from triggering in the background.
 		freezeFetch(
@@ -126,11 +122,9 @@ describe( 'SettingsEmailReporting', () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: true,
 		} );
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetProactiveUserEngagementSettings( {
-				subscribed: true,
-			} );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: true,
+		} );
 
 		const { getByText } = render( <SettingsEmailReporting />, {
 			registry,
@@ -145,11 +139,9 @@ describe( 'SettingsEmailReporting', () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: false,
 		} );
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetProactiveUserEngagementSettings( {
-				subscribed: true,
-			} );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: true,
+		} );
 
 		const { queryByText } = render( <SettingsEmailReporting />, {
 			registry,
@@ -164,11 +156,9 @@ describe( 'SettingsEmailReporting', () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: true,
 		} );
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetProactiveUserEngagementSettings( {
-				subscribed: true,
-			} );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: true,
+		} );
 
 		const { getByText } = render( <SettingsEmailReporting />, {
 			registry,

@@ -34,7 +34,7 @@ import { Switch } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/proactive-user-engagement/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import { Cell, Row } from '@/js/material-components';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
@@ -48,19 +48,15 @@ export default function SettingsEmailReporting( { loading = false } ) {
 		select( CORE_SITE ).getEmailReportingSettings()
 	);
 
-	const { setProactiveUserEngagementEnabled, saveEmailReportingSettings } =
+	const { setEmailReportingEnabled, saveEmailReportingSettings } =
 		useDispatch( CORE_SITE );
 
 	const { setValue } = useDispatch( CORE_UI );
 
 	const handleToggle = useCallback( async () => {
-		await setProactiveUserEngagementEnabled( ! isEnabled );
+		await setEmailReportingEnabled( ! isEnabled );
 		await saveEmailReportingSettings();
-	}, [
-		isEnabled,
-		setProactiveUserEngagementEnabled,
-		saveEmailReportingSettings,
-	] );
+	}, [ isEnabled, setEmailReportingEnabled, saveEmailReportingSettings ] );
 
 	const handleManageClick = useCallback( () => {
 		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );

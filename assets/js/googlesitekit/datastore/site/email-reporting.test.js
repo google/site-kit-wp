@@ -64,9 +64,7 @@ describe( 'core/site Email Reporting', () => {
 						enabled: false,
 					} );
 
-				registry
-					.dispatch( CORE_SITE )
-					.setProactiveUserEngagementEnabled( true );
+				registry.dispatch( CORE_SITE ).setEmailReportingEnabled( true );
 
 				const { response } = await registry
 					.dispatch( CORE_SITE )
@@ -104,9 +102,7 @@ describe( 'core/site Email Reporting', () => {
 						enabled: false,
 					} );
 
-				registry
-					.dispatch( CORE_SITE )
-					.setProactiveUserEngagementEnabled( true );
+				registry.dispatch( CORE_SITE ).setEmailReportingEnabled( true );
 
 				const { error } = await registry
 					.dispatch( CORE_SITE )
@@ -129,7 +125,7 @@ describe( 'core/site Email Reporting', () => {
 			} );
 		} );
 
-		describe( 'setProactiveUserEngagementEnabled', () => {
+		describe( 'setEmailReportingEnabled', () => {
 			it( 'sets the enabled status', () => {
 				registry
 					.dispatch( CORE_SITE )
@@ -141,9 +137,7 @@ describe( 'core/site Email Reporting', () => {
 					registry.select( CORE_SITE ).isEmailReportingEnabled()
 				).toBe( false );
 
-				registry
-					.dispatch( CORE_SITE )
-					.setProactiveUserEngagementEnabled( true );
+				registry.dispatch( CORE_SITE ).setEmailReportingEnabled( true );
 
 				expect(
 					registry.select( CORE_SITE ).isEmailReportingEnabled()
@@ -152,31 +146,29 @@ describe( 'core/site Email Reporting', () => {
 
 			it( 'requires a boolean argument', () => {
 				expect( () => {
-					registry
-						.dispatch( CORE_SITE )
-						.setProactiveUserEngagementEnabled();
+					registry.dispatch( CORE_SITE ).setEmailReportingEnabled();
 				} ).toThrow( 'enabled should be a boolean.' );
 
 				expect( () => {
 					registry
 						.dispatch( CORE_SITE )
-						.setProactiveUserEngagementEnabled( undefined );
+						.setEmailReportingEnabled( undefined );
 				} ).toThrow( 'enabled should be a boolean.' );
 
 				expect( () => {
 					registry
 						.dispatch( CORE_SITE )
-						.setProactiveUserEngagementEnabled( 'true' );
+						.setEmailReportingEnabled( 'true' );
 				} ).toThrow( 'enabled should be a boolean.' );
 
 				expect( () => {
 					registry
 						.dispatch( CORE_SITE )
-						.setProactiveUserEngagementEnabled( true );
+						.setEmailReportingEnabled( true );
 
 					registry
 						.dispatch( CORE_SITE )
-						.setProactiveUserEngagementEnabled( false );
+						.setEmailReportingEnabled( false );
 				} ).not.toThrow( 'enabled should be a boolean.' );
 			} );
 		} );
