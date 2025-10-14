@@ -34,7 +34,7 @@ import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 
 const baseInitialState = {
-	proactiveUserEngagement: {
+	emailReporting: {
 		settings: undefined,
 		savedSettings: undefined,
 		isSavingSettings: false,
@@ -42,27 +42,25 @@ const baseInitialState = {
 };
 
 const fetchStoreReducerCallback = createReducer(
-	( state, proactiveUserEngagementSettings ) => {
-		state.proactiveUserEngagement.settings =
-			proactiveUserEngagementSettings;
-		state.proactiveUserEngagement.savedSettings =
-			proactiveUserEngagementSettings;
+	( state, emailReportingSettings ) => {
+		state.emailReporting.settings = emailReportingSettings;
+		state.emailReporting.savedSettings = emailReportingSettings;
 	}
 );
 
-const fetchGetProactiveUserEngagementSettingsStore = createFetchStore( {
-	baseName: 'getProactiveUserEngagementSettings',
+const fetchGetEmailReportingSettingsStore = createFetchStore( {
+	baseName: 'getEmailReportingSettings',
 	controlCallback: () =>
-		get( 'core', 'user', 'proactive-user-engagement-settings', undefined, {
+		get( 'core', 'user', 'email-reporting-settings', undefined, {
 			useCache: false,
 		} ),
 	reducerCallback: fetchStoreReducerCallback,
 } );
 
-const fetchSaveProactiveUserEngagementSettingsStore = createFetchStore( {
-	baseName: 'saveProactiveUserEngagementSettings',
+const fetchSaveEmailReportingSettingsStore = createFetchStore( {
+	baseName: 'saveEmailReportingSettings',
 	controlCallback: ( settings ) =>
-		set( 'core', 'user', 'proactive-user-engagement-settings', {
+		set( 'core', 'user', 'email-reporting-settings', {
 			settings,
 		} ),
 	reducerCallback: fetchStoreReducerCallback,
@@ -70,7 +68,7 @@ const fetchSaveProactiveUserEngagementSettingsStore = createFetchStore( {
 	validateParams: ( settings ) => {
 		invariant(
 			isPlainObject( settings ),
-			'Proactive User Engagement settings should be an object.'
+			'Email Reporting settings should be an object.'
 		);
 		if ( settings.subscribed !== undefined ) {
 			invariant(
@@ -94,38 +92,36 @@ const fetchSaveProactiveUserEngagementSettingsStore = createFetchStore( {
 } );
 
 // Actions
-const SET_PROACTIVE_USER_ENGAGEMENT_SETTINGS =
-	'SET_PROACTIVE_USER_ENGAGEMENT_SETTINGS';
-const SET_PROACTIVE_USER_ENGAGEMENT_SETTINGS_SAVING_FLAG =
-	'SET_PROACTIVE_USER_ENGAGEMENT_SETTINGS_SAVING_FLAG';
-const RESET_PROACTIVE_USER_ENGAGEMENT_SETTINGS =
-	'RESET_PROACTIVE_USER_ENGAGEMENT_SETTINGS';
+const SET_EMAIL_REPORTING_SETTINGS = 'SET_EMAIL_REPORTING_SETTINGS';
+const SET_EMAIL_REPORTING_SETTINGS_SAVING_FLAG =
+	'SET_EMAIL_REPORTING_SETTINGS_SAVING_FLAG';
+const RESET_EMAIL_REPORTING_SETTINGS = 'RESET_EMAIL_REPORTING_SETTINGS';
 
 const baseActions = {
 	/**
-	 * Sets proactive user engagement settings.
+	 * Sets email reporting settings.
 	 *
 	 * @since 1.162.0
 	 *
 	 * @param {Object} settings Settings object.
 	 * @return {Object} Redux-style action.
 	 */
-	setProactiveUserEngagementSettings( settings ) {
+	setEmailReportingSettings( settings ) {
 		return {
-			type: SET_PROACTIVE_USER_ENGAGEMENT_SETTINGS,
+			type: SET_EMAIL_REPORTING_SETTINGS,
 			payload: { settings },
 		};
 	},
 
 	/**
-	 * Sets the proactive user engagement frequency.
+	 * Sets the email reporting frequency.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {string} frequency Frequency value.
 	 * @return {Object} Redux-style action.
 	 */
-	setProactiveUserEngagementFrequency( frequency ) {
+	setEmailReportingFrequency( frequency ) {
 		invariant(
 			EMAIL_REPORT_FREQUENCIES.includes( frequency ),
 			`frequency should be one of: ${ EMAIL_REPORT_FREQUENCIES.join(
@@ -134,24 +130,24 @@ const baseActions = {
 		);
 
 		return {
-			type: SET_PROACTIVE_USER_ENGAGEMENT_SETTINGS,
+			type: SET_EMAIL_REPORTING_SETTINGS,
 			payload: { settings: { frequency } },
 		};
 	},
 
 	/**
-	 * Saves the proactive user engagement settings.
+	 * Saves the email reporting settings.
 	 *
 	 * @since 1.162.0
 	 *
 	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	saveProactiveUserEngagementSettings: createValidatedAction(
+	saveEmailReportingSettings: createValidatedAction(
 		( settings = {} ) => {
 			invariant(
 				isPlainObject( settings ),
-				'Proactive User Engagement settings should be an object to save.'
+				'Email Reporting settings should be an object to save.'
 			);
 		},
 		function* ( settings = {} ) {
@@ -160,7 +156,7 @@ const baseActions = {
 			// Get current settings from state if no settings provided
 			const currentSettings = registry
 				.select( CORE_USER )
-				.getProactiveUserEngagementSettings();
+				.getEmailReportingSettings();
 			const defaultSettings = currentSettings || {};
 
 			const settingsToSave =
@@ -169,17 +165,17 @@ const baseActions = {
 					: currentSettings;
 
 			yield {
-				type: SET_PROACTIVE_USER_ENGAGEMENT_SETTINGS_SAVING_FLAG,
+				type: SET_EMAIL_REPORTING_SETTINGS_SAVING_FLAG,
 				payload: { isSaving: true },
 			};
 
 			const { response, error } =
-				yield fetchSaveProactiveUserEngagementSettingsStore.actions.fetchSaveProactiveUserEngagementSettings(
+				yield fetchSaveEmailReportingSettingsStore.actions.fetchSaveEmailReportingSettings(
 					settingsToSave
 				);
 
 			yield {
-				type: SET_PROACTIVE_USER_ENGAGEMENT_SETTINGS_SAVING_FLAG,
+				type: SET_EMAIL_REPORTING_SETTINGS_SAVING_FLAG,
 				payload: { isSaving: false },
 			};
 
@@ -188,15 +184,15 @@ const baseActions = {
 	),
 
 	/**
-	 * Resets modified proactive user engagement settings to currently saved values.
+	 * Resets modified email reporting settings to currently saved values.
 	 *
 	 * @since 1.162.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
-	*resetProactiveUserEngagementSettings() {
+	*resetEmailReportingSettings() {
 		return {
-			type: RESET_PROACTIVE_USER_ENGAGEMENT_SETTINGS,
+			type: RESET_EMAIL_REPORTING_SETTINGS,
 			payload: {},
 		};
 	},
@@ -206,22 +202,21 @@ export const baseReducer = createReducer( ( state, action ) => {
 	const { type, payload } = action;
 
 	switch ( type ) {
-		case SET_PROACTIVE_USER_ENGAGEMENT_SETTINGS: {
-			state.proactiveUserEngagement.settings = {
-				...state.proactiveUserEngagement.settings,
+		case SET_EMAIL_REPORTING_SETTINGS: {
+			state.emailReporting.settings = {
+				...state.emailReporting.settings,
 				...payload.settings,
 			};
 			break;
 		}
 
-		case SET_PROACTIVE_USER_ENGAGEMENT_SETTINGS_SAVING_FLAG: {
-			state.proactiveUserEngagement.isSavingSettings = payload.isSaving;
+		case SET_EMAIL_REPORTING_SETTINGS_SAVING_FLAG: {
+			state.emailReporting.isSavingSettings = payload.isSaving;
 			break;
 		}
 
-		case RESET_PROACTIVE_USER_ENGAGEMENT_SETTINGS: {
-			state.proactiveUserEngagement.settings =
-				state.proactiveUserEngagement.savedSettings;
+		case RESET_EMAIL_REPORTING_SETTINGS: {
+			state.emailReporting.settings = state.emailReporting.savedSettings;
 			break;
 		}
 
@@ -231,80 +226,80 @@ export const baseReducer = createReducer( ( state, action ) => {
 } );
 
 const baseResolvers = {
-	*getProactiveUserEngagementSettings() {
+	*getEmailReportingSettings() {
 		const registry = yield commonActions.getRegistry();
 
-		const proactiveUserEngagementSettings = registry
+		const emailReportingSettings = registry
 			.select( CORE_USER )
-			.getProactiveUserEngagementSettings();
+			.getEmailReportingSettings();
 
-		if ( proactiveUserEngagementSettings === undefined ) {
-			yield fetchGetProactiveUserEngagementSettingsStore.actions.fetchGetProactiveUserEngagementSettings();
+		if ( emailReportingSettings === undefined ) {
+			yield fetchGetEmailReportingSettingsStore.actions.fetchGetEmailReportingSettings();
 		}
 	},
 };
 
 const baseSelectors = {
 	/**
-	 * Gets the proactive user engagement settings.
+	 * Gets the email reporting settings.
 	 *
 	 * @since 1.162.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Object|undefined)} Proactive User Engagement settings; `undefined` if not loaded.
+	 * @return {(Object|undefined)} Email Reporting settings; `undefined` if not loaded.
 	 */
-	getProactiveUserEngagementSettings( state ) {
-		return state.proactiveUserEngagement.settings;
+	getEmailReportingSettings( state ) {
+		return state.emailReporting.settings;
 	},
 
 	/**
-	 * Determines whether the user is subscribed to proactive user engagement.
+	 * Determines whether the user is subscribed to email reporting.
 	 *
 	 * @since 1.162.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the user is subscribed, otherwise FALSE.
 	 */
-	isProactiveUserEngagementSubscribed( state ) {
-		const settings = state.proactiveUserEngagement.settings;
+	isEmailReportingSubscribed( state ) {
+		const settings = state.emailReporting.settings;
 		return !! settings?.subscribed;
 	},
 
 	/**
-	 * Determines whether the proactive user engagement settings have changed from what is saved.
+	 * Determines whether the email reporting settings have changed from what is saved.
 	 *
 	 * @since 1.162.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the settings have changed, otherwise FALSE.
 	 */
-	haveProactiveUserEngagementSettingsChanged( state ) {
-		const { settings, savedSettings } = state.proactiveUserEngagement;
+	haveEmailReportingSettingsChanged( state ) {
+		const { settings, savedSettings } = state.emailReporting;
 		return ! isEqual( settings, savedSettings );
 	},
 
 	/**
-	 * Determines whether the proactive user engagement settings are being saved or not.
+	 * Determines whether the email reporting settings are being saved or not.
 	 *
 	 * @since 1.162.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the settings are being saved, otherwise FALSE.
 	 */
-	isSavingProactiveUserEngagementSettings( state ) {
-		return !! state.proactiveUserEngagement.isSavingSettings;
+	isSavingEmailReportingSettings( state ) {
+		return !! state.emailReporting.isSavingSettings;
 	},
 
 	/**
-	 * Gets the proactive user engagement frequency.
+	 * Gets the email reporting frequency.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} Frequency value.
 	 */
-	getProactiveUserEngagementFrequency( state ) {
-		const settings = state?.proactiveUserEngagement?.settings;
+	getEmailReportingFrequency( state ) {
+		const settings = state?.emailReporting?.settings;
 		// If the settings haven't loaded at all, return `undefined` to signify
 		// we're still loading this value.
 		if ( settings === undefined ) {
@@ -324,14 +319,14 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} Saved frequency or undefined.
 	 */
-	getProactiveUserEngagementSavedFrequency( state ) {
-		return state?.proactiveUserEngagement?.savedSettings?.frequency;
+	getEmailReportingSavedFrequency( state ) {
+		return state?.emailReporting?.savedSettings?.frequency;
 	},
 };
 
 const store = combineStores(
-	fetchGetProactiveUserEngagementSettingsStore,
-	fetchSaveProactiveUserEngagementSettingsStore,
+	fetchGetEmailReportingSettingsStore,
+	fetchSaveEmailReportingSettingsStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

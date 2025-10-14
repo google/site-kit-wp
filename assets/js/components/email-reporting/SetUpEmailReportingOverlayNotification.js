@@ -35,7 +35,7 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/proactive-user-engagement/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import OverlayNotification from '@/js/googlesitekit/notifications/components/layout/OverlayNotification';
 import EmailReportingOverlayGraphic from '@/svg/graphics/email-reporting-overlay.svg';
@@ -78,7 +78,7 @@ export default function SetUpEmailReportingOverlayNotification( {
 	}, [ showTooltip ] );
 
 	const isUserSubscribed = useSelect( ( select ) =>
-		select( CORE_USER ).isProactiveUserEngagementSubscribed()
+		select( CORE_USER ).isEmailReportingSubscribed()
 	);
 
 	useEffect( () => {

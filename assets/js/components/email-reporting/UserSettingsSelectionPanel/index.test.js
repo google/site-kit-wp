@@ -29,13 +29,13 @@ import {
 } from '../../../../../tests/js/test-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/proactive-user-engagement/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
-import UserSettingsSelectionPanel from '@/js/components/proactive-user-engagement/UserSettingsSelectionPanel';
-import SelectionPanelFooter from '@/js/components/proactive-user-engagement/UserSettingsSelectionPanel/SelectionPanelFooter';
+import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
+import SelectionPanelFooter from '@/js/components/email-reporting/UserSettingsSelectionPanel/SelectionPanelFooter';
 
 describe( 'UserSettingsSelectionPanel', () => {
 	const features = [ 'proactiveUserEngagement' ];
@@ -46,12 +46,10 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		provideUserInfo( registry, { wpEmail: 'someone@anybusiness.com' } );
 
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetProactiveUserEngagementSettings( {
-				subscribed: false,
-				frequency: 'monthly',
-			} );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: false,
+			frequency: 'monthly',
+		} );
 
 		registry
 			.dispatch( CORE_UI )
@@ -130,10 +128,10 @@ describe( 'UserSettingsSelectionPanel', () => {
 		expect( dialog ).toHaveAttribute( 'aria-hidden', 'false' );
 	} );
 
-	it( 'calls saveProactiveUserEngagementSettings with subscribed true when subscribing', async () => {
+	it( 'calls saveEmailReportingSettings with subscribed true when subscribing', async () => {
 		const coreUserDispatch = registry.dispatch( CORE_USER );
 		const saveSpy = jest
-			.spyOn( coreUserDispatch, 'saveProactiveUserEngagementSettings' )
+			.spyOn( coreUserDispatch, 'saveEmailReportingSettings' )
 			.mockResolvedValue( { error: null } );
 
 		const { getByRole } = render( <UserSettingsSelectionPanel />, {
@@ -148,13 +146,13 @@ describe( 'UserSettingsSelectionPanel', () => {
 		expect( saveSpy ).toHaveBeenCalledWith( { subscribed: true } );
 	} );
 
-	it( 'calls saveProactiveUserEngagementSettings with subscribed false when unsubscribing', async () => {
+	it( 'calls saveEmailReportingSettings with subscribed false when unsubscribing', async () => {
 		const coreUserDispatch = registry.dispatch( CORE_USER );
-		coreUserDispatch.setProactiveUserEngagementSettings( {
+		coreUserDispatch.setEmailReportingSettings( {
 			subscribed: true,
 		} );
 		const saveSpy = jest
-			.spyOn( coreUserDispatch, 'saveProactiveUserEngagementSettings' )
+			.spyOn( coreUserDispatch, 'saveEmailReportingSettings' )
 			.mockResolvedValue( { error: null } );
 
 		const { getByRole } = render( <UserSettingsSelectionPanel />, {
@@ -169,13 +167,13 @@ describe( 'UserSettingsSelectionPanel', () => {
 		expect( saveSpy ).toHaveBeenCalledWith( { subscribed: false } );
 	} );
 
-	it( 'calls saveProactiveUserEngagementSettings without arguments when updating settings', async () => {
+	it( 'calls saveEmailReportingSettings without arguments when updating settings', async () => {
 		const coreUserDispatch = registry.dispatch( CORE_USER );
-		coreUserDispatch.setProactiveUserEngagementSettings( {
+		coreUserDispatch.setEmailReportingSettings( {
 			subscribed: true,
 		} );
 		const saveSpy = jest
-			.spyOn( coreUserDispatch, 'saveProactiveUserEngagementSettings' )
+			.spyOn( coreUserDispatch, 'saveEmailReportingSettings' )
 			.mockResolvedValue( { error: null } );
 
 		const { getByRole } = render( <UserSettingsSelectionPanel />, {
@@ -190,24 +188,22 @@ describe( 'UserSettingsSelectionPanel', () => {
 		expect( saveSpy.mock.calls[ 0 ] ).toHaveLength( 0 );
 	} );
 
-	it( 'resets proactive user engagement settings when the panel closes', async () => {
+	it( 'resets email reporting settings when the panel closes', async () => {
 		const coreUserDispatch = registry.dispatch( CORE_USER );
-		coreUserDispatch.receiveGetProactiveUserEngagementSettings( {
+		coreUserDispatch.receiveGetEmailReportingSettings( {
 			subscribed: true,
 			frequency: 'weekly',
 		} );
-		coreUserDispatch.setProactiveUserEngagementSettings( {
+		coreUserDispatch.setEmailReportingSettings( {
 			subscribed: false,
 		} );
 		expect(
-			registry
-				.select( CORE_USER )
-				.haveProactiveUserEngagementSettingsChanged()
+			registry.select( CORE_USER ).haveEmailReportingSettingsChanged()
 		).toBe( true );
 
 		const resetSpy = jest.spyOn(
 			coreUserDispatch,
-			'resetProactiveUserEngagementSettings'
+			'resetEmailReportingSettings'
 		);
 
 		render( <UserSettingsSelectionPanel />, {
@@ -231,15 +227,13 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		await waitFor( () => expect( resetSpy ).toHaveBeenCalledTimes( 1 ) );
 		expect(
-			registry.select( CORE_USER ).getProactiveUserEngagementSettings()
+			registry.select( CORE_USER ).getEmailReportingSettings()
 		).toEqual( {
 			subscribed: true,
 			frequency: 'weekly',
 		} );
 		expect(
-			registry
-				.select( CORE_USER )
-				.haveProactiveUserEngagementSettingsChanged()
+			registry.select( CORE_USER ).haveEmailReportingSettingsChanged()
 		).toBe( false );
 	} );
 } );

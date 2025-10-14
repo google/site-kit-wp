@@ -1,38 +1,38 @@
 <?php
 /**
- * REST_Proactive_User_Engagement_ControllerTest
+ * REST_Email_Reporting_ControllerTest
  *
- * @package   Google\Site_Kit\Tests\Core\Proactive_User_Engagement
+ * @package   Google\Site_Kit\Tests\Core\Email_Reporting
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\Core\Proactive_User_Engagement;
+namespace Google\Site_Kit\Tests\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Proactive_User_Engagement\Proactive_User_Engagement_Settings;
-use Google\Site_Kit\Core\Proactive_User_Engagement\REST_Proactive_User_Engagement_Controller;
+use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Settings;
+use Google\Site_Kit\Core\Email_Reporting\REST_Email_Reporting_Controller;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 
-class REST_Proactive_User_Engagement_ControllerTest extends TestCase {
+class REST_Email_Reporting_ControllerTest extends TestCase {
 
 	use RestTestTrait;
 
 	/**
-	 * Proactive_User_Engagement_Settings instance.
+	 * Email_Reporting_Settings instance.
 	 *
-	 * @var Proactive_User_Engagement_Settings
+	 * @var Email_Reporting_Settings
 	 */
 	private $settings;
 
 	/**
-	 * REST_Proactive_User_Engagement_Controller instance.
+	 * REST_Email_Reporting_Controller instance.
 	 *
-	 * @var REST_Proactive_User_Engagement_Controller
+	 * @var REST_Email_Reporting_Controller
 	 */
 	private $controller;
 
@@ -44,8 +44,8 @@ class REST_Proactive_User_Engagement_ControllerTest extends TestCase {
 
 		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options          = new Options( $context );
-		$this->settings   = new Proactive_User_Engagement_Settings( $options );
-		$this->controller = new REST_Proactive_User_Engagement_Controller( $this->settings );
+		$this->settings   = new Email_Reporting_Settings( $options );
+		$this->controller = new REST_Email_Reporting_Controller( $this->settings );
 	}
 
 	public function tear_down() {

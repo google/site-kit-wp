@@ -36,8 +36,8 @@ import Header from './Header';
 import SelectionPanelFooter from './SelectionPanelFooter';
 import P from '@/js/components/Typography/P';
 import Typography from '@/js/components/Typography';
-import FrequencySelector from '@/js/components/proactive-user-engagement/FrequencySelector';
-import SubscribeActions from '@/js/components/proactive-user-engagement/UserSettingsSelectionPanel/SubscribeActions';
+import FrequencySelector from '@/js/components/email-reporting/FrequencySelector';
+import SubscribeActions from '@/js/components/email-reporting/UserSettingsSelectionPanel/SubscribeActions';
 
 export default function PanelContent( {
 	notice,
