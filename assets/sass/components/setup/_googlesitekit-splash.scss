@@ -101,7 +101,7 @@
 			height: 100%;
 			width: 100%;
 
-			@media (max-width: $bp-mobileOnly) {
+			@media (max-width: $bp-desktop) {
 				max-height: 230px;
 			}
 
@@ -129,7 +129,7 @@
 		}
 
 		.googlesitekit-setup__content {
-			@media (max-width: $bp-nonTablet) {
+			@media (max-width: $bp-desktop) {
 				padding-top: 1rem;
 			}
 		}
