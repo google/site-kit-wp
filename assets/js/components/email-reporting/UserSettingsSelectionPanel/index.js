@@ -28,7 +28,7 @@ import { useCallback, useState } from '@wordpress/element';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/proactive-user-engagement/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import SelectionPanel from '@/js/components/SelectionPanel';
 import PanelContent from './PanelContent';
 
@@ -42,37 +42,35 @@ export default function UserSettingsSelectionPanel() {
 			return {};
 		}
 
-		return select( CORE_USER ).getProactiveUserEngagementSettings();
+		return select( CORE_USER ).getEmailReportingSettings();
 	} );
 	const isSavingSettings = useSelect( ( select ) => {
 		if ( ! isOpen ) {
 			return false;
 		}
 
-		return select( CORE_USER ).isSavingProactiveUserEngagementSettings();
+		return select( CORE_USER ).isSavingEmailReportingSettings();
 	} );
 
 	const [ notice, setNotice ] = useState( null );
 
 	const { setValue } = useDispatch( CORE_UI );
-	const {
-		saveProactiveUserEngagementSettings,
-		resetProactiveUserEngagementSettings,
-	} = useDispatch( CORE_USER );
+	const { saveEmailReportingSettings, resetEmailReportingSettings } =
+		useDispatch( CORE_USER );
 
 	const closePanel = useCallback( () => {
 		if ( isOpen ) {
 			setTimeout( () => {
 				// Clear state to ensure settings are re-fetched when opening the panel next time.
-				resetProactiveUserEngagementSettings();
+				resetEmailReportingSettings();
 				setNotice( null );
 			}, 310 ); // Wait until after the panel close animation.
 			setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
 		}
-	}, [ isOpen, resetProactiveUserEngagementSettings, setValue ] );
+	}, [ isOpen, resetEmailReportingSettings, setValue ] );
 
 	const onSaveCallback = useCallback( async () => {
-		const { error } = await saveProactiveUserEngagementSettings();
+		const { error } = await saveEmailReportingSettings();
 
 		if ( ! error ) {
 			setNotice( {
@@ -90,10 +88,10 @@ export default function UserSettingsSelectionPanel() {
 					__( 'An error occurred.', 'google-site-kit' ),
 			} );
 		}
-	}, [ saveProactiveUserEngagementSettings ] );
+	}, [ saveEmailReportingSettings ] );
 
 	const onSubscribe = useCallback( async () => {
-		const { error } = await saveProactiveUserEngagementSettings( {
+		const { error } = await saveEmailReportingSettings( {
 			subscribed: true,
 		} );
 
@@ -113,10 +111,10 @@ export default function UserSettingsSelectionPanel() {
 					__( 'An error occurred.', 'google-site-kit' ),
 			} );
 		}
-	}, [ saveProactiveUserEngagementSettings ] );
+	}, [ saveEmailReportingSettings ] );
 
 	const onUnsubscribe = useCallback( async () => {
-		const { error } = await saveProactiveUserEngagementSettings( {
+		const { error } = await saveEmailReportingSettings( {
 			subscribed: false,
 		} );
 
@@ -136,7 +134,7 @@ export default function UserSettingsSelectionPanel() {
 					__( 'An error occurred.', 'google-site-kit' ),
 			} );
 		}
-	}, [ saveProactiveUserEngagementSettings ] );
+	}, [ saveEmailReportingSettings ] );
 
 	const onNoticeDismiss = useCallback( () => setNotice( null ), [] );
 

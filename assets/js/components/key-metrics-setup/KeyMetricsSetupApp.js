@@ -40,6 +40,8 @@ import { SpinnerButton } from 'googlesitekit-components';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { Grid, Row, Cell } from '@/js/material-components';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import Header from '@/js/components/Header';
@@ -47,7 +49,9 @@ import Layout from '@/js/components/layout/Layout';
 import ErrorNotice from '@/js/components/ErrorNotice';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import ProgressIndicator from '@/js/components/ProgressIndicator';
 import UserInputSelectOptions from '@/js/components/user-input/UserInputSelectOptions';
+import ToastNotice from '@/js/components/ToastNotice';
 import { hasErrorForAnswer } from '@/js/components/user-input/util/validation';
 import {
 	getUserInputAnswers,
@@ -56,6 +60,7 @@ import {
 	USER_INPUT_QUESTIONS_PURPOSE,
 } from '@/js/components/user-input/util/constants';
 import WarningSVG from '@/svg/icons/warning.svg';
+import useQueryArg from '@/js/hooks/useQueryArg';
 
 export default function KeyMetricsSetupApp() {
 	const dashboardURL = useSelect( ( select ) =>
@@ -70,6 +75,9 @@ export default function KeyMetricsSetupApp() {
 	);
 	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigating()
+	);
+	const isGA4Connected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const error = useSelect( ( select ) =>
@@ -128,9 +136,15 @@ export default function KeyMetricsSetupApp() {
 		USER_INPUT_ANSWERS_PURPOSE: USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS,
 	} = getUserInputAnswersDescription();
 
+	const [ showProgress ] = useQueryArg( 'showProgress' );
+
+	const subHeader = !! showProgress ? (
+		<ProgressIndicator totalSegments={ 6 } currentSegment={ 4 } />
+	) : null;
+
 	return (
 		<Fragment>
-			<Header />
+			<Header subHeader={ subHeader } />
 			<div className="googlesitekit-key-metrics-setup">
 				<Grid>
 					<Row>
@@ -208,6 +222,14 @@ export default function KeyMetricsSetupApp() {
 					</Row>
 				</Grid>
 			</div>
+			{ isGA4Connected && (
+				<ToastNotice
+					title={ __(
+						'Google Analytics was successfully set up',
+						'google-site-kit'
+					) }
+				/>
+			) }
 		</Fragment>
 	);
 }

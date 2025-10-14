@@ -24,12 +24,16 @@ import {
 	provideSiteInfo,
 	freezeFetch,
 	muteFetch,
+	waitForTimeouts,
 } from '../../../../tests/js/test-utils';
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_KEY_METRICS_SETUP } from '@/js/googlesitekit/constants';
 import KeyMetricsSetupApp from './KeyMetricsSetupApp';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 
 describe( 'KeyMetricsSetupApp', () => {
 	mockLocation();
@@ -51,6 +55,13 @@ describe( 'KeyMetricsSetupApp', () => {
 		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
+	// The `UserInputSelectOptions` automatically focuses the first radio/checkbox
+	// 50 milliseconds after it renders, which causes inconsistencies in snapshots,
+	// so we advance the timer to make sure it's focused before we capture the snapshot.
+	async function waitForFocus() {
+		return await waitForTimeouts( 100 );
+	}
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 
@@ -68,6 +79,10 @@ describe( 'KeyMetricsSetupApp', () => {
 		} );
 
 		muteFetch( audienceSettingsEndpoint );
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveGetModules( withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 	} );
 
 	it( 'should render correctly', async () => {
@@ -80,6 +95,7 @@ describe( 'KeyMetricsSetupApp', () => {
 		);
 
 		await waitForRegistry();
+		await waitForFocus();
 
 		expect( container ).toMatchSnapshot();
 
@@ -193,6 +209,7 @@ describe( 'KeyMetricsSetupApp', () => {
 		);
 
 		await waitForRegistry();
+		await waitForFocus();
 
 		fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
 		fireEvent.click( getByRole( 'button', { name: 'Complete setup' } ) );
@@ -239,6 +256,47 @@ describe( 'KeyMetricsSetupApp', () => {
 
 		expect( global.location.assign ).not.toHaveBeenCalled();
 		expect( console ).toHaveErrored();
+	} );
+
+	it( 'should show the analytics setup success toast notice', async () => {
+		const { container, getByText, waitForRegistry } = render(
+			<KeyMetricsSetupApp />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+			}
+		);
+
+		await waitForRegistry();
+		await waitForFocus();
+
+		expect( container ).toMatchSnapshot();
+
+		expect(
+			getByText( 'Google Analytics was successfully set up' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should display the progress indicator when the showProgress query arg is present', async () => {
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup&showProgress=true';
+
+		const { container, waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
+		await waitForFocus();
+
+		expect( container ).toMatchSnapshot();
+
+		expect(
+			document.querySelector(
+				'.googlesitekit-subheader .googlesitekit-progress-indicator'
+			)
+		).toBeInTheDocument();
 	} );
 
 	it( 'should sync audiences and custom dimensions on render', async () => {

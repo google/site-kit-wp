@@ -28,7 +28,7 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 
 export default {
-	title: 'Components/ProactiveUserEngagement/FrequencySelector',
+	title: 'Components/EmailReporting/FrequencySelector',
 	component: FrequencySelector,
 	argTypes: {
 		frequency: {
@@ -40,6 +40,7 @@ export default {
 		},
 	},
 	args: {
+		isUserSubscribed: false,
 		savedSettings: {},
 		clientSettings: {
 			frequency: 'weekly',
@@ -49,7 +50,7 @@ export default {
 	},
 };
 
-function Template( { savedSettings, clientSettings } ) {
+function Template( { isUserSubscribed, savedSettings, clientSettings } ) {
 	function setupRegistry( registry ) {
 		provideSiteInfo( registry, {
 			startOfWeek: savedSettings?.startOfWeek,
@@ -57,17 +58,17 @@ function Template( { savedSettings, clientSettings } ) {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetProactiveUserEngagementSettings( savedSettings );
+			.receiveGetEmailReportingSettings( savedSettings );
 
 		registry
 			.dispatch( CORE_USER )
-			.setProactiveUserEngagementSettings( clientSettings );
+			.setEmailReportingSettings( clientSettings );
 	}
 
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
 			<div style={ { maxWidth: 920 } }>
-				<FrequencySelector />
+				<FrequencySelector isUserSubscribed={ isUserSubscribed } />
 			</div>
 		</WithRegistrySetup>
 	);
@@ -111,6 +112,7 @@ WeeklySelectedSundayStartOfTheWeek.scenario = {};
 
 export const PreviouslySavedFrequency = Template.bind( {} );
 PreviouslySavedFrequency.args = {
+	isUserSubscribed: true,
 	savedSettings: {
 		frequency: 'monthly',
 	},
@@ -122,6 +124,7 @@ PreviouslySavedFrequency.scenario = {};
 
 export const PreviouslySavedFrequencySameAsCurrent = Template.bind( {} );
 PreviouslySavedFrequencySameAsCurrent.args = {
+	isUserSubscribed: true,
 	savedSettings: {
 		frequency: 'monthly',
 	},

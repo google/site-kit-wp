@@ -63,15 +63,13 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import OfflineNotification from './notifications/OfflineNotification';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
-import UserSettingsSelectionPanel from './proactive-user-engagement/UserSettingsSelectionPanel';
+import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import { useFeature } from '@/js/hooks/useFeature';
 
 function DashboardEntityApp() {
 	const viewOnlyDashboard = useViewOnly();
 
-	const proactiveUserEngagementEnabled = useFeature(
-		'proactiveUserEngagement'
-	);
+	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
 
 	const viewableModules = useSelect( ( select ) => {
 		if ( ! viewOnlyDashboard ) {
@@ -265,7 +263,7 @@ function DashboardEntityApp() {
 				<OfflineNotification />
 			</div>
 
-			{ proactiveUserEngagementEnabled && <UserSettingsSelectionPanel /> }
+			{ emailReportingEnabled && <UserSettingsSelectionPanel /> }
 		</Fragment>
 	);
 }
