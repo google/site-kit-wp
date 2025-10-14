@@ -254,4 +254,25 @@ describe( 'KeyMetricsSetupApp', () => {
 			getByText( 'Google Analytics was successfully set up' )
 		).toBeInTheDocument();
 	} );
+
+	it( 'should display the progress indicator when the showProgress query arg is present', async () => {
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup&showProgress=true';
+
+		const { container, waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+		await waitForFocus();
+
+		expect( container ).toMatchSnapshot();
+
+		expect(
+			document.querySelector(
+				'.googlesitekit-subheader .googlesitekit-progress-indicator'
+			)
+		).toBeInTheDocument();
+	} );
 } );
