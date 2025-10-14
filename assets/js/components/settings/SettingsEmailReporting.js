@@ -35,9 +35,13 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Cell, Row } from '@/js/material-components';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
+import EmailReportingCardNotice, {
+	EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM,
+} from '@/js/components/email-reporting/EmailReportingCardNotice';
 
 export default function SettingsEmailReporting( { loading = false } ) {
 	const isEnabled = useSelect( ( select ) =>
@@ -46,6 +50,16 @@ export default function SettingsEmailReporting( { loading = false } ) {
 
 	const settings = useSelect( ( select ) =>
 		select( CORE_SITE ).getEmailReportingSettings()
+	);
+
+	const isSubscribed = useSelect( ( select ) =>
+		select( CORE_USER ).isEmailReportingSubscribed()
+	);
+
+	const isDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed(
+			EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM
+		)
 	);
 
 	const { setEmailReportingEnabled, saveEmailReportingSettings } =
@@ -104,18 +118,29 @@ export default function SettingsEmailReporting( { loading = false } ) {
 					</div>
 				</Cell>
 			</Row>
-			{ isEnabled && (
-				<Row className="googlesitekit-settings-email-reporting__manage">
-					<Cell size={ 12 }>
-						<Link onClick={ handleManageClick }>
-							{ __(
-								'Manage email reports subscription',
-								'google-site-kit'
-							) }
-						</Link>
-					</Cell>
-				</Row>
-			) }
+			{ /* Show the introductory notice if notice is not dismissed and user is not already subscribed */ }
+			{ isEnabled &&
+				settings !== undefined &&
+				! isSubscribed &&
+				isDismissed === false && (
+					<EmailReportingCardNotice className="googlesitekit-settings-email-reporting__manage" />
+				) }
+			{ /* Show manage email reports link if notice is dismissed or user is already subscribed */ }
+			{ isEnabled &&
+				settings !== undefined &&
+				isDismissed !== undefined &&
+				( isSubscribed || isDismissed !== false ) && (
+					<Row className="googlesitekit-settings-email-reporting__manage">
+						<Cell size={ 12 }>
+							<Link onClick={ handleManageClick }>
+								{ __(
+									'Manage email reports subscription',
+									'google-site-kit'
+								) }
+							</Link>
+						</Cell>
+					</Row>
+				) }
 		</Fragment>
 	);
 }
