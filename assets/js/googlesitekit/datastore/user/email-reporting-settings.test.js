@@ -25,14 +25,14 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 
-describe( 'core/user proactive user engagement settings', () => {
+describe( 'core/user email reporting settings', () => {
 	let registry;
 
-	const proactiveUserEngagementSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/proactive-user-engagement-settings'
+	const emailReportingSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/email-reporting-settings'
 	);
 
-	let proactiveUserEngagementSettingsResponse;
+	let emailReportingSettingsResponse;
 
 	beforeAll( () => {
 		setUsingCache( false );
@@ -42,7 +42,7 @@ describe( 'core/user proactive user engagement settings', () => {
 		registry = createTestRegistry();
 		provideModules( registry );
 
-		proactiveUserEngagementSettingsResponse = {
+		emailReportingSettingsResponse = {
 			subscribed: false,
 			frequency: 'monthly',
 		};
@@ -53,24 +53,24 @@ describe( 'core/user proactive user engagement settings', () => {
 	} );
 
 	describe( 'actions', () => {
-		describe( 'saveProactiveUserEngagementSettings', () => {
+		describe( 'saveEmailReportingSettings', () => {
 			it( 'should save settings', async () => {
 				const settings = {
 					subscribed: true,
 					frequency: 'weekly',
 				};
 
-				fetchMock.postOnce( proactiveUserEngagementSettingsEndpoint, {
+				fetchMock.postOnce( emailReportingSettingsEndpoint, {
 					body: settings,
 					status: 200,
 				} );
 
 				await registry
 					.dispatch( CORE_USER )
-					.saveProactiveUserEngagementSettings( settings );
+					.saveEmailReportingSettings( settings );
 
 				expect( fetchMock ).toHaveFetched(
-					proactiveUserEngagementSettingsEndpoint,
+					emailReportingSettingsEndpoint,
 					{
 						body: {
 							data: {
@@ -81,9 +81,7 @@ describe( 'core/user proactive user engagement settings', () => {
 				);
 
 				expect(
-					registry
-						.select( CORE_USER )
-						.getProactiveUserEngagementSettings()
+					registry.select( CORE_USER ).getEmailReportingSettings()
 				).toEqual( settings );
 			} );
 
@@ -96,19 +94,19 @@ describe( 'core/user proactive user engagement settings', () => {
 
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetProactiveUserEngagementSettings( {
+					.receiveGetEmailReportingSettings( {
 						subscribed: false,
 						frequency: 'monthly',
 					} );
 
-				fetchMock.postOnce( proactiveUserEngagementSettingsEndpoint, {
+				fetchMock.postOnce( emailReportingSettingsEndpoint, {
 					body: response,
 					status: 400,
 				} );
 
 				const { error } = await registry
 					.dispatch( CORE_USER )
-					.saveProactiveUserEngagementSettings( {
+					.saveEmailReportingSettings( {
 						subscribed: true,
 						frequency: 'weekly',
 					} );
@@ -118,7 +116,7 @@ describe( 'core/user proactive user engagement settings', () => {
 			} );
 		} );
 
-		describe( 'setProactiveUserEngagementSettings', () => {
+		describe( 'setEmailReportingSettings', () => {
 			it( 'should set the settings in the store', () => {
 				const settings = {
 					subscribed: true,
@@ -127,17 +125,15 @@ describe( 'core/user proactive user engagement settings', () => {
 
 				registry
 					.dispatch( CORE_USER )
-					.setProactiveUserEngagementSettings( settings );
+					.setEmailReportingSettings( settings );
 
 				expect(
-					registry
-						.select( CORE_USER )
-						.getProactiveUserEngagementSettings()
+					registry.select( CORE_USER ).getEmailReportingSettings()
 				).toEqual( settings );
 			} );
 		} );
 
-		describe( 'resetProactiveUserEngagementSettings', () => {
+		describe( 'resetEmailReportingSettings', () => {
 			it( 'should reset settings to saved values', async () => {
 				const savedSettings = {
 					subscribed: false,
@@ -150,103 +146,91 @@ describe( 'core/user proactive user engagement settings', () => {
 
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetProactiveUserEngagementSettings( savedSettings );
+					.receiveGetEmailReportingSettings( savedSettings );
 
 				// Modify the settings
 				registry
 					.dispatch( CORE_USER )
-					.setProactiveUserEngagementSettings( modifiedSettings );
+					.setEmailReportingSettings( modifiedSettings );
 
 				// Verify they're modified
 				expect(
-					registry
-						.select( CORE_USER )
-						.getProactiveUserEngagementSettings()
+					registry.select( CORE_USER ).getEmailReportingSettings()
 				).toEqual( modifiedSettings );
 
 				// Reset the settings
 				await registry
 					.dispatch( CORE_USER )
-					.resetProactiveUserEngagementSettings();
+					.resetEmailReportingSettings();
 
 				// Verify they're back to saved values
 				expect(
-					registry
-						.select( CORE_USER )
-						.getProactiveUserEngagementSettings()
+					registry.select( CORE_USER ).getEmailReportingSettings()
 				).toEqual( savedSettings );
 			} );
 		} );
 	} );
 
-	describe( 'setProactiveUserEngagementFrequency', () => {
+	describe( 'setEmailReportingFrequency', () => {
 		it( 'should set frequency in the store', () => {
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetProactiveUserEngagementSettings( {
-					subscribed: false,
-					frequency: 'monthly',
-				} );
+			registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+				subscribed: false,
+				frequency: 'monthly',
+			} );
 
 			registry
 				.dispatch( CORE_USER )
-				.setProactiveUserEngagementFrequency( 'quarterly' );
+				.setEmailReportingFrequency( 'quarterly' );
 
 			expect(
-				registry
-					.select( CORE_USER )
-					.getProactiveUserEngagementSettings()
+				registry.select( CORE_USER ).getEmailReportingSettings()
 			).toEqual( { subscribed: false, frequency: 'quarterly' } );
 		} );
 	} );
 
 	describe( 'selectors', () => {
-		describe( 'getProactiveUserEngagementSettings', () => {
+		describe( 'getEmailReportingSettings', () => {
 			it( 'should use a resolver to make a network request', async () => {
-				fetchMock.getOnce( proactiveUserEngagementSettingsEndpoint, {
-					body: proactiveUserEngagementSettingsResponse,
+				fetchMock.getOnce( emailReportingSettingsEndpoint, {
+					body: emailReportingSettingsResponse,
 				} );
 
 				const initialSettings = registry
 					.select( CORE_USER )
-					.getProactiveUserEngagementSettings();
+					.getEmailReportingSettings();
 
 				expect( initialSettings ).toEqual( undefined );
 				await untilResolved(
 					registry,
 					CORE_USER
-				).getProactiveUserEngagementSettings();
+				).getEmailReportingSettings();
 
 				const settings = registry
 					.select( CORE_USER )
-					.getProactiveUserEngagementSettings();
+					.getEmailReportingSettings();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( settings ).toEqual(
-					proactiveUserEngagementSettingsResponse
-				);
+				expect( settings ).toEqual( emailReportingSettingsResponse );
 			} );
 
 			it( 'should not make a network request if settings are already present', async () => {
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetProactiveUserEngagementSettings(
-						proactiveUserEngagementSettingsResponse
+					.receiveGetEmailReportingSettings(
+						emailReportingSettingsResponse
 					);
 
 				const settings = registry
 					.select( CORE_USER )
-					.getProactiveUserEngagementSettings();
+					.getEmailReportingSettings();
 
 				await untilResolved(
 					registry,
 					CORE_USER
-				).getProactiveUserEngagementSettings();
+				).getEmailReportingSettings();
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( settings ).toEqual(
-					proactiveUserEngagementSettingsResponse
-				);
+				expect( settings ).toEqual( emailReportingSettingsResponse );
 			} );
 
 			it( 'should dispatch an error if the request fails', async () => {
@@ -256,70 +240,62 @@ describe( 'core/user proactive user engagement settings', () => {
 					data: { status: 500 },
 				};
 
-				fetchMock.getOnce( proactiveUserEngagementSettingsEndpoint, {
+				fetchMock.getOnce( emailReportingSettingsEndpoint, {
 					body: response,
 					status: 500,
 				} );
 
-				registry
-					.select( CORE_USER )
-					.getProactiveUserEngagementSettings();
+				registry.select( CORE_USER ).getEmailReportingSettings();
 				await untilResolved(
 					registry,
 					CORE_USER
-				).getProactiveUserEngagementSettings();
+				).getEmailReportingSettings();
 
 				expect( console ).toHaveErrored();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const settings = registry
 					.select( CORE_USER )
-					.getProactiveUserEngagementSettings();
+					.getEmailReportingSettings();
 				expect( settings ).toEqual( undefined );
 			} );
 		} );
 
-		describe( 'isProactiveUserEngagementSubscribed', () => {
+		describe( 'isEmailReportingSubscribed', () => {
 			it( 'should return false when subscribed is false', () => {
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetProactiveUserEngagementSettings( {
+					.receiveGetEmailReportingSettings( {
 						subscribed: false,
 						frequency: 'monthly',
 					} );
 
 				expect(
-					registry
-						.select( CORE_USER )
-						.isProactiveUserEngagementSubscribed()
+					registry.select( CORE_USER ).isEmailReportingSubscribed()
 				).toBe( false );
 			} );
 
 			it( 'should return true when subscribed is true', () => {
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetProactiveUserEngagementSettings( {
+					.receiveGetEmailReportingSettings( {
 						subscribed: true,
 						frequency: 'weekly',
 					} );
 
 				expect(
-					registry
-						.select( CORE_USER )
-						.isProactiveUserEngagementSubscribed()
+					registry.select( CORE_USER ).isEmailReportingSubscribed()
 				).toBe( true );
 			} );
 
 			it( 'should return false when settings are undefined', () => {
 				expect(
-					registry
-						.select( CORE_USER )
-						.isProactiveUserEngagementSubscribed()
+					registry.select( CORE_USER ).isEmailReportingSubscribed()
 				).toBe( false );
 			} );
 		} );
 
-		describe( 'haveProactiveUserEngagementSettingsChanged', () => {
+		describe( 'haveEmailReportingSettingsChanged', () => {
 			it( 'should return false when settings have not changed', () => {
 				const settings = {
 					subscribed: false,
@@ -328,12 +304,12 @@ describe( 'core/user proactive user engagement settings', () => {
 
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetProactiveUserEngagementSettings( settings );
+					.receiveGetEmailReportingSettings( settings );
 
 				expect(
 					registry
 						.select( CORE_USER )
-						.haveProactiveUserEngagementSettingsChanged()
+						.haveEmailReportingSettingsChanged()
 				).toBe( false );
 			} );
 
@@ -345,42 +321,38 @@ describe( 'core/user proactive user engagement settings', () => {
 
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetProactiveUserEngagementSettings(
-						originalSettings
-					);
+					.receiveGetEmailReportingSettings( originalSettings );
 
-				registry
-					.dispatch( CORE_USER )
-					.setProactiveUserEngagementSettings( {
-						subscribed: true,
-						frequency: 'weekly',
-					} );
+				registry.dispatch( CORE_USER ).setEmailReportingSettings( {
+					subscribed: true,
+					frequency: 'weekly',
+				} );
 
 				expect(
 					registry
 						.select( CORE_USER )
-						.haveProactiveUserEngagementSettingsChanged()
+						.haveEmailReportingSettingsChanged()
 				).toBe( true );
 			} );
 		} );
 
-		describe( 'isSavingProactiveUserEngagementSettings', () => {
+		describe( 'isSavingEmailReportingSettings', () => {
 			it( 'should return false when not saving', () => {
 				expect(
 					registry
 						.select( CORE_USER )
-						.isSavingProactiveUserEngagementSettings()
+						.isSavingEmailReportingSettings()
 				).toBe( false );
 			} );
 
 			it( 'should return true when saving', async () => {
-				fetchMock.postOnce( proactiveUserEngagementSettingsEndpoint, {
+				fetchMock.postOnce( emailReportingSettingsEndpoint, {
 					body: { subscribed: true, frequency: 'weekly' },
 				} );
 
 				const promise = registry
 					.dispatch( CORE_USER )
-					.saveProactiveUserEngagementSettings( {
+					.saveEmailReportingSettings( {
 						subscribed: true,
 						frequency: 'weekly',
 					} );
@@ -388,7 +360,7 @@ describe( 'core/user proactive user engagement settings', () => {
 				expect(
 					registry
 						.select( CORE_USER )
-						.isSavingProactiveUserEngagementSettings()
+						.isSavingEmailReportingSettings()
 				).toBe( true );
 
 				await promise;
@@ -396,134 +368,114 @@ describe( 'core/user proactive user engagement settings', () => {
 				expect(
 					registry
 						.select( CORE_USER )
-						.isSavingProactiveUserEngagementSettings()
+						.isSavingEmailReportingSettings()
 				).toBe( false );
 			} );
 		} );
 
-		describe( 'getProactiveUserEngagementFrequency', () => {
+		describe( 'getEmailReportingFrequency', () => {
 			it( 'should return undefined when settings are loading', () => {
 				expect(
-					registry
-						.select( CORE_USER )
-						.getProactiveUserEngagementFrequency()
+					registry.select( CORE_USER ).getEmailReportingFrequency()
 				).toBe( undefined );
 			} );
 
 			it( 'should return weekly by default when frequency is not previously set', () => {
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetProactiveUserEngagementSettings( {
+					.receiveGetEmailReportingSettings( {
 						subscribed: true,
 					} );
 
 				expect(
-					registry
-						.select( CORE_USER )
-						.getProactiveUserEngagementFrequency()
+					registry.select( CORE_USER ).getEmailReportingFrequency()
 				).toBe( 'weekly' );
 			} );
 
 			it( 'should return the stored frequency when set', () => {
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetProactiveUserEngagementSettings( {
+					.receiveGetEmailReportingSettings( {
 						subscribed: false,
 						frequency: 'monthly',
 					} );
 
 				expect(
-					registry
-						.select( CORE_USER )
-						.getProactiveUserEngagementFrequency()
+					registry.select( CORE_USER ).getEmailReportingFrequency()
 				).toBe( 'monthly' );
 			} );
 
-			it( 'should update after setProactiveUserEngagementFrequency is dispatched', () => {
+			it( 'should update after setEmailReportingFrequency is dispatched', () => {
 				registry
 					.dispatch( CORE_USER )
-					.receiveGetProactiveUserEngagementSettings( {
+					.receiveGetEmailReportingSettings( {
 						subscribed: false,
 						frequency: 'monthly',
 					} );
 
 				registry
 					.dispatch( CORE_USER )
-					.setProactiveUserEngagementFrequency( 'weekly' );
+					.setEmailReportingFrequency( 'weekly' );
 
 				expect(
-					registry
-						.select( CORE_USER )
-						.getProactiveUserEngagementFrequency()
+					registry.select( CORE_USER ).getEmailReportingFrequency()
 				).toBe( 'weekly' );
 			} );
 		} );
 	} );
 
-	describe( 'getProactiveUserEngagementSavedFrequency', () => {
+	describe( 'getEmailReportingSavedFrequency', () => {
 		it( 'should return undefined when no saved settings are present', () => {
 			expect(
-				registry
-					.select( CORE_USER )
-					.getProactiveUserEngagementSavedFrequency()
+				registry.select( CORE_USER ).getEmailReportingSavedFrequency()
 			).toBe( undefined );
 		} );
 
 		it( 'should return the saved frequency when settings have been received', () => {
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetProactiveUserEngagementSettings( {
-					subscribed: false,
-					frequency: 'monthly',
-				} );
+			registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+				subscribed: false,
+				frequency: 'monthly',
+			} );
 
 			expect(
-				registry
-					.select( CORE_USER )
-					.getProactiveUserEngagementSavedFrequency()
+				registry.select( CORE_USER ).getEmailReportingSavedFrequency()
 			).toBe( 'monthly' );
 		} );
 
 		it( 'should not change when only the current in-store frequency is updated', () => {
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetProactiveUserEngagementSettings( {
-					subscribed: false,
-					frequency: 'monthly',
-				} );
+			registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+				subscribed: false,
+				frequency: 'monthly',
+			} );
 
 			// Update only the current working settings (not saved).
 			registry
 				.dispatch( CORE_USER )
-				.setProactiveUserEngagementFrequency( 'weekly' );
+				.setEmailReportingFrequency( 'weekly' );
 
 			// Saved frequency should remain unchanged.
 			expect(
-				registry
-					.select( CORE_USER )
-					.getProactiveUserEngagementSavedFrequency()
+				registry.select( CORE_USER ).getEmailReportingSavedFrequency()
 			).toBe( 'monthly' );
 		} );
 
-		it( 'should update after saveProactiveUserEngagementSettings is dispatched', async () => {
+		it( 'should update after saveEmailReportingSettings is dispatched', async () => {
 			const newSettings = {
 				subscribed: true,
 				frequency: 'weekly',
 			};
 
-			fetchMock.postOnce( proactiveUserEngagementSettingsEndpoint, {
+			fetchMock.postOnce( emailReportingSettingsEndpoint, {
 				body: newSettings,
 				status: 200,
 			} );
 
 			await registry
 				.dispatch( CORE_USER )
-				.saveProactiveUserEngagementSettings( newSettings );
+				.saveEmailReportingSettings( newSettings );
 
 			expect(
-				registry
-					.select( CORE_USER )
-					.getProactiveUserEngagementSavedFrequency()
+				registry.select( CORE_USER ).getEmailReportingSavedFrequency()
 			).toBe( 'weekly' );
 		} );
 	} );

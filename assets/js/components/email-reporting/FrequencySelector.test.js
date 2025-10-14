@@ -35,17 +35,13 @@ function setupRegistry(
 	provideSiteInfo( registry, { startOfWeek } );
 
 	if ( savedFrequency ) {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetProactiveUserEngagementSettings( {
-				frequency: savedFrequency,
-			} );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			frequency: savedFrequency,
+		} );
 	}
 
 	if ( frequency ) {
-		registry
-			.dispatch( CORE_USER )
-			.setProactiveUserEngagementFrequency( frequency );
+		registry.dispatch( CORE_USER ).setEmailReportingFrequency( frequency );
 	}
 }
 
@@ -222,9 +218,7 @@ describe( 'FrequencySelector', () => {
 
 			// Store should reflect selection.
 			expect(
-				registry
-					.select( CORE_USER )
-					.getProactiveUserEngagementFrequency()
+				registry.select( CORE_USER ).getEmailReportingFrequency()
 			).toBe( 'monthly' );
 
 			// UI should update selection state.
@@ -251,9 +245,7 @@ describe( 'FrequencySelector', () => {
 			fireEvent.keyDown( quarterlyCard, { key: 'Enter' } );
 
 			expect(
-				registry
-					.select( CORE_USER )
-					.getProactiveUserEngagementFrequency()
+				registry.select( CORE_USER ).getEmailReportingFrequency()
 			).toBe( 'quarterly' );
 			expect( quarterlyCard.getAttribute( 'aria-checked' ) ).toBe(
 				'true'
@@ -275,9 +267,7 @@ describe( 'FrequencySelector', () => {
 			fireEvent.keyDown( weeklyCard, { key: ' ' } );
 
 			expect(
-				registry
-					.select( CORE_USER )
-					.getProactiveUserEngagementFrequency()
+				registry.select( CORE_USER ).getEmailReportingFrequency()
 			).toBe( 'weekly' );
 			expect( weeklyCard.getAttribute( 'aria-checked' ) ).toBe( 'true' );
 		} );

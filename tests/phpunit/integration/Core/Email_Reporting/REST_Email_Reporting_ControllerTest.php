@@ -1,38 +1,38 @@
 <?php
 /**
- * REST_Proactive_User_Engagement_ControllerTest
+ * REST_Email_Reporting_ControllerTest
  *
- * @package   Google\Site_Kit\Tests\Core\Proactive_User_Engagement
+ * @package   Google\Site_Kit\Tests\Core\Email_Reporting
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\Core\Proactive_User_Engagement;
+namespace Google\Site_Kit\Tests\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Proactive_User_Engagement\Proactive_User_Engagement_Settings;
-use Google\Site_Kit\Core\Proactive_User_Engagement\REST_Proactive_User_Engagement_Controller;
+use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Settings;
+use Google\Site_Kit\Core\Email_Reporting\REST_Email_Reporting_Controller;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 
-class REST_Proactive_User_Engagement_ControllerTest extends TestCase {
+class REST_Email_Reporting_ControllerTest extends TestCase {
 
 	use RestTestTrait;
 
 	/**
-	 * Proactive_User_Engagement_Settings instance.
+	 * Email_Reporting_Settings instance.
 	 *
-	 * @var Proactive_User_Engagement_Settings
+	 * @var Email_Reporting_Settings
 	 */
 	private $settings;
 
 	/**
-	 * REST_Proactive_User_Engagement_Controller instance.
+	 * REST_Email_Reporting_Controller instance.
 	 *
-	 * @var REST_Proactive_User_Engagement_Controller
+	 * @var REST_Email_Reporting_Controller
 	 */
 	private $controller;
 
@@ -44,8 +44,8 @@ class REST_Proactive_User_Engagement_ControllerTest extends TestCase {
 
 		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options          = new Options( $context );
-		$this->settings   = new Proactive_User_Engagement_Settings( $options );
-		$this->controller = new REST_Proactive_User_Engagement_Controller( $this->settings );
+		$this->settings   = new Email_Reporting_Settings( $options );
+		$this->controller = new REST_Email_Reporting_Controller( $this->settings );
 	}
 
 	public function tear_down() {
@@ -69,11 +69,11 @@ class REST_Proactive_User_Engagement_ControllerTest extends TestCase {
 
 		$server     = rest_get_server();
 		$routes     = array(
-			'/' . REST_Routes::REST_ROOT . '/core/site/data/proactive-user-engagement',
+			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting',
 		);
 		$get_routes = array_intersect( $routes, array_keys( $server->get_routes() ) );
 
-		$this->assertEqualSets( $routes, $get_routes, 'Expected route for site proactive user engagement settings to be registered' );
+		$this->assertEqualSets( $routes, $get_routes, 'Expected route for site email reporting settings to be registered' );
 	}
 
 	public function test_get_settings() {
@@ -88,7 +88,7 @@ class REST_Proactive_User_Engagement_ControllerTest extends TestCase {
 		$this->settings->register();
 		$this->settings->set( $original_settings );
 
-		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/proactive-user-engagement' );
+		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting' );
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEqualSetsWithIndex( $original_settings, $response->get_data(), 'GET should return the current site settings' );
@@ -99,7 +99,7 @@ class REST_Proactive_User_Engagement_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/proactive-user-engagement' );
+		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting' );
 		$request->set_body_params(
 			array(
 				'data' => array(
@@ -123,7 +123,7 @@ class REST_Proactive_User_Engagement_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/proactive-user-engagement' );
+		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting' );
 		$request->set_body_params(
 			array(
 				'data' => array(

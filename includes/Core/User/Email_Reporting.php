@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\User\Proactive_User_Engagement
+ * Class Google\Site_Kit\Core\User\Email_Reporting
  *
  * @package   Google\Site_Kit\Core\User
  * @copyright 2025 Google LLC
@@ -13,27 +13,27 @@ namespace Google\Site_Kit\Core\User;
 use Google\Site_Kit\Core\Storage\User_Options;
 
 /**
- * Class for handling proactive user engagement settings rest routes.
+ * Class for handling email reporting settings rest routes.
  *
  * @since 1.162.0
  * @access private
  * @ignore
  */
-class Proactive_User_Engagement {
+class Email_Reporting {
 
 	/**
-	 * Proactive_User_Engagement_Settings instance.
+	 * Email_Reporting_Settings instance.
 	 *
 	 * @since 1.162.0
-	 * @var Proactive_User_Engagement_Settings
+	 * @var Email_Reporting_Settings
 	 */
-	private $proactive_user_engagement_settings;
+	private $email_reporting_settings;
 
 	/**
-	 * REST_Proactive_User_Engagement_Controller instance.
+	 * REST_Email_Reporting_Controller instance.
 	 *
 	 * @since 1.162.0
-	 * @var REST_Proactive_User_Engagement_Controller
+	 * @var REST_Email_Reporting_Controller
 	 */
 	private $rest_controller;
 
@@ -45,8 +45,8 @@ class Proactive_User_Engagement {
 	 * @param User_Options $user_options User_Options instance.
 	 */
 	public function __construct( User_Options $user_options ) {
-		$this->proactive_user_engagement_settings = new Proactive_User_Engagement_Settings( $user_options );
-		$this->rest_controller                    = new REST_Proactive_User_Engagement_Controller( $this->proactive_user_engagement_settings );
+		$this->email_reporting_settings = new Email_Reporting_Settings( $user_options );
+		$this->rest_controller          = new REST_Email_Reporting_Controller( $this->email_reporting_settings );
 	}
 
 	/**
@@ -55,7 +55,7 @@ class Proactive_User_Engagement {
 	 * @since 1.162.0
 	 */
 	public function register() {
-		$this->proactive_user_engagement_settings->register();
+		$this->email_reporting_settings->register();
 		$this->rest_controller->register();
 	}
 }
