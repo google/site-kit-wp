@@ -35,7 +35,7 @@ import {
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/proactive-user-engagement/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 
 describe( 'EmailReportingCardNotice', () => {
 	let registry;
@@ -58,7 +58,7 @@ describe( 'EmailReportingCardNotice', () => {
 	it( 'renders the notice when user is not subscribed and not dismissed', () => {
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetProactiveUserEngagementSettings( { subscribed: false } );
+			.receiveGetEmailReportingSettings( { subscribed: false } );
 
 		const { getByText } = render( <EmailReportingCardNotice />, {
 			registry,
@@ -79,7 +79,7 @@ describe( 'EmailReportingCardNotice', () => {
 	it( 'opens selection panel when "Set up" is clicked', () => {
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetProactiveUserEngagementSettings( { subscribed: false } );
+			.receiveGetEmailReportingSettings( { subscribed: false } );
 
 		const { getByRole } = render( <EmailReportingCardNotice />, {
 			registry,
@@ -105,7 +105,7 @@ describe( 'EmailReportingCardNotice', () => {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetProactiveUserEngagementSettings( { subscribed: false } );
+			.receiveGetEmailReportingSettings( { subscribed: false } );
 
 		const { getByRole } = render( <EmailReportingCardNotice />, {
 			registry,
@@ -120,11 +120,9 @@ describe( 'EmailReportingCardNotice', () => {
 	} );
 
 	it( 'does not render when user is already subscribed', () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetProactiveUserEngagementSettings( {
-				subscribed: true,
-			} );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: true,
+		} );
 
 		const { container } = render( <EmailReportingCardNotice />, {
 			registry,
@@ -143,7 +141,7 @@ describe( 'EmailReportingCardNotice', () => {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetProactiveUserEngagementSettings( { subscribed: false } );
+			.receiveGetEmailReportingSettings( { subscribed: false } );
 
 		const { container } = render( <EmailReportingCardNotice />, {
 			registry,
@@ -156,7 +154,7 @@ describe( 'EmailReportingCardNotice', () => {
 	it( 'does not render while proactive settings are unresolved', () => {
 		freezeFetch(
 			new RegExp(
-				'^/google-site-kit/v1/core/user/data/proactive-user-engagement-settings'
+				'^/google-site-kit/v1/core/user/data/email-reporting-settings'
 			)
 		);
 
