@@ -21,6 +21,10 @@
 	.googlesitekit-sign-in-with-google-compatibility-notice {
 		margin-bottom: $grid-gap-phone;
 
+		@media (min-width: $bp-desktop) {
+			margin-right: $grid-gap-desktop;
+		}
+
 		.googlesitekit-notice__title {
 			margin-bottom: 4px;
 		}
