@@ -1,17 +1,21 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Ads\Enhanced_Conversions
+ * Class Google\Site_Kit\Core\Tags\Enhanced_Conversions\Enhanced_Conversions
  *
- * @package   Google\Site_Kit\Modules\Ads
+ * @package   Google\Site_Kit\Core\Tags\Enhanced_Conversions
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Modules\Ads;
+namespace Google\Site_Kit\Core\Tags\Enhanced_Conversions;
 
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Modules\Ads;
+use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Tag_Manager;
 
 /**
  * Class Enhanced_Conversions.
@@ -22,6 +26,36 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  */
 class Enhanced_Conversions {
 	use Method_Proxy_Trait;
+
+	/**
+	 * Array of slugs of modules using GTag.
+	 */
+	const MODULES_USING_GTAG = array(
+		Ads::MODULE_SLUG,
+		Analytics_4::MODULE_SLUG,
+		Tag_Manager::MODULE_SLUG,
+	);
+
+	/**
+	 * Modules instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Modules
+	 */
+	private $modules;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since 1.141.0
+	 *
+	 * @param Modules $modules Modules instance.
+	 */
+	public function __construct(
+		Modules $modules
+	) {
+		$this->modules = $modules;
+	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -68,6 +102,22 @@ class Enhanced_Conversions {
 	}
 
 	/**
+	 * Checks if any module using GTag is connected.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return boolean Whether any module using GTag is connected.
+	 */
+	protected function has_connected_gtag_modules() {
+		$connected_gtag_modules = array_intersect(
+			self::MODULES_USING_GTAG,
+			array_keys( $this->modules->get_connected_modules() )
+		);
+
+		return ! empty( $connected_gtag_modules );
+	}
+
+	/**
 	 * Conditionally enqueues the necessary script for Enhanced Conversions.
 	 *
 	 * @since 1.159.0
@@ -76,6 +126,10 @@ class Enhanced_Conversions {
 	 * @param GTag $gtag GTag instance.
 	 */
 	public function maybe_enqueue_gtag_user_data( GTag $gtag ) {
+		if ( ! $this->has_connected_gtag_modules() ) {
+			return;
+		}
+
 		$user_data = $this->get_user_data();
 
 		if ( empty( $user_data ) ) {

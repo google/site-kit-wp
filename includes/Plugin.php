@@ -235,6 +235,9 @@ final class Plugin {
 					( new Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway( $this->context, $options ) )->register();
 				}
 				( new Core\Tracking\Feature_Metrics() )->register();
+				if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
+					( new Core\Tags\Enhanced_Conversions\Enhanced_Conversions( $modules ) )->register();
+				}
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(

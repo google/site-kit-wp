@@ -2,30 +2,46 @@
 /**
  * Enhanced_ConversionsTest
  *
- * @package   Google\Site_Kit\Tests\Modules\Ads
+ * @package   Google\Site_Kit\Tests\Core\Tags\Enhanced_Conversions
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\Modules\Ads;
+namespace Google\Site_Kit\Tests\Core\Tags\Enhanced_Conversions;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Tags\GTag;
-use Google\Site_Kit\Modules\Ads;
-use Google\Site_Kit\Modules\Ads\Enhanced_Conversions;
+use Google\Site_Kit\Core\Tags\Enhanced_Conversions\Enhanced_Conversions;
 use Google\Site_Kit\Tests\TestCase;
 
-/**
- * @group Modules
- * @group Ads
- */
 class Enhanced_ConversionsTest extends TestCase {
 
-	public function test_get_user_data() {
-		$enhanced_conversions = new Enhanced_Conversions();
+	/**
+	 * Modules instance.
+	 *
+	 * @var Modules
+	 */
+	private $modules;
 
+	/**
+	 * Enhanced_Conversions instance.
+	 *
+	 * @var Enhanced_Conversions
+	 */
+	private $enhanced_conversions;
+
+	public function set_up() {
+		parent::set_up();
+
+		$context                    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->modules              = new Modules( $context );
+		$this->enhanced_conversions = new Enhanced_Conversions( $this->modules );
+	}
+
+	public function test_get_user_data() {
 		$user = $this->factory()->user->create_and_get(
 			array(
 				'role'       => 'subscriber',
@@ -38,25 +54,23 @@ class Enhanced_ConversionsTest extends TestCase {
 		wp_set_current_user( $user->ID );
 
 		$expected = array(
-			'sha256_email_address' => $enhanced_conversions::get_formatted_email( $user->user_email ),
+			'sha256_email_address' => $this->enhanced_conversions::get_formatted_email( $user->user_email ),
 			'address'              => array(
-				'sha256_first_name' => $enhanced_conversions::get_formatted_value( $user->user_firstname ),
-				'sha256_last_name'  => $enhanced_conversions::get_formatted_value( $user->user_lastname ),
+				'sha256_first_name' => $this->enhanced_conversions::get_formatted_value( $user->user_firstname ),
+				'sha256_last_name'  => $this->enhanced_conversions::get_formatted_value( $user->user_lastname ),
 			),
 		);
 
 		// Use reflection method to access the protected method.
-		$reflection = new \ReflectionClass( $enhanced_conversions );
+		$reflection = new \ReflectionClass( $this->enhanced_conversions );
 		$method     = $reflection->getMethod( 'get_user_data' );
 		$method->setAccessible( true );
-		$user_data = $method->invoke( $enhanced_conversions );
+		$user_data = $method->invoke( $this->enhanced_conversions );
 
 		$this->assertEquals( $expected, $user_data, 'User data does not match expected values.' );
 	}
 
 	public function test_get_user_data_partial_info() {
-		$enhanced_conversions = new Enhanced_Conversions();
-
 		// Create user with only email (no first_name or last_name).
 		$user = $this->factory()->user->create_and_get(
 			array(
@@ -67,38 +81,34 @@ class Enhanced_ConversionsTest extends TestCase {
 		wp_set_current_user( $user->ID );
 
 		$expected = array(
-			'sha256_email_address' => $enhanced_conversions::get_formatted_email( $user->user_email ),
+			'sha256_email_address' => $this->enhanced_conversions::get_formatted_email( $user->user_email ),
 			// No 'address' key should be present since name fields are empty.
 		);
 
 		// Use reflection method to access the protected method.
-		$reflection = new \ReflectionClass( $enhanced_conversions );
+		$reflection = new \ReflectionClass( $this->enhanced_conversions );
 		$method     = $reflection->getMethod( 'get_user_data' );
 		$method->setAccessible( true );
-		$user_data = $method->invoke( $enhanced_conversions );
+		$user_data = $method->invoke( $this->enhanced_conversions );
 
 		$this->assertEquals( $expected, $user_data, 'User data should only contain email when name fields are empty.' );
 		$this->assertArrayNotHasKey( 'address', $user_data, 'Address key should not be present when name fields are empty.' );
 	}
 
 	public function test_get_user_data_not_logged_in() {
-		$enhanced_conversions = new Enhanced_Conversions();
-
 		// Ensure no user is logged in.
 		wp_set_current_user( 0 );
 
 		// Use reflection method to access the protected method.
-		$reflection = new \ReflectionClass( $enhanced_conversions );
+		$reflection = new \ReflectionClass( $this->enhanced_conversions );
 		$method     = $reflection->getMethod( 'get_user_data' );
 		$method->setAccessible( true );
-		$user_data = $method->invoke( $enhanced_conversions );
+		$user_data = $method->invoke( $this->enhanced_conversions );
 
 		$this->assertEquals( array(), $user_data, 'User data should be empty when user is not logged in.' );
 	}
 
 	public function test_get_formatted_value() {
-		$enhanced_conversions = new Enhanced_Conversions();
-
 		$test_cases = array(
 			'  example value ',
 			'john Doe',
@@ -108,19 +118,17 @@ class Enhanced_ConversionsTest extends TestCase {
 		);
 
 		foreach ( $test_cases as $input ) {
-			$expected = $enhanced_conversions::get_hashed_value(
-				$enhanced_conversions::get_normalized_value( $input )
+			$expected = $this->enhanced_conversions::get_hashed_value(
+				$this->enhanced_conversions::get_normalized_value( $input )
 			);
 
-			$formatted = $enhanced_conversions::get_formatted_value( $input );
+			$formatted = $this->enhanced_conversions::get_formatted_value( $input );
 
 			$this->assertEquals( $expected, $formatted, "Failed for input: '$input'" );
 		}
 	}
 
 	public function test_get_formatted_email() {
-		$enhanced_conversions = new Enhanced_Conversions();
-
 		$test_cases = array(
 			' foo@bar.com ',
 			' FOO@BAR.COM  ',
@@ -133,19 +141,17 @@ class Enhanced_ConversionsTest extends TestCase {
 		);
 
 		foreach ( $test_cases as $input ) {
-			$expected = $enhanced_conversions::get_hashed_value(
-				$enhanced_conversions::get_normalized_email( $input )
+			$expected = $this->enhanced_conversions::get_hashed_value(
+				$this->enhanced_conversions::get_normalized_email( $input )
 			);
 
-			$formatted = $enhanced_conversions::get_formatted_email( $input );
+			$formatted = $this->enhanced_conversions::get_formatted_email( $input );
 
 			$this->assertEquals( $expected, $formatted, "Failed for input: '$input'" );
 		}
 	}
 
 	public function test_get_normalized_value() {
-		$enhanced_conversions = new Enhanced_Conversions();
-
 		$test_cases = array(
 			' Example Value '       => 'example value',
 			' John Doe'             => 'john doe',
@@ -156,14 +162,12 @@ class Enhanced_ConversionsTest extends TestCase {
 		);
 
 		foreach ( $test_cases as $input => $expected ) {
-			$normalized = $enhanced_conversions::get_normalized_value( $input );
+			$normalized = $this->enhanced_conversions::get_normalized_value( $input );
 			$this->assertEquals( $expected, $normalized, "Failed for input: '$input'" );
 		}
 	}
 
 	public function test_get_normalized_email() {
-		$enhanced_conversions = new Enhanced_Conversions();
-
 		$test_cases = array(
 			' foo@bar.com '               => 'foo@bar.com',
 			' FOO@BAR.COM  '              => 'foo@bar.com',
@@ -176,14 +180,12 @@ class Enhanced_ConversionsTest extends TestCase {
 		);
 
 		foreach ( $test_cases as $input => $expected ) {
-			$normalized = $enhanced_conversions::get_normalized_email( $input );
+			$normalized = $this->enhanced_conversions::get_normalized_email( $input );
 			$this->assertEquals( $expected, $normalized, "Failed for input: '$input'" );
 		}
 	}
 
 	public function test_get_hashed_value() {
-		$enhanced_conversions = new Enhanced_Conversions();
-
 		$test_cases = array(
 			'example value',
 			'john doe',
@@ -193,12 +195,12 @@ class Enhanced_ConversionsTest extends TestCase {
 		);
 
 		foreach ( $test_cases as $input ) {
-			$hashed = $enhanced_conversions::get_hashed_value( $input );
+			$hashed = $this->enhanced_conversions::get_hashed_value( $input );
 			$this->assertEquals( hash( 'sha256', $input ), $hashed, "Failed for input: '$input'" );
 		}
 	}
 
-	public function test_injects_gtag_script_with_user_data() {
+	public function test_injects_gtag_script_with_user_data_when_services_are_connected() {
 		// Prevent test from failing in CI with deprecation notice.
 		remove_action( 'wp_print_styles', 'print_emoji_styles' );
 
@@ -217,8 +219,23 @@ class Enhanced_ConversionsTest extends TestCase {
 		$gtag->add_tag( 'test-tag' );
 		$gtag->register();
 
-		$enhanced_conversions = new Enhanced_Conversions();
-		$enhanced_conversions->register();
+		update_option(
+			Modules::OPTION_ACTIVE_MODULES,
+			array(
+				'analytics-4',
+			)
+		);
+
+		$this->modules->get_module( 'analytics-4' )->get_settings()->merge(
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '12345678',
+				'webDataStreamID' => '987654321',
+				'measurementID'   => 'G-123',
+			)
+		);
+
+		$this->enhanced_conversions->register();
 
 		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ), 'The googlesitekit_setup_gtag action should be registered.' );
 
@@ -231,5 +248,33 @@ class Enhanced_ConversionsTest extends TestCase {
 		);
 
 		$this->assertStringContainsString( $expected_script, $head_html, 'The inline script containing user data should be in the HTML.' );
+	}
+
+	public function test_does_not_inject_user_data_when_no_service_is_connected() {
+		// Prevent test from failing in CI with deprecation notice.
+		remove_action( 'wp_print_styles', 'print_emoji_styles' );
+
+		$user = $this->factory()->user->create_and_get(
+			array(
+				'role'       => 'subscriber',
+				'user_email' => 'john@doe.com',
+				'first_name' => 'John',
+				'last_name'  => 'Doe',
+			)
+		);
+
+		wp_set_current_user( $user->ID );
+
+		$gtag = new GTag( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$gtag->add_tag( 'test-tag' );
+		$gtag->register();
+
+		$this->enhanced_conversions->register();
+
+		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ), 'The googlesitekit_setup_gtag action should be registered.' );
+
+		$head_html = $this->capture_action( 'wp_head' );
+
+		$this->assertStringNotContainsString( 'gtag("set","user_data"', $head_html, 'The inline script containing user data should not be in the HTML.' );
 	}
 }
