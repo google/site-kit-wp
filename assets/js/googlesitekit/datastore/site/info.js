@@ -644,7 +644,7 @@ export const selectors = {
 	 *
 	 * 0 = Sunday, 1 = Monday, ... 6 = Saturday.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(number|undefined)} The start of week index, or undefined while loading.

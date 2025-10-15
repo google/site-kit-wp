@@ -13,14 +13,14 @@ namespace Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks;
 /**
  * Compatibility check for WordPress login accessibility.
  *
- * @since n.e.x.t
+ * @since 1.164.0
  */
 class WP_Login_Accessible_Check extends Compatibility_Check {
 
 	/**
 	 * Gets the unique slug for this compatibility check.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @return string The unique slug for this compatibility check.
 	 */
@@ -31,7 +31,7 @@ class WP_Login_Accessible_Check extends Compatibility_Check {
 	/**
 	 * Runs the compatibility check.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @return bool True if login is inaccessible (404), false otherwise.
 	 */

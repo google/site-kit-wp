@@ -467,7 +467,7 @@ export const actions = {
 	/**
 	 * Pins a notification to the top of its respective queue.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param {string} id      Notification ID to pin.
 	 * @param {string} groupID Group ID the notification belongs to.
@@ -500,7 +500,7 @@ export const actions = {
 	/**
 	 * Unpins a notification from the top of its respective queue.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param {string} id      Notification ID to unpin.
 	 * @param {string} groupID Group ID the notification belongs to.
@@ -1020,7 +1020,7 @@ export const selectors = {
 	/**
 	 * Gets all pinned notification IDs, keyed by group ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object} Object with group IDs as keys and pinned notification ID as the value.
@@ -1032,7 +1032,7 @@ export const selectors = {
 	/**
 	 * Gets the ID of the pinned notification for a specific group, if any.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param {Object} state   Data store's state.
 	 * @param {string} groupID The group ID to get the pinned notification ID for.

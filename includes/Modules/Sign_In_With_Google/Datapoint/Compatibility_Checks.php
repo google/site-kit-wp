@@ -20,7 +20,7 @@ use WP_Error;
 /**
  * Class for the compatibility-check datapoint.
  *
- * @since n.e.x.t
+ * @since 1.164.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Compatibility_Checks extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Compatibilty checks instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 * @var Checks
 	 */
 	private $checks;
@@ -37,7 +37,7 @@ class Compatibility_Checks extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -52,7 +52,7 @@ class Compatibility_Checks extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 */
@@ -72,7 +72,7 @@ class Compatibility_Checks extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data Data request object.

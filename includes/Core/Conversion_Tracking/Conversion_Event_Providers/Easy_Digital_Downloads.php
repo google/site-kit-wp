@@ -82,7 +82,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	/**
 	 * Registers hooks for the Easy Digital Downloads provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 */
 	public function register_hooks() {
 		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
@@ -96,7 +96,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	/**
 	 * Prints the purchase data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 */
 	protected function maybe_add_purchase_data_from_session() {
 		if ( ! function_exists( 'edd_get_purchase_session' ) || ! function_exists( 'edd_is_success_page' ) || ! edd_is_success_page() ) {
@@ -123,7 +123,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	/**
 	 * Extracts Enhanced Conversions data from an EDD session.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param mixed|array|null $session_data An array containing EDD purchase session data.
 	 *
@@ -149,7 +149,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	/**
 	 * Extracts user data from an EDD session.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param array $session_data An array containing EDD purchase session data.
 	 *

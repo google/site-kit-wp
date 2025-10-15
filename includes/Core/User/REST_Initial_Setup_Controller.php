@@ -20,7 +20,7 @@ use WP_REST_Server;
 /**
  * Class for handling audience settings rest routes.
  *
- * @since n.e.x.t
+ * @since 1.164.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class REST_Initial_Setup_Controller {
 	/**
 	 * Initial_Setup_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 * @var Initial_Setup_Settings
 	 */
 	private $initial_setup_settings;
@@ -37,7 +37,7 @@ class REST_Initial_Setup_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param Initial_Setup_Settings $initial_setup_settings Initial_Setup_Settings instance.
 	 */
@@ -48,7 +48,7 @@ class REST_Initial_Setup_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 */
 	public function register() {
 		add_filter(
@@ -74,7 +74,7 @@ class REST_Initial_Setup_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
