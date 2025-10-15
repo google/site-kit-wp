@@ -23,12 +23,14 @@ import {
 	fireEvent,
 	provideSiteInfo,
 	freezeFetch,
+	muteFetch,
 	waitForTimeouts,
 } from '../../../../tests/js/test-utils';
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_KEY_METRICS_SETUP } from '@/js/googlesitekit/constants';
 import KeyMetricsSetupApp from './KeyMetricsSetupApp';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
@@ -38,8 +40,19 @@ describe( 'KeyMetricsSetupApp', () => {
 
 	let registry;
 
+	const syncAudiencesEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
+	);
+	const syncCustomDimensionsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+	);
+
 	const coreUserInputSettingsEndpointRegExp = new RegExp(
 		'^/google-site-kit/v1/core/user/data/user-input-settings'
+	);
+
+	const audienceSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
 	// The `UserInputSelectOptions` automatically focuses the first radio/checkbox
@@ -58,6 +71,15 @@ describe( 'KeyMetricsSetupApp', () => {
 		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {} );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+		fetchMock.post( syncAudiencesEndpoint, { body: [], status: 200 } );
+		fetchMock.post( syncCustomDimensionsEndpoint, {
+			body: [],
+			status: 200,
+		} );
+
+		muteFetch( audienceSettingsEndpoint );
+
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveGetModules( withConnected( MODULE_SLUG_ANALYTICS_4 ) );
@@ -265,6 +287,7 @@ describe( 'KeyMetricsSetupApp', () => {
 		} );
 
 		await waitForRegistry();
+
 		await waitForFocus();
 
 		expect( container ).toMatchSnapshot();
@@ -274,5 +297,49 @@ describe( 'KeyMetricsSetupApp', () => {
 				'.googlesitekit-subheader .googlesitekit-progress-indicator'
 			)
 		).toBeInTheDocument();
+	} );
+
+	it( 'should sync audiences and custom dimensions on render', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences: null,
+		} );
+
+		const { waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
+		expect( fetchMock ).toHaveFetched( syncAudiencesEndpoint );
+		expect( fetchMock ).toHaveFetched( syncCustomDimensionsEndpoint );
+	} );
+
+	it( 'should not attempt to sync again while syncing is already in progress', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences: null,
+		} );
+
+		const { rerender, waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
+		expect( fetchMock ).toHaveFetchedTimes( 1, syncAudiencesEndpoint );
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			syncCustomDimensionsEndpoint
+		);
+
+		rerender( <KeyMetricsSetupApp /> );
+		await waitForRegistry();
+
+		expect( fetchMock ).toHaveFetchedTimes( 1, syncAudiencesEndpoint );
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			syncCustomDimensionsEndpoint
+		);
 	} );
 } );
