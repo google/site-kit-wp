@@ -236,7 +236,7 @@ final class Plugin {
 				}
 				( new Core\Tracking\Feature_Metrics() )->register();
 				if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
-					( new Core\Tags\Enhanced_Conversions\Enhanced_Conversions( $modules ) )->register();
+					( new Core\Tags\Enhanced_Conversions\Enhanced_Conversions() )->register();
 				}
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.

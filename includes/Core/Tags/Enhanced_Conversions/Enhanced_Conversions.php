@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Core\Tags\Enhanced_Conversions;
 
-use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Ads;
@@ -35,27 +34,6 @@ class Enhanced_Conversions {
 		Analytics_4::MODULE_SLUG,
 		Tag_Manager::MODULE_SLUG,
 	);
-
-	/**
-	 * Modules instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Modules
-	 */
-	private $modules;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since 1.141.0
-	 *
-	 * @param Modules $modules Modules instance.
-	 */
-	public function __construct(
-		Modules $modules
-	) {
-		$this->modules = $modules;
-	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -109,9 +87,11 @@ class Enhanced_Conversions {
 	 * @return boolean Whether any module using GTag is connected.
 	 */
 	protected function has_connected_gtag_modules() {
-		$connected_gtag_modules = array_intersect(
+		$connected_gtag_modules = array_filter(
 			self::MODULES_USING_GTAG,
-			array_keys( $this->modules->get_connected_modules() )
+			function ( $module ) {
+				return apply_filters( 'googlesitekit_is_module_connected', false, $module );
+			}
 		);
 
 		return ! empty( $connected_gtag_modules );

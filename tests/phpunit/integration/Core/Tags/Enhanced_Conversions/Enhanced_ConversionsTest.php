@@ -11,20 +11,17 @@
 namespace Google\Site_Kit\Tests\Core\Tags\Enhanced_Conversions;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Core\Tags\Enhanced_Conversions\Enhanced_Conversions;
+use Google\Site_Kit\Modules\Ads;
+use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Tag_Manager;
+use Google\Site_Kit\Tests\ModulesHelperTrait;
 use Google\Site_Kit\Tests\TestCase;
 
 class Enhanced_ConversionsTest extends TestCase {
-
-	/**
-	 * Modules instance.
-	 *
-	 * @var Modules
-	 */
-	private $modules;
+	use ModulesHelperTrait;
 
 	/**
 	 * Enhanced_Conversions instance.
@@ -36,9 +33,7 @@ class Enhanced_ConversionsTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$context                    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->modules              = new Modules( $context );
-		$this->enhanced_conversions = new Enhanced_Conversions( $this->modules );
+		$this->enhanced_conversions = new Enhanced_Conversions();
 	}
 
 	public function test_get_user_data() {
@@ -200,7 +195,10 @@ class Enhanced_ConversionsTest extends TestCase {
 		}
 	}
 
-	public function test_injects_gtag_script_with_user_data_when_services_are_connected() {
+	/**
+	 * @dataProvider data_gtag_modules
+	 */
+	public function test_injects_gtag_script_with_user_data_when_gtag_services_are_connected( $module ) {
 		// Prevent test from failing in CI with deprecation notice.
 		remove_action( 'wp_print_styles', 'print_emoji_styles' );
 
@@ -219,21 +217,7 @@ class Enhanced_ConversionsTest extends TestCase {
 		$gtag->add_tag( 'test-tag' );
 		$gtag->register();
 
-		update_option(
-			Modules::OPTION_ACTIVE_MODULES,
-			array(
-				'analytics-4',
-			)
-		);
-
-		$this->modules->get_module( 'analytics-4' )->get_settings()->merge(
-			array(
-				'accountID'       => '12345678',
-				'propertyID'      => '12345678',
-				'webDataStreamID' => '987654321',
-				'measurementID'   => 'G-123',
-			)
-		);
+		$this->force_connect_modules( $module );
 
 		$this->enhanced_conversions->register();
 
@@ -248,6 +232,20 @@ class Enhanced_ConversionsTest extends TestCase {
 		);
 
 		$this->assertStringContainsString( $expected_script, $head_html, 'The inline script containing user data should be in the HTML.' );
+	}
+
+	public function data_gtag_modules() {
+		return array(
+			Analytics_4::MODULE_SLUG => array(
+				Analytics_4::MODULE_SLUG,
+			),
+			Ads::MODULE_SLUG         => array(
+				Ads::MODULE_SLUG,
+			),
+			Tag_Manager::MODULE_SLUG => array(
+				Tag_Manager::MODULE_SLUG,
+			),
+		);
 	}
 
 	public function test_does_not_inject_user_data_when_no_service_is_connected() {
