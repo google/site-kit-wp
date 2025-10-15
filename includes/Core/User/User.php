@@ -49,7 +49,7 @@ class User {
 	/**
 	 * Initial_Setup instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 * @var Initial_Setup
 	 */
 	private $initial_setup;
@@ -59,7 +59,7 @@ class User {
 	 *
 	 * @since 1.134.0
 	 * @since 1.162.0 Added Email Reporting.
-	 * @since n.e.x.t Added Initial Setup.
+	 * @since 1.164.0 Added Initial Setup.
 	 *
 	 * @param User_Options $user_options User_Options instance.
 	 */
@@ -81,7 +81,7 @@ class User {
 	 *
 	 * @since 1.134.0
 	 * @since 1.162.0 Added Email Reporting.
-	 * @since n.e.x.t Added Initial Setup.
+	 * @since 1.164.0 Added Initial Setup.
 	 */
 	public function register() {
 		$this->audience_segmentation->register();

@@ -13,14 +13,14 @@ namespace Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks;
 /**
  * Compatibility check for conflicting plugins.
  *
- * @since n.e.x.t
+ * @since 1.164.0
  */
 class Conflicting_Plugins_Check extends Compatibility_Check {
 
 	/**
 	 * Gets the unique slug for this compatibility check.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @return string The unique slug for this compatibility check.
 	 */
@@ -31,7 +31,7 @@ class Conflicting_Plugins_Check extends Compatibility_Check {
 	/**
 	 * Runs the compatibility check.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @return array|false Array of conflicting plugins data if found, false otherwise.
 	 */

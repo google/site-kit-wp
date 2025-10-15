@@ -377,7 +377,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	/**
 	 * Gets the datapoint definitions for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @return array List of datapoint definitions.
 	 */
@@ -412,7 +412,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		/**
 		 * Display the Sign in with Google button.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.164.0
 		 *
 		 * @param array $args Optional arguments to customize button attributes.
 		 */
@@ -460,7 +460,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			/**
 			 * Display the Sign in with Google button.
 			 *
-			 * @since n.e.x.t
+			 * @since 1.164.0
 			 *
 			 * @param array $args Optional arguments to customize button attributes.
 			 */
@@ -473,7 +473,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	/**
 	 * Renders the Sign in with Google button markup.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param array $args Optional arguments to customize button attributes.
 	 */

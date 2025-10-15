@@ -83,7 +83,7 @@ const baseActions = {
 	/**
 	 * Saves the initial setup settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
 	 * @return {Object} Object with `response` and `error`.
@@ -116,7 +116,7 @@ const baseActions = {
 	/**
 	 * Sets whether Analytics setup is complete.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param {boolean} isAnalyticsSetupComplete Whether or not the Analytics setup is complete.
 	 * @return {Object} Redux-style action.
@@ -171,7 +171,7 @@ const baseSelectors = {
 	/**
 	 * Returns the initial setup settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Initial setup settings.
@@ -183,7 +183,7 @@ const baseSelectors = {
 	/**
 	 * Returns whether Analytics setup is complete from the initial setup settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|null|undefined)} Whether the Analytics setup is complete or not; `undefined` if not loaded or `null` if not set yet.
