@@ -132,6 +132,10 @@
 			@media (max-width: $bp-desktop) {
 				padding-top: 1rem;
 			}
+
+			@media (min-width: $bp-nonTablet) {
+				padding-bottom: $grid-gap-desktop;
+			}
 		}
 
 		.googlesitekit-start-setup-wrap .mdc-button__label {
