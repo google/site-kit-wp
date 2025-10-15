@@ -28,6 +28,7 @@ import {
 	createInterpolateElement,
 	useCallback,
 	Fragment,
+	useEffect,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -42,6 +43,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { Grid, Row, Cell } from '@/js/material-components';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import Header from '@/js/components/Header';
 import Layout from '@/js/components/layout/Layout';
 import ErrorNotice from '@/js/components/ErrorNotice';
@@ -102,13 +104,31 @@ export default function KeyMetricsSetupApp() {
 
 	const isBusy = isSavingSettings || isNavigating;
 
+	const isFetchingSyncAvailableCustomDimensions = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isFetchingSyncAvailableCustomDimensions()
+	);
+	const isSyncingAudiences = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isSyncingAudiences()
+	);
+
+	const isSyncing =
+		isFetchingSyncAvailableCustomDimensions || isSyncingAudiences;
+
+	const { fetchSyncAvailableCustomDimensions, syncAvailableAudiences } =
+		useDispatch( MODULES_ANALYTICS_4 );
+
+	useEffect( () => {
+		syncAvailableAudiences();
+		fetchSyncAvailableCustomDimensions();
+	}, [ syncAvailableAudiences, fetchSyncAvailableCustomDimensions ] );
+
 	const onSaveClick = useCallback( () => {
-		if ( isBusy ) {
+		if ( isBusy || isSyncing ) {
 			return;
 		}
 
 		submitChanges();
-	}, [ isBusy, submitChanges ] );
+	}, [ isBusy, isSyncing, submitChanges ] );
 
 	const { USER_INPUT_ANSWERS_PURPOSE } = getUserInputAnswers();
 
@@ -187,8 +207,10 @@ export default function KeyMetricsSetupApp() {
 
 								<SpinnerButton
 									onClick={ onSaveClick }
-									isSaving={ isBusy }
-									disabled={ hasErrorForAnswer( values ) }
+									isSaving={ isBusy || isSyncing }
+									disabled={
+										hasErrorForAnswer( values ) || isSyncing
+									}
 								>
 									{ __(
 										'Complete setup',
