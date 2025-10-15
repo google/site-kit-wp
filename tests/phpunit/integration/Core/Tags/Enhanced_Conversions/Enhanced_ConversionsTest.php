@@ -236,13 +236,13 @@ class Enhanced_ConversionsTest extends TestCase {
 
 	public function data_gtag_modules() {
 		return array(
-			Analytics_4::MODULE_SLUG => array(
+			array(
 				Analytics_4::MODULE_SLUG,
 			),
-			Ads::MODULE_SLUG         => array(
+			array(
 				Ads::MODULE_SLUG,
 			),
-			Tag_Manager::MODULE_SLUG => array(
+			array(
 				Tag_Manager::MODULE_SLUG,
 			),
 		);

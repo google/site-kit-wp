@@ -72,7 +72,7 @@ class TestCase extends WP_UnitTestCase {
 			2
 		);
 
-		// Initialize the global $wp_scripts and $wp_styles, which have been cleared in tear_down.
+		// Initialize the global $wp_scripts and $wp_styles, which are cleared in tear_down.
 		wp_scripts();
 		wp_styles();
 	}

@@ -86,15 +86,14 @@ class Enhanced_Conversions {
 	 *
 	 * @return boolean Whether any module using GTag is connected.
 	 */
-	protected function has_connected_gtag_modules() {
-		$connected_gtag_modules = array_filter(
-			self::MODULES_USING_GTAG,
-			function ( $module ) {
-				return apply_filters( 'googlesitekit_is_module_connected', false, $module );
+	protected function has_connected_gtag_module() {
+		foreach ( self::MODULES_USING_GTAG as $module ) {
+			if ( apply_filters( 'googlesitekit_is_module_connected', false, $module ) ) {
+				return true;
 			}
-		);
+		}
 
-		return ! empty( $connected_gtag_modules );
+		return false;
 	}
 
 	/**
@@ -106,7 +105,7 @@ class Enhanced_Conversions {
 	 * @param GTag $gtag GTag instance.
 	 */
 	public function maybe_enqueue_gtag_user_data( GTag $gtag ) {
-		if ( ! $this->has_connected_gtag_modules() ) {
+		if ( ! $this->has_connected_gtag_module() ) {
 			return;
 		}
 
