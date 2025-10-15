@@ -130,7 +130,7 @@
 		max-width: $max-width-setup-content;
 		padding: 2rem 0;
 
-		@media (min-width: $bp-desktop) {
+		@media (min-width: $bp-nonTablet) {
 			max-width: none;
 			padding: 0;
 		}
@@ -152,7 +152,7 @@
 			max-width: 100%;
 		}
 
-		@media (min-width: $bp-desktop) {
+		@media (min-width: $bp-nonTablet) {
 			align-self: center;
 			order: 2;
 		}

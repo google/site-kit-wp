@@ -76,6 +76,8 @@
 		}
 
 		.googlesitekit-opt-in {
+			margin-bottom: 42px;
+
 			label {
 				color: $c-surfaces-on-background-variant;
 
@@ -100,13 +102,13 @@
 			width: 100%;
 
 			@media (max-width: $bp-desktop) {
-				max-height: 511px;
+				max-height: 230px;
 			}
 
 			svg {
 				margin: 0 4%;
 				position: relative;
-				top: 30px;
+				top: 40px;
 				z-index: 11;
 
 				@media (max-width: $bp-desktop) {
@@ -119,17 +121,25 @@
 			position: relative;
 
 			@media (max-width: $bp-desktop) {
-				align-items: center;
+				align-items: content;
 				display: flex;
 				margin-bottom: $grid-gap-desktop;
 				overflow: hidden;
 			}
 		}
 
-		@media (max-width: $bp-mobileOnly) {
-			.googlesitekit-setup__content {
-				padding: 0;
+		.googlesitekit-setup__content {
+			@media (max-width: $bp-desktop) {
+				padding-top: 1rem;
 			}
+
+			@media (min-width: $bp-nonTablet) {
+				padding-bottom: $grid-gap-desktop;
+			}
+		}
+
+		.googlesitekit-start-setup-wrap .mdc-button__label {
+			font-family: $f-secondary;
 		}
 	}
 }

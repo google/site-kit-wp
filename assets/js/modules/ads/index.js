@@ -176,9 +176,6 @@ export const ADS_NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			await Promise.all( [
-				// The isPromptDismissed selector relies on the resolution
-				// of the getDismissedPrompts() resolver.
-				resolveSelect( CORE_USER ).getDismissedPrompts(),
 				// isGoogleForWooCommerceLinked is relying
 				// on the data being resolved in getModuleData() selector.
 				resolveSelect( MODULES_ADS ).getModuleData(),
@@ -191,15 +188,12 @@ export const ADS_NOTIFICATIONS = {
 			] );
 
 			const { isModuleConnected } = select( CORE_MODULES );
-			const { isPromptDismissed } = select( CORE_USER );
 			const { hasGoogleForWooCommerceAdsAccount } = select( MODULES_ADS );
 
 			const isAdsConnected = isModuleConnected( MODULE_SLUG_ADS );
-			const isDismissed = isPromptDismissed( 'ads-setup-cta' );
 
 			return (
 				isAdsConnected === false &&
-				isDismissed === false &&
 				hasGoogleForWooCommerceAdsAccount() === false
 			);
 		},
