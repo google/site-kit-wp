@@ -36,6 +36,6 @@ class WP_COM_Check extends Compatibility_Check {
 	 * @return bool True if hosted on WordPress.com, false otherwise.
 	 */
 	public function run() {
-		return defined( 'IS_WPCOM' );
+		return defined( 'WPCOMSH_VERSION' );
 	}
 }

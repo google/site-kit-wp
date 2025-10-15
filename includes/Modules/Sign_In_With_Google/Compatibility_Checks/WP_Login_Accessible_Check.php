@@ -36,7 +36,9 @@ class WP_Login_Accessible_Check extends Compatibility_Check {
 	 * @return bool True if login is inaccessible (404), false otherwise.
 	 */
 	public function run() {
-		$login_url = wp_login_url();
+		// Hardcode the wp-login at the end to avoid issues with filters - plugins modifying the wp-login page
+		// also override the URL request which skips the correct detection.
+		$login_url = site_url() . '/wp-login.php';
 		$response  = wp_remote_head( $login_url );
 
 		if ( is_wp_error( $response ) ) {
