@@ -14,7 +14,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use Google\Site_Kit\Modules\Ads\Enhanced_Conversions;
+use Google\Site_Kit\Core\Tags\Enhanced_Conversions\Enhanced_Conversions;
 
 /**
  * Class for handling Easy Digital Downloads conversion events.
