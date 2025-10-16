@@ -1,5 +1,7 @@
 /**
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Sign in with Google CompatibilityWarningSubtleNotification styles.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +16,14 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-sign-in-with-google-setup-module";
-@import "googlesitekit-sign-in-with-google-settings-module";
-@import "googlesitekit-registration-disabled-notice";
-@import "googlesitekit-sign-in-with-google-compatibility-warning";
+.googlesitekit-plugin {
+
+	#sign-in-with-google-compatibility-warning {
+		.googlesitekit-notice__description {
+			span {
+				display: block;
+				margin: 3px 0;
+			}
+		}
+	}
+}
