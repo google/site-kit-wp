@@ -164,12 +164,7 @@ export const SIGN_IN_WITH_GOOGLE_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 		],
 		checkRequirements: async ( { select, resolveSelect } ) => {
-			const [ , compatibilityChecks ] = await Promise.all( [
-				resolveSelect( CORE_MODULES ).getModules(),
-				resolveSelect(
-					MODULES_SIGN_IN_WITH_GOOGLE
-				).getCompatibilityChecks( { useCache: true } ),
-			] );
+			await resolveSelect( CORE_MODULES ).getModules();
 
 			const isConnected = select( CORE_MODULES ).isModuleConnected(
 				MODULE_SLUG_SIGN_IN_WITH_GOOGLE
@@ -178,6 +173,11 @@ export const SIGN_IN_WITH_GOOGLE_NOTIFICATIONS = {
 			if ( ! isConnected ) {
 				return false;
 			}
+
+			// Ensure compatibility checks are loaded only when the module is connected.
+			const compatibilityChecks = await resolveSelect(
+				MODULES_SIGN_IN_WITH_GOOGLE
+			).getCompatibilityChecks( { useCache: true } );
 
 			const errors = compatibilityChecks?.checks || {};
 
