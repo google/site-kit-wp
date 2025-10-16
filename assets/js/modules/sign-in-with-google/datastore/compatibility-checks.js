@@ -96,7 +96,7 @@ const baseSelectors = {
 	/**
 	 * Gets the compatibility checks data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object|undefined} Compatibility checks data, or `undefined` if not loaded.

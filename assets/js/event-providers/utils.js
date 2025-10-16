@@ -316,7 +316,8 @@ export function classifyPII( fieldMeta ) {
 export function getAddress( fields ) {
 	const names = fields
 		.filter( ( { type } ) => type === PII_TYPE.NAME )
-		.map( ( { value } ) => value );
+		.map( ( { value } ) => normalizeValue( value ) )
+		.filter( Boolean );
 
 	if ( ! names.length ) {
 		return undefined;
@@ -326,9 +327,9 @@ export function getAddress( fields ) {
 		names.length === 1 ? names[ 0 ].split( ' ' ) : names;
 
 	return {
-		first_name: normalizeValue( firstName ),
+		first_name: firstName,
 		...( lastNames?.length > 0
-			? { last_name: normalizeValue( lastNames.join( ' ' ) ) }
+			? { last_name: lastNames.join( ' ' ) }
 			: {} ),
 	};
 }

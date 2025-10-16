@@ -13,14 +13,14 @@ namespace Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks;
 /**
  * Manager class for compatibility checks.
  *
- * @since n.e.x.t
+ * @since 1.164.0
  */
 class Compatibility_Checks {
 
 	/**
 	 * Collection of compatibility checks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @var array
 	 */
@@ -29,7 +29,7 @@ class Compatibility_Checks {
 	/**
 	 * Adds a compatibility check to the collection.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param Compatibility_Check $check The compatibility check to add.
 	 */
@@ -40,7 +40,7 @@ class Compatibility_Checks {
 	/**
 	 * Runs all compatibility checks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @return array Results of the compatibility checks.
 	 */

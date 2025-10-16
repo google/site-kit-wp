@@ -69,11 +69,11 @@ describe( 'CompatibilityChecks utils', () => {
 			);
 		} );
 
-		it( 'returns message for wordpress.com hosting', () => {
+		it( 'returns message for WordPress.com hosting', () => {
 			expect(
 				getErrorMessages( { host_wordpress_dot_com: true } )
 			).toContain(
-				'Sign in with Google does not function on sites hosted on wordpress.com.'
+				'Sign in with Google does not function on sites hosted on WordPress.com.'
 			);
 		} );
 

@@ -116,7 +116,7 @@ const baseActions = {
 	/**
 	 * Sets the email reporting frequency.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param {string} frequency Frequency value.
 	 * @return {Object} Redux-style action.
@@ -293,7 +293,7 @@ const baseSelectors = {
 	/**
 	 * Gets the email reporting frequency.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} Frequency value.
@@ -314,7 +314,7 @@ const baseSelectors = {
 	/**
 	 * Gets the previously-saved frequency.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} Saved frequency or undefined.

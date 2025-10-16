@@ -24,7 +24,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Normalizes the conflicting plugins data to an array of plugin info objects.
  *
- * @since n.e.x.t
+ * @since 1.164.0
  *
  * @param {Object|Array} conflictingPlugins Plugins data keyed by slug or array.
  * @return {Array} Array of plugin info objects.
@@ -48,7 +48,7 @@ export function normalizeConflictingPlugins( conflictingPlugins ) {
 /**
  * Gets error messages from compatibility errors.
  *
- * @since n.e.x.t
+ * @since 1.164.0
  *
  * @param {*} errors Compatibility errors.
  * @return {Array} Array of error messages.
@@ -86,7 +86,7 @@ export function getErrorMessages( errors ) {
 			case ERROR_WPCOM:
 				errorMessages.push(
 					__(
-						'Sign in with Google does not function on sites hosted on wordpress.com.',
+						'Sign in with Google does not function on sites hosted on WordPress.com.',
 						'google-site-kit'
 					)
 				);

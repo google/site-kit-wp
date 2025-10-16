@@ -295,6 +295,31 @@ describe( 'Event Providers Utilities', () => {
 			).toBeUndefined();
 		} );
 
+		it( 'should filter out empty values', () => {
+			expect(
+				getAddress( [ { type: PII_TYPE.NAME, value: '' } ] )
+			).toBeUndefined();
+
+			expect(
+				getAddress( [
+					{ type: PII_TYPE.NAME, value: 'john' },
+					{ type: PII_TYPE.NAME, value: '' },
+				] )
+			).toEqual( {
+				first_name: 'john',
+			} );
+
+			expect(
+				getAddress( [
+					{ type: PII_TYPE.NAME, value: '' },
+					{ type: PII_TYPE.NAME, value: '   ' },
+					{ type: PII_TYPE.NAME, value: 'john' },
+				] )
+			).toEqual( {
+				first_name: 'john',
+			} );
+		} );
+
 		it( 'should extract first_name from a single name field', () => {
 			expect(
 				getAddress( [ { type: PII_TYPE.NAME, value: 'john' } ] )
