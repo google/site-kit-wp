@@ -85,7 +85,7 @@ export default function EmailReportingCardNotice( { className } ) {
 						'google-site-kit'
 					) }
 					description={ __(
-						"Receive the most important insights about your site's performance, key trends, and tailored metrics directly in your inbox",
+						"Receive the most important insights about your site’s performance, key trends, and tailored metrics directly in your inbox",
 						'google-site-kit'
 					) }
 					ctaButton={ {
