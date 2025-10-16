@@ -36,7 +36,6 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import Notice from '@/js/components/Notice';
 import { TYPES } from '@/js/components/Notice/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
-import { Row, Cell } from '@/js/material-components';
 
 export const EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM =
 	'email-reporting-card-notice';
@@ -76,29 +75,27 @@ export default function EmailReportingCardNotice( { className } ) {
 	}
 
 	return (
-		<Row className={ className }>
-			<Cell size={ 12 }>
-				<Notice
-					type={ TYPES.NEW }
-					title={ __(
-						'Get site insights in your inbox',
-						'google-site-kit'
-					) }
-					description={ __(
-						"Receive the most important insights about your site’s performance, key trends, and tailored metrics directly in your inbox",
-						'google-site-kit'
-					) }
-					ctaButton={ {
-						label: __( 'Set up', 'google-site-kit' ),
-						onClick: handleSetup,
-					} }
-					dismissButton={ {
-						label: __( 'Maybe later', 'google-site-kit' ),
-						onClick: handleDismiss,
-					} }
-				/>
-			</Cell>
-		</Row>
+		<div className={ className }>
+			<Notice
+				type={ TYPES.NEW }
+				title={ __(
+					'Get site insights in your inbox',
+					'google-site-kit'
+				) }
+				description={ __(
+					'Receive the most important insights about your site’s performance, key trends, and tailored metrics directly in your inbox',
+					'google-site-kit'
+				) }
+				ctaButton={ {
+					label: __( 'Set up', 'google-site-kit' ),
+					onClick: handleSetup,
+				} }
+				dismissButton={ {
+					label: __( 'Maybe later', 'google-site-kit' ),
+					onClick: handleDismiss,
+				} }
+			/>
+		</div>
 	);
 }
 

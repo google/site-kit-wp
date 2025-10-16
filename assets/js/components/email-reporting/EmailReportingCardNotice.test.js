@@ -71,7 +71,7 @@ describe( 'EmailReportingCardNotice', () => {
 		).toBeInTheDocument();
 		expect(
 			getByText(
-				/Receive the most important insights about your site's performance/i
+				/Receive the most important insights about your site’s performance/i
 			)
 		).toBeInTheDocument();
 	} );
