@@ -26,21 +26,27 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { HOUR_IN_SECONDS } from '@/js/util';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
 
 const fetchGetCompatibilityChecksStore = createFetchStore( {
 	baseName: 'getCompatibilityChecks',
-	controlCallback: () => {
+	controlCallback: ( {
+		useCache = false,
+		cacheTTL = 2 * HOUR_IN_SECONDS,
+	} = {} ) => {
 		return get(
 			'modules',
 			'sign-in-with-google',
 			'compatibility-checks',
 			null,
 			{
-				useCache: false,
+				useCache,
+				cacheTTL,
 			}
 		);
 	},
+	argsToParams: ( options = {} ) => options,
 	reducerCallback: createReducer( ( state, compatibilityChecks ) => {
 		state.compatibilityChecks = compatibilityChecks;
 	} ),
@@ -51,18 +57,38 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getCompatibilityChecks() {
+	/**
+	 * Gets the compatibility checks data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}  cacheOptions          Cache options.
+	 * @param {boolean} cacheOptions.useCache Whether to use cached data, if available. Default is false.
+	 * @param {number}  cacheOptions.cacheTTL How long to cache the data, in seconds. Default is 2 hours.
+	 */
+	*getCompatibilityChecks( cacheOptions ) {
 		const registry = yield commonActions.getRegistry();
 
 		const checks = registry
 			.select( MODULES_SIGN_IN_WITH_GOOGLE )
 			.getCompatibilityChecks();
 
-		if ( checks ) {
+		if ( checks !== undefined ) {
 			return;
 		}
 
-		yield fetchGetCompatibilityChecksStore.actions.fetchGetCompatibilityChecks();
+		const fetchArgs = {};
+
+		if ( cacheOptions ) {
+			const { useCache, cacheTTL } = cacheOptions;
+
+			fetchArgs.useCache = useCache;
+			fetchArgs.cacheTTL = cacheTTL;
+		}
+
+		yield fetchGetCompatibilityChecksStore.actions.fetchGetCompatibilityChecks(
+			fetchArgs
+		);
 	},
 };
 
