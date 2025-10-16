@@ -86,7 +86,7 @@ export function getErrorMessages( errors ) {
 			case ERROR_WPCOM:
 				errorMessages.push(
 					__(
-						'Sign in with Google does not function on sites hosted on wordpress.com.',
+						'Sign in with Google does not function on sites hosted on WordPress.com.',
 						'google-site-kit'
 					)
 				);

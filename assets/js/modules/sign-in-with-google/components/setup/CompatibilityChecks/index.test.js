@@ -132,7 +132,7 @@ describe( 'CompatibilityChecks', () => {
 		} );
 	} );
 
-	it( 'renders warning when site is hosted on wordpress.com', async () => {
+	it( 'renders warning when site is hosted on WordPress.com', async () => {
 		registry
 			.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
 			.receiveGetCompatibilityChecks( {
@@ -148,7 +148,7 @@ describe( 'CompatibilityChecks', () => {
 
 		await waitFor( () => {
 			expect( container ).toHaveTextContent(
-				'Sign in with Google does not function on sites hosted on wordpress.com.'
+				'Sign in with Google does not function on sites hosted on WordPress.com.'
 			);
 		} );
 	} );
