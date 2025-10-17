@@ -10,6 +10,6 @@
 		"@componentdriven/csf": "^0.0.2-alpha.0",
 		"glob": "^7.2.3",
 		"lodash": "^4.17.21",
-		"node-fetch": "^2.7.0"
+		"node-fetch": "^3.2.10"
 	}
 }
