@@ -133,7 +133,9 @@
 
 		.googlesitekit-audience-selection-panel__audience-creation-notice-header {
 			display: flex;
-			justify-content: space-between;
+
+			// No close icon now; keep layout start aligned.
+			justify-content: flex-start;
 		}
 
 		p.googlesitekit-audience-selection-panel__audience-creation-notice-title {
@@ -146,13 +148,7 @@
 			margin: 0;
 		}
 
-		.googlesitekit-audience-selection-panel__audience-creation-notice-close {
-			svg {
-				color: $c-surfaces-on-surface-variant;
-				height: 12px;
-				width: 12px;
-			}
-		}
+		// Removed close (X) button styles as per enhancement/9980.
 
 		.googlesitekit-audience-selection-panel__audience-creation-notice-body {
 			display: flex;
@@ -207,6 +203,23 @@
 
 		.googlesitekit-audience-creation-error-notice {
 			margin-bottom: 12px;
+		}
+
+		.googlesitekit-audience-selection-panel__audience-creation-notice-dismiss {
+			display: flex;
+			justify-content: flex-end;
+			margin-top: 4px;
+
+			.mdc-button {
+				color: $c-surfaces-on-surface;
+				min-height: auto;
+				padding-right: 0;
+
+				&:hover {
+					background-color: transparent;
+					color: $c-surfaces-on-surface-variant;
+				}
+			}
 		}
 	}
 
