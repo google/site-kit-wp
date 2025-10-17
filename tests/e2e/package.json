@@ -27,9 +27,9 @@
 		"dockerode": "^4.0.2",
 		"expect-puppeteer": "^4.4.0",
 		"jest": "^29.7.0",
-		"jest-puppeteer": "^6.0.1",
+		"jest-puppeteer": "^11.0.0",
 		"jsdom": "^16.5.0",
 		"lodash": "^4.17.21",
-		"puppeteer": "^10.4.0"
+		"puppeteer": "^24.22.0"
 	}
 }
