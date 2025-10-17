@@ -249,7 +249,7 @@ class Google_ProxyTest extends TestCase {
 
 		// WordPress technically allows for multiple roles, and some plugins
 		// make use of that feature - we can just fake it like below.
-		wp_get_current_user()->roles[] = 'shop_vendor';
+		wp_get_current_user()->add_role( 'shop_vendor' );
 
 		$this->assertEqualSetsWithIndex(
 			array(
