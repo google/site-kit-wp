@@ -194,6 +194,17 @@ jobs:
           cache: npm
       - name: npm install
         run: npm i -w assets -w storybook -w tests/js --include-workspace-root
-      # TODO: #10473 will complete the migration to Storybook test-runner as storyshots is deprecated.
-      # - name: Test Storybook
-      #   run: npm run test:storybook
+      - name: Install playwright browser
+        run: npx playwright install chromium
+      - name: Serve static Storybook
+        run: npx http-server ./dist -p 6006 &
+
+      - name: Wait for Storybook
+        run: |
+          for i in {1..60}; do
+            curl -fsS http://localhost:6006/index.html && break
+            sleep 1
+          done
+
+      - name: Test Storybook
+        run: npm run test:storybook
