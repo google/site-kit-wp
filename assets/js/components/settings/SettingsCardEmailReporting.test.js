@@ -27,6 +27,7 @@ import {
 } from '../../../../tests/js/utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import SettingsCardEmailReporting from './SettingsCardEmailReporting';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 describe( 'SettingsCardEmailReporting', () => {
 	let registry;
@@ -34,6 +35,9 @@ describe( 'SettingsCardEmailReporting', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideUserAuthentication( registry );
+
+		// Prevent network request/resolver from running to avoid console errors.
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	it( 'should render the layout with correct title', async () => {
