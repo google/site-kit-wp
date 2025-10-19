@@ -16,5 +16,6 @@
  * limitations under the License.
  */
 
+export { default as EnhancedConversionsNotification } from './EnhancedConversionsNotification';
 export { default as GoogleTagIDMismatchNotification } from './GoogleTagIDMismatchNotification';
 export { default as WebDataStreamNotAvailableNotification } from './WebDataStreamNotAvailableNotification';
