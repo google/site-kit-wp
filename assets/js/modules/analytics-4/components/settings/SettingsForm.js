@@ -38,7 +38,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { TYPES } from '@/js/components/Notice/constants';
 import SettingsControls from './SettingsControls';
 import ConversionTrackingToggle from '@/js/components/conversion-tracking/ConversionTrackingToggle';
-import EnhancedConversionsSettingsNotice from '@/js/modules/analytics-4/components/settings/EnhancedConversionsSettingsNotice';
+import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
 import EntityOwnershipChangeNotice from '@/js/components/settings/EntityOwnershipChangeNotice';
 import GoogleTagGatewayToggle from '@/js/components/google-tag-gateway/GoogleTagGatewayToggle';
 import Link from '@/js/components/Link';

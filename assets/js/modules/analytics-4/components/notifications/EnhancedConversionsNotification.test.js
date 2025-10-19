@@ -1,5 +1,5 @@
 /**
- * EnhancedConversionsNotification component tests.
+ * Analytics EnhancedConversionsNotification component tests.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -29,9 +29,9 @@ import { withNotificationComponentProps } from '@/js/googlesitekit/notifications
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import EnhancedConversionsNotification, {
 	ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS,
-} from '@/js/modules/analytics-4/components/notifications/EnhancedConversionsNotification';
+} from './EnhancedConversionsNotification';
 
-describe( 'EnhancedConversionsNotification', () => {
+describe( 'Analytics EnhancedConversionsNotification', () => {
 	let registry;
 
 	const EnhancedConversionsNotificationComponent =

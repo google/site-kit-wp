@@ -1,5 +1,5 @@
 /**
- * EnhancedConversionsSettingsNotice component.
+ * Analytics EnhancedConversionsSettingsNotice component.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -108,7 +108,7 @@ export default function EnhancedConversionsSettingsNotice( {
 			) }
 			description={ createInterpolateElement(
 				__(
-					'Site Kit now supports enhanced conversions. This free feature helps you get a more complete and reliable count of your sales and leads from your website, even when people switch devices. To activate, turn on the setting for collecting user data in your Analytics. <a />',
+					'Site Kit now supports enhanced conversions. This free feature helps you get a more complete and reliable count of your sales and leads from your website, even when people switch devices. To activate, turn on the setting for collecting user data in your Analytics account. <a />',
 					'google-site-kit'
 				),
 				{

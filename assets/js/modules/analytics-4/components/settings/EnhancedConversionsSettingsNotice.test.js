@@ -1,5 +1,5 @@
 /**
- * EnhancedConversionsSettingsNotice component tests.
+ * Analytics EnhancedConversionsSettingsNotice component tests.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -34,17 +34,19 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS } from '@/js/modules/analytics-4/components/notifications/EnhancedConversionsNotification';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
-import EnhancedConversionsSettingsNotice from '@/js/modules/analytics-4/components/settings/EnhancedConversionsSettingsNotice';
+import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-describe( 'EnhancedConversionsNotification', () => {
+describe( 'Analytics EnhancedConversionsNotification', () => {
 	let registry;
 
 	const dismissItemEndpointRegExp = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
 	);
+
+	const notificationID = ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -77,7 +79,7 @@ describe( 'EnhancedConversionsNotification', () => {
 
 	it( 'should dismiss the notice when the dismiss button is clicked', async () => {
 		fetchMock.postOnce( dismissItemEndpointRegExp, {
-			body: [ ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS ],
+			body: [ notificationID ],
 		} );
 
 		const { getByRole, waitForRegistry } = render(
@@ -97,11 +99,7 @@ describe( 'EnhancedConversionsNotification', () => {
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect( fetchMock ).toHaveFetched( dismissItemEndpointRegExp );
 			expect(
-				registry
-					.select( CORE_USER )
-					.isItemDismissed(
-						ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS
-					)
+				registry.select( CORE_USER ).isItemDismissed( notificationID )
 			).toBe( true );
 		} );
 	} );
@@ -109,9 +107,7 @@ describe( 'EnhancedConversionsNotification', () => {
 	it( 'should not render when the notification is dismissed', async () => {
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS,
-			] );
+			.receiveGetDismissedItems( [ notificationID ] );
 
 		const { container, waitForRegistry } = render(
 			<EnhancedConversionsSettingsNotice />,
@@ -126,7 +122,7 @@ describe( 'EnhancedConversionsNotification', () => {
 	} );
 
 	describe( 'event tracking', () => {
-		const eventCategory = `${ VIEW_CONTEXT_SETTINGS }_${ ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS }`;
+		const eventCategory = `${ VIEW_CONTEXT_SETTINGS }_${ notificationID }`;
 
 		it( 'should track an event when the notification is viewed', async () => {
 			const { waitForRegistry } = render(
@@ -147,7 +143,7 @@ describe( 'EnhancedConversionsNotification', () => {
 
 		it( 'should track an event when the CTA button is clicked', async () => {
 			fetchMock.postOnce( dismissItemEndpointRegExp, {
-				body: [ ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS ],
+				body: [ notificationID ],
 			} );
 
 			const { getByRole, waitForRegistry } = render(
@@ -179,7 +175,7 @@ describe( 'EnhancedConversionsNotification', () => {
 
 		it( 'should track an event when the dismiss button is clicked', async () => {
 			fetchMock.postOnce( dismissItemEndpointRegExp, {
-				body: [ ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS ],
+				body: [ notificationID ],
 			} );
 
 			const { getByRole, waitForRegistry } = render(

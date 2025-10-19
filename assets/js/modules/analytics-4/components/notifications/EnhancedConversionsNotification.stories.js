@@ -1,5 +1,5 @@
 /**
- * EnhancedConversionsNotification component stories.
+ * Analytics EnhancedConversionsNotification component stories.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -22,7 +22,7 @@
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import EnhancedConversionsNotification, {
 	ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS,
-} from '@/js/modules/analytics-4/components/notifications/EnhancedConversionsNotification';
+} from './EnhancedConversionsNotification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS
@@ -32,9 +32,9 @@ function Template() {
 	return <NotificationWithComponentProps />;
 }
 
-export const Default = Template.bind( {} );
-Default.storyName = 'Analytics';
-Default.parameters = {
+export const Analytics = Template.bind( {} );
+Analytics.storyName = 'Analytics';
+Analytics.parameters = {
 	features: [ 'gtagUserData' ],
 };
 

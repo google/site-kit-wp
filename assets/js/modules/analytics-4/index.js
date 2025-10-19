@@ -135,7 +135,7 @@ import {
 import ConversionReportingNotificationCTAWidget from './components/widgets/ConversionReportingNotificationCTAWidget';
 import EnhancedConversionsNotification, {
 	ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS,
-} from '@/js/modules/analytics-4/components/notifications/EnhancedConversionsNotification';
+} from './components/notifications/EnhancedConversionsNotification';
 
 export { registerStore } from './datastore';
 
