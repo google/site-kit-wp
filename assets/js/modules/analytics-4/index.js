@@ -133,6 +133,7 @@ import {
 } from './constants';
 import ConversionReportingNotificationCTAWidget from './components/widgets/ConversionReportingNotificationCTAWidget';
 import { AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION } from './components/audience-segmentation/dashboard/AudienceSegmentationIntroductoryOverlayNotification';
+import { isFeatureEnabled } from '@/js/features';
 
 export { registerStore } from './datastore';
 
@@ -239,11 +240,14 @@ export function registerWidgets( widgets ) {
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) => {
+				if ( ! isFeatureEnabled( 'setupFlowRefresh' ) ) {
+					return false;
+				}
+
 				const isAnalyticsConnected = select(
 					CORE_MODULES
 				).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 
-				// If Analytics is not connected, we can return early.
 				if ( ! isAnalyticsConnected ) {
 					return false;
 				}
