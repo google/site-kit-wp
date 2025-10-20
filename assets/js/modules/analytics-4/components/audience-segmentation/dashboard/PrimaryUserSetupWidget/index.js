@@ -33,7 +33,7 @@ import { isInsufficientPermissionsError } from '@/js/util/errors';
 import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudienceGroup';
 
 export default function PrimaryUserSetupWidget( { Widget } ) {
-	const { apiErrors, failedAudiences, onEnableGroups } =
+	const { apiErrors, isSaving, failedAudiences, onEnableGroups } =
 		useEnableAudienceGroup();
 
 	const isSettingUpAudiences = useSelect( ( select ) =>
@@ -48,7 +48,7 @@ export default function PrimaryUserSetupWidget( { Widget } ) {
 		onEnableGroups();
 	} );
 
-	if ( apiErrors.length || failedAudiences.length ) {
+	if ( ( apiErrors.length || failedAudiences.length ) && ! isSaving ) {
 		return (
 			<AudienceSegmentationErrorWidget
 				Widget={ Widget }
