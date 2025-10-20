@@ -370,7 +370,7 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_handle_provisioning_callback() {
+	private function set_up_handle_provisioning_callback_test() {
 		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$analytics = new Analytics_4( $context );
 
@@ -399,6 +399,21 @@ class Analytics_4Test extends TestCase {
 		$method = $class->getMethod( 'handle_provisioning_callback' );
 		$method->setAccessible( true );
 
+		return array(
+			'method'                      => $method,
+			'analytics'                   => $analytics,
+			'dashboard_url'               => $dashboard_url,
+			'admin_id'                    => $admin_id,
+			'account_ticked_id_transient' => $account_ticked_id_transient,
+		);
+	}
+
+	public function test_handle_provisioning_callback__account_ticket_id_mismatch() {
+		$test_variables = $this->set_up_handle_provisioning_callback_test();
+		$method         = $test_variables['method'];
+		$analytics      = $test_variables['analytics'];
+		$dashboard_url  = $test_variables['dashboard_url'];
+
 		// Results in an error for a mismatch (or no account ticket ID stored from before at all).
 		try {
 			$method->invokeArgs( $analytics, array() );
@@ -410,6 +425,14 @@ class Analytics_4Test extends TestCase {
 				'Should redirect to dashboard with account ticket ID mismatch error.'
 			);
 		}
+	}
+
+	public function test_handle_provisioning_callback__user_cancel() {
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$dashboard_url               = $test_variables['dashboard_url'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
 
 		// Results in an error when there is an error parameter.
 		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
@@ -427,6 +450,14 @@ class Analytics_4Test extends TestCase {
 			$this->assertFalse( get_transient( $account_ticked_id_transient ), 'Account ticket transient should be deleted when user cancels.' );
 		}
 		unset( $_GET['error'] );
+	}
+
+	public function test_handle_provisioning_callback__success() {
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$admin_id                    = $test_variables['admin_id'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
 
 		// Intercept Google API requests to avoid failures.
 		FakeHttp::fake_google_http_handler(
@@ -462,14 +493,29 @@ class Analytics_4Test extends TestCase {
 			$this->assertEquals( $_GET['accountId'], $settings['accountID'], 'Account ID should be set from GET parameter.' );
 			$this->assertEquals( $admin_id, $settings['ownerID'], 'Owner ID should be set to admin user ID.' );
 		}
+	}
 
-		// Results in a redirection to the Key Metrics Setup screen when setupFlowRefresh feature flag is present.
+	public function test_handle_provisioning_callback__with_setup_flow_refresh_feature_flag_enabled() {
 		$this->enable_feature( 'setupFlowRefresh' );
+
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$admin_id                    = $test_variables['admin_id'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
+
+		// Intercept Google API requests to avoid failures.
+		FakeHttp::fake_google_http_handler(
+			$analytics->get_client()
+		);
+
+		// Results in an dashboard redirect on success, with new data being stored.
 		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
+		$_GET['accountId'] = '12345678';
 
 		try {
 			$method->invokeArgs( $analytics, array() );
-			$this->fail( 'Expected redirect to the Key Metrics Setup screen' );
+			$this->fail( 'Expected redirect to module page with "authentication_success" notification' );
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
 				add_query_arg(
@@ -481,6 +527,14 @@ class Analytics_4Test extends TestCase {
 				$redirect->get_location(),
 				'Should redirect to the Key Metrics Setup screen.'
 			);
+
+			// Ensure transient was deleted by the method.
+			$this->assertFalse( get_transient( $account_ticked_id_transient ), 'Account ticket transient should be deleted on successful provisioning.' );
+			// Ensure settings were set correctly.
+			$settings = $analytics->get_settings()->get();
+
+			$this->assertEquals( $_GET['accountId'], $settings['accountID'], 'Account ID should be set from GET parameter.' );
+			$this->assertEquals( $admin_id, $settings['ownerID'], 'Owner ID should be set to admin user ID.' );
 		}
 	}
 
