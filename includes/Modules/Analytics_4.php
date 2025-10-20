@@ -998,9 +998,14 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->provision_property_webdatastream( $account_id, $account_ticket );
 
 		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			$show_progress = (bool) $input->filter( INPUT_GET, 'show_progress' );
+
 			wp_safe_redirect(
 				$this->context->admin_url(
 					'key-metrics-setup',
+					array(
+						'showProgress' => $show_progress ? 'true' : null,
+					)
 				)
 			);
 			exit;
