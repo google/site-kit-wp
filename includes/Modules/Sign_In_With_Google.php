@@ -519,6 +519,25 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	}
 
 	/**
+	 * Renders the Sign in with Google button for shortcode usage.
+	 *
+	 * This method captures the Sign in with Google button output
+	 * and returns it as a string for use in shortcodes.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $atts Shortcode attributes.
+	 * @return string The rendered button markup.
+	 */
+	public function render_siwg_shortcode( $atts ) {
+		ob_start();
+		do_action( 'googlesitekit_render_sign_in_with_google_button' );
+		$markup = ob_get_clean();
+
+		return $markup;
+	}
+
+	/**
 	 * Gets the absolute number of users who have authenticated using Sign in with Google.
 	 *
 	 * @since 1.140.0
