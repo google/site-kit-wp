@@ -146,6 +146,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 
 		add_action( 'googlesitekit_render_sign_in_with_google_button', array( $this, 'render_sign_in_with_google_button' ), 10, 1 );
 
+		// Add support for a shortcode to render the Sign in with Google button.
+		add_shortcode( 'site_kit_sign_in_with_google', array( $this, 'render_siwg_shortcode' ) );
+
 		add_action(
 			'login_form_' . self::ACTION_AUTH,
 			function () {
