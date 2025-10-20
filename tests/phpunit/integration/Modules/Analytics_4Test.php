@@ -1080,6 +1080,109 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( true, $account_ticket_params['enhanced_measurement_stream_enabled'], 'Enhanced measurement stream enabled should be stored in transient.' );
 	}
 
+	/**
+	 * @dataProvider data_show_progress
+	 */
+	public function test_create_account_ticket__with_setup_flow_refresh_feature_flag_enabled( $params ) {
+		$this->enable_feature( 'setupFlowRefresh' );
+
+		$account_ticket_id     = 'test-account-ticket-id';
+		$account_display_name  = 'test account name';
+		$region_code           = 'US';
+		$property_display_name = 'test property name';
+		$stream_display_name   = 'test stream name';
+		$timezone              = 'UTC';
+
+		$provision_account_ticket_request = null;
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) use ( &$provision_account_ticket_request, $account_ticket_id ) {
+				$url = parse_url( $request->getUri() );
+
+				if ( 'sitekit.withgoogle.com' !== $url['host'] ) {
+					return new FulfilledPromise( new Response( 200 ) );
+				}
+
+				switch ( $url['path'] ) {
+					case '/v1beta/accounts:provisionAccountTicket':
+						$provision_account_ticket_request = $request;
+
+						$response = new GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse();
+						$response->setAccountTicketId( $account_ticket_id );
+
+						return new FulfilledPromise( new Response( 200, array(), json_encode( $response ) ) );
+
+					default:
+						throw new Exception( 'Not implemented' );
+				}
+			}
+		);
+
+		$this->analytics->register();
+		$data = array(
+			'displayName'                      => $account_display_name,
+			'regionCode'                       => $region_code,
+			'propertyName'                     => $property_display_name,
+			'dataStreamName'                   => $stream_display_name,
+			'timezone'                         => $timezone,
+			'enhancedMeasurementStreamEnabled' => true,
+		);
+
+		if ( isset( $params['showProgressProvidedValue'] ) ) {
+			$data['showProgress'] = $params['showProgressProvidedValue'];
+		}
+
+		$response = $this->analytics->set_data( 'create-account-ticket', $data );
+		// Assert that the Analytics edit scope is required.
+		$this->assertWPError( $response, 'Should return error when required parameter is missing.' );
+		$this->assertEquals( 'missing_required_scopes', $response->get_error_code(), 'Error code should be missing_required_scopes when Analytics edit scope is not granted.' );
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
+
+		$response = $this->analytics->set_data( 'create-account-ticket', $data );
+
+		// Assert request was made with expected arguments.
+		$this->assertNotWPError( $response, 'Account ticket creation should succeed when all required parameters are provided.' );
+		$account_ticket_request = new Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest(
+			json_decode( $provision_account_ticket_request->getBody()->getContents(), true ) // must be array to hydrate model.
+		);
+		$this->assertEquals( $account_display_name, $account_ticket_request->getAccount()->getDisplayName(), 'Account display name should match the provided value.' );
+		$this->assertEquals( $region_code, $account_ticket_request->getAccount()->getRegionCode(), 'Account region code should match the provided value.' );
+		$redirect_uri = $this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri'];
+		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri(), 'Redirect URI should match the analytics redirect URI from site fields.' );
+		$this->assertEquals( $params['showProgressExpectedValue'], $account_ticket_request->getShowProgress(), 'The `showProgress` field should match the expected value' );
+
+		// Assert transient is set with params.
+		$account_ticket_params = get_transient( Analytics_4::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );
+		$this->assertEquals( $account_ticket_id, $account_ticket_params['id'], 'Account ticket ID should be stored in transient.' );
+		$this->assertEquals( $property_display_name, $account_ticket_params['property_name'], 'Property display name should be stored in transient.' );
+		$this->assertEquals( $stream_display_name, $account_ticket_params['data_stream_name'], 'Stream display name should be stored in transient.' );
+		$this->assertEquals( $timezone, $account_ticket_params['timezone'], 'Timezone should be stored in transient.' );
+		$this->assertEquals( true, $account_ticket_params['enhanced_measurement_stream_enabled'], 'Enhanced measurement stream enabled should be stored in transient.' );
+	}
+
+	public function data_show_progress() {
+		return array(
+			array(
+				array(
+					'showProgressProvidedValue' => true,
+					'showProgressExpectedValue' => true,
+				),
+			),
+			array(
+				array(
+					'showProgressProvidedValue' => false,
+					'showProgressExpectedValue' => false,
+				),
+			),
+			// When the value for `showProgress` is not provided, it should default to `false`.
+			array(
+				array(
+					'showProgressExpectedValue' => false,
+				),
+			),
+		);
+	}
+
 	public function test_get_scopes() {
 		$this->assertEqualSets(
 			array(
