@@ -495,7 +495,10 @@ class Analytics_4Test extends TestCase {
 		}
 	}
 
-	public function test_handle_provisioning_callback__with_setup_flow_refresh_feature_flag_enabled() {
+	/**
+	 * @dataProvider data_handle_provisioning_callback_show_progress
+	 */
+	public function test_handle_provisioning_callback__with_setup_flow_refresh_feature_flag_enabled( $params ) {
 		$this->enable_feature( 'setupFlowRefresh' );
 
 		$test_variables              = $this->set_up_handle_provisioning_callback_test();
@@ -513,6 +516,10 @@ class Analytics_4Test extends TestCase {
 		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
 		$_GET['accountId'] = '12345678';
 
+		if ( isset( $params['providedValue'] ) ) {
+			$_GET['show_progress'] = $params['providedValue'];
+		}
+
 		try {
 			$method->invokeArgs( $analytics, array() );
 			$this->fail( 'Expected redirect to module page with "authentication_success" notification' );
@@ -520,7 +527,8 @@ class Analytics_4Test extends TestCase {
 			$this->assertEquals(
 				add_query_arg(
 					array(
-						'page' => 'googlesitekit-key-metrics-setup',
+						'page'         => 'googlesitekit-key-metrics-setup',
+						'showProgress' => $params['expectedValue'],
 					),
 					admin_url( 'admin.php' )
 				),
@@ -536,6 +544,22 @@ class Analytics_4Test extends TestCase {
 			$this->assertEquals( $_GET['accountId'], $settings['accountID'], 'Account ID should be set from GET parameter.' );
 			$this->assertEquals( $admin_id, $settings['ownerID'], 'Owner ID should be set to admin user ID.' );
 		}
+	}
+
+	public function data_handle_provisioning_callback_show_progress() {
+		return array(
+			array(
+				'with show_progress provided' => array(
+					'providedValue' => '1',
+					'expectedValue' => 'true',
+				),
+			),
+			array(
+				'with show_progress not provided' => array(
+					'expectedValue' => null,
+				),
+			),
+		);
 	}
 
 	public function test_provision_property_webdatastream() {
@@ -1135,7 +1159,7 @@ class Analytics_4Test extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_show_progress
+	 * @dataProvider data_create_account_ticket_show_progress
 	 */
 	public function test_create_account_ticket__with_setup_flow_refresh_feature_flag_enabled( $params ) {
 		$this->enable_feature( 'setupFlowRefresh' );
@@ -1214,22 +1238,22 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( true, $account_ticket_params['enhanced_measurement_stream_enabled'], 'Enhanced measurement stream enabled should be stored in transient.' );
 	}
 
-	public function data_show_progress() {
+	public function data_create_account_ticket_show_progress() {
 		return array(
 			array(
-				array(
+				'with showProgress provided as true' => array(
 					'showProgressProvidedValue' => true,
 					'showProgressExpectedValue' => true,
 				),
 			),
 			array(
-				array(
+				'with showProgress provided as false' => array(
 					'showProgressProvidedValue' => false,
 					'showProgressExpectedValue' => false,
 				),
 			),
 			// When the value for `showProgress` is not provided, it should default to `false`.
-			array(
+			'with showProgress not provided' => array(
 				array(
 					'showProgressExpectedValue' => false,
 				),
