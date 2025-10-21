@@ -75,27 +75,23 @@ export default function EmailReportingCardNotice( { className } ) {
 	}
 
 	return (
-		<div className={ className }>
-			<Notice
-				type={ TYPES.NEW }
-				title={ __(
-					'Get site insights in your inbox',
-					'google-site-kit'
-				) }
-				description={ __(
-					'Receive the most important insights about your site’s performance, key trends, and tailored metrics directly in your inbox',
-					'google-site-kit'
-				) }
-				ctaButton={ {
-					label: __( 'Set up', 'google-site-kit' ),
-					onClick: handleSetup,
-				} }
-				dismissButton={ {
-					label: __( 'Maybe later', 'google-site-kit' ),
-					onClick: handleDismiss,
-				} }
-			/>
-		</div>
+		<Notice
+			className={ className }
+			type={ TYPES.NEW }
+			title={ __( 'Get site insights in your inbox', 'google-site-kit' ) }
+			description={ __(
+				'Receive the most important insights about your site’s performance, key trends, and tailored metrics directly in your inbox',
+				'google-site-kit'
+			) }
+			ctaButton={ {
+				label: __( 'Set up', 'google-site-kit' ),
+				onClick: handleSetup,
+			} }
+			dismissButton={ {
+				label: __( 'Maybe later', 'google-site-kit' ),
+				onClick: handleDismiss,
+			} }
+		/>
 	);
 }
 

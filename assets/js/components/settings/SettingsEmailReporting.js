@@ -123,7 +123,11 @@ export default function SettingsEmailReporting( { loading = false } ) {
 				settings !== undefined &&
 				! isSubscribed &&
 				isDismissed === false && (
-					<EmailReportingCardNotice className="googlesitekit-settings-email-reporting__manage" />
+					<Row className="googlesitekit-settings-email-reporting__manage">
+						<Cell size={ 12 }>
+							<EmailReportingCardNotice />
+						</Cell>
+					</Row>
 				) }
 			{ /* Show manage email reports link if notice is dismissed or user is already subscribed */ }
 			{ isEnabled &&
