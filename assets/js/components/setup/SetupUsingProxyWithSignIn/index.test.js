@@ -376,5 +376,28 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				);
 			} );
 		} );
+		it( 'should allow exiting the setup', async () => {
+			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+				adminURL: 'http://example.com/wp-admin/',
+			} );
+
+			const { queryByText } = render( <SetupUsingProxyWithSignIn />, {
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			expect( queryByText( /Exit setup/ ) ).toBeInTheDocument();
+
+			fireEvent.click( queryByText( /Exit setup/ ) );
+
+			await waitFor( () => {
+				expect( global.location.assign ).toHaveBeenCalled();
+			} );
+
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				'http://example.com/wp-admin/plugins.php'
+			);
+		} );
 	} );
 } );
