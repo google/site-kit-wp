@@ -172,4 +172,17 @@ class Conversion_TrackingTest extends TestCase {
 			'Feature metrics should match the expected values.'
 		);
 	}
+
+	public function test_events_supported_by_active_providers() {
+		$events = $this->conversion_tracking->get_supported_conversion_events();
+
+		$this->assertEquals(
+			array(
+				'fake_event_active_1',
+				'fake_event_active_2',
+			),
+			$events,
+			'Supported conversion events should match the expected values.'
+		);
+	}
 }
