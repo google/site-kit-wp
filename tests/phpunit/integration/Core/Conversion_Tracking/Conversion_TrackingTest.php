@@ -185,4 +185,16 @@ class Conversion_TrackingTest extends TestCase {
 			'Supported conversion events should match the expected values.'
 		);
 	}
+
+	public function test_events_supported_by_active_providers__no_active_providers() {
+		Conversion_Tracking::$providers = array();
+
+		$events = $this->conversion_tracking->get_supported_conversion_events();
+
+		$this->assertEquals(
+			array(),
+			$events,
+			'Supported conversion events should be an empty array when there are no active providers.'
+		);
+	}
 }
