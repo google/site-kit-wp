@@ -40,13 +40,14 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import AudienceItems from './AudienceItems';
-import ErrorNotice from './ErrorNotice';
+import SyncErrorNotice from './SyncErrorNotice';
 import Footer from './Footer';
 import Header from './Header';
 import LearnMoreLink from './LearnMoreLink';
 import SelectionPanel from '@/js/components/SelectionPanel';
 import AudienceCreationSuccessNotice from './AudienceCreationSuccessNotice';
 import useFormValue from '@/js/hooks/useFormValue';
+import SaveErrorNotice from './SaveErrorNotice';
 
 export default function Panel() {
 	const viewContext = useViewContext();
@@ -112,7 +113,8 @@ export default function Panel() {
 			<Header closePanel={ closePanel } />
 			<AudienceItems savedItemSlugs={ savedItemSlugs } />
 			<LearnMoreLink />
-			<ErrorNotice />
+			<SaveErrorNotice savedItemSlugs={ savedItemSlugs } />
+			<SyncErrorNotice />
 			<AudienceCreationSuccessNotice />
 			<Footer
 				closePanel={ closePanel }

@@ -71,6 +71,10 @@ class TestCase extends WP_UnitTestCase {
 			10,
 			2
 		);
+
+		// Initialize the global $wp_scripts and $wp_styles, which are cleared in tear_down.
+		wp_scripts();
+		wp_styles();
 	}
 
 	/**
@@ -82,12 +86,9 @@ class TestCase extends WP_UnitTestCase {
 		unset( $GLOBALS['current_screen'], $GLOBALS['taxnow'], $GLOBALS['typenow'] );
 
 		// Clean up scripts and styles hooks to avoid interference between tests.
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
-		wp_styles()->registered  = array();
-		wp_styles()->queue       = array();
-		wp_styles()->done        = array();
+		global $wp_scripts, $wp_styles;
+		$wp_scripts = null;
+		$wp_styles  = null;
 	}
 
 	/**

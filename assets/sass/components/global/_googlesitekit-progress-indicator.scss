@@ -35,7 +35,7 @@
 
 		// Add white dot to active segments when they are not the only child.
 		&:not(:only-child)::after {
-			background-color: $c-white;
+			background-color: $c-site-kit-sk-10;
 			border-radius: 50%;
 			content: "";
 			height: 6px;

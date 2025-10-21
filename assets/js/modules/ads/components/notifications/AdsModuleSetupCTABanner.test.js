@@ -24,7 +24,7 @@
  * Internal dependencies
  */
 const mockShowTooltip = jest.fn();
-jest.mock( '../../../../components/AdminMenuTooltip', () => ( {
+jest.mock( '../../../../components/AdminScreenTooltip', () => ( {
 	__esModule: true,
 	default: jest.fn(),
 	useShowTooltip: jest.fn( () => mockShowTooltip ),
@@ -276,19 +276,6 @@ describe( 'AdsModuleSetupCTABanner', () => {
 					connected: true,
 				},
 			] );
-
-			const isActive = await notification.checkRequirements(
-				registry,
-				VIEW_CONTEXT_MAIN_DASHBOARD
-			);
-
-			expect( isActive ).toBe( false );
-		} );
-
-		it( 'is not active when notification was previously dismissed', async () => {
-			await registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
-				[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
-			} );
 
 			const isActive = await notification.checkRequirements(
 				registry,

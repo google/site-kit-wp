@@ -726,7 +726,7 @@ export function registerWidgets( widgets ) {
 export const ANALYTICS_4_NOTIFICATIONS = {
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
 		Component: AudienceSegmentationSetupCTABanner,
-		priority: 130, // TODO: Revert this back to PRIORITY.SETUP_CTA_LOW after fixing https://github.com/google/site-kit-wp/issues/10890.
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -743,15 +743,10 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				resolveSelect( CORE_MODULES ).isModuleConnected(
 					MODULE_SLUG_ANALYTICS_4
 				),
-				resolveSelect( CORE_USER ).getDismissedPrompts(),
 				select( CORE_USER ).getUserAudienceSettings(),
 				select( MODULES_ANALYTICS_4 ).isGatheringData(),
 				resolveSelect( MODULES_ANALYTICS_4 ).getAudienceSettings(),
 			] );
-
-			const isDismissed = select( CORE_USER ).isPromptDismissed(
-				AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
-			);
 
 			const configuredAudiences =
 				select( CORE_USER ).getConfiguredAudiences();
@@ -768,8 +763,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				audienceSegmentationSetupCompletedBy !== null ||
 				configuredAudiences === undefined ||
 				configuredAudiences?.length ||
-				! analyticsIsDataAvailableOnLoad ||
-				isDismissed
+				! analyticsIsDataAvailableOnLoad
 			) {
 				return false;
 			}
@@ -873,7 +867,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 	'enhanced-measurement-notification': {
 		Component: EnhancedMeasurementActivationBanner,
-		priority: 140, // TODO: Revert this back to PRIORITY.SETUP_CTA_LOW after fixing https://github.com/google/site-kit-wp/issues/10890.
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],

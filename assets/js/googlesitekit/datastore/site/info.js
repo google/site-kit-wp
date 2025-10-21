@@ -178,6 +178,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				siteName,
 				siteLocale,
 				timezone,
+				startOfWeek,
 				usingProxy,
 				webStoriesActive,
 				proxySupportLinkURL,
@@ -213,6 +214,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				siteName,
 				siteLocale,
 				timezone,
+				startOfWeek,
 				usingProxy,
 				webStoriesActive,
 				proxySupportLinkURL,
@@ -301,6 +303,7 @@ export const resolvers = {
 			siteName,
 			siteLocale,
 			timezone,
+			startOfWeek,
 			usingProxy,
 			webStoriesActive,
 			proxySupportLinkURL,
@@ -343,6 +346,7 @@ export const resolvers = {
 			siteName,
 			siteLocale,
 			timezone,
+			startOfWeek,
 			postTypes,
 			usingProxy: !! usingProxy,
 			webStoriesActive,
@@ -634,6 +638,18 @@ export const selectors = {
 	 * @return {(string|undefined)} The timezone.
 	 */
 	getTimezone: getSiteInfoProperty( 'timezone' ),
+
+	/**
+	 * Gets the WordPress "start of week" option for the site.
+	 *
+	 * 0 = Sunday, 1 = Monday, ... 6 = Saturday.
+	 *
+	 * @since 1.164.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(number|undefined)} The start of week index, or undefined while loading.
+	 */
+	getStartOfWeek: getSiteInfoProperty( 'startOfWeek' ),
 
 	/**
 	 * Returns true if this site is using the proxy service.

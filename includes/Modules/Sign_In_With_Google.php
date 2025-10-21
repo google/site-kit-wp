@@ -46,6 +46,11 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Guard;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Tag_Matchers;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Web_Tag;
 use Google\Site_Kit\Modules\Sign_In_With_Google\WooCommerce_Authenticator;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks\Compatibility_Checks;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks\WP_Login_Accessible_Check;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks\WP_COM_Check;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks\Conflicting_Plugins_Check;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Datapoint\Compatibility_Checks as Compatibility_Checks_Datapoint;
 use WP_Error;
 use WP_User;
 
@@ -138,6 +143,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		$this->register_inline_data();
 
 		add_filter( 'wp_login_errors', array( $this, 'handle_login_errors' ) );
+
+		add_action( 'googlesitekit_render_sign_in_with_google_button', array( $this, 'render_sign_in_with_google_button' ), 10, 1 );
 
 		add_action(
 			'login_form_' . self::ACTION_AUTH,
@@ -368,6 +375,24 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	}
 
 	/**
+	 * Gets the datapoint definitions for the module.
+	 *
+	 * @since 1.164.0
+	 *
+	 * @return array List of datapoint definitions.
+	 */
+	protected function get_datapoint_definitions() {
+		$checks = new Compatibility_Checks();
+		$checks->add_check( new WP_Login_Accessible_Check() );
+		$checks->add_check( new WP_COM_Check() );
+		$checks->add_check( new Conflicting_Plugins_Check() );
+
+		return array(
+			'GET:compatibility-checks' => new Compatibility_Checks_Datapoint( array( 'checks' => $checks ) ),
+		);
+	}
+
+	/**
 	 * Renders the placeholder Sign in with Google div for the WooCommerce
 	 * login form.
 	 *
@@ -384,9 +409,19 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			return;
 		}
 
-		?>
-<div class="googlesitekit-sign-in-with-google__frontend-output-button woocommerce-form-row form-row"></div>
-		<?php
+		/**
+		 * Display the Sign in with Google button.
+		 *
+		 * @since 1.164.0
+		 *
+		 * @param array $args Optional arguments to customize button attributes.
+		 */
+		do_action(
+			'googlesitekit_render_sign_in_with_google_button',
+			array(
+				'class' => 'woocommerce-form-row form-row',
+			)
+		);
 	}
 
 	/**
@@ -421,9 +456,66 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 */
 	private function render_button_in_wp_login_form( $content ) {
 		if ( $this->can_render_signinwithgoogle() ) {
-			$content .= '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>';
+			ob_start();
+			/**
+			 * Display the Sign in with Google button.
+			 *
+			 * @since 1.164.0
+			 *
+			 * @param array $args Optional arguments to customize button attributes.
+			 */
+			do_action( 'googlesitekit_render_sign_in_with_google_button' );
+			$content .= ob_get_clean();
 		}
 		return $content;
+	}
+
+	/**
+	 * Renders the Sign in with Google button markup.
+	 *
+	 * @since 1.164.0
+	 *
+	 * @param array $args Optional arguments to customize button attributes.
+	 */
+	public function render_sign_in_with_google_button( $args = array() ) {
+		if ( ! is_array( $args ) ) {
+			$args = array();
+		}
+
+		$default_classes   = array( 'googlesitekit-sign-in-with-google__frontend-output-button' );
+		$classes_from_args = array();
+		if ( ! empty( $args['class'] ) ) {
+			$classes_from_args = is_array( $args['class'] ) ? $args['class'] : preg_split( '/\s+/', (string) $args['class'] );
+		}
+
+		// Merge default HTML class names and class names passed as arguments
+		// to the action, then sanitize each class name.
+		$merged_classes    = array_merge( $default_classes, $classes_from_args );
+		$sanitized_classes = array_map( 'sanitize_html_class', $merged_classes );
+
+		// Remove duplicates, empty values, and reindex array.
+		$classes = array_values( array_unique( array_filter( $sanitized_classes ) ) );
+
+		$attributes = array(
+			// HTML class attribute should be a string.
+			'class' => implode( ' ', $classes ),
+		);
+
+		$data_attributes = array( 'shape', 'text', 'theme' );
+		foreach ( $data_attributes as $attribute ) {
+			if ( empty( $args[ $attribute ] ) || ! is_scalar( $args[ $attribute ] ) ) {
+				continue;
+			}
+
+			$attributes[ 'data-googlesitekit-siwg-' . strtolower( $attribute ) ] = (string) $args[ $attribute ];
+		}
+
+		$attribute_strings = array();
+		foreach ( $attributes as $key => $value ) {
+			$attribute_strings[] = sprintf( '%s="%s"', $key, esc_attr( $value ) );
+		}
+
+		echo '<div ' . implode( ' ', $attribute_strings ) . '></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**

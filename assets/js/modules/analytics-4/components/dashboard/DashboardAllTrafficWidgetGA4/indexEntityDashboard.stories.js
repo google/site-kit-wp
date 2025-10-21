@@ -165,7 +165,11 @@ EntityDashboardLoaded.args = {
 		} );
 	},
 };
-EntityDashboardLoaded.scenario = {};
+// TODO: Restore this test
+// (see: https://github.com/google/site-kit-wp/issues/11619) once the
+// underlying issue with Google Charts in VRT tests is diagnosed + resolved.
+//
+// EntityDashboardLoaded.scenario = {};
 
 export const EntityDashboardLoading = Template.bind( {} );
 EntityDashboardLoading.storyName = 'Loading';
@@ -305,7 +309,11 @@ EntityDashboardOneRowOfData.args = {
 		} );
 	},
 };
-EntityDashboardOneRowOfData.scenario = {};
+// TODO: Restore this test
+// (see: https://github.com/google/site-kit-wp/issues/11619) once the
+// underlying issue with Google Charts in VRT tests is diagnosed + resolved.
+//
+// EntityDashboardOneRowOfData.scenario = {};
 
 export const NoDataInComparisonDateRange = Template.bind( {} );
 NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
@@ -318,7 +326,11 @@ NoDataInComparisonDateRange.args = {
 		} );
 	},
 };
-NoDataInComparisonDateRange.scenario = {};
+// TODO: Restore this test
+// (see: https://github.com/google/site-kit-wp/issues/11619) once the
+// underlying issue with Google Charts in VRT tests is diagnosed + resolved.
+//
+// NoDataInComparisonDateRange.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Widgets/All Traffic Widget GA4/Entity Dashboard',
