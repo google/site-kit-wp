@@ -246,6 +246,41 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	}
 
 	/**
+	 * Returns enhanced conversion events supported by active providers from the conversion tracking infrastructure.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Array of supported enhanced conversion events, or empty array.
+	 */
+	public function get_enhanced_conversion_events() {
+		$providers = $this->get_active_providers();
+
+		if ( empty( $providers ) ) {
+			return array();
+		}
+
+		$events = array();
+
+		foreach ( $providers as $provider ) {
+			$provider_class = get_class( $provider );
+			$constant_name  = $provider_class . '::ENHANCED_CONVERSION_EVENTS';
+
+			if ( defined( $constant_name ) ) {
+				$enhanced_events  = (array) constant( $constant_name );
+				$supported_events = array_values( (array) $provider->get_event_names() );
+
+				$supported_enhanced_events = array_intersect( $enhanced_events, $supported_events );
+
+				if ( ! empty( $supported_enhanced_events ) ) {
+					$events = array_merge( $events, array_values( $supported_enhanced_events ) );
+				}
+			}
+		}
+
+		return array_unique( $events );
+	}
+
+	/**
 	 * Gets an array of internal feature metrics.
 	 *
 	 * @since 1.163.0
