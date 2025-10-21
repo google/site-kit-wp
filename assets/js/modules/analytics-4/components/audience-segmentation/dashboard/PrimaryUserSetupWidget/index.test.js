@@ -36,6 +36,7 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 
 const syncAvailableCustomDimensionsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
@@ -94,40 +95,6 @@ describe( 'PrimaryUserSetupWidget', () => {
 		jest.clearAllMocks();
 	} );
 
-	it( 'should display the audiences that failed to be created', async () => {
-		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
-			body: [],
-			status: 200,
-		} );
-
-		fetchMock.post( syncAvailableAudiencesEndpoint, {
-			body: availableAudiences.slice( 0, 2 ),
-			status: 200,
-		} );
-
-		fetchMock.postOnce( createAudienceEndpoint, {
-			body: {
-				code: 'test_error',
-				message: 'Error message.',
-				data: { status: 500 },
-			},
-			status: 500,
-		} );
-
-		const { getByText } = render( <WidgetWithComponentProps />, {
-			registry,
-		} );
-
-		await waitFor( () => {
-			expect(
-				getByText( 'Failed to create the following audiences:' )
-			).toBeInTheDocument();
-			expect( getByText( 'Retry' ) ).toBeInTheDocument();
-			expect( getByText( 'new-visitors' ) ).toBeInTheDocument();
-			expect( getByText( 'returning-visitors' ) ).toBeInTheDocument();
-		} );
-	} );
-
 	it( 'should start audiences creation on mount', async () => {
 		freezeFetch( syncAvailableAudiencesEndpoint );
 
@@ -146,5 +113,93 @@ describe( 'PrimaryUserSetupWidget', () => {
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched( syncAvailableAudiencesEndpoint )
 		);
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should handle generic errors and diplay a retry button', async () => {
+		fetchMock.post( syncAvailableAudiencesEndpoint, {
+			body: {
+				code: 'test_error',
+				message: 'Error message.',
+			},
+			status: 500,
+		} );
+
+		const { container, getByText } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
+
+		await waitFor( () => {
+			expect(
+				getByText( 'Your visitor groups data loading failed' )
+			).toBeInTheDocument();
+			expect( getByText( 'Retry' ) ).toBeInTheDocument();
+		} );
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should display the audiences that failed to be created', async () => {
+		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
+			body: [],
+			status: 200,
+		} );
+
+		fetchMock.post( syncAvailableAudiencesEndpoint, {
+			body: availableAudiences.slice( 0, 2 ),
+			status: 200,
+		} );
+
+		fetchMock.post( createAudienceEndpoint, {
+			body: {
+				code: 'test_error',
+				message: 'Error message.',
+				data: { status: 500 },
+			},
+			status: 500,
+		} );
+
+		const { container, getByText } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
+
+		await waitFor( () => {
+			expect(
+				getByText( 'Failed to create the following audiences:' )
+			).toBeInTheDocument();
+			expect( getByText( 'Retry' ) ).toBeInTheDocument();
+			expect( getByText( 'new-visitors' ) ).toBeInTheDocument();
+			expect( getByText( 'returning-visitors' ) ).toBeInTheDocument();
+		} );
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should handle the insufficient permissions error', async () => {
+		fetchMock.post( syncAvailableAudiencesEndpoint, {
+			body: {
+				code: 'test_error',
+				message: 'Error message.',
+				data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+			},
+			status: 403,
+		} );
+
+		const { container, queryByText, getByText } = render(
+			<WidgetWithComponentProps />,
+			{
+				registry,
+			}
+		);
+
+		await waitFor( () => {
+			expect(
+				getByText( 'Insufficient permissions' )
+			).toBeInTheDocument();
+			expect( queryByText( 'Retry' ) ).not.toBeInTheDocument();
+		} );
+
+		expect( container ).toMatchSnapshot();
 	} );
 } );
