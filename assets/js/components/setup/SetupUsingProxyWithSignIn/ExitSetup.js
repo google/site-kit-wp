@@ -1,5 +1,5 @@
 /**
- * Header component for ExitSetup.
+ * ExitSetup component for SetupUsingProxyWithSignIn.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
