@@ -17,6 +17,10 @@ class FakeConversionEventProvider extends Conversion_Events_Provider {
 
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'fake-conversion-event-provider';
 
+	const ENHANCED_CONVERSION_EVENTS = array(
+		'test_event',
+	);
+
 	/**
 	 * Gets the event names.
 	 *

@@ -16,6 +16,10 @@ class FakeConversionEventProvider_Active extends FakeConversionEventProvider {
 
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'fake-conversion-event-provider-active';
 
+	const ENHANCED_CONVERSION_EVENTS = array(
+		'fake_event_active_2',
+	);
+
 	/**
 	 * Checks if the provider is active.
 	 *

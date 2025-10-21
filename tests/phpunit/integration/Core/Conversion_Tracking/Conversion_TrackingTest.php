@@ -196,4 +196,16 @@ class Conversion_TrackingTest extends TestCase {
 			'Supported conversion events should be an empty array when there are no active providers.'
 		);
 	}
+
+	public function test_get_enhanced_conversion_events() {
+		$events = $this->conversion_tracking->get_enhanced_conversion_events();
+
+		$this->assertEquals(
+			array(
+				'fake_event_active_2', // Only this event is defined as enhanced in the active provider.
+			),
+			$events,
+			'Enhanced conversion events should match the expected values.'
+		);
+	}
 }
