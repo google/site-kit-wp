@@ -173,7 +173,7 @@ class Conversion_TrackingTest extends TestCase {
 		);
 	}
 
-	public function test_events_supported_by_active_providers() {
+	public function test_get_supported_conversion_events() {
 		$events = $this->conversion_tracking->get_supported_conversion_events();
 
 		$this->assertEquals(
@@ -186,7 +186,7 @@ class Conversion_TrackingTest extends TestCase {
 		);
 	}
 
-	public function test_events_supported_by_active_providers__no_active_providers() {
+	public function test_get_supported_conversion_events__no_active_providers() {
 		Conversion_Tracking::$providers = array();
 
 		$events = $this->conversion_tracking->get_supported_conversion_events();
