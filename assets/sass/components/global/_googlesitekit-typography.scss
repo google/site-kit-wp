@@ -53,20 +53,17 @@ $typography-font-families: (
 );
 
 .googlesitekit-plugin {
+	@each $type, $font-family in $typography-font-families {
+		.googlesitekit-typography--#{$type} {
+			font-family: $font-family;
+		}
+	}
 
-	.googlesitekit-typography {
-
-		@each $type, $sizes in $typography-settings {
-			&.googlesitekit-typography--#{$type} {
-				font-family: map-get($typography-font-families, $type);
-
-				@each $size, $styles in $sizes {
-					&.googlesitekit-typography--#{$size} {
-
-						@each $prop, $value in $styles {
-							#{$prop}: #{$value};
-						}
-					}
+	@each $type, $sizes in $typography-settings {
+		@each $size, $styles in $sizes {
+			.googlesitekit-typography--#{$type}.googlesitekit-typography--#{$size} {
+				@each $prop, $value in $styles {
+					#{$prop}: #{$value};
 				}
 			}
 		}
