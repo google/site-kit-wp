@@ -832,7 +832,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 */
 	public function get_feature_metrics() {
 		return array(
-			'siwg_onetap' => $this->get_settings()->get()->oneTapEnabled ? 1 : 0,
+			'siwg_onetap' => $this->get_settings()->get()['oneTapEnabled'] ? 1 : 0,
 		);
 	}
 }
