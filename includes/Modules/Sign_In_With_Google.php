@@ -533,8 +533,22 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * @return string The rendered button markup.
 	 */
 	public function render_siwg_shortcode( $atts ) {
+		$args = shortcode_atts(
+			array(
+				'class' => '',
+				'shape' => '',
+				'text'  => '',
+				'theme' => '',
+			),
+			$atts,
+			'site_kit_sign_in_with_google'
+		);
+
+		// Remove empty attributes.
+		$args = array_filter( $args );
+
 		ob_start();
-		do_action( 'googlesitekit_render_sign_in_with_google_button' );
+		do_action( 'googlesitekit_render_sign_in_with_google_button', $args );
 		$markup = ob_get_clean();
 
 		return $markup;
