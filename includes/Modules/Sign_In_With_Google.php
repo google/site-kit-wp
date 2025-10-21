@@ -32,6 +32,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
@@ -69,6 +70,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	use Module_With_Settings_Trait;
 	use Module_With_Tag_Trait;
 	use Module_With_Inline_Data_Trait;
+	use Feature_Metrics_Trait;
 
 	/**
 	 * Module slug name.
@@ -142,6 +144,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 */
 	public function register() {
 		$this->register_inline_data();
+		$this->register_feature_metrics();
 
 		add_filter( 'wp_login_errors', array( $this, 'handle_login_errors' ) );
 
