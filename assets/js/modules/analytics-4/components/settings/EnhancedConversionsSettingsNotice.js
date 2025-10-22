@@ -28,6 +28,7 @@ import {
 	createInterpolateElement,
 	useCallback,
 	useEffect,
+	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -52,6 +53,8 @@ export default function EnhancedConversionsSettingsNotice( {
 
 	const inView = useInView();
 	const trackEvents = useNotificationEvents( id );
+
+	const [ isViewedOnce, setIsViewedOnce ] = useState( false );
 
 	const documentationURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL(
@@ -90,10 +93,12 @@ export default function EnhancedConversionsSettingsNotice( {
 
 	// Track view event when notice comes into view.
 	useEffect( () => {
-		if ( inView ) {
+		if ( ! isViewedOnce && inView ) {
 			trackEvents.view();
+
+			setIsViewedOnce( true );
 		}
-	}, [ inView, trackEvents ] );
+	}, [ inView, trackEvents, isViewedOnce ] );
 
 	if ( isDismissed ) {
 		return null;
