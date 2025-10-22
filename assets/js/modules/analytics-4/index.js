@@ -107,12 +107,14 @@ import {
 	SecondaryUserSetupWidget,
 } from './components/audience-segmentation/dashboard';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
+import { AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION } from './components/audience-segmentation/dashboard/AudienceSegmentationIntroductoryOverlayNotification';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	SITE_KIT_VIEW_ONLY_CONTEXTS,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
@@ -131,7 +133,9 @@ import {
 	MODULE_SLUG_ANALYTICS_4,
 } from './constants';
 import ConversionReportingNotificationCTAWidget from './components/widgets/ConversionReportingNotificationCTAWidget';
-import { AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION } from './components/audience-segmentation/dashboard/AudienceSegmentationIntroductoryOverlayNotification';
+import EnhancedConversionsNotification, {
+	ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS,
+} from './components/notifications/EnhancedConversionsNotification';
 
 export { registerStore } from './datastore';
 
@@ -1001,6 +1005,34 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 
 			return false;
 		},
+	},
+	[ ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS ]: {
+		Component: EnhancedConversionsNotification,
+		priority: PRIORITY.INFO,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { resolveSelect } ) => {
+			const adsConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ADS );
+
+			if ( adsConnected ) {
+				return false;
+			}
+
+			const analyticsConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+
+			if ( ! analyticsConnected ) {
+				return false;
+			}
+
+			return true;
+		},
+		isDismissible: true,
+		featureFlag: 'gtagUserData',
 	},
 };
 

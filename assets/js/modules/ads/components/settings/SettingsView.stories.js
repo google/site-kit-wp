@@ -70,6 +70,12 @@ GTGEnabled.parameters = {
 	features: [ 'googleTagGateway' ],
 };
 
+export const WithEnhancedConversionsNotice = Template.bind( null );
+WithEnhancedConversionsNotice.storyName = 'With enhanced conversions notice';
+WithEnhancedConversionsNotice.parameters = {
+	features: [ 'gtagUserData' ],
+};
+
 export default {
 	title: 'Modules/Ads/Settings/SettingsView',
 	decorators: [
