@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 /**
  * Class for handling initial setup rest routes.
  *
- * @since n.e.x.t
+ * @since 1.164.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Initial_Setup {
 	/**
 	 * Initial_Setup_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 * @var Initial_Setup_Settings
 	 */
 	private $initial_setup_settings;
@@ -32,7 +32,7 @@ class Initial_Setup {
 	/**
 	 * REST_Initial_Setup_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 * @var REST_Initial_Setup_Controller
 	 */
 	private $rest_controller;
@@ -40,7 +40,7 @@ class Initial_Setup {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param User_Options $user_options User_Options instance.
 	 */
@@ -52,7 +52,7 @@ class Initial_Setup {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 */
 	public function register() {
 		$this->initial_setup_settings->register();

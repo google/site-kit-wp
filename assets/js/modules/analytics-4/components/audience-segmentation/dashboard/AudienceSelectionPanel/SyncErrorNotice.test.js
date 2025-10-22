@@ -41,7 +41,7 @@ import {
 	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
 import * as tracking from '@/js/util/tracking';
-import ErrorNotice from './ErrorNotice';
+import SyncErrorNotice from './SyncErrorNotice';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -133,7 +133,7 @@ describe( 'ErrorNotice', () => {
 	} );
 
 	it( 'should not render if there are no errors', async () => {
-		const { container, waitForRegistry } = render( <ErrorNotice />, {
+		const { container, waitForRegistry } = render( <SyncErrorNotice />, {
 			registry,
 		} );
 
@@ -155,10 +155,13 @@ describe( 'ErrorNotice', () => {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveError( error, storeFunctionName, args );
 
-			const { getByText, waitForRegistry } = render( <ErrorNotice />, {
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			} );
+			const { getByText, waitForRegistry } = render(
+				<SyncErrorNotice />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
 
 			await waitForRegistry();
 
@@ -189,7 +192,7 @@ describe( 'ErrorNotice', () => {
 				.receiveError( error, storeFunctionName, args );
 
 			const { getByRole, getByText, waitForRegistry } = render(
-				<ErrorNotice />,
+				<SyncErrorNotice />,
 				{
 					registry,
 				}
@@ -223,7 +226,7 @@ describe( 'ErrorNotice', () => {
 				.receiveError( error, storeFunctionName, args );
 
 			const { getByRole, getByText, waitForRegistry } = render(
-				<ErrorNotice />,
+				<SyncErrorNotice />,
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -267,10 +270,13 @@ describe( 'ErrorNotice', () => {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveError( error, storeFunctionName, args );
 
-			const { getByText, waitForRegistry } = render( <ErrorNotice />, {
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			} );
+			const { getByText, waitForRegistry } = render(
+				<SyncErrorNotice />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
 
 			await waitForRegistry();
 
@@ -297,7 +303,7 @@ describe( 'ErrorNotice', () => {
 				.receiveError( error, storeFunctionName, args );
 
 			const { getByRole, getByText, waitForRegistry } = render(
-				<ErrorNotice />,
+				<SyncErrorNotice />,
 				{
 					registry,
 				}
@@ -386,9 +392,12 @@ describe( 'ErrorNotice', () => {
 		} );
 
 		it( 'should render the error notice', async () => {
-			const { getByText, waitForRegistry } = render( <ErrorNotice />, {
-				registry,
-			} );
+			const { getByText, waitForRegistry } = render(
+				<SyncErrorNotice />,
+				{
+					registry,
+				}
+			);
 
 			await waitForRegistry();
 
@@ -397,7 +406,7 @@ describe( 'ErrorNotice', () => {
 
 		it( 'should render a "Retry" button', async () => {
 			const { getByText, getByRole, waitForRegistry } = render(
-				<ErrorNotice />,
+				<SyncErrorNotice />,
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,

@@ -90,7 +90,7 @@ class Sign_In_With_Google_Block {
 		/**
 		 * Display the Sign in with Google button.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.164.0
 		 *
 		 * @param array $args Optional arguments to customize button attributes.
 		 */

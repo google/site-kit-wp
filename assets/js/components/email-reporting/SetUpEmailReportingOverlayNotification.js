@@ -38,7 +38,8 @@ import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/c
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import OverlayNotification from '@/js/googlesitekit/notifications/components/layout/OverlayNotification';
-import EmailReportingOverlayGraphic from '@/svg/graphics/email-reporting-overlay.svg';
+import EmailReportingOverlayGraphicDesktop from '@/svg/graphics/email-reporting-overlay-desktop.svg';
+import EmailReportingOverlayGraphicMobile from '@/svg/graphics/email-reporting-overlay-mobile.svg';
 
 export const SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION =
 	'email-reporting-overlay-notification';
@@ -112,8 +113,8 @@ export default function SetUpEmailReportingOverlayNotification( {
 					'Receive the most important insights about your site’s performance, key trends, and tailored metrics directly in your inbox',
 					'google-site-kit'
 				) }
-				GraphicDesktop={ EmailReportingOverlayGraphic }
-				GraphicMobile={ EmailReportingOverlayGraphic }
+				GraphicDesktop={ EmailReportingOverlayGraphicDesktop }
+				GraphicMobile={ EmailReportingOverlayGraphicMobile }
 				ctaButton={ {
 					label: __( 'Setup', 'google-site-kit' ),
 					onClick: onSetupCallback,
