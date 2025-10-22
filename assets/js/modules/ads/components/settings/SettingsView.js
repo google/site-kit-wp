@@ -139,16 +139,16 @@ export default function SettingsView() {
 			) }
 
 			<SettingsStatuses
-				statuses={
-					gtgEnabled
+				statuses={ [
+					{
+						label: __(
+							'Plugin conversion tracking',
+							'google-site-kit'
+						),
+						status: isConversionTrackingEnabled,
+					},
+					...( gtgEnabled
 						? [
-								{
-									label: __(
-										'Plugin conversion tracking',
-										'google-site-kit'
-									),
-									status: isConversionTrackingEnabled,
-								},
 								{
 									label: __(
 										'Google tag gateway for advertisers',
@@ -157,16 +157,8 @@ export default function SettingsView() {
 									status: isGTGEnabled,
 								},
 						  ]
-						: [
-								{
-									label: __(
-										'Conversion Tracking',
-										'google-site-kit'
-									),
-									status: isConversionTrackingEnabled,
-								},
-						  ]
-				}
+						: [] ),
+				] }
 			/>
 		</div>
 	);
