@@ -117,7 +117,7 @@ describe( 'PrimaryUserSetupWidget', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should handle generic errors and diplay a retry button', async () => {
+	it( 'should handle generic errors and display a retry button', async () => {
 		fetchMock.post( syncAvailableAudiencesEndpoint, {
 			body: {
 				code: 'test_error',
