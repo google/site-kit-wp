@@ -44,6 +44,7 @@ final class View_Only_Pointer {
 	 * Gets the view-only pointer.
 	 *
 	 * @since 1.83.0.
+	 * @since n.e.x.t Updated to work with extended Pointer class.
 	 *
 	 * @return Pointer Admin notice instance.
 	 */
@@ -57,38 +58,31 @@ final class View_Only_Pointer {
 						<span class='screen-reader-text'>Dismiss this notice.</span> \
 					</button>"
 				),
-				// 'content'         => __( 'Check Site Kit’s dashboard to find out how much traffic your site is getting, your most popular pages, top keywords people use to find your site on Search, and more.', 'google-site-kit' ),
-				'content'		  => function() {
-					return sprintf(
-						'<h4>%s</h4><p>%s</p>',
-						__( 'Subtitle text', 'google-site-kit' ),
-						__( 'Check Site Kit’s dashboard to find out how much traffic your site is getting, your most popular pages, top keywords people use to find your site on Search, and more.', 'google-site-kit' )
-					);
-				},
+				'content'         => __( 'Check Site Kit’s dashboard to find out how much traffic your site is getting, your most popular pages, top keywords people use to find your site on Search, and more.', 'google-site-kit' ),
 				'target_id'       => 'toplevel_page_googlesitekit-dashboard',
 				'active_callback' => function ( $hook_suffix ) {
-					// if ( 'index.php' !== $hook_suffix
-					// 	|| current_user_can( Permissions::AUTHENTICATE )
-					// 	|| ! current_user_can( Permissions::VIEW_SPLASH )
+					if ( 'index.php' !== $hook_suffix
+						|| current_user_can( Permissions::AUTHENTICATE )
+						|| ! current_user_can( Permissions::VIEW_SPLASH )
 
-					// ) {
-					// 	return false;
-					// }
+					) {
+						return false;
+					}
 
-					// $dismissed_wp_pointers = get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true );
-					// if ( ! $dismissed_wp_pointers ) {
-					// 	return true;
-					// }
+					$dismissed_wp_pointers = get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true );
+					if ( ! $dismissed_wp_pointers ) {
+						return true;
+					}
 
-					// $dismissed_wp_pointers = explode( ',', $dismissed_wp_pointers );
-					// if ( in_array( self::SLUG, $dismissed_wp_pointers, true ) ) {
-					// 	return false;
-					// }
+					$dismissed_wp_pointers = explode( ',', $dismissed_wp_pointers );
+					if ( in_array( self::SLUG, $dismissed_wp_pointers, true ) ) {
+						return false;
+					}
 
 					return true;
 				},
 				'with_title_icon' => true,
-				'class'           => 'googlesitekit-email-pointer',
+				'class'           => 'googlesitekit-view-only-pointer',
 				'buttons'         =>
 					sprintf('
 					 function(event, container) {

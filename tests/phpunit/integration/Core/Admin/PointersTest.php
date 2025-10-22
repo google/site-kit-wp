@@ -120,6 +120,45 @@ class PointersTest extends TestCase {
 		$this->assertStringContainsString( '#test-target', $output, 'Pointer output should contain the target selector.' );
 	}
 
+	public function test_print_pointer_script_with_buttons_and_class() {
+		add_filter(
+			'googlesitekit_admin_pointers',
+			function ( $pointers ) {
+				$pointers[] = new Pointer(
+					'test-slug-with-buttons',
+					array(
+						// Title contains button/span markup which should be preserved by wp_kses.
+						'title'           => "Title <button class='googlesitekit-pointer-cta--dismiss dashicons dashicons-no'><span class='screen-reader-text'>Dismiss</span></button>",
+						'content'         => 'Test pointer content with buttons.',
+						'target_id'       => 'test-target-buttons',
+						'active_callback' => '__return_true',
+						'with_title_icon' => true,
+						'class'           => 'custom-class',
+						'buttons'         => 'function(event, container) { return jQuery("<button class=\"googlesitekit-pointer-cta button-primary\">Setup</button>"); }',
+					)
+				);
+				return $pointers;
+			}
+		);
+
+		do_action( 'admin_enqueue_scripts', self::TEST_HOOK_SUFFIX );
+
+		$output = $this->capture_action( 'admin_print_footer_scripts' );
+
+		// Buttons function should be present in the options object.
+		$this->assertStringContainsString( 'buttons:', $output, 'Pointer output should include buttons property.' );
+		$this->assertStringContainsString( 'googlesitekit-pointer-cta button-primary', $output, 'Pointer output should include CTA button class.' );
+
+		// pointerClass should include wp-pointer, computed icon class, and custom class.
+		$this->assertStringContainsString( 'pointerClass:', $output, 'Pointer output should include pointerClass property.' );
+		$this->assertStringContainsString( 'wp-pointer', $output, 'Pointer class should include default wp-pointer.' );
+		$this->assertStringContainsString( 'googlesitekit-pointer-with-dismiss-icon', $output, 'Pointer class should include dismiss icon class when with_title_icon is true.' );
+		$this->assertStringContainsString( 'custom-class', $output, 'Pointer class should include custom class when provided.' );
+
+		// Title markup should be preserved (sanitized) allowing button/span with class.
+		$this->assertStringContainsString( 'googlesitekit-pointer-cta--dismiss', $output, 'Pointer title markup should include dismiss button class.' );
+	}
+
 	public function test_print_pointer_scripy() {
 		add_filter(
 			'googlesitekit_admin_pointers',

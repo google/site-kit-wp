@@ -55,6 +55,7 @@ class Email_Reporting {
 	 * @param Options|null $options Optional. Options instance. Default is a new instance.
 	 */
 	public function __construct( Context $context, ?Options $options = null ) {
+		$this->context         = $context;
 		$options               = $options ?: new Options( $context );
 		$this->settings        = new Email_Reporting_Settings( $options );
 		$this->rest_controller = new REST_Email_Reporting_Controller( $this->settings );
@@ -68,5 +69,9 @@ class Email_Reporting {
 	public function register() {
 		$this->settings->register();
 		$this->rest_controller->register();
+
+		// Register WP admin pointer for Email Reporting onboarding.
+		$pointer = new Email_Reporting_Pointer( $this->context );
+		$pointer->register();
 	}
 }

@@ -64,6 +64,9 @@ final class Pointer {
 				'target_id'       => '',
 				'position'        => 'top',
 				'active_callback' => null,
+				'buttons'         => null,
+				'with_title_icon' => false,
+				'class'           => '',
 			)
 		);
 	}
@@ -98,7 +101,7 @@ final class Pointer {
 	 * @return string Pointer buttons.
 	 */
 	public function get_buttons() {
-		return $this->args['buttons'];
+		return isset( $this->args['buttons'] ) ? $this->args['buttons'] : null;
 	}
 
 	/**
@@ -109,7 +112,7 @@ final class Pointer {
 	 * @return string|array Pointer title icon.
 	 */
 	public function get_with_title_icon() {
-		return $this->args['with_title_icon'];
+		return ! empty( $this->args['with_title_icon'] );
 	}
 
 	/**
@@ -120,7 +123,7 @@ final class Pointer {
 	 * @return string|array Pointer custom class.
 	 */
 	public function get_class() {
-		return $this->args['class'];
+		return isset( $this->args['class'] ) ? $this->args['class'] : '';
 	}
 
 	/**
