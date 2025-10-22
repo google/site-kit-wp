@@ -80,6 +80,8 @@ export default function EnhancedConversionsNotification( {
 					label: __( 'Go to Ads', 'google-site-kit' ),
 					href: 'https://ads.google.com/aw/conversions/customersettings',
 					dismissOnClick: true,
+					external: true,
+					hideExternalIndicator: true,
 				} }
 			/>
 		</Notification>

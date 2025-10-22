@@ -135,6 +135,8 @@ export default function EnhancedConversionsSettingsNotice( {
 				label: __( 'Go to Analytics', 'google-site-kit' ),
 				href: ctaURL,
 				onClick: handleCTAClick,
+				external: true,
+				hideExternalIndicator: true,
 			} }
 		/>
 	);

@@ -122,6 +122,8 @@ export default function EnhancedConversionsSettingsNotice( {
 				label: __( 'Go to Ads', 'google-site-kit' ),
 				href: 'https://ads.google.com/aw/conversions/customersettings',
 				onClick: handleCTAClick,
+				external: true,
+				hideExternalIndicator: true,
 			} }
 		/>
 	);

@@ -94,6 +94,8 @@ export default function EnhancedConversionsNotification( {
 					label: __( 'Go to Analytics', 'google-site-kit' ),
 					href: ctaURL,
 					dismissOnClick: true,
+					external: true,
+					hideExternalIndicator: true,
 				} }
 			/>
 		</Notification>
