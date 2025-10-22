@@ -37,6 +37,9 @@ describe( 'SettingsEmailReporting', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideUserAuthentication( registry );
+
+		// Prevent network request/resolver from running to avoid console errors.
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	it( 'should render the toggle with correct label', () => {
