@@ -29,10 +29,6 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'easy-digital-downloads';
 
-	const ENHANCED_CONVERSION_EVENTS = array(
-		'add_to_cart',
-	);
-
 	/**
 	 * Checks if the Easy Digital Downloads plugin is active.
 	 *
@@ -59,6 +55,17 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 		}
 
 		return $event_names;
+	}
+
+	/**
+	 * Gets the enhanced conversion event names that are tracked by this provider.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of enhanced conversion event names.
+	 */
+	public function get_enhanced_event_names() {
+		return array( 'add_to_cart' );
 	}
 
 	/**
