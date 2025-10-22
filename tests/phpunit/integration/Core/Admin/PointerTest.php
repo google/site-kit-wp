@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Tests\Core\Admin;
 
 use Google\Site_Kit\Core\Admin\Pointer;
 use Google\Site_Kit\Tests\TestCase;
-
 /**
  * @group Admin
  * @group Pointer
