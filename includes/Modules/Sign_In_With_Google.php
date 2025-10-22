@@ -146,6 +146,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 
 		add_action( 'googlesitekit_render_sign_in_with_google_button', array( $this, 'render_sign_in_with_google_button' ), 10, 1 );
 
+		// Add support for a shortcode to render the Sign in with Google button.
+		add_shortcode( 'site_kit_sign_in_with_google', array( $this, 'render_siwg_shortcode' ) );
+
 		add_action(
 			'login_form_' . self::ACTION_AUTH,
 			function () {
@@ -377,7 +380,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	/**
 	 * Gets the datapoint definitions for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @return array List of datapoint definitions.
 	 */
@@ -412,7 +415,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		/**
 		 * Display the Sign in with Google button.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.164.0
 		 *
 		 * @param array $args Optional arguments to customize button attributes.
 		 */
@@ -460,7 +463,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			/**
 			 * Display the Sign in with Google button.
 			 *
-			 * @since n.e.x.t
+			 * @since 1.164.0
 			 *
 			 * @param array $args Optional arguments to customize button attributes.
 			 */
@@ -473,7 +476,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	/**
 	 * Renders the Sign in with Google button markup.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param array $args Optional arguments to customize button attributes.
 	 */
@@ -516,6 +519,39 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		}
 
 		echo '<div ' . implode( ' ', $attribute_strings ) . '></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	/**
+	 * Renders the Sign in with Google button for shortcode usage.
+	 *
+	 * This method captures the Sign in with Google button output
+	 * and returns it as a string for use in shortcodes.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $atts Shortcode attributes.
+	 * @return string The rendered button markup.
+	 */
+	public function render_siwg_shortcode( $atts ) {
+		$args = shortcode_atts(
+			array(
+				'class' => '',
+				'shape' => '',
+				'text'  => '',
+				'theme' => '',
+			),
+			$atts,
+			'site_kit_sign_in_with_google'
+		);
+
+		// Remove empty attributes.
+		$args = array_filter( $args );
+
+		ob_start();
+		do_action( 'googlesitekit_render_sign_in_with_google_button', $args );
+		$markup = ob_get_clean();
+
+		return $markup;
 	}
 
 	/**

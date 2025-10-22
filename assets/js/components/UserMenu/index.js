@@ -43,18 +43,18 @@ import DisconnectIcon from '@/svg/icons/disconnect.svg';
 import ManageSitesIcon from '@/svg/icons/manage-sites.svg';
 import ManageEmailReportsIcon from '@/svg/icons/manage-email-reports.svg';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '@/js/modules/analytics-4/datastore/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
 import useViewContext from '@/js/hooks/useViewContext';
 import useFormValue from '@/js/hooks/useFormValue';
 import { useFeature } from '@/js/hooks/useFeature';
 
 export default function UserMenu() {
-	const proactiveUserEngagementEnabled = useFeature(
-		'proactiveUserEngagement'
-	);
+	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
 
 	const proxyPermissionsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxyPermissionsURL()
@@ -120,6 +120,8 @@ export default function UserMenu() {
 		setMenuOpen( false );
 	}, [ dialogActive ] );
 
+	const { setValue } = useDispatch( CORE_UI );
+
 	const handleMenuItemSelect = useCallback(
 		async ( _index, event ) => {
 			const {
@@ -139,6 +141,9 @@ export default function UserMenu() {
 				case 'disconnect':
 					handleDialog();
 					break;
+				case 'manage-email-reports':
+					setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+					break;
 				default:
 					handleMenu();
 			}
@@ -148,6 +153,7 @@ export default function UserMenu() {
 			handleMenu,
 			handleDialog,
 			navigateTo,
+			setValue,
 			viewContext,
 		]
 	);
@@ -266,7 +272,7 @@ export default function UserMenu() {
 					<li>
 						<Details />
 					</li>
-					{ proactiveUserEngagementEnabled && (
+					{ emailReportingEnabled && (
 						<li
 							id="manage-email-reports"
 							className="mdc-list-item"

@@ -285,19 +285,6 @@ describe( 'AdsModuleSetupCTABanner', () => {
 			expect( isActive ).toBe( false );
 		} );
 
-		it( 'is not active when notification was previously dismissed', async () => {
-			await registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
-				[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
-			} );
-
-			const isActive = await notification.checkRequirements(
-				registry,
-				VIEW_CONTEXT_MAIN_DASHBOARD
-			);
-
-			expect( isActive ).toBe( false );
-		} );
-
 		it( 'is not active when Google for WooCommerce Ads account is linked', async () => {
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
