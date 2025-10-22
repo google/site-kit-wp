@@ -74,6 +74,15 @@ abstract class Conversion_Events_Provider {
 	abstract public function get_event_names();
 
 	/**
+	 * Gets the enhanced conversion event names.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of enhanced conversion event names.
+	 */
+	abstract public function get_enhanced_event_names();
+
+	/**
 	 * Registers any actions/hooks for this provider.
 	 *
 	 * @since 1.129.0
