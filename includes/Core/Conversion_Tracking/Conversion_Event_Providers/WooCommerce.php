@@ -26,11 +26,6 @@ class WooCommerce extends Conversion_Events_Provider {
 
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'woocommerce';
 
-	const ENHANCED_CONVERSION_EVENTS = array(
-		'add_to_cart',
-		'purchase',
-	);
-
 	/**
 	 * Avaialble products on the page.
 	 *
@@ -71,6 +66,17 @@ class WooCommerce extends Conversion_Events_Provider {
 		$events_to_track  = $this->events_to_track();
 
 		return array_unique( array_merge( $events_to_track, $wgai_event_names ) );
+	}
+
+	/**
+	 * Gets the enhanced conversion event names that are tracked by this provider.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of enhanced conversion event names.
+	 */
+	public function get_enhanced_event_names() {
+		return array( 'add_to_cart', 'purchase' );
 	}
 
 	/**
