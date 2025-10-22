@@ -522,7 +522,7 @@ class Analytics_4Test extends TestCase {
 
 		try {
 			$method->invokeArgs( $analytics, array() );
-			$this->fail( 'Expected redirect to module page with "authentication_success" notification' );
+			$this->fail( 'Expected redirect to the Key Metrics Setup screen' );
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
 				add_query_arg(
