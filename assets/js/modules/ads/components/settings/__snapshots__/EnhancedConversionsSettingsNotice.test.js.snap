@@ -51,10 +51,11 @@ exports[`Ads EnhancedConversionsNotification should render the notice 1`] = `
         </span>
       </button>
       <a
+        aria-label="Go to Ads (opens in a new tab)"
         class="mdc-button googlesitekit-notice__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
         href="https://ads.google.com/aw/conversions/customersettings"
         role="button"
-        target="_self"
+        target="_blank"
       >
         <span
           class="mdc-button__label"
