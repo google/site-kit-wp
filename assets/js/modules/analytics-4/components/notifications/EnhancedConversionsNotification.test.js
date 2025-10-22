@@ -56,7 +56,6 @@ describe( 'Analytics EnhancedConversionsNotification', () => {
 			<EnhancedConversionsNotificationComponent />,
 			{
 				registry,
-				features: [ 'gtagUserData' ],
 			}
 		);
 

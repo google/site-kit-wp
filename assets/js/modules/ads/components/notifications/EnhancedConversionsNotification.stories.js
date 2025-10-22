@@ -34,9 +34,6 @@ function Template() {
 
 export const Ads = Template.bind( {} );
 Ads.storyName = 'Ads';
-Ads.parameters = {
-	features: [ 'gtagUserData' ],
-};
 
 export default {
 	title: 'Components/Notifications/Subtle/EnhancedConversionsNotification',

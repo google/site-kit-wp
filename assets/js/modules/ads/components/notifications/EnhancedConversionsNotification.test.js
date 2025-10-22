@@ -48,7 +48,6 @@ describe( 'Ads EnhancedConversionsNotification', () => {
 			<EnhancedConversionsNotificationComponent />,
 			{
 				registry,
-				features: [ 'gtagUserData' ],
 			}
 		);
 

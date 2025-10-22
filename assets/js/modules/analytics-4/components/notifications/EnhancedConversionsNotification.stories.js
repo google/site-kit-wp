@@ -34,9 +34,6 @@ function Template() {
 
 export const Analytics = Template.bind( {} );
 Analytics.storyName = 'Analytics';
-Analytics.parameters = {
-	features: [ 'gtagUserData' ],
-};
 
 export default {
 	title: 'Components/Notifications/Subtle/EnhancedConversionsNotification',
