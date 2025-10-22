@@ -386,6 +386,40 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEquals( 'test_client_id.apps.googleusercontent.com', $inline_modules_data['sign-in-with-google']['existingClientID'], 'Inline data should include existingClientID when option set.' );
 	}
 
+	public function test_shortcode_is_registered() {
+		$this->module->register();
+
+		$this->assertTrue( shortcode_exists( 'site_kit_sign_in_with_google' ), 'Shortcode should be registered.' );
+	}
+
+	public function test_render_siwg_shortcode__outputs_button_div() {
+		$this->module->register();
+
+		$output = do_shortcode( '[site_kit_sign_in_with_google]' );
+
+		$this->assertStringContainsString( '<div', $output, 'Shortcode output should contain a div element.' );
+		$this->assertStringContainsString( 'class="googlesitekit-sign-in-with-google__frontend-output-button"', $output, 'Shortcode output should contain the correct class.' );
+	}
+
+	public function test_render_siwg_shortcode__with_attributes() {
+		$this->module->register();
+
+		// The shortcode doesn't directly accept attributes, but it should still render the button
+		// using the action which can be customized via filters/hooks.
+		$output = do_shortcode( '[site_kit_sign_in_with_google]' );
+
+		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'Shortcode should render button with default class.' );
+	}
+
+	public function test_render_siwg_shortcode__returns_string() {
+		$this->module->register();
+
+		$output = do_shortcode( '[site_kit_sign_in_with_google]' );
+
+		$this->assertIsString( $output, 'Shortcode should return a string.' );
+		$this->assertNotEmpty( $output, 'Shortcode output should not be empty.' );
+	}
+
 	public function test_get_feature_metrics() {
 		$this->module->register();
 		$this->module->get_settings()->register();
