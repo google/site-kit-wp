@@ -16,10 +16,6 @@ class FakeConversionEventProvider_Active extends FakeConversionEventProvider {
 
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'fake-conversion-event-provider-active';
 
-	const ENHANCED_CONVERSION_EVENTS = array(
-		'fake_event_active_2',
-	);
-
 	/**
 	 * Checks if the provider is active.
 	 *
@@ -41,6 +37,19 @@ class FakeConversionEventProvider_Active extends FakeConversionEventProvider {
 	public function get_event_names() {
 		return array(
 			'fake_event_active_1',
+			'fake_event_active_2',
+		);
+	}
+
+	/**
+	 * Gets the enhanced conversion event names.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of enhanced conversion event names.
+	 */
+	public function get_enhanced_event_names() {
+		return array(
 			'fake_event_active_2',
 		);
 	}

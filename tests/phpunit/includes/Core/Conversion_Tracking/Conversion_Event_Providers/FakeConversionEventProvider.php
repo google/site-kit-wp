@@ -17,10 +17,6 @@ class FakeConversionEventProvider extends Conversion_Events_Provider {
 
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'fake-conversion-event-provider';
 
-	const ENHANCED_CONVERSION_EVENTS = array(
-		'test_event',
-	);
-
 	/**
 	 * Gets the event names.
 	 *
@@ -29,6 +25,19 @@ class FakeConversionEventProvider extends Conversion_Events_Provider {
 	 * @return array List of event names.
 	 */
 	public function get_event_names() {
+		return array(
+			'test-event',
+		);
+	}
+
+	/**
+	 * Gets the enhanced conversion event names.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of enhanced conversion event names.
+	 */
+	public function get_enhanced_event_names() {
 		return array(
 			'test-event',
 		);
