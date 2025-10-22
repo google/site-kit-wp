@@ -262,19 +262,9 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 		$events = array();
 
 		foreach ( $providers as $provider ) {
-			$provider_class = get_class( $provider );
-			$constant_name  = $provider_class . '::ENHANCED_CONVERSION_EVENTS';
+			$supported_enhanced_events = array_intersect( $provider->get_enhanced_event_names(), $provider->get_event_names() );
 
-			if ( defined( $constant_name ) ) {
-				$enhanced_events  = (array) constant( $constant_name );
-				$supported_events = array_values( (array) $provider->get_event_names() );
-
-				$supported_enhanced_events = array_intersect( $enhanced_events, $supported_events );
-
-				if ( ! empty( $supported_enhanced_events ) ) {
-					$events = array_merge( $events, array_values( $supported_enhanced_events ) );
-				}
-			}
+			$events = array_merge( $events, array_values( $supported_enhanced_events ) );
 		}
 
 		return array_unique( $events );
