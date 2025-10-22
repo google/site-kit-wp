@@ -20,7 +20,11 @@
  * Internal dependencies
  */
 import PrimaryUserSetupWidget from '.';
-import { render, waitFor } from '../../../../../../../../tests/js/test-utils';
+import {
+	fireEvent,
+	render,
+	waitFor,
+} from '../../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
@@ -174,6 +178,47 @@ describe( 'PrimaryUserSetupWidget', () => {
 		} );
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should retry audience creation when the retry button is clicked', async () => {
+		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
+			body: [],
+			status: 200,
+		} );
+
+		fetchMock.post( syncAvailableAudiencesEndpoint, {
+			body: availableAudiences.slice( 0, 2 ),
+			status: 200,
+		} );
+
+		fetchMock.postOnce( createAudienceEndpoint, {
+			body: {
+				code: 'test_error',
+				message: 'Error message.',
+				data: { status: 500 },
+			},
+			status: 500,
+		} );
+
+		const { getByRole } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
+
+		let retryButton;
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetchedTimes( 1, createAudienceEndpoint );
+			retryButton = getByRole( 'button', { name: /retry/i } );
+			expect( retryButton ).toBeInTheDocument();
+		} );
+
+		freezeFetch( createAudienceEndpoint );
+		fireEvent.click( retryButton );
+
+		await waitFor( () => {
+			expect( retryButton ).not.toBeInTheDocument();
+			expect( fetchMock ).toHaveFetchedTimes( 2, createAudienceEndpoint );
+		} );
 	} );
 
 	it( 'should handle the insufficient permissions error', async () => {

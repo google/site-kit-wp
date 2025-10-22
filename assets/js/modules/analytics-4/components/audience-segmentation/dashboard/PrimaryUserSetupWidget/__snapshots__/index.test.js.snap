@@ -66,7 +66,7 @@ exports[`PrimaryUserSetupWidget should display the audiences that failed to be c
 </div>
 `;
 
-exports[`PrimaryUserSetupWidget should handle generic errors and diplay a retry button 1`] = `
+exports[`PrimaryUserSetupWidget should handle generic errors and display a retry button 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--keyMetricsAddMetric googlesitekit-widget--no-padding googlesitekit-audience-segmentation-error-widget"
