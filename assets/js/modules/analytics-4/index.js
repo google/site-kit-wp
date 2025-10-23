@@ -897,9 +897,9 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 	},
 };
 
-export function registerNotifications( Notifications ) {
+export function registerNotifications( notifications ) {
 	for ( const notificationID in ANALYTICS_4_NOTIFICATIONS ) {
-		Notifications.registerNotification(
+		notifications.registerNotification(
 			notificationID,
 			ANALYTICS_4_NOTIFICATIONS[ notificationID ]
 		);
