@@ -773,6 +773,25 @@ const baseResolvers = {
 		}
 	},
 
+	*hasModuleOwnership( slug ) {
+		const { select, resolveSelect } = yield commonActions.getRegistry();
+
+		const hasOwnership = select( CORE_MODULES ).hasModuleOwnership( slug );
+
+		if ( hasOwnership !== undefined ) {
+			return;
+		}
+
+		const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+
+		yield commonActions.await(
+			Promise.all( [
+				resolveSelect( CORE_USER ).getUser(),
+				resolveSelect( storeName ).getSettings(),
+			] )
+		);
+	},
+
 	*getRecoverableModules() {
 		const registry = yield commonActions.getRegistry();
 		const modules = yield commonActions.await(
