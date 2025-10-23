@@ -36,6 +36,7 @@ import { SettingsNotice } from '@/js/modules/sign-in-with-google/components/comm
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import DisplaySetting from '@/js/components/DisplaySetting';
 import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function SettingsView() {
 	const clientID = useSelect( ( select ) =>
@@ -184,7 +185,7 @@ export default function SettingsView() {
 						>
 							{ __( 'Show next to comments', 'google-site-kit' ) }
 						</Typography>
-						<p className="googlesitekit-settings-module__meta-item-data">
+						<P className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting
 								value={
 									!! showNextToCommentsEnabled
@@ -192,7 +193,7 @@ export default function SettingsView() {
 										: __( 'Disabled', 'google-site-kit' )
 								}
 							/>
-						</p>
+						</P>
 					</div>
 				</div>
 			) }
