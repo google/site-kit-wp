@@ -105,6 +105,7 @@ import {
 	ConnectAnalyticsCTAWidget,
 	InfoNoticeWidget,
 	SecondaryUserSetupWidget,
+	PrimaryUserSetupWidget,
 } from './components/audience-segmentation/dashboard';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 import { AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION } from './components/audience-segmentation/dashboard/AudienceSegmentationIntroductoryOverlayNotification';
@@ -136,6 +137,7 @@ import ConversionReportingNotificationCTAWidget from './components/widgets/Conve
 import EnhancedConversionsNotification, {
 	ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS,
 } from './components/notifications/EnhancedConversionsNotification';
+import { isFeatureEnabled } from '@/js/features';
 
 export { registerStore } from './datastore';
 
@@ -227,6 +229,48 @@ export function registerWidgets( widgets ) {
 					availableAudiences?.length &&
 					configuredAudiences === null &&
 					audienceSegmentationSetupCompletedBy !== null
+				);
+			},
+		},
+		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
+	);
+
+	widgets.registerWidget(
+		'analyticsAudiencePrimaryUserSetup',
+		{
+			Component: PrimaryUserSetupWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			isActive: ( select ) => {
+				if ( ! isFeatureEnabled( 'setupFlowRefresh' ) ) {
+					return false;
+				}
+
+				const isAnalyticsConnected = select(
+					CORE_MODULES
+				).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+
+				if ( ! isAnalyticsConnected ) {
+					return false;
+				}
+
+				const availableAudiences =
+					select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+				const configuredAudiences =
+					select( CORE_USER ).getConfiguredAudiences();
+
+				const audienceSegmentationSetupCompletedBy =
+					select(
+						MODULES_ANALYTICS_4
+					).getAudienceSegmentationSetupCompletedBy();
+
+				return (
+					availableAudiences?.length &&
+					configuredAudiences === null &&
+					audienceSegmentationSetupCompletedBy === null
 				);
 			},
 		},
