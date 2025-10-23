@@ -220,6 +220,11 @@ class Web_Tag extends Module_Web_Tag {
 
 		// Output the Sign in with Google script.
 		printf( "\n<!-- %s -->\n", esc_html__( 'Sign in with Google button added by Site Kit', 'google-site-kit' ) );
+		?>
+		<style>
+		.googlesitekit-sign-in-with-google__frontend-output-button{max-width:320px}
+		</style>
+		<?php
 		BC_Functions::wp_print_script_tag( array( 'src' => 'https://accounts.google.com/gsi/client' ) );
 		BC_Functions::wp_print_inline_script_tag( $inline_script );
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ) );
