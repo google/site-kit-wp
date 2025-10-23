@@ -74,6 +74,10 @@ export default function SettingsView() {
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getOneTapEnabled()
 	);
 
+	const showNextToCommentsEnabled = useSelect( ( select ) =>
+		select( MODULES_SIGN_IN_WITH_GOOGLE ).getShowNextToCommentsEnabled()
+	);
+
 	// If Sign in with Google does not have a client ID, do not display the
 	// settings view.
 	if ( ! clientID ) {
@@ -168,6 +172,30 @@ export default function SettingsView() {
 					</p>
 				</div>
 			</div>
+
+			{ anyoneCanRegister && (
+				<div className="googlesitekit-settings-module__meta-items">
+					<div className="googlesitekit-settings-module__meta-item">
+						<Typography
+							as="h5"
+							size="medium"
+							type="label"
+							className="googlesitekit-settings-module__meta-item-type"
+						>
+							{ __( 'Show next to comments', 'google-site-kit' ) }
+						</Typography>
+						<p className="googlesitekit-settings-module__meta-item-data">
+							<DisplaySetting
+								value={
+									!! showNextToCommentsEnabled
+										? __( 'Enabled', 'google-site-kit' )
+										: __( 'Disabled', 'google-site-kit' )
+								}
+							/>
+						</p>
+					</div>
+				</div>
+			) }
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">

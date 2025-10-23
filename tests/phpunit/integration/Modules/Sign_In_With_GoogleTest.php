@@ -126,6 +126,63 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertStringContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output, 'Button should render when HTTPS and clientID set.' );
 	}
 
+	public function test_render_button_in_wp_comments() {
+		update_option( 'home', 'http://example.com/' );
+		update_option( 'siteurl', 'http://example.com/' );
+
+		// Navigate to a singular post.
+		$post_id = $this->factory()->post->create();
+		$this->go_to( get_permalink( $post_id ) );
+
+		$this->module->register();
+		$this->module->get_settings()->register();
+
+		// Does not render the if the site does not allow users to register.
+		$this->module->get_settings()->set(
+			array(
+				'clientID'                  => '1234567890.googleusercontent.com',
+				'showNextToCommentsEnabled' => true,
+			)
+		);
+		update_option( 'users_can_register', false );
+		$output = apply_filters( 'comment_form_after_fields', '' );
+		$this->assertNull( $output, 'Button should not render when site does not have open user registration.' );
+
+		// Update site URL to https.
+		$_SERVER['HTTPS']       = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
+		$_SERVER['SCRIPT_NAME'] = wp_login_url(); // Required because is_login() uses this var.
+		update_option( 'siteurl', 'https://example.com/' );
+		update_option( 'home', 'https://example.com/' );
+
+		// Does not render if Show next to comments is not enabled.
+		$this->module->get_settings()->set(
+			array(
+				'clientID'                  => '1234567890.googleusercontent.com',
+				'showNextToCommentsEnabled' => false,
+			)
+		);
+		update_option( 'users_can_register', true );
+		$output = apply_filters( 'comment_form_after_fields', '' );
+		$this->assertNull( $output, 'Button should not render when Show next to comments is not enabled.' );
+
+		// Renders the button when both open user registration and the Show
+		// next to comments setting are enabled.
+		$this->module->get_settings()->set(
+			array(
+				'clientID'                  => '1234567890.googleusercontent.com',
+				'showNextToCommentsEnabled' => true,
+			)
+		);
+		update_site_option( 'users_can_register', true );
+
+		// Render the button.
+		ob_start();
+		comment_form( array(), $post_id );
+		$output = ob_get_clean();
+
+		$this->assertStringContainsString( "<div class=\"googlesitekit-sign-in-with-google__frontend-output-button googlesitekit-sign-in-with-google__comments-form-button googlesitekit-sign-in-with-google__comments-form-button-postid-$post_id", $output, 'Button should render when when both open user registration and the Shownext to comments setting are enabled.' );
+	}
+
 	/**
 	 * @dataProvider provide_button_markup_data
 	 */

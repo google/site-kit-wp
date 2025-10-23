@@ -645,6 +645,17 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-sign-in-with-google-comments',
+				array(
+					'src'           => $base_url . 'js/googlesitekit-sign-in-with-google-comments.js',
+					'dependencies'  => array(
+						'googlesitekit-tracking-data',
+						'googlesitekit-data',
+					),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+				)
+			),
+			new Script(
 				'googlesitekit-ad-blocking-recovery',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-ad-blocking-recovery.js',

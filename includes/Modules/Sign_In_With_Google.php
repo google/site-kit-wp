@@ -192,6 +192,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		// like most WordPress pages.
 		add_action( 'login_init', array( $this, 'register_tag' ) );
 
+		// Place Sign in with Google button next to comments form if the
+		// setting is enabled.
+		add_action( 'comment_form_after_fields', array( $this, 'handle_comments_form' ) );
+
 		// Check to see if the module is connected before registering the block.
 		if ( $this->is_connected() ) {
 			$this->sign_in_with_google_block->register();
@@ -219,6 +223,39 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			wp_safe_redirect( $redirect_to );
 			exit;
 		}
+	}
+
+	/**
+	 * Conditionally show the Sign in with Google button in a comments form.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function handle_comments_form() {
+		$settings            = $this->get_settings()->get();
+		$anyone_can_register = (bool) get_option( 'users_can_register' );
+
+		// Only show the button if:
+		// - the comments form setting is enabled
+		// - open user registration is enabled
+		//
+		// If the comments form setting is not enabled, do nothing.
+		if ( empty( $settings['showNextToCommentsEnabled'] ) || ! $anyone_can_register ) {
+			return;
+		}
+
+		// Output the post ID to allow identitifying the post for this comment.
+		$post_id = get_the_ID();
+
+		// Output the Sign in with Google button in the comments form.
+		do_action(
+			'googlesitekit_render_sign_in_with_google_button',
+			array(
+				'class' => array(
+					'googlesitekit-sign-in-with-google__comments-form-button',
+					"googlesitekit-sign-in-with-google__comments-form-button-postid-${post_id}",
+				),
+			)
+		);
 	}
 
 	/**
@@ -501,7 +538,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			'class' => implode( ' ', $classes ),
 		);
 
-		$data_attributes = array( 'shape', 'text', 'theme' );
+		$data_attributes = array( 'for-comment-form', 'post-id', 'shape', 'text', 'theme' );
 		foreach ( $data_attributes as $attribute ) {
 			if ( empty( $args[ $attribute ] ) || ! is_scalar( $args[ $attribute ] ) ) {
 				continue;
