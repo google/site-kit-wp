@@ -177,7 +177,7 @@ export const SIGN_IN_WITH_GOOGLE_NOTIFICATIONS = {
 			// Ensure compatibility checks are loaded only when the module is connected.
 			const compatibilityChecks = await resolveSelect(
 				MODULES_SIGN_IN_WITH_GOOGLE
-			).getCompatibilityChecks( { useCache: true } );
+			).getCompatibilityChecks();
 
 			const errors = compatibilityChecks?.checks || {};
 
