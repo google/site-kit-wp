@@ -52,6 +52,9 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
+import EnhancedConversionsNotification, {
+	ENHANCED_CONVERSIONS_NOTIFICATION_ADS,
+} from './components/notifications/EnhancedConversionsNotification';
 
 export { registerStore } from './datastore';
 
@@ -200,6 +203,26 @@ export const ADS_NOTIFICATIONS = {
 		isDismissible: true,
 		dismissRetries: 1,
 		featureFlag: 'adsPax',
+	},
+	[ ENHANCED_CONVERSIONS_NOTIFICATION_ADS ]: {
+		Component: EnhancedConversionsNotification,
+		priority: PRIORITY.INFO,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { resolveSelect } ) => {
+			const adsConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ADS );
+
+			if ( ! adsConnected ) {
+				return false;
+			}
+
+			return true;
+		},
+		isDismissible: true,
+		featureFlag: 'gtagUserData',
 	},
 };
 
