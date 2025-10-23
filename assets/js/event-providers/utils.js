@@ -230,12 +230,12 @@ export function isLikelyPhone( value ) {
 		return false;
 	}
 
-	// Reduce false positives: reject plain numeric strings without formatting or international prefix
-	// Allow formatted numbers (e.g., '123-456-7890', '(555) 123-4567') and international format (e.g., '+1234567890')
+	// Reduce false positives: reject plain numeric strings without formatting or international prefix.
+	// Allow formatted numbers (e.g., '123-456-7890', '(555) 123-4567') and international format (e.g., '+1234567890').
 	const hasFormatting = /[\s\-()+.]/.test( value );
 	const hasInternationalPrefix = value.trim().startsWith( '+' );
 
-	// If it's a plain numeric string (no formatting and no + prefix), reject it to avoid false positives
+	// If it's a plain numeric string (no formatting and no + prefix), reject it to avoid false positives.
 	if ( ! hasFormatting && ! hasInternationalPrefix ) {
 		return false;
 	}
