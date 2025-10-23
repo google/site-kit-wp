@@ -226,7 +226,21 @@ export function isLikelyPhone( value ) {
 
 	const phonePattern = /^\+?\d{7,}$/;
 
-	return phonePattern.test( normalizedPhone );
+	if ( ! phonePattern.test( normalizedPhone ) ) {
+		return false;
+	}
+
+	// Reduce false positives: reject plain numeric strings without formatting or international prefix
+	// Allow formatted numbers (e.g., '123-456-7890', '(555) 123-4567') and international format (e.g., '+1234567890')
+	const hasFormatting = /[\s\-()+.]/.test( value );
+	const hasInternationalPrefix = value.trim().startsWith( '+' );
+
+	// If it's a plain numeric string (no formatting and no + prefix), reject it to avoid false positives
+	if ( ! hasFormatting && ! hasInternationalPrefix ) {
+		return false;
+	}
+
+	return true;
 }
 
 /**
@@ -245,6 +259,7 @@ export function classifyPII( fieldMeta ) {
 	value = normalizeValue( value );
 	label = normalizeLabel( label );
 
+	// First check explicit field types (most reliable).
 	switch ( type ) {
 		case 'email':
 			return {
@@ -258,6 +273,7 @@ export function classifyPII( fieldMeta ) {
 			};
 	}
 
+	// Then check email patterns (emails are more distinctive than phone patterns).
 	if ( isLikelyEmail( value ) ) {
 		return {
 			type: PII_TYPE.EMAIL,
@@ -265,13 +281,7 @@ export function classifyPII( fieldMeta ) {
 		};
 	}
 
-	if ( isLikelyPhone( value ) ) {
-		return {
-			type: PII_TYPE.PHONE,
-			value: normalizePhone( value ),
-		};
-	}
-
+	// Then check field name/label indicators for all PII types (context-based detection).
 	if (
 		PII_INDICATORS[ PII_TYPE.EMAIL ].includes( name ) ||
 		PII_INDICATORS[ PII_TYPE.EMAIL ].includes( label )
@@ -299,6 +309,14 @@ export function classifyPII( fieldMeta ) {
 		return {
 			type: PII_TYPE.NAME,
 			value: normalizeValue( value ),
+		};
+	}
+
+	// Finally, use pattern matching as fallback (most prone to false positives).
+	if ( isLikelyPhone( value ) ) {
+		return {
+			type: PII_TYPE.PHONE,
+			value: normalizePhone( value ),
 		};
 	}
 
