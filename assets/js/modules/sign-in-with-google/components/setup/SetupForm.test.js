@@ -73,4 +73,31 @@ describe( 'SetupForm', () => {
 			} )
 		).toBeInTheDocument();
 	} );
+
+	it( 'should render existing client ID message when there is an existing client ID', async () => {
+		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).receiveModuleData( {
+			existingClientID: 'existing-client-id.apps.google.com',
+		} );
+
+		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).receiveGetSettings( {
+			clientID: '',
+		} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<SetupForm onCompleteSetup={ () => {} } />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+
+		expect(
+			getByText(
+				'Sign in with Google was already set up on this site. We recommend using your existing Client ID.'
+			)
+		).toBeInTheDocument();
+	} );
 } );
