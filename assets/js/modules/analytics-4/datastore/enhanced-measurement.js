@@ -399,25 +399,11 @@ const baseResolvers = {
 			);
 		}
 	},
-
-	*isEnhancedMeasurementStreamAlreadyEnabled( propertyID, webDataStreamID ) {
-		const registry = yield commonActions.getRegistry();
-		// Only fetch enhanced measurement settings if the `streamEnabled` setting is not already in the store.
-		const isEnhancedMeasurementStreamEnabled = registry
-			.select( MODULES_ANALYTICS_4 )
-			.isEnhancedMeasurementStreamAlreadyEnabled(
-				propertyID,
-				webDataStreamID
-			);
-
-		if ( isEnhancedMeasurementStreamEnabled === undefined ) {
-			yield fetchGetEnhancedMeasurementSettingsStore.actions.fetchGetEnhancedMeasurementSettings(
-				propertyID,
-				webDataStreamID
-			);
-		}
-	},
 };
+baseResolvers.isEnhancedMeasurementStreamEnabled =
+	baseResolvers.getEnhancedMeasurementSettings;
+baseResolvers.isEnhancedMeasurementStreamAlreadyEnabled =
+	baseResolvers.getEnhancedMeasurementSettings;
 
 const baseSelectors = {
 	/**
