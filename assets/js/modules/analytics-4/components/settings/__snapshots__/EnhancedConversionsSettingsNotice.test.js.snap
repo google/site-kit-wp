@@ -1,0 +1,69 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Analytics EnhancedConversionsNotification should render the notice 1`] = `
+<div>
+  <div
+    class="googlesitekit-notice googlesitekit-notice--info"
+  >
+    <div
+      class="googlesitekit-notice__icon"
+    >
+      <svg />
+    </div>
+    <div
+      class="googlesitekit-notice__content"
+    >
+      <p
+        class="googlesitekit-notice__title"
+      >
+        Boost your Analytics data with enhanced conversions
+      </p>
+      <p
+        class="googlesitekit-notice__description"
+      >
+        Site Kit now supports enhanced conversions. This free feature helps you get a more complete and reliable count of your sales and leads from your website, even when people switch devices. To activate, turn on the setting for collecting user data in your Analytics account. 
+        <a
+          aria-label="Learn more (opens in a new tab)"
+          class="googlesitekit-cta-link"
+          href="https://sitekit.withgoogle.com/support/?doc=enhanced-conversions-analytics"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            Learn more
+          </span>
+        </a>
+      </p>
+    </div>
+    <div
+      class="googlesitekit-notice__action"
+    >
+      <button
+        class="mdc-button mdc-button--tertiary"
+        target="_self"
+      >
+        <span
+          class="mdc-button__label"
+        >
+          No thanks
+        </span>
+      </button>
+      <a
+        aria-label="Go to Analytics (opens in a new tab)"
+        class="mdc-button googlesitekit-notice__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+        href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Fa123456p654321%2Fadmin%2Fdatapolicies%2Fdatacollection&Email=wapuu.wordpress%40gmail.com"
+        role="button"
+        target="_blank"
+      >
+        <span
+          class="mdc-button__label"
+        >
+          Go to Analytics
+        </span>
+      </a>
+    </div>
+  </div>
+</div>
+`;

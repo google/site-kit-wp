@@ -419,4 +419,35 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertIsString( $output, 'Shortcode should return a string.' );
 		$this->assertNotEmpty( $output, 'Shortcode output should not be empty.' );
 	}
+
+	public function test_get_feature_metrics() {
+		$this->module->register();
+		$this->module->get_settings()->register();
+		update_option( Sign_In_With_Google_Settings::OPTION, array( 'oneTapEnabled' => true ) );
+
+		$feature_metrics = $this->module->get_feature_metrics();
+
+		$this->assertEquals(
+			array(
+				'siwg_onetap' => 1,
+			),
+			$feature_metrics,
+			'Feature metrics should match the expected values.'
+		);
+	}
+
+	public function test_get_feature_metrics__one_tap_not_enabled() {
+		$this->module->register();
+		$this->module->get_settings()->register();
+
+		$feature_metrics = $this->module->get_feature_metrics();
+
+		$this->assertEquals(
+			array(
+				'siwg_onetap' => 0,
+			),
+			$feature_metrics,
+			'Feature metrics should match the expected values.'
+		);
+	}
 }
