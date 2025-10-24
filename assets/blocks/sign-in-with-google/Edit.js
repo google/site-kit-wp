@@ -109,6 +109,8 @@ export default function Edit( { attributes, setAttributes, className } ) {
 						options={ createSelectOptions(
 							SIGN_IN_WITH_GOOGLE_SHAPES
 						) }
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
 					/>
 					<SelectControl
 						label={ __( 'Button text', 'google-site-kit' ) }
@@ -117,6 +119,8 @@ export default function Edit( { attributes, setAttributes, className } ) {
 						options={ createSelectOptions(
 							SIGN_IN_WITH_GOOGLE_TEXTS
 						) }
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
 					/>
 					<SelectControl
 						label={ __( 'Button theme', 'google-site-kit' ) }
@@ -125,6 +129,8 @@ export default function Edit( { attributes, setAttributes, className } ) {
 						options={ createSelectOptions(
 							SIGN_IN_WITH_GOOGLE_THEMES
 						) }
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
 					/>
 					<TextControl
 						label={ __( 'CSS class', 'google-site-kit' ) }
@@ -134,6 +140,8 @@ export default function Edit( { attributes, setAttributes, className } ) {
 						) }
 						value={ buttonClassName || '' }
 						onChange={ handleClassChange }
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 			</InspectorControls>
