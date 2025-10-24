@@ -49,6 +49,7 @@ import Link from '@/js/components/Link';
 import ExternalIcon from '@/svg/icons/external.svg';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import MediaErrorHandler from '@/js/components/MediaErrorHandler';
+import { ShowNextToCommentsToggle } from '@/js/modules/sign-in-with-google/components/common';
 const LazyGraphicSVG = lazy( () =>
 	import( '../../../../../svg/graphics/sign-in-with-google-setup.svg' )
 );
@@ -79,13 +80,22 @@ export default function SetupForm() {
 			select( MODULES_SIGN_IN_WITH_GOOGLE ).getSettings() !== undefined
 	);
 
-	// Read One Tap current value and set a default ON during setup when registration is open,
+	// Read current value of toggles and switch them on during setup when registration is open,
 	// without breaking canSubmitChanges (wait until settingsLoaded).
 	const oneTapEnabled = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getOneTapEnabled()
 	);
 	const [ hasSetDefaultOneTap, setHasSetDefaultOneTap ] = useState( false );
-	const { setOneTapEnabled } = useDispatch( MODULES_SIGN_IN_WITH_GOOGLE );
+	const showNextToCommentsEnabled = useSelect( ( select ) =>
+		select( MODULES_SIGN_IN_WITH_GOOGLE ).getShowNextToCommentsEnabled()
+	);
+	const [
+		hasSetDefaultShowNextToComments,
+		setHasSetDefaultShowNextToComments,
+	] = useState( false );
+	const { setOneTapEnabled, setShowNextToCommentsEnabled } = useDispatch(
+		MODULES_SIGN_IN_WITH_GOOGLE
+	);
 
 	useEffect( () => {
 		if (
@@ -103,6 +113,24 @@ export default function SetupForm() {
 		hasSetDefaultOneTap,
 		oneTapEnabled,
 		setOneTapEnabled,
+	] );
+
+	useEffect( () => {
+		if (
+			settingsLoaded &&
+			anyoneCanRegister &&
+			! hasSetDefaultShowNextToComments &&
+			showNextToCommentsEnabled === false
+		) {
+			setShowNextToCommentsEnabled( true );
+			setHasSetDefaultShowNextToComments( true );
+		}
+	}, [
+		settingsLoaded,
+		anyoneCanRegister,
+		hasSetDefaultShowNextToComments,
+		showNextToCommentsEnabled,
+		setShowNextToCommentsEnabled,
 	] );
 
 	// Prefill the clientID field with a value from a previous module connection, if it exists.
@@ -180,6 +208,7 @@ export default function SetupForm() {
 				{ anyoneCanRegister && (
 					<div className="googlesitekit-setup-module__inputs">
 						<OneTapToggle />
+						<ShowNextToCommentsToggle />
 					</div>
 				) }
 			</div>
