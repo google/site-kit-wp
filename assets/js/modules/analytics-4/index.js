@@ -136,9 +136,9 @@ import EnhancedConversionsNotification, {
 	ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS,
 } from './components/notifications/EnhancedConversionsNotification';
 import {
+	asyncRequire,
 	asyncRequireAll,
 	asyncRequireAny,
-	asyncRequireFalse,
 } from '@/js/util/async';
 import {
 	requireAudienceSegmentationWidgetHidden,
@@ -802,7 +802,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		checkRequirements: asyncRequireAll(
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 			requireDataIsAvailableOnLoad(),
-			asyncRequireFalse( requireAudienceSegmentationSetupCompleted() )
+			asyncRequire( false, requireAudienceSegmentationSetupCompleted() )
 		),
 		isDismissible: true,
 		dismissRetries: 1,
@@ -845,7 +845,8 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 			// Check if the prompt with the legacy key used before the banner was refactored
 			// to use the `notification ID` as the dismissal key, is dismissed.
-			asyncRequireFalse(
+			asyncRequire(
+				false,
 				requireItemDismissed(
 					LEGACY_ENHANCED_MEASUREMENT_SETUP_CTA_DISMISSED_ITEM_KEY
 				)
@@ -854,7 +855,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				requireModuleOwnership( MODULE_SLUG_ANALYTICS_4 ),
 				requireModuleAccess( MODULE_SLUG_ANALYTICS_4 )
 			),
-			asyncRequireFalse( requireEnhancedMeasurementEnabled() )
+			asyncRequire( false, requireEnhancedMeasurementEnabled() )
 		),
 	},
 	[ AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION ]: {
@@ -870,14 +871,15 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		checkRequirements: asyncRequireAll(
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 			requireAudienceSegmentationSetupCompleted(),
-			asyncRequireFalse( requireAudienceSegmentationWidgetHidden() ),
+			asyncRequire( false, requireAudienceSegmentationWidgetHidden() ),
 			// Only show the notification to users who are authenticated or the module is shared with.
 			asyncRequireAny(
 				requireIsAuthenticated(),
 				requireCanViewSharedModule( MODULE_SLUG_ANALYTICS_4 )
 			),
 			// Only show if the current user is not the one who set up AS.
-			asyncRequireFalse(
+			asyncRequire(
+				false,
 				requireAudienceSegmentationSetupCompletedByUser()
 			)
 		),
@@ -890,7 +892,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: asyncRequireAll(
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
-			asyncRequireFalse( requireModuleConnected( MODULE_SLUG_ADS ) )
+			asyncRequire( false, requireModuleConnected( MODULE_SLUG_ADS ) )
 		),
 		isDismissible: true,
 		featureFlag: 'gtagUserData',

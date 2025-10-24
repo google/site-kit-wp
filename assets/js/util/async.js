@@ -145,29 +145,16 @@ export function asyncRequireAny( ...requirements ) {
 }
 
 /**
- * Returns a function which decorates the given predicate to return `true` only if the predicate returns `true`.
+ * Returns a predicate function which proxies the given function and returns `true` only if the given function's return equals the given value.
  *
  * @since n.e.x.t
  *
- * @param {function(): Promise<boolean>} predicate Predicate function.
- * @return {function(): Promise<boolean>} Decorated function.
+ * @param {*}        want Value to match against predicate return.
+ * @param {Function} func Function to proxy and check return value of.
+ * @return {function(): Promise<boolean>} Predicate function.
  */
-export function asyncRequireTrue( predicate ) {
+export function asyncRequire( want, func ) {
 	return async function ( ...args ) {
-		return true === ( await predicate( ...args ) );
-	};
-}
-
-/**
- * Returns a function which decorates the given predicate to return `true` only if the predicate returns `false`.
- *
- * @since n.e.x.t
- *
- * @param {function(): Promise<boolean>} predicate Predicate function.
- * @return {function(): Promise<boolean>} Decorated function.
- */
-export function asyncRequireFalse( predicate ) {
-	return async function ( ...args ) {
-		return false === ( await predicate( ...args ) );
+		return want === ( await func( ...args ) );
 	};
 }
