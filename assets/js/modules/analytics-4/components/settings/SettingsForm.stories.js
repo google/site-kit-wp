@@ -304,6 +304,12 @@ IceEnabled.decorators = [
 	},
 ];
 
+export const WithEnhancedConversionsNotice = Template.bind( null );
+WithEnhancedConversionsNotice.storyName = 'With enhanced conversions notice';
+WithEnhancedConversionsNotice.parameters = {
+	features: [ 'gtagUserData' ],
+};
+
 export default {
 	title: 'Modules/Analytics4/Settings/SettingsEdit',
 	decorators: [

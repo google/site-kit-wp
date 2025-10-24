@@ -28,13 +28,14 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
-use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
+use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use Google\Site_Kit\Core\Util\Plugin_Status;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_Client_ID;
@@ -61,13 +62,14 @@ use WP_User;
  * @access private
  * @ignore
  */
-final class Sign_In_With_Google extends Module implements Module_With_Inline_Data, Module_With_Assets, Module_With_Settings, Module_With_Deactivation, Module_With_Debug_Fields, Module_With_Tag {
+final class Sign_In_With_Google extends Module implements Module_With_Inline_Data, Module_With_Assets, Module_With_Settings, Module_With_Deactivation, Module_With_Debug_Fields, Module_With_Tag, Provides_Feature_Metrics {
 
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Settings_Trait;
 	use Module_With_Tag_Trait;
 	use Module_With_Inline_Data_Trait;
+	use Feature_Metrics_Trait;
 
 	/**
 	 * Module slug name.
@@ -141,10 +143,14 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 */
 	public function register() {
 		$this->register_inline_data();
+		$this->register_feature_metrics();
 
 		add_filter( 'wp_login_errors', array( $this, 'handle_login_errors' ) );
 
 		add_action( 'googlesitekit_render_sign_in_with_google_button', array( $this, 'render_sign_in_with_google_button' ), 10, 1 );
+
+		// Add support for a shortcode to render the Sign in with Google button.
+		add_shortcode( 'site_kit_sign_in_with_google', array( $this, 'render_siwg_shortcode' ) );
 
 		add_action(
 			'login_form_' . self::ACTION_AUTH,
@@ -195,6 +201,20 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		// Place Sign in with Google button next to comments form if the
 		// setting is enabled.
 		add_action( 'comment_form_after_fields', array( $this, 'handle_comments_form' ) );
+
+		// Add the Sign in with Google compatibility checks datapoint to our
+		// preloaded paths.
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $paths ) {
+				return array_merge(
+					$paths,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/modules/sign-in-with-google/data/compatibility-checks',
+					)
+				);
+			}
+		);
 
 		// Check to see if the module is connected before registering the block.
 		if ( $this->is_connected() ) {
@@ -556,6 +576,39 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	}
 
 	/**
+	 * Renders the Sign in with Google button for shortcode usage.
+	 *
+	 * This method captures the Sign in with Google button output
+	 * and returns it as a string for use in shortcodes.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $atts Shortcode attributes.
+	 * @return string The rendered button markup.
+	 */
+	public function render_siwg_shortcode( $atts ) {
+		$args = shortcode_atts(
+			array(
+				'class' => '',
+				'shape' => '',
+				'text'  => '',
+				'theme' => '',
+			),
+			$atts,
+			'site_kit_sign_in_with_google'
+		);
+
+		// Remove empty attributes.
+		$args = array_filter( $args );
+
+		ob_start();
+		do_action( 'googlesitekit_render_sign_in_with_google_button', $args );
+		$markup = ob_get_clean();
+
+		return $markup;
+	}
+
+	/**
 	 * Gets the absolute number of users who have authenticated using Sign in with Google.
 	 *
 	 * @since 1.140.0
@@ -854,5 +907,18 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 */
 	protected function is_woocommerce_active() {
 		return class_exists( 'WooCommerce' );
+	}
+
+	/**
+	 * Gets an array of internal feature metrics.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_feature_metrics() {
+		return array(
+			'siwg_onetap' => $this->get_settings()->get()['oneTapEnabled'] ? 1 : 0,
+		);
 	}
 }

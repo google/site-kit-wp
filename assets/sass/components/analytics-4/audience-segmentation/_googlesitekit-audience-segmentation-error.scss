@@ -72,5 +72,14 @@
 				margin: 0;
 			}
 		}
+
+		.googlesitekit-widget-audience-segmentation-error__failed-audiences {
+			list-style: disc;
+			list-style-position: inside;
+
+			li {
+				margin-left: 10px;
+			}
+		}
 	}
 }

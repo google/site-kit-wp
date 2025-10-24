@@ -442,4 +442,69 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$this->assertEquals( 'test_client_id.apps.googleusercontent.com', $inline_modules_data['sign-in-with-google']['existingClientID'], 'Inline data should include existingClientID when option set.' );
 	}
+
+	public function test_shortcode_is_registered() {
+		$this->module->register();
+
+		$this->assertTrue( shortcode_exists( 'site_kit_sign_in_with_google' ), 'Shortcode should be registered.' );
+	}
+
+	public function test_render_siwg_shortcode__outputs_button_div() {
+		$this->module->register();
+
+		$output = do_shortcode( '[site_kit_sign_in_with_google]' );
+
+		$this->assertStringContainsString( '<div', $output, 'Shortcode output should contain a div element.' );
+		$this->assertStringContainsString( 'class="googlesitekit-sign-in-with-google__frontend-output-button"', $output, 'Shortcode output should contain the correct class.' );
+	}
+
+	public function test_render_siwg_shortcode__with_attributes() {
+		$this->module->register();
+
+		// The shortcode doesn't directly accept attributes, but it should still render the button
+		// using the action which can be customized via filters/hooks.
+		$output = do_shortcode( '[site_kit_sign_in_with_google]' );
+
+		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'Shortcode should render button with default class.' );
+	}
+
+	public function test_render_siwg_shortcode__returns_string() {
+		$this->module->register();
+
+		$output = do_shortcode( '[site_kit_sign_in_with_google]' );
+
+		$this->assertIsString( $output, 'Shortcode should return a string.' );
+		$this->assertNotEmpty( $output, 'Shortcode output should not be empty.' );
+	}
+
+	public function test_get_feature_metrics() {
+		$this->module->register();
+		$this->module->get_settings()->register();
+		update_option( Sign_In_With_Google_Settings::OPTION, array( 'oneTapEnabled' => true ) );
+
+		$feature_metrics = $this->module->get_feature_metrics();
+
+		$this->assertEquals(
+			array(
+				'siwg_onetap' => 1,
+			),
+			$feature_metrics,
+			'Feature metrics should match the expected values.'
+		);
+	}
+
+	public function test_get_feature_metrics__one_tap_not_enabled() {
+		$this->module->register();
+		$this->module->get_settings()->register();
+
+		$feature_metrics = $this->module->get_feature_metrics();
+
+		$this->assertEquals(
+			array(
+				'siwg_onetap' => 0,
+			),
+			$feature_metrics,
+			'Feature metrics should match the expected values.'
+		);
+	}
 }
