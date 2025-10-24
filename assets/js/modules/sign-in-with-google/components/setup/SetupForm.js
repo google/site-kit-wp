@@ -147,12 +147,8 @@ export default function SetupForm() {
 			.select( MODULES_SIGN_IN_WITH_GOOGLE )
 			.getClientID();
 
-		await registry
+		const existingID = await registry
 			.resolveSelect( MODULES_SIGN_IN_WITH_GOOGLE )
-			.getExistingClientID();
-
-		const existingID = registry
-			.select( MODULES_SIGN_IN_WITH_GOOGLE )
 			.getExistingClientID();
 
 		if ( currentClientID === '' && existingID ) {
