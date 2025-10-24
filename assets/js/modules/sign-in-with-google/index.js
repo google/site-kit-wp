@@ -40,9 +40,14 @@ import {
 	NOTIFICATION_AREAS,
 	PRIORITY,
 } from '@/js/googlesitekit/notifications/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_SETTINGS,
+} from '@/js/googlesitekit/constants';
 import SetupSuccessSubtleNotification from './components/dashboard/SetupSuccessSubtleNotification';
 import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
+import CompatibilityWarningSubtleNotification from './components/dashboard/CompatibilityWarningSubtleNotification';
 
 export { registerStore } from './datastore';
 
@@ -99,8 +104,8 @@ export function registerModule( modules ) {
 	} );
 }
 
-export function registerNotifications( notifications ) {
-	notifications.registerNotification( 'sign-in-with-google-setup-cta', {
+export const SIGN_IN_WITH_GOOGLE_NOTIFICATIONS = {
+	'sign-in-with-google-setup-cta': {
 		Component: SignInWithGoogleSetupCTABanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
@@ -130,8 +135,8 @@ export function registerNotifications( notifications ) {
 			return true;
 		},
 		isDismissible: true,
-	} );
-	notifications.registerNotification( 'setup-success-notification-siwg', {
+	},
+	'setup-success-notification-siwg': {
 		Component: SetupSuccessSubtleNotification,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
@@ -148,5 +153,47 @@ export function registerNotifications( notifications ) {
 
 			return false;
 		},
-	} );
+	},
+	'sign-in-with-google-compatibility-warning': {
+		Component: CompatibilityWarningSubtleNotification,
+		priority: PRIORITY.WARNING,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_SETTINGS,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+		],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await resolveSelect( CORE_MODULES ).getModules();
+
+			const isConnected = select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_SIGN_IN_WITH_GOOGLE
+			);
+
+			if ( ! isConnected ) {
+				return false;
+			}
+
+			// Ensure compatibility checks are loaded only when the module is connected.
+			const compatibilityChecks = await resolveSelect(
+				MODULES_SIGN_IN_WITH_GOOGLE
+			).getCompatibilityChecks();
+
+			const errors = compatibilityChecks?.checks || {};
+
+			return Object.keys( errors ).length > 0;
+		},
+		isDismissible: true,
+	},
+};
+
+export function registerNotifications( notifications ) {
+	for ( const [ notificationID, notificationSettings ] of Object.entries(
+		SIGN_IN_WITH_GOOGLE_NOTIFICATIONS
+	) ) {
+		notifications.registerNotification(
+			notificationID,
+			notificationSettings
+		);
+	}
 }

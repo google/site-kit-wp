@@ -58,7 +58,7 @@ const baseResolvers = {
 			.select( MODULES_SIGN_IN_WITH_GOOGLE )
 			.getCompatibilityChecks();
 
-		if ( checks ) {
+		if ( checks !== undefined ) {
 			return;
 		}
 

@@ -1,7 +1,7 @@
 /**
- * Sign in with Google settings components.
+ * Sign in with Google CompatibilityWarningSubtleNotification styles.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,14 @@
  * limitations under the License.
  */
 
-export { default as SignInWithGoogleSetupCTABanner } from './SignInWithGoogleSetupCTABanner';
-export { default as SetupSuccessSubtleNotification } from './SetupSuccessSubtleNotification';
-export { default as CompatibilityWarningSubtleNotification } from './CompatibilityWarningSubtleNotification';
+.googlesitekit-plugin {
+
+	#sign-in-with-google-compatibility-warning {
+		.googlesitekit-notice__description {
+			span {
+				display: block;
+				margin: 3px 0;
+			}
+		}
+	}
+}
