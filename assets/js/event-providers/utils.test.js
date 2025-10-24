@@ -112,9 +112,20 @@ describe( 'Event Providers Utilities', () => {
 
 	describe( 'isLikelyPhone', () => {
 		it.each( [
+			// Valid formatted phone numbers.
 			[ ' 123-456-7890 ', true ],
 			[ ' (123) 456-7890 ', true ],
 			[ '+1 (123) 456-7890', true ],
+			[ '123.456.7890', true ],
+			[ '123 456 7890', true ],
+			// Valid international format.
+			[ '+1234567890', true ],
+			[ '+44 20 7946 0958', true ],
+			// Invalid: plain numeric strings (false positives we want to avoid).
+			[ '1234567890', false ], // Plain 10-digit number (could be order number, ID, etc.).
+			[ '12345678901', false ], // Plain 11-digit number.
+			[ '1234567', false ], // Plain 7-digit number.
+			// Invalid: too short or invalid patterns.
 			[ ' 12345 ', false ],
 			[ 'foo bar', false ],
 			[ '+1 123', false ],
@@ -128,6 +139,21 @@ describe( 'Event Providers Utilities', () => {
 				expect( isLikelyPhone( input ) ).toBe( result );
 			}
 		);
+
+		it( 'should reject plain numeric strings to avoid false positives with order numbers and IDs', () => {
+			// These should NOT be classified as phone numbers.
+			expect( isLikelyPhone( '1234567890' ) ).toBe( false ); // Order number.
+			expect( isLikelyPhone( '1234567' ) ).toBe( false ); // Short ID.
+			expect( isLikelyPhone( '12345678901234' ) ).toBe( false ); // Long ID.
+		} );
+
+		it( 'should accept formatted phone numbers and international format', () => {
+			// These SHOULD be classified as phone numbers.
+			expect( isLikelyPhone( '123-456-7890' ) ).toBe( true ); // Formatted.
+			expect( isLikelyPhone( '(123) 456-7890' ) ).toBe( true ); // Formatted.
+			expect( isLikelyPhone( '+1234567890' ) ).toBe( true ); // International.
+			expect( isLikelyPhone( '+44 20 7946 0958' ) ).toBe( true ); // International formatted.
+		} );
 	} );
 
 	describe( 'classifyPII', () => {
@@ -151,7 +177,7 @@ describe( 'Event Providers Utilities', () => {
 			} );
 		} );
 
-		it( 'should fallback to matching value pattern if type is not specified', () => {
+		it( 'should prioritize email pattern matching over phone pattern matching', () => {
 			expect(
 				classifyPII( {
 					type: 'text',
@@ -242,6 +268,89 @@ describe( 'Event Providers Utilities', () => {
 					name: 'quantity',
 				} )
 			).toBe( null );
+		} );
+
+		it( 'should prioritize context over pattern matching to avoid false positives', () => {
+			// Order number field should NOT be classified as phone even if it's 7+ digits.
+			expect(
+				classifyPII( {
+					type: 'text',
+					value: '1234567890',
+					name: 'order-number',
+					label: 'Order Number',
+				} )
+			).toBe( null );
+
+			// But phone field with numeric value should be classified as phone.
+			expect(
+				classifyPII( {
+					type: 'text',
+					value: '1234567890',
+					name: 'phone',
+					label: 'Phone Number',
+				} )
+			).toEqual( {
+				type: PII_TYPE.PHONE,
+				value: '1234567890',
+			} );
+		} );
+
+		it( 'should use pattern matching as last resort only for formatted phone numbers', () => {
+			// Plain numeric string should NOT be classified without context.
+			expect(
+				classifyPII( {
+					type: 'text',
+					value: '1234567890',
+				} )
+			).toBe( null );
+
+			// But formatted phone number should be classified.
+			expect(
+				classifyPII( {
+					type: 'text',
+					value: '123-456-7890',
+				} )
+			).toEqual( {
+				type: PII_TYPE.PHONE,
+				value: '1234567890',
+			} );
+
+			// International format should be classified.
+			expect(
+				classifyPII( {
+					type: 'text',
+					value: '+1234567890',
+				} )
+			).toEqual( {
+				type: PII_TYPE.PHONE,
+				value: '+1234567890',
+			} );
+		} );
+
+		it( 'should prioritize field type over everything else', () => {
+			// Even if name suggests email, tel type should win.
+			expect(
+				classifyPII( {
+					type: 'tel',
+					value: '123-456-7890',
+					name: 'email-field',
+				} )
+			).toEqual( {
+				type: PII_TYPE.PHONE,
+				value: '1234567890',
+			} );
+
+			// Even if name suggests phone, email type should win.
+			expect(
+				classifyPII( {
+					type: 'email',
+					value: 'test@example.com',
+					name: 'phone-field',
+				} )
+			).toEqual( {
+				type: PII_TYPE.EMAIL,
+				value: 'test@example.com',
+			} );
 		} );
 	} );
 
