@@ -28,6 +28,7 @@ import {
 	OneTapToggle,
 	Preview,
 	SettingsNotice,
+	ShowNextToCommentsToggle,
 } from '@/js/modules/sign-in-with-google/components/common';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
@@ -78,6 +79,9 @@ export default function SettingsForm() {
 				<Row>
 					<Cell size={ 12 }>
 						<OneTapToggle />
+					</Cell>
+					<Cell size={ 12 }>
+						<ShowNextToCommentsToggle />
 					</Cell>
 					<Cell size={ 12 }>
 						<AnyoneCanRegisterReadOnly />

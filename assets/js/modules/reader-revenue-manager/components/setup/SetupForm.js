@@ -115,10 +115,6 @@ export default function SetupForm( { onCompleteSetup } ) {
 		selectPublication,
 	] );
 
-	if ( ! publications ) {
-		return null;
-	}
-
 	return (
 		<form onSubmit={ submitForm }>
 			<StoreErrorNotices
@@ -126,7 +122,7 @@ export default function SetupForm( { onCompleteSetup } ) {
 				storeName={ MODULES_READER_REVENUE_MANAGER }
 			/>
 			<p className="googlesitekit-margin-bottom-0">
-				{ publications.length === 1
+				{ publications?.length === 1
 					? __(
 							'Site Kit will connect your existing publication',
 							'google-site-kit'

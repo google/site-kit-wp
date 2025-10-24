@@ -27,7 +27,6 @@ import {
 	useEffect,
 	useState,
 } from '@wordpress/element';
-import { ESCAPE } from '@wordpress/keycodes';
 import { useDebounce } from '@/js/hooks/useDebounce';
 
 /**
@@ -72,28 +71,6 @@ function ResetButton( { children } ) {
 			debouncedSetInProgress( false );
 		}
 	}, [ isDoingReset, isNavigatingToPostResetURL, debouncedSetInProgress ] );
-
-	useEffect( () => {
-		function handleCloseModal( event ) {
-			if ( ESCAPE === event.keyCode ) {
-				// Only close the modal if the "Escape" key is pressed.
-				setDialogActive( false );
-			}
-		}
-
-		if ( dialogActive ) {
-			// When the dialogActive changes and it is set to true(has opened), add the event listener.
-			global.addEventListener( 'keyup', handleCloseModal, false );
-		}
-		// Remove the event listener when the dialog is removed; there's no need
-		// to have it attached when it won't be used.
-		return () => {
-			if ( dialogActive ) {
-				// When the dialogActive is true(is open) and its value changes, remove the event listener.
-				global.removeEventListener( 'keyup', handleCloseModal );
-			}
-		};
-	}, [ dialogActive ] );
 
 	const { reset } = useDispatch( CORE_SITE );
 	const { navigateTo } = useDispatch( CORE_LOCATION );

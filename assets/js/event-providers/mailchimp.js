@@ -41,7 +41,7 @@ import { classifyPII, getUserData } from './utils';
 /**
  * Extracts and classifies user data from a Mailchimp form submission.
  *
- * @since n.e.x.t
+ * @since 1.164.0
  *
  * @param {HTMLFormElement} form The submitted form element.
  * @param {Object}          data The submitted form's data.

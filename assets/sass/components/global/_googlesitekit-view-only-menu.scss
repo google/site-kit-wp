@@ -100,6 +100,59 @@
 			flex: 0 0 24px;
 		}
 
+		.googlesitekit-view-only-menu__email-reporting {
+			padding: 0;
+			transition: background-color 0.3s;
+
+			&:hover {
+				background-color: $c-interactive-tertiary-hover;
+			}
+		}
+
+		.googlesitekit-view-only-menu__email-reporting-item {
+			display: flex;
+			gap: 8px;
+			margin-bottom: 0;
+
+			.mdc-button {
+				color: $c-surfaces-on-surface;
+				justify-content: flex-start;
+				padding: 0 32px;
+				width: 100%;
+
+				&:hover {
+					background: transparent;
+				}
+
+				&::after,
+				&::before {
+					background-color: transparent;
+				}
+
+				&.mdc-ripple-upgraded--background-focused {
+					background-color: transparent;
+				}
+			}
+
+			svg {
+				padding: 2px;
+				width: 24px;
+			}
+		}
+
+		.googlesitekit-view-only-menu__email-reporting-item--icon {
+			align-items: center;
+			display: flex;
+			flex: 0 0 24px;
+			justify-content: center;
+			margin-right: 7px;
+		}
+
+		.googlesitekit-view-only-menu__email-reporting-item--name {
+			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
+		}
+
 		.googlesitekit-view-only-menu__service--name {
 			font-size: $fs-body-md;
 			letter-spacing: $ls-s;

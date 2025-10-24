@@ -126,6 +126,129 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertStringContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output, 'Button should render when HTTPS and clientID set.' );
 	}
 
+	public function test_render_button_in_wp_comments() {
+		update_option( 'home', 'http://example.com/' );
+		update_option( 'siteurl', 'http://example.com/' );
+
+		// Navigate to a singular post.
+		$post_id = $this->factory()->post->create();
+		$this->go_to( get_permalink( $post_id ) );
+
+		$this->module->register();
+		$this->module->get_settings()->register();
+
+		// Does not render the if the site does not allow users to register.
+		$this->module->get_settings()->set(
+			array(
+				'clientID'                  => '1234567890.googleusercontent.com',
+				'showNextToCommentsEnabled' => true,
+			)
+		);
+		update_option( 'users_can_register', false );
+		$output = apply_filters( 'comment_form_after_fields', '' );
+		$this->assertNull( $output, 'Button should not render when site does not have open user registration.' );
+
+		// Update site URL to https.
+		$_SERVER['HTTPS']       = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
+		$_SERVER['SCRIPT_NAME'] = wp_login_url(); // Required because is_login() uses this var.
+		update_option( 'siteurl', 'https://example.com/' );
+		update_option( 'home', 'https://example.com/' );
+
+		// Does not render if Show next to comments is not enabled.
+		$this->module->get_settings()->set(
+			array(
+				'clientID'                  => '1234567890.googleusercontent.com',
+				'showNextToCommentsEnabled' => false,
+			)
+		);
+		update_option( 'users_can_register', true );
+		$output = apply_filters( 'comment_form_after_fields', '' );
+		$this->assertNull( $output, 'Button should not render when Show next to comments is not enabled.' );
+
+		// Renders the button when both open user registration and the Show
+		// next to comments setting are enabled.
+		$this->module->get_settings()->set(
+			array(
+				'clientID'                  => '1234567890.googleusercontent.com',
+				'showNextToCommentsEnabled' => true,
+			)
+		);
+		update_site_option( 'users_can_register', true );
+
+		// Render the button.
+		ob_start();
+		comment_form( array(), $post_id );
+		$output = ob_get_clean();
+
+		$this->assertStringContainsString( "<div class=\"googlesitekit-sign-in-with-google__frontend-output-button googlesitekit-sign-in-with-google__comments-form-button googlesitekit-sign-in-with-google__comments-form-button-postid-$post_id", $output, 'Button should render when when both open user registration and the Shownext to comments setting are enabled.' );
+	}
+
+	/**
+	 * @dataProvider provide_button_markup_data
+	 */
+	public function test_render_sign_in_with_google_button( $args, $expected_strings ) {
+		$this->module->register();
+
+		ob_start();
+		do_action( 'googlesitekit_render_sign_in_with_google_button', $args );
+		$output = ob_get_clean();
+
+		foreach ( $expected_strings as $expected_string ) {
+			$this->assertStringContainsString( $expected_string, $output, 'Expected string not found in output.' );
+		}
+	}
+
+	public function provide_button_markup_data() {
+		return array(
+			'default markup'                       => array(
+				array(),
+				array( 'class="googlesitekit-sign-in-with-google__frontend-output-button"' ),
+			),
+			'with extra class'                     => array(
+				array( 'class' => 'extra-class' ),
+				array( 'class="googlesitekit-sign-in-with-google__frontend-output-button extra-class"' ),
+			),
+			'with valid data attributes'           => array(
+				array(
+					'text'  => 'continue_with',
+					'theme' => 'filled_blue',
+					'shape' => 'pill',
+				),
+				array(
+					'data-googlesitekit-siwg-text="continue_with"',
+					'data-googlesitekit-siwg-theme="filled_blue"',
+					'data-googlesitekit-siwg-shape="pill"',
+				),
+			),
+			'with class and valid data attributes' => array(
+				array(
+					'class' => 'extra-class',
+					'text'  => 'continue_with',
+					'theme' => 'filled_blue',
+					'shape' => 'pill',
+				),
+				array(
+					'class="googlesitekit-sign-in-with-google__frontend-output-button extra-class"',
+					'data-googlesitekit-siwg-text="continue_with"',
+					'data-googlesitekit-siwg-theme="filled_blue"',
+					'data-googlesitekit-siwg-shape="pill"',
+				),
+			),
+			'does not omit invalid values'         => array(
+				array(
+					'text'  => 'invalid value',
+					'theme' => 'filled@blue',
+					'shape' => 'pill',
+				),
+				array(
+					'data-googlesitekit-siwg-text="invalid value"',
+					'data-googlesitekit-siwg-theme="filled@blue"',
+					'data-googlesitekit-siwg-shape="pill"',
+				),
+			),
+		);
+	}
+
 	public function test_handle_disconnect_user__bad_nonce() {
 		$this->module->register();
 
@@ -318,5 +441,70 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
 		$this->assertEquals( 'test_client_id.apps.googleusercontent.com', $inline_modules_data['sign-in-with-google']['existingClientID'], 'Inline data should include existingClientID when option set.' );
+	}
+
+	public function test_shortcode_is_registered() {
+		$this->module->register();
+
+		$this->assertTrue( shortcode_exists( 'site_kit_sign_in_with_google' ), 'Shortcode should be registered.' );
+	}
+
+	public function test_render_siwg_shortcode__outputs_button_div() {
+		$this->module->register();
+
+		$output = do_shortcode( '[site_kit_sign_in_with_google]' );
+
+		$this->assertStringContainsString( '<div', $output, 'Shortcode output should contain a div element.' );
+		$this->assertStringContainsString( 'class="googlesitekit-sign-in-with-google__frontend-output-button"', $output, 'Shortcode output should contain the correct class.' );
+	}
+
+	public function test_render_siwg_shortcode__with_attributes() {
+		$this->module->register();
+
+		// The shortcode doesn't directly accept attributes, but it should still render the button
+		// using the action which can be customized via filters/hooks.
+		$output = do_shortcode( '[site_kit_sign_in_with_google]' );
+
+		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'Shortcode should render button with default class.' );
+	}
+
+	public function test_render_siwg_shortcode__returns_string() {
+		$this->module->register();
+
+		$output = do_shortcode( '[site_kit_sign_in_with_google]' );
+
+		$this->assertIsString( $output, 'Shortcode should return a string.' );
+		$this->assertNotEmpty( $output, 'Shortcode output should not be empty.' );
+	}
+
+	public function test_get_feature_metrics() {
+		$this->module->register();
+		$this->module->get_settings()->register();
+		update_option( Sign_In_With_Google_Settings::OPTION, array( 'oneTapEnabled' => true ) );
+
+		$feature_metrics = $this->module->get_feature_metrics();
+
+		$this->assertEquals(
+			array(
+				'siwg_onetap' => 1,
+			),
+			$feature_metrics,
+			'Feature metrics should match the expected values.'
+		);
+	}
+
+	public function test_get_feature_metrics__one_tap_not_enabled() {
+		$this->module->register();
+		$this->module->get_settings()->register();
+
+		$feature_metrics = $this->module->get_feature_metrics();
+
+		$this->assertEquals(
+			array(
+				'siwg_onetap' => 0,
+			),
+			$feature_metrics,
+			'Feature metrics should match the expected values.'
+		);
 	}
 }

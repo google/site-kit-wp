@@ -13,14 +13,14 @@ namespace Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks;
 /**
  * Compatibility check for conflicting plugins.
  *
- * @since n.e.x.t
+ * @since 1.164.0
  */
 class Conflicting_Plugins_Check extends Compatibility_Check {
 
 	/**
 	 * Gets the unique slug for this compatibility check.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @return string The unique slug for this compatibility check.
 	 */
@@ -31,13 +31,14 @@ class Conflicting_Plugins_Check extends Compatibility_Check {
 	/**
 	 * Runs the compatibility check.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @return array|false Array of conflicting plugins data if found, false otherwise.
 	 */
 	public function run() {
-		$active_plugins   = get_option( 'active_plugins', array() );
-		$security_plugins = array(
+		$conflicting_plugins = array();
+		$active_plugins      = get_option( 'active_plugins', array() );
+		$security_plugins    = array(
 			'better-wp-security/better-wp-security.php',
 			'security-malware-firewall/security-malware-firewall.php',
 			'sg-security/sg-security.php',
@@ -49,21 +50,25 @@ class Conflicting_Plugins_Check extends Compatibility_Check {
 			'wps-hide-login/wps-hide-login.php',
 		);
 
-		$conflicting_plugins = array();
 		foreach ( $active_plugins as $plugin_slug ) {
-			if ( isset( $security_plugins[ $plugin_slug ] ) ) {
-				$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_slug );
-				$plugin_name = $plugin_data['Name'];
-
-				$conflicting_plugins[ $plugin_slug ] = array(
-					'pluginName'      => $plugin_name,
-					'conflictMessage' => sprintf(
-						/* translators: %s: plugin name */
-						__( '%s may prevent Sign in with Google from working properly.', 'google-site-kit' ),
-						$plugin_name
-					),
-				);
+			// If the plugin isn't in our array of known plugins with issues,
+			// try the next plugin slug in the list of active plugins
+			// (eg. "exit early").
+			if ( ! in_array( $plugin_slug, $security_plugins, true ) ) {
+				continue;
 			}
+
+			$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_slug );
+			$plugin_name = $plugin_data['Name'];
+
+			$conflicting_plugins[ $plugin_slug ] = array(
+				'pluginName'      => $plugin_name,
+				'conflictMessage' => sprintf(
+					/* translators: %s: plugin name */
+					__( '%s may prevent Sign in with Google from working properly.', 'google-site-kit' ),
+					$plugin_name
+				),
+			);
 		}
 
 		return ! empty( $conflicting_plugins ) ? $conflicting_plugins : false;

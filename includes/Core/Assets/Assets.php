@@ -645,6 +645,17 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-sign-in-with-google-comments',
+				array(
+					'src'           => $base_url . 'js/googlesitekit-sign-in-with-google-comments.js',
+					'dependencies'  => array(
+						'googlesitekit-tracking-data',
+						'googlesitekit-data',
+					),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+				)
+			),
+			new Script(
 				'googlesitekit-ad-blocking-recovery',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-ad-blocking-recovery.js',
@@ -875,6 +886,7 @@ final class Assets {
 			'user' => array(
 				'id'      => $current_user->ID,
 				'email'   => $current_user->user_email,
+				'wpEmail' => $current_user->user_email, // Preserved for features that need the original WP email (email gets overridden during proxy auth).
 				'name'    => $current_user->display_name,
 				'picture' => get_avatar_url( $current_user->user_email ),
 			),

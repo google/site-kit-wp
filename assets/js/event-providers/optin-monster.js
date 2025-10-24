@@ -44,7 +44,7 @@ global.document.addEventListener( 'om.Analytics.track', ( { detail } ) => {
 /**
  * Extracts and classifies user data from an OptinMonster form submission.
  *
- * @since n.e.x.t
+ * @since 1.164.0
  *
  * @param {Object} form OptinMonster form object.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.

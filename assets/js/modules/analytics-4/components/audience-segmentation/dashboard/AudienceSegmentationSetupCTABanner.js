@@ -36,7 +36,10 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '@/js/modules/analytics-4/datastore/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
@@ -61,7 +64,7 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 	const viewContext = useViewContext();
 	const trackEventCategory = `${ viewContext }_audiences-setup-cta-dashboard`;
 
-	const { dismissNotification, registerNotification } =
+	const { dismissNotification, registerNotification, pinNotification } =
 		useDispatch( CORE_NOTIFICATIONS );
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -106,10 +109,16 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 		setShowErrorModal( true );
 	}, [ setShowErrorModal ] );
 
+	const onOAuthNavigation = useCallback(
+		() => pinNotification( id, NOTIFICATION_GROUPS.SETUP_CTAS ),
+		[ id, pinNotification ]
+	);
+
 	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
 		useEnableAudienceGroup( {
 			onSuccess,
 			onError,
+			onOAuthNavigation,
 		} );
 
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );
@@ -126,6 +135,10 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 
 	const setupErrorCode = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorCode()
+	);
+
+	const learnMoreLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'visitor-groups' )
 	);
 
 	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
@@ -149,6 +162,9 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 						'Understand what brings new visitors to your site and keeps them coming back. Site Kit can now group your site visitors into relevant segments like "new" and "returning". To set up these new groups, Site Kit needs to update your Google Analytics property.',
 						'google-site-kit'
 					) }
+					learnMoreLink={ {
+						href: learnMoreLink,
+					} }
 					ctaButton={ {
 						label: isSaving
 							? __( 'Enabling groups', 'google-site-kit' )

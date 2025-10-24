@@ -13,14 +13,14 @@ namespace Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks;
 /**
  * Abstract base class for compatibility checks.
  *
- * @since n.e.x.t
+ * @since 1.164.0
  */
 abstract class Compatibility_Check {
 
 	/**
 	 * Gets the unique slug for this compatibility check.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @return string The unique slug for this compatibility check.
 	 */
@@ -29,7 +29,7 @@ abstract class Compatibility_Check {
 	/**
 	 * Runs the compatibility check.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @return array The result of the compatibility check.
 	 */

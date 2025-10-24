@@ -159,17 +159,54 @@ class Conversion_TrackingTest extends TestCase {
 	}
 
 	public function test_get_feature_metrics() {
-		$this->conversion_tracking_settings->set( array( 'enabled' => true ) );
 		$feature_metrics = $this->conversion_tracking->get_feature_metrics();
 
 		$this->assertEquals(
 			array(
-				'conversion_tracking_enabled'   => true,
-				'conversion_tracking_providers' => array( FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ),
-				'conversion_tracking_events'    => array( 'test-event' ),
+				'conversion_tracking_enabled'    => true,
+				'conversion_tracking_providers'  => array( FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ),
+				'conversion_tracking_events'     => array( 'fake_event_active_1', 'fake_event_active_2' ),
+				'conversion_tracking_events_enh' => array( 'fake_event_active_2' ),
 			),
 			$feature_metrics,
 			'Feature metrics should match the expected values.'
+		);
+	}
+
+	public function test_get_supported_conversion_events() {
+		$events = $this->conversion_tracking->get_supported_conversion_events();
+
+		$this->assertEquals(
+			array(
+				'fake_event_active_1',
+				'fake_event_active_2',
+			),
+			$events,
+			'Supported conversion events should match the expected values.'
+		);
+	}
+
+	public function test_get_supported_conversion_events__no_active_providers() {
+		Conversion_Tracking::$providers = array();
+
+		$events = $this->conversion_tracking->get_supported_conversion_events();
+
+		$this->assertEquals(
+			array(),
+			$events,
+			'Supported conversion events should be an empty array when there are no active providers.'
+		);
+	}
+
+	public function test_get_enhanced_conversion_events() {
+		$events = $this->conversion_tracking->get_enhanced_conversion_events();
+
+		$this->assertEquals(
+			array(
+				'fake_event_active_2', // Only this event is defined as enhanced in the active provider.
+			),
+			$events,
+			'Enhanced conversion events should match the expected values.'
 		);
 	}
 }
