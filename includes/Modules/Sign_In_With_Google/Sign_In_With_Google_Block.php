@@ -89,23 +89,19 @@ class Sign_In_With_Google_Block {
 			return '';
 		}
 
-		$attributes = is_array( $attributes ) ? $attributes : array();
-
+		$attributes  = is_array( $attributes ) ? $attributes : array();
 		$button_args = array();
 
-		$text_values = wp_list_pluck( Settings::TEXTS, 'value' );
-		if ( ! empty( $attributes['text'] ) && in_array( $attributes['text'], $text_values, true ) ) {
-			$button_args['text'] = $attributes['text'];
-		}
+		$allowed_attributes = array(
+			'text'  => wp_list_pluck( Settings::TEXTS, 'value' ),
+			'theme' => wp_list_pluck( Settings::THEMES, 'value' ),
+			'shape' => wp_list_pluck( Settings::SHAPES, 'value' ),
+		);
 
-		$theme_values = wp_list_pluck( Settings::THEMES, 'value' );
-		if ( ! empty( $attributes['theme'] ) && in_array( $attributes['theme'], $theme_values, true ) ) {
-			$button_args['theme'] = $attributes['theme'];
-		}
-
-		$shape_values = wp_list_pluck( Settings::SHAPES, 'value' );
-		if ( ! empty( $attributes['shape'] ) && in_array( $attributes['shape'], $shape_values, true ) ) {
-			$button_args['shape'] = $attributes['shape'];
+		foreach ( array( 'text', 'theme', 'shape' ) as $key ) {
+			if ( ! empty( $attributes[ $key ] ) && in_array( $attributes[ $key ], $allowed_attributes[ $key ], true ) ) {
+				$button_args[ $key ] = $attributes[ $key ];
+			}
 		}
 
 		if ( ! empty( $attributes['buttonClassName'] ) && is_string( $attributes['buttonClassName'] ) ) {
