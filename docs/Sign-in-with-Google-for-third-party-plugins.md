@@ -374,7 +374,7 @@ The button container can be styled using CSS. The default class is always presen
 
 1. **Do not replicate the HTML output** - Always use the PHP action or shortcode. The implementation may change in future versions of Site Kit.
 
-2. **Requires Site Kit 1.137.0 or later** - The Sign in with Google module was introduced in this version. The shortcode feature was added in a later version.
+2. **Requires Site Kit 1.164.0 or later** - The Sign in with Google module was introduced in this version. The shortcode feature was added in a later version.
 
 3. **Requires HTTPS** - This is a Google requirement for secure authentication.
 
