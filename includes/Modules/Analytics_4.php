@@ -998,9 +998,14 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->provision_property_webdatastream( $account_id, $account_ticket );
 
 		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			$show_progress = (bool) $input->filter( INPUT_GET, 'show_progress' );
+
 			wp_safe_redirect(
 				$this->context->admin_url(
 					'key-metrics-setup',
+					array(
+						'showProgress' => $show_progress ? 'true' : null,
+					)
 				)
 			);
 			exit;
@@ -1240,6 +1245,10 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				$account_ticket_request->setSiteSecret( $credentials['oauth2_client_secret'] );
 				$account_ticket_request->setRedirectUri( $this->get_provisioning_redirect_uri() );
 				$account_ticket_request->setAccount( $account );
+
+				if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+					$account_ticket_request->setShowProgress( isset( $data['showProgress'] ) ? (bool) $data['showProgress'] : false );
+				}
 
 				return $this->get_service( 'analyticsprovisioning' )
 					->accounts->provisionAccountTicket( $account_ticket_request );
