@@ -26,6 +26,7 @@ import {
 import { render } from '../../../../../../tests/js/test-utils';
 import SetupForm from './SetupForm';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 describe( 'SetupForm', () => {
 	let registry;
@@ -99,5 +100,35 @@ describe( 'SetupForm', () => {
 				'Sign in with Google was already set up on this site. We recommend using your existing Client ID.'
 			)
 		).toBeInTheDocument();
+	} );
+
+	it( 'should render the one tap and show next to comments toggles when anyone can register', async () => {
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			anyoneCanRegister: 1,
+		} );
+		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).receiveGetSettings( {
+			oneTapEnabled: false,
+			showNextToCommentsEnabled: false,
+		} );
+		const { container, getByLabelText, waitForRegistry } = render(
+			<SetupForm onCompleteSetup={ () => {} } />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+
+		const oneTapSwitchControl = getByLabelText( 'Enable One Tap sign in' );
+		expect( oneTapSwitchControl ).toBeInTheDocument();
+		expect( oneTapSwitchControl ).toBeChecked();
+
+		const showNextToCommentsSwitchControl = getByLabelText(
+			'Show next to comments'
+		);
+		expect( showNextToCommentsSwitchControl ).toBeInTheDocument();
+		expect( showNextToCommentsSwitchControl ).toBeChecked();
 	} );
 } );
