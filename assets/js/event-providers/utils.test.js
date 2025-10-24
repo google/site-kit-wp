@@ -340,7 +340,7 @@ describe( 'Event Providers Utilities', () => {
 				value: '1234567890',
 			} );
 
-			// Even if name suggests phone, email type should win
+			// Even if name suggests phone, email type should win.
 			expect(
 				classifyPII( {
 					type: 'email',
