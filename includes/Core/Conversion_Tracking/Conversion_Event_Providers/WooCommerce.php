@@ -69,6 +69,17 @@ class WooCommerce extends Conversion_Events_Provider {
 	}
 
 	/**
+	 * Gets the enhanced conversion event names that are tracked by this provider.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of enhanced conversion event names.
+	 */
+	public function get_enhanced_event_names() {
+		return array( 'add_to_cart', 'purchase' );
+	}
+
+	/**
 	 * Gets the conversion event names that are tracked by Google Analytics for WooCommerce provider.
 	 *
 	 * @since 1.154.0
