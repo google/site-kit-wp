@@ -41,7 +41,7 @@ exports[`Header should have only the initial stub segment when setupFlowRefresh 
           class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
         >
           <button
-            class="mdc-button mdc-button--tertiary"
+            class="mdc-button googlesitekit-header__exit-button mdc-button--tertiary"
             target="_self"
           >
             <span
@@ -419,7 +419,7 @@ exports[`Header should render the progress indicator in the header when setupFlo
           class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
         >
           <button
-            class="mdc-button mdc-button--tertiary"
+            class="mdc-button googlesitekit-header__exit-button mdc-button--tertiary"
             target="_self"
           >
             <span

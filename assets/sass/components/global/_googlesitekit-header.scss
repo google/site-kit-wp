@@ -17,7 +17,6 @@
  */
 
 .googlesitekit-plugin {
-
 	.googlesitekit-subheader {
 		background-color: $c-base;
 		position: relative;
@@ -29,7 +28,6 @@
 	}
 
 	.googlesitekit-header {
-
 		@include googlesitekit-inner-padding;
 		background-color: $c-base;
 		left: 0;
@@ -50,7 +48,6 @@
 		}
 
 		body.admin-bar & {
-
 			@media (min-width: $width-tablet + 1 + px) {
 				top: 46px;
 			}
@@ -130,9 +127,7 @@
 		}
 
 		.googlesitekit-date-range-selector {
-
 			@media (max-width: $bp-mobileOnly) {
-
 				background: none;
 			}
 
@@ -166,7 +161,6 @@
 				}
 
 				svg {
-
 					@media (max-width: $bp-mobileOnly) {
 						margin-right: 0;
 					}
@@ -210,6 +204,10 @@
 					display: inline-block;
 				}
 			}
+		}
+
+		.googlesitekit-header__exit-button {
+			font-family: $f-secondary;
 		}
 	}
 }

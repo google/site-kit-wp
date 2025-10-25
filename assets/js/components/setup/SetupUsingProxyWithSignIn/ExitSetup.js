@@ -41,7 +41,11 @@ export default function ExitSetup() {
 	}
 
 	return (
-		<Button onClick={ handleClick } tertiary>
+		<Button
+			className="googlesitekit-header__exit-button"
+			onClick={ handleClick }
+			tertiary
+		>
 			{ __( 'Exit setup', 'google-site-kit' ) }
 		</Button>
 	);
