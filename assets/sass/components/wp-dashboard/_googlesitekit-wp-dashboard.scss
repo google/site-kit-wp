@@ -142,27 +142,3 @@
 		width: 100% !important;
 	}
 }
-
-.googlesitekit-pointer-with-dismiss-icon {
-
-	.googlesitekit-pointer-cta--dismiss {
-		align-items: center;
-		border: none;
-		border-radius: 50%;
-		display: flex;
-		justify-content: center;
-		position: absolute;
-		right: 10px;
-		top: 12px;
-
-		&:hover {
-			cursor: pointer;
-		}
-	}
-}
-
-.googlesitekit-email-pointer .wp-pointer-content h3 {
-	&::before {
-		content: "\f466";
-	}
-}

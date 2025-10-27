@@ -115,7 +115,7 @@ class Pointers {
 		$slug    = $pointer->get_slug();
 		$buttons = $pointer->get_buttons();
 		$class   = array( 'wp-pointer' );
-		if ( $pointer->get_with_title_icon() ) {
+		if ( $pointer->get_with_dismiss_icon() ) {
 			$class[] = 'googlesitekit-pointer-with-dismiss-icon';
 		}
 		if ( $pointer->get_class() ) {
@@ -150,7 +150,10 @@ class Pointers {
 					$pointer->get_title(),
 					array(
 						'span'   => array( 'class' => array() ),
-						'button' => array( 'class' => array() ),
+						'button' => array(
+							'class' => array(),
+							'type'  => array(),
+						),
 					)
 				),
 				$content,

@@ -74,7 +74,7 @@ final class Email_Reporting_Pointer {
 			self::SLUG,
 			array(
 				// Title allows limited markup (button/span) sanitized via wp_kses in Pointers::print_pointer_script.
-				'title'           => sprintf(
+				'title'             => sprintf(
 					'%s %s',
 					__( 'Get site insights in your inbox', 'google-site-kit' ),
 					'<button type=\'button\' class=\'googlesitekit-pointer-cta--dismiss dashicons dashicons-no\'>' .
@@ -82,7 +82,7 @@ final class Email_Reporting_Pointer {
 					'</button>'
 				),
 				// Return subtitle and content as HTML with safe tags.
-				'content'         => function () {
+				'content'           => function () {
 					return sprintf(
 						'<h4>%s</h4><p>%s</p>',
 						__( 'Keep track of your site with Site Kit', 'google-site-kit' ),
@@ -90,9 +90,9 @@ final class Email_Reporting_Pointer {
 					);
 				},
 				// Site Kit menu in WP Admin.
-				'target_id'       => 'toplevel_page_googlesitekit-dashboard',
-				'position'        => 'top',
-				'active_callback' => function ( $hook_suffix ) {
+				'target_id'         => 'toplevel_page_googlesitekit-dashboard',
+				'position'          => 'top',
+				'active_callback'   => function ( $hook_suffix ) {
 					// Only on the main WP Dashboard screen.
 					if ( 'index.php' !== $hook_suffix ) {
 						return false;
@@ -131,10 +131,10 @@ final class Email_Reporting_Pointer {
 					return true;
 				},
 				// Add dashicon before title and special className hook.
-				'with_title_icon' => true,
-				'class'           => 'googlesitekit-email-pointer',
+				'with_dismiss_icon' => true,
+				'class'             => 'googlesitekit-email-pointer',
 				// Inline JS function to render CTA button and add delegated handlers for CTA and dismiss.
-				'buttons'         => sprintf(
+				'buttons'           => sprintf(
 					'function(event, container) {
 						jQuery("body").on("click", ".googlesitekit-pointer-cta--dismiss", function() {
 							container.element.pointer("close");

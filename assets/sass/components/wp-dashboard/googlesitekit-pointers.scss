@@ -16,29 +16,6 @@
  * limitations under the License.
  */
 
-.googlesitekit-pointer-with-dismiss-icon {
-	.wp-pointer-content h3 {
-		padding-right: 36px; // space for dismiss button
-		position: relative;
-	}
-	.googlesitekit-pointer-cta--dismiss {
-		align-items: center;
-		background: transparent;
-		border: none;
-		border-radius: 50%;
-		cursor: pointer;
-		display: inline-flex;
-		height: 28px;
-		justify-content: center;
-		position: absolute;
-		right: 0;
-		text-decoration: none;
-		top: 50%;
-		transform: translateY(-50%);
-		width: 28px;
-	}
-}
-
 .googlesitekit-email-pointer {
 	.wp-pointer-content h3::before {
 		content: "\f466"; // Email icon
@@ -57,3 +34,31 @@
 		margin-top: 0;
 	}
 }
+
+.googlesitekit-pointer-with-dismiss-icon {
+	.wp-pointer-content h3 {
+		padding-right: 36px; // space for dismiss button
+		position: relative;
+	}
+
+	.googlesitekit-pointer-cta--dismiss {
+		align-items: center;
+		border: none;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		position: absolute;
+		right: 10px;
+		top: 12px;
+
+		&:hover {
+			cursor: pointer;
+		}
+	}
+}
+
+// .googlesitekit-email-pointer .wp-pointer-content h3 {
+// 	&::before {
+// 		content: "\f466";
+// 	}
+// }

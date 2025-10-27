@@ -128,13 +128,13 @@ class PointersTest extends TestCase {
 					'test-slug-with-buttons',
 					array(
 						// Title contains button/span markup which should be preserved by wp_kses.
-						'title'           => "Title <button class='googlesitekit-pointer-cta--dismiss dashicons dashicons-no'><span class='screen-reader-text'>Dismiss</span></button>",
-						'content'         => 'Test pointer content with buttons.',
-						'target_id'       => 'test-target-buttons',
-						'active_callback' => '__return_true',
-						'with_title_icon' => true,
-						'class'           => 'custom-class',
-						'buttons'         => 'function(event, container) { return jQuery("<button class=\"googlesitekit-pointer-cta button-primary\">Setup</button>"); }',
+						'title'             => "Title <button class='googlesitekit-pointer-cta--dismiss dashicons dashicons-no'><span class='screen-reader-text'>Dismiss</span></button>",
+						'content'           => 'Test pointer content with buttons.',
+						'target_id'         => 'test-target-buttons',
+						'active_callback'   => '__return_true',
+						'with_dismiss_icon' => true,
+						'class'             => 'custom-class',
+						'buttons'           => 'function(event, container) { return jQuery("<button class=\"googlesitekit-pointer-cta button-primary\">Setup</button>"); }',
 					)
 				);
 				return $pointers;
@@ -152,7 +152,7 @@ class PointersTest extends TestCase {
 		// pointerClass should include wp-pointer, computed icon class, and custom class.
 		$this->assertStringContainsString( 'pointerClass:', $output, 'Pointer output should include pointerClass property.' );
 		$this->assertStringContainsString( 'wp-pointer', $output, 'Pointer class should include default wp-pointer.' );
-		$this->assertStringContainsString( 'googlesitekit-pointer-with-dismiss-icon', $output, 'Pointer class should include dismiss icon class when with_title_icon is true.' );
+		$this->assertStringContainsString( 'googlesitekit-pointer-with-dismiss-icon', $output, 'Pointer class should include dismiss icon class when with_dismiss_icon is true.' );
 		$this->assertStringContainsString( 'custom-class', $output, 'Pointer class should include custom class when provided.' );
 
 		// Title markup should be preserved (sanitized) allowing button/span with class.

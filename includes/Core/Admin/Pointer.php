@@ -59,14 +59,14 @@ final class Pointer {
 		$this->args = wp_parse_args(
 			$args,
 			array(
-				'title'           => '',
-				'content'         => '',
-				'target_id'       => '',
-				'position'        => 'top',
-				'active_callback' => null,
-				'buttons'         => null,
-				'with_title_icon' => false,
-				'class'           => '',
+				'title'             => '',
+				'content'           => '',
+				'target_id'         => '',
+				'position'          => 'top',
+				'active_callback'   => null,
+				'buttons'           => null,
+				'with_dismiss_icon' => false,
+				'class'             => '',
 			)
 		);
 	}
@@ -98,27 +98,27 @@ final class Pointer {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string Pointer buttons.
+	 * @return string|null Pointer buttons or null.
 	 */
 	public function get_buttons() {
 		return isset( $this->args['buttons'] ) ? $this->args['buttons'] : null;
 	}
 
 	/**
-	 * Gets the pointer title icon.
+	 * Gets if the pointer should include a dismiss icon.
 	 *
-	 * @since 1.83.0
+	 * @since n.e.x.t
 	 *
-	 * @return string|array Pointer title icon.
+	 * @return boolean Should the Pointer include a dismiss icon.
 	 */
-	public function get_with_title_icon() {
-		return ! empty( $this->args['with_title_icon'] );
+	public function get_with_dismiss_icon() {
+		return ! empty( $this->args['with_dismiss_icon'] );
 	}
 
 	/**
 	 * Gets the pointer custom class.
 	 *
-	 * @since 1.83.0
+	 * @since n.e.x.t
 	 *
 	 * @return string|array Pointer custom class.
 	 */

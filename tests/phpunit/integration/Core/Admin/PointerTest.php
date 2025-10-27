@@ -149,19 +149,19 @@ class PointerTest extends TestCase {
 		$this->assertEquals( $buttons, $pointer->get_buttons(), 'Pointer buttons should match the provided value.' );
 	}
 
-	public function test_get_with_title_icon_and_class() {
+	public function test_get_with_dismiss_icon_and_class() {
 		$pointer = new Pointer(
 			'test-slug',
 			array(
-				'title'           => 'Title',
-				'content'         => 'Content',
-				'target_id'       => 'target',
-				'with_title_icon' => true,
-				'class'           => 'custom-class',
+				'title'             => 'Title',
+				'content'           => 'Content',
+				'target_id'         => 'target',
+				'with_dismiss_icon' => true,
+				'class'             => 'custom-class',
 			)
 		);
 
-		$this->assertTrue( $pointer->get_with_title_icon(), 'Pointer should report with_title_icon as true.' );
+		$this->assertTrue( $pointer->get_with_dismiss_icon(), 'Pointer should report with_dismiss_icon as true.' );
 		$this->assertEquals( 'custom-class', $pointer->get_class(), 'Pointer custom class should match the provided value.' );
 	}
 

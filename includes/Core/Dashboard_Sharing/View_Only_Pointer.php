@@ -20,7 +20,6 @@ use Google\Site_Kit\Core\Permissions\Permissions;
  * @access private
  * @ignore
  */
-// phpcs:ignoreFile
 final class View_Only_Pointer {
 
 	const SLUG = 'googlesitekit-view-only-pointer';
@@ -52,15 +51,16 @@ final class View_Only_Pointer {
 		return new Pointer(
 			self::SLUG,
 			array(
-				'title'           => sprintf( '%s %s',
+				'title'             => sprintf(
+					'%s "<button type="button-link" class="googlesitekit-pointer-cta--dismiss dashicons dashicons-no"> \
+						<span class="screen-reader-text">%s</span> \
+					</button>"',
 					__( 'You now have access to Site Kit', 'google-site-kit' ),
-					"<button type='button-link' class='googlesitekit-pointer-cta--dismiss dashicons dashicons-no'> \
-						<span class='screen-reader-text'>Dismiss this notice.</span> \
-					</button>"
+					__( 'Dismiss this notice.', 'google-site-kit' ),
 				),
-				'content'         => __( 'Check Site Kit’s dashboard to find out how much traffic your site is getting, your most popular pages, top keywords people use to find your site on Search, and more.', 'google-site-kit' ),
-				'target_id'       => 'toplevel_page_googlesitekit-dashboard',
-				'active_callback' => function ( $hook_suffix ) {
+				'content'           => __( 'Check Site Kit’s dashboard to find out how much traffic your site is getting, your most popular pages, top keywords people use to find your site on Search, and more.', 'google-site-kit' ),
+				'target_id'         => 'toplevel_page_googlesitekit-dashboard',
+				'active_callback'   => function ( $hook_suffix ) {
 					if ( 'index.php' !== $hook_suffix
 						|| current_user_can( Permissions::AUTHENTICATE )
 						|| ! current_user_can( Permissions::VIEW_SPLASH )
@@ -81,10 +81,11 @@ final class View_Only_Pointer {
 
 					return true;
 				},
-				'with_title_icon' => true,
-				'class'           => 'googlesitekit-view-only-pointer',
-				'buttons'         =>
-					sprintf('
+				'with_dismiss_icon' => true,
+				'class'             => 'googlesitekit-view-only-pointer',
+				'buttons'           =>
+					sprintf(
+						'
 					 function(event, container) {
 						jQuery("body").on("click", ".googlesitekit-pointer-cta--dismiss", function() {
 							 container.element.pointer("close");
@@ -95,9 +96,11 @@ final class View_Only_Pointer {
 							window.location = "admin.php?page=googlesitekit-dashboard";
 						});
 
-						return jQuery(\'<button class="googlesitekit-pointer-cta button-primary">Setup</button>\');
+						return jQuery(\'<button class="googlesitekit-pointer-cta button-primary">%s</button>\');
 					}
-					', self::SLUG),
+					',
+						__( 'View dashboard', 'google-site-kit' )
+					),
 			)
 		);
 	}
