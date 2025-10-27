@@ -44,6 +44,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { Grid, Row, Cell } from '@/js/material-components';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import ExitSetup from '@/js/components/setup/ExitSetup';
 import Header from '@/js/components/Header';
 import Layout from '@/js/components/layout/Layout';
 import ErrorNotice from '@/js/components/ErrorNotice';
@@ -138,13 +139,17 @@ export default function KeyMetricsSetupApp() {
 
 	const [ showProgress ] = useQueryArg( 'showProgress' );
 
-	const subHeader = !! showProgress ? (
+	const isInitialSetupFlow = !! showProgress;
+
+	const subHeader = isInitialSetupFlow ? (
 		<ProgressIndicator totalSegments={ 6 } currentSegment={ 4 } />
 	) : null;
 
 	return (
 		<Fragment>
-			<Header subHeader={ subHeader } />
+			<Header subHeader={ subHeader }>
+				{ isInitialSetupFlow && <ExitSetup /> }
+			</Header>
 			<div className="googlesitekit-key-metrics-setup">
 				<div className="googlesitekit-module-page">
 					<Grid>
