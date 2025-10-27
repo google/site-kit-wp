@@ -85,11 +85,10 @@ exports[`AudienceCreationNotice should not render the missing scope notice if th
         class="googlesitekit-audience-selection-panel__audience-creation-notice-dismiss"
       >
         <button
-          class="mdc-button googlesitekit-audience-selection-panel__audience-creation-notice-no-thanks mdc-button--tertiary"
-          target="_self"
+          class="googlesitekit-cta-link googlesitekit-cta-link--link-button"
         >
           <span
-            class="mdc-button__label"
+            class="googlesitekit-cta-link__contents"
           >
             No thanks
           </span>
@@ -185,11 +184,10 @@ exports[`AudienceCreationNotice should render the missing scope notice if the us
         class="googlesitekit-audience-selection-panel__audience-creation-notice-dismiss"
       >
         <button
-          class="mdc-button googlesitekit-audience-selection-panel__audience-creation-notice-no-thanks mdc-button--tertiary"
-          target="_self"
+          class="googlesitekit-cta-link googlesitekit-cta-link--link-button"
         >
           <span
-            class="mdc-button__label"
+            class="googlesitekit-cta-link__contents"
           >
             No thanks
           </span>
@@ -312,11 +310,10 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
         class="googlesitekit-audience-selection-panel__audience-creation-notice-dismiss"
       >
         <button
-          class="mdc-button googlesitekit-audience-selection-panel__audience-creation-notice-no-thanks mdc-button--tertiary"
-          target="_self"
+          class="googlesitekit-cta-link googlesitekit-cta-link--link-button"
         >
           <span
-            class="mdc-button__label"
+            class="googlesitekit-cta-link__contents"
           >
             No thanks
           </span>
@@ -380,11 +377,10 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
         class="googlesitekit-audience-selection-panel__audience-creation-notice-dismiss"
       >
         <button
-          class="mdc-button googlesitekit-audience-selection-panel__audience-creation-notice-no-thanks mdc-button--tertiary"
-          target="_self"
+          class="googlesitekit-cta-link googlesitekit-cta-link--link-button"
         >
           <span
-            class="mdc-button__label"
+            class="googlesitekit-cta-link__contents"
           >
             No thanks
           </span>
