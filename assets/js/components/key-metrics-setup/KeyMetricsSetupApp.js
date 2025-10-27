@@ -71,12 +71,16 @@ export default function KeyMetricsSetupApp() {
 	const settings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()
 	);
-	const isSavingSettings = useSelect( ( select ) =>
-		select( CORE_USER ).isSavingUserInputSettings( settings )
-	);
-	const isNavigating = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigating()
-	);
+
+	const isBusy = useSelect( ( select ) => {
+		const isSavingSettings =
+			select( CORE_USER ).isSavingUserInputSettings( settings );
+
+		const isNavigating = select( CORE_LOCATION ).isNavigating();
+
+		return isSavingSettings || isNavigating;
+	} );
+
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
@@ -92,6 +96,18 @@ export default function KeyMetricsSetupApp() {
 			) || []
 	);
 
+	const isSyncing = useSelect( ( select ) => {
+		const isFetchingSyncAvailableCustomDimensions =
+			select(
+				MODULES_ANALYTICS_4
+			).isFetchingSyncAvailableCustomDimensions();
+
+		const isSyncingAudiences =
+			select( MODULES_ANALYTICS_4 ).isSyncingAudiences();
+
+		return isFetchingSyncAvailableCustomDimensions || isSyncingAudiences;
+	} );
+
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
@@ -102,18 +118,6 @@ export default function KeyMetricsSetupApp() {
 			navigateTo( url.toString() );
 		}
 	}, [ saveUserInputSettings, dashboardURL, navigateTo ] );
-
-	const isBusy = isSavingSettings || isNavigating;
-
-	const isFetchingSyncAvailableCustomDimensions = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isFetchingSyncAvailableCustomDimensions()
-	);
-	const isSyncingAudiences = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isSyncingAudiences()
-	);
-
-	const isSyncing =
-		isFetchingSyncAvailableCustomDimensions || isSyncingAudiences;
 
 	const { fetchSyncAvailableCustomDimensions, syncAvailableAudiences } =
 		useDispatch( MODULES_ANALYTICS_4 );
