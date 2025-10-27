@@ -61,10 +61,6 @@ export default function Edit( { attributes, setAttributes, className } ) {
 		return [ DEFAULT_OPTION, ...options ];
 	}
 
-	function getSelectValue( value ) {
-		return value ?? '';
-	}
-
 	function handleSelectChange( attribute, value ) {
 		setAttributes( { [ attribute ]: value || undefined } );
 	}
@@ -104,42 +100,58 @@ export default function Edit( { attributes, setAttributes, className } ) {
 				>
 					<SelectControl
 						label={ __( 'Button shape', 'google-site-kit' ) }
-						value={ getSelectValue( shape ) }
+						value={ shape ?? '' }
 						onChange={ createSelectChangeHandler( 'shape' ) }
 						options={ createSelectOptions(
 							SIGN_IN_WITH_GOOGLE_SHAPES
 						) }
+						// Opt in to new WP components styles (6.7–7.1):
+						// __next40pxDefaultSize - use new 40px height (replaces deprecated 36px)
+						// __nextHasNoMarginBottom - remove legacy bottom margin
+						// Ref: https://github.com/WordPress/gutenberg/pull/61132
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
 					/>
 					<SelectControl
 						label={ __( 'Button text', 'google-site-kit' ) }
-						value={ getSelectValue( text ) }
+						value={ text ?? '' }
 						onChange={ createSelectChangeHandler( 'text' ) }
 						options={ createSelectOptions(
 							SIGN_IN_WITH_GOOGLE_TEXTS
 						) }
+						// Opt in to new WP components styles (6.7–7.1):
+						// __next40pxDefaultSize - use new 40px height (replaces deprecated 36px)
+						// __nextHasNoMarginBottom - remove legacy bottom margin
+						// Ref: https://github.com/WordPress/gutenberg/pull/61132
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
 					/>
 					<SelectControl
 						label={ __( 'Button theme', 'google-site-kit' ) }
-						value={ getSelectValue( theme ) }
+						value={ theme ?? '' }
 						onChange={ createSelectChangeHandler( 'theme' ) }
 						options={ createSelectOptions(
 							SIGN_IN_WITH_GOOGLE_THEMES
 						) }
+						// Opt in to new WP components styles (6.7–7.1):
+						// __next40pxDefaultSize - use new 40px height (replaces deprecated 36px)
+						// __nextHasNoMarginBottom - remove legacy bottom margin
+						// Ref: https://github.com/WordPress/gutenberg/pull/61132
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
 					/>
 					<TextControl
-						label={ __( 'CSS class', 'google-site-kit' ) }
+						label={ __( 'HTML class', 'google-site-kit' ) }
 						help={ __(
-							'Add optional classes to customise the button in the editor and on the frontend.',
+							'Add optional classes to customize the button in the editor and on the frontend.',
 							'google-site-kit'
 						) }
 						value={ buttonClassName || '' }
 						onChange={ handleClassChange }
+						// Opt in to new WP components styles (6.7–7.1):
+						// __next40pxDefaultSize - use new 40px height (replaces deprecated 36px)
+						// __nextHasNoMarginBottom - remove legacy bottom margin
+						// Ref: https://github.com/WordPress/gutenberg/pull/61132
 						__next40pxDefaultSize
 						__nextHasNoMarginBottom
 					/>
