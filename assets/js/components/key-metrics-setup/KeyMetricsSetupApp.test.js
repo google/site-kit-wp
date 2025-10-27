@@ -25,6 +25,7 @@ import {
 	freezeFetch,
 	muteFetch,
 	waitForTimeouts,
+	waitFor,
 } from '../../../../tests/js/test-utils';
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -55,6 +56,10 @@ describe( 'KeyMetricsSetupApp', () => {
 		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
+	const initialSetupSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/initial-setup-settings'
+	);
+
 	// The `UserInputSelectOptions` automatically focuses the first radio/checkbox
 	// 50 milliseconds after it renders, which causes inconsistencies in snapshots,
 	// so we advance the timer to make sure it's focused before we capture the snapshot.
@@ -79,6 +84,7 @@ describe( 'KeyMetricsSetupApp', () => {
 		} );
 
 		muteFetch( audienceSettingsEndpoint );
+		muteFetch( initialSetupSettingsEndpoint );
 
 		registry
 			.dispatch( CORE_MODULES )
@@ -163,6 +169,10 @@ describe( 'KeyMetricsSetupApp', () => {
 	} );
 
 	it( 'should navigate to the dashboard when saving is successful', async () => {
+		fetchMock.postOnce( initialSetupSettingsEndpoint, {
+			body: { initialSetupSettings: true },
+		} );
+
 		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
 			body: {
 				purpose: {
@@ -183,11 +193,54 @@ describe( 'KeyMetricsSetupApp', () => {
 		fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
 		fireEvent.click( getByRole( 'button', { name: 'Complete setup' } ) );
 
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&showSuccess=true'
+			);
+		} );
+	} );
+
+	it( 'should call saveInitialSetupSettings with isAnalyticsSetupComplete:true after successful setup', async () => {
+		fetchMock.getOnce( initialSetupSettingsEndpoint, {
+			body: { isAnalyticsSetupComplete: null },
+			status: 200,
+		} );
+
+		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
+			body: {
+				purpose: {
+					values: [ 'publish_blog' ],
+					scope: 'site',
+				},
+			},
+			status: 200,
+		} );
+
+		fetchMock.postOnce( initialSetupSettingsEndpoint, {
+			body: { isAnalyticsSetupComplete: true },
+			status: 200,
+		} );
+
+		const { getByRole, waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
 		await waitForRegistry();
 
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
-		);
+		fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
+		fireEvent.click( getByRole( 'button', { name: 'Complete setup' } ) );
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( initialSetupSettingsEndpoint, {
+				method: 'POST',
+				body: {
+					data: {
+						settings: { isAnalyticsSetupComplete: true },
+					},
+				},
+			} );
+		} );
 	} );
 
 	it( 'should show an error when the save fails', async () => {

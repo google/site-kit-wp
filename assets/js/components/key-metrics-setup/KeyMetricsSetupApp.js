@@ -91,16 +91,26 @@ export default function KeyMetricsSetupApp() {
 			) || []
 	);
 
-	const { saveUserInputSettings } = useDispatch( CORE_USER );
+	const { saveUserInputSettings, saveInitialSetupSettings } =
+		useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const submitChanges = useCallback( async () => {
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
 			const url = new URL( dashboardURL );
+			await saveInitialSetupSettings( {
+				isAnalyticsSetupComplete: true,
+			} );
+			url.searchParams.set( 'showSuccess', 'true' );
 			navigateTo( url.toString() );
 		}
-	}, [ saveUserInputSettings, dashboardURL, navigateTo ] );
+	}, [
+		saveUserInputSettings,
+		dashboardURL,
+		saveInitialSetupSettings,
+		navigateTo,
+	] );
 
 	const isBusy = isSavingSettings || isNavigating;
 
