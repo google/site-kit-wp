@@ -131,13 +131,6 @@
 			}
 		}
 
-		.googlesitekit-audience-selection-panel__audience-creation-notice-header {
-			display: flex;
-
-			// No close icon now; keep layout start aligned.
-			justify-content: flex-start;
-		}
-
 		p.googlesitekit-audience-selection-panel__audience-creation-notice-title {
 			color: $c-surfaces-on-surface-variant;
 			font-family: $f-primary;
@@ -147,8 +140,6 @@
 			line-height: $lh-label-sm;
 			margin: 0;
 		}
-
-		// Removed close (X) button styles as per enhancement/9980.
 
 		.googlesitekit-audience-selection-panel__audience-creation-notice-body {
 			display: flex;
@@ -210,14 +201,18 @@
 			justify-content: flex-end;
 			margin-top: 4px;
 
-			.mdc-button {
+			.googlesitekit-cta-link {
 				color: $c-surfaces-on-surface;
-				min-height: auto;
-				padding-right: 0;
+				font-weight: 500;
+				padding: 14px 5px;
 
 				&:hover {
+					text-decoration: none;
+				}
+
+				&:active,
+				&:focus {
 					background-color: transparent;
-					color: $c-surfaces-on-surface-variant;
 				}
 			}
 		}

@@ -46,7 +46,7 @@ import {
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
-import Button from '@/js/googlesitekit/components-gm2/Button';
+import Link from '@/js/components/Link';
 import SpinnerButton, {
 	SPINNER_POSITION,
 } from '@/js/googlesitekit/components-gm2/SpinnerButton';
@@ -321,13 +321,9 @@ export default function AudienceCreationNotice() {
 						</div>
 					) ) }
 				<div className="googlesitekit-audience-selection-panel__audience-creation-notice-dismiss">
-					<Button
-						className="googlesitekit-audience-selection-panel__audience-creation-notice-no-thanks"
-						onClick={ onCloseClick }
-						tertiary
-					>
+					<Link onClick={ onCloseClick } linkButton>
 						{ __( 'No thanks', 'google-site-kit' ) }
-					</Button>
+					</Link>
 				</div>
 			</div>
 			{ ! hasAnalytics4EditScope && ! isEditScopeNoticeDismissed && (

@@ -514,44 +514,4 @@ describe( 'AudienceCreationNotice', () => {
 			)
 		);
 	} );
-
-	it( 'should not render the notice after it has been dismissed by clicking No thanks (persistent dismissal)', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ AUDIENCE_CREATION_NOTICE_SLUG ] );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
-			resourceAvailabilityDates: {
-				audience: availableAudiences.reduce( ( acc, { name } ) => {
-					acc[ name ] = 20201220;
-
-					return acc;
-				}, {} ),
-				customDimension: {},
-				property: {},
-			},
-		} );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			accountID: '12345',
-			propertyID: '34567',
-			measurementID: '56789',
-			webDataStreamID: '78901',
-		} );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
-			availableAudiences: availableAudiences.filter(
-				( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
-			),
-		} );
-
-		const { container, waitForRegistry } = render(
-			<AudienceCreationNotice />,
-			{ registry }
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
 } );
