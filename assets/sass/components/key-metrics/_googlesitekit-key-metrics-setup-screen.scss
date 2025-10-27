@@ -19,10 +19,41 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-key-metrics-setup {
-		padding: 32px;
-	}
+		margin-bottom: 30px;
 
-	.googlesitekit-key-metrics-setup__description {
-		color: $c-surfaces-on-background-variant;
+		.googlesitekit-key-metrics-setup__title {
+			margin-top: 0;
+		}
+
+		.googlesitekit-key-metrics-setup__heading {
+			margin-bottom: 20px;
+
+			h2 {
+				margin: 0 0 6px;
+			}
+
+			p {
+				color: $c-surfaces-on-background-variant;
+			}
+		}
+
+		.googlesitekit-user-input__select-options-wrapper {
+
+			@media (min-width: $bp-xxxlarge) {
+				padding-left: unset;
+			}
+
+			.googlesitekit-user-input__select-option {
+				border-bottom: 1px solid $c-mercury;
+			}
+
+			.googlesitekit-user-input__select-option:first-child {
+				border-top: 1px solid $c-mercury;
+			}
+		}
+
+		.googlesitekit-user-input__footer {
+			flex-direction: row;
+		}
 	}
 }
