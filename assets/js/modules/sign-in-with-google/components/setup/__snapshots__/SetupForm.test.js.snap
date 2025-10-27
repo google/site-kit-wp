@@ -1,0 +1,433 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SetupForm should render existing client ID message when there is an existing client ID 1`] = `
+<div>
+  <div
+    class="googlesitekit-sign-in-with-google-setup__form"
+  >
+    <div
+      class="googlesitekit-setup-module__panel-item"
+    >
+      <p
+        class="googlesitekit-setup-module__step-description"
+      >
+        To set up Sign in with Google, Site Kit will help you create an “OAuth Client ID“ that will be used to enable Sign in with Google on your website. You will be directed to a page that will allow you to generate an “OAuth Client ID“. 
+        <a
+          aria-label="Learn more (opens in a new tab)"
+          class="googlesitekit-cta-link"
+          href="undefined?doc=sign-in-with-google"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            Learn more
+          </span>
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 5px;"
+          >
+            <svg />
+          </span>
+        </a>
+      </p>
+      <p
+        class="googlesitekit-margin-bottom-0"
+      >
+        Add your client ID here to complete setup:
+      </p>
+      <div
+        class="googlesitekit-setup-module__inputs"
+      >
+        <div
+          class="googlesitekit-settings-module__fields-group"
+        >
+          <div
+            class="mdc-text-field googlesitekit-text-field-client-id mdc-text-field--outlined"
+          >
+            <input
+              class="mdc-text-field__input"
+              id="googlesitekit-textfield-1"
+              maxlength="120"
+              value="existing-client-id.apps.google.com"
+            />
+            <div
+              class="mdc-notched-outline mdc-notched-outline--upgraded mdc-notched-outline--notched"
+            >
+              <div
+                class="mdc-notched-outline__leading"
+              />
+              <div
+                class="mdc-notched-outline__notch"
+              >
+                <label
+                  class="mdc-floating-label mdc-floating-label--float-above"
+                  for="googlesitekit-textfield-1"
+                  style=""
+                >
+                  Client ID
+                </label>
+              </div>
+              <div
+                class="mdc-notched-outline__trailing"
+              />
+            </div>
+          </div>
+          <div
+            class="mdc-text-field-helper-line"
+          >
+            <p
+              aria-hidden="false"
+              class="mdc-text-field-helper-text mdc-text-field-helper-text--persistent"
+            >
+              Sign in with Google was already set up on this site. We recommend using your existing Client ID.
+            </p>
+          </div>
+        </div>
+      </div>
+      <button
+        aria-label="Get your client ID (opens in a new tab)"
+        class="mdc-button googlesitekit-sign-in-with-google-client-id-cta mdc-button--raised mdc-button--inverse"
+        target="_blank"
+      >
+        <span
+          class="mdc-button__label"
+        >
+          Get your client ID
+        </span>
+        <svg />
+      </button>
+    </div>
+    <div
+      class="googlesitekit-setup-module__panel-item googlesitekit-setup-module__panel-item--with-svg"
+    >
+      <svg />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SetupForm should render the form correctly 1`] = `
+<div>
+  <div
+    class="googlesitekit-sign-in-with-google-setup__form"
+  >
+    <div
+      class="googlesitekit-setup-module__panel-item"
+    >
+      <p
+        class="googlesitekit-setup-module__step-description"
+      >
+        To set up Sign in with Google, Site Kit will help you create an “OAuth Client ID“ that will be used to enable Sign in with Google on your website. You will be directed to a page that will allow you to generate an “OAuth Client ID“. 
+        <a
+          aria-label="Learn more (opens in a new tab)"
+          class="googlesitekit-cta-link"
+          href="undefined?doc=sign-in-with-google"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            Learn more
+          </span>
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 5px;"
+          >
+            <svg />
+          </span>
+        </a>
+      </p>
+      <p
+        class="googlesitekit-margin-bottom-0"
+      >
+        Add your client ID here to complete setup:
+      </p>
+      <div
+        class="googlesitekit-setup-module__inputs"
+      >
+        <div
+          class="googlesitekit-settings-module__fields-group"
+        >
+          <div
+            class="mdc-text-field googlesitekit-text-field-client-id mdc-text-field--outlined"
+          >
+            <input
+              class="mdc-text-field__input"
+              id="googlesitekit-textfield-0"
+              maxlength="120"
+              value=""
+            />
+            <div
+              class="mdc-notched-outline mdc-notched-outline--upgraded"
+            >
+              <div
+                class="mdc-notched-outline__leading"
+              />
+              <div
+                class="mdc-notched-outline__notch"
+              >
+                <label
+                  class="mdc-floating-label"
+                  for="googlesitekit-textfield-0"
+                  style=""
+                >
+                  Client ID
+                </label>
+              </div>
+              <div
+                class="mdc-notched-outline__trailing"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <button
+        aria-label="Get your client ID (opens in a new tab)"
+        class="mdc-button googlesitekit-sign-in-with-google-client-id-cta mdc-button--raised mdc-button--inverse"
+        target="_blank"
+      >
+        <span
+          class="mdc-button__label"
+        >
+          Get your client ID
+        </span>
+        <svg />
+      </button>
+    </div>
+    <div
+      class="googlesitekit-setup-module__panel-item googlesitekit-setup-module__panel-item--with-svg"
+    >
+      <svg />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SetupForm should render the one tap and show next to comments toggles when anyone can register 1`] = `
+<div>
+  <div
+    class="googlesitekit-sign-in-with-google-setup__form"
+  >
+    <div
+      class="googlesitekit-setup-module__panel-item"
+    >
+      <p
+        class="googlesitekit-setup-module__step-description"
+      >
+        To set up Sign in with Google, Site Kit will help you create an “OAuth Client ID“ that will be used to enable Sign in with Google on your website. You will be directed to a page that will allow you to generate an “OAuth Client ID“. 
+        <a
+          aria-label="Learn more (opens in a new tab)"
+          class="googlesitekit-cta-link"
+          href="undefined?doc=sign-in-with-google"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            Learn more
+          </span>
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 5px;"
+          >
+            <svg />
+          </span>
+        </a>
+      </p>
+      <p
+        class="googlesitekit-margin-bottom-0"
+      >
+        Add your client ID here to complete setup:
+      </p>
+      <div
+        class="googlesitekit-setup-module__inputs"
+      >
+        <div
+          class="googlesitekit-settings-module__fields-group"
+        >
+          <div
+            class="mdc-text-field googlesitekit-text-field-client-id mdc-text-field--outlined"
+          >
+            <input
+              class="mdc-text-field__input"
+              id="googlesitekit-textfield-2"
+              maxlength="120"
+              value=""
+            />
+            <div
+              class="mdc-notched-outline mdc-notched-outline--upgraded"
+            >
+              <div
+                class="mdc-notched-outline__leading"
+              />
+              <div
+                class="mdc-notched-outline__notch"
+              >
+                <label
+                  class="mdc-floating-label"
+                  for="googlesitekit-textfield-2"
+                  style=""
+                >
+                  Client ID
+                </label>
+              </div>
+              <div
+                class="mdc-notched-outline__trailing"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <button
+        aria-label="Get your client ID (opens in a new tab)"
+        class="mdc-button googlesitekit-sign-in-with-google-client-id-cta mdc-button--raised mdc-button--inverse"
+        target="_blank"
+      >
+        <span
+          class="mdc-button__label"
+        >
+          Get your client ID
+        </span>
+        <svg />
+      </button>
+      <div
+        class="googlesitekit-setup-module__inputs"
+      >
+        <div
+          class="googlesitekit-settings-module__fields-group googlesitekit-settings-module__one-tap"
+        >
+          <div
+            aria-checked="true"
+            class="mdc-switch mdc-switch--checked"
+            role="switch"
+            tabindex="0"
+          >
+            <div
+              class="mdc-switch__track"
+            >
+               
+            </div>
+            <div
+              class="mdc-switch__thumb-underlay"
+            >
+              <div
+                class="mdc-switch__thumb"
+              >
+                <input
+                  class="mdc-switch__native-control"
+                  id="googlesitekit-switch-0"
+                  readonly=""
+                  role="switch"
+                  type="checkbox"
+                />
+              </div>
+            </div>
+          </div>
+          <label
+            class=""
+            for="googlesitekit-switch-0"
+          >
+            Enable One Tap sign in
+          </label>
+          <p
+            aria-hidden="false"
+            class="mdc-text-field-helper-text mdc-text-field-helper-text--persistent"
+          >
+            One Tap allows users to sign in or sign up with one click offering smooth user entry points without redirecting to a dedicated sign in and sign up page. 
+            <a
+              aria-label="Learn more (opens in a new tab)"
+              class="googlesitekit-cta-link"
+              href="undefined?doc=sign-in-with-google-one-tap"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                Learn more
+              </span>
+              <span
+                class="googlesitekit-icon-wrapper"
+                style="margin-left: 5px;"
+              >
+                <svg />
+              </span>
+            </a>
+          </p>
+        </div>
+        <div
+          class="googlesitekit-settings-module__fields-group googlesitekit-settings-module__show-next-to-comments"
+        >
+          <div
+            aria-checked="true"
+            class="mdc-switch mdc-switch--checked"
+            role="switch"
+            tabindex="0"
+          >
+            <div
+              class="mdc-switch__track"
+            >
+               
+            </div>
+            <div
+              class="mdc-switch__thumb-underlay"
+            >
+              <div
+                class="mdc-switch__thumb"
+              >
+                <input
+                  class="mdc-switch__native-control"
+                  id="googlesitekit-switch-1"
+                  readonly=""
+                  role="switch"
+                  type="checkbox"
+                />
+              </div>
+            </div>
+          </div>
+          <label
+            class=""
+            for="googlesitekit-switch-1"
+          >
+            Show next to comments
+          </label>
+          <p
+            aria-hidden="false"
+            class="mdc-text-field-helper-text mdc-text-field-helper-text--persistent"
+          >
+            Show a Sign in with Google button next to comments and allow users to use their Google Account to leave comments. 
+            <a
+              aria-label="Learn more (opens in a new tab)"
+              class="googlesitekit-cta-link"
+              href="undefined?doc=sign-in-with-google-comments"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                Learn more
+              </span>
+              <span
+                class="googlesitekit-icon-wrapper"
+                style="margin-left: 5px;"
+              >
+                <svg />
+              </span>
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div
+      class="googlesitekit-setup-module__panel-item googlesitekit-setup-module__panel-item--with-svg"
+    >
+      <svg />
+    </div>
+  </div>
+</div>
+`;

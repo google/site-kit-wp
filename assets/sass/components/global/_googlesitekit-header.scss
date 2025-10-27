@@ -23,10 +23,6 @@
 		position: relative;
 		z-index: 11;
 
-		@media (min-width: $bp-tablet) {
-			padding: 0 10px;
-		}
-
 		&:not(:empty) {
 			border-bottom: 1px solid $c-utility-divider;
 		}

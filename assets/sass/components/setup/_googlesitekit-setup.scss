@@ -77,6 +77,26 @@
 			padding-left: 10px;
 			padding-right: 10px;
 		}
+
+		.googlesitekit-setup__step-hint {
+			display: flex;
+			gap: 4px;
+			margin: 13px 0 12px;
+			padding: 0 8px;
+
+			p {
+				color: $c-surfaces-on-background-variant;
+				font-size: $fs-body-sm;
+				letter-spacing: $ls-xs;
+				line-height: $lh-body-sm;
+				margin: 0;
+			}
+
+			.googlesitekit-info-tooltip {
+				color: $c-content-secondary;
+				display: flex;
+			}
+		}
 	}
 
 	.googlesitekit-setup-compat {
@@ -130,7 +150,7 @@
 		max-width: $max-width-setup-content;
 		padding: 2rem 0;
 
-		@media (min-width: $bp-desktop) {
+		@media (min-width: $bp-nonTablet) {
 			max-width: none;
 			padding: 0;
 		}
@@ -152,7 +172,7 @@
 			max-width: 100%;
 		}
 
-		@media (min-width: $bp-desktop) {
+		@media (min-width: $bp-nonTablet) {
 			align-self: center;
 			order: 2;
 		}
@@ -208,4 +228,8 @@
 			}
 		}
 	}
+}
+
+.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-setup__step-hint-tooltip {
+	max-width: 220px;
 }

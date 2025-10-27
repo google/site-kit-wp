@@ -19,5 +19,6 @@ export const TYPES = {
 	SUCCESS: 'success',
 	WARNING: 'warning',
 	INFO: 'info',
+	INFO_ALT: 'info-alt',
 	ERROR: 'error',
 };

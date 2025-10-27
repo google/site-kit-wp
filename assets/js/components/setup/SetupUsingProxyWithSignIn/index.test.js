@@ -16,6 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
+ * Internal dependencies
+ */
 import {
 	render,
 	createTestRegistry,
@@ -24,13 +32,26 @@ import {
 	provideUserInfo,
 	provideUserCapabilities,
 	muteFetch,
+	fireEvent,
+	provideSiteInfo,
+	waitFor,
+	provideModuleRegistrations,
+	act,
 } from '../../../../../tests/js/test-utils';
 import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
+import {
+	ANALYTICS_NOTICE_CHECKBOX,
+	ANALYTICS_NOTICE_FORM_NAME,
+} from '@/js/components/setup/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWithSignIn';
-import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
+import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWithSignIn';
 
 jest.mock(
 	'../CompatibilityChecks',
@@ -40,12 +61,14 @@ jest.mock(
 );
 
 describe( 'SetupUsingProxyWithSignIn', () => {
+	mockLocation();
 	let registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 
 		provideModules( registry );
+		provideSiteInfo( registry );
 		provideUserInfo( registry );
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
@@ -103,6 +126,94 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		expect(
 			queryByText( /Connect Google Analytics as part of your setup/ )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'should navigate to the proxy setup URL on CTA click', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<SetupUsingProxyWithSignIn />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: /sign in with google/i } )
+		);
+
+		const proxySetupURL = registry.select( CORE_SITE ).getProxySetupURL();
+
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalled();
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				proxySetupURL
+			);
+		} );
+	} );
+
+	it( 'should navigate to the proxy setup URL with Analytics re-auth redirect URL on CTA click if chosen to connect Analytics', async () => {
+		fetchMock.postOnce(
+			new RegExp( '^/google-site-kit/v1/core/modules/data/activation' ),
+			{ body: { success: true } }
+		);
+
+		fetchMock.getOnce(
+			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			{
+				body: {
+					authenticated: true,
+					requiredScopes: [
+						'https://www.googleapis.com/auth/analytics.readonly',
+					],
+					grantedScopes: [],
+					unsatisfiedScopes: [
+						'https://www.googleapis.com/auth/analytics.readonly',
+					],
+					needsReauthentication: true,
+				},
+			}
+		);
+
+		// Set the Analytics checkbox to true.
+		registry.dispatch( CORE_FORMS ).setValues( ANALYTICS_NOTICE_FORM_NAME, {
+			[ ANALYTICS_NOTICE_CHECKBOX ]: true,
+		} );
+
+		provideModuleRegistrations( registry );
+
+		const { getByRole, waitForRegistry } = render(
+			<SetupUsingProxyWithSignIn />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: /sign in with google/i } )
+		);
+
+		await act( () =>
+			registry.resolveSelect( MODULES_ANALYTICS_4 ).getAdminReauthURL()
+		);
+
+		const proxySetupURL = registry.select( CORE_SITE ).getProxySetupURL();
+		const reauthURL = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAdminReauthURL();
+
+		const finalURL = addQueryArgs( proxySetupURL, {
+			redirect: reauthURL,
+		} );
+
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalled();
+			expect( global.location.assign ).toHaveBeenCalledWith( finalURL );
+		} );
 	} );
 
 	describe( 'with the `setupFlowRefresh` feature flag enabled', () => {
@@ -185,6 +296,119 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 					/Get visitor insights by connecting Google Analytics as part of setup/
 				)
 			).not.toBeInTheDocument();
+		} );
+
+		it( 'should navigate to the proxy setup URL with Analytics re-auth redirect URL and `showProgress` query argument on CTA click if chosen to connect Analytics', async () => {
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/modules/data/activation'
+				),
+				{ body: { success: true } }
+			);
+
+			fetchMock.getOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/user/data/authentication'
+				),
+				{
+					body: {
+						authenticated: true,
+						requiredScopes: [
+							'https://www.googleapis.com/auth/analytics.readonly',
+						],
+						grantedScopes: [],
+						unsatisfiedScopes: [
+							'https://www.googleapis.com/auth/analytics.readonly',
+						],
+						needsReauthentication: true,
+					},
+				}
+			);
+
+			// Set the Analytics checkbox to true.
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( ANALYTICS_NOTICE_FORM_NAME, {
+					[ ANALYTICS_NOTICE_CHECKBOX ]: true,
+				} );
+
+			provideModuleRegistrations( registry );
+
+			const { getByRole, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click(
+				getByRole( 'button', { name: /sign in with google/i } )
+			);
+
+			await act( () =>
+				registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getAdminReauthURL()
+			);
+
+			const proxySetupURL = registry
+				.select( CORE_SITE )
+				.getProxySetupURL();
+			const reauthURL = registry
+				.select( MODULES_ANALYTICS_4 )
+				.getAdminReauthURL();
+			const reauthURLWithShowProgress = addQueryArgs( reauthURL, {
+				showProgress: true,
+			} );
+
+			const finalURL = addQueryArgs( proxySetupURL, {
+				redirect: reauthURLWithShowProgress,
+			} );
+
+			await waitFor( () => {
+				expect( global.location.assign ).toHaveBeenCalled();
+				expect( global.location.assign ).toHaveBeenCalledWith(
+					finalURL
+				);
+			} );
+		} );
+
+		it( 'should allow exiting the setup', async () => {
+			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+				adminURL: 'http://example.com/wp-admin/',
+			} );
+
+			const { queryByText } = render( <SetupUsingProxyWithSignIn />, {
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			expect( queryByText( /Exit setup/ ) ).toBeInTheDocument();
+
+			fireEvent.click( queryByText( /Exit setup/ ) );
+
+			await waitFor( () => {
+				expect( global.location.assign ).toHaveBeenCalled();
+			} );
+
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				'http://example.com/wp-admin/plugins.php'
+			);
+		} );
+
+		it( 'should render a "Why is this required?" information tooltip', () => {
+			const { getByText } = render( <SetupUsingProxyWithSignIn />, {
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			expect( getByText( /Why is this required?/ ) ).toBeInTheDocument();
 		} );
 	} );
 } );

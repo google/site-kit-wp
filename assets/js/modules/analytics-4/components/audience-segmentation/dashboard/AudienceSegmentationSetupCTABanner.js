@@ -36,7 +36,10 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '@/js/modules/analytics-4/datastore/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
@@ -61,7 +64,7 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 	const viewContext = useViewContext();
 	const trackEventCategory = `${ viewContext }_audiences-setup-cta-dashboard`;
 
-	const { dismissNotification, registerNotification } =
+	const { dismissNotification, registerNotification, pinNotification } =
 		useDispatch( CORE_NOTIFICATIONS );
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -106,10 +109,16 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 		setShowErrorModal( true );
 	}, [ setShowErrorModal ] );
 
+	const onOAuthNavigation = useCallback(
+		() => pinNotification( id, NOTIFICATION_GROUPS.SETUP_CTAS ),
+		[ id, pinNotification ]
+	);
+
 	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
 		useEnableAudienceGroup( {
 			onSuccess,
 			onError,
+			onOAuthNavigation,
 		} );
 
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );

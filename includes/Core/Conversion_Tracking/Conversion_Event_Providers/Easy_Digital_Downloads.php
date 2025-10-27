@@ -14,7 +14,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use Google\Site_Kit\Modules\Ads\Enhanced_Conversions;
+use Google\Site_Kit\Core\Tags\Enhanced_Conversions\Enhanced_Conversions;
 
 /**
  * Class for handling Easy Digital Downloads conversion events.
@@ -58,6 +58,17 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	}
 
 	/**
+	 * Gets the enhanced conversion event names that are tracked by this provider.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of enhanced conversion event names.
+	 */
+	public function get_enhanced_event_names() {
+		return array( 'add_to_cart' );
+	}
+
+	/**
 	 * Registers the script for the provider.
 	 *
 	 * @since 1.130.0
@@ -82,7 +93,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	/**
 	 * Registers hooks for the Easy Digital Downloads provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 */
 	public function register_hooks() {
 		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
@@ -96,7 +107,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	/**
 	 * Prints the purchase data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 */
 	protected function maybe_add_purchase_data_from_session() {
 		if ( ! function_exists( 'edd_get_purchase_session' ) || ! function_exists( 'edd_is_success_page' ) || ! edd_is_success_page() ) {
@@ -123,7 +134,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	/**
 	 * Extracts Enhanced Conversions data from an EDD session.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param mixed|array|null $session_data An array containing EDD purchase session data.
 	 *
@@ -149,7 +160,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	/**
 	 * Extracts user data from an EDD session.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.164.0
 	 *
 	 * @param array $session_data An array containing EDD purchase session data.
 	 *

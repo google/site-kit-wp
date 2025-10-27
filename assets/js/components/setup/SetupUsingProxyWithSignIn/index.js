@@ -45,9 +45,12 @@ import Splash from './Splash';
 import Actions from './Actions';
 import Notice from '@/js/components/Notice';
 import { TYPES } from '@/js/components/Notice/constants';
+import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 
 export default function SetupUsingProxyWithSignIn() {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { activateModule } = useDispatch( CORE_MODULES );
@@ -81,6 +84,12 @@ export default function SetupUsingProxyWithSignIn() {
 					);
 
 					moduleReauthURL = response.moduleReauthURL;
+
+					if ( setupFlowRefreshEnabled ) {
+						moduleReauthURL = addQueryArgs( moduleReauthURL, {
+							showProgress: true,
+						} );
+					}
 				}
 			}
 
@@ -115,12 +124,13 @@ export default function SetupUsingProxyWithSignIn() {
 			}
 		},
 		[
+			connectAnalytics,
 			proxySetupURL,
-			navigateTo,
 			isConnected,
 			activateModule,
-			connectAnalytics,
 			viewContext,
+			setupFlowRefreshEnabled,
+			navigateTo,
 		]
 	);
 

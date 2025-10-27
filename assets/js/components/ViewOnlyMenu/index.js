@@ -49,9 +49,7 @@ import {
 import ManageEmailReports from '@/js/components/ViewOnlyMenu/ManageEmailReports';
 
 export default function ViewOnlyMenu() {
-	const proactiveUserEngagementEnabled = useFeature(
-		'proactiveUserEngagement'
-	);
+	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
 
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
@@ -114,7 +112,7 @@ export default function ViewOnlyMenu() {
 			>
 				<Description />
 				<SharedServices />
-				{ proactiveUserEngagementEnabled && <ManageEmailReports /> }
+				{ emailReportingEnabled && <ManageEmailReports /> }
 				<li className="mdc-list-divider" role="separator"></li>
 				<Tracking />
 			</Menu>

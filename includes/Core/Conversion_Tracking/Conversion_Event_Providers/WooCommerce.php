@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
 use Google\Site_Kit\Core\Util\Feature_Flags;
-use Google\Site_Kit\Modules\Ads\Enhanced_Conversions;
+use Google\Site_Kit\Core\Tags\Enhanced_Conversions\Enhanced_Conversions;
 
 /**
  * Class for handling WooCommerce conversion events.
@@ -66,6 +66,17 @@ class WooCommerce extends Conversion_Events_Provider {
 		$events_to_track  = $this->events_to_track();
 
 		return array_unique( array_merge( $events_to_track, $wgai_event_names ) );
+	}
+
+	/**
+	 * Gets the enhanced conversion event names that are tracked by this provider.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of enhanced conversion event names.
+	 */
+	public function get_enhanced_event_names() {
+		return array( 'add_to_cart', 'purchase' );
 	}
 
 	/**
