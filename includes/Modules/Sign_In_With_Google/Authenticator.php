@@ -296,8 +296,8 @@ class Authenticator implements Authenticator_Interface {
 	 * @return bool True if registration is open, false otherwise.
 	 */
 	protected function is_registration_open() {
-		// No need to check the multisite settings because it is already incorporated in the following
-		// users_can_register check.
+		// No need to check the multisite settings because it is already
+		// incorporated in the following users_can_register check.
 		// See: https://github.com/WordPress/WordPress/blob/505b7c55f5363d51e7e28d512ce7dcb2d5f45894/wp-includes/ms-default-filters.php#L20.
 		return get_option( 'users_can_register' );
 	}
