@@ -146,81 +146,99 @@ export default function KeyMetricsSetupApp() {
 		<Fragment>
 			<Header subHeader={ subHeader } />
 			<div className="googlesitekit-key-metrics-setup">
-				<Grid>
-					<Row>
-						<Cell size={ 12 }>
-							<Layout rounded>
-								<Typography
-									as="h1"
-									type="headline"
-									size="medium"
-								>
-									{ __(
-										'Tell us your main goal to get tailored metrics',
-										'google-site-kit'
-									) }
-								</Typography>
-								<Typography as="h2" type="body" size="large">
-									{ __(
-										'Which option most closely matches the purpose of your site?',
-										'google-site-kit'
-									) }
-								</Typography>
-								<P
-									className="googlesitekit-key-metrics-setup__description"
-									type="body"
-									size="small"
-								>
-									{ createInterpolateElement(
-										__(
-											'Even if multiple options apply to your site, select the one that applies the most.<br />You can also answer or edit your response later in Settings.',
-											'google-site-kit'
-										),
-										{
-											br: <br />,
-										}
-									) }
-								</P>
+				<div className="googlesitekit-module-page">
+					<Grid>
+						<Layout rounded>
+							<Grid>
+								<Row>
+									<Cell size={ 12 }>
+										<Typography
+											as="h1"
+											type="headline"
+											size="medium"
+											className="googlesitekit-key-metrics-setup__title"
+										>
+											{ __(
+												'Tell us your main goal to get tailored metrics',
+												'google-site-kit'
+											) }
+										</Typography>
 
-								<UserInputSelectOptions
-									slug={ USER_INPUT_QUESTIONS_PURPOSE }
-									max={
-										USER_INPUT_MAX_ANSWERS[
-											USER_INPUT_QUESTIONS_PURPOSE
-										]
-									}
-									options={ omit(
-										USER_INPUT_ANSWERS_PURPOSE,
-										'other'
-									) }
-									descriptions={
-										USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS
-									}
-								/>
+										<div className="googlesitekit-key-metrics-setup__heading">
+											<Typography
+												as="h2"
+												type="body"
+												size="large"
+											>
+												{ __(
+													'Which option most closely matches the purpose of your site?',
+													'google-site-kit'
+												) }
+											</Typography>
+											<P
+												className="googlesitekit-key-metrics-setup__description"
+												type="body"
+												size="small"
+											>
+												{ createInterpolateElement(
+													__(
+														'Even if multiple options apply to your site, select the one that applies the most.<br />You can also answer or edit your response later in Settings.',
+														'google-site-kit'
+													),
+													{
+														br: <br />,
+													}
+												) }
+											</P>
+										</div>
 
-								{ error && (
-									<ErrorNotice
-										error={ error }
-										Icon={ WarningSVG }
-									/>
-								) }
+										<UserInputSelectOptions
+											slug={
+												USER_INPUT_QUESTIONS_PURPOSE
+											}
+											max={
+												USER_INPUT_MAX_ANSWERS[
+													USER_INPUT_QUESTIONS_PURPOSE
+												]
+											}
+											options={ omit(
+												USER_INPUT_ANSWERS_PURPOSE,
+												'other'
+											) }
+											descriptions={
+												USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS
+											}
+										/>
 
-								<SpinnerButton
-									onClick={ onSaveClick }
-									isSaving={ isBusy || isSyncing }
-									disabled={
-										hasErrorForAnswer( values ) || isSyncing
-									}
-								>
-									{ __(
-										'Complete setup',
-										'google-site-kit'
-									) }
-								</SpinnerButton>
-							</Layout>
-						</Cell>
-					</Row>
-				</Grid>
+										{ error && (
+											<ErrorNotice
+												error={ error }
+												Icon={ WarningSVG }
+											/>
+										) }
+
+										<div className="googlesitekit-user-input__footer">
+											<SpinnerButton
+												onClick={ onSaveClick }
+												isSaving={ isBusy || isSyncing }
+												disabled={
+													hasErrorForAnswer(
+														values
+													) || isSyncing
+												}
+											>
+												{ __(
+													'Complete setup',
+													'google-site-kit'
+												) }
+											</SpinnerButton>
+										</div>
+									</Cell>
+								</Row>
+							</Grid>
+						</Layout>
+					</Grid>
+				</div>
 			</div>
 			{ isGA4Connected && (
 				<ToastNotice
