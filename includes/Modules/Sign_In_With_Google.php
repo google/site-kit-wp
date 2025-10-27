@@ -28,7 +28,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
-use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -36,7 +36,6 @@ use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use Google\Site_Kit\Core\Util\Plugin_Status;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_Client_ID;
@@ -199,6 +198,24 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		// like most WordPress pages.
 		add_action( 'login_init', array( $this, 'register_tag' ) );
 
+		// Place Sign in with Google button next to comments form if the
+		// setting is enabled.
+		add_action( 'comment_form_after_fields', array( $this, 'handle_comments_form' ) );
+
+		// Add the Sign in with Google compatibility checks datapoint to our
+		// preloaded paths.
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $paths ) {
+				return array_merge(
+					$paths,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/modules/sign-in-with-google/data/compatibility-checks',
+					)
+				);
+			}
+		);
+
 		// Check to see if the module is connected before registering the block.
 		if ( $this->is_connected() ) {
 			$this->sign_in_with_google_block->register();
@@ -226,6 +243,39 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			wp_safe_redirect( $redirect_to );
 			exit;
 		}
+	}
+
+	/**
+	 * Conditionally show the Sign in with Google button in a comments form.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function handle_comments_form() {
+		$settings            = $this->get_settings()->get();
+		$anyone_can_register = (bool) get_option( 'users_can_register' );
+
+		// Only show the button if:
+		// - the comments form setting is enabled
+		// - open user registration is enabled
+		//
+		// If the comments form setting is not enabled, do nothing.
+		if ( empty( $settings['showNextToCommentsEnabled'] ) || ! $anyone_can_register ) {
+			return;
+		}
+
+		// Output the post ID to allow identitifying the post for this comment.
+		$post_id = get_the_ID();
+
+		// Output the Sign in with Google button in the comments form.
+		do_action(
+			'googlesitekit_render_sign_in_with_google_button',
+			array(
+				'class' => array(
+					'googlesitekit-sign-in-with-google__comments-form-button',
+					"googlesitekit-sign-in-with-google__comments-form-button-postid-${post_id}",
+				),
+			)
+		);
 	}
 
 	/**
@@ -508,7 +558,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			'class' => implode( ' ', $classes ),
 		);
 
-		$data_attributes = array( 'shape', 'text', 'theme' );
+		$data_attributes = array( 'for-comment-form', 'post-id', 'shape', 'text', 'theme' );
 		foreach ( $data_attributes as $attribute ) {
 			if ( empty( $args[ $attribute ] ) || ! is_scalar( $args[ $attribute ] ) ) {
 				continue;
@@ -619,6 +669,12 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 				'label' => sprintf( __( '%s: One Tap Enabled', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
 				'value' => $settings['oneTapEnabled'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['oneTapEnabled'] ? 'yes' : 'no',
+			),
+			'sign_in_with_google_comments'                 => array(
+				/* translators: %s: Sign in with Google service name */
+				'label' => sprintf( __( '%s: Show next to comments', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
+				'value' => $settings['showNextToCommentsEnabled'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
+				'debug' => $settings['showNextToCommentsEnabled'] ? 'yes' : 'no',
 			),
 			'sign_in_with_google_authenticated_user_count' => array(
 				/* translators: %1$s: Sign in with Google service name */

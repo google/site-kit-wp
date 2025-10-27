@@ -36,6 +36,7 @@ import { SettingsNotice } from '@/js/modules/sign-in-with-google/components/comm
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import DisplaySetting from '@/js/components/DisplaySetting';
 import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function SettingsView() {
 	const clientID = useSelect( ( select ) =>
@@ -72,6 +73,10 @@ export default function SettingsView() {
 
 	const oneTapEnabled = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getOneTapEnabled()
+	);
+
+	const showNextToCommentsEnabled = useSelect( ( select ) =>
+		select( MODULES_SIGN_IN_WITH_GOOGLE ).getShowNextToCommentsEnabled()
 	);
 
 	// If Sign in with Google does not have a client ID, do not display the
@@ -168,6 +173,30 @@ export default function SettingsView() {
 					</p>
 				</div>
 			</div>
+
+			{ anyoneCanRegister && (
+				<div className="googlesitekit-settings-module__meta-items">
+					<div className="googlesitekit-settings-module__meta-item">
+						<Typography
+							as="h5"
+							size="medium"
+							type="label"
+							className="googlesitekit-settings-module__meta-item-type"
+						>
+							{ __( 'Show next to comments', 'google-site-kit' ) }
+						</Typography>
+						<P className="googlesitekit-settings-module__meta-item-data">
+							<DisplaySetting
+								value={
+									!! showNextToCommentsEnabled
+										? __( 'Enabled', 'google-site-kit' )
+										: __( 'Disabled', 'google-site-kit' )
+								}
+							/>
+						</P>
+					</div>
+				</div>
+			) }
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
