@@ -19,13 +19,19 @@
 .googlesitekit-plugin {
 	.googlesitekit-settings-email-reporting {
 		.googlesitekit-settings-email-reporting__switch {
-			margin-bottom: 25px;
+			text-wrap: nowrap;
+			.mdc-switch {
+				margin-top: 5px;
+				vertical-align: top;
+			}
 			.mdc-switch + label {
 				display: inline-block;
+				height: auto;
 				line-height: 25px;
-				max-height: 25px;
+				padding-right: 35px;
 				.googlesitekit-settings-email-reporting__label-description {
 					color: $c-surfaces-on-background-variant;
+					text-wrap: wrap;
 				}
 			}
 		}
