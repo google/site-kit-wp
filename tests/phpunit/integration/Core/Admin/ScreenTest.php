@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Screen;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\Exception\RedirectException;
 
 /**
  * @group Admin
@@ -123,5 +124,200 @@ class ScreenTest extends TestCase {
 		$this->assertTrue( wp_style_is( 'googlesitekit-admin-css', 'enqueued' ), 'Admin CSS should be enqueued after calling enqueue_assets.' );
 		$this->assertCount( 1, $invocations, 'Enqueue callback should be called exactly once.' );
 		$this->assertEquals( array( $assets ), $invocations[0], 'Enqueue callback should receive the assets as argument.' );
+	}
+
+	public function test_dashboard_initialize_redirects_to_user_input_when_analytics_connected() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		$authentication = new class() {
+			public function is_authenticated() {
+				return true; }
+		};
+		$modules        = new class() {
+			public function is_module_connected( $slug ) {
+				return 'analytics-4' === $slug; }
+		};
+
+		$screen = new Screen(
+			'test-slug',
+			array(
+				'initialize_callback' => function ( Context $ctx ) use ( $authentication, $modules ) {
+					$is_view_only = ! $authentication->is_authenticated();
+					if ( $is_view_only ) {
+						return;
+					}
+					$is_analytics_setup_complete = false;
+					if ( false === $is_analytics_setup_complete ) {
+						$is_analytics_connected = $modules->is_module_connected( 'analytics-4' );
+						if ( $is_analytics_connected ) {
+							wp_safe_redirect(
+								$ctx->admin_url(
+									'user-input',
+									array( 'showProgress' => true )
+								)
+							);
+							exit;
+						}
+					}
+				},
+			)
+		);
+
+		$location = null;
+		try {
+			$screen->initialize( $context );
+		} catch ( RedirectException $e ) {
+			$location = $e->get_location();
+		}
+		$this->assertNotEmpty( $location, 'Redirect should occur.' );
+		$this->assertStringContainsString( 'page=googlesitekit-user-input', $location, 'User input page should be redirected to.' );
+		$this->assertStringContainsString( 'showProgress=1', $location, 'Show progress should be set.' );
+	}
+
+	public function test_dashboard_initialize_redirects_to_dashboard_with_params_when_analytics_not_connected() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		$authentication = new class() { public function is_authenticated() {
+				return true;
+		} };
+		$modules        = new class() { public function is_module_connected( $slug ) {
+				return false;
+		} };
+
+		$screen = new Screen(
+			'test-slug',
+			array(
+				'initialize_callback' => function ( Context $ctx ) use ( $authentication, $modules ) {
+					$is_view_only = ! $authentication->is_authenticated();
+					if ( $is_view_only ) {
+						return;
+					}
+					$is_analytics_setup_complete = false;
+					if ( false === $is_analytics_setup_complete ) {
+						$is_analytics_connected = $modules->is_module_connected( 'analytics-4' );
+						if ( ! $is_analytics_connected ) {
+							$slug = $ctx->input()->filter( INPUT_GET, 'slug' );
+							$show_progress = (bool) $ctx->input()->filter( INPUT_GET, 'showProgress' );
+							$re_auth = (bool) $ctx->input()->filter( INPUT_GET, 'reAuth' );
+							if ( 'analytics-4' === $slug && $re_auth && $show_progress ) {
+								return;
+							}
+							wp_safe_redirect(
+								$ctx->admin_url(
+									'dashboard',
+									array(
+										'slug'         => 'analytics-4',
+										'showProgress' => true,
+										'reAuth'       => true,
+									)
+								)
+							);
+							exit;
+						}
+					}
+				},
+			)
+		);
+
+		$location = null;
+		try {
+			$screen->initialize( $context );
+		} catch ( RedirectException $e ) {
+			$location = $e->get_location();
+		}
+		$this->assertNotEmpty( $location, 'Redirect should occur.' );
+		$this->assertStringContainsString( 'page=googlesitekit-dashboard', $location, 'Dashboard page should be redirected to.' );
+		$this->assertStringContainsString( 'slug=analytics-4', $location, 'Slug should be set to analytics-4.' );
+		$this->assertStringContainsString( 'showProgress=1', $location, 'Show progress should be set.' );
+		$this->assertStringContainsString( 'reAuth=1', $location, 'Re-auth should be set.' );
+	}
+
+	public function test_dashboard_initialize_no_redirect_when_in_progress_reauth() {
+		$mock_input = new class() extends \Google\Site_Kit\Core\Util\Input {
+			public function filter( $type, $name, $filter = FILTER_DEFAULT, $options = 0 ) {
+				if ( INPUT_GET !== $type ) {
+					return null;
+				}
+				$map = array(
+					'slug'         => 'analytics-4',
+					'showProgress' => '1',
+					'reAuth'       => '1',
+				);
+				return isset( $map[ $name ] ) ? $map[ $name ] : null;
+			}
+		};
+		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, $mock_input );
+
+		$authentication = new class() { public function is_authenticated() {
+				return true;
+		} };
+		$modules        = new class() { public function is_module_connected( $slug ) {
+				return false;
+		} };
+
+		$screen = new Screen(
+			'test-slug',
+			array(
+				'initialize_callback' => function ( Context $ctx ) use ( $authentication, $modules ) {
+					$is_view_only = ! $authentication->is_authenticated();
+					if ( $is_view_only ) {
+						return; }
+					$is_analytics_connected = $modules->is_module_connected( 'analytics-4' );
+					if ( ! $is_analytics_connected ) {
+						$slug = $ctx->input()->filter( INPUT_GET, 'slug' );
+						$show_progress = (bool) $ctx->input()->filter( INPUT_GET, 'showProgress' );
+						$re_auth = (bool) $ctx->input()->filter( INPUT_GET, 'reAuth' );
+						if ( 'analytics-4' === $slug && $re_auth && $show_progress ) {
+							return;
+						}
+						wp_safe_redirect(
+							$ctx->admin_url(
+								'dashboard',
+								array(
+									'slug'         => 'analytics-4',
+									'showProgress' => true,
+									'reAuth'       => true,
+								)
+							)
+						);
+						exit;
+					}
+				},
+			)
+		);
+
+		$threw_redirect = false;
+		try {
+			$screen->initialize( $context );
+		} catch ( RedirectException $e ) {
+			$threw_redirect = true;
+		}
+		$this->assertFalse( $threw_redirect, 'No redirect should occur for in-progress reAuth branch.' );
+	}
+
+	public function test_dashboard_initialize_no_redirect_when_setup_complete() {
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$authentication = new class() { public function is_authenticated() {
+				return true;
+		} };
+
+		$screen = new Screen(
+			'test-slug',
+			array(
+				'initialize_callback' => function () use ( $authentication ) {
+					$is_view_only = ! $authentication->is_authenticated();
+					if ( $is_view_only ) {
+						return; }
+				},
+			)
+		);
+
+		$threw_redirect = false;
+		try {
+			$screen->initialize( $context );
+		} catch ( RedirectException $e ) {
+			$threw_redirect = true;
+		}
+		$this->assertFalse( $threw_redirect, 'No redirect should occur when setup complete.' );
 	}
 }

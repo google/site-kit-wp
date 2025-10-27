@@ -87,23 +87,23 @@ final class Screens {
 	 * @since 1.0.0
 	 *
 	 * @param Context        $context Plugin context.
-	 * @param User_Options   $user_options  Optional. User_Options instance. Default is a new instance.
 	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
 	 * @param Modules        $modules Optional. Modules instance. Default is a new instance.
 	 * @param Authentication $authentication  Optional. Authentication instance. Default is a new instance.
+	 * @param User_Options   $user_options  Optional. User_Options instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
-		User_Options $user_options,
 		?Assets $assets = null,
 		?Modules $modules = null,
-		?Authentication $authentication = null
+		?Authentication $authentication = null,
+		?User_Options $user_options = null
 	) {
 		$this->context        = $context;
-		$this->user_options   = $user_options;
 		$this->assets         = $assets ?: new Assets( $this->context );
 		$this->modules        = $modules ?: new Modules( $this->context );
 		$this->authentication = $authentication ?: new Authentication( $this->context );
+		$this->user_options   = $user_options ?: new User_Options( $this->context );
 	}
 
 	/**
