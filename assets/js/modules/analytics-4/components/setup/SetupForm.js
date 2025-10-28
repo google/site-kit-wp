@@ -57,6 +57,7 @@ import SetupEnhancedConversionTrackingNotice from '@/js/components/conversion-tr
 import useFormValue from '@/js/hooks/useFormValue';
 import { useFeature } from '@/js/hooks/useFeature';
 import Link from '@/js/components/Link';
+import Null from '@/js/components/Null';
 
 export default function SetupForm( { finishSetup } ) {
 	const hasEditScope = useSelect( ( select ) =>
@@ -164,13 +165,15 @@ export default function SetupForm( { finishSetup } ) {
 						'google-site-kit'
 					),
 					{
-						LearnMoreLink: (
+						LearnMoreLink: setupFlowRefreshEnabled ? (
 							<Link
 								href={ enhancedConversionsDocumentationURL }
 								external
 							>
 								{ __( 'Learn more', 'google-site-kit' ) }
 							</Link>
+						) : (
+							<Null />
 						),
 					}
 				) }
@@ -181,7 +184,9 @@ export default function SetupForm( { finishSetup } ) {
 					disabled={ ! canSubmitChanges || isSaving }
 					isSaving={ isSaving }
 				>
-					{ __( 'Setup', 'google-site-kit' ) }
+					{ setupFlowRefreshEnabled
+						? __( 'Set up', 'google-site-kit' )
+						: __( 'Complete setup', 'google-site-kit' ) }
 				</SpinnerButton>
 			</div>
 		</form>
