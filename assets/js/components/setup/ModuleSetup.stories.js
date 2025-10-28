@@ -84,14 +84,14 @@ function provideAnalytics4( registry ) {
 }
 
 export const AnalyticsDefault = Template.bind( {} );
-AnalyticsDefault.storyName = 'AnalyticsDefault';
+AnalyticsDefault.storyName = 'Analytics Default';
 AnalyticsDefault.args = {
 	setupRegistry: provideAnalytics4,
 	moduleSlug: MODULE_SLUG_ANALYTICS_4,
 };
 
 export const AnalyticsInitialSetupFlow = Template.bind( {} );
-AnalyticsInitialSetupFlow.storyName = 'AnalyticsInitialSetupFlow';
+AnalyticsInitialSetupFlow.storyName = 'Analytics 4 Initial Setup Flow';
 AnalyticsInitialSetupFlow.args = {
 	setupRegistry: provideAnalytics4,
 	moduleSlug: MODULE_SLUG_ANALYTICS_4,
