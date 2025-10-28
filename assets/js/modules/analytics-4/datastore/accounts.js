@@ -150,10 +150,13 @@ const baseActions = {
 	 * Creates a new Analytics (GA4) account.
 	 *
 	 * @since 1.98.0
+	 * @since n.e.x.t Add `showProgress` option.
 	 *
+	 * @param {Object}  [options={}]                 Optional options object.
+	 * @param {boolean} [options.showProgress=false] Whether to show the progress indicator.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createAccount() {
+	*createAccount( { showProgress = false } = {} ) {
 		const registry = yield commonActions.getRegistry();
 
 		const { getValue } = registry.select( CORE_FORMS );
@@ -167,6 +170,7 @@ const baseActions = {
 				FORM_ACCOUNT_CREATE,
 				ENHANCED_MEASUREMENT_ENABLED
 			),
+			showProgress,
 		};
 
 		yield clearError( 'createAccount', [] );

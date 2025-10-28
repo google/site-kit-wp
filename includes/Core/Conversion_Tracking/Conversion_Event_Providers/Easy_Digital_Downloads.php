@@ -14,7 +14,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use Google\Site_Kit\Modules\Ads\Enhanced_Conversions;
+use Google\Site_Kit\Core\Tags\Enhanced_Conversions\Enhanced_Conversions;
 
 /**
  * Class for handling Easy Digital Downloads conversion events.
@@ -55,6 +55,17 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 		}
 
 		return $event_names;
+	}
+
+	/**
+	 * Gets the enhanced conversion event names that are tracked by this provider.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of enhanced conversion event names.
+	 */
+	public function get_enhanced_event_names() {
+		return array( 'add_to_cart' );
 	}
 
 	/**

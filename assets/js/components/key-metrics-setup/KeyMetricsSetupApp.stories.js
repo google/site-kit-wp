@@ -55,6 +55,14 @@ WithError.args = {
 	},
 };
 
+export const WithProgress = Template.bind( {} );
+WithProgress.storyName = 'With progress indicator';
+WithProgress.parameters = {
+	query: {
+		showProgress: true,
+	},
+};
+
 export default {
 	title: 'Modules/Analytics4/Setup/KeyMetricsSetupApp',
 	component: KeyMetricsSetupApp,

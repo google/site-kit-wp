@@ -247,13 +247,11 @@ class Google_ProxyTest extends TestCase {
 			'User fields should contain editor role for single role user.'
 		);
 
-		// WordPress technically allows for multiple roles, and some plugins
-		// make use of that feature - we can just fake it like below.
-		wp_get_current_user()->roles[] = 'shop_vendor';
+		wp_get_current_user()->add_role( 'subscriber' );
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'user_roles' => 'editor,shop_vendor',
+				'user_roles' => 'editor,subscriber',
 			),
 			$this->google_proxy->get_user_fields(),
 			'User fields should contain multiple roles when user has multiple roles.'

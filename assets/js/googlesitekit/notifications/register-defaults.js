@@ -828,17 +828,15 @@ export const DEFAULT_NOTIFICATIONS = {
 		],
 		isDismissible: true,
 		checkRequirements: async ( { select, resolveSelect } ) => {
-			await resolveSelect(
+			const settings = await resolveSelect(
 				CORE_USER
-			).getProactiveUserEngagementSettings();
-			const settings =
-				select( CORE_USER ).getProactiveUserEngagementSettings();
+			).getEmailReportingSettings();
 
 			if ( settings === undefined || settings?.subscribed ) {
 				return false;
 			}
 
-			return ! select( CORE_USER ).isProactiveUserEngagementSubscribed();
+			return ! select( CORE_USER ).isEmailReportingSubscribed();
 		},
 	},
 };

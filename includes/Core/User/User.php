@@ -39,12 +39,12 @@ class User {
 	private $conversion_reporting;
 
 	/**
-	 * Proactive_User_Engagement instance.
+	 * Email_Reporting instance.
 	 *
 	 * @since 1.162.0
-	 * @var Proactive_User_Engagement
+	 * @var Email_Reporting
 	 */
-	private $proactive_user_engagement;
+	private $email_reporting;
 
 	/**
 	 * Initial_Setup instance.
@@ -58,7 +58,7 @@ class User {
 	 * Constructor.
 	 *
 	 * @since 1.134.0
-	 * @since 1.162.0 Added Proactive User Engagement.
+	 * @since 1.162.0 Added Email Reporting.
 	 * @since 1.164.0 Added Initial Setup.
 	 *
 	 * @param User_Options $user_options User_Options instance.
@@ -68,7 +68,7 @@ class User {
 		$this->conversion_reporting  = new Conversion_Reporting( $user_options );
 
 		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) ) {
-			$this->proactive_user_engagement = new Proactive_User_Engagement( $user_options );
+			$this->email_reporting = new Email_Reporting( $user_options );
 		}
 
 		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
@@ -80,15 +80,15 @@ class User {
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.134.0
-	 * @since 1.162.0 Added Proactive User Engagement.
+	 * @since 1.162.0 Added Email Reporting.
 	 * @since 1.164.0 Added Initial Setup.
 	 */
 	public function register() {
 		$this->audience_segmentation->register();
 		$this->conversion_reporting->register();
 
-		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) && $this->proactive_user_engagement ) {
-			$this->proactive_user_engagement->register();
+		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) && $this->email_reporting ) {
+			$this->email_reporting->register();
 		}
 
 		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
