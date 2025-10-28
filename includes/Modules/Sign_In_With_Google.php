@@ -272,7 +272,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			array(
 				'class' => array(
 					'googlesitekit-sign-in-with-google__comments-form-button',
-					"googlesitekit-sign-in-with-google__comments-form-button-postid-${post_id}",
+					"googlesitekit-sign-in-with-google__comments-form-button-postid-{$post_id}",
 				),
 			)
 		);
