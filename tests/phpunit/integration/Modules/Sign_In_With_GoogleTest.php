@@ -174,13 +174,15 @@ class Sign_In_With_GoogleTest extends TestCase {
 			)
 		);
 		update_site_option( 'users_can_register', true );
+		// Ensure multisite option is also set.
+		add_filter( 'option_users_can_register', '__return_true' );
 
 		// Render the button.
 		ob_start();
 		comment_form( array(), $post_id );
 		$output = ob_get_clean();
 
-		$this->assertStringContainsString( "<div class=\"googlesitekit-sign-in-with-google__frontend-output-button googlesitekit-sign-in-with-google__comments-form-button googlesitekit-sign-in-with-google__comments-form-button-postid-$post_id", $output, 'Button should render when when both open user registration and the Shownext to comments setting are enabled.' );
+		$this->assertStringContainsString( "<div class=\"googlesitekit-sign-in-with-google__frontend-output-button googlesitekit-sign-in-with-google__comments-form-button googlesitekit-sign-in-with-google__comments-form-button-postid-$post_id", $output, 'Button should render when when both open user registration and the Show next to comments setting are enabled.' );
 	}
 
 	/**
