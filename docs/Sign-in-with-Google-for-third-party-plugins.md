@@ -1,6 +1,6 @@
 # Sign in with Google for Third-Party Plugins & Themes
 
-Starting from **Site Kit 1.164.0 or later**, Site Kit supports rendering a Sign in with Google button using [WordPress PHP actions](https://developer.wordpress.org/plugins/hooks/actions/) and [WordPress shortcodes](https://codex.wordpress.org/Shortcode).
+Starting from **Site Kit n.e.x.t (or later)**, Site Kit supports rendering a Sign in with Google button using [WordPress PHP actions](https://developer.wordpress.org/plugins/hooks/actions/) and [WordPress shortcodes](https://codex.wordpress.org/Shortcode).
 
 Use this documentation to integrate the Sign in with Google button provided by Site Kit into your WordPress plugin, theme, or site code directly.
 
