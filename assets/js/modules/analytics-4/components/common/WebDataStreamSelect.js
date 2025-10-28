@@ -44,13 +44,8 @@ import {
 import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
 
-export default function WebDataStreamSelect( {
-	hasModuleAccess,
-	isDisabled,
-	className,
-	onChange,
-	...props
-} ) {
+export default function WebDataStreamSelect( props ) {
+	const { hasModuleAccess, isDisabled, className, onChange } = props;
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
@@ -142,7 +137,6 @@ export default function WebDataStreamSelect( {
 				enhanced
 				outlined
 				disabled
-				{ ...props }
 			>
 				<Option value={ measurementID }>{ measurementID }</Option>
 			</Select>
@@ -164,7 +158,6 @@ export default function WebDataStreamSelect( {
 			disabled={ isDisabled || ! isValidPropertySelection( propertyID ) }
 			enhanced
 			outlined
-			{ ...props }
 		>
 			{ ( webDataStreams || [] )
 				.concat( {
