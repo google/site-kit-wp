@@ -102,7 +102,7 @@
 			background-color: $c-surfaces-background;
 			border-radius: $br-xs;
 			margin: 5px $grid-gap-desktop;
-			padding: 20px 20px 6px;
+			padding: 20px;
 
 			.googlesitekit-notice__content {
 				flex: 1 1 0;
@@ -204,7 +204,6 @@
 			.googlesitekit-cta-link {
 				color: $c-surfaces-on-surface;
 				font-weight: 500;
-				padding: 14px 5px;
 
 				&:hover {
 					text-decoration: none;
