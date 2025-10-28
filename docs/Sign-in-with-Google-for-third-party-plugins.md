@@ -141,7 +141,7 @@ function my_custom_login_form() {
 
 ## Styling the Button
 
-The button container can be styled using CSS. The default class is always present, and you can add your own:
+The **button container** can be styled using CSS. The default class is always present, and you can add your own:
 
 ```css
 .googlesitekit-sign-in-with-google__frontend-output-button {
