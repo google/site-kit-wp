@@ -22,6 +22,7 @@
 import MainHeader from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import ProgressIndicator from '@/js/components/ProgressIndicator';
+import ExitSetup from './ExitSetup';
 import { useFeature } from '@/js/hooks/useFeature';
 
 export default function Header() {
@@ -31,7 +32,7 @@ export default function Header() {
 		<MainHeader
 			subHeader={ setupFlowRefreshEnabled ? <ProgressIndicator /> : null }
 		>
-			<HelpMenu />
+			{ setupFlowRefreshEnabled ? <ExitSetup /> : <HelpMenu /> }
 		</MainHeader>
 	);
 }
