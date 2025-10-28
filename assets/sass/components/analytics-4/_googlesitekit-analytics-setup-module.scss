@@ -17,11 +17,40 @@
  */
 
 .googlesitekit-plugin {
-
 	.googlesitekit-setup-module--analytics {
+		.googlesitekit-setup-module__inputs {
+			align-items: start;
+			.mdc-select-helper-text {
+				margin: 0;
+				.googlesitekit-setup__step-hint {
+					margin: 7px 0 0 15px;
+					padding: 0;
+				}
+			}
+		}
+
+		.googlesitekit-setup-module__select_account {
+			font-size: $fs-body-lg;
+			margin-bottom: 0;
+		}
+
+		.googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label {
+			font-size: $fs-body-sm;
+		}
+
+		.googlesitekit-module-settings-group__helper-text {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-sm;
+			margin: 4px 0;
+		}
+
+		.googlesitekit-color--surfaces-on-background-variant {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-body-sm;
+			margin: 23px 0 0;
+		}
 
 		.googlesitekit-analytics-enable + .googlesitekit-setup-module__inputs {
-
 			.googlesitekit-analytics__select-property,
 			.googlesitekit-analytics__select-profile {
 				margin-top: $grid-gap-phone / 2;
@@ -29,7 +58,6 @@
 		}
 
 		.googlesitekit-setup-module__inputs--multiline {
-
 			.googlesitekit-analytics-webdatastreamname {
 				margin-bottom: $grid-gap-phone;
 

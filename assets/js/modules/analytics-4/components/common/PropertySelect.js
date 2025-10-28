@@ -44,13 +44,13 @@ import {
 import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
 
-export default function PropertySelect( props ) {
-	const {
-		isDisabled,
-		hasModuleAccess,
-		className,
-		onChange = () => {},
-	} = props;
+export default function PropertySelect( {
+	isDisabled,
+	hasModuleAccess,
+	className,
+	onChange = () => {},
+	...props
+} ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
@@ -132,6 +132,7 @@ export default function PropertySelect( props ) {
 				enhanced
 				outlined
 				disabled
+				{ ...props }
 			>
 				<Option value={ propertyID }>{ propertyID }</Option>
 			</Select>
@@ -155,6 +156,7 @@ export default function PropertySelect( props ) {
 			disabled={ isDisabled }
 			enhanced
 			outlined
+			{ ...props }
 		>
 			{ ( properties || [] )
 				.concat( {
