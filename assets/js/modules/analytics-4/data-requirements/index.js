@@ -17,15 +17,16 @@
 /**
  * Internal dependencies
  */
+import { WPDataRegistry } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 /**
- * Requires that data is available on load.
+ * Returns a function that checks if data is available on load.
  *
  * @since n.e.x.t
  *
- * @return {boolean} Whether data is available on load or not.
+ * @return {function(WPDataRegistry): boolean} Whether data is available on load or not.
  */
 export function requireDataIsAvailableOnLoad() {
 	return ( { select } ) =>
@@ -33,11 +34,11 @@ export function requireDataIsAvailableOnLoad() {
 }
 
 /**
- * Requires that audience segmentation setup is completed.
+ * Returns a function that checks if audience segmentation setup is completed.
  *
  * @since n.e.x.t
  *
- * @return {boolean} Whether setup is completed or not.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether setup is completed or not.
  */
 export function requireAudienceSegmentationSetupCompleted() {
 	return async ( { select, resolveSelect } ) => {
@@ -50,11 +51,11 @@ export function requireAudienceSegmentationSetupCompleted() {
 }
 
 /**
- * Requires that audience segmentation setup was completed by the current user.
+ * Returns a function that checks if audience segmentation setup was completed by the current user.
  *
  * @since n.e.x.t
  *
- * @return {boolean} Whether setup was completed by the current user or not.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether setup was completed by the current user or not.
  */
 export function requireAudienceSegmentationSetupCompletedByUser() {
 	return async ( { select, resolveSelect } ) => {
@@ -78,11 +79,11 @@ export function requireAudienceSegmentationSetupCompletedByUser() {
 }
 
 /**
- * Requires that the connected web datastream is not available.
+ * Returns a function that checks if the connected web datastream is not available.
  *
  * @since n.e.x.t
  *
- * @return {boolean} `true` if the connected web datastream is not available, otherwise `false`.
+ * @return {function(WPDataRegistry): Promise<boolean>} `true` if the connected web datastream is not available, otherwise `false`.
  */
 export function requireWebDataStreamUnavailable() {
 	return async ( { select, resolveSelect } ) => {
@@ -95,35 +96,37 @@ export function requireWebDataStreamUnavailable() {
 }
 
 /**
- * Requires that the connected Google tag ID is mismatched.
+ * Returns a function that checks if the connected Google tag ID is mismatched.
  *
  * @since n.e.x.t
  *
- * @return {boolean} Whether the connected Google tag is mismatched or not.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the connected Google tag is mismatched or not.
  */
 export function requireMismatchedGoogleTag() {
 	return async ( { select, resolveSelect } ) => {
 		await resolveSelect( MODULES_ANALYTICS_4 ).getModuleData();
 
-		return select( MODULES_ANALYTICS_4 ).hasMismatchedGoogleTagID();
+		return (
+			true === select( MODULES_ANALYTICS_4 ).hasMismatchedGoogleTagID()
+		);
 	};
 }
 
 /**
- * Requires that enhanced measurement is enabled for the connected web datastream.
+ * Returns a function that checks if enhanced measurement is enabled for the connected web datastream.
  *
  * @since n.e.x.t
  *
- * @return {boolean} Whether enhanced measurement is enabled or not.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether enhanced measurement is enabled or not.
  */
 export function requireEnhancedMeasurementEnabled() {
 	return async ( { select, resolveSelect } ) => {
 		const { isEnhancedMeasurementStreamEnabled, getSettings } =
 			resolveSelect( MODULES_ANALYTICS_4 );
-
-		await getSettings();
 		const { getPropertyID, getWebDataStreamID } =
 			select( MODULES_ANALYTICS_4 );
+
+		await getSettings();
 
 		return (
 			true ===
