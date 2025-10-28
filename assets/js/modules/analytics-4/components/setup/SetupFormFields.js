@@ -106,62 +106,48 @@ export default function SetupFormFields() {
 				<div>
 					<PropertySelect
 						onChange={ resetEnhancedMeasurementSetting }
-						helperText={
-							setupFlowRefreshEnabled && (
-								<StepHint
-									leadingText={ __(
-										'What is an Analytics property?',
-										'google-site-kit'
-									) }
-									tooltipText={ createInterpolateElement(
-										__(
-											'An Analytics property is a container for data collected from a website. It represents a specific website, and within a property, you can view reports, manage data collection, attribution, privacy settings, and product links. <a>Learn more</a>',
-											'google-site-kit'
-										),
-										{
-											a: (
-												<Link
-													external
-													hideExternalIndicator
-												/>
-											),
-										}
-									) }
-								/>
-							)
-						}
 						hasModuleAccess
 					/>
+					{ setupFlowRefreshEnabled && (
+						<StepHint
+							leadingText={ __(
+								'What is an Analytics property?',
+								'google-site-kit'
+							) }
+							tooltipText={ createInterpolateElement(
+								__(
+									'An Analytics property is a container for data collected from a website. It represents a specific website, and within a property, you can view reports, manage data collection, attribution, privacy settings, and product links. <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: <Link external hideExternalIndicator />,
+								}
+							) }
+						/>
+					) }
 				</div>
 				<div>
 					<WebDataStreamSelect
 						onChange={ resetEnhancedMeasurementSetting }
-						helperText={
-							setupFlowRefreshEnabled && (
-								<StepHint
-									leadingText={ __(
-										'What is a web data stream?',
-										'google-site-kit'
-									) }
-									tooltipText={ createInterpolateElement(
-										__(
-											'A data stream is a flow of data from your visitors to Analytics. When a data stream is created, Analytics generates a snippet of code that is added to your site to collect that data. <a>Learn more</a>',
-											'google-site-kit'
-										),
-										{
-											a: (
-												<Link
-													external
-													hideExternalIndicator
-												/>
-											),
-										}
-									) }
-								/>
-							)
-						}
 						hasModuleAccess
 					/>
+					{ setupFlowRefreshEnabled && (
+						<StepHint
+							leadingText={ __(
+								'What is a web data stream?',
+								'google-site-kit'
+							) }
+							tooltipText={ createInterpolateElement(
+								__(
+									'A data stream is a flow of data from your visitors to Analytics. When a data stream is created, Analytics generates a snippet of code that is added to your site to collect that data. <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: <Link external hideExternalIndicator />,
+								}
+							) }
+						/>
+					) }
 				</div>
 			</div>
 
