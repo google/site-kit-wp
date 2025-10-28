@@ -45,6 +45,29 @@ import {
 import { createReducer } from './create-reducer';
 
 /**
+ * @since n.e.x.t
+ *
+ * @typedef {Object} WPDataRegistry
+ * @property {Function} registerStore Given a namespace key and settings
+ *                                    object, registers a new namespace
+ *                                    store.
+ * @property {Function} subscribe     Given a function callback, invokes
+ *                                    the callback on any change to state
+ *                                    within any registered store.
+ * @property {Function} select        Given a namespace key, returns an
+ *                                    object of the store's registered
+ *                                    selectors.
+ * @property {Function} dispatch      Given a namespace key, returns an
+ *                                    object of the store's registered
+ *                                    action dispatchers.
+ * @property {Function} resolveSelect Given a namespace key, returns an
+ *                                    object containing the store's
+ *                                    selectors modified so that they return
+ *                                    promises that resolve to their eventual
+ *                                    values, after any resolvers have run.
+ */
+
+/**
  * The Site Kit data registry.
  *
  * This should not be imported directly outside of `googlesitekit-*` files
