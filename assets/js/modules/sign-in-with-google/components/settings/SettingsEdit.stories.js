@@ -70,7 +70,7 @@ Default.decorators = [
 					text: 'continue_with',
 					theme: 'outline',
 					shape: 'rectangular',
-					OneTapEnabled: true,
+					oneTapEnabled: true,
 				} );
 
 			// Story-specific setup.
