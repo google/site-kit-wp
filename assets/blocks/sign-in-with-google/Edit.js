@@ -105,7 +105,8 @@ export default function Edit( { attributes, setAttributes, className } ) {
 						options={ createSelectOptions(
 							SIGN_IN_WITH_GOOGLE_SHAPES
 						) }
-						// Opt in to new WP components styles (6.7–7.1):
+						// Opt-in to new WordPress components styles introduced in Gutenberg 6.7+.
+						// Safe for pre-6.7 WordPress: these props are ignored in older versions.
 						// __next40pxDefaultSize - use new 40px height (replaces deprecated 36px)
 						// __nextHasNoMarginBottom - remove legacy bottom margin
 						// Ref: https://github.com/WordPress/gutenberg/pull/61132
@@ -119,7 +120,8 @@ export default function Edit( { attributes, setAttributes, className } ) {
 						options={ createSelectOptions(
 							SIGN_IN_WITH_GOOGLE_TEXTS
 						) }
-						// Opt in to new WP components styles (6.7–7.1):
+						// Opt-in to new WordPress components styles introduced in Gutenberg 6.7+.
+						// Safe for pre-6.7 WordPress: these props are ignored in older versions.
 						// __next40pxDefaultSize - use new 40px height (replaces deprecated 36px)
 						// __nextHasNoMarginBottom - remove legacy bottom margin
 						// Ref: https://github.com/WordPress/gutenberg/pull/61132
@@ -133,7 +135,8 @@ export default function Edit( { attributes, setAttributes, className } ) {
 						options={ createSelectOptions(
 							SIGN_IN_WITH_GOOGLE_THEMES
 						) }
-						// Opt in to new WP components styles (6.7–7.1):
+						// Opt-in to new WordPress components styles introduced in Gutenberg 6.7+.
+						// Safe for pre-6.7 WordPress: these props are ignored in older versions.
 						// __next40pxDefaultSize - use new 40px height (replaces deprecated 36px)
 						// __nextHasNoMarginBottom - remove legacy bottom margin
 						// Ref: https://github.com/WordPress/gutenberg/pull/61132
@@ -148,7 +151,8 @@ export default function Edit( { attributes, setAttributes, className } ) {
 						) }
 						value={ buttonClassName || '' }
 						onChange={ handleClassChange }
-						// Opt in to new WP components styles (6.7–7.1):
+						// Opt-in to new WordPress components styles introduced in Gutenberg 6.7+.
+						// Safe for pre-6.7 WordPress: these props are ignored in older versions.
 						// __next40pxDefaultSize - use new 40px height (replaces deprecated 36px)
 						// __nextHasNoMarginBottom - remove legacy bottom margin
 						// Ref: https://github.com/WordPress/gutenberg/pull/61132
