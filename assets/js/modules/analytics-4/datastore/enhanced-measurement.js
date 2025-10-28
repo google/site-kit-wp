@@ -418,6 +418,8 @@ const baseResolvers = {
 		}
 	},
 };
+baseResolvers.isEnhancedMeasurementStreamEnabled =
+	baseResolvers.getEnhancedMeasurementSettings;
 
 const baseSelectors = {
 	/**
