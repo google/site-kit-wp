@@ -56,9 +56,15 @@ export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.scenario = {};
 
-export const WithProgressIndicator = Template.bind( null );
-WithProgressIndicator.storyName = 'With progress indicator';
-WithProgressIndicator.parameters = {
+export const SetupFlowRefresh = Template.bind( null );
+SetupFlowRefresh.storyName = 'With setupFlowRefresh';
+SetupFlowRefresh.parameters = {
+	features: [ 'setupFlowRefresh' ],
+};
+
+export const InitialSetupFlow = Template.bind( null );
+InitialSetupFlow.storyName = 'Initial setup flow';
+InitialSetupFlow.parameters = {
 	features: [ 'setupFlowRefresh' ],
 	query: {
 		showProgress: 'true',
