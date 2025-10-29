@@ -378,7 +378,7 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snpashot 1`
                             <span
                               class="mdc-button__label"
                             >
-                              Setup
+                              Set up
                             </span>
                           </button>
                         </div>
@@ -787,25 +787,6 @@ exports[`ModuleSetup Analytics 4 not initial setup flow should match the snpasho
                           class="googlesitekit-color--surfaces-on-background-variant"
                         >
                           To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings. 
-                          <a
-                            aria-label="Learn more (opens in a new tab)"
-                            class="googlesitekit-cta-link"
-                            href="https://sitekit.withgoogle.com/support/?doc=plugin-conversion-tracking"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            <span
-                              class="googlesitekit-cta-link__contents"
-                            >
-                              Learn more
-                            </span>
-                            <span
-                              class="googlesitekit-icon-wrapper"
-                              style="margin-left: 5px;"
-                            >
-                              <svg />
-                            </span>
-                          </a>
                         </p>
                         <div
                           class="googlesitekit-setup-module__action"
@@ -817,7 +798,7 @@ exports[`ModuleSetup Analytics 4 not initial setup flow should match the snpasho
                             <span
                               class="mdc-button__label"
                             >
-                              Setup
+                              Complete setup
                             </span>
                           </button>
                         </div>
