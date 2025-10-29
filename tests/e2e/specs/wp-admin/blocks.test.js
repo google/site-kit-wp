@@ -96,9 +96,22 @@ describe( 'blocks', () => {
 			);
 
 			// Expect the block to be present in the block editor.
-			await page.waitForSelector(
-				'.googlesitekit-blocks-reader-revenue-manager'
-			);
+			// Blocks using block API v3 are rendered inside an iframe.
+			try {
+				const iframe = await (
+					await page.waitForSelector( '[name=editor-canvas]' )
+				 ).contentFrame();
+
+				await iframe.waitForSelector(
+					'.googlesitekit-blocks-reader-revenue-manager',
+					{ timeout: 5000 }
+				);
+			} catch ( error ) {
+				// Fallback for older WP versions where the block is not in an iframe.
+				await page.waitForSelector(
+					'.googlesitekit-blocks-reader-revenue-manager'
+				);
+			}
 
 			// Verify there are no console errors.
 			const consoleErrors = await page.evaluate( () => {
@@ -143,9 +156,21 @@ describe( 'blocks', () => {
 			);
 
 			// Expect the block to be present in the block editor.
-			await page.waitForSelector(
-				'.googlesitekit-blocks-reader-revenue-manager'
-			);
+			try {
+				const iframe = await (
+					await page.waitForSelector( '[name=editor-canvas]' )
+				 ).contentFrame();
+
+				await iframe.waitForSelector(
+					'.googlesitekit-blocks-reader-revenue-manager',
+					{ timeout: 5000 }
+				);
+			} catch ( error ) {
+				// Fallback for older WP versions where the block is not in an iframe.
+				await page.waitForSelector(
+					'.googlesitekit-blocks-reader-revenue-manager'
+				);
+			}
 
 			// Verify there are no console errors.
 			const consoleErrors = await page.evaluate( () => {
@@ -188,9 +213,21 @@ describe( 'blocks', () => {
 			);
 
 			// Expect the block to be present in the block editor.
-			await page.waitForSelector(
-				'.googlesitekit-blocks-sign-in-with-google'
-			);
+			try {
+				const iframe = await (
+					await page.waitForSelector( '[name=editor-canvas]' )
+				 ).contentFrame();
+
+				await iframe.waitForSelector(
+					'.googlesitekit-blocks-sign-in-with-google',
+					{ timeout: 5000 }
+				);
+			} catch ( error ) {
+				// Fallback for older WP versions where the block is not in an iframe.
+				await page.waitForSelector(
+					'.googlesitekit-blocks-sign-in-with-google'
+				);
+			}
 
 			// Verify there are no console errors.
 			const consoleErrors = await page.evaluate( () => {
