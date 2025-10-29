@@ -36,7 +36,6 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {};
 
 export const WithError = Template.bind( {} );
 WithError.storyName = 'With error';
@@ -55,7 +54,6 @@ WithError.args = {
 		);
 	},
 };
-WithError.scenario = {};
 
 export const WithProgress = Template.bind( {} );
 WithProgress.storyName = 'With progress indicator';
@@ -64,7 +62,6 @@ WithProgress.parameters = {
 		showProgress: true,
 	},
 };
-WithProgress.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Setup/KeyMetricsSetupApp',
