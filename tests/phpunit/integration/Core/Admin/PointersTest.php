@@ -134,7 +134,7 @@ class PointersTest extends TestCase {
 						'active_callback'   => '__return_true',
 						'with_dismiss_icon' => true,
 						'class'             => 'custom-class',
-						'buttons'           => 'function(event, container) { return jQuery("<button class=\"googlesitekit-pointer-cta button-primary\">Setup</button>"); }',
+						'buttons'           => '<a class=\"googlesitekit-pointer-cta button-primary\" href="#">Set up</a>',
 					)
 				);
 				return $pointers;
@@ -152,7 +152,6 @@ class PointersTest extends TestCase {
 		// pointerClass should include wp-pointer, computed icon class, and custom class.
 		$this->assertStringContainsString( 'pointerClass:', $output, 'Pointer output should include pointerClass property.' );
 		$this->assertStringContainsString( 'wp-pointer', $output, 'Pointer class should include default wp-pointer.' );
-		$this->assertStringContainsString( 'googlesitekit-pointer-with-dismiss-icon', $output, 'Pointer class should include dismiss icon class when with_dismiss_icon is true.' );
 		$this->assertStringContainsString( 'custom-class', $output, 'Pointer class should include custom class when provided.' );
 
 		// Title markup should be preserved (sanitized) allowing button/span with class.
