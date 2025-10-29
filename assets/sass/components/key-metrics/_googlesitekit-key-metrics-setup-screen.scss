@@ -21,22 +21,6 @@
 	.googlesitekit-key-metrics-setup {
 		margin-bottom: 30px;
 
-		.googlesitekit-key-metrics-setup__title {
-			margin-top: 0;
-		}
-
-		.googlesitekit-key-metrics-setup__heading {
-			margin-bottom: 20px;
-
-			h2 {
-				margin: 0 0 6px;
-			}
-
-			p {
-				color: $c-surfaces-on-background-variant;
-			}
-		}
-
 		.googlesitekit-user-input__select-options-wrapper {
 
 			@media (min-width: $bp-xxxlarge) {
@@ -54,6 +38,22 @@
 
 		.googlesitekit-user-input__footer {
 			flex-direction: row;
+		}
+	}
+
+	.googlesitekit-key-metrics-setup__title {
+		margin-top: 0;
+	}
+
+	.googlesitekit-key-metrics-setup__heading {
+		margin-bottom: 20px;
+
+		h2 {
+			margin: 0 0 6px;
+		}
+
+		p {
+			color: $c-surfaces-on-background-variant;
 		}
 	}
 }
