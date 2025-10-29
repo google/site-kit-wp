@@ -95,23 +95,14 @@ describe( 'blocks', () => {
 				'button.editor-block-list-item-google-site-kit-rrm-contribute-with-google'
 			);
 
-			// Expect the block to be present in the block editor.
-			// Blocks using block API v3 are rendered inside an iframe.
-			try {
-				const iframe = await (
-					await page.waitForSelector( '[name=editor-canvas]' )
-				 ).contentFrame();
+			const iframe = await (
+				await page.waitForSelector( '[name=editor-canvas]' )
+			 ).contentFrame();
 
-				await iframe.waitForSelector(
-					'.googlesitekit-blocks-reader-revenue-manager',
-					{ timeout: 5000 }
-				);
-			} catch ( error ) {
-				// Fallback for older WP versions where the block is not in an iframe.
-				await page.waitForSelector(
-					'.googlesitekit-blocks-reader-revenue-manager'
-				);
-			}
+			await iframe.waitForSelector(
+				'.googlesitekit-blocks-reader-revenue-manager',
+				{ timeout: 5000 }
+			);
 
 			// Verify there are no console errors.
 			const consoleErrors = await page.evaluate( () => {
@@ -155,22 +146,14 @@ describe( 'blocks', () => {
 				'button.editor-block-list-item-google-site-kit-rrm-subscribe-with-google'
 			);
 
-			// Expect the block to be present in the block editor.
-			try {
-				const iframe = await (
-					await page.waitForSelector( '[name=editor-canvas]' )
-				 ).contentFrame();
+			const iframe = await (
+				await page.waitForSelector( '[name=editor-canvas]' )
+			 ).contentFrame();
 
-				await iframe.waitForSelector(
-					'.googlesitekit-blocks-reader-revenue-manager',
-					{ timeout: 5000 }
-				);
-			} catch ( error ) {
-				// Fallback for older WP versions where the block is not in an iframe.
-				await page.waitForSelector(
-					'.googlesitekit-blocks-reader-revenue-manager'
-				);
-			}
+			await iframe.waitForSelector(
+				'.googlesitekit-blocks-reader-revenue-manager',
+				{ timeout: 5000 }
+			);
 
 			// Verify there are no console errors.
 			const consoleErrors = await page.evaluate( () => {
