@@ -248,7 +248,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	/**
 	 * Conditionally show the Sign in with Google button in a comments form.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 */
 	public function handle_comments_form() {
 		$settings            = $this->get_settings()->get();
@@ -581,7 +581,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * This method captures the Sign in with Google button output
 	 * and returns it as a string for use in shortcodes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 *
 	 * @param array $atts Shortcode attributes.
 	 * @return string The rendered button markup.
@@ -918,7 +918,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	/**
 	 * Gets an array of internal feature metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 *
 	 * @return array
 	 */
