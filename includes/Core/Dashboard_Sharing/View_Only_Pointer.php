@@ -52,11 +52,11 @@ final class View_Only_Pointer {
 			self::SLUG,
 			array(
 				'title'             => sprintf(
-					'%s "<button type="button-link" class="googlesitekit-pointer-cta--dismiss dashicons dashicons-no"> \
-						<span class="screen-reader-text">%s</span> \
-					</button>"',
+					'%s %s',
 					__( 'You now have access to Site Kit', 'google-site-kit' ),
-					__( 'Dismiss this notice.', 'google-site-kit' ),
+					'<button type=\'button\' class=\'googlesitekit-pointer-cta--dismiss dashicons dashicons-no\'>' .
+						'<span class=\'screen-reader-text\'>' . esc_html__( 'Dismiss this notice.', 'google-site-kit' ) . '</span>' .
+					'</button>'
 				),
 				'content'           => __( 'Check Site Kit’s dashboard to find out how much traffic your site is getting, your most popular pages, top keywords people use to find your site on Search, and more.', 'google-site-kit' ),
 				'target_id'         => 'toplevel_page_googlesitekit-dashboard',
@@ -85,21 +85,8 @@ final class View_Only_Pointer {
 				'class'             => 'googlesitekit-view-only-pointer',
 				'buttons'           =>
 					sprintf(
-						'
-					 function(event, container) {
-						jQuery("body").on("click", ".googlesitekit-pointer-cta--dismiss", function() {
-							 container.element.pointer("close");
-						});
-						jQuery("body").on("click", ".googlesitekit-pointer-cta", function() {
-							container.element.pointer("close");
-
-							window.location = "admin.php?page=googlesitekit-dashboard";
-						});
-
-						return jQuery(\'<button class="googlesitekit-pointer-cta button-primary">%s</button>\');
-					}
-					',
-						__( 'View dashboard', 'google-site-kit' )
+						'<a class=\'googlesitekit-pointer-cta button-primary\' href=\'admin.php?page=googlesitekit-dashboard\'>%s</a>',
+						esc_js( __( 'View dashboard', 'google-site-kit' ) )
 					),
 			)
 		);

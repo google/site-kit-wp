@@ -14,18 +14,21 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Pointer;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_Settings;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 
 /**
  * @group Util
- * @group Pointer
+ * @group Email_Reporting
  */
 class Email_Reporting_PointerTest extends TestCase {
+	use Fake_Site_Connection_Trait;
 
 	/**
 	 * Context instance.
@@ -33,6 +36,13 @@ class Email_Reporting_PointerTest extends TestCase {
 	 * @var Context
 	 */
 	private $context;
+
+	/**
+	 * Email_Reporting_Settings instance.
+	 *
+	 * @var User_Email_Reporting_Settings
+	 */
+	private $email_reporting_settings;
 
 	/**
 	 * Dismissed_Items instance.
@@ -49,9 +59,11 @@ class Email_Reporting_PointerTest extends TestCase {
 		remove_all_filters( 'user_has_cap' );
 		remove_all_filters( 'googlesitekit_admin_pointers' );
 
-		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->context                  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options                   = new User_Options( $this->context );
+		$this->email_reporting_settings = new User_Email_Reporting_Settings( $user_options );
 
-		$pointer = new Email_Reporting_Pointer( $this->context );
+		$pointer = new Email_Reporting_Pointer( $this->context, $user_options, $this->email_reporting_settings );
 		$pointer->register();
 	}
 
@@ -83,9 +95,14 @@ class Email_Reporting_PointerTest extends TestCase {
 	}
 
 	public function test_active_callback__view_only_access() {
-		$user_id = $this->create_editor_user();
-
+		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		$this->grant_editors_view_only_dashboard_access();
+
+		$this->register_permissions_for_user( $user_id );
+
+		// Ensure VIEW_DASHBOARD is granted via shared dashboard for non-admins.
+		$this->dismissed_items->add( 'shared_dashboard_splash', 0 );
+
 		$this->register_permissions_for_user( $user_id );
 
 		$pointer = $this->get_registered_pointer();
@@ -151,10 +168,34 @@ class Email_Reporting_PointerTest extends TestCase {
 		$permissions           = new Permissions( $this->context, $authentication, $modules, $user_options, $this->dismissed_items );
 
 		$permissions->register();
+
+		$restore_user = $user_options->switch_user( $user_id );
+		// Provide proxy credentials so Authentication::is_setup_completed() initial check passes.
+		$this->fake_proxy_site_connection();
+		// Mark setup as complete for capability checks.
+		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
+
+		// For administrators, additionally satisfy VIEW_DASHBOARD via the authenticated dashboard path.
+		if ( in_array( 'administrator', ( new \WP_User( $user_id ) )->roles, true ) ) {
+			$authentication->verification()->set( true );
+			$authentication->get_oauth_client()->set_token(
+				array(
+					'access_token' => 'valid-auth-token',
+				)
+			);
+		}
+		$restore_user();
+
+		// Re-register the Email Reporting pointer bound to the current user context so that
+		// user-scoped checks (subscription, dismissals) use the correct User_Options.
+		remove_all_filters( 'googlesitekit_admin_pointers' );
+		$pointer_user_settings = new User_Email_Reporting_Settings( $user_options );
+		$pointer               = new Email_Reporting_Pointer( $this->context, $user_options, $pointer_user_settings );
+		$pointer->register();
 	}
 
 	private function grant_editors_view_only_dashboard_access() {
-		$settings              = new \Google\Site_Kit\Core\Modules\Module_Sharing_Settings( new Options( $this->context ) );
+		$settings              = new Module_Sharing_Settings( new Options( $this->context ) );
 		$test_sharing_settings = array(
 			'analytics-4' => array(
 				'sharedRoles' => array( 'editor' ),
@@ -162,9 +203,5 @@ class Email_Reporting_PointerTest extends TestCase {
 			),
 		);
 		$settings->set( $test_sharing_settings );
-	}
-
-	private function create_editor_user() {
-		return $this->factory()->user->create( array( 'role' => 'editor' ) );
 	}
 }

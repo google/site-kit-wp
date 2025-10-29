@@ -37,14 +37,34 @@ final class Email_Reporting_Pointer {
 	private $context;
 
 	/**
+	 * User_Email_Reporting_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var User_Email_Reporting_Settings
+	 */
+	protected $user_settings;
+
+	/**
+	 * Dismissed_Items instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Dismissed_Items
+	 */
+	protected $dismissed_items;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Context $context Plugin context.
+	 * @param Context                       $context Plugin context.
+	 * @param User_Options                  $user_options User options instance.
+	 * @param User_Email_Reporting_Settings $user_settings User email reporting settings instance.
 	 */
-	public function __construct( Context $context ) {
-		$this->context = $context;
+	public function __construct( Context $context, User_Options $user_options, User_Email_Reporting_Settings $user_settings ) {
+		$this->context         = $context;
+		$this->user_settings   = $user_settings;
+		$this->dismissed_items = new Dismissed_Items( $user_options );
 	}
 
 	/**
@@ -99,7 +119,7 @@ final class Email_Reporting_Pointer {
 					}
 
 					// User must have Site Kit access: either admin (can authenticate) or view-only (can view splash).
-					if ( ! current_user_can( Permissions::AUTHENTICATE ) && ! current_user_can( Permissions::VIEW_SPLASH ) ) {
+					if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
 						return false;
 					}
 
@@ -113,18 +133,13 @@ final class Email_Reporting_Pointer {
 						}
 					}
 
-					// Create user-level storage to check subscription and dismissed items.
-					$user_options  = new User_Options( $this->context, $user_id );
-					$user_settings = new User_Email_Reporting_Settings( $user_options );
-
 					// If user is already subscribed to email reporting, bail early.
-					if ( $user_settings->is_user_subscribed() ) {
+					if ( $this->user_settings->is_user_subscribed() ) {
 						return false;
 					}
 
 					// If the overlay notification has already been dismissed, bail early.
-					$dismissed_items = new Dismissed_Items( $user_options );
-					if ( $dismissed_items->is_dismissed( 'email-reporting-overlay-notification' ) ) {
+					if ( $this->dismissed_items->is_dismissed( 'email-reporting-overlay-notification' ) ) {
 						return false;
 					}
 
@@ -135,16 +150,7 @@ final class Email_Reporting_Pointer {
 				'class'             => 'googlesitekit-email-pointer',
 				// Inline JS function to render CTA button and add delegated handlers for CTA and dismiss.
 				'buttons'           => sprintf(
-					'function(event, container) {
-						jQuery("body").on("click", ".googlesitekit-pointer-cta--dismiss", function() {
-							container.element.pointer("close");
-						});
-						jQuery("body").on("click", ".googlesitekit-pointer-cta", function() {
-							container.element.pointer("close");
-							window.location = "admin.php?page=googlesitekit-dashboard&email-reporting-panel-opened=1";
-						});
-						return jQuery("<button class=\"googlesitekit-pointer-cta button-primary\">%s</button>");
-					}',
+					"<a class='googlesitekit-pointer-cta button-primary' href='admin.php?page=googlesitekit-dashboard&email-reporting-panel=1'>%s</a>",
 					esc_js( __( 'Set up', 'google-site-kit' ) )
 				),
 			)

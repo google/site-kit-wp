@@ -66,10 +66,9 @@ import {
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from './email-reporting/constants';
 import OfflineNotification from './notifications/OfflineNotification';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
+import CoreDashboardEffects from './CoreDashboardEffects';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
 import useQueryArg from '@/js/hooks/useQueryArg';
@@ -92,11 +91,8 @@ export default function DashboardMainApp() {
 	const breakpoint = useBreakpoint();
 
 	const [ widgetArea, setWidgetArea ] = useQueryArg( 'widgetArea' );
-	const [ emailReportingPanelOpened, setEmailReportingPanelOpened ] =
-		useQueryArg( 'email-reporting-panel-opened' );
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const { setValue: setUIValue } = useDispatch( CORE_UI );
 
 	const grantedScopes = useSelect( ( select ) =>
 		select( CORE_USER ).getGrantedScopes()
@@ -147,12 +143,6 @@ export default function DashboardMainApp() {
 
 				setWidgetArea( undefined );
 			}, 100 );
-		}
-
-		// If redirected from a pointer CTA or following link from email footer, open the Email Reporting selection panel.
-		if ( emailReportingPanelOpened !== undefined ) {
-			setUIValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-			setEmailReportingPanelOpened( undefined );
 		}
 	} );
 
@@ -261,6 +251,7 @@ export default function DashboardMainApp() {
 		<Fragment>
 			<ScrollEffect />
 			<ModuleDashboardEffects />
+			<CoreDashboardEffects />
 
 			<AdminScreenTooltip />
 

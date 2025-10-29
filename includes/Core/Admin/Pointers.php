@@ -62,6 +62,8 @@ class Pointers {
 		}
 
 		wp_enqueue_style( 'wp-pointer' );
+		// Dashboard styles are required where pointers are used to ensure proper styling.
+		wp_enqueue_style( 'googlesitekit-wp-dashboard-css' );
 		wp_enqueue_script( 'wp-pointer' );
 
 		add_action(
@@ -103,6 +105,7 @@ class Pointers {
 	 * Prints script for a given pointer.
 	 *
 	 * @since 1.83.0
+	 * @since n.e.x.t Updated to support buttons and header dismiss icon.
 	 *
 	 * @param Pointer $pointer Pointer to print.
 	 */
@@ -114,10 +117,12 @@ class Pointers {
 
 		$slug    = $pointer->get_slug();
 		$buttons = $pointer->get_buttons();
-		$class   = array( 'wp-pointer' );
-		if ( $pointer->get_with_dismiss_icon() ) {
-			$class[] = 'googlesitekit-pointer-with-dismiss-icon';
+		if ( $buttons ) {
+			// Content including buttons escaped below in the inline script with wp_kses.
+			$content .= "<div class='googlesitekit-pointer-buttons'>" . $buttons . '</div>';
 		}
+
+		$class = array( 'wp-pointer' );
 		if ( $pointer->get_class() ) {
 			$class[] = $pointer->get_class();
 		}
@@ -140,10 +145,24 @@ class Pointers {
 							);
 						},
 						pointerClass: "%s",
-						%s
+						buttons: function( event, container ) {
+							return jQuery("<div></div>");
+						}
 					};
 
-					jQuery( "#%s" ).pointer( options ).pointer( "open" );
+					jQuery( "#%6$s" ).pointer( options ).pointer( "open" );
+
+					jQuery("body").on("click", ".googlesitekit-pointer-cta--dismiss", function() {
+						jQuery( "#%6$s" ).pointer("close");
+					});
+					jQuery("body").on("click", ".googlesitekit-pointer-cta", function(event) {
+						// We must prevent default link navigation in order to dismiss the pointer first
+						// to prevent it showing again.
+						event.preventDefault();
+						jQuery( "#%6$s" ).pointer("close");
+						window.location = jQuery(this).attr("href");
+						// TODO: add trackEvent in #11168
+					});
 				} );
 				',
 				wp_kses(
@@ -156,12 +175,32 @@ class Pointers {
 						),
 					)
 				),
-				$content,
+				wp_kses(
+					$content,
+					array(
+						'a'      => array(
+							'href'   => array(),
+							'class'  => array(),
+							'target' => array(),
+							'rel'    => array(),
+						),
+						'h4'     => array(),
+						'p'      => array( 'class' => array() ),
+						'br'     => array(),
+						'strong' => array(),
+						'em'     => array(),
+						'button' => array(
+							'class'    => array(),
+							'type'     => array(),
+							'data-url' => array(),
+						),
+						'div'    => array( 'class' => array() ),
+					)
+				),
 				wp_json_encode( $pointer->get_position() ),
 				esc_js( $slug ),
 				implode( ' ', $class ),
-				$buttons ? 'buttons: ' . $buttons : null,
-				esc_js( $pointer->get_target_id() )
+				esc_js( $pointer->get_target_id() ),
 			),
 			array(
 				'id' => $slug,

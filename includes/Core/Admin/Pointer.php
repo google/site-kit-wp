@@ -105,17 +105,6 @@ final class Pointer {
 	}
 
 	/**
-	 * Gets if the pointer should include a dismiss icon.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return boolean Should the Pointer include a dismiss icon.
-	 */
-	public function get_with_dismiss_icon() {
-		return ! empty( $this->args['with_dismiss_icon'] );
-	}
-
-	/**
 	 * Gets the pointer custom class.
 	 *
 	 * @since n.e.x.t
