@@ -23,6 +23,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { SpinnerButton } from 'googlesitekit-components';
+import ExternalIcon from '@/svg/icons/external.svg';
 
 export default function CTAButton( {
 	label,
@@ -31,9 +32,16 @@ export default function CTAButton( {
 	inProgress,
 	onClick,
 	href,
+	external,
+	hideExternalIndicator,
 } ) {
 	if ( ! label || ( ! onClick && ! href ) ) {
 		return null;
+	}
+
+	let trailingIconToUse;
+	if ( external && ! hideExternalIndicator ) {
+		trailingIconToUse = <ExternalIcon width={ 14 } height={ 14 } />;
 	}
 
 	return (
@@ -44,6 +52,8 @@ export default function CTAButton( {
 			isSaving={ inProgress }
 			onClick={ onClick }
 			href={ href }
+			target={ external ? '_blank' : '_self' }
+			trailingIcon={ trailingIconToUse }
 		>
 			{ label }
 		</SpinnerButton>
