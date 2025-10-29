@@ -220,10 +220,12 @@ export default function KeyMetricsSetupApp() {
 										/>
 
 										{ error && (
-											<ErrorNotice
-												error={ error }
-												Icon={ WarningSVG }
-											/>
+											<div className="googlesitekit-user-input__error">
+												<ErrorNotice
+													error={ error }
+													Icon={ WarningSVG }
+												/>
+											</div>
 										) }
 
 										<div className="googlesitekit-user-input__footer">
