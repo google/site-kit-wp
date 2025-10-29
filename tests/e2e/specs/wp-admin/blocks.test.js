@@ -212,22 +212,14 @@ describe( 'blocks', () => {
 				'button.editor-block-list-item-google-site-kit-sign-in-with-google'
 			);
 
-			// Expect the block to be present in the block editor.
-			try {
-				const iframe = await (
-					await page.waitForSelector( '[name=editor-canvas]' )
-				 ).contentFrame();
+			const iframe = await (
+				await page.waitForSelector( '[name=editor-canvas]' )
+			 ).contentFrame();
 
-				await iframe.waitForSelector(
-					'.googlesitekit-blocks-sign-in-with-google',
-					{ timeout: 5000 }
-				);
-			} catch ( error ) {
-				// Fallback for older WP versions where the block is not in an iframe.
-				await page.waitForSelector(
-					'.googlesitekit-blocks-sign-in-with-google'
-				);
-			}
+			await iframe.waitForSelector(
+				'.googlesitekit-blocks-sign-in-with-google',
+				{ timeout: 5000 }
+			);
 
 			// Verify there are no console errors.
 			const consoleErrors = await page.evaluate( () => {
