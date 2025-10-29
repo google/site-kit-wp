@@ -225,6 +225,7 @@ function Template() {
 							ctaButton={ {
 								label: 'Go to AdSense',
 								onClick: () => {},
+								external: true,
 							} }
 							dismissButton={ {
 								label: 'Maybe later',
