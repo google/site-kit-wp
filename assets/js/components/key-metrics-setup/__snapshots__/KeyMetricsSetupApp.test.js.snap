@@ -1202,23 +1202,27 @@ exports[`KeyMetricsSetupApp should show an error when the save fails 1`] = `
                   </div>
                 </div>
                 <div
-                  class="googlesitekit-notice googlesitekit-notice--error"
+                  class="googlesitekit-user-input__error"
                 >
                   <div
-                    class="googlesitekit-notice__icon"
+                    class="googlesitekit-notice googlesitekit-notice--error"
                   >
-                    <svg />
-                  </div>
-                  <div
-                    class="googlesitekit-notice__content"
-                  >
-                    <p
-                      class="googlesitekit-notice__description"
+                    <div
+                      class="googlesitekit-notice__icon"
                     >
-                      <span>
-                        Error: Internal server error (Please try again.)
-                      </span>
-                    </p>
+                      <svg />
+                    </div>
+                    <div
+                      class="googlesitekit-notice__content"
+                    >
+                      <p
+                        class="googlesitekit-notice__description"
+                      >
+                        <span>
+                          Error: Internal server error (Please try again.)
+                        </span>
+                      </p>
+                    </div>
                   </div>
                 </div>
                 <div
