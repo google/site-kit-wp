@@ -54,9 +54,6 @@ class Email_Reporting_PointerTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		remove_all_filters( 'map_meta_cap' );
-		remove_all_filters( 'googlesitekit_user_data' );
-		remove_all_filters( 'user_has_cap' );
 		remove_all_filters( 'googlesitekit_admin_pointers' );
 
 		$this->context                  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
@@ -87,6 +84,7 @@ class Email_Reporting_PointerTest extends TestCase {
 
 	public function test_active_callback__admin_access_not_subscribed_overlay_not_dismissed() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
 		$this->register_permissions_for_user( $user_id );
 
 		$pointer = $this->get_registered_pointer();
@@ -96,8 +94,8 @@ class Email_Reporting_PointerTest extends TestCase {
 
 	public function test_active_callback__view_only_access() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $user_id );
 		$this->grant_editors_view_only_dashboard_access();
-
 		$this->register_permissions_for_user( $user_id );
 
 		// Ensure VIEW_DASHBOARD is granted via shared dashboard for non-admins.
@@ -112,6 +110,7 @@ class Email_Reporting_PointerTest extends TestCase {
 
 	public function test_active_callback__pointer_dismissed() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
 		$this->register_permissions_for_user( $user_id );
 
 		update_user_meta( $user_id, 'dismissed_wp_pointers', Email_Reporting_Pointer::SLUG );
@@ -123,6 +122,7 @@ class Email_Reporting_PointerTest extends TestCase {
 
 	public function test_active_callback__subscribed_user_bails() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
 		$this->register_permissions_for_user( $user_id );
 
 		// Mark user as subscribed at user level.
@@ -141,6 +141,7 @@ class Email_Reporting_PointerTest extends TestCase {
 
 	public function test_active_callback__overlay_dismissed_bails() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
 		$this->register_permissions_for_user( $user_id );
 
 		// Dismiss the email reporting overlay notification for this user.
@@ -159,8 +160,6 @@ class Email_Reporting_PointerTest extends TestCase {
 	}
 
 	private function register_permissions_for_user( $user_id ) {
-		wp_set_current_user( $user_id );
-
 		$user_options          = new User_Options( $this->context, $user_id );
 		$authentication        = new Authentication( $this->context, null, $user_options );
 		$modules               = new Modules( $this->context, null, $user_options, $authentication );
@@ -169,14 +168,13 @@ class Email_Reporting_PointerTest extends TestCase {
 
 		$permissions->register();
 
-		$restore_user = $user_options->switch_user( $user_id );
 		// Provide proxy credentials so Authentication::is_setup_completed() initial check passes.
 		$this->fake_proxy_site_connection();
 		// Mark setup as complete for capability checks.
 		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
 
 		// For administrators, additionally satisfy VIEW_DASHBOARD via the authenticated dashboard path.
-		if ( in_array( 'administrator', ( new \WP_User( $user_id ) )->roles, true ) ) {
+		if ( user_can( 'administrator', $user_id ) ) {
 			$authentication->verification()->set( true );
 			$authentication->get_oauth_client()->set_token(
 				array(
@@ -184,14 +182,6 @@ class Email_Reporting_PointerTest extends TestCase {
 				)
 			);
 		}
-		$restore_user();
-
-		// Re-register the Email Reporting pointer bound to the current user context so that
-		// user-scoped checks (subscription, dismissals) use the correct User_Options.
-		remove_all_filters( 'googlesitekit_admin_pointers' );
-		$pointer_user_settings = new User_Email_Reporting_Settings( $user_options );
-		$pointer               = new Email_Reporting_Pointer( $this->context, $user_options, $pointer_user_settings );
-		$pointer->register();
 	}
 
 	private function grant_editors_view_only_dashboard_access() {
