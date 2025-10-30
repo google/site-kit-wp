@@ -119,7 +119,7 @@ class Pointers {
 		$buttons = $pointer->get_buttons();
 		if ( $buttons ) {
 			// Content including buttons escaped below in the inline script with wp_kses.
-			$content .= "<div class='googlesitekit-pointer-buttons'>" . $buttons . '</div>';
+			$content .= '<div class="googlesitekit-pointer-buttons">' . $buttons . '</div>';
 		}
 
 		$class = array( 'wp-pointer' );
@@ -127,83 +127,71 @@ class Pointers {
 			$class[] = $pointer->get_class();
 		}
 
-		BC_Functions::wp_print_inline_script_tag(
-			sprintf(
-				'
-				jQuery( function() {
-					var options = {
-						content: "<h3>%s</h3>%s",
-						position: %s,
-						pointerWidth: 420,
-						close: function() {
-							jQuery.post(
-								window.ajaxurl,
-								{
-									pointer: "%s",
-									action:  "dismiss-wp-pointer",
-								}
-							);
-						},
-						pointerClass: "%s",
-						buttons: function( event, container ) {
-							return jQuery("<div></div>");
-						}
-					};
-
-					jQuery( "#%6$s" ).pointer( options ).pointer( "open" );
-
-					jQuery("body").on("click", ".googlesitekit-pointer-cta--dismiss", function() {
-						jQuery( "#%6$s" ).pointer("close");
-					});
-					jQuery("body").on("click", ".googlesitekit-pointer-cta", function(event) {
-						// We must prevent default link navigation in order to dismiss the pointer first
-						// to prevent it showing again.
-						event.preventDefault();
-						jQuery( "#%6$s" ).pointer("close");
-						window.location = jQuery(this).attr("href");
-						// TODO: add trackEvent in #11168
-					});
-				} );
-				',
-				wp_kses(
-					$pointer->get_title(),
-					array(
-						'span'   => array( 'class' => array() ),
-						'button' => array(
-							'class' => array(),
-							'type'  => array(),
-						),
-					)
-				),
-				wp_kses(
-					$content,
-					array(
-						'a'      => array(
-							'href'   => array(),
-							'class'  => array(),
-							'target' => array(),
-							'rel'    => array(),
-						),
-						'h4'     => array(),
-						'p'      => array( 'class' => array() ),
-						'br'     => array(),
-						'strong' => array(),
-						'em'     => array(),
-						'button' => array(
-							'class'    => array(),
-							'type'     => array(),
-							'data-url' => array(),
-						),
-						'div'    => array( 'class' => array() ),
-					)
-				),
-				wp_json_encode( $pointer->get_position() ),
-				esc_js( $slug ),
-				implode( ' ', $class ),
-				esc_js( $pointer->get_target_id() ),
+		$kses_title = array(
+			'span'   => array( 'class' => array() ),
+			'button' => array(
+				'class'       => array(),
+				'type'        => array(),
+				'data-action' => array(),
 			),
+		);
+
+		$kses_content = array(
+			'a'      => array(
+				'href'        => array(),
+				'class'       => array(),
+				'target'      => array(),
+				'rel'         => array(),
+				'data-action' => array(),
+			),
+			'h4'     => array(),
+			'p'      => array( 'class' => array() ),
+			'br'     => array(),
+			'strong' => array(),
+			'em'     => array(),
+			'button' => array(
+				'class'       => array(),
+				'type'        => array(),
+				'data-action' => array(),
+			),
+			'div'    => array( 'class' => array() ),
+		);
+
+		BC_Functions::wp_print_inline_script_tag(
+			<<<'JS'
+			(
+				function ( $, wp, config ) {
+					function initPointer() {
+						const options = {
+							content: '<h3>' + config.title + '</h3>' + config.content,
+							position: JSON.parse( config.position ),
+							pointerWidth: 420,
+							pointerClass: config.class,
+							close: function() {
+								wp.ajax.post( 'dismiss-wp-pointer', { pointer: config.targetId } );
+							},
+							buttons: function( event, container ) {
+								container.pointer.on( 'click', '[data-action="dismiss"]', function() {
+									container.element.pointer( 'close' );
+								} );
+							}
+						};
+
+						$( '#' + config.targetId ).pointer( options ).pointer( 'open' );
+					}
+
+					$( initPointer );
+				}
+			)( window.jQuery, window.wp, { ...document.currentScript.dataset } );
+			JS
+			,
 			array(
-				'id' => $slug,
+				'data-slug'      => $pointer->get_slug(),
+				'data-class'     => implode( ' ', $class ),
+				'data-target-id' => $pointer->get_target_id(),
+				'data-title'     => wp_kses( $pointer->get_title(), $kses_title ),
+				'data-content'   => wp_kses( $content, $kses_content ),
+				'data-position'  => wp_json_encode( $pointer->get_position() ),
 			)
 		);
 	}

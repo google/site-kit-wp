@@ -117,7 +117,7 @@ class PointersTest extends TestCase {
 		$this->assertStringContainsString( 'test-slug', $output, 'Pointer output should contain the slug.' );
 		$this->assertStringContainsString( 'Test pointer title', $output, 'Pointer output should contain the title.' );
 		$this->assertStringContainsString( 'Test pointer content.', $output, 'Pointer output should contain the content.' );
-		$this->assertStringContainsString( '#test-target', $output, 'Pointer output should contain the target selector.' );
+		$this->assertStringContainsString( 'test-target', $output, 'Pointer output should contain the target ID.' );
 	}
 
 	public function test_print_pointer_script_with_buttons_and_class() {
@@ -158,7 +158,7 @@ class PointersTest extends TestCase {
 		$this->assertStringContainsString( 'googlesitekit-pointer-cta--dismiss', $output, 'Pointer title markup should include dismiss button class.' );
 	}
 
-	public function test_print_pointer_scripy() {
+	public function test_print_pointer_script() {
 		add_filter(
 			'googlesitekit_admin_pointers',
 			function ( $pointers ) {
@@ -182,6 +182,6 @@ class PointersTest extends TestCase {
 		$this->assertStringContainsString( 'test-slug', $output, 'Pointer output should contain the slug.' );
 		$this->assertStringContainsString( 'Test pointer title', $output, 'Pointer output should contain the title.' );
 		$this->assertStringContainsString( 'Test pointer content.', $output, 'Pointer output should contain the content.' );
-		$this->assertStringContainsString( '#test-target', $output, 'Pointer output should contain the target selector.' );
+		$this->assertStringContainsString( 'test-target', $output, 'Pointer output should contain the target ID.' );
 	}
 }

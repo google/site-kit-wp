@@ -94,15 +94,15 @@ final class Email_Reporting_Pointer {
 			self::SLUG,
 			array(
 				// Title allows limited markup (button/span) sanitized via wp_kses in Pointers::print_pointer_script.
-				'title'             => sprintf(
+				'title'           => sprintf(
 					'%s %s',
 					__( 'Get site insights in your inbox', 'google-site-kit' ),
-					'<button type=\'button\' class=\'googlesitekit-pointer-cta--dismiss dashicons dashicons-no\'>' .
-						'<span class=\'screen-reader-text\'>' . esc_html__( 'Dismiss this notice.', 'google-site-kit' ) . '</span>' .
+					'<button type="button" class="googlesitekit-pointer-cta--dismiss dashicons dashicons-no" data-action="dismiss">' .
+					'<span class="screen-reader-text">' . esc_html__( 'Dismiss this notice.', 'google-site-kit' ) . '</span>' .
 					'</button>'
 				),
 				// Return subtitle and content as HTML with safe tags.
-				'content'           => function () {
+				'content'         => function () {
 					return sprintf(
 						'<h4>%s</h4><p>%s</p>',
 						__( 'Keep track of your site with Site Kit', 'google-site-kit' ),
@@ -110,9 +110,9 @@ final class Email_Reporting_Pointer {
 					);
 				},
 				// Site Kit menu in WP Admin.
-				'target_id'         => 'toplevel_page_googlesitekit-dashboard',
-				'position'          => 'top',
-				'active_callback'   => function ( $hook_suffix ) {
+				'target_id'       => 'toplevel_page_googlesitekit-dashboard',
+				'position'        => 'top',
+				'active_callback' => function ( $hook_suffix ) {
 					// Only on the main WP Dashboard screen.
 					if ( 'index.php' !== $hook_suffix ) {
 						return false;
@@ -145,15 +145,14 @@ final class Email_Reporting_Pointer {
 
 					return true;
 				},
-				// Add dashicon before title and special className hook.
-				'with_dismiss_icon' => true,
-				'class'             => 'googlesitekit-email-pointer',
+				'class'           => 'googlesitekit-email-pointer',
 				// Inline JS function to render CTA button and add delegated handlers for CTA and dismiss.
-				'buttons'           => sprintf(
-					"<a class='googlesitekit-pointer-cta button-primary' href='admin.php?page=googlesitekit-dashboard&email-reporting-panel=1'>%s</a>",
-					esc_js( __( 'Set up', 'google-site-kit' ) )
+				'buttons'         => sprintf(
+					'<a class="googlesitekit-pointer-cta button-primary" data-action="dismiss" href="%s">%s</a>',
+					$this->context->admin_url( 'dashboard', array( 'email-reporting-panel' => 1 ) ),
+					esc_html__( 'Set up', 'google-site-kit' )
 				),
-			)
+			),
 		);
 	}
 }
