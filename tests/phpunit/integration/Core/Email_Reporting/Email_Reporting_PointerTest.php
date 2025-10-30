@@ -11,17 +11,16 @@
 namespace Google\Site_Kit\Tests\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Pointer;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
-use Google\Site_Kit\Core\Modules\Modules;
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_Settings;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Tests\UserAuthenticationTrait;
 
 /**
  * @group Util
@@ -29,39 +28,32 @@ use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
  */
 class Email_Reporting_PointerTest extends TestCase {
 	use Fake_Site_Connection_Trait;
+	use UserAuthenticationTrait;
 
-	/**
-	 * Context instance.
-	 *
-	 * @var Context
-	 */
-	private $context;
+	private Context $context;
 
-	/**
-	 * Email_Reporting_Settings instance.
-	 *
-	 * @var User_Email_Reporting_Settings
-	 */
-	private $email_reporting_settings;
+	private User_Options $user_options;
 
-	/**
-	 * Dismissed_Items instance.
-	 *
-	 * @var Dismissed_Items
-	 */
-	private $dismissed_items;
+	private Dismissed_Items $dismissed_items;
+
+	private User_Email_Reporting_Settings $email_reporting_settings;
 
 	public function set_up() {
 		parent::set_up();
+		$this->context                  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->user_options             = new User_Options( $this->context );
+		$this->dismissed_items          = new Dismissed_Items( $this->user_options );
+		$this->email_reporting_settings = new User_Email_Reporting_Settings( $this->user_options );
 
 		remove_all_filters( 'googlesitekit_admin_pointers' );
 
-		$this->context                  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$user_options                   = new User_Options( $this->context );
-		$this->email_reporting_settings = new User_Email_Reporting_Settings( $user_options );
-
-		$pointer = new Email_Reporting_Pointer( $this->context, $user_options, $this->email_reporting_settings );
+		$pointer = new Email_Reporting_Pointer( $this->context, $this->user_options, $this->email_reporting_settings );
 		$pointer->register();
+
+		// Mark setup as complete for fundamental permission checks.
+		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
+		// Provide proxy credentials so Authentication::is_setup_completed() initial check passes.
+		$this->fake_proxy_site_connection();
 	}
 
 	public function test_register() {
@@ -85,7 +77,9 @@ class Email_Reporting_PointerTest extends TestCase {
 	public function test_active_callback__admin_access_not_subscribed_overlay_not_dismissed() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
-		$this->register_permissions_for_user( $user_id );
+		$this->user_options->switch_user( $user_id );
+		$this->set_user_access_token( $user_id, 'test-access-token' );
+		$this->user_options->set( Verification::OPTION, 'verified' );
 
 		$pointer = $this->get_registered_pointer();
 
@@ -95,13 +89,11 @@ class Email_Reporting_PointerTest extends TestCase {
 	public function test_active_callback__view_only_access() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
+		$this->user_options->switch_user( $user_id );
 		$this->grant_editors_view_only_dashboard_access();
-		$this->register_permissions_for_user( $user_id );
 
-		// Ensure VIEW_DASHBOARD is granted via shared dashboard for non-admins.
+		// Ensure VIEW_DASHBOARD is granted via shared dashboard for non-authenticated-admins.
 		$this->dismissed_items->add( 'shared_dashboard_splash', 0 );
-
-		$this->register_permissions_for_user( $user_id );
 
 		$pointer = $this->get_registered_pointer();
 
@@ -111,7 +103,6 @@ class Email_Reporting_PointerTest extends TestCase {
 	public function test_active_callback__pointer_dismissed() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
-		$this->register_permissions_for_user( $user_id );
 
 		update_user_meta( $user_id, 'dismissed_wp_pointers', Email_Reporting_Pointer::SLUG );
 
@@ -123,12 +114,10 @@ class Email_Reporting_PointerTest extends TestCase {
 	public function test_active_callback__subscribed_user_bails() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
-		$this->register_permissions_for_user( $user_id );
+		$this->user_options->switch_user( $user_id );
 
 		// Mark user as subscribed at user level.
-		$user_options  = new User_Options( $this->context, $user_id );
-		$user_settings = new User_Email_Reporting_Settings( $user_options );
-		$user_settings->merge(
+		$this->email_reporting_settings->merge(
 			array(
 				'subscribed' => true,
 			)
@@ -142,11 +131,9 @@ class Email_Reporting_PointerTest extends TestCase {
 	public function test_active_callback__overlay_dismissed_bails() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
-		$this->register_permissions_for_user( $user_id );
+		$this->user_options->switch_user( $user_id );
 
 		// Dismiss the email reporting overlay notification for this user.
-		$user_options          = new User_Options( $this->context, $user_id );
-		$this->dismissed_items = new Dismissed_Items( $user_options );
 		$this->dismissed_items->add( 'email-reporting-overlay-notification' );
 
 		$pointer = $this->get_registered_pointer();
@@ -157,31 +144,6 @@ class Email_Reporting_PointerTest extends TestCase {
 	private function get_registered_pointer() {
 		$pointers = apply_filters( 'googlesitekit_admin_pointers', array() );
 		return array_pop( $pointers );
-	}
-
-	private function register_permissions_for_user( $user_id ) {
-		$user_options          = new User_Options( $this->context, $user_id );
-		$authentication        = new Authentication( $this->context, null, $user_options );
-		$modules               = new Modules( $this->context, null, $user_options, $authentication );
-		$this->dismissed_items = new Dismissed_Items( $user_options );
-		$permissions           = new Permissions( $this->context, $authentication, $modules, $user_options, $this->dismissed_items );
-
-		$permissions->register();
-
-		// Provide proxy credentials so Authentication::is_setup_completed() initial check passes.
-		$this->fake_proxy_site_connection();
-		// Mark setup as complete for capability checks.
-		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
-
-		// For administrators, additionally satisfy VIEW_DASHBOARD via the authenticated dashboard path.
-		if ( user_can( 'administrator', $user_id ) ) {
-			$authentication->verification()->set( true );
-			$authentication->get_oauth_client()->set_token(
-				array(
-					'access_token' => 'valid-auth-token',
-				)
-			);
-		}
 	}
 
 	private function grant_editors_view_only_dashboard_access() {
