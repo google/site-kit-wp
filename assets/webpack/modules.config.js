@@ -99,6 +99,8 @@ module.exports = function ( mode, rules ) {
 				'./js/googlesitekit-main-dashboard.js',
 			'googlesitekit-entity-dashboard':
 				'./js/googlesitekit-entity-dashboard.js',
+			'googlesitekit-public-dashboard':
+				'./js/googlesitekit-public-dashboard.js',
 			'googlesitekit-splash': './js/googlesitekit-splash.js',
 			'googlesitekit-wp-dashboard': './js/googlesitekit-wp-dashboard.js',
 		},
