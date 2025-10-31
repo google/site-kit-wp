@@ -84,10 +84,25 @@ class Email_LogTest extends TestCase {
 		$this->assertFalse( $post_type->show_in_menu, 'Post type should not show in admin menus.' );
 		$this->assertTrue( $post_type->map_meta_cap, 'Post type should map meta caps.' );
 		$this->assertSame( 'post', $post_type->capability_type, 'Post type should use post capabilities.' );
+	}
 
-		$supports     = get_all_post_type_supports( Email_Log::POST_TYPE );
-		$support_keys = array_keys( array_filter( $supports ) );
-		$this->assertSame( array( 'author' ), $support_keys, 'Post type should only support the author feature.' );
+	public function test_post_author_is_persisted() {
+		$user_id = self::factory()->user->create();
+		$post_id = wp_insert_post(
+			array(
+				'post_type'   => Email_Log::POST_TYPE,
+				'post_status' => 'googlesitekit_email_scheduled',
+				'post_title'  => 'Internal Log',
+				'post_author' => $user_id,
+			)
+		);
+
+		$this->assertIsInt( $post_id, 'Email log post should insert successfully.' );
+
+		$post = get_post( $post_id );
+		$this->assertSame( $user_id, (int) $post->post_author, 'Email log post author should persist when saved programmatically.' );
+
+		wp_delete_post( $post_id, true );
 	}
 
 	public function test_registers_delivery_statuses() {
