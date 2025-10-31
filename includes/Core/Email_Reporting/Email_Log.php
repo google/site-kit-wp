@@ -32,27 +32,27 @@ final class Email_Log {
 	/**
 	 * Report frequency meta key.
 	 */
-	const META_REPORT_FREQUENCY = 'report_frequency';
+	const META_REPORT_FREQUENCY = '_report_frequency';
 
 	/**
 	 * Batch ID meta key.
 	 */
-	const META_BATCH_ID = 'batch_id';
+	const META_BATCH_ID = '_batch_id';
 
 	/**
 	 * Send attempts meta key.
 	 */
-	const META_SEND_ATTEMPTS = 'send_attempts';
+	const META_SEND_ATTEMPTS = '_send_attempts';
 
 	/**
 	 * Error details meta key.
 	 */
-	const META_ERROR_DETAILS = 'error_details';
+	const META_ERROR_DETAILS = '_error_details';
 
 	/**
 	 * Report reference dates meta key.
 	 */
-	const META_REPORT_REFERENCE_DATES = 'report_reference_dates';
+	const META_REPORT_REFERENCE_DATES = '_report_reference_dates';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -87,31 +87,8 @@ final class Email_Log {
 		register_post_type(
 			self::POST_TYPE,
 			array(
-				'labels'              => array(
-					'name'               => _x( 'Email Reports', 'Post type general name', 'google-site-kit' ),
-					'singular_name'      => _x( 'Email Report', 'Post type singular name', 'google-site-kit' ),
-					'add_new'            => _x( 'Add New', 'email report', 'google-site-kit' ),
-					'add_new_item'       => __( 'Add New Email Report', 'google-site-kit' ),
-					'edit_item'          => __( 'Edit Email Report', 'google-site-kit' ),
-					'new_item'           => __( 'New Email Report', 'google-site-kit' ),
-					'view_item'          => __( 'View Email Report', 'google-site-kit' ),
-					'search_items'       => __( 'Search Email Reports', 'google-site-kit' ),
-					'not_found'          => __( 'No Email Reports found.', 'google-site-kit' ),
-					'not_found_in_trash' => __( 'No Email Reports found in Trash.', 'google-site-kit' ),
-				),
-				'public'              => false,
-				'show_ui'             => false,
-				'show_in_rest'        => false,
-				'has_archive'         => false,
-				'rewrite'             => false,
-				'publicly_queryable'  => false,
-				'exclude_from_search' => true,
-				'query_var'           => false,
-				'show_in_nav_menus'   => false,
-				'show_in_menu'        => false,
-				'map_meta_cap'        => true,
-				'capability_type'     => 'post',
-				'supports'            => array( 'author' ),
+				'public'       => false,
+				'map_meta_cap' => true,
 			)
 		);
 	}
@@ -182,7 +159,6 @@ final class Email_Log {
 			array(
 				'type'              => 'string',
 				'single'            => true,
-				'show_in_rest'      => false,
 				'auth_callback'     => $auth_callback,
 				'sanitize_callback' => array( __CLASS__, 'sanitize_frequency' ),
 			)
@@ -194,7 +170,6 @@ final class Email_Log {
 			array(
 				'type'              => 'string',
 				'single'            => true,
-				'show_in_rest'      => false,
 				'auth_callback'     => $auth_callback,
 				'sanitize_callback' => array( __CLASS__, 'sanitize_batch_id' ),
 			)
@@ -206,7 +181,6 @@ final class Email_Log {
 			array(
 				'type'              => 'integer',
 				'single'            => true,
-				'show_in_rest'      => false,
 				'auth_callback'     => $auth_callback,
 				'sanitize_callback' => array( __CLASS__, 'sanitize_attempts' ),
 			)
@@ -218,7 +192,6 @@ final class Email_Log {
 			array(
 				'type'              => 'string',
 				'single'            => true,
-				'show_in_rest'      => false,
 				'auth_callback'     => $auth_callback,
 				'sanitize_callback' => array( __CLASS__, 'sanitize_error_details' ),
 			)
@@ -230,7 +203,6 @@ final class Email_Log {
 			array(
 				'type'              => 'string',
 				'single'            => true,
-				'show_in_rest'      => false,
 				'auth_callback'     => $auth_callback,
 				'sanitize_callback' => array( __CLASS__, 'sanitize_reference_dates' ),
 			)
