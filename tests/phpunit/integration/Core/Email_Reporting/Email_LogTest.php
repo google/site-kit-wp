@@ -87,13 +87,17 @@ class Email_LogTest extends TestCase {
 	}
 
 	public function test_post_author_is_persisted() {
-		$user_id = self::factory()->user->create();
+		$admin_id     = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$recipient_id = self::factory()->user->create();
+
+		wp_set_current_user( $admin_id );
+
 		$post_id = wp_insert_post(
 			array(
 				'post_type'   => Email_Log::POST_TYPE,
 				'post_status' => 'googlesitekit_email_scheduled',
 				'post_title'  => 'Internal Log',
-				'post_author' => $user_id,
+				'post_author' => $recipient_id,
 			)
 		);
 
@@ -102,9 +106,10 @@ class Email_LogTest extends TestCase {
 
 		$post = get_post( $post_id );
 		$this->assertInstanceOf( 'WP_Post', $post, 'Inserted email log post should be retrievable.' );
-		$this->assertSame( $user_id, (int) $post->post_author, 'Email log post author should persist when saved programmatically.' );
+		$this->assertSame( $recipient_id, (int) $post->post_author, 'Email log post author should persist when saved programmatically.' );
 
 		wp_delete_post( $post_id, true );
+		wp_set_current_user( 0 );
 	}
 
 	public function test_registers_delivery_statuses() {
