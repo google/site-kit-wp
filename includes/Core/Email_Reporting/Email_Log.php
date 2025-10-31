@@ -144,7 +144,6 @@ final class Email_Log {
 			register_post_status(
 				$slug,
 				array(
-					'label'                     => $status['label'],
 					'public'                    => false,
 					'internal'                  => true,
 					'exclude_from_search'       => true,
