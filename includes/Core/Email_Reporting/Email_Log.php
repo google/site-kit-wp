@@ -55,6 +55,15 @@ final class Email_Log {
 	const META_REPORT_REFERENCE_DATES = '_report_reference_dates';
 
 	/**
+	 * Email log post statuses.
+	 *
+	 * Slugs must stay within the posts table varchar(20) limit.
+	 */
+	const STATUS_SENT      = 'gsk_email_sent';
+	const STATUS_FAILED    = 'gsk_email_failed';
+	const STATUS_SCHEDULED = 'gsk_email_scheduled';
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since n.e.x.t
@@ -102,7 +111,7 @@ final class Email_Log {
 	 */
 	protected function register_post_statuses() {
 		$statuses = array(
-			'googlesitekit_email_sent'      => array(
+			self::STATUS_SENT      => array(
 				'label'       => __( 'Sent', 'google-site-kit' ),
 				/* translators: %s: Number of sent email reports. */
 				'label_count' => _n_noop(
@@ -111,7 +120,7 @@ final class Email_Log {
 					'google-site-kit'
 				),
 			),
-			'googlesitekit_email_failed'    => array(
+			self::STATUS_FAILED    => array(
 				'label'       => __( 'Failed', 'google-site-kit' ),
 				/* translators: %s: Number of failed email reports. */
 				'label_count' => _n_noop(
@@ -120,7 +129,7 @@ final class Email_Log {
 					'google-site-kit'
 				),
 			),
-			'googlesitekit_email_scheduled' => array(
+			self::STATUS_SCHEDULED => array(
 				'label'       => __( 'Scheduled', 'google-site-kit' ),
 				/* translators: %s: Number of scheduled email reports. */
 				'label_count' => _n_noop(

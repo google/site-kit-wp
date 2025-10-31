@@ -43,7 +43,7 @@ class Email_LogTest extends TestCase {
 			unregister_post_type( Email_Log::POST_TYPE );
 		}
 
-		foreach ( array( 'googlesitekit_email_sent', 'googlesitekit_email_failed', 'googlesitekit_email_scheduled' ) as $status ) {
+		foreach ( array( Email_Log::STATUS_SENT, Email_Log::STATUS_FAILED, Email_Log::STATUS_SCHEDULED ) as $status ) {
 			if ( isset( $GLOBALS['wp_post_statuses'][ $status ] ) ) {
 				unset( $GLOBALS['wp_post_statuses'][ $status ] );
 			}
@@ -95,13 +95,17 @@ class Email_LogTest extends TestCase {
 		$post_id = wp_insert_post(
 			array(
 				'post_type'   => Email_Log::POST_TYPE,
-				'post_status' => 'googlesitekit_email_scheduled',
+				'post_status' => Email_Log::STATUS_SCHEDULED,
 				'post_title'  => 'Internal Log',
 				'post_author' => $recipient_id,
-			)
+			),
+			true
 		);
 
-		$this->assertIsInt( $post_id, 'Email log post should insert successfully.' );
+		if ( $post_id instanceof \WP_Error ) {
+			$this->fail( 'Email log post failed to insert: ' . $post_id->get_error_message() );
+		}
+
 		$this->assertGreaterThan( 0, $post_id, 'Email log post ID should be positive.' );
 
 		$post = get_post( $post_id );
@@ -115,9 +119,9 @@ class Email_LogTest extends TestCase {
 	public function test_registers_delivery_statuses() {
 		foreach (
 			array(
-				'googlesitekit_email_sent',
-				'googlesitekit_email_failed',
-				'googlesitekit_email_scheduled',
+				Email_Log::STATUS_SENT,
+				Email_Log::STATUS_FAILED,
+				Email_Log::STATUS_SCHEDULED,
 			) as $status
 		) {
 			$status_object = get_post_status_object( $status );
