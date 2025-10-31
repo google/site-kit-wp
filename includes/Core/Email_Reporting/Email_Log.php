@@ -89,6 +89,8 @@ final class Email_Log {
 			array(
 				'public'       => false,
 				'map_meta_cap' => true,
+				'rewrite'      => false,
+				'query_var'    => false,
 			)
 		);
 	}

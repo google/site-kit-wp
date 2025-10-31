@@ -98,8 +98,10 @@ class Email_LogTest extends TestCase {
 		);
 
 		$this->assertIsInt( $post_id, 'Email log post should insert successfully.' );
+		$this->assertGreaterThan( 0, $post_id, 'Email log post ID should be positive.' );
 
 		$post = get_post( $post_id );
+		$this->assertInstanceOf( 'WP_Post', $post, 'Inserted email log post should be retrievable.' );
 		$this->assertSame( $user_id, (int) $post->post_author, 'Email log post author should persist when saved programmatically.' );
 
 		wp_delete_post( $post_id, true );
