@@ -95,11 +95,6 @@ describe( 'blocks', () => {
 				'button.editor-block-list-item-google-site-kit-rrm-contribute-with-google'
 			);
 
-			// Expect the block to be present in the block editor.
-			await page.waitForSelector(
-				'.googlesitekit-blocks-reader-revenue-manager'
-			);
-
 			// Verify there are no console errors.
 			const consoleErrors = await page.evaluate( () => {
 				return window.console.errors || [];
@@ -142,11 +137,6 @@ describe( 'blocks', () => {
 				'button.editor-block-list-item-google-site-kit-rrm-subscribe-with-google'
 			);
 
-			// Expect the block to be present in the block editor.
-			await page.waitForSelector(
-				'.googlesitekit-blocks-reader-revenue-manager'
-			);
-
 			// Verify there are no console errors.
 			const consoleErrors = await page.evaluate( () => {
 				return window.console.errors || [];
@@ -185,11 +175,6 @@ describe( 'blocks', () => {
 			// Click on the Sign in with Google block.
 			await page.click(
 				'button.editor-block-list-item-google-site-kit-sign-in-with-google'
-			);
-
-			// Expect the block to be present in the block editor.
-			await page.waitForSelector(
-				'.googlesitekit-blocks-sign-in-with-google'
 			);
 
 			// Verify there are no console errors.

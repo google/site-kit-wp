@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
+use Google\Site_Kit\Core\Util\Block_Support;
 
 /**
  * Contribute with Google Gutenberg block.
@@ -73,8 +74,16 @@ class Contribute_With_Google_Block {
 		add_action(
 			'init',
 			function () {
+				$base_path  = dirname( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '/dist/assets/blocks/reader-revenue-manager/contribute-with-google';
+				$block_json = $base_path . '/block.json';
+				if ( Block_Support::has_block_api_version_3_support() ) {
+					$v3_block_json = $base_path . '/v3/block.json';
+					if ( file_exists( $v3_block_json ) ) {
+						$block_json = $v3_block_json;
+					}
+				}
 				register_block_type(
-					dirname( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '/dist/assets/blocks/reader-revenue-manager/contribute-with-google/block.json',
+					$block_json,
 					array(
 						'render_callback' => array( $this, 'render_callback' ),
 					)
