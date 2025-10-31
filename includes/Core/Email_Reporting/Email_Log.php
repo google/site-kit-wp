@@ -250,7 +250,7 @@ final class Email_Log {
 	public static function sanitize_batch_id( $value ) {
 		$value = sanitize_text_field( (string) $value );
 
-		return function_exists( 'mb_substr' ) ? mb_substr( $value, 0, 191 ) : substr( $value, 0, 191 );
+		return substr( $value, 0, 191 );
 	}
 
 	/**
