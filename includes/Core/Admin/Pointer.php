@@ -59,11 +59,14 @@ final class Pointer {
 		$this->args = wp_parse_args(
 			$args,
 			array(
-				'title'           => '',
-				'content'         => '',
-				'target_id'       => '',
-				'position'        => 'top',
-				'active_callback' => null,
+				'title'             => '',
+				'content'           => '',
+				'target_id'         => '',
+				'position'          => 'top',
+				'active_callback'   => null,
+				'buttons'           => null,
+				'with_dismiss_icon' => false,
+				'class'             => '',
 			)
 		);
 	}
@@ -88,6 +91,28 @@ final class Pointer {
 	 */
 	public function get_title() {
 		return $this->args['title'];
+	}
+
+	/**
+	 * Gets the pointer buttons.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string|null Pointer buttons or null.
+	 */
+	public function get_buttons() {
+		return isset( $this->args['buttons'] ) ? $this->args['buttons'] : null;
+	}
+
+	/**
+	 * Gets the pointer custom class.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string|array Pointer custom class.
+	 */
+	public function get_class() {
+		return isset( $this->args['class'] ) ? $this->args['class'] : '';
 	}
 
 	/**
