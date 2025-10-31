@@ -102,7 +102,7 @@
 			background-color: $c-surfaces-background;
 			border-radius: $br-xs;
 			margin: 5px $grid-gap-desktop;
-			padding: 20px 20px 6px;
+			padding: 20px;
 
 			.googlesitekit-notice__content {
 				flex: 1 1 0;
@@ -131,11 +131,6 @@
 			}
 		}
 
-		.googlesitekit-audience-selection-panel__audience-creation-notice-header {
-			display: flex;
-			justify-content: space-between;
-		}
-
 		p.googlesitekit-audience-selection-panel__audience-creation-notice-title {
 			color: $c-surfaces-on-surface-variant;
 			font-family: $f-primary;
@@ -144,14 +139,6 @@
 			letter-spacing: $ls-xs;
 			line-height: $lh-label-sm;
 			margin: 0;
-		}
-
-		.googlesitekit-audience-selection-panel__audience-creation-notice-close {
-			svg {
-				color: $c-surfaces-on-surface-variant;
-				height: 12px;
-				width: 12px;
-			}
 		}
 
 		.googlesitekit-audience-selection-panel__audience-creation-notice-body {
@@ -207,6 +194,26 @@
 
 		.googlesitekit-audience-creation-error-notice {
 			margin-bottom: 12px;
+		}
+
+		.googlesitekit-audience-selection-panel__audience-creation-notice-dismiss {
+			display: flex;
+			justify-content: flex-end;
+			margin-top: 4px;
+
+			.googlesitekit-cta-link {
+				color: $c-surfaces-on-surface;
+				font-weight: 500;
+
+				&:hover {
+					text-decoration: none;
+				}
+
+				&:active,
+				&:focus {
+					background-color: transparent;
+				}
+			}
 		}
 	}
 
