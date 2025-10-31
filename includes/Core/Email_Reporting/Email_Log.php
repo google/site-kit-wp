@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Core\Email_Reporting;
 
-use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\User\Email_Reporting_Settings as Reporting_Settings;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -246,8 +246,13 @@ final class Email_Log {
 	 * @return string Sanitized value.
 	 */
 	public static function sanitize_frequency( $value ) {
-		$allowed = array( 'weekly', 'monthly', 'quarterly' );
+		$allowed = array(
+			Reporting_Settings::FREQUENCY_WEEKLY,
+			Reporting_Settings::FREQUENCY_MONTHLY,
+			Reporting_Settings::FREQUENCY_QUARTERLY,
+		);
 		$value   = is_string( $value ) ? strtolower( $value ) : '';
+
 		return in_array( $value, $allowed, true ) ? $value : '';
 	}
 
@@ -261,6 +266,7 @@ final class Email_Log {
 	 */
 	public static function sanitize_batch_id( $value ) {
 		$value = sanitize_text_field( (string) $value );
+
 		return function_exists( 'mb_substr' ) ? mb_substr( $value, 0, 191 ) : substr( $value, 0, 191 );
 	}
 
