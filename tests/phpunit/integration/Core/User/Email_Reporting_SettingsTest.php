@@ -44,7 +44,7 @@ class Email_Reporting_SettingsTest extends TestCase {
 		$this->assertEquals(
 			array(
 				'subscribed' => false,
-				'frequency'  => 'weekly',
+				'frequency'  => Email_Reporting_Settings::FREQUENCY_WEEKLY,
 			),
 			$this->settings->get(),
 			'Default settings should be unsubscribed with weekly frequency'
@@ -57,18 +57,18 @@ class Email_Reporting_SettingsTest extends TestCase {
 		$this->assertEquals(
 			array(
 				'subscribed' => true,
-				'frequency'  => 'weekly',
+				'frequency'  => Email_Reporting_Settings::FREQUENCY_WEEKLY,
 			),
 			$this->settings->get(),
 			'Subscribed setting should be updated to true'
 		);
 
 		// Test merging frequency setting.
-		$this->assertTrue( $this->settings->merge( array( 'frequency' => 'monthly' ) ), 'Merging frequency setting should return true' );
+		$this->assertTrue( $this->settings->merge( array( 'frequency' => Email_Reporting_Settings::FREQUENCY_MONTHLY ) ), 'Merging frequency setting should return true' );
 		$this->assertEquals(
 			array(
 				'subscribed' => true,
-				'frequency'  => 'monthly',
+				'frequency'  => Email_Reporting_Settings::FREQUENCY_MONTHLY,
 			),
 			$this->settings->get(),
 			'Frequency setting should be updated to monthly'
@@ -79,7 +79,7 @@ class Email_Reporting_SettingsTest extends TestCase {
 			$this->settings->merge(
 				array(
 					'subscribed' => false,
-					'frequency'  => 'quarterly',
+					'frequency'  => Email_Reporting_Settings::FREQUENCY_QUARTERLY,
 				)
 			),
 			'Merging all settings should work/return true'
@@ -87,7 +87,7 @@ class Email_Reporting_SettingsTest extends TestCase {
 		$this->assertEquals(
 			array(
 				'subscribed' => false,
-				'frequency'  => 'quarterly',
+				'frequency'  => Email_Reporting_Settings::FREQUENCY_QUARTERLY,
 			),
 			$this->settings->get(),
 			'All settings should be updated to their new values'
@@ -99,7 +99,7 @@ class Email_Reporting_SettingsTest extends TestCase {
 			$this->settings->merge(
 				array(
 					'subscribed' => null,
-					'frequency'  => 'monthly',
+					'frequency'  => Email_Reporting_Settings::FREQUENCY_MONTHLY,
 				)
 			),
 			'Merging with null value should return true'
@@ -107,7 +107,7 @@ class Email_Reporting_SettingsTest extends TestCase {
 		$this->assertEquals(
 			array(
 				'subscribed' => false,
-				'frequency'  => 'monthly',
+				'frequency'  => Email_Reporting_Settings::FREQUENCY_MONTHLY,
 			),
 			$this->settings->get(),
 			'null values should be ignored and original settings preserved'
@@ -119,7 +119,7 @@ class Email_Reporting_SettingsTest extends TestCase {
 			$this->settings->merge(
 				array(
 					'invalid_key' => 'value',
-					'frequency'   => 'monthly',
+					'frequency'   => Email_Reporting_Settings::FREQUENCY_MONTHLY,
 				)
 			),
 			'Merging with invalid key should return true'
@@ -127,7 +127,7 @@ class Email_Reporting_SettingsTest extends TestCase {
 		$this->assertEquals(
 			array(
 				'subscribed' => false,
-				'frequency'  => 'monthly',
+				'frequency'  => Email_Reporting_Settings::FREQUENCY_MONTHLY,
 			),
 			$this->settings->get(),
 			'Invalid keys should be ignored and original settings preserved'
@@ -188,41 +188,41 @@ class Email_Reporting_SettingsTest extends TestCase {
 				array( 'subscribed' => false ),
 			),
 			'frequency as valid weekly'            => array(
-				array( 'frequency' => 'weekly' ),
-				array( 'frequency' => 'weekly' ),
+				array( 'frequency' => Email_Reporting_Settings::FREQUENCY_WEEKLY ),
+				array( 'frequency' => Email_Reporting_Settings::FREQUENCY_WEEKLY ),
 			),
 			'frequency as valid monthly'           => array(
-				array( 'frequency' => 'monthly' ),
-				array( 'frequency' => 'monthly' ),
+				array( 'frequency' => Email_Reporting_Settings::FREQUENCY_MONTHLY ),
+				array( 'frequency' => Email_Reporting_Settings::FREQUENCY_MONTHLY ),
 			),
 			'frequency as valid quarterly'         => array(
-				array( 'frequency' => 'quarterly' ),
-				array( 'frequency' => 'quarterly' ),
+				array( 'frequency' => Email_Reporting_Settings::FREQUENCY_QUARTERLY ),
+				array( 'frequency' => Email_Reporting_Settings::FREQUENCY_QUARTERLY ),
 			),
 			'frequency as invalid string'          => array(
 				array( 'frequency' => 'invalid' ),
-				array( 'frequency' => 'weekly' ),
+				array( 'frequency' => Email_Reporting_Settings::FREQUENCY_WEEKLY ),
 			),
 			'frequency as number'                  => array(
 				array( 'frequency' => 123 ),
-				array( 'frequency' => 'weekly' ),
+				array( 'frequency' => Email_Reporting_Settings::FREQUENCY_WEEKLY ),
 			),
 			'frequency as boolean'                 => array(
 				array( 'frequency' => true ),
-				array( 'frequency' => 'weekly' ),
+				array( 'frequency' => Email_Reporting_Settings::FREQUENCY_WEEKLY ),
 			),
 			'frequency as array'                   => array(
 				array( 'frequency' => array() ),
-				array( 'frequency' => 'weekly' ),
+				array( 'frequency' => Email_Reporting_Settings::FREQUENCY_WEEKLY ),
 			),
 			'both settings valid'                  => array(
 				array(
 					'subscribed' => true,
-					'frequency'  => 'monthly',
+					'frequency'  => Email_Reporting_Settings::FREQUENCY_MONTHLY,
 				),
 				array(
 					'subscribed' => true,
-					'frequency'  => 'monthly',
+					'frequency'  => Email_Reporting_Settings::FREQUENCY_MONTHLY,
 				),
 			),
 			'both settings with invalid frequency' => array(
@@ -232,18 +232,18 @@ class Email_Reporting_SettingsTest extends TestCase {
 				),
 				array(
 					'subscribed' => true,
-					'frequency'  => 'weekly',
+					'frequency'  => Email_Reporting_Settings::FREQUENCY_WEEKLY,
 				),
 			),
 			'extra keys ignored'                   => array(
 				array(
 					'subscribed' => true,
-					'frequency'  => 'monthly',
+					'frequency'  => Email_Reporting_Settings::FREQUENCY_MONTHLY,
 					'extra'      => 'ignored',
 				),
 				array(
 					'subscribed' => true,
-					'frequency'  => 'monthly',
+					'frequency'  => Email_Reporting_Settings::FREQUENCY_MONTHLY,
 				),
 			),
 		);
