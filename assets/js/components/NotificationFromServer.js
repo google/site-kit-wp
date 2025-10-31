@@ -104,9 +104,9 @@ function NotificationFromServer( {
 			ctaButton={ {
 				label: ctaLabel,
 				href: ctaURL,
-				target: ctaTarget,
 				onClick: onCTAClick,
 				dismissOptions,
+				external: ctaTarget === '_blank',
 			} }
 			dismissButton={
 				dismissible
