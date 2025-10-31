@@ -56,6 +56,7 @@ class Email_Reporting {
 	 */
 	public function __construct( Context $context, ?Options $options = null ) {
 		$options               = $options ?: new Options( $context );
+		$this->context         = $context;
 		$this->settings        = new Email_Reporting_Settings( $options );
 		$this->rest_controller = new REST_Email_Reporting_Controller( $this->settings );
 	}
@@ -68,5 +69,7 @@ class Email_Reporting {
 	public function register() {
 		$this->settings->register();
 		$this->rest_controller->register();
+		$email_log = new Email_Log( $this->context );
+		$email_log->register();
 	}
 }
