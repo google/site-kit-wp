@@ -34,7 +34,7 @@ import { Button } from 'googlesitekit-components';
 import Link from '@/js/components/Link';
 import OptIn from '@/js/components/OptIn';
 import ResetButton from '@/js/components/ResetButton';
-import StepHint from '@/js/components/setup/SetupUsingProxyWithSignIn/StepHint';
+import StepHint from '@/js/components/setup/StepHint';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';

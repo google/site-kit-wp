@@ -137,6 +137,63 @@ describe( 'SetupForm', () => {
 		expect( getByText( 'Web Data Stream' ) ).toBeInTheDocument();
 	} );
 
+	it( 'renders the form correctly with setupFlowRefresh enabled', async () => {
+		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {
+			enabled: true, // Hide notice for this case.
+		} );
+		registry.dispatch( CORE_SITE ).setConversionTrackingEnabled( false );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAccountSummaries( accountSummaries );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperty( properties[ 0 ], {
+				propertyID,
+			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
+				propertyIDs: [ propertyID ],
+			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetEnhancedMeasurementSettings(
+				{
+					...defaultEnhancedMeasurementSettings,
+					streamEnabled: false,
+				},
+				{
+					propertyID,
+					webDataStreamID,
+				}
+			);
+
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.selectAccount( accountID );
+
+		const { container, queryByText, getByRole, waitForRegistry } = render(
+			<SetupForm />,
+			{
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+
+		expect(
+			container.querySelector( 'a[href*=plugin-conversion-tracking]' )
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'button', { name: /Set up/i } )
+		).toBeInTheDocument();
+		expect( queryByText( 'Complete setup' ) ).not.toBeInTheDocument();
+	} );
+
 	it( 'submits the form upon pressing the CTA', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			adsConversionID: '',
