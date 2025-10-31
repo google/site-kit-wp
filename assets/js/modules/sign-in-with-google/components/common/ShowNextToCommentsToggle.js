@@ -62,7 +62,7 @@ export default function ShowNextToCommentsToggle() {
 
 	const learnMoreLink = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
-			'sign-in-with-google-comments'
+			'sign-in-with-google'
 		);
 	} );
 
