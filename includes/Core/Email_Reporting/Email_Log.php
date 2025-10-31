@@ -358,6 +358,9 @@ final class Email_Log {
 	/**
 	 * Authorization callback for protected log meta.
 	 *
+	 * Ensures only internal workflows (cron/init) or administrators touch the
+	 * private log metadata so the CPT stays non-public.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @return bool
