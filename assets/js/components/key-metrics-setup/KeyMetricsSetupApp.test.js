@@ -162,9 +162,10 @@ describe( 'KeyMetricsSetupApp', () => {
 		);
 	} );
 
-	it( 'should navigate to the dashboard when saving is successful', async () => {
+	it( 'should navigate to the dashboard without notification and slug params when saving is successful and in the initial setup flow', async () => {
 		global.location.href =
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup&showProgress=true';
+
 		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
 			body: {
 				purpose: {
@@ -192,7 +193,7 @@ describe( 'KeyMetricsSetupApp', () => {
 		);
 	} );
 
-	it( 'should navigate with notification and slug params when not in initial setup flow', async () => {
+	it( 'should navigate to the dashboard with notification and slug params when saving is successful and not in the initial setup flow', async () => {
 		global.location.href =
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup';
 
