@@ -45,7 +45,7 @@ import HelpMenu from '@/js/components/help/HelpMenu';
 import { Cell, Grid, Row } from '@/js/material-components';
 import Header from '@/js/components/Header';
 import ModuleSetupFooter from './ModuleSetupFooter';
-import ExitSetup from './SetupUsingProxyWithSignIn/ExitSetup';
+import ExitSetup from '@/js/components/setup/SetupUsingProxyWithSignIn/ExitSetup';
 import ProgressIndicator from '@/js/components/ProgressIndicator';
 
 export default function ModuleSetup( { moduleSlug } ) {
