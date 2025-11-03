@@ -161,8 +161,6 @@ export default function KeyMetricsSetupApp() {
 		USER_INPUT_ANSWERS_PURPOSE: USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS,
 	} = getUserInputAnswersDescription();
 
-	// isInitialSetupFlow already declared above.
-
 	const subHeader = isInitialSetupFlow ? (
 		<ProgressIndicator totalSegments={ 6 } currentSegment={ 4 } />
 	) : null;
