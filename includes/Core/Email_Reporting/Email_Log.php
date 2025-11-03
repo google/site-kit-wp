@@ -111,45 +111,20 @@ final class Email_Log {
 	 */
 	protected function register_post_statuses() {
 		$statuses = array(
-			self::STATUS_SENT      => array(
-				'label'       => __( 'Sent', 'google-site-kit' ),
-				/* translators: %s: Number of sent email reports. */
-				'label_count' => _n_noop(
-					'Sent <span class="count">(%s)</span>',
-					'Sent <span class="count">(%s)</span>',
-					'google-site-kit'
-				),
-			),
-			self::STATUS_FAILED    => array(
-				'label'       => __( 'Failed', 'google-site-kit' ),
-				/* translators: %s: Number of failed email reports. */
-				'label_count' => _n_noop(
-					'Failed <span class="count">(%s)</span>',
-					'Failed <span class="count">(%s)</span>',
-					'google-site-kit'
-				),
-			),
-			self::STATUS_SCHEDULED => array(
-				'label'       => __( 'Scheduled', 'google-site-kit' ),
-				/* translators: %s: Number of scheduled email reports. */
-				'label_count' => _n_noop(
-					'Scheduled <span class="count">(%s)</span>',
-					'Scheduled <span class="count">(%s)</span>',
-					'google-site-kit'
-				),
-			),
+			self::STATUS_SENT,
+			self::STATUS_FAILED,
+			self::STATUS_SCHEDULED,
 		);
 
-		foreach ( $statuses as $slug => $status ) {
+		foreach ( $statuses as $key => $status ) {
 			register_post_status(
-				$slug,
+				$status,
 				array(
 					'public'                    => false,
 					'internal'                  => true,
 					'exclude_from_search'       => true,
 					'show_in_admin_all_list'    => false,
 					'show_in_admin_status_list' => false,
-					'label_count'               => $status['label_count'],
 				)
 			);
 		}
