@@ -14,11 +14,11 @@ Site Kit provides a PHP action, Gutenberg block, and a shortcode that allow thir
 
 The Sign in with Google action and shortcode are ideal for:
 
--   Adding Google authentication to custom login forms
--   Integrating Google Sign-In into membership plugins
--   Providing alternative authentication methods in custom user interfaces
--   Enhancing WooCommerce or other e-commerce login experiences
--   Embedding the button in page content, widgets, or page builders (using the shortcode)
+- Adding Google authentication to custom login forms
+- Integrating Google Sign-In into membership plugins
+- Providing alternative authentication methods in custom user interfaces
+- Enhancing WooCommerce or other e-commerce login experiences
+- Embedding the button in page content, widgets, or page builders (using the shortcode)
 
 ## PHP WordPress Action Hook
 
@@ -30,12 +30,12 @@ do_action( 'googlesitekit_render_sign_in_with_google_button', array() );
 
 The action accepts an optional `array` of the following parameters as its only argument:
 
-| Argument | Type                | Description                                                                                                                                                    | Values                                                                  |
-| -------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `class`  | `string` or `array` | Additional CSS classes to add to the button container (`'googlesitekit-sign-in-with-google__frontend-output-button'` is always present and cannot be removed.) | `string` or `array` of `string`                                         |
-| `text`   | `string`            | Button text variation                                                                                                                                          | `'continue_with'`, `'signin'`, `'signin_with'`, `'signup_with'`         |
-| `theme`  | `string`            | Button color theme                                                                                                                                             | `'outline'` (light), `'filled_blue'` (neutral), `'filled_black'` (dark) |
-| `shape`  | `string`            | Button shape                                                                                                                                                   | `'rectangular'`, `'pill'`                                               |
+| Argument | Type                | Description                                                                                                                                                    | Values                                                                                            |
+| -------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `class`  | `string` or `array` | Additional CSS classes to add to the button container (`'googlesitekit-sign-in-with-google__frontend-output-button'` is always present and cannot be removed.) | <ul><li>`string`</li><li>`array` of `string`</li></ul>                                            |
+| `text`   | `string`            | Button text variation                                                                                                                                          | <ul><li>`continue_with`</li><li>`signin`</li><li>`signin_with`</li><li>`signup_with`</li></ul>    |
+| `theme`  | `string`            | Button color theme                                                                                                                                             | <ul><li>`outline` (light)</li><li>`filled_blue` (neutral)</li><li>`filled_black` (dark)</li></ul> |
+| `shape`  | `string`            | Button shape                                                                                                                                                   | <ul><li>`rectangular`</li><li>`pill`</li></ul>                                                    |
 
 **Returns:** The action returns no value as it outputs HTML directly (`void`).
 
@@ -76,17 +76,17 @@ The shortcode accepts the same customization attributes as the PHP action:
 
 **Shortcode Attributes:**
 
--   `class` - Additional CSS class(es) to add to the button container
--   `shape` - Button shape (see options in "parameters" above)
--   `text` - Button text variation (see options in "parameters" above)
--   `theme` - Button color theme (see options in "parameters" above)
+- `class` - Additional CSS class(es) to add to the button container
+- `shape` - Button shape (see options in "parameters" above)
+- `text` - Button text variation (see options in "parameters" above)
+- `theme` - Button color theme (see options in "parameters" above)
 
 The shortcode is useful for:
 
--   Adding the button via the WordPress block editor (in text mode)
--   Including the button in widgets that support shortcodes
--   Embedding the button in page builders
--   Any context where using the Gutenberg block/PHP code directly is not possible
+- Adding the button via the WordPress block editor (in text mode)
+- Including the button in widgets that support shortcodes
+- Embedding the button in page builders
+- Any context where using the Gutenberg block/PHP code directly is not possible
 
 ## Behavior When Not Connected
 
@@ -94,8 +94,8 @@ You can use the PHP action or Shortcode even if Sign in with Google is not conne
 
 The Sign in with Google button will **NOT** render in the following scenarios:
 
--   Sign in with Google is not connected in Site Kit
--   Your site is not using HTTPS/SSL (Sign in with Google requires HTTPS for security)
+- Sign in with Google is not connected in Site Kit
+- Your site is not using HTTPS/SSL (Sign in with Google requires HTTPS for security)
 
 ## Examples
 
@@ -145,8 +145,8 @@ The **button container** can be styled using CSS. The default class is always pr
 
 ```css
 .googlesitekit-sign-in-with-google__frontend-output-button {
-	margin: 20px 0;
-	text-align: center;
+    margin: 20px 0;
+    text-align: center;
 }
 ```
 
@@ -154,6 +154,6 @@ The **button container** can be styled using CSS. The default class is always pr
 
 ## Additional Resources
 
--   [Site Kit Sign in with Google Documentation](https://sitekit.withgoogle.com/documentation/supported-services/sign-in-with-google) - Check if you can't get a button to appear
--   [Google Identity Services Documentation](https://developers.google.com/identity/gsi/web) - Includes styling examples, etc.
--   [Site Kit Support](https://github.com/google/site-kit-wp/issues) - Report issues or ask questions
+- [Site Kit Sign in with Google Documentation](https://sitekit.withgoogle.com/documentation/supported-services/sign-in-with-google) - Check if you can't get a button to appear
+- [Google Identity Services Documentation](https://developers.google.com/identity/gsi/web) - Includes styling examples, etc.
+- [Site Kit Support](https://github.com/google/site-kit-wp/issues) - Report issues or ask questions
