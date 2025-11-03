@@ -321,7 +321,7 @@ export default function AudienceCreationNotice() {
 						</div>
 					) ) }
 				<div className="googlesitekit-audience-selection-panel__audience-creation-notice-dismiss">
-					<Link onClick={ onCloseClick } linkButton>
+					<Link onClick={ onCloseClick }>
 						{ __( 'No thanks', 'google-site-kit' ) }
 					</Link>
 				</div>

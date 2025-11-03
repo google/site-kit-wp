@@ -141,10 +141,18 @@
 			margin: 0;
 		}
 
+		.googlesitekit-audience-creation-error-notice {
+			margin-bottom: 12px;
+		}
+
 		.googlesitekit-audience-selection-panel__audience-creation-notice-body {
 			display: flex;
 			flex-direction: column;
 			justify-content: space-between;
+
+			& + .googlesitekit-audience-creation-error-notice {
+				margin-top: 18px;
+			}
 		}
 
 		.googlesitekit-audience-selection-panel__audience-creation-notice-audience {
@@ -192,27 +200,13 @@
 			}
 		}
 
-		.googlesitekit-audience-creation-error-notice {
-			margin-bottom: 12px;
-		}
-
 		.googlesitekit-audience-selection-panel__audience-creation-notice-dismiss {
-			display: flex;
-			justify-content: flex-end;
-			margin-top: 4px;
+			margin-top: 14px;
+			text-align: right;
 
 			.googlesitekit-cta-link {
 				color: $c-surfaces-on-surface;
 				font-weight: 500;
-
-				&:hover {
-					text-decoration: none;
-				}
-
-				&:active,
-				&:focus {
-					background-color: transparent;
-				}
 			}
 		}
 	}
