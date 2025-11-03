@@ -43,13 +43,13 @@
 	.wp-pointer-content h3::before {
 		content: "\f466"; // Email icon
 		font-family: dashicons, sans-serif;
-		margin-right: calc($grid-gap-phone / 2);
+		margin-right: 8px;
 	}
 
 	.wp-pointer-content h4 {
-		line-height: $lh-label-lg;
+		line-height: 24px;
 		margin-bottom: 0;
-		margin-top: $grid-gap-phone;
+		margin-top: 16px;
 	}
 
 	.wp-pointer-content p {

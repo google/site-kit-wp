@@ -128,13 +128,12 @@ class PointersTest extends TestCase {
 					'test-slug-with-buttons',
 					array(
 						// Title contains button/span markup which should be preserved by wp_kses.
-						'title'             => "Title <button class='googlesitekit-pointer-cta--dismiss dashicons dashicons-no'><span class='screen-reader-text'>Dismiss</span></button>",
-						'content'           => 'Test pointer content with buttons.',
-						'target_id'         => 'test-target-buttons',
-						'active_callback'   => '__return_true',
-						'with_dismiss_icon' => true,
-						'class'             => 'custom-class',
-						'buttons'           => '<a class=\"googlesitekit-pointer-cta button-primary\" href="#">Set up</a>',
+						'title'           => "Title <button class='googlesitekit-pointer-cta--dismiss dashicons dashicons-no'><span class='screen-reader-text'>Dismiss</span></button>",
+						'content'         => 'Test pointer content with buttons.',
+						'target_id'       => 'test-target-buttons',
+						'active_callback' => '__return_true',
+						'class'           => 'custom-class',
+						'buttons'         => '<a class=\"googlesitekit-pointer-cta button-primary\" href="#">Set up</a>',
 					)
 				);
 				return $pointers;

@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Pointer;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_Settings;
+use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\UserAuthenticationTrait;
@@ -36,14 +36,14 @@ class Email_Reporting_PointerTest extends TestCase {
 
 	private Dismissed_Items $dismissed_items;
 
-	private User_Email_Reporting_Settings $email_reporting_settings;
+	private Email_Reporting_Settings $email_reporting_settings;
 
 	public function set_up() {
 		parent::set_up();
 		$this->context                  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->user_options             = new User_Options( $this->context );
 		$this->dismissed_items          = new Dismissed_Items( $this->user_options );
-		$this->email_reporting_settings = new User_Email_Reporting_Settings( $this->user_options );
+		$this->email_reporting_settings = new Email_Reporting_Settings( $this->user_options );
 
 		remove_all_filters( 'googlesitekit_admin_pointers' );
 

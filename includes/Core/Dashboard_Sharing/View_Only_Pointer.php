@@ -51,16 +51,16 @@ final class View_Only_Pointer {
 		return new Pointer(
 			self::SLUG,
 			array(
-				'title'             => sprintf(
+				'title'           => sprintf(
 					'%s %s',
 					__( 'You now have access to Site Kit', 'google-site-kit' ),
 					'<button type=\'button\' class=\'googlesitekit-pointer-cta--dismiss dashicons dashicons-no\'>' .
 						'<span class=\'screen-reader-text\'>' . esc_html__( 'Dismiss this notice.', 'google-site-kit' ) . '</span>' .
 					'</button>'
 				),
-				'content'           => __( 'Check Site Kit’s dashboard to find out how much traffic your site is getting, your most popular pages, top keywords people use to find your site on Search, and more.', 'google-site-kit' ),
-				'target_id'         => 'toplevel_page_googlesitekit-dashboard',
-				'active_callback'   => function ( $hook_suffix ) {
+				'content'         => __( 'Check Site Kit’s dashboard to find out how much traffic your site is getting, your most popular pages, top keywords people use to find your site on Search, and more.', 'google-site-kit' ),
+				'target_id'       => 'toplevel_page_googlesitekit-dashboard',
+				'active_callback' => function ( $hook_suffix ) {
 					if ( 'index.php' !== $hook_suffix
 						|| current_user_can( Permissions::AUTHENTICATE )
 						|| ! current_user_can( Permissions::VIEW_SPLASH )
@@ -81,9 +81,8 @@ final class View_Only_Pointer {
 
 					return true;
 				},
-				'with_dismiss_icon' => true,
-				'class'             => 'googlesitekit-view-only-pointer',
-				'buttons'           =>
+				'class'           => 'googlesitekit-view-only-pointer',
+				'buttons'         =>
 					sprintf(
 						'<a class=\'googlesitekit-pointer-cta button-primary\' href=\'admin.php?page=googlesitekit-dashboard\'>%s</a>',
 						esc_js( __( 'View dashboard', 'google-site-kit' ) )

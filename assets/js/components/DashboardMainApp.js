@@ -48,7 +48,6 @@ import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
-import ScrollEffect from './ScrollEffect';
 import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import { useFeature } from '@/js/hooks/useFeature';
@@ -249,9 +248,8 @@ export default function DashboardMainApp() {
 
 	return (
 		<Fragment>
-			<ScrollEffect />
-			<ModuleDashboardEffects />
 			<CoreDashboardEffects />
+			<ModuleDashboardEffects />
 
 			<AdminScreenTooltip />
 

@@ -17,31 +17,14 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { useMount } from 'react-use';
-
-/**
  * Internal dependencies
  */
-import { useDispatch } from 'googlesitekit-data';
-import useQueryArg from '@/js/hooks/useQueryArg';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from './email-reporting/constants';
+import useOpenEmailReportingSelectionPanelEffect from '@/js/hooks/useOpenEmailReportingSelectionPanelEffect';
+import { useHasScrolledEffect } from '@/js/hooks/useHasScrolledEffect';
 
 export default function CoreDashboardEffects() {
-	const [ emailReportingPanelOpen, setEmailReportingPanelOpen ] = useQueryArg(
-		'email-reporting-panel'
-	);
-	const { setValue: setUIValue } = useDispatch( CORE_UI );
-
-	useMount( () => {
-		// If redirected from a pointer CTA or following link from email footer, open the Email Reporting selection panel.
-		if ( emailReportingPanelOpen !== undefined ) {
-			setUIValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-			setEmailReportingPanelOpen( undefined );
-		}
-	} );
+	useOpenEmailReportingSelectionPanelEffect();
+	useHasScrolledEffect();
 
 	return null;
 }
