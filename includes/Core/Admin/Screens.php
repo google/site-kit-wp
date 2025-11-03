@@ -393,9 +393,9 @@ final class Screens {
 								if ( $is_analytics_connected ) {
 									wp_safe_redirect(
 										$context->admin_url(
-											'user-input',
+											'key-metrics-setup',
 											array(
-												'showProgress' => true,
+												'showProgress' => 'true',
 											)
 										)
 									);
@@ -403,8 +403,8 @@ final class Screens {
 									exit;
 								} else {
 									$slug = $context->input()->filter( INPUT_GET, 'slug' );
-									$show_progress = (bool) $context->input()->filter( INPUT_GET, 'showProgress' );
-									$re_auth = (bool) $context->input()->filter( INPUT_GET, 'reAuth' );
+									$show_progress = $context->input()->filter( INPUT_GET, 'showProgress', FILTER_VALIDATE_BOOLEAN );
+									$re_auth = $context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
 
 									if ( 'analytics-4' === $slug && $re_auth && $show_progress ) {
 										return;
@@ -415,8 +415,8 @@ final class Screens {
 											'dashboard',
 											array(
 												'slug'   => 'analytics-4',
-												'showProgress' => true,
-												'reAuth' => true,
+												'showProgress' => 'true',
+												'reAuth' => 'true',
 											)
 										)
 									);

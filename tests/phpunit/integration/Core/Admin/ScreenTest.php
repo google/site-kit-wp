@@ -152,8 +152,8 @@ class ScreenTest extends TestCase {
 						if ( $is_analytics_connected ) {
 							wp_safe_redirect(
 								$ctx->admin_url(
-									'user-input',
-									array( 'showProgress' => true )
+									'key-metrics-setup',
+									array( 'showProgress' => 'true' )
 								)
 							);
 							exit;
@@ -170,8 +170,8 @@ class ScreenTest extends TestCase {
 			$location = $e->get_location();
 		}
 		$this->assertNotEmpty( $location, 'Redirect should occur.' );
-		$this->assertStringContainsString( 'page=googlesitekit-user-input', $location, 'User input page should be redirected to.' );
-		$this->assertStringContainsString( 'showProgress=1', $location, 'Show progress should be set.' );
+		$this->assertStringContainsString( 'page=googlesitekit-key-metrics-setup', $location, 'Key metrics setup should be redirected to.' );
+		$this->assertStringContainsString( 'showProgress=true', $location, 'Show progress should be set to the string "true".' );
 	}
 
 	public function test_dashboard_initialize_redirects_to_dashboard_with_params_when_analytics_not_connected() {
@@ -197,8 +197,8 @@ class ScreenTest extends TestCase {
 						$is_analytics_connected = $modules->is_module_connected( 'analytics-4' );
 						if ( ! $is_analytics_connected ) {
 							$slug = $ctx->input()->filter( INPUT_GET, 'slug' );
-							$show_progress = (bool) $ctx->input()->filter( INPUT_GET, 'showProgress' );
-							$re_auth = (bool) $ctx->input()->filter( INPUT_GET, 'reAuth' );
+							$show_progress = $ctx->input()->filter( INPUT_GET, 'showProgress', FILTER_VALIDATE_BOOLEAN );
+							$re_auth = $ctx->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
 							if ( 'analytics-4' === $slug && $re_auth && $show_progress ) {
 								return;
 							}
@@ -207,8 +207,8 @@ class ScreenTest extends TestCase {
 									'dashboard',
 									array(
 										'slug'         => 'analytics-4',
-										'showProgress' => true,
-										'reAuth'       => true,
+										'showProgress' => 'true',
+										'reAuth'       => 'true',
 									)
 								)
 							);
@@ -228,8 +228,8 @@ class ScreenTest extends TestCase {
 		$this->assertNotEmpty( $location, 'Redirect should occur.' );
 		$this->assertStringContainsString( 'page=googlesitekit-dashboard', $location, 'Dashboard page should be redirected to.' );
 		$this->assertStringContainsString( 'slug=analytics-4', $location, 'Slug should be set to analytics-4.' );
-		$this->assertStringContainsString( 'showProgress=1', $location, 'Show progress should be set.' );
-		$this->assertStringContainsString( 'reAuth=1', $location, 'Re-auth should be set.' );
+		$this->assertStringContainsString( 'showProgress=true', $location, 'Show progress should be set.' );
+		$this->assertStringContainsString( 'reAuth=true', $location, 'Re-auth should be set to the string "true".' );
 	}
 
 	public function test_dashboard_initialize_no_redirect_when_in_progress_reauth() {
@@ -240,8 +240,8 @@ class ScreenTest extends TestCase {
 				}
 				$map = array(
 					'slug'         => 'analytics-4',
-					'showProgress' => '1',
-					'reAuth'       => '1',
+					'showProgress' => 'true',
+					'reAuth'       => 'true',
 				);
 				return isset( $map[ $name ] ) ? $map[ $name ] : null;
 			}
@@ -265,8 +265,8 @@ class ScreenTest extends TestCase {
 					$is_analytics_connected = $modules->is_module_connected( 'analytics-4' );
 					if ( ! $is_analytics_connected ) {
 						$slug = $ctx->input()->filter( INPUT_GET, 'slug' );
-						$show_progress = (bool) $ctx->input()->filter( INPUT_GET, 'showProgress' );
-						$re_auth = (bool) $ctx->input()->filter( INPUT_GET, 'reAuth' );
+						$show_progress = $ctx->input()->filter( INPUT_GET, 'showProgress', FILTER_VALIDATE_BOOLEAN );
+						$re_auth = $ctx->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
 						if ( 'analytics-4' === $slug && $re_auth && $show_progress ) {
 							return;
 						}
@@ -275,8 +275,8 @@ class ScreenTest extends TestCase {
 								'dashboard',
 								array(
 									'slug'         => 'analytics-4',
-									'showProgress' => true,
-									'reAuth'       => true,
+									'showProgress' => 'true',
+									'reAuth'       => 'true',
 								)
 							)
 						);
