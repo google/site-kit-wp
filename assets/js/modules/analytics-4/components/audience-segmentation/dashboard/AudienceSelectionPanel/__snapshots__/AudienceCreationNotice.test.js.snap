@@ -85,7 +85,7 @@ exports[`AudienceCreationNotice should not render the missing scope notice if th
         class="googlesitekit-audience-selection-panel__audience-creation-notice-dismiss"
       >
         <button
-          class="googlesitekit-cta-link googlesitekit-cta-link--link-button"
+          class="googlesitekit-cta-link"
         >
           <span
             class="googlesitekit-cta-link__contents"
@@ -184,7 +184,7 @@ exports[`AudienceCreationNotice should render the missing scope notice if the us
         class="googlesitekit-audience-selection-panel__audience-creation-notice-dismiss"
       >
         <button
-          class="googlesitekit-cta-link googlesitekit-cta-link--link-button"
+          class="googlesitekit-cta-link"
         >
           <span
             class="googlesitekit-cta-link__contents"
@@ -310,7 +310,7 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
         class="googlesitekit-audience-selection-panel__audience-creation-notice-dismiss"
       >
         <button
-          class="googlesitekit-cta-link googlesitekit-cta-link--link-button"
+          class="googlesitekit-cta-link"
         >
           <span
             class="googlesitekit-cta-link__contents"
@@ -377,7 +377,7 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
         class="googlesitekit-audience-selection-panel__audience-creation-notice-dismiss"
       >
         <button
-          class="googlesitekit-cta-link googlesitekit-cta-link--link-button"
+          class="googlesitekit-cta-link"
         >
           <span
             class="googlesitekit-cta-link__contents"
