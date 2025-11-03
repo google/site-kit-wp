@@ -248,7 +248,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	/**
 	 * Conditionally show the Sign in with Google button in a comments form.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 */
 	public function handle_comments_form() {
 		$settings            = $this->get_settings()->get();
@@ -272,7 +272,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			array(
 				'class' => array(
 					'googlesitekit-sign-in-with-google__comments-form-button',
-					"googlesitekit-sign-in-with-google__comments-form-button-postid-${post_id}",
+					"googlesitekit-sign-in-with-google__comments-form-button-postid-{$post_id}",
 				),
 			)
 		);
@@ -581,7 +581,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * This method captures the Sign in with Google button output
 	 * and returns it as a string for use in shortcodes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 *
 	 * @param array $atts Shortcode attributes.
 	 * @return string The rendered button markup.
@@ -673,8 +673,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			'sign_in_with_google_comments'                 => array(
 				/* translators: %s: Sign in with Google service name */
 				'label' => sprintf( __( '%s: Show next to comments', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) ),
-				'value' => $settings['showNextToCommentsEnabled'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
-				'debug' => $settings['showNextToCommentsEnabled'] ? 'yes' : 'no',
+				'value' => (bool) get_option( 'users_can_register' ) && $settings['showNextToCommentsEnabled'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
+				'debug' => (bool) get_option( 'users_can_register' ) && $settings['showNextToCommentsEnabled'] ? 'yes' : 'no',
 			),
 			'sign_in_with_google_authenticated_user_count' => array(
 				/* translators: %1$s: Sign in with Google service name */
@@ -918,7 +918,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	/**
 	 * Gets an array of internal feature metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 *
 	 * @return array
 	 */

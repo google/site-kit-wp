@@ -18,7 +18,7 @@
  * WordPress dependencies
  */
 import { createInterpolateElement, useCallback } from '@wordpress/element';
-import { __, _x, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -44,10 +44,6 @@ export default function ShowNextToCommentsToggle() {
 		select( CORE_SITE ).getAnyoneCanRegister()
 	);
 
-	const isMultisite = useSelect( ( select ) =>
-		select( CORE_SITE ).isMultisite()
-	);
-
 	const trackShowNextToCommentsToggleChange = useCallback( () => {
 		trackEvent(
 			`${ viewContext }_sign-in-with-google-settings`,
@@ -66,7 +62,7 @@ export default function ShowNextToCommentsToggle() {
 
 	const learnMoreLink = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
-			'sign-in-with-google-comments'
+			'sign-in-with-google'
 		);
 	} );
 
@@ -90,25 +86,6 @@ export default function ShowNextToCommentsToggle() {
 					}
 				) }
 			</HelperText>
-			{ ! anyoneCanRegister && (
-				<HelperText persistent>
-					{ sprintf(
-						/* translators: %1$s: Setting name, %2$s: Sign in with Google service name */
-						__(
-							'Requires open user registration. Please enable “%1$s” in WordPress settings to use %2$s for comments.',
-							'google-site-kit'
-						),
-						isMultisite
-							? __( 'Allow new registrations', 'google-site-kit' )
-							: __( 'Anyone can register', 'google-site-kit' ),
-						_x(
-							'Sign in with Google',
-							'Service name',
-							'google-site-kit'
-						)
-					) }
-				</HelperText>
-			) }
 		</div>
 	);
 }
