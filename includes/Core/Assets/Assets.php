@@ -673,6 +673,15 @@ final class Assets {
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
 			),
+			new Script(
+				'googlesitekit-angie-mcp',
+				array(
+					'src'           => $base_url . 'js/googlesitekit-angie-mcp.js',
+					'dependencies'  => array(
+						'googlesitekit-modules-analytics-4',
+					),
+				)
+			),
 			new Stylesheet(
 				'googlesitekit-admin-css',
 				array(

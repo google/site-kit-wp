@@ -2059,6 +2059,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 						'googlesitekit-datastore-user',
 						'googlesitekit-datastore-forms',
 						'googlesitekit-components',
+						'googlesitekit-widgets',
+						'googlesitekit-i18n',
 						'googlesitekit-modules-data',
 					),
 				)
