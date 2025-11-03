@@ -35,6 +35,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 describe( 'ModuleSetup', () => {
 	mockLocation();
@@ -179,27 +180,27 @@ describe( 'ModuleSetup', () => {
 				await waitForRegistry();
 			} );
 
-			it( 'should display an exit button', () => {
+			it( 'should not display an exit button', () => {
 				expect( queryByText( 'Exit setup' ) ).not.toBeInTheDocument();
 			} );
-			it( 'should display the progress indicator', () => {
+			it( 'should not display the progress indicator', () => {
 				expect(
 					container.querySelector(
 						'.googlesitekit-progress-indicator'
 					)
 				).not.toBeInTheDocument();
 			} );
-			it( 'should not display the help button', () => {
+			it( 'should display the help button', () => {
 				expect(
 					container.querySelector(
 						'.googlesitekit-help-menu__button'
 					)
 				).toBeInTheDocument();
 			} );
-			it( 'should not display the "Connect Service" line', () => {
+			it( 'should display the "Connect Service" line', () => {
 				expect( getByText( 'Connect Service' ) ).toBeInTheDocument();
 			} );
-			it( 'should not display the setup footer', () => {
+			it( 'should display the setup footer', () => {
 				expect(
 					container.querySelector( '.googlesitekit-setup__footer' )
 				).toBeInTheDocument();
@@ -208,5 +209,36 @@ describe( 'ModuleSetup', () => {
 				expect( container ).toMatchSnapshot();
 			} );
 		} );
+	} );
+
+	it( 'renders all elements correctly', () => {
+		provideModules( registry );
+
+		registry.dispatch( CORE_MODULES ).registerModule( 'test-module', {
+			storeName: 'modules/test-module',
+			SetupComponent: () => <div>Test module setup component</div>,
+		} );
+
+		const { container, getByText } = render(
+			<ModuleSetup moduleSlug="test-module" />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MODULE_SETUP,
+			}
+		);
+
+		expect(
+			getByText( 'Test module setup component' )
+		).toBeInTheDocument();
+
+		expect(
+			container.querySelector( '.googlesitekit-header' )
+		).toBeInTheDocument();
+
+		expect(
+			container.querySelector( '.googlesitekit-setup__footer' )
+		).toBeInTheDocument();
+
+		expect( container ).toMatchSnapshot();
 	} );
 } );
