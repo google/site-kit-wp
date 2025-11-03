@@ -39,7 +39,7 @@ class Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest extends GoogleAnal
 	/**
 	 * The state of the show progress flag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 * @var bool
 	 */
 	public $show_progress = false;
@@ -87,7 +87,7 @@ class Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest extends GoogleAnal
 	/**
 	 * Sets the show progress flag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 *
 	 * @param bool $show_progress The show progress flag.
 	 */
@@ -98,7 +98,7 @@ class Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest extends GoogleAnal
 	/**
 	 * Gets the show progress flag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 */
 	public function getShowProgress() {
 		return $this->show_progress;

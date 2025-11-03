@@ -248,7 +248,7 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	/**
 	 * Returns enhanced conversion events supported by active providers from the conversion tracking infrastructure.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 *
 	 * @return array Array of supported enhanced conversion events, or empty array.
 	 */

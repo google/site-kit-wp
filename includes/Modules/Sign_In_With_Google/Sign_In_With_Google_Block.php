@@ -77,7 +77,7 @@ class Sign_In_With_Google_Block {
 	 * Render callback for the Sign in with Google block.
 	 *
 	 * @since 1.147.0
-	 * @since n.e.x.t Added the `$attributes` parameter.
+	 * @since 1.165.0 Added the `$attributes` parameter.
 	 *
 	 * @param array $attributes Block attributes.
 	 * @return string Rendered block.

@@ -403,7 +403,7 @@ exports[`SetupForm should render the one tap and show next to comments toggles w
             <a
               aria-label="Learn more (opens in a new tab)"
               class="googlesitekit-cta-link"
-              href="undefined?doc=sign-in-with-google-comments"
+              href="undefined?doc=sign-in-with-google"
               rel="noopener noreferrer"
               target="_blank"
             >
