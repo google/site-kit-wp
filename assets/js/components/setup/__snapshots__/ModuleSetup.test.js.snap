@@ -345,7 +345,7 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snpashot 1`
                           </p>
                         </div>
                         <p
-                          class="googlesitekit-color--surfaces-on-background-variant"
+                          class="googlesitekit-color--surfaces-on-background-variant googlesitekit-plugin-conversion-tracking-notice"
                         >
                           To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings. 
                           <a
@@ -784,7 +784,7 @@ exports[`ModuleSetup Analytics 4 not initial setup flow should match the snpasho
                           </p>
                         </div>
                         <p
-                          class="googlesitekit-color--surfaces-on-background-variant"
+                          class="googlesitekit-color--surfaces-on-background-variant googlesitekit-plugin-conversion-tracking-notice"
                         >
                           To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings. 
                         </p>

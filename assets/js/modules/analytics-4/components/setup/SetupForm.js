@@ -54,7 +54,7 @@ import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import SetupEnhancedConversionTrackingNotice from '@/js/components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
+import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
 import useFormValue from '@/js/hooks/useFormValue';
 import { useFeature } from '@/js/hooks/useFeature';
 import Link from '@/js/components/Link';
@@ -94,7 +94,7 @@ export default function SetupForm( { finishSetup } ) {
 			: url;
 	} );
 
-	const enhancedConversionsDocumentationURL = useSelect( ( select ) => {
+	const pluginConversionsDocumentationURL = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
 			'plugin-conversion-tracking'
 		);
@@ -167,7 +167,7 @@ export default function SetupForm( { finishSetup } ) {
 			/>
 			<SetupFormFields />
 
-			<SetupEnhancedConversionTrackingNotice
+			<SetupPluginConversionTrackingNotice
 				message={ createInterpolateElement(
 					__(
 						'To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings. <LearnMoreLink />',
@@ -176,7 +176,7 @@ export default function SetupForm( { finishSetup } ) {
 					{
 						LearnMoreLink: setupFlowRefreshEnabled ? (
 							<Link
-								href={ enhancedConversionsDocumentationURL }
+								href={ pluginConversionsDocumentationURL }
 								external
 							>
 								{ __( 'Learn more', 'google-site-kit' ) }

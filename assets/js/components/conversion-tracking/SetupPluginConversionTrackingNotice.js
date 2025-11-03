@@ -25,7 +25,7 @@ import classnames from 'classnames';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
-export default function SetupEnhancedConversionTrackingNotice( {
+export default function SetupPluginConversionTrackingNotice( {
 	className,
 	message,
 } ) {
@@ -41,7 +41,7 @@ export default function SetupEnhancedConversionTrackingNotice( {
 		<p
 			className={ classnames(
 				className,
-				'googlesitekit-color--surfaces-on-background-variant'
+				'googlesitekit-color--surfaces-on-background-variant googlesitekit-plugin-conversion-tracking-notice'
 			) }
 		>
 			{ message }
