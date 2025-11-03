@@ -448,7 +448,7 @@ exports[`SetupForm renders the form correctly with setupFlowRefresh enabled 1`] 
       </p>
     </div>
     <p
-      class="googlesitekit-color--surfaces-on-background-variant"
+      class="googlesitekit-color--surfaces-on-background-variant googlesitekit-plugin-conversion-tracking-notice"
     >
       To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings. 
       <a
