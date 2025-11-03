@@ -260,33 +260,6 @@ describe( 'AudienceSegmentationSetupCTABanner', () => {
 			expect( isActive ).toBe( false );
 		} );
 
-		it( 'is not active when configured audiences are present and Google Analytics data is loaded on the page', async () => {
-			const settings = {
-				configuredAudiences: [
-					audiencesFixture[ 0 ],
-					audiencesFixture[ 1 ],
-					audiencesFixture[ 2 ],
-				],
-				isAudienceSegmentationWidgetHidden: false,
-			};
-
-			// Set the data availability on page load to true.
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveIsDataAvailableOnLoad( true );
-
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetUserAudienceSettings( settings );
-
-			const isActive = await notification.checkRequirements(
-				registry,
-				VIEW_CONTEXT_MAIN_DASHBOARD
-			);
-
-			expect( isActive ).toBe( false );
-		} );
-
 		it( 'is not active when audienceSegmentationSetupCompletedBy has been set', async () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )

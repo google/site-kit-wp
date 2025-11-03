@@ -121,11 +121,10 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setEnhancedMeasurementStreamEnabled( {
-						propertyID,
-						webDataStreamID,
-						enabled: true,
-					} );
+					.receiveGetEnhancedMeasurementSettings(
+						fixtures.defaultEnhancedMeasurementSettings,
+						{ propertyID, webDataStreamID }
+					);
 
 				if ( args.enhancedConversionTracking !== 'resolving' ) {
 					registry

@@ -203,13 +203,12 @@ describe( 'Ads WooCommerce Redirect Modal', () => {
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
-		// Wait for the subtle notification to appear, then click the CTA.
-		await Promise.all( [
-			page.waitForSelector( '.googlesitekit-notice' ),
-			expect( page ).toClick( '.mdc-button', {
-				text: CTA_KEEP_EXISTING_ACCOUNT,
-			} ),
-		] );
+		// Wait for the notification to appear, then click the CTA.
+
+		await page.waitForSelector( '.googlesitekit-notice' );
+		await expect( page ).toClick( '.mdc-button', {
+			text: CTA_KEEP_EXISTING_ACCOUNT,
+		} );
 
 		await expect( page ).not.toMatchElement( WOO_MODAL_SELECTOR );
 	} );
