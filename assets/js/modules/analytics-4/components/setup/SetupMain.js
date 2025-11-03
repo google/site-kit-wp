@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -131,7 +132,15 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<Fragment>
-			<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
+			<div
+				className={ classnames(
+					'googlesitekit-setup-module googlesitekit-setup-module--analytics',
+					{
+						'googlesitekit-feature--setupFlowRefresh':
+							setupFlowRefreshEnabled,
+					}
+				) }
+			>
 				<div className="googlesitekit-setup-module__step">
 					{ isInitialSetupFlow ? (
 						<Typography
