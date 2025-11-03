@@ -163,6 +163,8 @@ describe( 'KeyMetricsSetupApp', () => {
 	} );
 
 	it( 'should navigate to the dashboard when saving is successful', async () => {
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup&showProgress=true';
 		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
 			body: {
 				purpose: {
@@ -187,6 +189,37 @@ describe( 'KeyMetricsSetupApp', () => {
 
 		expect( global.location.assign ).toHaveBeenCalledWith(
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
+		);
+	} );
+
+	it( 'should navigate with notification and slug params when not in initial setup flow', async () => {
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup';
+
+		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
+			body: {
+				purpose: {
+					values: [ 'publish_blog' ],
+					scope: 'site',
+				},
+			},
+			status: 200,
+		} );
+
+		const { getByRole, waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
+		fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
+		fireEvent.click( getByRole( 'button', { name: 'Complete setup' } ) );
+
+		await waitForRegistry();
+
+		expect( global.location.assign ).toHaveBeenCalledWith(
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=authentication_success&slug=analytics-4'
 		);
 	} );
 
