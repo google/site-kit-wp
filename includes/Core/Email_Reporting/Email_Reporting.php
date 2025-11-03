@@ -91,7 +91,6 @@ class Email_Reporting {
 		$this->rest_controller->register();
 
 		// Register WP admin pointer for Email Reporting onboarding.
-		$pointer = new Email_Reporting_Pointer( $this->context, $this->user_options, $this->user_settings );
-		$pointer->register();
+		( new Email_Reporting_Pointer( $this->context, $this->user_options, $this->user_settings ) )->register();
 	}
 }
