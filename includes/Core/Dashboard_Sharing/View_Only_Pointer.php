@@ -54,7 +54,7 @@ final class View_Only_Pointer {
 				'title'           => sprintf(
 					'%s %s',
 					__( 'You now have access to Site Kit', 'google-site-kit' ),
-					'<button type=\'button\' class=\'googlesitekit-pointer-cta--dismiss dashicons dashicons-no\'>' .
+					'<button type=\'button\' class=\'googlesitekit-pointer-cta--dismiss dashicons dashicons-no\' data-action=\'dismiss\'>' .
 						'<span class=\'screen-reader-text\'>' . esc_html__( 'Dismiss this notice.', 'google-site-kit' ) . '</span>' .
 					'</button>'
 				),
@@ -74,9 +74,13 @@ final class View_Only_Pointer {
 						return true;
 					}
 
-					$dismissed_wp_pointers = explode( ',', $dismissed_wp_pointers );
-					if ( in_array( self::SLUG, $dismissed_wp_pointers, true ) ) {
-						return false;
+					$user_id               = get_current_user_id();
+					$dismissed_wp_pointers = get_user_meta( $user_id, 'dismissed_wp_pointers', true );
+					if ( $dismissed_wp_pointers ) {
+						$dismissed_wp_pointers = explode( ',', $dismissed_wp_pointers );
+						if ( in_array( self::SLUG, $dismissed_wp_pointers, true ) ) {
+							return false;
+						}
 					}
 
 					return true;
@@ -84,10 +88,10 @@ final class View_Only_Pointer {
 				'class'           => 'googlesitekit-view-only-pointer',
 				'buttons'         =>
 					sprintf(
-						'<a class=\'googlesitekit-pointer-cta button-primary\' href=\'admin.php?page=googlesitekit-dashboard\'>%s</a>',
-						esc_js( __( 'View dashboard', 'google-site-kit' ) )
+						'<a class=\'googlesitekit-pointer-cta button-primary\' href=\'admin.php?page=googlesitekit-dashboard\' data-action=\'dismiss\'>%s</a>',
+						esc_html__( 'View dashboard', 'google-site-kit' )
 					),
-			)
+			),
 		);
 	}
 }

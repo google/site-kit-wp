@@ -115,7 +115,6 @@ class Pointers {
 			return;
 		}
 
-		$slug    = $pointer->get_slug();
 		$buttons = $pointer->get_buttons();
 		if ( $buttons ) {
 			// Content including buttons escaped below in the inline script with wp_kses.
@@ -168,7 +167,7 @@ class Pointers {
 							pointerWidth: 420,
 							pointerClass: config.class,
 							close: function() {
-								wp.ajax.post( 'dismiss-wp-pointer', { pointer: config.targetId } );
+								wp.ajax.post( 'dismiss-wp-pointer', { pointer: config.slug } );
 							},
 							buttons: function( event, container ) {
 								container.pointer.on( 'click', '[data-action="dismiss"]', function() {
