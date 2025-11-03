@@ -106,7 +106,7 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snpashot 1`
                   class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
                 >
                   <div
-                    class="googlesitekit-setup-module googlesitekit-setup-module--analytics"
+                    class="googlesitekit-setup-module googlesitekit-setup-module--analytics googlesitekit-feature--setupFlowRefresh"
                   >
                     <div
                       class="googlesitekit-setup-module__step"
