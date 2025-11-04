@@ -51,7 +51,44 @@ jobs:
           registry: ghcr.io
           username: google-site-kit-bot
           password: ${{ secrets.GH_BOT_TOKEN }}
-      - name: Run Backstopjs
+      - name: Run Backstopjs (Run 1)
+        id: vrt_run_1
+        run: npm run test:visualtest
+      - name: Run Backstopjs (Run 2)
+        id: vrt_run_2
+        continue-on-error: false
+        run: npm run test:visualtest
+      - name: Run Backstopjs (Run 3)
+        id: vrt_run_3
+        continue-on-error: false
+        run: npm run test:visualtest
+      - name: Run Backstopjs (Run 4)
+        id: vrt_run_4
+        continue-on-error: false
+        run: npm run test:visualtest
+      - name: Run Backstopjs (Run 5)
+        id: vrt_run_5
+        continue-on-error: false
+        run: npm run test:visualtest
+      - name: Run Backstopjs (Run 6)
+        id: vrt_run_6
+        continue-on-error: false
+        run: npm run test:visualtest
+      - name: Run Backstopjs (Run 7)
+        id: vrt_run_7
+        continue-on-error: false
+        run: npm run test:visualtest
+      - name: Run Backstopjs (Run 8)
+        id: vrt_run_8
+        continue-on-error: false
+        run: npm run test:visualtest
+      - name: Run Backstopjs (Run 9)
+        id: vrt_run_9
+        continue-on-error: false
+        run: npm run test:visualtest
+      - name: Run Backstopjs (Run 10)
+        id: vrt_run_10
+        continue-on-error: false
         run: npm run test:visualtest
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
