@@ -74,6 +74,8 @@ class Subscribed_Users_Query {
 	/**
 	 * Queries administrators with the email reporting meta set.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param string $meta_key User meta key.
 	 * @return int[] User IDs.
 	 */
@@ -91,6 +93,8 @@ class Subscribed_Users_Query {
 
 	/**
 	 * Queries shared role users with the email reporting meta set.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param string $meta_key User meta key.
 	 * @return int[] User IDs.
@@ -115,6 +119,8 @@ class Subscribed_Users_Query {
 
 	/**
 	 * Filters user IDs by subscription meta values.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param int[]  $user_ids  Candidate user IDs.
 	 * @param string $frequency Target frequency.
@@ -145,6 +151,8 @@ class Subscribed_Users_Query {
 
 	/**
 	 * Builds the meta query clause to ensure the subscription meta exists.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param string $meta_key Meta key.
 	 * @return array Meta query clause.
