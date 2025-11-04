@@ -52,37 +52,6 @@ describe( 'ModuleSetup', () => {
 		provideModuleRegistrations( registry );
 	} );
 
-	it( 'renders all elements correctly', () => {
-		provideModules( registry );
-
-		registry.dispatch( CORE_MODULES ).registerModule( 'test-module', {
-			storeName: 'modules/test-module',
-			SetupComponent: () => <div>Test module setup component</div>,
-		} );
-
-		const { container, getByText } = render(
-			<ModuleSetup moduleSlug="test-module" />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MODULE_SETUP,
-			}
-		);
-
-		expect(
-			getByText( 'Test module setup component' )
-		).toBeInTheDocument();
-
-		expect(
-			container.querySelector( '.googlesitekit-header' )
-		).toBeInTheDocument();
-
-		expect(
-			container.querySelector( '.googlesitekit-setup__footer' )
-		).toBeInTheDocument();
-
-		expect( container ).toMatchSnapshot();
-	} );
-
 	describe( 'Analytics 4', () => {
 		beforeEach( () => {
 			provideModules( registry, [
@@ -262,5 +231,36 @@ describe( 'ModuleSetup', () => {
 				expect( container ).toMatchSnapshot();
 			} );
 		} );
+	} );
+
+	it( 'renders all elements correctly', () => {
+		provideModules( registry );
+
+		registry.dispatch( CORE_MODULES ).registerModule( 'test-module', {
+			storeName: 'modules/test-module',
+			SetupComponent: () => <div>Test module setup component</div>,
+		} );
+
+		const { container, getByText } = render(
+			<ModuleSetup moduleSlug="test-module" />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MODULE_SETUP,
+			}
+		);
+
+		expect(
+			getByText( 'Test module setup component' )
+		).toBeInTheDocument();
+
+		expect(
+			container.querySelector( '.googlesitekit-header' )
+		).toBeInTheDocument();
+
+		expect(
+			container.querySelector( '.googlesitekit-setup__footer' )
+		).toBeInTheDocument();
+
+		expect( container ).toMatchSnapshot();
 	} );
 } );
