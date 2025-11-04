@@ -99,6 +99,7 @@ use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Audiences;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
@@ -149,14 +150,11 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	const CUSTOM_DIMENSION_POST_CATEGORIES = 'googlesitekit_post_categories';
 
 	/**
-	 * Weights for audience types when sorting audiences in the selection panel
-	 * and within the dashboard widget.
+	 * Audience type sort order moved to `Audiences::AUDIENCE_TYPE_SORT_ORDER`.
+	 *
+	 * @since n.e.x.t
 	 */
-	const AUDIENCE_TYPE_SORT_ORDER = array(
-		'USER_AUDIENCE'     => 0,
-		'SITE_KIT_AUDIENCE' => 1,
-		'DEFAULT_AUDIENCE'  => 2,
-	);
+	// const AUDIENCE_TYPE_SORT_ORDER deprecated – use Audiences::AUDIENCE_TYPE_SORT_ORDER.
 
 	/**
 	 * Custom_Dimensions_Data_Available instance.
@@ -192,6 +190,14 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	protected $audience_settings;
 
 	/**
+	 * Audiences utility instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Audiences
+	 */
+	private $audiences_util;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.113.0
@@ -213,6 +219,17 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
 		$this->reset_audiences                  = new Reset_Audiences( $this->user_options );
 		$this->audience_settings                = new Audience_Settings( $this->options );
+		$this->audiences_util                   = new Audiences(
+			function ( $available_audiences ) {
+				// Persist audiences and last synced timestamp.
+				$this->audience_settings->merge(
+					array(
+						'availableAudiences'             => $available_audiences,
+						'availableAudiencesLastSyncedAt' => time(),
+					)
+				);
+			}
+		);
 		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings(), $this->audience_settings );
 	}
 
@@ -635,7 +652,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 		// Return the SITE_KIT_AUDIENCE audiences.
 		$available_audiences = $this->audience_settings->get()['availableAudiences'] ?? array();
-		$site_kit_audiences  = $this->get_site_kit_audiences( $available_audiences );
+		$site_kit_audiences  = $this->audiences_util->get_site_kit_audiences( $available_audiences );
 
 		$debug_fields['analytics_4_site_kit_audiences'] = array(
 			'label' => __( 'Analytics: Site created audiences', 'google-site-kit' ),
@@ -1879,7 +1896,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );
 			case 'POST:sync-audiences':
-				$audiences = $this->set_available_audiences( $response->getAudiences() );
+				$audiences = $this->audiences_util->set_available_audiences( $response->getAudiences() );
 				return $audiences;
 			case 'POST:sync-custom-dimensions':
 				if ( is_wp_error( $response ) ) {
@@ -2532,199 +2549,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		return $allowed;
 	}
 
-	/**
-	 * Sets and returns available audiences.
-	 *
-	 * @since 1.126.0
-	 *
-	 * @param GoogleAnalyticsAdminV1alphaAudience[] $audiences The audiences to set.
-	 * @return array The available audiences.
-	 */
-	private function set_available_audiences( $audiences ) {
-		$available_audiences = array_map(
-			function ( GoogleAnalyticsAdminV1alphaAudience $audience ) {
-				$display_name  = $audience->getDisplayName();
-				$audience_item = array(
-					'name'        => $audience->getName(),
-					'displayName' => ( 'All Users' === $display_name ) ? 'All visitors' : $display_name,
-					'description' => $audience->getDescription(),
-				);
-
-				$audience_slug = $this->get_audience_slug( $audience );
-				$audience_type = $this->get_audience_type( $audience_slug );
-
-				$audience_item['audienceType'] = $audience_type;
-				$audience_item['audienceSlug'] = $audience_slug;
-
-				return $audience_item;
-			},
-			$audiences
-		);
-
-		usort(
-			$available_audiences,
-			function ( $audience_a, $audience_b ) use ( $available_audiences ) {
-				$audience_index_a = array_search( $audience_a, $available_audiences, true );
-				$audience_index_b = array_search( $audience_b, $available_audiences, true );
-
-				if ( false === $audience_index_a || false === $audience_index_b ) {
-					return 0;
-				}
-
-				$audience_a = $available_audiences[ $audience_index_a ];
-				$audience_b = $available_audiences[ $audience_index_b ];
-
-				$audience_type_a = $audience_a['audienceType'];
-				$audience_type_b = $audience_b['audienceType'];
-
-				if ( $audience_type_a === $audience_type_b ) {
-					if ( 'SITE_KIT_AUDIENCE' === $audience_type_b ) {
-						return 'new-visitors' === $audience_a['audienceSlug'] ? -1 : 1;
-					}
-
-					return $audience_index_a - $audience_index_b;
-				}
-
-				$weight_a = self::AUDIENCE_TYPE_SORT_ORDER[ $audience_type_a ];
-				$weight_b = self::AUDIENCE_TYPE_SORT_ORDER[ $audience_type_b ];
-
-				if ( $weight_a === $weight_b ) {
-					return $audience_index_a - $audience_index_b;
-				}
-
-				return $weight_a - $weight_b;
-			}
-		);
-
-		$this->audience_settings->merge(
-			array(
-				'availableAudiences'             => $available_audiences,
-				'availableAudiencesLastSyncedAt' => time(),
-			)
-		);
-
-		return $available_audiences;
-	}
-
-	/**
-	 * Gets the audience slug.
-	 *
-	 * @since 1.126.0
-	 *
-	 * @param GoogleAnalyticsAdminV1alphaAudience $audience The audience object.
-	 * @return string The audience slug.
-	 */
-	private function get_audience_slug( GoogleAnalyticsAdminV1alphaAudience $audience ) {
-		$display_name = $audience->getDisplayName();
-
-		if ( 'All Users' === $display_name ) {
-			return 'all-users';
-		}
-
-		if ( 'Purchasers' === $display_name ) {
-			return 'purchasers';
-		}
-
-		$filter_clauses = $audience->getFilterClauses();
-
-		if ( $filter_clauses ) {
-			if ( $this->has_audience_site_kit_identifier(
-				$filter_clauses,
-				'new_visitors'
-			) ) {
-				return 'new-visitors';
-			}
-
-			if ( $this->has_audience_site_kit_identifier(
-				$filter_clauses,
-				'returning_visitors'
-			) ) {
-				return 'returning-visitors';
-			}
-		}
-
-		// Return an empty string for user defined audiences.
-		return '';
-	}
-
-	/**
-	 * Gets the audience type based on the audience slug.
-	 *
-	 * @since 1.126.0
-	 *
-	 * @param string $audience_slug The audience slug.
-	 * @return string The audience type.
-	 */
-	private function get_audience_type( $audience_slug ) {
-		if ( ! $audience_slug ) {
-			return 'USER_AUDIENCE';
-		}
-
-		switch ( $audience_slug ) {
-			case 'all-users':
-			case 'purchasers':
-				return 'DEFAULT_AUDIENCE';
-			case 'new-visitors':
-			case 'returning-visitors':
-				return 'SITE_KIT_AUDIENCE';
-		}
-	}
-
-	/**
-	 * Checks if an audience Site Kit identifier
-	 * (e.g. `created_by_googlesitekit:new_visitors`) exists in a nested array or object.
-	 *
-	 * @since 1.126.0
-	 *
-	 * @param array|object $data The array or object to search.
-	 * @param mixed        $identifier The identifier to search for.
-	 * @return bool True if the value exists, false otherwise.
-	 */
-	private function has_audience_site_kit_identifier( $data, $identifier ) {
-		if ( is_array( $data ) || is_object( $data ) ) {
-			foreach ( $data as $key => $value ) {
-				if ( is_array( $value ) || is_object( $value ) ) {
-					// Recursively search the nested structure.
-					if ( $this->has_audience_site_kit_identifier( $value, $identifier ) ) {
-						return true;
-					}
-				} elseif (
-					'fieldName' === $key &&
-					'groupId' === $value &&
-					isset( $data['stringFilter'] ) &&
-					"created_by_googlesitekit:{$identifier}" === $data['stringFilter']['value']
-				) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Returns the Site Kit-created audience display names from the passed list of audiences.
-	 *
-	 * @since 1.129.0
-	 *
-	 * @param array $audiences List of audiences.
-	 *
-	 * @return array List of Site Kit-created audience display names.
-	 */
-	private function get_site_kit_audiences( $audiences ) {
-		// Ensure that audiences are available, otherwise return an empty array.
-		if ( empty( $audiences ) || ! is_array( $audiences ) ) {
-			return array();
-		}
-
-		$site_kit_audiences = array_filter( $audiences, fn ( $audience ) => ! empty( $audience['audienceType'] ) && ( 'SITE_KIT_AUDIENCE' === $audience['audienceType'] ) );
-
-		if ( empty( $site_kit_audiences ) ) {
-			return array();
-		}
-
-		return wp_list_pluck( $site_kit_audiences, 'displayName' );
-	}
+	// Audience-related utility methods extracted to `Audiences` class.
 
 	/**
 	 * Populates conversion reporting event data to pass to JS via _googlesitekitModulesData.
