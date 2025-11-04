@@ -19,9 +19,17 @@
 .googlesitekit-toast-notice {
 	animation: toast-fade-in 250ms ease-in-out, toast-fade-out 250ms ease-in-out 5.25s;
 	animation-fill-mode: forwards;
-	bottom: 45px;
+	border-radius: $br-xs;
+	bottom: $grid-gap-phone;
+	left: $grid-gap-phone;
 	position: fixed;
-	right: 45px;
+	right: $grid-gap-phone;
+
+	@media (min-width: $bp-tablet) {
+		bottom: 45px;
+		left: auto;
+		right: 45px;
+	}
 
 	@keyframes toast-fade-in {
 		from {
