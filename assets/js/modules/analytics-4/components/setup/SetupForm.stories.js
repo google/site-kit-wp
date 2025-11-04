@@ -56,12 +56,6 @@ export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.scenario = {};
 
-export const SetupFlowRefresh = Template.bind( null );
-SetupFlowRefresh.storyName = 'With setupFlowRefresh';
-SetupFlowRefresh.parameters = {
-	features: [ 'setupFlowRefresh' ],
-};
-
 export const InitialSetupFlow = Template.bind( null );
 InitialSetupFlow.storyName = 'Initial setup flow';
 InitialSetupFlow.parameters = {
@@ -70,6 +64,7 @@ InitialSetupFlow.parameters = {
 		showProgress: 'true',
 	},
 };
+InitialSetupFlow.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Setup/SetupForm',
