@@ -46,7 +46,8 @@ import {
 import { Cell, Row } from '@/js/material-components';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
-import { useDispatch } from '@/js/googlesitekit-data';
+import { useDispatch, useSelect } from '@/js/googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export default function SplashContent( {
 	analyticsModuleActive,
@@ -80,6 +81,12 @@ export default function SplashContent( {
 	const cellDetailsProp = analyticsModuleActive
 		? { smSize: 4, mdSize: 6, lgSize: 6 }
 		: { smSize: 4, mdSize: 7, lgSize: 6 };
+
+	const learnMoreLink = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'setup-update-ga4-account'
+		);
+	} );
 
 	return (
 		<Row className="googlesitekit-setup__content">
@@ -172,7 +179,7 @@ export default function SplashContent( {
 								),
 								{
 									LearnMoreLink: (
-										<Link href="#" external>
+										<Link href={ learnMoreLink } external>
 											{ __(
 												'Learn more',
 												'google-site-kit'
