@@ -26,6 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs, getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -69,14 +70,22 @@ export default function SetupForm( { finishSetup } ) {
 	const viewContext = useViewContext();
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
+	const showProgress = getQueryArg( location.href, 'showProgress' );
+
 	const keyMetricsSetupURL = useSelect( ( select ) => {
 		if ( ! setupFlowRefreshEnabled ) {
 			return undefined;
 		}
 
-		return select( CORE_SITE ).getAdminURL(
+		const url = select( CORE_SITE ).getAdminURL(
 			'googlesitekit-key-metrics-setup'
 		);
+
+		return showProgress
+			? addQueryArgs( url, {
+					showProgress: 'true',
+			  } )
+			: url;
 	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );

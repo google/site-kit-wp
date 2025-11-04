@@ -82,7 +82,7 @@ class Enhanced_Conversions {
 	/**
 	 * Checks if any module using GTag is connected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 *
 	 * @return boolean Whether any module using GTag is connected.
 	 */

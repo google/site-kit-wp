@@ -86,4 +86,7 @@ export default {
 			);
 		},
 	],
+	parameters: {
+		padding: '0 0 60px 0', // Simulates 60px padding bottom from #wpbody-content.
+	},
 };

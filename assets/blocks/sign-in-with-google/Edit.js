@@ -45,7 +45,7 @@ const DEFAULT_OPTION = {
  * Sign in with Google Block Edit component.
  *
  * @since 1.147.0
- * @since n.e.x.t Added attributes, setAttributes, and className to props.
+ * @since 1.165.0 Added attributes, setAttributes, and className to props.
  *
  * @param {Object}   props               Component props.
  * @param {Object}   props.attributes    Block attributes.

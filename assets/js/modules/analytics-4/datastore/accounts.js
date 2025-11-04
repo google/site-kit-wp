@@ -150,7 +150,7 @@ const baseActions = {
 	 * Creates a new Analytics (GA4) account.
 	 *
 	 * @since 1.98.0
-	 * @since n.e.x.t Add `showProgress` option.
+	 * @since 1.165.0 Add `showProgress` option.
 	 *
 	 * @param {Object}  [options={}]                 Optional options object.
 	 * @param {boolean} [options.showProgress=false] Whether to show the progress indicator.
