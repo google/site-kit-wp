@@ -95,6 +95,14 @@ describe( 'blocks', () => {
 				'button.editor-block-list-item-google-site-kit-rrm-contribute-with-google'
 			);
 
+			const iframe = await (
+				await page.waitForSelector( '[name=editor-canvas]' )
+			 ).contentFrame();
+
+			await iframe.waitForSelector(
+				'.googlesitekit-blocks-reader-revenue-manager'
+			);
+
 			// Verify there are no console errors.
 			const consoleErrors = await page.evaluate( () => {
 				return window.console.errors || [];
@@ -137,6 +145,14 @@ describe( 'blocks', () => {
 				'button.editor-block-list-item-google-site-kit-rrm-subscribe-with-google'
 			);
 
+			const iframe = await (
+				await page.waitForSelector( '[name=editor-canvas]' )
+			 ).contentFrame();
+
+			await iframe.waitForSelector(
+				'.googlesitekit-blocks-reader-revenue-manager'
+			);
+
 			// Verify there are no console errors.
 			const consoleErrors = await page.evaluate( () => {
 				return window.console.errors || [];
@@ -175,6 +191,14 @@ describe( 'blocks', () => {
 			// Click on the Sign in with Google block.
 			await page.click(
 				'button.editor-block-list-item-google-site-kit-sign-in-with-google'
+			);
+
+			const iframe = await (
+				await page.waitForSelector( '[name=editor-canvas]' )
+			 ).contentFrame();
+
+			await iframe.waitForSelector(
+				'.googlesitekit-blocks-sign-in-with-google'
 			);
 
 			// Verify there are no console errors.
