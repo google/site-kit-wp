@@ -26,6 +26,10 @@ class Email_Reporting_Settings extends User_Setting {
 	 */
 	const OPTION = 'googlesitekit_email_reporting_settings';
 
+	const FREQUENCY_WEEKLY    = 'weekly';
+	const FREQUENCY_MONTHLY   = 'monthly';
+	const FREQUENCY_QUARTERLY = 'quarterly';
+
 	/**
 	 * Gets the expected value type.
 	 *
@@ -47,7 +51,7 @@ class Email_Reporting_Settings extends User_Setting {
 	protected function get_default() {
 		return array(
 			'subscribed' => false,
-			'frequency'  => 'weekly',
+			'frequency'  => self::FREQUENCY_WEEKLY,
 		);
 	}
 
@@ -112,11 +116,11 @@ class Email_Reporting_Settings extends User_Setting {
 				if ( is_string( $settings['frequency'] ) ) {
 					$sanitized_settings['frequency'] = $settings['frequency'];
 				} else {
-					$sanitized_settings['frequency'] = 'weekly';
+					$sanitized_settings['frequency'] = self::FREQUENCY_WEEKLY;
 				}
 
-				if ( ! in_array( $sanitized_settings['frequency'], array( 'weekly', 'monthly', 'quarterly' ), true ) ) {
-					$sanitized_settings['frequency'] = 'weekly';
+				if ( ! in_array( $sanitized_settings['frequency'], array( self::FREQUENCY_WEEKLY, self::FREQUENCY_MONTHLY, self::FREQUENCY_QUARTERLY ), true ) ) {
+					$sanitized_settings['frequency'] = self::FREQUENCY_WEEKLY;
 				}
 			}
 
