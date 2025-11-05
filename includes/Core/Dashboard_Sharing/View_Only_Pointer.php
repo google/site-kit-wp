@@ -54,8 +54,8 @@ final class View_Only_Pointer {
 				'title'           => sprintf(
 					'%s %s',
 					__( 'You now have access to Site Kit', 'google-site-kit' ),
-					'<button type=\'button\' class=\'googlesitekit-pointer-cta--dismiss dashicons dashicons-no\' data-action=\'dismiss\'>' .
-						'<span class=\'screen-reader-text\'>' . esc_html__( 'Dismiss this notice.', 'google-site-kit' ) . '</span>' .
+					'<button type="button" class="googlesitekit-pointer-cta--dismiss dashicons dashicons-no" data-action="dismiss">' .
+						'<span class="screen-reader-text">' . esc_html__( 'Dismiss this notice.', 'google-site-kit' ) . '</span>' .
 					'</button>'
 				),
 				'content'         => __( 'Check Site Kit’s dashboard to find out how much traffic your site is getting, your most popular pages, top keywords people use to find your site on Search, and more.', 'google-site-kit' ),
@@ -88,7 +88,7 @@ final class View_Only_Pointer {
 				'class'           => 'googlesitekit-view-only-pointer',
 				'buttons'         =>
 					sprintf(
-						'<a class=\'googlesitekit-pointer-cta button-primary\' href=\'admin.php?page=googlesitekit-dashboard\' data-action=\'dismiss\'>%s</a>',
+						'<a class="googlesitekit-pointer-cta button-primary" href="admin.php?page=googlesitekit-dashboard" data-action="dismiss">%s</a>',
 						esc_html__( 'View dashboard', 'google-site-kit' )
 					),
 			),
