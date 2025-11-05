@@ -65,9 +65,43 @@ class Has_Multiple_Admins {
 			$user_query   = new WP_User_Query( $user_query_args );
 			$admins_count = $user_query->get_total();
 
-			$this->transients->get( self::OPTION, $admins_count, HOUR_IN_SECONDS );
+			// Cache the count for 1 week.
+			$this->transients->set( self::OPTION, $admins_count, WEEK_IN_SECONDS );
 		}
 
 		return $admins_count > 1;
+	}
+
+	/**
+	 * Registers hooks to keep the cached value accurate.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function register() {
+		// Invalidate when a user is registered (might be an admin) or deleted.
+		add_action( 'user_register', array( $this, 'invalidate' ) );
+		add_action( 'deleted_user', array( $this, 'invalidate' ) );
+
+		// Invalidate when a role changes to or from administrator.
+		add_action(
+			'set_user_role',
+			function ( $user_id, $role, $old_roles ) {
+				if ( 'administrator' === strtolower( $role ) || in_array( 'administrator', array_map( 'strtolower', (array) $old_roles ), true ) ) {
+					$this->invalidate();
+				}
+			},
+			10,
+			3
+		);
+	}
+
+	/**
+	 * Deletes the cached admins count.
+	 *
+	 * @since n.e.x.t
+	 * @return void
+	 */
+	public function invalidate() {
+		$this->transients->delete( self::OPTION );
 	}
 }

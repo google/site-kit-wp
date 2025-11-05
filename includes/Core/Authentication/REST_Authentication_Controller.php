@@ -111,6 +111,8 @@ final class REST_Authentication_Controller {
 								'ownerID'            => $this->authentication->get_owner_id_instance()->get(),
 							);
 
+							// hasMultipleAdmins is intentionally exposed only here (core/site) per acceptance criteria.
+
 							return new WP_REST_Response( $data );
 						},
 						'permission_callback' => $can_setup,
