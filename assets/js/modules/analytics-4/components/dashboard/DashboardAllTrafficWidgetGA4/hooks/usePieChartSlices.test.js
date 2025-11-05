@@ -1,0 +1,147 @@
+/**
+ * `usePieChartSlices()` custom hook tests.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import { renderHook } from '../../../../../../../../tests/js/test-utils';
+import usePieChartSlices from './usePieChartSlices';
+
+describe( 'usePieChartSlices', () => {
+	it( 'should return pie chart slices for the given dimension values', async () => {
+		const { result } = await renderHook( () => usePieChartSlices() );
+
+		expect( result.current ).toBeInstanceOf( Function );
+
+		const getPieChartSlices = result.current;
+
+		const pieChartSlices = getPieChartSlices( [
+			'dimensionValue1',
+			'dimensionValue2',
+			'dimensionValue3',
+		] );
+
+		expect( pieChartSlices ).toEqual( {
+			0: { color: '#fece72' },
+			1: { color: '#a983e6' },
+			2: { color: '#bed4ff' },
+		} );
+	} );
+
+	it( 'should return the same colors for dimension values when they are passed in again in a different order', async () => {
+		const { result } = await renderHook( () => usePieChartSlices() );
+
+		const getPieChartSlices = result.current;
+
+		const pieChartSlices = getPieChartSlices( [
+			'dimensionValue1',
+			'dimensionValue2',
+			'dimensionValue3',
+			'dimensionValue4',
+			'dimensionValue5',
+		] );
+
+		expect( pieChartSlices ).toEqual( {
+			0: { color: '#fece72' },
+			1: { color: '#a983e6' },
+			2: { color: '#bed4ff' },
+			3: { color: '#ee92da' },
+			4: { color: '#ff9b7a' },
+		} );
+
+		const pieChartSlices2 = getPieChartSlices( [
+			'dimensionValue3',
+			'dimensionValue4',
+			'dimensionValue5',
+			'dimensionValue1',
+			'dimensionValue2',
+		] );
+
+		expect( pieChartSlices2 ).toEqual( {
+			0: { color: '#bed4ff' },
+			1: { color: '#ee92da' },
+			2: { color: '#ff9b7a' },
+			3: { color: '#fece72' },
+			4: { color: '#a983e6' },
+		} );
+	} );
+
+	it( 'should reuse colors from the same palette for dimension values passed in which are not in the original array', async () => {
+		const { result } = await renderHook( () => usePieChartSlices() );
+
+		const getPieChartSlices = result.current;
+
+		const pieChartSlices = getPieChartSlices( [
+			'dimensionValue1',
+			'dimensionValue2',
+			'dimensionValue3',
+			'dimensionValue4',
+			'dimensionValue5',
+		] );
+
+		expect( pieChartSlices ).toEqual( {
+			0: { color: '#fece72' },
+			1: { color: '#a983e6' },
+			2: { color: '#bed4ff' },
+			3: { color: '#ee92da' },
+			4: { color: '#ff9b7a' },
+		} );
+
+		const pieChartSlices2 = getPieChartSlices( [
+			'dimensionValue1',
+			'dimensionValue10',
+			'dimensionValue4',
+			'dimensionValue3',
+			'dimensionValue11',
+		] );
+
+		expect( pieChartSlices2 ).toEqual( {
+			0: { color: '#fece72' },
+			1: { color: '#a983e6' },
+			2: { color: '#ee92da' },
+			3: { color: '#bed4ff' },
+			4: { color: '#ff9b7a' },
+		} );
+	} );
+
+	it( 'should return `#ccc` for dimension values when there are more than five dimension values', async () => {
+		const { result } = await renderHook( () => usePieChartSlices() );
+
+		const getPieChartSlices = result.current;
+
+		const pieChartSlices = getPieChartSlices( [
+			'dimensionValue1',
+			'dimensionValue2',
+			'dimensionValue3',
+			'dimensionValue4',
+			'dimensionValue5',
+			'dimensionValue6',
+			'dimensionValue7',
+		] );
+
+		expect( pieChartSlices ).toEqual( {
+			0: { color: '#fece72' },
+			1: { color: '#a983e6' },
+			2: { color: '#bed4ff' },
+			3: { color: '#ee92da' },
+			4: { color: '#ff9b7a' },
+			5: { color: '#ccc' },
+			6: { color: '#ccc' },
+		} );
+	} );
+} );
