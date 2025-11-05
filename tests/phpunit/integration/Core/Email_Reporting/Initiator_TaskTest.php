@@ -38,12 +38,12 @@ class Initiator_TaskTest extends TestCase {
 
 		$this->scheduler = $this->getMockBuilder( Email_Reporting_Scheduler::class )
 			->disableOriginalConstructor()
-			->onlyMethods( array( 'schedule_next_initiator', 'schedule_worker', 'schedule_fallback' ) )
+			->setMethods( array( 'schedule_next_initiator', 'schedule_worker', 'schedule_fallback' ) )
 			->getMock();
 
 		$this->query = $this->getMockBuilder( Subscribed_Users_Query::class )
 			->disableOriginalConstructor()
-			->onlyMethods( array( 'for_frequency' ) )
+			->setMethods( array( 'for_frequency' ) )
 			->getMock();
 
 		$this->task             = new Initiator_Task( $this->scheduler, $this->query );
