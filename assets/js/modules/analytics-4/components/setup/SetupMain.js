@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -100,7 +101,10 @@ export default function SetupMain( { finishSetup } ) {
 
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
+	const [ showProgress ] = useQueryArg( 'showProgress' );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
+	const isInitialSetupFlow = !! showProgress && setupFlowRefreshEnabled;
 
 	const [ searchConsoleSetupSuccess, setSearchConsoleSetupSuccess ] =
 		useQueryArg( 'searchConsoleSetupSuccess' );
@@ -128,20 +132,45 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<Fragment>
-			<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
+			<div
+				className={ classnames(
+					'googlesitekit-setup-module googlesitekit-setup-module--analytics',
+					{
+						'googlesitekit-feature--setupFlowRefresh':
+							setupFlowRefreshEnabled,
+					}
+				) }
+			>
 				<div className="googlesitekit-setup-module__step">
-					<div className="googlesitekit-setup-module__logo">
-						<AnalyticsIcon width="40" height="40" />
-					</div>
+					{ isInitialSetupFlow ? (
+						<Typography
+							as="h1"
+							className="googlesitekit-setup__title"
+							size="medium"
+							type="headline"
+						>
+							{ __( 'Set up Analytics', 'google-site-kit' ) }
+						</Typography>
+					) : (
+						<Fragment>
+							<div className="googlesitekit-setup-module__logo">
+								<AnalyticsIcon width="40" height="40" />
+							</div>
 
-					<Typography
-						as="h3"
-						className="googlesitekit-setup-module__title"
-						size="small"
-						type="headline"
-					>
-						{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					</Typography>
+							<Typography
+								as="h3"
+								className="googlesitekit-setup-module__title"
+								size="small"
+								type="headline"
+							>
+								{ _x(
+									'Analytics',
+									'Service name',
+									'google-site-kit'
+								) }
+							</Typography>
+						</Fragment>
+					) }
 				</div>
 				<div className="googlesitekit-setup-module__step">
 					{ viewComponent }
