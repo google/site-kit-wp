@@ -66,7 +66,9 @@ class Frequency_Planner {
 		// ISO weekday index where Sunday=0 and Saturday=6, matching WordPress' start_of_week option.
 		$current_wday = (int) $current->format( 'w' );
 
+		// Figure out how many days to move forward to land on the configured week start.
 		$days_until_target = ( $start_of_week - $current_wday + 7 ) % 7;
+		// If today is already the target weekday but the time has passed, shift to the following week.
 		if ( 0 === $days_until_target && $current >= $day_start ) {
 			$days_until_target = 7;
 		}

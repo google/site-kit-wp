@@ -107,7 +107,12 @@ class Email_Reporting {
 	 * @param Options|null      $options      Optional. Options instance. Default is a new instance.
 	 * @param User_Options|null $user_options Optional. User options instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, Modules $modules, ?Options $options = null, ?User_Options $user_options = null ) {
+	public function __construct(
+		Context $context,
+		Modules $modules,
+		?Options $options = null,
+		?User_Options $user_options = null
+	) {
 		$this->context      = $context;
 		$this->modules      = $modules;
 		$this->options      = $options ?: new Options( $this->context );
