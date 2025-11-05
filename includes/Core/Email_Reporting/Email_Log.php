@@ -40,6 +40,11 @@ final class Email_Log {
 	const META_BATCH_ID = '_batch_id';
 
 	/**
+	 * Maximum length for stored log strings (MySQL utf8mb4 index safety).
+	 */
+	const META_STRING_MAX_LENGTH = 191;
+
+	/**
 	 * Send attempts meta key.
 	 */
 	const META_SEND_ATTEMPTS = '_send_attempts';
@@ -197,6 +202,8 @@ final class Email_Log {
 	/**
 	 * Sanitizes the report frequency meta value.
 	 *
+	 * Allows only known scheduling frequencies, normalizing strings to lowercase.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @param mixed $value Meta value.
@@ -216,6 +223,8 @@ final class Email_Log {
 	/**
 	 * Sanitizes the batch ID meta value.
 	 *
+	 * Strips unsafe characters and clamps identifiers so they remain index-safe.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @param mixed $value Meta value.
@@ -224,7 +233,7 @@ final class Email_Log {
 	public static function sanitize_batch_id( $value ) {
 		$value = sanitize_text_field( (string) $value );
 
-		return substr( $value, 0, 191 );
+		return substr( $value, 0, self::META_STRING_MAX_LENGTH );
 	}
 
 	/**
@@ -245,6 +254,8 @@ final class Email_Log {
 
 	/**
 	 * Sanitizes the error details meta value.
+	 *
+	 * Converts WP_Error instances and other payloads into JSON for storage.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -287,6 +298,8 @@ final class Email_Log {
 	/**
 	 * Sanitizes the report reference dates meta value.
 	 *
+	 * Extracts known timestamps, coercing them to integers before encoding.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @param mixed $value Meta value.
@@ -297,17 +310,19 @@ final class Email_Log {
 			return '';
 		}
 
-		$keys = array( 'startDate', 'sendDate', 'compareStartDate', 'compareEndDate' );
-		$in   = (array) $value;
-		$out  = array_fill_keys( $keys, 0 );
+		$keys      = array( 'startDate', 'sendDate', 'compareStartDate', 'compareEndDate' );
+		$raw_dates = (array) $value;
+		// Pre-seed ( 'startDate', 'sendDate', 'compareStartDate', 'compareEndDate' ) keys
+		// so missing timestamps normalize to 0 and consumers always see a full schema.
+		$normalized = array_fill_keys( $keys, 0 );
 
 		foreach ( $keys as $key ) {
-			if ( isset( $in[ $key ] ) ) {
-				$out[ $key ] = absint( $in[ $key ] );
+			if ( isset( $raw_dates[ $key ] ) ) {
+				$normalized[ $key ] = absint( $raw_dates[ $key ] );
 			}
 		}
 
-		$encoded = wp_json_encode( $out, JSON_UNESCAPED_UNICODE );
+		$encoded = wp_json_encode( $normalized, JSON_UNESCAPED_UNICODE );
 
 		return is_string( $encoded ) ? $encoded : '';
 	}
