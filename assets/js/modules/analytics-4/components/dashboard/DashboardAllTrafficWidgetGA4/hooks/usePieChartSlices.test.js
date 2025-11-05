@@ -22,6 +22,14 @@
 import { renderHook } from '../../../../../../../../tests/js/test-utils';
 import usePieChartSlices from './usePieChartSlices';
 
+const PIE_CHART_COLORS = [
+	'#fece72',
+	'#a983e6',
+	'#bed4ff',
+	'#ee92da',
+	'#ff9b7a',
+];
+
 describe( 'usePieChartSlices', () => {
 	it( 'should return pie chart slices for the given dimension values', async () => {
 		const { result } = await renderHook( () => usePieChartSlices() );
@@ -37,9 +45,9 @@ describe( 'usePieChartSlices', () => {
 		] );
 
 		expect( pieChartSlices ).toEqual( {
-			0: { color: '#fece72' },
-			1: { color: '#a983e6' },
-			2: { color: '#bed4ff' },
+			0: { color: PIE_CHART_COLORS[ 0 ] },
+			1: { color: PIE_CHART_COLORS[ 1 ] },
+			2: { color: PIE_CHART_COLORS[ 2 ] },
 		} );
 	} );
 
@@ -57,11 +65,11 @@ describe( 'usePieChartSlices', () => {
 		] );
 
 		expect( pieChartSlices ).toEqual( {
-			0: { color: '#fece72' },
-			1: { color: '#a983e6' },
-			2: { color: '#bed4ff' },
-			3: { color: '#ee92da' },
-			4: { color: '#ff9b7a' },
+			0: { color: PIE_CHART_COLORS[ 0 ] },
+			1: { color: PIE_CHART_COLORS[ 1 ] },
+			2: { color: PIE_CHART_COLORS[ 2 ] },
+			3: { color: PIE_CHART_COLORS[ 3 ] },
+			4: { color: PIE_CHART_COLORS[ 4 ] },
 		} );
 
 		const pieChartSlices2 = getPieChartSlices( [
@@ -73,11 +81,11 @@ describe( 'usePieChartSlices', () => {
 		] );
 
 		expect( pieChartSlices2 ).toEqual( {
-			0: { color: '#bed4ff' },
-			1: { color: '#ee92da' },
-			2: { color: '#ff9b7a' },
-			3: { color: '#fece72' },
-			4: { color: '#a983e6' },
+			0: { color: PIE_CHART_COLORS[ 2 ] },
+			1: { color: PIE_CHART_COLORS[ 3 ] },
+			2: { color: PIE_CHART_COLORS[ 4 ] },
+			3: { color: PIE_CHART_COLORS[ 0 ] },
+			4: { color: PIE_CHART_COLORS[ 1 ] },
 		} );
 	} );
 
@@ -95,11 +103,11 @@ describe( 'usePieChartSlices', () => {
 		] );
 
 		expect( pieChartSlices ).toEqual( {
-			0: { color: '#fece72' },
-			1: { color: '#a983e6' },
-			2: { color: '#bed4ff' },
-			3: { color: '#ee92da' },
-			4: { color: '#ff9b7a' },
+			0: { color: PIE_CHART_COLORS[ 0 ] },
+			1: { color: PIE_CHART_COLORS[ 1 ] },
+			2: { color: PIE_CHART_COLORS[ 2 ] },
+			3: { color: PIE_CHART_COLORS[ 3 ] },
+			4: { color: PIE_CHART_COLORS[ 4 ] },
 		} );
 
 		const pieChartSlices2 = getPieChartSlices( [
@@ -111,11 +119,11 @@ describe( 'usePieChartSlices', () => {
 		] );
 
 		expect( pieChartSlices2 ).toEqual( {
-			0: { color: '#fece72' },
-			1: { color: '#a983e6' },
-			2: { color: '#ee92da' },
-			3: { color: '#bed4ff' },
-			4: { color: '#ff9b7a' },
+			0: { color: PIE_CHART_COLORS[ 0 ] },
+			1: { color: PIE_CHART_COLORS[ 1 ] },
+			2: { color: PIE_CHART_COLORS[ 3 ] },
+			3: { color: PIE_CHART_COLORS[ 2 ] },
+			4: { color: PIE_CHART_COLORS[ 4 ] },
 		} );
 	} );
 
@@ -135,11 +143,11 @@ describe( 'usePieChartSlices', () => {
 		] );
 
 		expect( pieChartSlices ).toEqual( {
-			0: { color: '#fece72' },
-			1: { color: '#a983e6' },
-			2: { color: '#bed4ff' },
-			3: { color: '#ee92da' },
-			4: { color: '#ff9b7a' },
+			0: { color: PIE_CHART_COLORS[ 0 ] },
+			1: { color: PIE_CHART_COLORS[ 1 ] },
+			2: { color: PIE_CHART_COLORS[ 2 ] },
+			3: { color: PIE_CHART_COLORS[ 3 ] },
+			4: { color: PIE_CHART_COLORS[ 4 ] },
 			5: { color: '#ccc' },
 			6: { color: '#ccc' },
 		} );
