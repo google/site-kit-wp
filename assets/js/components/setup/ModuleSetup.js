@@ -45,6 +45,7 @@ import HelpMenu from '@/js/components/help/HelpMenu';
 import { Cell, Grid, Row } from '@/js/material-components';
 import Header from '@/js/components/Header';
 import ModuleSetupFooter from './ModuleSetupFooter';
+import ExitSetup from '@/js/components/setup/ExitSetup';
 import ProgressIndicator from '@/js/components/ProgressIndicator';
 
 export default function ModuleSetup( { moduleSlug } ) {
@@ -115,7 +116,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 
 	const { SetupComponent } = module;
 
-	const showProgressIndicator =
+	const isInitialSetupFlow =
 		setupFlowRefreshEnabled &&
 		moduleSlug === MODULE_SLUG_ANALYTICS_4 &&
 		showProgress === 'true';
@@ -124,7 +125,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 		<Fragment>
 			<Header
 				subHeader={
-					showProgressIndicator ? (
+					isInitialSetupFlow ? (
 						<ProgressIndicator
 							currentSegment={ 4 }
 							totalSegments={ 6 }
@@ -132,7 +133,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 					) : null
 				}
 			>
-				<HelpMenu />
+				{ isInitialSetupFlow ? <ExitSetup /> : <HelpMenu /> }
 			</Header>
 			<div className="googlesitekit-setup">
 				<Grid>
@@ -142,12 +143,14 @@ export default function ModuleSetup( { moduleSlug } ) {
 								<Grid>
 									<Row>
 										<Cell size={ 12 }>
-											<p className="googlesitekit-setup__intro-title">
-												{ __(
-													'Connect Service',
-													'google-site-kit'
-												) }
-											</p>
+											{ ! isInitialSetupFlow && (
+												<p className="googlesitekit-setup__intro-title">
+													{ __(
+														'Connect Service',
+														'google-site-kit'
+													) }
+												</p>
+											) }
 											<SetupComponent
 												module={ module }
 												finishSetup={ finishSetup }
@@ -156,15 +159,18 @@ export default function ModuleSetup( { moduleSlug } ) {
 									</Row>
 								</Grid>
 
-								<ModuleSetupFooter
-									module={ module }
-									onCancel={ onCancelButtonClick }
-									onComplete={
-										typeof onCompleteSetup === 'function'
-											? onCompleteSetupCallback
-											: undefined
-									}
-								/>
+								{ ! isInitialSetupFlow && (
+									<ModuleSetupFooter
+										module={ module }
+										onCancel={ onCancelButtonClick }
+										onComplete={
+											typeof onCompleteSetup ===
+											'function'
+												? onCompleteSetupCallback
+												: undefined
+										}
+									/>
+								) }
 							</section>
 						</Cell>
 					</Row>

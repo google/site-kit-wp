@@ -113,6 +113,11 @@ export default function KeyMetricsSetupApp() {
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
+	// Query arg derived state (declared before callbacks that depend on it).
+	const [ showProgress ] = useQueryArg( 'showProgress' );
+
+	const isInitialSetupFlow = !! showProgress;
+
 	const submitChanges = useCallback( async () => {
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
@@ -120,7 +125,17 @@ export default function KeyMetricsSetupApp() {
 			await saveInitialSetupSettings( {
 				isAnalyticsSetupComplete: true,
 			} );
-			url.searchParams.set( 'showSuccess', 'true' );
+
+			// If not in the initial setup flow, append notification params for Analytics.
+			if ( ! isInitialSetupFlow ) {
+				url.searchParams.set(
+					'notification',
+					'authentication_success'
+				);
+				url.searchParams.set( 'slug', 'analytics-4' );
+			} else {
+				url.searchParams.set( 'showSuccess', 'true' );
+			}
 			navigateTo( url.toString() );
 		}
 	}, [
@@ -128,6 +143,7 @@ export default function KeyMetricsSetupApp() {
 		dashboardURL,
 		saveInitialSetupSettings,
 		navigateTo,
+		isInitialSetupFlow,
 	] );
 
 	const { fetchSyncAvailableCustomDimensions, syncAvailableAudiences } =
@@ -151,10 +167,6 @@ export default function KeyMetricsSetupApp() {
 	const {
 		USER_INPUT_ANSWERS_PURPOSE: USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS,
 	} = getUserInputAnswersDescription();
-
-	const [ showProgress ] = useQueryArg( 'showProgress' );
-
-	const isInitialSetupFlow = !! showProgress;
 
 	const subHeader = isInitialSetupFlow ? (
 		<ProgressIndicator totalSegments={ 6 } currentSegment={ 4 } />
