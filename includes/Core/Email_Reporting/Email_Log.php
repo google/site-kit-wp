@@ -69,6 +69,99 @@ final class Email_Log {
 	const STATUS_SCHEDULED = 'gsk_email_scheduled';
 
 	/**
+	 * Extracts a normalized date range array from an email log post.
+	 *
+	 * @param mixed $email_log Potential email log post.
+	 * @return array|null
+	 */
+	public static function get_date_range_from_log( $email_log ) {
+		if ( ! ( $email_log instanceof \WP_Post ) ) {
+			return null;
+		}
+
+		if ( self::POST_TYPE !== $email_log->post_type ) {
+			return null;
+		}
+
+		$raw = get_post_meta( $email_log->ID, self::META_REPORT_REFERENCE_DATES, true );
+		if ( empty( $raw ) ) {
+			return null;
+		}
+
+		if ( is_string( $raw ) ) {
+			$decoded = json_decode( $raw, true );
+			if ( JSON_ERROR_NONE !== json_last_error() ) {
+				return null;
+			}
+		} elseif ( is_array( $raw ) ) {
+			$decoded = $raw;
+		} else {
+			return null;
+		}
+
+		$normalized = array();
+		$start      = isset( $decoded['startDate'] ) ? self::format_reference_date( $decoded['startDate'] ) : null;
+		if ( $start ) {
+			$normalized['startDate'] = $start;
+		}
+
+		$send = isset( $decoded['sendDate'] ) ? self::format_reference_date( $decoded['sendDate'] ) : null;
+		if ( $send ) {
+			$normalized['endDate'] = $send;
+		}
+
+		$compare_start = isset( $decoded['compareStartDate'] ) ? self::format_reference_date( $decoded['compareStartDate'] ) : null;
+		if ( $compare_start ) {
+			$normalized['compareStartDate'] = $compare_start;
+		}
+
+		$compare_end = isset( $decoded['compareEndDate'] ) ? self::format_reference_date( $decoded['compareEndDate'] ) : null;
+		if ( $compare_end ) {
+			$normalized['compareEndDate'] = $compare_end;
+		}
+
+		if ( empty( $normalized['startDate'] ) || empty( $normalized['endDate'] ) ) {
+			return null;
+		}
+
+		return $normalized;
+	}
+
+	/**
+	 * Formats a timestamp or date string stored in reference date meta.
+	 *
+	 * @param mixed $value Date value.
+	 * @return string|null
+	 */
+	protected static function format_reference_date( $value ) {
+		if ( '' === $value || null === $value ) {
+			return null;
+		}
+
+		if ( is_numeric( $value ) ) {
+			$timestamp = (int) $value;
+			if ( $timestamp <= 0 ) {
+				return null;
+			}
+		} else {
+			$timestamp = strtotime( (string) $value );
+		}
+
+		if ( false === $timestamp ) {
+			return null;
+		}
+
+		if ( function_exists( 'wp_timezone' ) && function_exists( 'wp_date' ) ) {
+			$timezone = wp_timezone();
+			if ( $timezone ) {
+				return wp_date( 'Y-m-d', $timestamp, $timezone );
+			}
+		}
+
+		return gmdate( 'Y-m-d', $timestamp );
+	}
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since n.e.x.t
