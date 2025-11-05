@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User\Initial_Setup_Settings;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
  * Class managing admin screens.
@@ -381,6 +382,10 @@ final class Screens {
 						}
 					},
 					'initialize_callback' => function ( Context $context ) {
+						if ( ! Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+							return;
+						}
+
 						$is_view_only = ! $this->authentication->is_authenticated();
 
 						if ( ! $is_view_only ) {
