@@ -17,7 +17,7 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
 import { useMount } from 'react-use';
 
