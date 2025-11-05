@@ -1564,6 +1564,7 @@ class Analytics_4Test extends TestCase {
 				'accounts',
 				'ads-links',
 				'adsense-links',
+				'batch-report',
 				'container-lookup',
 				'container-destinations',
 				'google-tag-settings',
@@ -1601,6 +1602,7 @@ class Analytics_4Test extends TestCase {
 				'accounts',
 				'ads-links',
 				'adsense-links',
+				'batch-report',
 				'container-lookup',
 				'container-destinations',
 				'google-tag-settings',
@@ -2394,6 +2396,223 @@ class Analytics_4Test extends TestCase {
 			),
 			$request_params['dimensions'],
 			'Expected dimensions array for single object input.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_get_batch_report( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$this->fake_handler_and_invoke_register_method( $property_id );
+
+		$data = $this->analytics->get_data(
+			'batch-report',
+			array(
+				'requests' => array(
+					array(
+						'metrics'    => array( 'sessions' ),
+						'dimensions' => array( 'sessionDefaultChannelGrouping' ),
+						'url'        => 'https://example.org/batch-1/',
+					),
+					array(
+						'metrics'          => array(
+							array(
+								'name'       => 'total',
+								'expression' => 'totalUsers',
+							),
+						),
+						'dimensionFilters' => array(
+							'sessionDefaultChannelGrouping' => 'Organic Search',
+						),
+						'limit'            => 50,
+					),
+				),
+			)
+		);
+
+		$this->assertNotWPError( $data, 'Batch report request should succeed when parameters are valid.' );
+
+		$this->assertEquals( 'batch-value-1', $data['reports'][0]['rows'][0]['metricValues'][0]['value'], 'First batch report should include expected metric value.' );
+		$this->assertEquals( 'sessionDefaultChannelGrouping', $data['reports'][0]['dimensionHeaders'][0]['name'], 'First batch report should expose expected dimension header.' );
+		$this->assertEquals( 'batch-value-2', $data['reports'][1]['rows'][0]['metricValues'][0]['value'], 'Second batch report should include expected metric value.' );
+		$this->assertEquals( 'newVsReturning', $data['reports'][1]['dimensionHeaders'][1]['name'], 'Second batch report should expose expected secondary dimension header.' );
+
+		$this->assertCount( 1, $this->request_handler_calls, 'Batch report request should result in a single HTTP request.' );
+
+		$request_url    = $this->request_handler_calls[0]['url'];
+		$request_params = $this->request_handler_calls[0]['params'];
+
+		$this->assertEquals( 'analyticsdata.googleapis.com', $request_url['host'], 'Batch report request host should be analyticsdata.googleapis.com.' );
+		$this->assertEquals( "/v1beta/properties/$property_id:batchRunReports", $request_url['path'], 'Batch report request path should match the batchRunReports endpoint.' );
+
+		$this->assertArrayHasKey( 'requests', $request_params, 'Batch report payload should include requests key.' );
+		$this->assertCount( 2, $request_params['requests'], 'Batch report payload should include two requests.' );
+
+		$first_request  = $request_params['requests'][0];
+		$second_request = $request_params['requests'][1];
+
+		$this->assertEquals(
+			array(
+				array(
+					'name' => 'sessions',
+				),
+			),
+			$first_request['metrics'],
+			'First batch request should include expected metrics.'
+		);
+
+		$this->assertEquals(
+			array(
+				array(
+					'name' => 'sessionDefaultChannelGrouping',
+				),
+			),
+			$first_request['dimensions'],
+			'First batch request should include expected dimensions.'
+		);
+
+		$this->assertEquals(
+			1,
+			$first_request['keepEmptyRows'],
+			'First batch request should default keepEmptyRows to 1.'
+		);
+
+		$page_path_filters = array_filter(
+			$first_request['dimensionFilter']['andGroup']['expressions'],
+			function ( $expression ) {
+				return isset( $expression['filter']['fieldName'] ) && 'pagePath' === $expression['filter']['fieldName'];
+			}
+		);
+		$this->assertNotEmpty( $page_path_filters, 'First batch request should include a pagePath filter when URL is provided.' );
+
+		$page_path_filters = array_values( $page_path_filters );
+		$page_path_filter  = $page_path_filters[0];
+		$this->assertEquals( 'https://example.org/batch-1/', $page_path_filter['filter']['stringFilter']['value'], 'First batch request should retain provided URL in pagePath filter.' );
+
+		$this->assertEquals(
+			50,
+			$second_request['limit'],
+			'Second batch request should pass through the provided limit.'
+		);
+
+		$this->assertEquals(
+			array(
+				array(
+					'name'       => 'total',
+					'expression' => 'totalUsers',
+				),
+			),
+			$second_request['metrics'],
+			'Second batch request should include expected metrics.'
+		);
+
+		$this->assertArrayHasKey(
+			'dimensionFilter',
+			$second_request,
+			'Second batch request should include dimension filters by default.'
+		);
+
+		$channel_filters = array_filter(
+			$second_request['dimensionFilter']['andGroup']['expressions'],
+			function ( $expression ) {
+				return isset( $expression['filter']['fieldName'] ) && 'sessionDefaultChannelGrouping' === $expression['filter']['fieldName'];
+			}
+		);
+		$this->assertNotEmpty( $channel_filters, 'Second batch request should include provided dimension filter.' );
+
+		$channel_filters = array_values( $channel_filters );
+		$channel_filter  = $channel_filters[0];
+		$this->assertEquals(
+			'Organic Search',
+			$channel_filter['filter']['stringFilter']['value'],
+			'Second batch request should retain provided dimension filter value.'
+		);
+	}
+
+	public function test_get_batch_report__requires_requests_parameter() {
+		$this->setup_user_authentication( 'valid-auth-token' );
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '123456789',
+			)
+		);
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$this->analytics->register();
+
+		$data = $this->analytics->get_data( 'batch-report', array() );
+
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: requests.', $data, 'Batch report should require a requests parameter.' );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code(), 'Error code should be missing_required_param when requests parameter is empty.' );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ), 'Error data should include status 400 for missing requests parameter.' );
+	}
+
+	/**
+	 * @dataProvider data_invalid_batch_report_requests
+	 *
+	 * @param mixed  $invalid_requests Invalid requests value.
+	 * @param string $message          Assertion message for the scenario.
+	 */
+	public function test_get_batch_report__invalid_requests_parameter( $invalid_requests, $message ) {
+		$this->setup_user_authentication( 'valid-auth-token' );
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '123456789',
+			)
+		);
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$this->analytics->register();
+
+		$data = $this->analytics->get_data(
+			'batch-report',
+			array(
+				'requests' => $invalid_requests,
+			)
+		);
+
+		$this->assertWPErrorWithMessage( 'Batch report requests must be an array with 1-5 requests.', $data, $message );
+		$this->assertEquals( 'invalid_batch_size', $data->get_error_code(), $message );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_batch_size' ), 'Error data should include status 400 for invalid batch size.' );
+	}
+
+	public function data_invalid_batch_report_requests() {
+		return array(
+			'requests not array' => array(
+				'not-an-array',
+				'Batch report should reject non-array requests parameter.',
+			),
+			'too many requests'  => array(
+				array_fill( 0, 6, array( 'metrics' => array( 'sessions' ) ) ),
+				'Batch report should reject request arrays longer than five entries.',
+			),
 		);
 	}
 
@@ -3281,6 +3500,77 @@ class Analytics_4Test extends TestCase {
 													),
 												),
 											),
+										),
+									),
+								)
+							)
+						)
+					);
+
+				case "/v1beta/properties/$property_id:batchRunReports":
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode(
+								array(
+									'kind'    => 'analyticsData#batchRunReports',
+									'reports' => array(
+										array(
+											'kind'     => 'analyticsData#runReport',
+											'dimensionHeaders' => array(
+												array( 'name' => 'sessionDefaultChannelGrouping' ),
+												array( 'name' => 'date' ),
+											),
+											'metricHeaders' => array(
+												array(
+													'name' => 'sessions',
+													'type' => 'TYPE_INTEGER',
+												),
+											),
+											'rows'     => array(
+												array(
+													'dimensionValues' => array(
+														array( 'value' => 'Organic Search' ),
+														array( 'value' => '2024-07-10' ),
+													),
+													'metricValues'    => array(
+														array( 'value' => 'batch-value-1' ),
+													),
+												),
+											),
+											'totals'   => array(),
+											'maximums' => array(),
+											'minimums' => array(),
+											'metadata' => array( 'timeZone' => 'UTC' ),
+										),
+										array(
+											'kind'     => 'analyticsData#runReport',
+											'dimensionHeaders' => array(
+												array( 'name' => 'date' ),
+												array( 'name' => 'newVsReturning' ),
+											),
+											'metricHeaders' => array(
+												array(
+													'name' => 'activeUsers',
+													'type' => 'TYPE_INTEGER',
+												),
+											),
+											'rows'     => array(
+												array(
+													'dimensionValues' => array(
+														array( 'value' => '2024-07-10' ),
+														array( 'value' => 'returning' ),
+													),
+													'metricValues'    => array(
+														array( 'value' => 'batch-value-2' ),
+													),
+												),
+											),
+											'totals'   => array(),
+											'maximums' => array(),
+											'minimums' => array(),
+											'metadata' => array( 'timeZone' => 'UTC' ),
 										),
 									),
 								)

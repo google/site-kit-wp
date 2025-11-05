@@ -60,9 +60,17 @@ class Email_Reporting {
 	 * REST_Email_Reporting_Controller instance.
 	 *
 	 * @since 1.162.0
-	 * @var REST_Email_Reporting_Controller|null
+	 * @var REST_Email_Reporting_Controller
 	 */
 	protected $rest_controller;
+
+	/**
+	 * Email_Log instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Email_Log
+	 */
+	protected $email_log;
 
 	/**
 	 * Constructor.
@@ -74,11 +82,12 @@ class Email_Reporting {
 	 */
 	public function __construct( Context $context, ?Options $options = null ) {
 		$this->context         = $context;
-		$options               = $options ?: new Options( $context );
+		$options               = $options ?: new Options( $this->context );
 		$this->settings        = new Email_Reporting_Settings( $options );
 		$this->user_options    = new User_Options( $context );
 		$this->user_settings   = new User_Email_Reporting_Settings( $this->user_options );
 		$this->rest_controller = new REST_Email_Reporting_Controller( $this->settings );
+		$this->email_log       = new Email_Log( $this->context );
 	}
 
 	/**
@@ -92,5 +101,6 @@ class Email_Reporting {
 
 		// Register WP admin pointer for Email Reporting onboarding.
 		( new Email_Reporting_Pointer( $this->context, $this->user_options, $this->user_settings ) )->register();
+		$this->email_log->register();
 	}
 }

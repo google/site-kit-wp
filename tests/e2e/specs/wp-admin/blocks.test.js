@@ -95,8 +95,11 @@ describe( 'blocks', () => {
 				'button.editor-block-list-item-google-site-kit-rrm-contribute-with-google'
 			);
 
-			// Expect the block to be present in the block editor.
-			await page.waitForSelector(
+			const iframe = await (
+				await page.waitForSelector( '[name=editor-canvas]' )
+			 ).contentFrame();
+
+			await iframe.waitForSelector(
 				'.googlesitekit-blocks-reader-revenue-manager'
 			);
 
@@ -142,8 +145,11 @@ describe( 'blocks', () => {
 				'button.editor-block-list-item-google-site-kit-rrm-subscribe-with-google'
 			);
 
-			// Expect the block to be present in the block editor.
-			await page.waitForSelector(
+			const iframe = await (
+				await page.waitForSelector( '[name=editor-canvas]' )
+			 ).contentFrame();
+
+			await iframe.waitForSelector(
 				'.googlesitekit-blocks-reader-revenue-manager'
 			);
 
@@ -187,8 +193,11 @@ describe( 'blocks', () => {
 				'button.editor-block-list-item-google-site-kit-sign-in-with-google'
 			);
 
-			// Expect the block to be present in the block editor.
-			await page.waitForSelector(
+			const iframe = await (
+				await page.waitForSelector( '[name=editor-canvas]' )
+			 ).contentFrame();
+
+			await iframe.waitForSelector(
 				'.googlesitekit-blocks-sign-in-with-google'
 			);
 
