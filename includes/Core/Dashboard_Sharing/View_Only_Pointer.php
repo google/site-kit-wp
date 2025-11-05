@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\Dashboard_Sharing;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Pointer;
 use Google\Site_Kit\Core\Permissions\Permissions;
 
@@ -23,6 +24,25 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 final class View_Only_Pointer {
 
 	const SLUG = 'googlesitekit-view-only-pointer';
+
+	/**
+	 * Plugin context.
+	 *
+	 * @since n.e.x.t
+	 * @var Context
+	 */
+	private $context;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Context $context Plugin context.
+	 */
+	public function __construct( Context $context ) {
+		$this->context = $context;
+	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -88,7 +108,8 @@ final class View_Only_Pointer {
 				'class'           => 'googlesitekit-view-only-pointer',
 				'buttons'         =>
 					sprintf(
-						'<a class="googlesitekit-pointer-cta button-primary" href="admin.php?page=googlesitekit-dashboard" data-action="dismiss">%s</a>',
+						'<a class="googlesitekit-pointer-cta button-primary" href="%s" data-action="dismiss">%s</a>',
+						esc_attr( $this->context->admin_url( 'dashboard' ) ),
 						esc_html__( 'View dashboard', 'google-site-kit' )
 					),
 			),
