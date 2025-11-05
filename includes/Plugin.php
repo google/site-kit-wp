@@ -229,7 +229,7 @@ final class Plugin {
 				( new Core\Tags\GTag( $options ) )->register();
 				( new Core\Conversion_Tracking\Conversion_Tracking( $this->context, $options ) )->register();
 				if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) ) {
-					( new Core\Email_Reporting\Email_Reporting( $this->context, $options ) )->register();
+					( new Core\Email_Reporting\Email_Reporting( $this->context, $modules, $options, $user_options ) )->register();
 				}
 				if ( Feature_Flags::enabled( 'googleTagGateway' ) ) {
 					( new Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway( $this->context, $options ) )->register();
