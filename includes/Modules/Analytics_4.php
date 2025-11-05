@@ -728,6 +728,10 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'service'   => 'analyticsdata',
 				'shareable' => true,
 			),
+			'GET:batch-report'                          => array(
+				'service'   => 'analyticsdata',
+				'shareable' => true,
+			),
 			'GET:webdatastreams'                        => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'                  => array( 'service' => 'analyticsadmin' ),
 			'GET:enhanced-measurement-settings'         => array( 'service' => 'analyticsenhancedmeasurement' ),
@@ -1362,6 +1366,58 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				$request->setProperty( $property_id );
 
 				return $this->get_analyticsdata_service()->properties->runReport( $property_id, $request );
+
+			case 'GET:batch-report':
+				if ( empty( $data['requests'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'requests' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! is_array( $data['requests'] ) || count( $data['requests'] ) > 5 ) {
+					return new WP_Error(
+						'invalid_batch_size',
+						__( 'Batch report requests must be an array with 1-5 requests.', 'google-site-kit' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$settings = $this->get_settings()->get();
+				if ( empty( $settings['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_setting',
+						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
+						array( 'status' => 500 )
+					);
+				}
+
+				$batch_requests = array();
+				$report         = new Analytics_4_Report_Request( $this->context );
+
+				foreach ( $data['requests'] as $request_data ) {
+					$data_request = new Data_Request( 'GET', 'modules', $this->slug, 'report', $request_data );
+					$request      = $report->create_request(
+						$data_request,
+						$this->is_shared_data_request( $data_request )
+					);
+					if ( is_wp_error( $request ) ) {
+						return $request;
+					}
+					$batch_requests[] = $request;
+				}
+
+				$property_id = self::normalize_property_id( $settings['propertyID'] );
+
+				$batch_request = new Google_Service_AnalyticsData\BatchRunReportsRequest();
+				$batch_request->setRequests( $batch_requests );
+
+				return $this->get_analyticsdata_service()->properties->batchRunReports(
+					$property_id,
+					$batch_request
+				);
 
 			case 'GET:enhanced-measurement-settings':
 				if ( ! isset( $data['propertyID'] ) ) {

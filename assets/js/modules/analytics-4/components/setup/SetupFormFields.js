@@ -20,7 +20,12 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+	useEffect,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -41,6 +46,9 @@ import {
 } from '@/js/modules/analytics-4/components/common';
 import SetupEnhancedMeasurementSwitch from './SetupEnhancedMeasurementSwitch';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
+import StepHint from '@/js/components/setup/StepHint';
+import Link from '@/js/components/Link';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SetupFormFields() {
 	const accounts =
@@ -64,6 +72,8 @@ export default function SetupFormFields() {
 
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
 
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	useEffect( () => {
 		if ( hasExistingTag ) {
 			setUseSnippet( existingTag !== measurementID );
@@ -79,7 +89,7 @@ export default function SetupFormFields() {
 	return (
 		<Fragment>
 			{ !! accounts.length && (
-				<p className="googlesitekit-margin-bottom-0">
+				<p className="googlesitekit-setup-module__select_account">
 					{ __(
 						'Please select the account information below. You can change this later in your settings.',
 						'google-site-kit'
@@ -88,15 +98,57 @@ export default function SetupFormFields() {
 			) }
 
 			<div className="googlesitekit-setup-module__inputs">
-				<AccountSelect onChange={ resetEnhancedMeasurementSetting } />
-				<PropertySelect
-					onChange={ resetEnhancedMeasurementSetting }
-					hasModuleAccess
-				/>
-				<WebDataStreamSelect
-					onChange={ resetEnhancedMeasurementSetting }
-					hasModuleAccess
-				/>
+				<div>
+					<AccountSelect
+						onChange={ resetEnhancedMeasurementSetting }
+					/>
+				</div>
+				<div>
+					<PropertySelect
+						onChange={ resetEnhancedMeasurementSetting }
+						hasModuleAccess
+					/>
+					{ setupFlowRefreshEnabled && (
+						<StepHint
+							leadingText={ __(
+								'What is an Analytics property?',
+								'google-site-kit'
+							) }
+							tooltipText={ createInterpolateElement(
+								__(
+									'An Analytics property is a container for data collected from a website. It represents a specific website, and within a property, you can view reports, manage data collection, attribution, privacy settings, and product links. <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: <Link external hideExternalIndicator />,
+								}
+							) }
+						/>
+					) }
+				</div>
+				<div>
+					<WebDataStreamSelect
+						onChange={ resetEnhancedMeasurementSetting }
+						hasModuleAccess
+					/>
+					{ setupFlowRefreshEnabled && (
+						<StepHint
+							leadingText={ __(
+								'What is a web data stream?',
+								'google-site-kit'
+							) }
+							tooltipText={ createInterpolateElement(
+								__(
+									'A data stream is a flow of data from your visitors to Analytics. When a data stream is created, Analytics generates a snippet of code that is added to your site to collect that data. <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: <Link external hideExternalIndicator />,
+								}
+							) }
+						/>
+					) }
+				</div>
 			</div>
 
 			{ webDataStreamID === WEBDATASTREAM_CREATE && (
