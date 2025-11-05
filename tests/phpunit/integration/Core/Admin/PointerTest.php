@@ -135,7 +135,7 @@ class PointerTest extends TestCase {
 	}
 
 	public function test_get_buttons() {
-		$buttons = 'function(event, container) { return jQuery("<button>OK</button>"); }';
+		$buttons = '<button>OK</button>';
 		$pointer = new Pointer(
 			'test-slug',
 			array(
