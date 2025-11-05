@@ -14,6 +14,7 @@ use DateInterval;
 use DateTimeImmutable;
 use DateTimeZone;
 use InvalidArgumentException;
+use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 
 /**
  * Calculates the next occurrence for email reporting schedules.
@@ -37,13 +38,13 @@ class Frequency_Planner {
 	 */
 	public function next_occurrence( $frequency, $timestamp, DateTimeZone $time_zone ) {
 		switch ( $frequency ) {
-			case Email_Reporting_Scheduler::FREQUENCY_WEEKLY:
+			case Email_Reporting_Settings::FREQUENCY_WEEKLY:
 				return $this->get_next_weekly_occurrence( $timestamp, $time_zone );
 
-			case Email_Reporting_Scheduler::FREQUENCY_MONTHLY:
+			case Email_Reporting_Settings::FREQUENCY_MONTHLY:
 				return $this->get_next_monthly_occurrence( $timestamp, $time_zone );
 
-			case Email_Reporting_Scheduler::FREQUENCY_QUARTERLY:
+			case Email_Reporting_Settings::FREQUENCY_QUARTERLY:
 				return $this->get_next_quarterly_occurrence( $timestamp, $time_zone );
 		}
 

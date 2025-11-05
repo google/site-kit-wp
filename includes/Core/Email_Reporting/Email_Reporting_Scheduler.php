@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Email_Reporting;
 
+use Google\Site_Kit\Core\User\Email_Reporting_Settings;
+
 /**
  * Schedules cron events related to email reporting.
  *
@@ -18,10 +20,6 @@ namespace Google\Site_Kit\Core\Email_Reporting;
  * @ignore
  */
 class Email_Reporting_Scheduler {
-
-	const FREQUENCY_WEEKLY    = 'weekly';
-	const FREQUENCY_MONTHLY   = 'monthly';
-	const FREQUENCY_QUARTERLY = 'quarterly';
 
 	const ACTION_INITIATOR = 'googlesitekit_email_reporting_initiator';
 	const ACTION_WORKER    = 'googlesitekit_email_reporting_worker';
@@ -51,7 +49,7 @@ class Email_Reporting_Scheduler {
 	 * @since n.e.x.t
 	 */
 	public function schedule_initiator_events() {
-		foreach ( array( self::FREQUENCY_WEEKLY, self::FREQUENCY_MONTHLY, self::FREQUENCY_QUARTERLY ) as $frequency ) {
+		foreach ( array( Email_Reporting_Settings::FREQUENCY_WEEKLY, Email_Reporting_Settings::FREQUENCY_MONTHLY, Email_Reporting_Settings::FREQUENCY_QUARTERLY ) as $frequency ) {
 			$this->schedule_initiator_once( $frequency );
 		}
 	}

@@ -10,8 +10,8 @@ namespace Google\Site_Kit\Tests\Core\Email_Reporting;
 use DateInterval;
 use DateTimeImmutable;
 use DateTimeZone;
-use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Scheduler;
 use Google\Site_Kit\Core\Email_Reporting\Frequency_Planner;
+use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 use Google\Site_Kit\Tests\TestCase;
 
 class Frequency_PlannerTest extends TestCase {
@@ -59,7 +59,7 @@ class Frequency_PlannerTest extends TestCase {
 		$current  = new DateTimeImmutable( $current_date, $timezone );
 
 		$next_timestamp = $this->planner->next_occurrence(
-			Email_Reporting_Scheduler::FREQUENCY_WEEKLY,
+			Email_Reporting_Settings::FREQUENCY_WEEKLY,
 			$current->getTimestamp(),
 			$timezone
 		);
@@ -89,7 +89,7 @@ class Frequency_PlannerTest extends TestCase {
 		$timezone = wp_timezone();
 
 		$timestamp          = ( new DateTimeImmutable( $baseline, $timezone ) )->getTimestamp();
-		$next               = $this->planner->next_occurrence( Email_Reporting_Scheduler::FREQUENCY_MONTHLY, $timestamp, $timezone );
+		$next               = $this->planner->next_occurrence( Email_Reporting_Settings::FREQUENCY_MONTHLY, $timestamp, $timezone );
 		$expected_timestamp = ( new DateTimeImmutable( $expected, $timezone ) )->getTimestamp();
 
 		$this->assertSame( $expected_timestamp, $next, $message );
@@ -112,7 +112,7 @@ class Frequency_PlannerTest extends TestCase {
 		$timezone = new DateTimeZone( 'UTC' );
 
 		$timestamp          = ( new DateTimeImmutable( $baseline, $timezone ) )->getTimestamp();
-		$next               = $this->planner->next_occurrence( Email_Reporting_Scheduler::FREQUENCY_QUARTERLY, $timestamp, $timezone );
+		$next               = $this->planner->next_occurrence( Email_Reporting_Settings::FREQUENCY_QUARTERLY, $timestamp, $timezone );
 		$expected_timestamp = ( new DateTimeImmutable( $expected, $timezone ) )->getTimestamp();
 
 		$this->assertSame( $expected_timestamp, $next, $message );

@@ -137,7 +137,7 @@ class Subscribed_Users_Query {
 				continue;
 			}
 
-			$user_frequency = isset( $settings['frequency'] ) ? (string) $settings['frequency'] : Email_Reporting_Scheduler::FREQUENCY_WEEKLY;
+			$user_frequency = isset( $settings['frequency'] ) ? (string) $settings['frequency'] : User_Email_Reporting_Settings::FREQUENCY_WEEKLY;
 
 			if ( $user_frequency !== $frequency ) {
 				continue;
