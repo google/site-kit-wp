@@ -26,6 +26,7 @@ import { Fragment, useCallback, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
+import { isValidAccountID } from '@/js/modules/analytics-4/utils/validation';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -55,6 +56,9 @@ export default function SetupFormFields() {
 	);
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
+	);
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
 	const measurementID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getMeasurementID()
@@ -103,14 +107,16 @@ export default function SetupFormFields() {
 						onChange={ resetEnhancedMeasurementSetting }
 						hasModuleAccess
 					/>
-					{ setupFlowRefreshEnabled && <PropertyHint /> }
+					{ setupFlowRefreshEnabled &&
+						isValidAccountID( accountID ) && <PropertyHint /> }
 				</div>
 				<div>
 					<WebDataStreamSelect
 						onChange={ resetEnhancedMeasurementSetting }
 						hasModuleAccess
 					/>
-					{ setupFlowRefreshEnabled && <WebDataStreamHint /> }
+					{ setupFlowRefreshEnabled &&
+						isValidAccountID( accountID ) && <WebDataStreamHint /> }
 				</div>
 			</div>
 
