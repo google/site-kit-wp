@@ -331,7 +331,8 @@ final class Email_Log {
 	/**
 	 * Sanitizes the batch ID meta value.
 	 *
-	 * Strips unsafe characters and clamps identifiers so they remain index-safe.
+	 * Strips unsafe characters and limits identifier string length so IDs
+	 * remain index-safe in MySQL databases.
 	 *
 	 * @since n.e.x.t
 	 *
