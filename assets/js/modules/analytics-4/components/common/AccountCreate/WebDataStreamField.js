@@ -19,19 +19,23 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import CreateAccountField from './CreateAccountField';
 import { useDispatch } from 'googlesitekit-data';
-import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
+import CreateAccountField from './CreateAccountField';
+import { WebDataStreamHint } from '@/js/modules/analytics-4/components/common';
 
 export default function WebDataStreamField() {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	const value = useFormValue( FORM_ACCOUNT_CREATE, 'dataStreamName' );
 	const { setValues } = useDispatch( CORE_FORMS );
 
@@ -43,12 +47,15 @@ export default function WebDataStreamField() {
 	);
 
 	return (
-		<CreateAccountField
-			label={ __( 'Web Data Stream', 'google-site-kit' ) }
-			value={ value }
-			hasError={ ! value }
-			setValue={ setValue }
-			name="dataStream"
-		/>
+		<Fragment>
+			<CreateAccountField
+				label={ __( 'Web Data Stream', 'google-site-kit' ) }
+				value={ value }
+				hasError={ ! value }
+				setValue={ setValue }
+				name="dataStream"
+			/>
+			{ setupFlowRefreshEnabled && <WebDataStreamHint /> }
+		</Fragment>
 	);
 }
