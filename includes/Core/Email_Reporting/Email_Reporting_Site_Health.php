@@ -88,6 +88,10 @@ class Email_Reporting_Site_Health {
 		$fields['email_reports_status']['value'] = $is_enabled ? __( 'Enabled', 'google-site-kit' ) : __( 'Disabled', 'google-site-kit' );
 		$fields['email_reports_status']['debug'] = $is_enabled ? 'enabled' : 'disabled';
 
+		if ( ! $is_enabled ) {
+			return $fields;
+		}
+
 		$subscriber_count                             = $this->get_subscriber_count();
 		$fields['email_reports_subscribers']['value'] = $subscriber_count;
 		$fields['email_reports_subscribers']['debug'] = $subscriber_count;
