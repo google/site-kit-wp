@@ -51,7 +51,17 @@ jobs:
           registry: ghcr.io
           username: google-site-kit-bot
           password: ${{ secrets.GH_BOT_TOKEN }}
-      - name: Run Backstopjs
+      - name: Run Backstopjs (Run 1)
+        run: npm run test:visualtest
+      - name: Run Backstopjs (Run 2)
+        run: npm run test:visualtest
+      - name: Run Backstopjs (Run 3)
+        run: npm run test:visualtest
+      - name: Run Backstopjs (Run 4)
+        run: npm run test:visualtest
+      - name: Run Backstopjs (Run 5)
+        run: npm run test:visualtest
+      - name: Run Backstopjs (Run 6)
         run: npm run test:visualtest
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
