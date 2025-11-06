@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+import { withQuery } from '@storybook/addon-queryparams';
+
+/**
  * Internal dependencies
  */
 import AccountCreate from '.';
@@ -31,6 +37,7 @@ import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
@@ -38,11 +45,21 @@ import { Cell, Grid, Row } from '@/js/material-components';
 
 const { accountSummaries } = fixtures;
 
-function Template( args ) {
+function Template( args, { parameters } ) {
 	return (
 		<div className="googlesitekit-layout">
-			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics">
-				<div className="googlesitekit-setup-module">
+			<div className="googlesitekit-setup">
+				<div
+					className={ classnames(
+						'googlesitekit-setup-module googlesitekit-setup-module--analytics',
+						{
+							'googlesitekit-feature--setupFlowRefresh':
+								parameters?.features?.includes(
+									'setupFlowRefresh'
+								),
+						}
+					) }
+				>
 					<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
 						<Grid>
 							<Row>
@@ -59,12 +76,23 @@ function Template( args ) {
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'AccountCreate';
+Default.storyName = 'Default';
 Default.scenario = {};
+
+export const InitialSetupFlow = Template.bind( {} );
+InitialSetupFlow.storyName = 'Initial setup flow';
+InitialSetupFlow.parameters = {
+	features: [ 'setupFlowRefresh' ],
+	query: {
+		showProgress: 'true',
+	},
+};
+InitialSetupFlow.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AccountCreate',
 	decorators: [
+		withQuery,
 		( Story ) => {
 			function setupRegistry( registry ) {
 				provideModules( registry, [
@@ -89,6 +117,10 @@ export default {
 					accountID: ACCOUNT_CREATE,
 					useSnippet: true,
 				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetConversionTrackingSettings( { enabled: false } );
 			}
 
 			return (
