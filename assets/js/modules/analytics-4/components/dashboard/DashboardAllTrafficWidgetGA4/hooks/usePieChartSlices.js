@@ -29,6 +29,10 @@ const PIE_CHART_COLORS = [
 	'#ff9b7a',
 ];
 
+// This is the fallback color for dimension values that are not in the `PIE_CHART_COLORS` array.
+// In practice, we should never reach this fallback color.
+const FALLBACK_COLOR = '#ccc';
+
 /**
  * Gets the pie chart slices for the given dimension values.
  *
@@ -54,7 +58,7 @@ export default function usePieChartSlices() {
 		const availableColor =
 			PIE_CHART_COLORS.find(
 				( color ) => ! usedColors.includes( color )
-			) || '#ccc';
+			) || FALLBACK_COLOR;
 
 		colors[ dimensionValue ] = availableColor;
 
