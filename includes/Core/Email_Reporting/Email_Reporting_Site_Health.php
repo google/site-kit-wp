@@ -150,7 +150,7 @@ class Email_Reporting_Site_Health {
 		$latest_post = new \WP_Query(
 			array(
 				'post_type'      => Email_Log::POST_TYPE,
-				'post_status'    => 'any',
+				'post_status'    => $this->get_relevant_log_statuses(),
 				'posts_per_page' => 1,
 				'fields'         => 'ids',
 				'orderby'        => 'date',
@@ -173,7 +173,7 @@ class Email_Reporting_Site_Health {
 		$batch_query = new \WP_Query(
 			array(
 				'post_type'      => Email_Log::POST_TYPE,
-				'post_status'    => 'any',
+				'post_status'    => $this->get_relevant_log_statuses(),
 				'posts_per_page' => -1,
 				'fields'         => 'ids',
 				'orderby'        => 'date',
@@ -286,6 +286,21 @@ class Email_Reporting_Site_Health {
 		return array(
 			'value' => $iso,
 			'debug' => $iso,
+		);
+	}
+
+	/**
+	 * Gets the list of email log statuses considered for Site Health summaries.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[]
+	 */
+	private function get_relevant_log_statuses() {
+		return array(
+			Email_Log::STATUS_SENT,
+			Email_Log::STATUS_FAILED,
+			Email_Log::STATUS_SCHEDULED,
 		);
 	}
 }
