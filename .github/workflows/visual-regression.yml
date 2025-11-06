@@ -25,6 +25,8 @@ on:
       - reopened
       - synchronize
       - ready_for_review
+  schedule:
+      - cron: '12,42 * * * *' # Every hour at 12 and 42 minutes past the hour
 
 concurrency:
   group: visual-regression-${{ github.ref }}
