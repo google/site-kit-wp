@@ -75,27 +75,8 @@ final class Email_Log {
 	 * @return array|null
 	 */
 	public static function get_date_range_from_log( $email_log ) {
-		if ( ! ( $email_log instanceof \WP_Post ) ) {
-			return null;
-		}
-
-		if ( self::POST_TYPE !== $email_log->post_type ) {
-			return null;
-		}
-
-		$raw = get_post_meta( $email_log->ID, self::META_REPORT_REFERENCE_DATES, true );
-		if ( empty( $raw ) ) {
-			return null;
-		}
-
-		if ( is_string( $raw ) ) {
-			$decoded = json_decode( $raw, true );
-			if ( JSON_ERROR_NONE !== json_last_error() ) {
-				return null;
-			}
-		} elseif ( is_array( $raw ) ) {
-			$decoded = $raw;
-		} else {
+		$decoded = self::validate_and_decode_email_log( $email_log );
+		if ( null === $decoded ) {
 			return null;
 		}
 
@@ -125,6 +106,40 @@ final class Email_Log {
 		}
 
 		return $normalized;
+	}
+
+	/**
+	 * Validates an email log and returns decoded reference date metadata.
+	 *
+	 * @param mixed $email_log Potential email log post.
+	 * @return array|null Decoded reference date metadata, or null on failure.
+	 */
+	protected static function validate_and_decode_email_log( $email_log ) {
+		if ( ! ( $email_log instanceof \WP_Post ) ) {
+			return null;
+		}
+
+		if ( self::POST_TYPE !== $email_log->post_type ) {
+			return null;
+		}
+
+		$raw = get_post_meta( $email_log->ID, self::META_REPORT_REFERENCE_DATES, true );
+		if ( empty( $raw ) ) {
+			return null;
+		}
+
+		if ( is_string( $raw ) ) {
+			$decoded = json_decode( $raw, true );
+			if ( JSON_ERROR_NONE !== json_last_error() ) {
+				return null;
+			}
+		} elseif ( is_array( $raw ) ) {
+			$decoded = $raw;
+		} else {
+			return null;
+		}
+
+		return $decoded;
 	}
 
 	/**
