@@ -171,7 +171,10 @@ MainDashboardLoaded.args = {
 		} );
 	},
 };
-MainDashboardLoaded.scenario = {};
+MainDashboardLoaded.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 200,
+};
 
 export const MainDashboardLoading = Template.bind( {} );
 MainDashboardLoading.storyName = 'Loading';
@@ -230,7 +233,10 @@ MainDashboardDataUnavailable.args = {
 		} );
 	},
 };
-MainDashboardDataUnavailable.scenario = {};
+MainDashboardDataUnavailable.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 200,
+};
 
 export const MainDashboardZeroData = Template.bind( {} );
 MainDashboardZeroData.storyName = 'Zero Data';
@@ -271,7 +277,10 @@ MainDashboardZeroData.args = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	},
 };
-MainDashboardZeroData.scenario = {};
+MainDashboardZeroData.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 200,
+};
 
 export const MainDashboardError = Template.bind( {} );
 MainDashboardError.storyName = 'Error';
@@ -315,7 +324,10 @@ MainDashboardOneRowOfData.args = {
 		} );
 	},
 };
-MainDashboardOneRowOfData.scenario = {};
+MainDashboardOneRowOfData.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 200,
+};
 
 export const NoDataInComparisonDateRange = Template.bind( {} );
 NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
@@ -328,7 +340,10 @@ NoDataInComparisonDateRange.args = {
 		} );
 	},
 };
-NoDataInComparisonDateRange.scenario = {};
+NoDataInComparisonDateRange.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 200,
+};
 
 export default {
 	title: 'Modules/Analytics4/Widgets/All Traffic Widget GA4/Main Dashboard',
