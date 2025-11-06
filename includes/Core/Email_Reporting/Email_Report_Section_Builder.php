@@ -66,7 +66,7 @@ class Email_Report_Section_Builder {
 	 */
 	public function build_sections( $module_slug, array $raw_payloads, $frequency, $user_locale, $email_log = null ) {
 		$sections        = array();
-		$switched_locale = function_exists( 'switch_to_locale' ) ? switch_to_locale( $user_locale ) : false;
+		$switched_locale = switch_to_locale( $user_locale );
 		$log_date_range  = Email_Log::get_date_range_from_log( $email_log );
 
 		try {
@@ -92,7 +92,7 @@ class Email_Report_Section_Builder {
 				$sections[] = $section;
 			}
 		} finally {
-			if ( $switched_locale && function_exists( 'restore_previous_locale' ) ) {
+			if ( $switched_locale ) {
 				restore_previous_locale();
 			}
 		}
@@ -143,11 +143,7 @@ class Email_Report_Section_Builder {
 
 			$number = (float) $trend;
 
-			if ( function_exists( 'number_format_i18n' ) ) {
-				$formatted = number_format_i18n( $number, 2 );
-			} else {
-				$formatted = number_format( $number, 2, '.', ',' );
-			}
+			$formatted = number_format_i18n( $number, 2 );
 
 			$out[] = sprintf( '%s%%', $formatted );
 		}
