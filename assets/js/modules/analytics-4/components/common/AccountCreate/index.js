@@ -19,8 +19,14 @@
 /**
  * WordPress dependencies
  */
+import classnames from 'classnames';
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState, useEffect } from '@wordpress/element';
+import {
+	useCallback,
+	useState,
+	useEffect,
+	createInterpolateElement,
+} from '@wordpress/element';
 import { getQueryArg } from '@wordpress/url';
 
 /**
@@ -29,6 +35,7 @@ import { getQueryArg } from '@wordpress/url';
 import { invalidateCache } from 'googlesitekit-api';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
+import { useFeature } from '@/js/hooks/useFeature';
 import {
 	FORM_ACCOUNT_CREATE,
 	EDIT_SCOPE,
@@ -50,14 +57,18 @@ import AccountField from './AccountField';
 import PropertyField from './PropertyField';
 import CountrySelect from './CountrySelect';
 import WebDataStreamField from './WebDataStreamField';
-import EnhancedMeasurementSwitch from '@/js/modules/analytics-4/components/common/EnhancedMeasurementSwitch';
+import { EnhancedMeasurementSwitch } from '@/js/modules/analytics-4/components/common';
 import useViewContext from '@/js/hooks/useViewContext';
 import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
 import Typography from '@/js/components/Typography';
 import useFormValue from '@/js/hooks/useFormValue';
 import P from '@/js/components/Typography/P';
+import Link from '@/js/components/Link';
+import Null from '@/js/components/Null';
 
 export default function AccountCreate() {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const accounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountSummaries()
@@ -96,6 +107,11 @@ export default function AccountCreate() {
 	const timezone = useSelect( ( select ) =>
 		select( CORE_SITE ).getTimezone()
 	);
+	const pluginConversionsDocumentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'plugin-conversion-tracking'
+		);
+	} );
 
 	const viewContext = useViewContext();
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -221,18 +237,22 @@ export default function AccountCreate() {
 		return <ProgressBar />;
 	}
 
+	const isInitialSetupFlow = !! showProgress && setupFlowRefreshEnabled;
+
 	return (
-		<div>
+		<div className="googlesitekit-analytics-setup__form">
 			<StoreErrorNotices
 				moduleSlug="analytics-4"
 				storeName={ MODULES_ANALYTICS_4 }
 			/>
 
-			<Typography as="h3" type="title" size="large">
-				{ __( 'Create your Analytics account', 'google-site-kit' ) }
-			</Typography>
+			{ ! isInitialSetupFlow && (
+				<Typography as="h3" type="title" size="large">
+					{ __( 'Create your Analytics account', 'google-site-kit' ) }
+				</Typography>
+			) }
 
-			<P>
+			<P size={ isInitialSetupFlow ? 'large' : undefined }>
 				{ __(
 					'We’ve pre-filled the required information for your new account. Confirm or edit any details:',
 					'google-site-kit'
@@ -252,9 +272,13 @@ export default function AccountCreate() {
 			</div>
 
 			<div className="googlesitekit-setup-module__inputs">
-				<CountrySelect />
+				<Cell size={ 6 }>
+					<CountrySelect />
+				</Cell>
 
-				<TimezoneSelect />
+				<Cell size={ 6 }>
+					<TimezoneSelect />
+				</Cell>
 			</div>
 
 			<div className="googlesitekit-setup-module__inputs">
@@ -264,15 +288,34 @@ export default function AccountCreate() {
 				/>
 
 				<SetupPluginConversionTrackingNotice
-					className="googlesitekit-margin-top-0"
-					message={ __(
-						'To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings.',
-						'google-site-kit'
+					className={ classnames( {
+						'googlesitekit-margin-top-0': ! isInitialSetupFlow,
+					} ) }
+					message={ createInterpolateElement(
+						__(
+							'To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings. <LearnMoreLink />',
+							'google-site-kit'
+						),
+						{
+							LearnMoreLink: setupFlowRefreshEnabled ? (
+								<Link
+									href={ pluginConversionsDocumentationURL }
+									external
+								>
+									{ __( 'Learn more', 'google-site-kit' ) }
+								</Link>
+							) : (
+								<Null />
+							),
+						}
 					) }
 				/>
 			</div>
 
-			<P>
+			<P
+				className="googlesitekit-analytics-create-account-info"
+				size={ isInitialSetupFlow ? 'small' : undefined }
+			>
 				{ hasRequiredScope && (
 					<span>
 						{ __(
