@@ -127,7 +127,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 				subHeader={
 					isInitialSetupFlow ? (
 						<ProgressIndicator
-							currentSegment={ 4 }
+							currentSegment={ 3 }
 							totalSegments={ 6 }
 						/>
 					) : null
