@@ -52,7 +52,7 @@ import CountrySelect from './CountrySelect';
 import WebDataStreamField from './WebDataStreamField';
 import EnhancedMeasurementSwitch from '@/js/modules/analytics-4/components/common/EnhancedMeasurementSwitch';
 import useViewContext from '@/js/hooks/useViewContext';
-import SetupEnhancedConversionTrackingNotice from '@/js/components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
+import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
 import Typography from '@/js/components/Typography';
 import useFormValue from '@/js/hooks/useFormValue';
 import P from '@/js/components/Typography/P';
@@ -263,7 +263,7 @@ export default function AccountCreate() {
 					className="googlesitekit-margin-bottom-0"
 				/>
 
-				<SetupEnhancedConversionTrackingNotice
+				<SetupPluginConversionTrackingNotice
 					className="googlesitekit-margin-top-0"
 					message={ __(
 						'To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings.',

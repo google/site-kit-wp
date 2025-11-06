@@ -36,7 +36,7 @@ import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { ConversionIDTextField } from '@/js/modules/ads/components/common';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import SetupEnhancedConversionTrackingNotice from '@/js/components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
+import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
 
 export default function SetupForm( {
 	finishSetup,
@@ -90,7 +90,7 @@ export default function SetupForm( {
 				</div>
 			) }
 
-			<SetupEnhancedConversionTrackingNotice
+			<SetupPluginConversionTrackingNotice
 				className="googlesitekit-margin-top-1"
 				message={ __(
 					'To track the performance of your campaigns, Site Kit will enable plugin conversion tracking. You can always disable it in settings.',

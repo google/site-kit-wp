@@ -117,7 +117,11 @@ class REST_Email_Reporting_Controller {
 										'properties'    => array(
 											'frequency'  => array(
 												'type' => 'string',
-												'enum' => array( 'weekly', 'monthly', 'quarterly' ),
+												'enum' => array(
+													Email_Reporting_Settings::FREQUENCY_WEEKLY,
+													Email_Reporting_Settings::FREQUENCY_MONTHLY,
+													Email_Reporting_Settings::FREQUENCY_QUARTERLY,
+												),
 											),
 											'subscribed' => array(
 												'type' => 'boolean',
