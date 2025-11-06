@@ -47,23 +47,13 @@ jobs:
           cache: npm
       - name: npm install
         run: npm i -w assets -w tests/backstop -w storybook -w tests/js --include-workspace-root
-      # - name: Log in to GitHub Container Registry
-      #   uses: docker/login-action@v3
-      #   with:
-      #     registry: ghcr.io
-      #     username: google-site-kit-bot
-      #     password: ${{ secrets.GH_BOT_TOKEN }}
-      - name: Run Backstopjs (Run 1)
-        run: npm run test:visualtest
-      - name: Run Backstopjs (Run 2)
-        run: npm run test:visualtest
-      - name: Run Backstopjs (Run 3)
-        run: npm run test:visualtest
-      - name: Run Backstopjs (Run 4)
-        run: npm run test:visualtest
-      - name: Run Backstopjs (Run 5)
-        run: npm run test:visualtest
-      - name: Run Backstopjs (Run 6)
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: google-site-kit-bot
+          password: ${{ secrets.GH_BOT_TOKEN }}
+      - name: Run Backstopjs
         run: npm run test:visualtest
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
