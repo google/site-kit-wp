@@ -88,6 +88,7 @@ InitialSetupFlow.parameters = {
 	},
 };
 InitialSetupFlow.args = {
+	className: 'googlesitekit-analytics-setup__form',
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{

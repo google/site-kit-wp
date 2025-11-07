@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import classnames from 'classnames';
@@ -66,7 +71,7 @@ import P from '@/js/components/Typography/P';
 import Link from '@/js/components/Link';
 import Null from '@/js/components/Null';
 
-export default function AccountCreate() {
+export default function AccountCreate( { className } ) {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
 	const [ isNavigating, setIsNavigating ] = useState( false );
@@ -240,7 +245,7 @@ export default function AccountCreate() {
 	const isInitialSetupFlow = !! showProgress && setupFlowRefreshEnabled;
 
 	return (
-		<div className="googlesitekit-analytics-setup__form">
+		<div className={ className }>
 			<StoreErrorNotices
 				moduleSlug="analytics-4"
 				storeName={ MODULES_ANALYTICS_4 }
@@ -355,3 +360,7 @@ export default function AccountCreate() {
 		</div>
 	);
 }
+
+AccountCreate.propTypes = {
+	className: PropTypes.string,
+};

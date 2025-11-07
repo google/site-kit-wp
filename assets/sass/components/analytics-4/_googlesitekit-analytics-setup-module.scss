@@ -46,14 +46,6 @@
 				margin-bottom: 0;
 			}
 
-			.googlesitekit-module-settings-group__helper-text {
-				color: $c-surfaces-on-surface-variant;
-				font-size: $fs-body-sm;
-				letter-spacing: $ls-xs;
-				margin-bottom: 4px;
-				margin-top: 4px;
-			}
-
 			.googlesitekit-plugin-conversion-tracking-notice {
 				color: $c-surfaces-on-surface;
 				font-size: $fs-body-sm;
@@ -61,19 +53,26 @@
 				margin: 23px 0 0;
 			}
 
-			.googlesitekit-analytics-enable-enhanced-measurement {
+			// Ensure that these styles are only applied within Analytics setup.
+			.googlesitekit-analytics-setup__form {
 
-				.googlesitekit-module-settings-group__helper-text {
-					margin-left: 42px;
-				}
+				.googlesitekit-analytics-enable-enhanced-measurement {
 
-				.googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label {
-					font-size: $fs-body-sm;
-					letter-spacing: $ls-xs;
+					.googlesitekit-module-settings-group__helper-text {
+						color: $c-surfaces-on-surface-variant;
+						font-size: $fs-body-sm;
+						letter-spacing: $ls-xs;
+						margin: 8px 0 0 42px;
+					}
 
-					// Remove left margin when enhanced measurement is already enabled.
-					+ .googlesitekit-module-settings-group__helper-text {
-						margin-left: 0;
+					.googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label {
+						font-size: $fs-body-sm;
+						letter-spacing: $ls-xs;
+
+						// Remove left margin when enhanced measurement is already enabled.
+						+ .googlesitekit-module-settings-group__helper-text {
+							margin: 4px 0 0;
+						}
 					}
 				}
 			}

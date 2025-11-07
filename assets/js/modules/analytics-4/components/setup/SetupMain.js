@@ -121,7 +121,7 @@ export default function SetupMain( { finishSetup } ) {
 		viewComponent = <ProgressBar />;
 	} else if ( isCreateAccount ) {
 		viewComponent = usingProxy ? (
-			<AccountCreate />
+			<AccountCreate className="googlesitekit-analytics-setup__form" />
 		) : (
 			<AccountCreateLegacy />
 		);
