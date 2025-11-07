@@ -25,10 +25,16 @@ import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { useSelect } from 'googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Link from '@/js/components/Link';
 import StepHint from '@/js/components/setup/StepHint';
 
 export default function PropertyHint() {
+	const learnMoreLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'ga4-property' )
+	);
+
 	return (
 		<StepHint
 			leadingText={ __(
@@ -41,7 +47,13 @@ export default function PropertyHint() {
 					'google-site-kit'
 				),
 				{
-					a: <Link external hideExternalIndicator />,
+					a: (
+						<Link
+							href={ learnMoreLink }
+							external
+							hideExternalIndicator
+						/>
+					),
 				}
 			) }
 		/>

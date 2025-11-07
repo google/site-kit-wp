@@ -57,11 +57,11 @@ import { Cell, Grid, Row } from '@/js/material-components';
 import PageHeader from './PageHeader';
 import Layout from './layout/Layout';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import ScrollEffect from './ScrollEffect';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import OfflineNotification from './notifications/OfflineNotification';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
+import CoreDashboardEffects from './CoreDashboardEffects';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import { useFeature } from '@/js/hooks/useFeature';
@@ -144,7 +144,7 @@ function DashboardEntityApp() {
 	if ( currentEntityURL === null ) {
 		return (
 			<div className="googlesitekit-widget-context googlesitekit-module-page googlesitekit-entity-dashboard">
-				<ScrollEffect />
+				<CoreDashboardEffects />
 				<ModuleDashboardEffects />
 				<Grid>
 					<Row>
@@ -217,7 +217,7 @@ function DashboardEntityApp() {
 	}
 	return (
 		<Fragment>
-			<ScrollEffect />
+			<CoreDashboardEffects />
 			<ModuleDashboardEffects />
 			<Header showNavigation>
 				<EntitySearchInput />

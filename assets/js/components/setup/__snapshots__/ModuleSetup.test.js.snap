@@ -76,9 +76,6 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
       <div
         class="googlesitekit-progress-indicator__segment"
       />
-      <div
-        class="googlesitekit-progress-indicator__segment"
-      />
     </div>
   </div>
   <div
