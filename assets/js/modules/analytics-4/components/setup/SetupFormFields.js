@@ -49,6 +49,7 @@ import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
 import StepHint from '@/js/components/setup/StepHint';
 import Link from '@/js/components/Link';
 import { useFeature } from '@/js/hooks/useFeature';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export default function SetupFormFields() {
 	const accounts =
@@ -86,6 +87,14 @@ export default function SetupFormFields() {
 		} );
 	}, [ setValues ] );
 
+	const propertyLearnMoreLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'ga4-property' )
+	);
+
+	const webDataStreamLearnMoreLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'ga4-data-stream' )
+	);
+
 	return (
 		<Fragment>
 			{ !! accounts.length && (
@@ -120,7 +129,13 @@ export default function SetupFormFields() {
 									'google-site-kit'
 								),
 								{
-									a: <Link external hideExternalIndicator />,
+									a: (
+										<Link
+											href={ propertyLearnMoreLink }
+											external
+											hideExternalIndicator
+										/>
+									),
 								}
 							) }
 						/>
@@ -143,7 +158,13 @@ export default function SetupFormFields() {
 									'google-site-kit'
 								),
 								{
-									a: <Link external hideExternalIndicator />,
+									a: (
+										<Link
+											href={ webDataStreamLearnMoreLink }
+											external
+											hideExternalIndicator
+										/>
+									),
 								}
 							) }
 						/>
