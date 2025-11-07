@@ -20,17 +20,13 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import {
-	createInterpolateElement,
-	Fragment,
-	useCallback,
-	useEffect,
-} from '@wordpress/element';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
+import { isValidAccountID } from '@/js/modules/analytics-4/utils/validation';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -40,16 +36,15 @@ import {
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	AccountSelect,
+	PropertyHint,
 	PropertySelect,
+	WebDataStreamHint,
 	WebDataStreamSelect,
 	WebDataStreamNameInput,
 } from '@/js/modules/analytics-4/components/common';
 import SetupEnhancedMeasurementSwitch from './SetupEnhancedMeasurementSwitch';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
-import StepHint from '@/js/components/setup/StepHint';
-import Link from '@/js/components/Link';
 import { useFeature } from '@/js/hooks/useFeature';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export default function SetupFormFields() {
 	const accounts =
@@ -61,6 +56,9 @@ export default function SetupFormFields() {
 	);
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
+	);
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAccountID()
 	);
 	const measurementID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getMeasurementID()
@@ -87,14 +85,6 @@ export default function SetupFormFields() {
 		} );
 	}, [ setValues ] );
 
-	const propertyLearnMoreLink = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'ga4-property' )
-	);
-
-	const webDataStreamLearnMoreLink = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'ga4-data-stream' )
-	);
-
 	return (
 		<Fragment>
 			{ !! accounts.length && (
@@ -117,58 +107,16 @@ export default function SetupFormFields() {
 						onChange={ resetEnhancedMeasurementSetting }
 						hasModuleAccess
 					/>
-					{ setupFlowRefreshEnabled && (
-						<StepHint
-							leadingText={ __(
-								'What is an Analytics property?',
-								'google-site-kit'
-							) }
-							tooltipText={ createInterpolateElement(
-								__(
-									'An Analytics property is a container for data collected from a website. It represents a specific website, and within a property, you can view reports, manage data collection, attribution, privacy settings, and product links. <a>Learn more</a>',
-									'google-site-kit'
-								),
-								{
-									a: (
-										<Link
-											href={ propertyLearnMoreLink }
-											external
-											hideExternalIndicator
-										/>
-									),
-								}
-							) }
-						/>
-					) }
+					{ setupFlowRefreshEnabled &&
+						isValidAccountID( accountID ) && <PropertyHint /> }
 				</div>
 				<div>
 					<WebDataStreamSelect
 						onChange={ resetEnhancedMeasurementSetting }
 						hasModuleAccess
 					/>
-					{ setupFlowRefreshEnabled && (
-						<StepHint
-							leadingText={ __(
-								'What is a web data stream?',
-								'google-site-kit'
-							) }
-							tooltipText={ createInterpolateElement(
-								__(
-									'A data stream is a flow of data from your visitors to Analytics. When a data stream is created, Analytics generates a snippet of code that is added to your site to collect that data. <a>Learn more</a>',
-									'google-site-kit'
-								),
-								{
-									a: (
-										<Link
-											href={ webDataStreamLearnMoreLink }
-											external
-											hideExternalIndicator
-										/>
-									),
-								}
-							) }
-						/>
-					) }
+					{ setupFlowRefreshEnabled &&
+						isValidAccountID( accountID ) && <WebDataStreamHint /> }
 				</div>
 			</div>
 
