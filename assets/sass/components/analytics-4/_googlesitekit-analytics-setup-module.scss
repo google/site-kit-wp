@@ -61,9 +61,7 @@
 				margin: 23px 0 0;
 			}
 
-			// The ".googlesitekit-setup-module__inputs +" selector helps to specify the Analytics setup screen
-			// and prevents affecting the settings edit screen.
-			.googlesitekit-setup-module__inputs + .googlesitekit-analytics-enable-enhanced-measurement {
+			.googlesitekit-analytics-enable-enhanced-measurement {
 
 				.googlesitekit-module-settings-group__helper-text {
 					margin-left: 42px;
