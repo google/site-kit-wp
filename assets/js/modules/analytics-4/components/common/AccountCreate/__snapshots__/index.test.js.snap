@@ -313,7 +313,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
       </div>
     </div>
     <p
-      class="googlesitekit-typography googlesitekit-analytics-create-account-info googlesitekit-typography--body googlesitekit-typography--medium"
+      class="googlesitekit-typography googlesitekit-analytics-setup__analytics-create-account-info googlesitekit-typography--body googlesitekit-typography--medium"
     >
       <span>
         You will be redirected to Google Analytics to accept the terms of service.

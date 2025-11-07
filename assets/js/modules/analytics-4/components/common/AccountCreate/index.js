@@ -313,7 +313,7 @@ export default function AccountCreate() {
 			</div>
 
 			<P
-				className="googlesitekit-analytics-create-account-info"
+				className="googlesitekit-analytics-setup__analytics-create-account-info"
 				size={ isInitialSetupFlow ? 'small' : undefined }
 			>
 				{ hasRequiredScope && (
