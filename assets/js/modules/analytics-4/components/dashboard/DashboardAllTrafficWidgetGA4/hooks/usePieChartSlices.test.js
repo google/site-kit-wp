@@ -56,7 +56,7 @@ describe( 'usePieChartSlices', () => {
 
 		const getPieChartSlices = result.current;
 
-		const pieChartSlices = getPieChartSlices( [
+		let pieChartSlices = getPieChartSlices( [
 			'dimensionValue1',
 			'dimensionValue2',
 			'dimensionValue3',
@@ -72,7 +72,7 @@ describe( 'usePieChartSlices', () => {
 			4: { color: PIE_CHART_COLORS[ 4 ] },
 		} );
 
-		const pieChartSlices2 = getPieChartSlices( [
+		pieChartSlices = getPieChartSlices( [
 			'dimensionValue3',
 			'dimensionValue4',
 			'dimensionValue5',
@@ -80,7 +80,7 @@ describe( 'usePieChartSlices', () => {
 			'dimensionValue2',
 		] );
 
-		expect( pieChartSlices2 ).toEqual( {
+		expect( pieChartSlices ).toEqual( {
 			0: { color: PIE_CHART_COLORS[ 2 ] },
 			1: { color: PIE_CHART_COLORS[ 3 ] },
 			2: { color: PIE_CHART_COLORS[ 4 ] },
@@ -94,7 +94,7 @@ describe( 'usePieChartSlices', () => {
 
 		const getPieChartSlices = result.current;
 
-		const pieChartSlices = getPieChartSlices( [
+		let pieChartSlices = getPieChartSlices( [
 			'dimensionValue1',
 			'dimensionValue2',
 			'dimensionValue3',
@@ -110,7 +110,7 @@ describe( 'usePieChartSlices', () => {
 			4: { color: PIE_CHART_COLORS[ 4 ] },
 		} );
 
-		const pieChartSlices2 = getPieChartSlices( [
+		pieChartSlices = getPieChartSlices( [
 			'dimensionValue1',
 			'dimensionValue10',
 			'dimensionValue4',
@@ -118,7 +118,7 @@ describe( 'usePieChartSlices', () => {
 			'dimensionValue11',
 		] );
 
-		expect( pieChartSlices2 ).toEqual( {
+		expect( pieChartSlices ).toEqual( {
 			0: { color: PIE_CHART_COLORS[ 0 ] },
 			1: { color: PIE_CHART_COLORS[ 1 ] },
 			2: { color: PIE_CHART_COLORS[ 3 ] },
@@ -150,6 +150,36 @@ describe( 'usePieChartSlices', () => {
 			4: { color: PIE_CHART_COLORS[ 4 ] },
 			5: { color: '#ccc' },
 			6: { color: '#ccc' },
+		} );
+	} );
+
+	it( 'should not clear the cached colors when the dimension values are empty', async () => {
+		const { result } = await renderHook( () => usePieChartSlices() );
+
+		const getPieChartSlices = result.current;
+
+		let pieChartSlices = getPieChartSlices( [
+			'dimensionValue1',
+			'dimensionValue2',
+		] );
+
+		expect( pieChartSlices ).toEqual( {
+			0: { color: PIE_CHART_COLORS[ 0 ] },
+			1: { color: PIE_CHART_COLORS[ 1 ] },
+		} );
+
+		pieChartSlices = getPieChartSlices( [] );
+
+		expect( pieChartSlices ).toEqual( {} );
+
+		pieChartSlices = getPieChartSlices( [
+			'dimensionValue3',
+			'dimensionValue1',
+		] );
+
+		expect( pieChartSlices ).toEqual( {
+			0: { color: PIE_CHART_COLORS[ 1 ] },
+			1: { color: PIE_CHART_COLORS[ 0 ] },
 		} );
 	} );
 } );

@@ -66,6 +66,10 @@ export default function usePieChartSlices() {
 	}
 
 	function getPieChartSlices( dimensionValues ) {
+		if ( dimensionValues.length === 0 ) {
+			return {};
+		}
+
 		// Remove cached colors for dimension values that are not in the new dimension values array,
 		// to avoid running out of colors.
 		Object.keys( dimensionValueColorsRef.current ).forEach(
