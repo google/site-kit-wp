@@ -87,13 +87,24 @@ InitialSetupFlow.parameters = {
 		showProgress: 'true',
 	},
 };
+InitialSetupFlow.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: false,
+			},
+		] );
+	},
+};
 InitialSetupFlow.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AccountCreate',
 	decorators: [
 		withQuery,
-		( Story ) => {
+		( Story, { args } ) => {
 			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
@@ -121,6 +132,10 @@ export default {
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetConversionTrackingSettings( { enabled: false } );
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
 			}
 
 			return (
