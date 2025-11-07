@@ -46,11 +46,6 @@
 				margin-bottom: 0;
 			}
 
-			.googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label {
-				font-size: $fs-body-sm;
-				letter-spacing: $ls-xs;
-			}
-
 			.googlesitekit-module-settings-group__helper-text {
 				color: $c-surfaces-on-surface-variant;
 				font-size: $fs-body-sm;
@@ -70,6 +65,16 @@
 
 				.googlesitekit-module-settings-group__helper-text {
 					margin-left: 42px;
+				}
+
+				.googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label {
+					font-size: $fs-body-sm;
+					letter-spacing: $ls-xs;
+
+					// Remove left margin when enhanced measurement is already enabled.
+					+ .googlesitekit-module-settings-group__helper-text {
+						margin-left: 0;
+					}
 				}
 			}
 
