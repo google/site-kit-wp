@@ -32,8 +32,8 @@ export default function CTAButton( {
 	inProgress,
 	onClick,
 	href,
-	external,
-	hideExternalIndicator,
+	external = false,
+	hideExternalIndicator = false,
 } ) {
 	if ( ! label || ( ! onClick && ! href ) ) {
 		return null;
