@@ -59,12 +59,14 @@
 				}
 			}
 
-			.googlesitekit-settings-module__one-tap,
-			.googlesitekit-settings-module__show-next-to-comments {
+			.googlesitekit-settings-module__one-tap {
 				@media (min-width: $bp-xlarge) {
 					margin-top: $grid-gap-desktop;
 				}
+			}
 
+			.googlesitekit-settings-module__one-tap,
+			.googlesitekit-settings-module__show-next-to-comments {
 				border-bottom: none;
 
 				.mdc-switch {
