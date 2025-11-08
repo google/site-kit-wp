@@ -31,8 +31,8 @@ export default function CTAButton( {
 	inProgress,
 	onClick,
 	href,
-	external,
-	hideExternalIndicator,
+	external = false,
+	hideExternalIndicator = false,
 } ) {
 	let trailingIconToUse;
 	if ( external && ! hideExternalIndicator ) {
