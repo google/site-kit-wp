@@ -52,7 +52,7 @@ export default function CTAButton( {
 			isSaving={ inProgress }
 			onClick={ onClick }
 			href={ href }
-			target={ external ? '_blank' : '_self' }
+			target={ external ? '_blank' : undefined }
 			trailingIcon={ trailingIconToUse }
 		>
 			{ label }
