@@ -134,6 +134,21 @@ class PointerTest extends TestCase {
 		}
 	}
 
+	public function test_get_buttons() {
+		$buttons = '<button>OK</button>';
+		$pointer = new Pointer(
+			'test-slug',
+			array(
+				'title'     => 'Title',
+				'content'   => 'Content',
+				'target_id' => 'target',
+				'buttons'   => $buttons,
+			)
+		);
+
+		$this->assertEquals( $buttons, $pointer->get_buttons(), 'Pointer buttons should match the provided value.' );
+	}
+
 	public function data_is_active() {
 		return array(
 			'no args'             => array(

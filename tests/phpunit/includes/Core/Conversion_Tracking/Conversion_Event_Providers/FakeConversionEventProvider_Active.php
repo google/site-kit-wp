@@ -30,7 +30,7 @@ class FakeConversionEventProvider_Active extends FakeConversionEventProvider {
 	/**
 	 * Gets the event names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 *
 	 * @return array List of event names.
 	 */
@@ -44,7 +44,7 @@ class FakeConversionEventProvider_Active extends FakeConversionEventProvider {
 	/**
 	 * Gets the enhanced conversion event names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 *
 	 * @return array List of enhanced conversion event names.
 	 */

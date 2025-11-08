@@ -84,7 +84,7 @@ const baseActions = {
 	/**
 	 * Saves the email reporting settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
@@ -103,7 +103,7 @@ const baseActions = {
 	/**
 	 * Sets email reporting enabled state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 *
 	 * @param {*} enabled Whether email reporting is enabled.
 	 * @return {Object} Redux-style action.
@@ -156,7 +156,7 @@ const baseSelectors = {
 	/**
 	 * Gets the email reporting settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Email Reporting settings; `undefined` if not loaded.
@@ -168,7 +168,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether email reporting is enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if email reporting is enabled, otherwise FALSE.

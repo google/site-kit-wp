@@ -33,7 +33,7 @@ class FakeConversionEventProvider extends Conversion_Events_Provider {
 	/**
 	 * Gets the enhanced conversion event names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.165.0
 	 *
 	 * @return array List of enhanced conversion event names.
 	 */
