@@ -106,6 +106,14 @@ function NotificationFromServer( {
 				href: ctaURL,
 				onClick: onCTAClick,
 				dismissOptions,
+				// In the case of notifications, other `target="_blank"` CTA URLs
+				// are external, and adding a new, more explicit/clear `external`
+				// prop would be a refactor of the service, JS, and PHP code all
+				// for mildly more "intuitive" prop names/API.
+				//
+				// In this case it's not worth the refactor (as of writing this
+				// logic), so we allow for any "open in a new window" URLs
+				// to also be "external".
 				external: ctaTarget === '_blank',
 			} }
 			dismissButton={
