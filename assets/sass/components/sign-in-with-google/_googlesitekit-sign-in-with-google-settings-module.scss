@@ -97,6 +97,10 @@
 				.mdc-layout-grid {
 					.mdc-layout-grid__inner {
 						margin-bottom: $grid-gap-desktop;
+
+						@media (min-width: $bp-xlarge) {
+							margin-bottom: 0;
+						}
 					}
 				}
 
