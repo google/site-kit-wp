@@ -126,7 +126,6 @@ export default function KeyMetricsSetupApp() {
 				isAnalyticsSetupComplete: true,
 			} );
 
-			// If not in the initial setup flow, append notification params for Analytics.
 			if ( ! isInitialSetupFlow ) {
 				url.searchParams.set(
 					'notification',

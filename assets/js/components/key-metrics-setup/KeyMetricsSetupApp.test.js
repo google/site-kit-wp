@@ -52,10 +52,6 @@ describe( 'KeyMetricsSetupApp', () => {
 		'^/google-site-kit/v1/core/user/data/user-input-settings'
 	);
 
-	const audienceSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/audience-settings'
-	);
-
 	const initialSetupSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/initial-setup-settings'
 	);
@@ -83,8 +79,15 @@ describe( 'KeyMetricsSetupApp', () => {
 			status: 200,
 		} );
 
-		muteFetch( audienceSettingsEndpoint );
-		muteFetch( initialSetupSettingsEndpoint );
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+			configuredAudiences: null,
+			isAudienceSegmentationWidgetHidden: false,
+			didSetAudiences: false,
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetInitialSetupSettings( {
+			isAnalyticsSetupComplete: false,
+		} );
 
 		registry
 			.dispatch( CORE_MODULES )
@@ -173,7 +176,7 @@ describe( 'KeyMetricsSetupApp', () => {
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup&showProgress=true';
 
 		fetchMock.postOnce( initialSetupSettingsEndpoint, {
-			body: { initialSetupSettings: true },
+			body: { settings: { isAnalyticsSetupComplete: true } },
 		} );
 
 		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
@@ -205,7 +208,7 @@ describe( 'KeyMetricsSetupApp', () => {
 
 	it( 'should call saveInitialSetupSettings with isAnalyticsSetupComplete:true after successful setup', async () => {
 		fetchMock.getOnce( initialSetupSettingsEndpoint, {
-			body: { isAnalyticsSetupComplete: null },
+			body: { settings: { isAnalyticsSetupComplete: null } },
 			status: 200,
 		} );
 
@@ -220,7 +223,7 @@ describe( 'KeyMetricsSetupApp', () => {
 		} );
 
 		fetchMock.postOnce( initialSetupSettingsEndpoint, {
-			body: { isAnalyticsSetupComplete: true },
+			body: { settings: { isAnalyticsSetupComplete: true } },
 			status: 200,
 		} );
 
@@ -251,7 +254,7 @@ describe( 'KeyMetricsSetupApp', () => {
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup';
 
 		fetchMock.postOnce( initialSetupSettingsEndpoint, {
-			body: { initialSetupSettings: true },
+			body: { settings: { isAnalyticsSetupComplete: true } },
 		} );
 
 		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
