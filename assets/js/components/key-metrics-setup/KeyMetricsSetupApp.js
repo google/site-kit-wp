@@ -44,6 +44,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { Grid, Row, Cell } from '@/js/material-components';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import ExitSetup from '@/js/components/setup/ExitSetup';
 import Header from '@/js/components/Header';
 import Layout from '@/js/components/layout/Layout';
 import ErrorNotice from '@/js/components/ErrorNotice';
@@ -70,12 +71,16 @@ export default function KeyMetricsSetupApp() {
 	const settings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()
 	);
-	const isSavingSettings = useSelect( ( select ) =>
-		select( CORE_USER ).isSavingUserInputSettings( settings )
-	);
-	const isNavigating = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigating()
-	);
+
+	const isBusy = useSelect( ( select ) => {
+		const isSavingSettings =
+			select( CORE_USER ).isSavingUserInputSettings( settings );
+
+		const isNavigating = select( CORE_LOCATION ).isNavigating();
+
+		return isSavingSettings || isNavigating;
+	} );
+
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
@@ -91,28 +96,48 @@ export default function KeyMetricsSetupApp() {
 			) || []
 	);
 
+	const isSyncing = useSelect( ( select ) => {
+		const isFetchingSyncAvailableCustomDimensions =
+			select(
+				MODULES_ANALYTICS_4
+			).isFetchingSyncAvailableCustomDimensions();
+
+		const isSyncingAudiences =
+			select( MODULES_ANALYTICS_4 ).isSyncingAudiences();
+
+		return isFetchingSyncAvailableCustomDimensions || isSyncingAudiences;
+	} );
+
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	// Query arg derived state (declared before callbacks that depend on it).
+	const [ showProgress ] = useQueryArg( 'showProgress' );
+
+	const isInitialSetupFlow = !! showProgress;
 
 	const submitChanges = useCallback( async () => {
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
 			const url = new URL( dashboardURL );
+
+			// If not in the initial setup flow, append notification params for Analytics.
+			if ( ! isInitialSetupFlow ) {
+				url.searchParams.set(
+					'notification',
+					'authentication_success'
+				);
+				url.searchParams.set( 'slug', 'analytics-4' );
+			}
+
 			navigateTo( url.toString() );
 		}
-	}, [ saveUserInputSettings, dashboardURL, navigateTo ] );
-
-	const isBusy = isSavingSettings || isNavigating;
-
-	const isFetchingSyncAvailableCustomDimensions = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isFetchingSyncAvailableCustomDimensions()
-	);
-	const isSyncingAudiences = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isSyncingAudiences()
-	);
-
-	const isSyncing =
-		isFetchingSyncAvailableCustomDimensions || isSyncingAudiences;
+	}, [
+		saveUserInputSettings,
+		dashboardURL,
+		navigateTo,
+		isInitialSetupFlow,
+	] );
 
 	const { fetchSyncAvailableCustomDimensions, syncAvailableAudiences } =
 		useDispatch( MODULES_ANALYTICS_4 );
@@ -136,91 +161,111 @@ export default function KeyMetricsSetupApp() {
 		USER_INPUT_ANSWERS_PURPOSE: USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS,
 	} = getUserInputAnswersDescription();
 
-	const [ showProgress ] = useQueryArg( 'showProgress' );
-
-	const subHeader = !! showProgress ? (
+	const subHeader = isInitialSetupFlow ? (
 		<ProgressIndicator totalSegments={ 6 } currentSegment={ 4 } />
 	) : null;
 
 	return (
 		<Fragment>
-			<Header subHeader={ subHeader } />
+			<Header subHeader={ subHeader }>
+				{ isInitialSetupFlow && <ExitSetup /> }
+			</Header>
 			<div className="googlesitekit-key-metrics-setup">
-				<Grid>
-					<Row>
-						<Cell size={ 12 }>
-							<Layout rounded>
-								<Typography
-									as="h1"
-									type="headline"
-									size="medium"
-								>
-									{ __(
-										'Tell us your main goal to get tailored metrics',
-										'google-site-kit'
-									) }
-								</Typography>
-								<Typography as="h2" type="body" size="large">
-									{ __(
-										'Which option most closely matches the purpose of your site?',
-										'google-site-kit'
-									) }
-								</Typography>
-								<P
-									className="googlesitekit-key-metrics-setup__description"
-									type="body"
-									size="small"
-								>
-									{ createInterpolateElement(
-										__(
-											'Even if multiple options apply to your site, select the one that applies the most.<br />You can also answer or edit your response later in Settings.',
-											'google-site-kit'
-										),
-										{
-											br: <br />,
-										}
-									) }
-								</P>
+				<div className="googlesitekit-module-page">
+					<Grid>
+						<Layout rounded>
+							<Grid>
+								<Row>
+									<Cell size={ 12 }>
+										<Typography
+											as="h1"
+											type="headline"
+											size="medium"
+											className="googlesitekit-key-metrics-setup__title"
+										>
+											{ __(
+												'Tell us your main goal to get tailored metrics',
+												'google-site-kit'
+											) }
+										</Typography>
 
-								<UserInputSelectOptions
-									slug={ USER_INPUT_QUESTIONS_PURPOSE }
-									max={
-										USER_INPUT_MAX_ANSWERS[
-											USER_INPUT_QUESTIONS_PURPOSE
-										]
-									}
-									options={ omit(
-										USER_INPUT_ANSWERS_PURPOSE,
-										'other'
-									) }
-									descriptions={
-										USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS
-									}
-								/>
+										<div className="googlesitekit-key-metrics-setup__heading">
+											<Typography
+												as="h2"
+												type="body"
+												size="large"
+											>
+												{ __(
+													'Which option most closely matches the purpose of your site?',
+													'google-site-kit'
+												) }
+											</Typography>
+											<P
+												className="googlesitekit-key-metrics-setup__description"
+												type="body"
+												size="small"
+											>
+												{ createInterpolateElement(
+													__(
+														'Even if multiple options apply to your site, select the one that applies the most.<br />You can also answer or edit your response later in Settings.',
+														'google-site-kit'
+													),
+													{
+														br: <br />,
+													}
+												) }
+											</P>
+										</div>
 
-								{ error && (
-									<ErrorNotice
-										error={ error }
-										Icon={ WarningSVG }
-									/>
-								) }
+										<UserInputSelectOptions
+											slug={
+												USER_INPUT_QUESTIONS_PURPOSE
+											}
+											max={
+												USER_INPUT_MAX_ANSWERS[
+													USER_INPUT_QUESTIONS_PURPOSE
+												]
+											}
+											options={ omit(
+												USER_INPUT_ANSWERS_PURPOSE,
+												'other'
+											) }
+											descriptions={
+												USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS
+											}
+										/>
 
-								<SpinnerButton
-									onClick={ onSaveClick }
-									isSaving={ isBusy || isSyncing }
-									disabled={
-										hasErrorForAnswer( values ) || isSyncing
-									}
-								>
-									{ __(
-										'Complete setup',
-										'google-site-kit'
-									) }
-								</SpinnerButton>
-							</Layout>
-						</Cell>
-					</Row>
-				</Grid>
+										{ error && (
+											<div className="googlesitekit-user-input__error">
+												<ErrorNotice
+													error={ error }
+													Icon={ WarningSVG }
+												/>
+											</div>
+										) }
+
+										<div className="googlesitekit-user-input__footer">
+											<SpinnerButton
+												onClick={ onSaveClick }
+												isSaving={ isBusy || isSyncing }
+												disabled={
+													hasErrorForAnswer(
+														values
+													) || isSyncing
+												}
+											>
+												{ __(
+													'Complete setup',
+													'google-site-kit'
+												) }
+											</SpinnerButton>
+										</div>
+									</Cell>
+								</Row>
+							</Grid>
+						</Layout>
+					</Grid>
+				</div>
 			</div>
 			{ isGA4Connected && (
 				<ToastNotice
