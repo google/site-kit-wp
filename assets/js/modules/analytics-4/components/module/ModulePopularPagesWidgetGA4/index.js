@@ -21,7 +21,6 @@
  */
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { cloneDeep } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -224,7 +223,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 		},
 	];
 
-	const rows = report?.rows?.length ? cloneDeep( report.rows ) : [];
+	const rows = report?.rows?.length ? structuredClone( report.rows ) : [];
 	const ZeroState = ZeroDataMessage;
 
 	// Combine the titles from the pageTitles with the rows from the metrics report.

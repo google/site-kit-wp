@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { cloneDeep } from 'lodash';
+import { structuredClone } from 'lodash';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
@@ -119,7 +119,7 @@ export default function WPDashboardPopularPagesGA4( {
 	}
 
 	// data.rows is not guaranteed to be set so we need a fallback.
-	const rows = report?.rows?.length ? cloneDeep( report.rows ) : [];
+	const rows = report?.rows?.length ? structuredClone( report.rows ) : [];
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
 		const url = row.dimensionValues[ 0 ].value;

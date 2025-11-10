@@ -31,7 +31,6 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { cloneDeep } from 'lodash';
 
 function Template() {
 	return (
@@ -58,7 +57,7 @@ function setupPublicationsWithProduct(
 	publicationIndex,
 	productName
 ) {
-	const publicationsWithProducts = cloneDeep( publications );
+	const publicationsWithProducts = structuredClone( publications );
 
 	publicationsWithProducts[ publicationIndex ].products.push( {
 		name: productName,
