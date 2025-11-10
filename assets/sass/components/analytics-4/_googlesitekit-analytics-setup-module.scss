@@ -29,6 +29,15 @@
 					margin: 7px 0 0 15px;
 					padding: 0;
 				}
+
+				.mdc-text-field,
+				.mdc-select {
+					width: 250px;
+
+					@media (min-width: $bp-tablet) {
+						width: 280px;
+					}
+				}
 			}
 
 			.googlesitekit-setup-module__select_account {
@@ -37,23 +46,43 @@
 				margin-bottom: 0;
 			}
 
-			.googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label {
-				font-size: $fs-body-sm;
-				letter-spacing: $ls-xs;
-			}
-
-			.googlesitekit-module-settings-group__helper-text {
-				color: $c-surfaces-on-surface-variant;
-				font-size: $fs-body-sm;
-				letter-spacing: $ls-xs;
-				margin: 4px 0;
-			}
-
 			.googlesitekit-plugin-conversion-tracking-notice {
 				color: $c-surfaces-on-surface;
 				font-size: $fs-body-sm;
 				letter-spacing: $ls-xs;
 				margin: 23px 0 0;
+			}
+
+			// Ensure that these styles are only applied within Analytics setup.
+			.googlesitekit-analytics-setup__form {
+
+				.googlesitekit-analytics-enable-enhanced-measurement {
+
+					.googlesitekit-module-settings-group__helper-text {
+						color: $c-surfaces-on-surface-variant;
+						font-size: $fs-body-sm;
+						letter-spacing: $ls-xs;
+						margin: 8px 0 0;
+					}
+
+					.googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label {
+						font-size: $fs-body-sm;
+						letter-spacing: $ls-xs;
+
+						+ .googlesitekit-module-settings-group__helper-text {
+							margin: 4px 0 0;
+						}
+					}
+
+					.mdc-switch + label + .googlesitekit-module-settings-group__helper-text {
+						margin-left: 42px;
+					}
+				}
+			}
+
+			.googlesitekit-analytics-setup__analytics-create-account-info {
+				margin-top: 1em;
+				padding-bottom: 6px;
 			}
 		}
 

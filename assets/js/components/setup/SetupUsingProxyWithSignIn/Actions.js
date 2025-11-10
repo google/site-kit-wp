@@ -81,6 +81,12 @@ export default function Actions( {
 		} );
 	}, [ dashboardURL, dismissItem, navigateTo, viewContext ] );
 
+	const learnMoreLink = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'setup-connect-google-account'
+		);
+	} );
+
 	return (
 		<Fragment>
 			{ ctaFeedback }
@@ -128,7 +134,13 @@ export default function Actions( {
 							'google-site-kit'
 						),
 						{
-							a: <Link external hideExternalIndicator />,
+							a: (
+								<Link
+									href={ learnMoreLink }
+									external
+									hideExternalIndicator
+								/>
+							),
 						}
 					) }
 				/>
