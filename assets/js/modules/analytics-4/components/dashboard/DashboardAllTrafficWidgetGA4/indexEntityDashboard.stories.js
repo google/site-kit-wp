@@ -269,7 +269,7 @@ EntityDashboardZeroData.args = {
 };
 EntityDashboardZeroData.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
-	delay: 200,
+	delay: 500,
 };
 
 export const EntityDashboardError = Template.bind( {} );
