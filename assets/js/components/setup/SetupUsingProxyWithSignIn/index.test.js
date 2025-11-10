@@ -308,7 +308,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 
 		it( 'should navigate to the proxy setup URL with Analytics re-auth redirect URL and `showProgress` query argument on CTA click if chosen to connect Analytics', async () => {
 			fetchMock.postOnce( initialSetupSettingsEndpoint, {
-				body: { initialSetupSettings: false },
+				body: { settings: { isAnalyticsSetupComplete: false } },
 			} );
 
 			fetchMock.postOnce(
@@ -391,7 +391,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 
 		it( 'should call saveInitialSetupSettings with isAnalyticsSetupComplete: false when starting setup with Analytics', async () => {
 			fetchMock.postOnce( initialSetupSettingsEndpoint, {
-				body: { initialSetupSettings: false },
+				body: { settings: { isAnalyticsSetupComplete: false } },
 			} );
 
 			fetchMock.postOnce(

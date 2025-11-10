@@ -23,7 +23,6 @@ import {
 	fireEvent,
 	provideSiteInfo,
 	freezeFetch,
-	muteFetch,
 	waitForTimeouts,
 	waitFor,
 } from '../../../../tests/js/test-utils';
@@ -207,11 +206,6 @@ describe( 'KeyMetricsSetupApp', () => {
 	} );
 
 	it( 'should call saveInitialSetupSettings with isAnalyticsSetupComplete:true after successful setup', async () => {
-		fetchMock.getOnce( initialSetupSettingsEndpoint, {
-			body: { settings: { isAnalyticsSetupComplete: null } },
-			status: 200,
-		} );
-
 		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
 			body: {
 				purpose: {
@@ -285,8 +279,6 @@ describe( 'KeyMetricsSetupApp', () => {
 	} );
 
 	it( 'should show an error when the save fails', async () => {
-		muteFetch( initialSetupSettingsEndpoint );
-
 		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
 			body: {
 				code: 'internal_server_error',
