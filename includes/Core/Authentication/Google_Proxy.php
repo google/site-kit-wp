@@ -300,8 +300,20 @@ class Google_Proxy {
 		$body = wp_remote_retrieve_body( $response );
 		$body = json_decode( $body, true );
 		if ( $code < 200 || 299 < $code ) {
-			$message = is_array( $body ) && ! empty( $body['error'] ) ? $body['error'] : '';
-			return new WP_Error( 'request_failed', $message, array( 'status' => $code ) );
+			$message    = '';
+			$error_code = 'request_failed';
+
+			if ( is_array( $body ) ) {
+				if ( ! empty( $body['error'] ) ) {
+					$message = $body['error'];
+				}
+
+				if ( ! empty( $body['error_code'] ) ) {
+					$error_code = $body['error_code'];
+				}
+			}
+
+			return new WP_Error( $error_code, $message, array( 'status' => $code ) );
 		}
 
 		if ( ! empty( $args['return'] ) && 'response' === $args['return'] ) {
