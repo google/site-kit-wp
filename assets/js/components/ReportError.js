@@ -39,6 +39,7 @@ import {
 } from '@/js/util/errors';
 import { getInsufficientPermissionsErrorDescription } from '@/js/util/insufficient-permissions-error-description';
 import { purify } from '@/js/util/purify';
+import { removeParamFromURL } from '@/js/util/urls';
 import CTA from './notifications/CTA';
 import ReportErrorActions from './ReportErrorActions';
 import useViewOnly from '@/js/hooks/useViewOnly';
@@ -96,7 +97,8 @@ export default function ReportError( { moduleSlug, error } ) {
 		} ) ),
 		( errorA, errorB ) =>
 			errorA.message === errorB.message &&
-			errorA.reconnectURL === errorB.reconnectURL
+			removeParamFromURL( errorA.reconnectURL, 'code' ) ===
+				removeParamFromURL( errorB.reconnectURL, 'code' )
 	);
 
 	const hasInsufficientPermissionsError = errors.some( ( err ) =>
