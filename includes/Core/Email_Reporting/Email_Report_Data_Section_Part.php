@@ -73,63 +73,55 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Constructor.
 	 *
-	 * @param string      $section_key    Unique section key.
-	 * @param string      $title          Section title.
-	 * @param array       $labels         Labels (strings) for the section rows/series.
-	 * @param array       $values         Values (already formatted to strings for output).
-	 * @param array|null  $trends         Optional trends (strings) matching values.
-	 * @param array|null  $date_range     Optional date range array with 'startDate' and 'endDate'.
-	 * @param string|null $dashboard_link Optional dashboard deeplink.
+	 * @param string $section_key  Unique section key.
+	 * @param array  $section_data Section data (title, labels, values, optional trends, date_range, dashboard_link).
 	 *
 	 * @throws InvalidArgumentException When validation fails.
 	 */
-	public function __construct(
-		$section_key,
-		$title,
-		array $labels,
-		array $values,
-		$trends = null,
-		$date_range = null,
-		$dashboard_link = null
-	) {
-		$section_key = is_string( $section_key ) ? $section_key : '';
-		$title       = is_string( $title ) ? $title : '';
-
-		if ( '' === $section_key ) {
+	public function __construct( $section_key, $section_data ) {
+		if ( ! is_string( $section_key ) || '' === $section_key ) {
 			throw new InvalidArgumentException( 'section_key must be a non-empty string' );
 		}
-		if ( '' === $title ) {
+
+		if ( ! is_array( $section_data ) ) {
+			throw new InvalidArgumentException( 'section_data must be an array' );
+		}
+
+		if ( ! is_string( $section_data['title'] ) || '' === $section_data['title'] ) {
 			throw new InvalidArgumentException( 'title must be a non-empty string' );
 		}
 
-		$this->labels = array_map( 'strval', $labels );
-		$this->values = array_map( 'strval', $values );
-
-		if ( ! is_array( $labels ) ) {
+		if ( ! array_key_exists( 'labels', $section_data ) || ! is_array( $section_data['labels'] ) ) {
 			throw new InvalidArgumentException( 'labels must be an array' );
 		}
-		if ( ! is_array( $values ) ) {
+
+		if ( ! array_key_exists( 'values', $section_data ) || ! is_array( $section_data['values'] ) ) {
 			throw new InvalidArgumentException( 'values must be an array' );
 		}
+
+		$this->labels = array_map( 'strval', $section_data['labels'] );
+		$this->values = array_map( 'strval', $section_data['values'] );
+
+		$trends = array_key_exists( 'trends', $section_data ) ? $section_data['trends'] : null;
 
 		if ( null !== $trends ) {
 			if ( ! is_array( $trends ) ) {
 				throw new InvalidArgumentException( 'trends must be an array or null' );
 			}
 			$this->trends = array_map( 'strval', $trends );
-		} else {
-			$this->trends = null;
 		}
+
+		$date_range = array_key_exists( 'date_range', $section_data ) ? $section_data['date_range'] : null;
 
 		if ( null !== $date_range ) {
 			if ( ! is_array( $date_range ) ) {
 				throw new InvalidArgumentException( 'date_range must be an array or null' );
 			}
 			// Validate presence of keys if provided.
-			$start = isset( $date_range['startDate'] ) ? (string) $date_range['startDate'] : null;
-			$end   = isset( $date_range['endDate'] ) ? (string) $date_range['endDate'] : null;
-			if ( null === $start || null === $end ) {
-				throw new InvalidArgumentException( 'date_range must contain startDate and endDate' );
+			foreach ( array( 'startDate', 'endDate' ) as $required_key ) {
+				if ( empty( $date_range[ $required_key ] ) ) {
+					throw new InvalidArgumentException( 'date_range must contain startDate and endDate' );
+				}
 			}
 			$compare_start_provided = array_key_exists( 'compareStartDate', $date_range );
 			$compare_end_provided   = array_key_exists( 'compareEndDate', $date_range );
@@ -137,28 +129,30 @@ class Email_Report_Data_Section_Part {
 				throw new InvalidArgumentException( 'date_range must contain both compareStartDate and compareEndDate when comparison dates are provided' );
 			}
 			$this->date_range = array(
-				'startDate' => $start,
-				'endDate'   => $end,
+				'startDate' => (string) $date_range['startDate'],
+				'endDate'   => (string) $date_range['endDate'],
 			);
 			if ( $compare_start_provided && $compare_end_provided ) {
 				$this->date_range['compareStartDate'] = (string) $date_range['compareStartDate'];
 				$this->date_range['compareEndDate']   = (string) $date_range['compareEndDate'];
 			}
-		} else {
-			$this->date_range = null;
 		}
+
+		$dashboard_link = array_key_exists( 'dashboard_link', $section_data ) ? $section_data['dashboard_link'] : null;
 
 		if ( null !== $dashboard_link && ! is_string( $dashboard_link ) ) {
 			throw new InvalidArgumentException( 'dashboard_link must be a string or null' );
 		}
 
 		$this->section_key    = $section_key;
-		$this->title          = $title;
+		$this->title          = $section_data['title'];
 		$this->dashboard_link = $dashboard_link;
 	}
 
 	/**
 	 * Gets the section key.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @return string
 	 */
@@ -169,6 +163,8 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Gets the title.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @return string
 	 */
 	public function get_title() {
@@ -177,6 +173,8 @@ class Email_Report_Data_Section_Part {
 
 	/**
 	 * Gets labels.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @return array
 	 */
@@ -187,6 +185,8 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Gets values.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @return array
 	 */
 	public function get_values() {
@@ -195,6 +195,8 @@ class Email_Report_Data_Section_Part {
 
 	/**
 	 * Gets trends.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @return array|null
 	 */
@@ -205,6 +207,8 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Gets date range.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @return array|null
 	 */
 	public function get_date_range() {
@@ -214,6 +218,8 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Gets dashboard link.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @return string|null
 	 */
 	public function get_dashboard_link() {
@@ -221,36 +227,41 @@ class Email_Report_Data_Section_Part {
 	}
 
 	/**
+	 * Gets the array representation of the section part.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function to_array() {
+		return array(
+			'section_key'    => $this->get_section_key(),
+			'title'          => $this->get_title(),
+			'labels'         => $this->get_labels(),
+			'values'         => $this->get_values(),
+			'trends'         => $this->get_trends(),
+			'date_range'     => $this->get_date_range(),
+			'dashboard_link' => $this->get_dashboard_link(),
+		);
+	}
+
+	/**
 	 * Whether the section is empty (no values or all empty strings).
 	 *
+	 * @since n.e.x.t
 	 * @return bool
 	 */
 	public function is_empty() {
 		if ( empty( $this->values ) ) {
 			return true;
 		}
+
 		foreach ( $this->values as $value ) {
 			if ( '' !== trim( (string) $value ) ) {
 				return false;
 			}
 		}
-		return true;
-	}
 
-	/**
-	 * Returns normalized array representation for templates.
-	 *
-	 * @return array
-	 */
-	public function to_array() {
-		return array(
-			'section_key'    => $this->section_key,
-			'title'          => $this->title,
-			'labels'         => $this->labels,
-			'values'         => $this->values,
-			'trends'         => $this->trends,
-			'date_range'     => $this->date_range,
-			'dashboard_link' => $this->dashboard_link,
-		);
+		return true;
 	}
 }

@@ -19,17 +19,19 @@ class Email_Report_Data_Section_PartTest extends TestCase {
 	public function test_getters_and_to_array() {
 		$section = new Email_Report_Data_Section_Part(
 			'traffic_sources',
-			'Traffic Sources',
-			array( 'Direct', 'Organic' ),
-			array( '1234', '5678' ),
-			array( '+5.0%', '-1.2%' ),
 			array(
-				'startDate'        => '2025-10-01',
-				'endDate'          => '2025-10-31',
-				'compareStartDate' => '2025-09-01',
-				'compareEndDate'   => '2025-09-30',
-			),
-			'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard#/module/analytics-4'
+				'title'          => 'Traffic Sources',
+				'labels'         => array( 'Direct', 'Organic' ),
+				'values'         => array( '1234', '5678' ),
+				'trends'         => array( '+5.0%', '-1.2%' ),
+				'date_range'     => array(
+					'startDate'        => '2025-10-01',
+					'endDate'          => '2025-10-31',
+					'compareStartDate' => '2025-09-01',
+					'compareEndDate'   => '2025-09-30',
+				),
+				'dashboard_link' => 'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard#/module/analytics-4',
+			)
 		);
 
 		$this->assertSame( 'traffic_sources', $section->get_section_key(), 'Section key should match constructor argument.' );
@@ -52,31 +54,30 @@ class Email_Report_Data_Section_PartTest extends TestCase {
 		$this->assertFalse( $section->is_empty(), 'Section with values should not be empty' );
 
 		$as_array = $section->to_array();
-		$this->assertArrayHasKey( 'section_key', $as_array, 'Array representation should include section_key.' );
-		$this->assertArrayHasKey( 'title', $as_array, 'Array representation should include title.' );
-		$this->assertArrayHasKey( 'labels', $as_array, 'Array representation should include labels.' );
-		$this->assertArrayHasKey( 'values', $as_array, 'Array representation should include values.' );
-		$this->assertArrayHasKey( 'trends', $as_array, 'Array representation should include trends.' );
-		$this->assertArrayHasKey( 'date_range', $as_array, 'Array representation should include date_range.' );
-		$this->assertArrayHasKey( 'dashboard_link', $as_array, 'Array representation should include dashboard_link.' );
+
 		$this->assertSame(
 			array(
-				'startDate'        => '2025-10-01',
-				'endDate'          => '2025-10-31',
-				'compareStartDate' => '2025-09-01',
-				'compareEndDate'   => '2025-09-30',
+				'section_key'    => $section->get_section_key(),
+				'title'          => $section->get_title(),
+				'labels'         => $section->get_labels(),
+				'values'         => $section->get_values(),
+				'trends'         => $section->get_trends(),
+				'date_range'     => $section->get_date_range(),
+				'dashboard_link' => $section->get_dashboard_link(),
 			),
-			$as_array['date_range'],
-			'Array date_range should match getter output.'
+			$as_array,
+			'Array representation should mirror getter output.'
 		);
 	}
 
 	public function test_is_empty_true_when_values_empty() {
 		$section = new Email_Report_Data_Section_Part(
 			'empty',
-			'Empty',
-			array(),
-			array()
+			array(
+				'title'  => 'Empty',
+				'labels' => array(),
+				'values' => array(),
+			)
 		);
 		$this->assertTrue( $section->is_empty(), 'Section with empty values should be empty' );
 	}
@@ -85,15 +86,16 @@ class Email_Report_Data_Section_PartTest extends TestCase {
 		$this->expectException( InvalidArgumentException::class );
 		new Email_Report_Data_Section_Part(
 			'comparison',
-			'Comparison',
-			array( 'Label' ),
-			array( 'Value' ),
-			null,
 			array(
-				'startDate'        => '2025-10-01',
-				'endDate'          => '2025-10-31',
-				'compareStartDate' => '2025-09-01',
-			),
+				'title'      => 'Comparison',
+				'labels'     => array( 'Label' ),
+				'values'     => array( 'Value' ),
+				'date_range' => array(
+					'startDate'        => '2025-10-01',
+					'endDate'          => '2025-10-31',
+					'compareStartDate' => '2025-09-01',
+				),
+			)
 		);
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Email_Reporting\Email_Report_Report_Processor
+ * Class Google\Site_Kit\Core\Email_Reporting\Email_Report_Payload_Processor
  *
  * @package   Google\Site_Kit\Core\Email_Reporting
  * @copyright 2025 Google LLC
@@ -17,16 +17,18 @@ namespace Google\Site_Kit\Core\Email_Reporting;
  * @access private
  * @ignore
  */
-class Email_Report_Report_Processor {
+class Email_Report_Payload_Processor {
 
 	/**
 	 * Processes GA4 batch reports using helper structure.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param array $batch_results  Raw batch report results.
 	 * @param array $report_configs Optional. Additional report config metadata keyed by index.
 	 * @return array Processed reports keyed by report identifier.
 	 */
-	public function process_batch_reports( array $batch_results, array $report_configs = array() ) {
+	public function process_batch_reports( $batch_results, $report_configs = array() ) {
 		$reports = array();
 
 		if ( isset( $batch_results['reports'] ) && is_array( $batch_results['reports'] ) ) {
@@ -65,6 +67,8 @@ class Email_Report_Report_Processor {
 	/**
 	 * Compute date range array from meta.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array|null $date_range Date meta, must contain startDate/endDate if provided.
 	 * @return array|null
 	 */
@@ -73,11 +77,11 @@ class Email_Report_Report_Processor {
 			return null;
 		}
 
-		$start = isset( $date_range['startDate'] ) ? (string) $date_range['startDate'] : null;
-		$end   = isset( $date_range['endDate'] ) ? (string) $date_range['endDate'] : null;
-		if ( ! $start || ! $end ) {
+		if ( empty( $date_range['startDate'] ) || empty( $date_range['endDate'] ) ) {
 			return null;
 		}
+		$start = (string) $date_range['startDate'];
+		$end   = (string) $date_range['endDate'];
 
 		$compare_start = null;
 		$compare_end   = null;
@@ -89,18 +93,18 @@ class Email_Report_Report_Processor {
 		// Ensure dates are localized strings (Y-m-d) using site timezone.
 		$timezone = function_exists( 'wp_timezone' ) ? wp_timezone() : null;
 		if ( function_exists( 'wp_date' ) && $timezone ) {
-			$start_ts = strtotime( $start );
-			$end_ts   = strtotime( $end );
-			if ( false !== $start_ts && false !== $end_ts ) {
-				$start = wp_date( 'Y-m-d', $start_ts, $timezone );
-				$end   = wp_date( 'Y-m-d', $end_ts, $timezone );
+			$start_timestamp = strtotime( $start );
+			$end_timestamp   = strtotime( $end );
+			if ( false !== $start_timestamp && false !== $end_timestamp ) {
+				$start = wp_date( 'Y-m-d', $start_timestamp, $timezone );
+				$end   = wp_date( 'Y-m-d', $end_timestamp, $timezone );
 			}
 			if ( null !== $compare_start && null !== $compare_end ) {
-				$compare_start_ts = strtotime( $compare_start );
-				$compare_end_ts   = strtotime( $compare_end );
-				if ( false !== $compare_start_ts && false !== $compare_end_ts ) {
-					$compare_start = wp_date( 'Y-m-d', $compare_start_ts, $timezone );
-					$compare_end   = wp_date( 'Y-m-d', $compare_end_ts, $timezone );
+				$compare_start_timestamp = strtotime( $compare_start );
+				$compare_end_timestamp   = strtotime( $compare_end );
+				if ( false !== $compare_start_timestamp && false !== $compare_end_timestamp ) {
+					$compare_start = wp_date( 'Y-m-d', $compare_start_timestamp, $timezone );
+					$compare_end   = wp_date( 'Y-m-d', $compare_end_timestamp, $timezone );
 				}
 			}
 		}
@@ -120,10 +124,12 @@ class Email_Report_Report_Processor {
 	/**
 	 * Processes a single GA4 report into a normalized structure.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array $report Single report data.
 	 * @return array Normalized report data.
 	 */
-	public function process_single_report( array $report ) {
+	public function process_single_report( $report ) {
 		if ( empty( $report ) ) {
 			return array();
 		}
@@ -138,10 +144,12 @@ class Email_Report_Report_Processor {
 	/**
 	 * Extracts report metadata (dimensions, metrics, row count).
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array $report Report payload.
 	 * @return array Report metadata.
 	 */
-	public function extract_report_metadata( array $report ) {
+	public function extract_report_metadata( $report ) {
 		$metadata = array();
 
 		if ( ! empty( $report['dimensionHeaders'] ) ) {
@@ -179,10 +187,12 @@ class Email_Report_Report_Processor {
 	/**
 	 * Extracts totals from a GA4 report.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array $report Report payload.
 	 * @return array Array of totals keyed by metric name.
 	 */
-	public function extract_report_totals( array $report ) {
+	public function extract_report_totals( $report ) {
 		if ( empty( $report['totals'] ) || ! is_array( $report['totals'] ) ) {
 			return array();
 		}
@@ -213,10 +223,12 @@ class Email_Report_Report_Processor {
 	/**
 	 * Extracts rows from a GA4 report into a normalized structure.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array $report Report payload.
 	 * @return array Processed rows including dimensions and metrics.
 	 */
-	public function extract_report_rows( array $report ) {
+	public function extract_report_rows( $report ) {
 		if ( empty( $report['rows'] ) || ! is_array( $report['rows'] ) ) {
 			return array();
 		}
@@ -257,13 +269,15 @@ class Email_Report_Report_Processor {
 	/**
 	 * Extracts metric values for a specific dimension value.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array  $rows             Processed rows.
 	 * @param string $dimension_name   Dimension name to match.
 	 * @param string $dimension_value  Expected dimension value.
 	 * @param array  $metric_names     Metrics to extract in order.
 	 * @return array
 	 */
-	public function extract_metric_values_for_dimension( array $rows, $dimension_name, $dimension_value, array $metric_names ) {
+	public function extract_metric_values_for_dimension( $rows, $dimension_name, $dimension_value, $metric_names ) {
 		foreach ( $rows as $row ) {
 			if ( empty( $row['dimensions'][ $dimension_name ] ) ) {
 				continue;
@@ -289,11 +303,13 @@ class Email_Report_Report_Processor {
 	/**
 	 * Computes metric values and trends for a report.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array $report       Processed report data.
 	 * @param array $metric_names Ordered list of metric names.
 	 * @return array
 	 */
-	public function compute_metric_values_and_trends( array $report, array $metric_names ) {
+	public function compute_metric_values_and_trends( $report, $metric_names ) {
 		$values = array();
 		$trends = null;
 
@@ -324,21 +340,18 @@ class Email_Report_Report_Processor {
 				$current    = isset( $current_values[ $index ] ) ? $current_values[ $index ] : null;
 				$comparison = isset( $comparison_values[ $index ] ) ? $comparison_values[ $index ] : null;
 
-				if ( is_numeric( $current ) && is_numeric( $comparison ) && 0.0 !== (float) $comparison ) {
-					$trends[] = ( (float) $current - (float) $comparison ) / (float) $comparison * 100;
-				} else {
-					$trends[] = null;
-				}
+				$trends[] = $this->compute_trend( $current, $comparison );
 			}
 		} elseif ( count( $totals ) > 1 ) {
+			$primary_totals    = $totals[0];
 			$comparison_totals = $totals[1];
 			$trends            = array();
+
 			foreach ( $metric_names as $metric_name ) {
-				if ( isset( $totals[0][ $metric_name ], $comparison_totals[ $metric_name ] ) && is_numeric( $totals[0][ $metric_name ] ) && is_numeric( $comparison_totals[ $metric_name ] ) && 0.0 !== (float) $comparison_totals[ $metric_name ] ) {
-					$trends[] = ( (float) $totals[0][ $metric_name ] - (float) $comparison_totals[ $metric_name ] ) / (float) $comparison_totals[ $metric_name ] * 100;
-				} else {
-					$trends[] = null;
-				}
+				$current    = isset( $primary_totals[ $metric_name ] ) ? $primary_totals[ $metric_name ] : null;
+				$comparison = isset( $comparison_totals[ $metric_name ] ) ? $comparison_totals[ $metric_name ] : null;
+
+				$trends[] = $this->compute_trend( $current, $comparison );
 			}
 		}
 
@@ -346,12 +359,31 @@ class Email_Report_Report_Processor {
 	}
 
 	/**
+	 * Computes the trend percentage between two numeric values.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $current    Current value.
+	 * @param mixed $comparison Comparison value.
+	 * @return float|null
+	 */
+	private function compute_trend( $current, $comparison ) {
+		if ( is_numeric( $current ) && is_numeric( $comparison ) && 0.0 !== (float) $comparison ) {
+			return ( (float) $current - (float) $comparison ) / (float) $comparison * 100;
+		}
+
+		return null;
+	}
+
+	/**
 	 * Determines whether an array uses sequential integer keys starting at zero.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param array $data Array to test.
 	 * @return bool
 	 */
-	private function is_sequential_array( array $data ) {
+	private function is_sequential_array( $data ) {
 		if ( empty( $data ) ) {
 			return true;
 		}

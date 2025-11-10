@@ -81,24 +81,22 @@ final class Email_Log {
 		}
 
 		$normalized = array();
-		$start      = isset( $decoded['startDate'] ) ? self::format_reference_date( $decoded['startDate'] ) : null;
-		if ( $start ) {
-			$normalized['startDate'] = $start;
-		}
+		$keys       = array(
+			'startDate'        => 'startDate',
+			'sendDate'         => 'endDate',
+			'compareStartDate' => 'compareStartDate',
+			'compareEndDate'   => 'compareEndDate',
+		);
 
-		$send = isset( $decoded['sendDate'] ) ? self::format_reference_date( $decoded['sendDate'] ) : null;
-		if ( $send ) {
-			$normalized['endDate'] = $send;
-		}
+		foreach ( $keys as $key => $alias ) {
+			if ( ! isset( $decoded[ $key ] ) ) {
+				continue;
+			}
 
-		$compare_start = isset( $decoded['compareStartDate'] ) ? self::format_reference_date( $decoded['compareStartDate'] ) : null;
-		if ( $compare_start ) {
-			$normalized['compareStartDate'] = $compare_start;
-		}
-
-		$compare_end = isset( $decoded['compareEndDate'] ) ? self::format_reference_date( $decoded['compareEndDate'] ) : null;
-		if ( $compare_end ) {
-			$normalized['compareEndDate'] = $compare_end;
+			$formatted = self::format_reference_date( $decoded[ $key ] );
+			if ( null !== $formatted ) {
+				$normalized[ $alias ] = $formatted;
+			}
 		}
 
 		if ( empty( $normalized['startDate'] ) || empty( $normalized['endDate'] ) ) {
@@ -143,12 +141,12 @@ final class Email_Log {
 	}
 
 	/**
-	 * Formats a timestamp or date string stored in reference date meta.
+	 * Validates and normalizes a reference date value into a UNIX timestamp.
 	 *
 	 * @param mixed $value Date value.
-	 * @return string|null
+	 * @return int|null UNIX timestamp or null on failure.
 	 */
-	protected static function format_reference_date( $value ) {
+	protected static function validate_reference_date( $value ) {
 		if ( '' === $value || null === $value ) {
 			return null;
 		}
@@ -163,6 +161,21 @@ final class Email_Log {
 		}
 
 		if ( false === $timestamp ) {
+			return null;
+		}
+
+		return $timestamp;
+	}
+
+	/**
+	 * Formats a timestamp or date string stored in reference date meta.
+	 *
+	 * @param mixed $value Date value.
+	 * @return string|null
+	 */
+	protected static function format_reference_date( $value ) {
+		$timestamp = self::validate_reference_date( $value );
+		if ( null === $timestamp ) {
 			return null;
 		}
 

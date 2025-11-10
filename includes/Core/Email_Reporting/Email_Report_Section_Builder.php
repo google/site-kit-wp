@@ -38,28 +38,26 @@ class Email_Report_Section_Builder {
 	/**
 	 * Report processor instance.
 	 *
-	 * @var Email_Report_Report_Processor
+	 * @var Email_Report_Payload_Processor
 	 */
 	protected $report_processor;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Context                            $context          Plugin context.
-	 * @param Email_Report_Report_Processor|null $report_processor Optional. Report processor instance.
+	 * @param Context                             $context          Plugin context.
+	 * @param Email_Report_Payload_Processor|null $report_processor Optional. Report processor instance.
 	 */
-	public function __construct( Context $context, Email_Report_Report_Processor $report_processor = null ) {
+	public function __construct( Context $context, ?Email_Report_Payload_Processor $report_processor = null ) {
 		$this->context            = $context;
-		$this->report_processor   = $report_processor ? $report_processor : new Email_Report_Report_Processor();
+		$this->report_processor   = $report_processor ? $report_processor : new Email_Report_Payload_Processor();
 		$this->label_translations = array(
 			// Analytics 4.
-			'totalUsers'     => __( 'Total Visitors', 'google-site-kit' ),
-			'newUsers'       => __( 'New Visitors', 'google-site-kit' ),
-			'returningUsers' => __( 'Returning Visitors', 'google-site-kit' ),
-			'subscribers'    => __( 'Subscribers', 'google-site-kit' ),
+			'totalUsers'  => __( 'Total Visitors', 'google-site-kit' ),
+			'newUsers'    => __( 'New Visitors', 'google-site-kit' ),
 			// Search Console.
-			'impressions'    => __( 'Total impressions in Search', 'google-site-kit' ),
-			'clicks'         => __( 'Total clicks from Search', 'google-site-kit' ),
+			'impressions' => __( 'Total impressions in Search', 'google-site-kit' ),
+			'clicks'      => __( 'Total clicks from Search', 'google-site-kit' ),
 		);
 	}
 
@@ -68,12 +66,11 @@ class Email_Report_Section_Builder {
 	 *
 	 * @param string   $module_slug Module slug (e.g. analytics-4) for the dashboard link only.
 	 * @param array    $raw_payloads Raw reports payloads.
-	 * @param string   $frequency    Email frequency (e.g. weekly, monthly).
 	 * @param string   $user_locale  User locale (e.g. en_US).
 	 * @param \WP_Post $email_log   Optional. Email log post instance containing date metadata.
 	 * @return Email_Report_Data_Section_Part[] Section parts for the provided module.
 	 */
-	public function build_sections( $module_slug, array $raw_payloads, $frequency, $user_locale, $email_log = null ) {
+	public function build_sections( $module_slug, $raw_payloads, $user_locale, $email_log = null ) {
 		$sections        = array();
 		$switched_locale = switch_to_locale( $user_locale );
 		$log_date_range  = Email_Log::get_date_range_from_log( $email_log );
@@ -86,12 +83,14 @@ class Email_Report_Section_Builder {
 
 				$section = new Email_Report_Data_Section_Part(
 					isset( $section_payload['section_key'] ) ? (string) $section_payload['section_key'] : 'section',
-					isset( $section_payload['title'] ) ? (string) $section_payload['title'] : '',
-					$labels,
-					$values,
-					$trends,
-					$date_range,
-					$this->format_dashboard_link( $module_slug )
+					array(
+						'title'          => isset( $section_payload['title'] ) ? (string) $section_payload['title'] : '',
+						'labels'         => $labels,
+						'values'         => $values,
+						'trends'         => $trends,
+						'date_range'     => $date_range,
+						'dashboard_link' => $this->format_dashboard_link( $module_slug ),
+					)
 				);
 
 				if ( $section->is_empty() ) {
@@ -115,12 +114,11 @@ class Email_Report_Section_Builder {
 	 * @param array $labels Labels.
 	 * @return array
 	 */
-	protected function normalize_labels( array $labels ) {
-		$output = array();
-		foreach ( $labels as $label ) {
-			$output[] = isset( $this->label_translations[ $label ] ) ? $this->label_translations[ $label ] : (string) $label;
-		}
-		return $output;
+	protected function normalize_labels( $labels ) {
+		return array_map(
+			fn( $label ) => $this->label_translations[ $label ] ?? (string) $label,
+			$labels
+		);
 	}
 
 	/**
@@ -166,7 +164,7 @@ class Email_Report_Section_Builder {
 	 * @param array $section_payload Section payload data.
 	 * @return array
 	 */
-	protected function normalize_section_payload_components( array $section_payload ) {
+	protected function normalize_section_payload_components( $section_payload ) {
 		$labels      = $this->normalize_labels( isset( $section_payload['labels'] ) ? $section_payload['labels'] : array() );
 		$value_types = isset( $section_payload['value_types'] ) && is_array( $section_payload['value_types'] ) ? $section_payload['value_types'] : array();
 		$values      = $this->normalize_values( isset( $section_payload['values'] ) ? $section_payload['values'] : array(), $value_types );
@@ -183,7 +181,7 @@ class Email_Report_Section_Builder {
 	 * @param array $value_types Optional. Metric types corresponding to each value.
 	 * @return array
 	 */
-	protected function normalize_values( array $values, array $value_types = array() ) {
+	protected function normalize_values( $values, $value_types = array() ) {
 		$output = array();
 		foreach ( $values as $index => $value ) {
 			$type = isset( $value_types[ $index ] ) ? $value_types[ $index ] : 'TYPE_STANDARD';
@@ -260,7 +258,7 @@ class Email_Report_Section_Builder {
 	 * @param array $raw_payloads Raw payloads.
 	 * @return array[] Structured section payloads.
 	 */
-	protected function extract_sections_from_payloads( array $raw_payloads ) {
+	protected function extract_sections_from_payloads( $raw_payloads ) {
 		$sections = array();
 
 		foreach ( $raw_payloads as $payload_group ) {
@@ -300,9 +298,10 @@ class Email_Report_Section_Builder {
 	 * @param array  $module_payload Module payload.
 	 * @return array
 	 */
-	protected function build_module_section_payloads( $module_key, array $module_payload ) {
+	protected function build_module_section_payloads( $module_key, $module_payload ) {
 		switch ( $module_key ) {
 			case 'analytics-4':
+			case 'adsense':
 				return $this->build_sections_from_analytics_module( $module_payload );
 			case 'search-console':
 				return $this->build_sections_from_search_console_module( $module_payload );
@@ -317,7 +316,7 @@ class Email_Report_Section_Builder {
 	 * @param array $module_payload Module payload keyed by section slug.
 	 * @return array
 	 */
-	protected function build_sections_from_analytics_module( array $module_payload ) {
+	protected function build_sections_from_analytics_module( $module_payload ) {
 		$sections                = array();
 		$module_report_configs   = isset( $module_payload['report_configs'] ) && is_array( $module_payload['report_configs'] ) ? $module_payload['report_configs'] : array();
 		$module_payload_filtered = $module_payload;
@@ -356,7 +355,7 @@ class Email_Report_Section_Builder {
 	 * @param array $module_payload Module payload keyed by section slug.
 	 * @return array
 	 */
-	protected function build_sections_from_search_console_module( array $module_payload ) {
+	protected function build_sections_from_search_console_module( $module_payload ) {
 		$sections = array();
 
 		foreach ( $module_payload as $section_key => $section_data ) {
@@ -440,7 +439,7 @@ class Email_Report_Section_Builder {
 	 * @param array $data Array to test.
 	 * @return bool
 	 */
-	protected function is_sequential_array( array $data ) {
+	protected function is_sequential_array( $data ) {
 		if ( empty( $data ) ) {
 			return true;
 		}
@@ -454,7 +453,7 @@ class Email_Report_Section_Builder {
 	 * @param array $processed_reports Processed report data keyed by ID.
 	 * @return array Section payloads.
 	 */
-	protected function build_section_payloads_from_processed_reports( array $processed_reports ) {
+	protected function build_section_payloads_from_processed_reports( $processed_reports ) {
 		$sections = array();
 
 		foreach ( $processed_reports as $report_id => $report ) {
@@ -498,7 +497,7 @@ class Email_Report_Section_Builder {
 	 * @param string $section_key         Section key identifier.
 	 * @return array|null Section payload array, or null if data is invalid.
 	 */
-	protected function build_section_payload_from_search_console( array $search_console_data, $section_key ) {
+	protected function build_section_payload_from_search_console( $search_console_data, $section_key ) {
 		if ( empty( $search_console_data ) ) {
 			return null;
 		}
