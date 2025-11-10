@@ -78,6 +78,7 @@ class Email_Reporting_Settings extends Setting {
 	 */
 	public function is_email_reporting_enabled() {
 		$settings = $this->get();
-		return $settings['enabled'];
+
+		return (bool) $settings['enabled'];
 	}
 }
