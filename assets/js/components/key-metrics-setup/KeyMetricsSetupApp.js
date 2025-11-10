@@ -132,9 +132,8 @@ export default function KeyMetricsSetupApp() {
 					'authentication_success'
 				);
 				url.searchParams.set( 'slug', 'analytics-4' );
-			} else {
-				url.searchParams.set( 'showSuccess', 'true' );
 			}
+
 			navigateTo( url.toString() );
 		}
 	}, [

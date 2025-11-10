@@ -201,7 +201,7 @@ describe( 'KeyMetricsSetupApp', () => {
 
 		await waitFor( () => {
 			expect( global.location.assign ).toHaveBeenCalledWith(
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&showSuccess=true'
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
 			);
 		} );
 	} );
