@@ -49,7 +49,12 @@ const widgetComponentProps = getWidgetComponentProps(
 );
 
 function Template() {
-	return <DashboardAllTrafficWidgetGA4 { ...widgetComponentProps } />;
+	// Min height added to fix rare VRT instability where the mobile VRT for Zero Data was not capturing the full height.
+	return (
+		<div style={ { minHeight: '980px' } }>
+			<DashboardAllTrafficWidgetGA4 { ...widgetComponentProps } />
+		</div>
+	);
 }
 
 const baseAllTrafficOptions = {
@@ -269,7 +274,7 @@ EntityDashboardZeroData.args = {
 };
 EntityDashboardZeroData.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
-	delay: 500,
+	delay: 500, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
 };
 
 export const EntityDashboardError = Template.bind( {} );
