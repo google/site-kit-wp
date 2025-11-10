@@ -449,9 +449,12 @@ describe( 'WooCommerceRedirectModal', () => {
 		} );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-		const { getByText, waitForRegistry } = render( <ModalComponent />, {
-			registry,
-		} );
+		const { getByText, getByRole, waitForRegistry } = render(
+			<ModalComponent />,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -462,6 +465,8 @@ describe( 'WooCommerceRedirectModal', () => {
 		await act( async () => {
 			await fireEvent.click( viewCurrentAdsAccountButton );
 		} );
+
+		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
 
 		expect( dismissNotificationSpy ).toHaveBeenCalled();
 
