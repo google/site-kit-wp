@@ -29,18 +29,18 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import NoticeNotification from '../../../../googlesitekit/notifications/components/layout/NoticeNotification';
-import useQueryArg from '../../../../hooks/useQueryArg';
-import { TYPES } from '../../../../components/Notice/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import { TYPES } from '@/js/components/Notice/constants';
 
 export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 	const [ , setNotification ] = useQueryArg( 'notification' );
 	const [ , setSlug ] = useQueryArg( 'slug' );
 
-	const onDismiss = () => {
+	function onDismiss() {
 		setNotification( undefined );
 		setSlug( undefined );
-	};
+	}
 
 	return (
 		<Notification>

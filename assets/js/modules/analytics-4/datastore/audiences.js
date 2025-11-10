@@ -26,20 +26,21 @@ import {
 	CUSTOM_DIMENSION_DEFINITIONS,
 	DATE_RANGE_OFFSET,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
+	RESOURCE_TYPE_AUDIENCE,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	combineStores,
+	createReducer,
 	createRegistrySelector,
 	commonActions,
 } from 'googlesitekit-data';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { getPreviousDate } from '../../../util';
-import { isInsufficientPermissionsError } from '../../../util/errors';
-import { validateAudience } from '../utils/validation';
-import { RESOURCE_TYPE_AUDIENCE } from './partial-data';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getPreviousDate } from '@/js/util';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
+import { validateAudience } from '@/js/modules/analytics-4/utils/validation';
 
 const MAX_INITIAL_AUDIENCES = 2;
 const START_AUDIENCES_SETUP = 'START_AUDIENCES_SETUP';
@@ -747,43 +748,34 @@ const baseActions = {
 	},
 };
 
-const baseReducer = ( state, { type } ) => {
+const baseReducer = createReducer( ( state, { type } ) => {
 	switch ( type ) {
-		case START_AUDIENCES_SETUP: {
-			return {
-				...state,
-				isSettingUpAudiences: true,
+		case START_AUDIENCES_SETUP:
+			state.isSettingUpAudiences = true;
+			break;
+
+		case START_MAYBE_SYNC_AUDIENCES:
+			state.audienceSync = {
+				inProgress: true,
+				hasSynced: false,
 			};
-		}
-		case START_MAYBE_SYNC_AUDIENCES: {
-			return {
-				...state,
-				audienceSync: {
-					inProgress: true,
-					hasSynced: false,
-				},
+			break;
+
+		case FINISH_MAYBE_SYNC_AUDIENCES:
+			state.audienceSync = {
+				inProgress: false,
+				hasSynced: true,
 			};
-		}
-		case FINISH_MAYBE_SYNC_AUDIENCES: {
-			return {
-				...state,
-				audienceSync: {
-					inProgress: false,
-					hasSynced: true,
-				},
-			};
-		}
-		case FINISH_AUDIENCES_SETUP: {
-			return {
-				...state,
-				isSettingUpAudiences: false,
-			};
-		}
-		default: {
-			return state;
-		}
+			break;
+
+		case FINISH_AUDIENCES_SETUP:
+			state.isSettingUpAudiences = false;
+			break;
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {};
 
@@ -879,7 +871,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the audience is syncing.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.158.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean)} `true` if the audience is syncing, `false` if not.
@@ -889,7 +881,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the audience sync has completed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.158.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean)} `true` if the audience sync has completed, `false` if not.

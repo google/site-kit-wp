@@ -26,19 +26,19 @@ import {
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/utils';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 import {
 	EDIT_SCOPE,
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
-import * as fixtures from '../../datastore/__fixtures__';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import SetupForm from './SetupForm';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 const {
 	accountSummaries,
@@ -135,6 +135,63 @@ describe( 'SetupForm', () => {
 		expect( getByText( 'Account' ) ).toBeInTheDocument();
 		expect( getByText( 'Property' ) ).toBeInTheDocument();
 		expect( getByText( 'Web Data Stream' ) ).toBeInTheDocument();
+	} );
+
+	it( 'renders the form correctly with setupFlowRefresh enabled', async () => {
+		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {
+			enabled: true, // Hide notice for this case.
+		} );
+		registry.dispatch( CORE_SITE ).setConversionTrackingEnabled( false );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAccountSummaries( accountSummaries );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperty( properties[ 0 ], {
+				propertyID,
+			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
+				propertyIDs: [ propertyID ],
+			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetEnhancedMeasurementSettings(
+				{
+					...defaultEnhancedMeasurementSettings,
+					streamEnabled: false,
+				},
+				{
+					propertyID,
+					webDataStreamID,
+				}
+			);
+
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.selectAccount( accountID );
+
+		const { container, queryByText, getByRole, waitForRegistry } = render(
+			<SetupForm />,
+			{
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+
+		expect(
+			container.querySelector( 'a[href*=plugin-conversion-tracking]' )
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'button', { name: /Set up/i } )
+		).toBeInTheDocument();
+		expect( queryByText( 'Complete setup' ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'submits the form upon pressing the CTA', async () => {

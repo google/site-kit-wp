@@ -30,12 +30,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import SetupCTA from '../../../../../googlesitekit/notifications/components/layout/SetupCTA';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
 import BannerSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta.svg?url';
 import BannerMobileSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta-mobile.svg?url';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { EDIT_SCOPE } from '../../../datastore/constants';
+import { EDIT_SCOPE } from '@/js/modules/analytics-4/datastore/constants';
 
 export default function ProcessingBanner( { id, Notification, onDismiss } ) {
 	const documentationURL = useSelect( ( select ) =>
@@ -79,7 +79,8 @@ export default function ProcessingBanner( { id, Notification, onDismiss } ) {
 					onClick: onDismiss,
 				} }
 				waitingProgress={ {
-					height: 4, // The progress bar height is set to 7px via CSS. This value removes margins within the ProgressBar component.
+					verticalSpacing: 0, // Remove vertical spacing to show the banner flush to the header.
+					height: 7,
 					indeterminate: true,
 				} }
 				helpText={ __(

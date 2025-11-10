@@ -25,12 +25,14 @@ import {
 	untilResolved,
 	muteFetch,
 	provideUserAuthentication,
+	provideSiteInfo,
 } from '../../../../../tests/js/utils';
 import {
 	surveyEventEndpoint,
 	surveyTimeoutsEndpoint,
 	surveyTriggerEndpoint,
 } from '../../../../../tests/js/mock-survey-endpoints';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 describe( 'core/user surveys', () => {
 	let registry;
@@ -69,6 +71,7 @@ describe( 'core/user surveys', () => {
 
 			it( 'should not throw when called with only a triggerID', async () => {
 				provideUserAuthentication( registry );
+				provideSiteInfo( registry );
 
 				muteFetch( surveyTriggerEndpoint );
 
@@ -85,6 +88,22 @@ describe( 'core/user surveys', () => {
 
 			it( 'should not fetch if user is not authenticated', async () => {
 				provideUserAuthentication( registry, { authenticated: false } );
+				provideSiteInfo( registry );
+
+				await registry
+					.dispatch( CORE_USER )
+					.triggerSurvey( 'userInput_answered_other__goals' );
+
+				expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint, {
+					body: {
+						data: { triggerID: 'userInput_answered_other__goals' },
+					},
+				} );
+			} );
+
+			it( 'should not fetch if site is not using proxy', async () => {
+				provideUserAuthentication( registry );
+				provideSiteInfo( registry, { usingProxy: false } );
 
 				await registry
 					.dispatch( CORE_USER )
@@ -98,6 +117,7 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'should wait for authentication to be resolved before making a network request', async () => {
+				provideSiteInfo( registry );
 				muteFetch( surveyTriggerEndpoint );
 
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
@@ -133,6 +153,7 @@ describe( 'core/user surveys', () => {
 
 			it( 'should make network requests to survey endpoint', async () => {
 				provideUserAuthentication( registry );
+				provideSiteInfo( registry );
 
 				muteFetch( surveyTriggerEndpoint );
 
@@ -158,6 +179,7 @@ describe( 'core/user surveys', () => {
 				const triggerID = 'userInput_answered_other__goals';
 
 				provideUserAuthentication( registry );
+				provideSiteInfo( registry );
 
 				registry
 					.dispatch( CORE_USER )
@@ -177,6 +199,7 @@ describe( 'core/user surveys', () => {
 				fetchMock.post( surveyTriggerEndpoint, {} );
 
 				provideUserAuthentication( registry );
+				provideSiteInfo( registry );
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 				await Promise.all( [
@@ -194,6 +217,7 @@ describe( 'core/user surveys', () => {
 				const triggerID = 'userInput_answered_other__goals';
 
 				provideUserAuthentication( registry );
+				provideSiteInfo( registry );
 
 				await registry.resolveSelect( CORE_USER ).getAuthentication();
 
@@ -202,6 +226,7 @@ describe( 'core/user surveys', () => {
 				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 				await registry.resolveSelect( CORE_USER ).getSurveyTimeouts();
+				await registry.resolveSelect( CORE_SITE ).getSiteInfo();
 
 				jest.useFakeTimers();
 

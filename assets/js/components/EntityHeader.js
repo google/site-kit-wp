@@ -17,31 +17,33 @@
  */
 
 /**
- * External dependencies
- */
-import { throttle } from 'lodash';
-
-/**
  * WordPress dependencies
  */
+import { useThrottle } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
-import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import { useCallback, useRef, useState } from '@wordpress/element';
+
+/**
+ * External dependencies
+ */
+import { useEvent } from 'react-use';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import BackspaceIcon from '../../svg/icons/keyboard-backspace.svg';
-import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import BackspaceIcon from '@/svg/icons/keyboard-backspace.svg';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import Link from './Link';
-import { shortenURL } from '../util/urls';
-import { trackEvent } from '../util';
+import P from './Typography/P';
+import { shortenURL } from '@/js/util/urls';
+import { trackEvent } from '@/js/util';
 import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
-} from '../hooks/useDashboardType';
-import useViewContext from '../hooks/useViewContext';
+} from '@/js/hooks/useDashboardType';
+import useViewContext from '@/js/hooks/useViewContext';
 
 function EntityHeader() {
 	const viewContext = useViewContext();
@@ -56,37 +58,29 @@ function EntityHeader() {
 	const headerDetailsRef = useRef();
 	const [ url, setURL ] = useState( entityURL );
 
-	useEffect( () => {
-		const shortenEntityURL = () => {
-			if ( ! headerDetailsRef.current ) {
-				return;
-			}
+	const shortenEntityURL = useCallback( () => {
+		if ( ! headerDetailsRef.current ) {
+			return;
+		}
 
-			// Remove 40 px for margins + SVG at the end of the URL link.
-			const availableWidth = headerDetailsRef.current.clientWidth - 40;
+		// Remove 40 px for margins + SVG at the end of the URL link.
+		const availableWidth = headerDetailsRef.current.clientWidth - 40;
 
-			const urlFontSize = global
-				.getComputedStyle( headerDetailsRef.current.lastChild, null )
-				.getPropertyValue( 'font-size' );
-			const fontSize = parseFloat( urlFontSize );
+		const urlFontSize = global
+			.getComputedStyle( headerDetailsRef.current.lastChild, null )
+			.getPropertyValue( 'font-size' );
+		const fontSize = parseFloat( urlFontSize );
 
-			// 2 is appox. the minimum character constant for sans-serif fonts:
-			// https://pearsonified.com/characters-per-line/
-			const maxChars = ( availableWidth * 2 ) / fontSize;
+		// 2 is appox. the minimum character constant for sans-serif fonts:
+		// https://pearsonified.com/characters-per-line/
+		const maxChars = ( availableWidth * 2 ) / fontSize;
 
-			setURL( shortenURL( entityURL, maxChars ) );
-		};
+		setURL( shortenURL( entityURL, maxChars ) );
+	}, [ entityURL ] );
 
-		// Use throttled version only on window resize.
-		const throttledShortenURL = throttle( shortenEntityURL, 100 );
+	const throttledShortenEntityURL = useThrottle( shortenEntityURL, 150 );
 
-		shortenEntityURL();
-
-		global.addEventListener( 'resize', throttledShortenURL );
-		return () => {
-			global.removeEventListener( 'resize', throttledShortenURL );
-		};
-	}, [ entityURL, headerDetailsRef, setURL ] );
+	useEvent( 'resize', throttledShortenEntityURL );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const returnURL = useSelect( ( select ) =>
@@ -128,7 +122,7 @@ function EntityHeader() {
 				ref={ headerDetailsRef }
 				className="googlesitekit-entity-header__details"
 			>
-				<p>{ currentEntityTitle }</p>
+				<P>{ currentEntityTitle }</P>
 				<Link
 					href={ entityURL }
 					aria-label={ entityURL }

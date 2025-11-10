@@ -30,6 +30,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Inline_Data;
+use Google\Site_Kit\Core\Modules\Module_With_Inline_Data_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -51,7 +53,6 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\BC_Functions;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
@@ -70,7 +71,6 @@ use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedM
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
-use Google\Site_Kit\Modules\Analytics_4\Report\PivotRequest as Analytics_4_PivotReport_Request;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdsLinked;
@@ -79,6 +79,10 @@ use Google\Site_Kit\Modules\Analytics_4\Tag_Interface;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportRequest as Google_Service_AnalyticsData_RunReportRequest;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Google_Service_AnalyticsData_DateRange;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension as Google_Service_AnalyticsData_Dimension;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Metric as Google_Service_AnalyticsData_Metric;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaAudience;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaAccount;
@@ -91,7 +95,9 @@ use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_Tag
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
+use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
@@ -109,7 +115,7 @@ use WP_Post;
  * @access private
  * @ignore
  */
-final class Analytics_4 extends Module implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State, Module_With_Tag {
+final class Analytics_4 extends Module implements Module_With_Inline_Data, Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Activation, Module_With_Deactivation, Module_With_Data_Available_State, Module_With_Tag, Provides_Feature_Metrics {
 
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
@@ -118,6 +124,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	use Module_With_Settings_Trait;
 	use Module_With_Data_Available_State_Trait;
 	use Module_With_Tag_Trait;
+	use Module_With_Inline_Data_Trait;
+	use Feature_Metrics_Trait;
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
@@ -196,10 +204,10 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 */
 	public function __construct(
 		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Authentication $authentication = null,
-		Assets $assets = null
+		?Options $options = null,
+		?User_Options $user_options = null,
+		?Authentication $authentication = null,
+		?Assets $assets = null
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
@@ -216,6 +224,10 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+
+		$this->register_inline_data();
+
+		$this->register_feature_metrics();
 
 		$synchronize_property = new Synchronize_Property(
 			$this,
@@ -360,14 +372,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			2
 		);
 
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_custom_dimensions_data' ), 10 );
-
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_tag_id_mismatch' ), 15 );
-
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_resource_availability_dates_data' ) );
-
-		add_filter( 'googlesitekit_inline_modules_data', $this->get_method_proxy( 'inline_conversion_reporting_events_detection' ), 15 );
-
 		add_filter(
 			'googlesitekit_auth_scopes',
 			function ( array $scopes ) {
@@ -375,10 +379,14 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 				$needs_tagmanager_scope = false;
 
+				$refined_scopes = $this->get_refined_scopes( $scopes );
+
 				if ( $oauth_client->has_sufficient_scopes(
-					array(
-						self::READONLY_SCOPE,
-						'https://www.googleapis.com/auth/tagmanager.readonly',
+					array_merge(
+						$refined_scopes,
+						array(
+							'https://www.googleapis.com/auth/tagmanager.readonly',
+						),
 					)
 				) ) {
 					$needs_tagmanager_scope = true;
@@ -388,18 +396,16 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					// Unsatisfied Scopes notification to be displayed without the Additional Permissions Required
 					// modal also appearing.
 				} elseif ( ! $oauth_client->has_sufficient_scopes(
-					array(
-						self::READONLY_SCOPE,
-					)
+					$refined_scopes
 				) ) {
 					$needs_tagmanager_scope = true;
 				}
 
 				if ( $needs_tagmanager_scope ) {
-					$scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
+					$refined_scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
 				}
 
-				return $scopes;
+				return $refined_scopes;
 			}
 		);
 
@@ -588,11 +594,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
-			'analytics_4_ads_conversion_id'           => array(
-				'label' => __( 'Analytics: Ads Conversion ID', 'google-site-kit' ),
-				'value' => $settings['adsConversionID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['adsConversionID'] ),
-			),
 			'analytics_4_available_custom_dimensions' => array(
 				'label' => __( 'Analytics: Available Custom Dimensions', 'google-site-kit' ),
 				'value' => empty( $settings['availableCustomDimensions'] )
@@ -650,16 +651,24 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				: join( ', ', $site_kit_audiences ),
 		);
 
-		// Add fields from Google tag gateway.
-		// Note: fields are added in both Analytics and Ads so that the debug fields will show if either module is enabled.
-		if ( Feature_Flags::enabled( 'googleTagGateway' ) ) {
-			$google_tag_gateway             = new Google_Tag_Gateway( $this->context );
-			$fields_from_google_tag_gateway = $google_tag_gateway->get_debug_fields();
-
-			$debug_fields = array_merge( $debug_fields, $fields_from_google_tag_gateway );
-		}
-
 		return $debug_fields;
+	}
+
+	/**
+	 * Gets an array of internal feature metrics.
+	 *
+	 * @since 1.163.0
+	 *
+	 * @return array
+	 */
+	public function get_feature_metrics() {
+		$settings = $this->get_settings()->get();
+
+		return array(
+			'audseg_setup_completed'   => (bool) $this->audience_settings->get()['audienceSegmentationSetupCompletedBy'],
+			'audseg_audience_count'    => count( $this->audience_settings->get()['availableAudiences'] ?? array() ),
+			'analytics_adsense_linked' => $this->is_adsense_connected() && $settings['adSenseLinked'],
+		);
 	}
 
 	/**
@@ -714,11 +723,12 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			),
 			'GET:properties'                            => array( 'service' => 'analyticsadmin' ),
 			'GET:property'                              => array( 'service' => 'analyticsadmin' ),
+			'GET:has-property-access'                   => array( 'service' => 'analyticsdata' ),
 			'GET:report'                                => array(
 				'service'   => 'analyticsdata',
 				'shareable' => true,
 			),
-			'GET:pivot-report'                          => array(
+			'GET:batch-report'                          => array(
 				'service'   => 'analyticsdata',
 				'shareable' => true,
 			),
@@ -742,6 +752,9 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				'service' => '',
 			),
 			'POST:set-google-tag-id-mismatch'           => array(
+				'service' => '',
+			),
+			'POST:set-is-web-data-stream-unavailable'   => array(
 				'service' => '',
 			),
 			'POST:create-audience'                      => array(
@@ -988,6 +1001,20 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 		$this->provision_property_webdatastream( $account_id, $account_ticket );
 
+		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			$show_progress = (bool) $input->filter( INPUT_GET, 'show_progress' );
+
+			wp_safe_redirect(
+				$this->context->admin_url(
+					'key-metrics-setup',
+					array(
+						'showProgress' => $show_progress ? 'true' : null,
+					)
+				)
+			);
+			exit;
+		}
+
 		wp_safe_redirect(
 			$this->context->admin_url(
 				'dashboard',
@@ -1223,6 +1250,10 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				$account_ticket_request->setRedirectUri( $this->get_provisioning_redirect_uri() );
 				$account_ticket_request->setAccount( $account );
 
+				if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+					$account_ticket_request->setShowProgress( isset( $data['showProgress'] ) ? (bool) $data['showProgress'] : false );
+				}
+
 				return $this->get_service( 'analyticsprovisioning' )
 					->accounts->provisionAccountTicket( $account_ticket_request );
 			case 'POST:create-property':
@@ -1283,6 +1314,29 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				}
 
 				return $this->get_service( 'analyticsadmin' )->properties->get( self::normalize_property_id( $data['propertyID'] ) );
+			case 'GET:has-property-access':
+				if ( ! isset( $data['propertyID'] ) ) {
+					throw new Missing_Required_Param_Exception( 'propertyID' );
+				}
+
+				// A simple way to check for property access is to attempt a minimal report request.
+				// If the user does not have access, this will return a 403 error.
+				$request = new Google_Service_AnalyticsData_RunReportRequest();
+				$request->setDimensions( array( new Google_Service_AnalyticsData_Dimension( array( 'name' => 'date' ) ) ) );
+				$request->setMetrics( array( new Google_Service_AnalyticsData_Metric( array( 'name' => 'sessions' ) ) ) );
+				$request->setDateRanges(
+					array(
+						new Google_Service_AnalyticsData_DateRange(
+							array(
+								'start_date' => 'yesterday',
+								'end_date'   => 'today',
+							)
+						),
+					)
+				);
+				$request->setLimit( 0 );
+
+				return $this->get_analyticsdata_service()->properties->runReport( $data['propertyID'], $request );
 			case 'GET:report':
 				if ( empty( $data['metrics'] ) ) {
 					return new WP_Error(
@@ -1312,21 +1366,21 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				$request->setProperty( $property_id );
 
 				return $this->get_analyticsdata_service()->properties->runReport( $property_id, $request );
-			case 'GET:pivot-report':
-				if ( empty( $data['metrics'] ) ) {
+
+			case 'GET:batch-report':
+				if ( empty( $data['requests'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
 						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'metrics' ),
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'requests' ),
 						array( 'status' => 400 )
 					);
 				}
 
-				if ( empty( $data['pivots'] ) ) {
+				if ( ! is_array( $data['requests'] ) || count( $data['requests'] ) > 5 ) {
 					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'pivots' ),
+						'invalid_batch_size',
+						__( 'Batch report requests must be an array with 1-5 requests.', 'google-site-kit' ),
 						array( 'status' => 400 )
 					);
 				}
@@ -1340,16 +1394,31 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 					);
 				}
 
-				$report  = new Analytics_4_PivotReport_Request( $this->context );
-				$request = $report->create_request( $data, $this->is_shared_data_request( $data ) );
-				if ( is_wp_error( $request ) ) {
-					return $request;
+				$batch_requests = array();
+				$report         = new Analytics_4_Report_Request( $this->context );
+
+				foreach ( $data['requests'] as $request_data ) {
+					$data_request = new Data_Request( 'GET', 'modules', $this->slug, 'report', $request_data );
+					$request      = $report->create_request(
+						$data_request,
+						$this->is_shared_data_request( $data_request )
+					);
+					if ( is_wp_error( $request ) ) {
+						return $request;
+					}
+					$batch_requests[] = $request;
 				}
 
 				$property_id = self::normalize_property_id( $settings['propertyID'] );
-				$request->setProperty( $property_id );
 
-				return $this->get_analyticsdata_service()->properties->runPivotReport( $property_id, $request );
+				$batch_request = new Google_Service_AnalyticsData\BatchRunReportsRequest();
+				$batch_request->setRequests( $batch_requests );
+
+				return $this->get_analyticsdata_service()->properties->batchRunReports(
+					$property_id,
+					$batch_request
+				);
+
 			case 'GET:enhanced-measurement-settings':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
@@ -1762,8 +1831,8 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 				$property_id    = self::normalize_property_id( $settings['propertyID'] );
 
 				return $analyticsadmin
-				->properties_keyEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-				->listPropertiesKeyEvents( $property_id );
+					->properties_keyEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					->listPropertiesKeyEvents( $property_id );
 			case 'POST:set-google-tag-id-mismatch':
 				if ( ! isset( $data['hasMismatchedTag'] ) ) {
 					throw new Missing_Required_Param_Exception( 'hasMismatchedTag' );
@@ -1771,12 +1840,34 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 
 				if ( false === $data['hasMismatchedTag'] ) {
 					return function () {
-						return $this->transients->delete( 'googlesitekit_inline_tag_id_mismatch' );
+						$this->transients->delete( 'googlesitekit_inline_tag_id_mismatch' );
+						return false;
 					};
 				}
 
 				return function () use ( $data ) {
-					return $this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
+					$this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
+					return $data['hasMismatchedTag'];
+				};
+			case 'POST:set-is-web-data-stream-unavailable':
+				if ( ! isset( $data['isWebDataStreamUnavailable'] ) ) {
+					throw new Missing_Required_Param_Exception( 'isWebDataStreamUnavailable' );
+				}
+
+				if ( true === $data['isWebDataStreamUnavailable'] ) {
+					return function () {
+						$settings      = $this->get_settings()->get();
+						$transient_key = 'googlesitekit_web_data_stream_unavailable_' . $settings['webDataStreamID'];
+						$this->transients->set( $transient_key, true );
+						return true;
+					};
+				}
+
+				return function () {
+					$settings      = $this->get_settings()->get();
+					$transient_key = 'googlesitekit_web_data_stream_unavailable_' . $settings['webDataStreamID'];
+					$this->transients->delete( $transient_key );
+					return false;
 				};
 		}
 
@@ -1841,9 +1932,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			case 'GET:key-events':
 				return (array) $response->getKeyEvents();
 			case 'GET:report':
-				$report = new Analytics_4_Report_Response( $this->context );
-				return $report->parse_response( $data, $response );
-			case 'GET:pivot-report':
 				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );
 			case 'POST:sync-audiences':
@@ -2078,10 +2166,6 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 			$tag->set_custom_dimensions( $custom_dimensions_data );
 		}
 
-		$tag->set_ads_conversion_id(
-			$this->get_settings()->get()['adsConversionID']
-		);
-
 		$tag->register();
 	}
 
@@ -2307,20 +2391,37 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 * @return boolean|WP_Error
 	 */
 	public function check_service_entity_access() {
-		$analyticsadmin = $this->get_service( 'analyticsadmin' );
-		$settings       = $this->settings->get();
+		$settings = $this->get_settings()->get();
 
-		try {
-			$analyticsadmin
-			->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-			->listPropertiesDataStreams(
-				self::normalize_property_id( $settings['propertyID'] )
+		if ( empty( $settings['propertyID'] ) ) {
+			return new WP_Error(
+				'missing_required_setting',
+				__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
+				array( 'status' => 500 )
 			);
-		} catch ( Exception $e ) {
-			if ( $e->getCode() === 403 ) {
+		}
+
+		return $this->has_property_access( $settings['propertyID'] );
+	}
+
+	/**
+	 * Checks if the current user has access to the given property ID.
+	 *
+	 * @since 1.163.0
+	 *
+	 * @param string $property_id Property ID to check access for.
+	 * @return boolean|WP_Error True if the user has access, false if not, or WP_Error on any other error.
+	 */
+	public function has_property_access( $property_id ) {
+		$request = $this->get_data( 'has-property-access', array( 'propertyID' => $property_id ) );
+
+		if ( is_wp_error( $request ) ) {
+			// A 403 error implies that the user does not have access to the service entity.
+			if ( $request->get_error_code() === 403 ) {
 				return false;
 			}
-			return $this->exception_to_error( $e );
+
+			return $request;
 		}
 
 		return true;
@@ -2414,63 +2515,54 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 * Populates custom dimension data to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.113.0
+	 * @since 1.158.0 Renamed method to `get_inline_custom_dimensions_data()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
-	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
 	 */
-	private function inline_custom_dimensions_data( $modules_data ) {
+	private function get_inline_custom_dimensions_data() {
 		if ( $this->is_connected() ) {
-			// Add the data under the `analytics-4` key to make it clear it's scoped to this module.
-			$modules_data['analytics-4'] = array(
+			return array(
 				'customDimensionsDataAvailable' => $this->custom_dimensions_data_available->get_data_availability(),
 			);
 		}
-
-		return $modules_data;
 	}
 
 	/**
 	 * Populates tag ID mismatch value to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.130.0
+	 * @since 1.158.0 Renamed method to `get_inline_tag_id_mismatch()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
-	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
 	 */
-	protected function inline_tag_id_mismatch( $modules_data ) {
+	private function get_inline_tag_id_mismatch() {
 		if ( $this->is_connected() ) {
 			$tag_id_mismatch = $this->transients->get( 'googlesitekit_inline_tag_id_mismatch' );
 
-			// Add the data under the `analytics-4` key to make it clear it's scoped to this module.
-			// No need to check if `analytics-4` key is present, as this hook is added with higher
-			// priority than inline_custom_dimensions_data where this key is set.
-			$modules_data['analytics-4']['tagIDMismatch'] = $tag_id_mismatch;
+			return array(
+				'tagIDMismatch' => $tag_id_mismatch,
+			);
 		}
 
-		return $modules_data;
+		return array();
 	}
 
 	/**
 	 * Populates resource availability dates data to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.127.0
+	 * @since 1.158.0 Renamed method to `get_inline_resource_availability_dates_data()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
-	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
 	 */
-	private function inline_resource_availability_dates_data( $modules_data ) {
+	private function get_inline_resource_availability_dates_data() {
 		if ( $this->is_connected() ) {
-			// Add the data under the `analytics-4` key to make it clear it's scoped to this module.
-			// If `analytics-4` key already exists, merge the data.
-			$modules_data['analytics-4'] = array_merge(
-				$modules_data['analytics-4'] ?? array(),
-				array(
-					'resourceAvailabilityDates' => $this->resource_data_availability_date->get_all_resource_dates(),
-				)
+			return array(
+				'resourceAvailabilityDates' => $this->resource_data_availability_date->get_all_resource_dates(),
 			);
 		}
 
-		return $modules_data;
+		return array();
 	}
 
 	/**
@@ -2694,23 +2786,90 @@ final class Analytics_4 extends Module implements Module_With_Scopes, Module_Wit
 	 * Populates conversion reporting event data to pass to JS via _googlesitekitModulesData.
 	 *
 	 * @since 1.139.0
+	 * @since 1.158.0 Renamed method to `get_inline_conversion_reporting_events_detection()`, and modified it to return a new array rather than populating a passed filter value.
 	 *
-	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
 	 */
-	public function inline_conversion_reporting_events_detection( $modules_data ) {
+	private function get_inline_conversion_reporting_events_detection() {
 		if ( ! $this->is_connected() ) {
-			return $modules_data;
+			return array();
 		}
 
 		$detected_events  = $this->transients->get( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
 		$lost_events      = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
 		$new_events_badge = $this->transients->get( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
 
-		$modules_data['analytics-4']['newEvents']      = is_array( $detected_events ) ? $detected_events : array();
-		$modules_data['analytics-4']['lostEvents']     = is_array( $lost_events ) ? $lost_events : array();
-		$modules_data['analytics-4']['newBadgeEvents'] = is_array( $new_events_badge ) ? $new_events_badge['events'] : array();
+		return array(
+			'newEvents'      => is_array( $detected_events ) ? $detected_events : array(),
+			'lostEvents'     => is_array( $lost_events ) ? $lost_events : array(),
+			'newBadgeEvents' => is_array( $new_events_badge ) ? $new_events_badge['events'] : array(),
+		);
+	}
 
+	/**
+	 * Refines the requested scopes based on the current authentication and connection state.
+	 *
+	 * Specifically, the `EDIT_SCOPE` is only added if the user is not yet authenticated,
+	 * or if they are authenticated and have already granted the scope, or if the module
+	 * is not yet connected (i.e. during setup).
+	 *
+	 * @since 1.163.0
+	 *
+	 * @param string[] $scopes Array of requested scopes.
+	 * @return string[] Refined array of requested scopes.
+	 */
+	private function get_refined_scopes( $scopes = array() ) {
+		if ( ! Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			return $scopes;
+		}
+
+		if ( ! $this->authentication->is_authenticated() ) {
+			$scopes[] = self::EDIT_SCOPE;
+			return $scopes;
+		}
+
+		$oauth_client        = $this->authentication->get_oauth_client();
+		$granted_scopes      = $oauth_client->get_granted_scopes();
+		$is_in_setup_process = ! $this->is_connected();
+
+		if ( in_array( self::EDIT_SCOPE, $granted_scopes, true ) || $is_in_setup_process ) {
+			$scopes[] = self::EDIT_SCOPE;
+		}
+
+		return $scopes;
+	}
+
+	/**
+	 * Gets required inline data for the module.
+	 *
+	 * @since 1.158.0
+	 * @since 1.160.0 Include $modules_data parameter to match the interface.
+	 *
+	 * @param array $modules_data Inline modules data.
+	 * @return array An array of the module's inline data.
+	 */
+	public function get_inline_data( $modules_data ) {
+		if ( ! $this->is_connected() ) {
+			return $modules_data;
+		}
+
+		$inline_data = array();
+
+		// Web data stream availability data.
+		$settings                                  = $this->get_settings()->get();
+		$transient_key                             = 'googlesitekit_web_data_stream_unavailable_' . $settings['webDataStreamID'];
+		$is_web_data_stream_unavailable            = $this->transients->get( $transient_key );
+		$inline_data['isWebDataStreamUnavailable'] = (bool) $is_web_data_stream_unavailable;
+
+		$inline_data = array_merge(
+			$inline_data,
+			$this->get_inline_custom_dimensions_data(),
+			$this->get_inline_tag_id_mismatch(),
+			$this->get_inline_resource_availability_dates_data(),
+			$this->get_inline_conversion_reporting_events_detection()
+		);
+
+		$modules_data[ self::MODULE_SLUG ] = $inline_data;
 		return $modules_data;
 	}
 }

@@ -37,47 +37,50 @@ import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
-} from '../googlesitekit/widgets/default-contexts';
-import { DAY_IN_SECONDS } from '../util';
+} from '@/js/googlesitekit/widgets/default-contexts';
+import { DAY_IN_SECONDS } from '@/js/util';
 import Header from './Header';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
-import WidgetContextRenderer from '../googlesitekit/widgets/components/WidgetContextRenderer';
-import { AudienceSelectionPanel } from '../modules/analytics-4/components/audience-segmentation/dashboard';
+import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
+import { AudienceSelectionPanel } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
-import ScrollEffect from './ScrollEffect';
 import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
+import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
+import { useFeature } from '@/js/hooks/useFeature';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_KEY_METRICS,
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
-} from '../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-} from '../googlesitekit/datastore/user/constants';
-import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
-import useViewOnly from '../hooks/useViewOnly';
-import { CORE_FORMS } from '../googlesitekit/datastore/forms/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import OfflineNotification from './notifications/OfflineNotification';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
-import { useBreakpoint } from '../hooks/useBreakpoint';
-import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
-import useQueryArg from '../hooks/useQueryArg';
-import { getNavigationalScrollTop } from '../util/scroll';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import CoreDashboardEffects from './CoreDashboardEffects';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import { getNavigationalScrollTop } from '@/js/util/scroll';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
 import Notifications from './notifications/Notifications';
 import {
 	NOTIFICATION_GROUPS,
 	NOTIFICATION_AREAS,
-} from '../googlesitekit/notifications/constants';
-import { AdminMenuTooltip } from './AdminMenuTooltip';
+} from '@/js/googlesitekit/notifications/constants';
+import { AdminScreenTooltip } from './AdminScreenTooltip';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
@@ -93,11 +96,9 @@ export default function DashboardMainApp() {
 	const grantedScopes = useSelect( ( select ) =>
 		select( CORE_USER ).getGrantedScopes()
 	);
-	const temporaryPersistedPermissionsError = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-			'permissionsError'
-		)
+	const temporaryPersistedPermissionsError = useFormValue(
+		FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+		'permissionsError'
 	);
 	const hasReceivedGrantedScopes =
 		grantedScopes !== undefined &&
@@ -227,6 +228,8 @@ export default function DashboardMainApp() {
 		);
 	} );
 
+	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
+
 	useMonitorInternetConnection();
 
 	let lastWidgetAnchor = null;
@@ -245,10 +248,10 @@ export default function DashboardMainApp() {
 
 	return (
 		<Fragment>
-			<ScrollEffect />
+			<CoreDashboardEffects />
 			<ModuleDashboardEffects />
 
-			<AdminMenuTooltip />
+			<AdminScreenTooltip />
 
 			<Header showNavigation>
 				<EntitySearchInput />
@@ -257,63 +260,68 @@ export default function DashboardMainApp() {
 				<HelpMenu />
 			</Header>
 
-			{ /* These notifications are rendered at the top of the dashboard,
-			but are not attached to the header. The first component renders the
-			default queue which mainly contains setup success notices. The
-			second renders the Setup CTA Widgets. */ }
-			<Notifications areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP } />
-			<Notifications
-				areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP }
-				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-			/>
+			<div className="googlesitekit-page-content">
+				{ /*
+					These notifications are rendered at the top of the dashboard,
+					but are not attached to the header. The first component renders the
+					default queue which mainly contains setup success notices. The
+					second renders the Setup CTA Widgets.
+				*/ }
+				<Notifications areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP } />
+				<Notifications
+					areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP }
+					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+				/>
 
-			<Notifications
-				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-			/>
+				<Notifications
+					areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+				/>
 
-			{ isKeyMetricsWidgetHidden !== true && (
+				{ isKeyMetricsWidgetHidden !== true && (
+					<WidgetContextRenderer
+						id={ ANCHOR_ID_KEY_METRICS }
+						slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
+						className={ classnames( {
+							'googlesitekit-widget-context--last':
+								lastWidgetAnchor === ANCHOR_ID_KEY_METRICS,
+						} ) }
+					/>
+				) }
 				<WidgetContextRenderer
-					id={ ANCHOR_ID_KEY_METRICS }
-					slug={ CONTEXT_MAIN_DASHBOARD_KEY_METRICS }
+					id={ ANCHOR_ID_TRAFFIC }
+					slug={ CONTEXT_MAIN_DASHBOARD_TRAFFIC }
 					className={ classnames( {
 						'googlesitekit-widget-context--last':
-							lastWidgetAnchor === ANCHOR_ID_KEY_METRICS,
+							lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
 					} ) }
 				/>
-			) }
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_TRAFFIC }
-				slug={ CONTEXT_MAIN_DASHBOARD_TRAFFIC }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_CONTENT }
-				slug={ CONTEXT_MAIN_DASHBOARD_CONTENT }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_CONTENT,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_SPEED }
-				slug={ CONTEXT_MAIN_DASHBOARD_SPEED }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_SPEED,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_MONETIZATION }
-				slug={ CONTEXT_MAIN_DASHBOARD_MONETIZATION }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
-				} ) }
-			/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_CONTENT }
+					slug={ CONTEXT_MAIN_DASHBOARD_CONTENT }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_CONTENT,
+					} ) }
+				/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_SPEED }
+					slug={ CONTEXT_MAIN_DASHBOARD_SPEED }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_SPEED,
+					} ) }
+				/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_MONETIZATION }
+					slug={ CONTEXT_MAIN_DASHBOARD_MONETIZATION }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
+					} ) }
+				/>
+				<OfflineNotification />
+			</div>
 
 			<SurveyViewTrigger
 				triggerID="view_dashboard"
@@ -323,6 +331,8 @@ export default function DashboardMainApp() {
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
+
+			{ emailReportingEnabled && <UserSettingsSelectionPanel /> }
 
 			{ configuredAudiences && <AudienceSelectionPanel /> }
 

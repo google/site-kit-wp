@@ -35,7 +35,11 @@ const path = require( 'path' );
  * Internal dependencies
  */
 const storybookConfig = require( '../../storybook/main' );
-const rootURL = 'file:///src/dist/iframe.html?id=';
+
+// Use HTTP server instead of file:// URLs to support ES modules in modern Storybook.
+// See https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#dropped-support-for-file-urls.
+const rootURL =
+	process.env.STORYBOOK_SERVER_URL || 'http://localhost:3000/iframe.html?id=';
 
 const storybookDir = path.resolve( __dirname, '../../storybook' );
 const storyFiles = flatten(
@@ -116,7 +120,7 @@ storyFiles.forEach( ( storyFile ) => {
 } );
 
 // Adding Support for array-based selectors from BackstopJS 6.3.25
-const processSelectors = ( scenarioObj ) => {
+function processSelectors( scenarioObj ) {
 	const processedScenario = { ...scenarioObj };
 
 	if (
@@ -144,7 +148,7 @@ const processSelectors = ( scenarioObj ) => {
 	}
 
 	return processedScenario;
-};
+}
 
 module.exports = csfScenarios.map( ( scenario ) => {
 	const backstopReadySelector = 'body.backstopjs-ready';

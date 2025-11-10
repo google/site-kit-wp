@@ -22,16 +22,15 @@
 import {
 	MODULES_ADSENSE,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
-} from '../../datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../constants';
+} from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import AdBlockingRecoverySetupSuccessNotification from './AdBlockingRecoverySetupSuccessNotification';
 import {
-	WithTestRegistry,
-	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'adsense-abr-success-notification'
@@ -48,26 +47,27 @@ export default {
 	component: AdBlockingRecoverySetupSuccessNotification,
 	decorators: [
 		( Story ) => {
-			const registry = createTestRegistry();
-			provideSiteInfo( registry );
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ADSENSE,
-					active: true,
-					connected: true,
-				},
-			] );
+			function setupRegistry( registry ) {
+				provideSiteInfo( registry );
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ADSENSE,
+						active: true,
+						connected: true,
+					},
+				] );
 
-			registry.dispatch( MODULES_ADSENSE ).setSettings( {
-				accountID: 'pub-123456',
-				adBlockingRecoverySetupStatus:
-					ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
-			} );
+				registry.dispatch( MODULES_ADSENSE ).setSettings( {
+					accountID: 'pub-123456',
+					adBlockingRecoverySetupStatus:
+						ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED,
+				} );
+			}
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

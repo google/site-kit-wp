@@ -32,7 +32,7 @@ import {
 	combineStores,
 	createReducer,
 } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	ACCOUNT_CREATE,
 	PROPERTY_CREATE,
@@ -40,13 +40,13 @@ import {
 	FORM_ACCOUNT_CREATE,
 	MODULES_ANALYTICS_4,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
-import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { isValidAccountSelection } from '../utils/validation';
-import { caseInsensitiveListSort } from '../../../util/case-insensitive-sort';
-import { populateAccountSummaries } from '../utils/account';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { isValidAccountSelection } from '@/js/modules/analytics-4/utils/validation';
+import { caseInsensitiveListSort } from '@/js/util/case-insensitive-sort';
+import { populateAccountSummaries } from '@/js/modules/analytics-4/utils/account';
 
 const { receiveError, clearError, clearErrors } = errorStoreActions;
 
@@ -66,15 +66,12 @@ const fetchGetAccountSummariesStore = createFetchStore( {
 	argsToParams: ( pageToken ) => {
 		return { pageToken };
 	},
-	reducerCallback( state, response ) {
-		return {
-			...state,
-			accountSummaries: [
-				...( state.accountSummaries || [] ),
-				...populateAccountSummaries( response.accountSummaries || [] ),
-			],
-		};
-	},
+	reducerCallback: createReducer( ( state, response ) => {
+		state.accountSummaries = [
+			...( state.accountSummaries || [] ),
+			...populateAccountSummaries( response.accountSummaries || [] ),
+		];
+	} ),
 } );
 
 const fetchCreateAccountStore = createFetchStore( {
@@ -87,13 +84,12 @@ const fetchCreateAccountStore = createFetchStore( {
 			data
 		);
 	},
-	// eslint-disable-next-line sitekit/acronym-case
-	reducerCallback: ( state, { accountTicketId: accountTicketID } ) => {
-		return {
-			...state,
-			accountTicketID,
-		};
-	},
+	reducerCallback: createReducer(
+		// eslint-disable-next-line sitekit/acronym-case
+		( state, { accountTicketId: accountTicketID } ) => {
+			state.accountTicketID = accountTicketID;
+		}
+	),
 	argsToParams: ( data ) => {
 		return { data };
 	},
@@ -154,10 +150,13 @@ const baseActions = {
 	 * Creates a new Analytics (GA4) account.
 	 *
 	 * @since 1.98.0
+	 * @since 1.165.0 Add `showProgress` option.
 	 *
+	 * @param {Object}  [options={}]                 Optional options object.
+	 * @param {boolean} [options.showProgress=false] Whether to show the progress indicator.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createAccount() {
+	*createAccount( { showProgress = false } = {} ) {
 		const registry = yield commonActions.getRegistry();
 
 		const { getValue } = registry.select( CORE_FORMS );
@@ -171,6 +170,7 @@ const baseActions = {
 				FORM_ACCOUNT_CREATE,
 				ENHANCED_MEASUREMENT_ENABLED
 			),
+			showProgress,
 		};
 
 		yield clearError( 'createAccount', [] );

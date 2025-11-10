@@ -31,25 +31,28 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
-} from '../../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	ACTIVATION_STEP_IN_PROGRESS,
 	ACTIVATION_STEP_SETUP,
 	ACTIVATION_STEP_SUCCESS,
 	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
-} from '../../../constants';
-import { useShowTooltip } from '../../../../../components/AdminMenuTooltip/useShowTooltip';
+} from '@/js/modules/analytics-4/constants';
+import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip/useShowTooltip';
 import ProcessingBanner from './ProcessingBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function EnhancedMeasurementActivationBanner( {
 	id,
@@ -63,12 +66,11 @@ export default function EnhancedMeasurementActivationBanner( {
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' )
-	);
+	const autoSubmit = useFormValue( FORM_SETUP, 'autoSubmit' );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
+	const { unpinNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const tooltipSettings = {
 		tooltipSlug: ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
@@ -97,8 +99,10 @@ export default function EnhancedMeasurementActivationBanner( {
 			return;
 		}
 
+		await unpinNotification( id, NOTIFICATION_GROUPS.SETUP_CTAS );
+
 		setStep( ACTIVATION_STEP_SUCCESS );
-	}, [ setValues, submitChanges ] );
+	}, [ id, setValues, submitChanges, unpinNotification ] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.

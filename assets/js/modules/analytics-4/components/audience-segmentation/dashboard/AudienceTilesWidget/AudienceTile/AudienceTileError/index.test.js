@@ -38,11 +38,11 @@ import {
 	provideUserInfo,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../../../tests/js/utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../../../googlesitekit/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../../../datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../../../util/errors';
-import * as tracking from '../../../../../../../../util/tracking';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import * as tracking from '@/js/util/tracking';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -140,6 +140,8 @@ describe( 'AudienceTileError', () => {
 		expect( getByText( 'Insufficient permissions' ) ).toBeInTheDocument();
 
 		expect( container ).toMatchSnapshot();
+
+		await act( waitForDefaultTimeouts );
 	} );
 
 	it( 'should correctly render the generic error variant', async () => {

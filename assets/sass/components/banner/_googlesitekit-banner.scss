@@ -52,6 +52,12 @@
 		}
 	}
 
+	.googlesitekit-banner__title-icon {
+		height: 52px;
+		margin-bottom: $grid-gap-phone / 4;
+		width: 52px;
+	}
+
 	p.googlesitekit-banner__title {
 		font-family: $f-primary;
 		font-size: $fs-title-md;
@@ -168,8 +174,6 @@
 }
 
 .googlesitekit-banner__progress-bar {
-	height: 7px;
-
 	// Prevent page shift between variants as the progress bar removes 10px padding from the widget context.
 	margin-bottom: 3px;
 

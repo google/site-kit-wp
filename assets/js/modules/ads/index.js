@@ -25,17 +25,17 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import AdsIcon from '../../../svg/graphics/ads.svg';
+import AdsIcon from '@/svg/graphics/ads.svg';
 import { SettingsEdit, SettingsView } from './components/settings';
 import { SetupMain, SetupMainPAX } from './components/setup';
 import { MODULES_ADS } from './datastore/constants';
 import { MODULE_SLUG_ADS } from './constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	CORE_USER,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
-} from '../../googlesitekit/datastore/user/constants';
-import { isFeatureEnabled } from '../../features';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { isFeatureEnabled } from '@/js/features';
 import {
 	PAXSetupSuccessSubtleNotification,
 	SetupSuccessSubtleNotification,
@@ -46,16 +46,19 @@ import {
 	NOTIFICATION_GROUPS,
 	NOTIFICATION_AREAS,
 	PRIORITY,
-} from '../../googlesitekit/notifications/constants';
+} from '@/js/googlesitekit/notifications/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
+import EnhancedConversionsNotification, {
+	ENHANCED_CONVERSIONS_NOTIFICATION_ADS,
+} from './components/notifications/EnhancedConversionsNotification';
 
 export { registerStore } from './datastore';
 
-export const registerModule = ( modules ) => {
+export function registerModule( modules ) {
 	modules.registerModule( MODULE_SLUG_ADS, {
 		storeName: MODULES_ADS,
 		SettingsEditComponent: SettingsEdit,
@@ -93,9 +96,9 @@ export const registerModule = ( modules ) => {
 			};
 		},
 	} );
-};
+}
 
-export const registerWidgets = () => {};
+export function registerWidgets() {}
 
 export const ADS_NOTIFICATIONS = {
 	'setup-success-notification-ads': {
@@ -176,9 +179,6 @@ export const ADS_NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			await Promise.all( [
-				// The isPromptDismissed selector relies on the resolution
-				// of the getDismissedPrompts() resolver.
-				resolveSelect( CORE_USER ).getDismissedPrompts(),
 				// isGoogleForWooCommerceLinked is relying
 				// on the data being resolved in getModuleData() selector.
 				resolveSelect( MODULES_ADS ).getModuleData(),
@@ -191,15 +191,12 @@ export const ADS_NOTIFICATIONS = {
 			] );
 
 			const { isModuleConnected } = select( CORE_MODULES );
-			const { isPromptDismissed } = select( CORE_USER );
 			const { hasGoogleForWooCommerceAdsAccount } = select( MODULES_ADS );
 
 			const isAdsConnected = isModuleConnected( MODULE_SLUG_ADS );
-			const isDismissed = isPromptDismissed( 'ads-setup-cta' );
 
 			return (
 				isAdsConnected === false &&
-				isDismissed === false &&
 				hasGoogleForWooCommerceAdsAccount() === false
 			);
 		},
@@ -207,13 +204,33 @@ export const ADS_NOTIFICATIONS = {
 		dismissRetries: 1,
 		featureFlag: 'adsPax',
 	},
+	[ ENHANCED_CONVERSIONS_NOTIFICATION_ADS ]: {
+		Component: EnhancedConversionsNotification,
+		priority: PRIORITY.INFO,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { resolveSelect } ) => {
+			const adsConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ADS );
+
+			if ( ! adsConnected ) {
+				return false;
+			}
+
+			return true;
+		},
+		isDismissible: true,
+		featureFlag: 'gtagUserData',
+	},
 };
 
-export const registerNotifications = ( notifications ) => {
+export function registerNotifications( notifications ) {
 	for ( const notificationID in ADS_NOTIFICATIONS ) {
 		notifications.registerNotification(
 			notificationID,
 			ADS_NOTIFICATIONS[ notificationID ]
 		);
 	}
-};
+}

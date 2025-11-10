@@ -30,20 +30,29 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
-import { Cell, Grid, Row } from '../../../../../../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../../../../../hooks/useBreakpoint';
-import AudienceSegmentationErrorSVG from '../../../../../../../svg/graphics/audience-segmentation-error-full-width.svg';
-import { isInsufficientPermissionsError } from '../../../../../../util/errors';
-import ReportErrorActions from '../../../../../../components/ReportErrorActions';
-import GetHelpLink from '../GetHelpLink';
+} from '@/js/hooks/useBreakpoint';
+import AudienceSegmentationErrorSVG from '@/svg/graphics/audience-segmentation-error-full-width.svg';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
+import Typography from '@/js/components/Typography';
+import ErrorWidgetDetails from './ErrorWidgetDetails';
 
 const ErrorWidgetContent = forwardRef(
-	( { Widget, errors, onRetry, onRequestAccess, showRetryButton }, ref ) => {
+	(
+		{
+			Widget,
+			errors,
+			onRetry,
+			onRequestAccess,
+			showRetryButton,
+			failedAudiences,
+		},
+		ref
+	) => {
 		const breakpoint = useBreakpoint();
 		const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 		const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
@@ -64,7 +73,7 @@ const ErrorWidgetContent = forwardRef(
 				>
 					<Row>
 						<Cell smSize={ 6 } mdSize={ 8 } lgSize={ 7 }>
-							<h3 className="googlesitekit-publisher-win__title">
+							<Typography as="h3" type="title" size="large">
 								{ hasInsufficientPermissionsError
 									? __(
 											'Insufficient permissions',
@@ -74,30 +83,18 @@ const ErrorWidgetContent = forwardRef(
 											'Your visitor groups data loading failed',
 											'google-site-kit'
 									  ) }
-							</h3>
+							</Typography>
 							<div className="googlesitekit-widget-audience-segmentation-error__actions">
-								{ showRetryButton && onRetry ? (
-									<Button onClick={ onRetry } danger>
-										{ __( 'Retry', 'google-site-kit' ) }
-									</Button>
-								) : (
-									<ReportErrorActions
-										moduleSlug="analytics-4"
-										error={ errors }
-										GetHelpLink={
-											hasInsufficientPermissionsError
-												? GetHelpLink
-												: undefined
-										}
-										hideGetHelpLink={
-											! hasInsufficientPermissionsError
-										}
-										buttonVariant="danger"
-										getHelpClassName="googlesitekit-error-retry-text"
-										onRetry={ onRetry }
-										onRequestAccess={ onRequestAccess }
-									/>
-								) }
+								<ErrorWidgetDetails
+									failedAudiences={ failedAudiences }
+									showRetryButton={ showRetryButton }
+									onRetry={ onRetry }
+									onRequestAccess={ onRequestAccess }
+									errors={ errors }
+									hasInsufficientPermissionsError={
+										hasInsufficientPermissionsError
+									}
+								/>
 							</div>
 						</Cell>
 						{ ! isMobileBreakpoint && ! isTabletBreakpoint && (
@@ -139,6 +136,7 @@ ErrorWidgetContent.propTypes = {
 	onRetry: PropTypes.func.isRequired,
 	onRequestAccess: PropTypes.func.isRequired,
 	showRetryButton: PropTypes.bool,
+	failedAudiences: PropTypes.arrayOf( PropTypes.string ),
 };
 
 export default ErrorWidgetContent;

@@ -38,7 +38,7 @@
 	}
 
 	if ( purchase && canTrackPurchase ) {
-		const { id, totals, items } = purchase;
+		const { id, totals, items, user_data: userData } = purchase;
 
 		const eventData = formatEventData(
 			totals.total_price,
@@ -48,6 +48,11 @@
 			totals.shipping_total,
 			totals.tax_total
 		);
+
+		// User data is already normalized from WooCommerce.php.
+		if ( global._googlesitekit?.gtagUserData && userData ) {
+			eventData.user_data = userData;
+		}
 
 		global._googlesitekit?.gtagEvent?.( 'purchase', eventData );
 	}
@@ -91,7 +96,7 @@
 				return;
 			}
 
-			$productCard.on( 'click', function ( event ) {
+			$productCard.on( 'click', ( event ) => {
 				const $target = jQuery( event.target );
 				const $button = $target.closest(
 					'.wc-block-components-product-button [data-product_id]'
@@ -200,7 +205,7 @@
 	/**
 	 * Returns the price of a product formatted with decimal places if necessary.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.158.0
 	 *
 	 * @param {string} price                 The price to parse.
 	 * @param {number} [currencyMinorUnit=2] The number decimals to show in the currency.

@@ -24,7 +24,7 @@
  * Internal dependencies
  */
 const mockShowTooltip = jest.fn();
-jest.mock( '../../../../components/AdminMenuTooltip', () => ( {
+jest.mock( '../../../../components/AdminScreenTooltip', () => ( {
 	__esModule: true,
 	default: jest.fn(),
 	useShowTooltip: jest.fn( () => mockShowTooltip ),
@@ -37,19 +37,20 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import { ADS_NOTIFICATIONS } from '../..';
-import { MODULES_ADS, PLUGINS } from '../../datastore/constants';
-import { MODULE_SLUG_ADS } from '../../constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { ADS_NOTIFICATIONS } from '@/js/modules/ads';
+import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
-import { enabledFeatures } from '../../../../features';
+import { enabledFeatures } from '@/js/features';
 import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
 const NOTIFICATION_ID = 'ads-setup-cta';
@@ -75,7 +76,9 @@ describe( 'AdsModuleSetupCTABanner', () => {
 				connected: false,
 			},
 		] );
-		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
+		// Avoid invoking survey triggers for now.
+		provideSiteInfo( registry, { usingProxy: false } );
 
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
@@ -142,7 +145,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 				document.querySelector( '.mdc-dialog' )
 			).toBeInTheDocument();
 			// Dismissal should be triggered when the modal is opened.
-			expect( fetchMock ).toHaveFetchedTimes( 0 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 
 		it( 'should trigger WooCommerce redirect modal when both WooCommerce and Google For WooCommerce are active but Ads account is not connected', async () => {
@@ -179,7 +182,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 			).toBeInTheDocument();
 
 			// Dismissal should be triggered when the modal is opened.
-			expect( fetchMock ).toHaveFetchedTimes( 0 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 
 		it( 'should start Ads module activation when WooCommerce is not active', async () => {
@@ -273,19 +276,6 @@ describe( 'AdsModuleSetupCTABanner', () => {
 					connected: true,
 				},
 			] );
-
-			const isActive = await notification.checkRequirements(
-				registry,
-				VIEW_CONTEXT_MAIN_DASHBOARD
-			);
-
-			expect( isActive ).toBe( false );
-		} );
-
-		it( 'is not active when notification was previously dismissed', async () => {
-			await registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
-				[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
-			} );
 
 			const isActive = await notification.checkRequirements(
 				registry,

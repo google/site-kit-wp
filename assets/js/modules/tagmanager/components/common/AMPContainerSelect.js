@@ -35,11 +35,11 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
 	CONTAINER_CREATE,
 	MODULES_TAGMANAGER,
-} from '../../datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+} from '@/js/modules/tagmanager/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import ContainerSelect from './ContainerSelect';
-import { trackEvent } from '../../../../util/tracking';
-import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '@/js/util/tracking';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function AMPContainerSelect( { hasModuleAccess } ) {
 	const viewContext = useViewContext();
@@ -119,7 +119,6 @@ export default function AMPContainerSelect( { hasModuleAccess } ) {
 	);
 }
 
-// eslint-disable-next-line sitekit/acronym-case
 AMPContainerSelect.propTypes = {
 	hasModuleAccess: PropTypes.bool,
 };

@@ -29,25 +29,26 @@ import { useSelect } from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
-} from '../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import OptionalSettingsView from './OptionalSettingsView';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import DisplaySetting, {
-	BLANK_SPACE,
-} from '../../../../components/DisplaySetting';
-import Link from '../../../../components/Link';
-import VisuallyHidden from '../../../../components/VisuallyHidden';
-import { escapeURI } from '../../../../util/escape-uri';
-import { useFeature } from '../../../../hooks/useFeature';
-import SettingsStatuses from '../../../../components/settings/SettingsStatuses';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import DisplaySetting, { BLANK_SPACE } from '@/js/components/DisplaySetting';
+import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
+import Link from '@/js/components/Link';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
+import { escapeURI } from '@/js/util/escape-uri';
+import { useFeature } from '@/js/hooks/useFeature';
+import SettingsStatuses from '@/js/components/settings/SettingsStatuses';
 import {
 	isValidPropertyID,
 	isValidWebDataStreamID,
-} from '../../utils/validation';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+} from '@/js/modules/analytics-4/utils/validation';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import Typography from '@/js/components/Typography';
 
 export default function SettingsView() {
 	const gtgEnabled = useFeature( 'googleTagGateway' );
+	const gtagUserDataEnabled = useFeature( 'gtagUserData' );
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
@@ -126,9 +127,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Account', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ accountID } />
 					</p>
@@ -152,15 +158,25 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Property', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ propertyID } />
 					</p>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ createInterpolateElement(
 							__(
 								'<VisuallyHidden>Google Analytics</VisuallyHidden> Measurement ID',
@@ -170,16 +186,21 @@ export default function SettingsView() {
 								VisuallyHidden: <VisuallyHidden />,
 							}
 						) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ measurementID } />
 					</p>
 				</div>
 				{ googleTagID && (
 					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
+						<Typography
+							as="h5"
+							size="medium"
+							type="label"
+							className="googlesitekit-settings-module__meta-item-type"
+						>
 							{ __( 'Google Tag ID', 'google-site-kit' ) }
-						</h5>
+						</Typography>
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting value={ googleTagID } />
 						</p>
@@ -204,9 +225,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Code Snippet', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ useSnippet && (
 							<span>
@@ -239,7 +265,7 @@ export default function SettingsView() {
 					},
 					{
 						label: __(
-							'Enhanced Conversion Tracking',
+							'Plugin conversion tracking',
 							'google-site-kit'
 						),
 						status: isConversionTrackingEnabled,
@@ -257,6 +283,8 @@ export default function SettingsView() {
 						: [] ),
 				] }
 			/>
+
+			{ gtagUserDataEnabled && <EnhancedConversionsSettingsNotice /> }
 		</div>
 	);
 }

@@ -27,17 +27,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SpinnerButton from '../../googlesitekit/components-gm2/SpinnerButton';
+import SpinnerButton from '@/js/googlesitekit/components-gm2/SpinnerButton';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Grid, Cell, Row } from '../../material-components';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import Link from '../Link';
+import { Grid, Cell, Row } from '@/js/material-components';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import Link from '@/js/components/Link';
 import WPConsentAPIRequirement from './WPConsentAPIRequirement';
-import Tick from '../../../svg/icons/tick.svg';
-import { trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
-import ErrorNotice from '../ErrorNotice';
-import Notice from '../Notice';
+import Tick from '@/svg/icons/tick.svg';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import Notice from '@/js/components/Notice';
 
 export default function WPConsentAPIRequirements() {
 	const viewContext = useViewContext();
@@ -278,7 +278,7 @@ export default function WPConsentAPIRequirements() {
 							footer={
 								<Notice
 									type={ Notice.TYPES.INFO }
-									className="googlesitekit-notice--small googlesitekit-settings-notice"
+									className="googlesitekit-notice--small"
 									description={ __(
 										"Make sure you have installed a plugin compatible with WP Consent API (Site Kit isn't able to verify the compatibility of all WP plugins).",
 										'google-site-kit'

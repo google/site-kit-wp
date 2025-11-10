@@ -51,7 +51,7 @@ describe( 'ConfirmDisableConversionTrackingDialog', () => {
 
 		expect(
 			getByText(
-				/By disabling enhanced conversion tracking, you will no longer have access to/i
+				/By disabling plugin conversion tracking, you will no longer have access to/i
 			)
 		).toBeInTheDocument();
 	} );

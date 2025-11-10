@@ -30,9 +30,10 @@ import { set } from 'googlesitekit-api';
 import {
 	commonActions,
 	combineStores,
+	createReducer,
 	createRegistryControl,
 } from 'googlesitekit-data';
-import { createFetchStore } from '../data/create-fetch-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 
 const RECEIVE_GATHERING_DATA = 'RECEIVE_GATHERING_DATA';
 const RECEIVE_DATA_AVAILABLE_ON_LOAD = 'RECEIVE_DATA_AVAILABLE_ON_LOAD';
@@ -55,10 +56,10 @@ const WAIT_FOR_DATA_AVAILABILITY_STATE = 'WAIT_FOR_DATA_AVAILABILITY_STATE';
  *                                               not be determined, the selector should return null.
  * @return {Object} The gathering data store object.
  */
-export const createGatheringDataStore = (
+export function createGatheringDataStore(
 	moduleSlug,
 	{ storeName, dataAvailable = false, selectDataAvailability } = {}
-) => {
+) {
 	invariant(
 		'string' === typeof moduleSlug && moduleSlug,
 		'module slug is required.'
@@ -143,9 +144,13 @@ export const createGatheringDataStore = (
 	const controls = {
 		[ WAIT_FOR_DATA_AVAILABILITY_STATE ]: createRegistryControl(
 			( registry ) => () => {
-				const dataAvailabityDetermined = () =>
-					registry.select( storeName ).selectDataAvailability() !==
-					undefined;
+				function dataAvailabityDetermined() {
+					return (
+						registry
+							.select( storeName )
+							.selectDataAvailability() !== undefined
+					);
+				}
 
 				if ( dataAvailabityDetermined() ) {
 					return true;
@@ -163,29 +168,22 @@ export const createGatheringDataStore = (
 		),
 	};
 
-	const reducer = ( state = initialState, { type, payload } ) => {
-		switch ( type ) {
-			case RECEIVE_GATHERING_DATA: {
-				const { gatheringData } = payload;
-				return {
-					...state,
-					gatheringData,
-				};
-			}
+	const reducer = createReducer(
+		( state = initialState, { type, payload } ) => {
+			switch ( type ) {
+				case RECEIVE_GATHERING_DATA:
+					state.gatheringData = payload.gatheringData;
+					break;
 
-			case RECEIVE_DATA_AVAILABLE_ON_LOAD: {
-				const { dataAvailableOnLoad } = payload;
-				return {
-					...state,
-					dataAvailableOnLoad,
-				};
-			}
+				case RECEIVE_DATA_AVAILABLE_ON_LOAD:
+					state.dataAvailableOnLoad = payload.dataAvailableOnLoad;
+					break;
 
-			default: {
-				return state;
+				default:
+					break;
 			}
 		}
-	};
+	);
 
 	const resolvers = {
 		*isGatheringData() {
@@ -272,4 +270,4 @@ export const createGatheringDataStore = (
 		resolvers,
 		selectors,
 	} );
-};
+}

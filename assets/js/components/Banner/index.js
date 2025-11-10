@@ -32,7 +32,8 @@ import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../hooks/useBreakpoint';
+} from '@/js/hooks/useBreakpoint';
+import TitleIcon from './TitleIcon';
 import Title from './Title';
 import Description from './Description';
 import HelpText from './HelpText';
@@ -40,12 +41,13 @@ import LearnMoreLink from './LearnMoreLink';
 import CTAButton from './CTAButton';
 import DismissButton from './DismissButton';
 import Footer from './Footer';
-import Notice from '../Notice';
+import Notice from '@/js/components/Notice';
 
 const Banner = forwardRef(
 	(
 		{
 			className,
+			titleIcon,
 			title,
 			description,
 			additionalDescription,
@@ -78,19 +80,15 @@ const Banner = forwardRef(
 				className={ classnames( 'googlesitekit-banner', className ) }
 			>
 				<div className="googlesitekit-banner__content">
+					{ titleIcon && <TitleIcon>{ titleIcon }</TitleIcon> }
+
 					<Title>{ title }</Title>
 
-					<Description>
-						{ description }{ ' ' }
-						{ learnMoreLink?.href && (
-							<LearnMoreLink { ...learnMoreLink } />
-						) }
-						{ additionalDescription && (
-							<div className="googlesitekit-banner__additional-description">
-								{ additionalDescription }
-							</div>
-						) }
-					</Description>
+					<Description
+						description={ description }
+						learnMoreLink={ learnMoreLink }
+						additionalDescription={ additionalDescription }
+					/>
 
 					{ helpText && <HelpText>{ helpText }</HelpText> }
 
@@ -126,6 +124,7 @@ const Banner = forwardRef(
 );
 
 Banner.propTypes = {
+	titleIcon: PropTypes.node,
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
 	additionalDescription: PropTypes.oneOfType( [

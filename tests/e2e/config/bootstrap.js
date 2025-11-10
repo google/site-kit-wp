@@ -172,6 +172,12 @@ const IGNORE_CONSOLE_MESSAGES = [
 		matcher: 'startsWith',
 		pattern: 'Warning: You are importing createRoot from',
 	},
+	// Gutenberg blockEditor.transformStyles warnings within the block editor.
+	{
+		matcher: 'includes',
+		pattern:
+			'wp.blockEditor.transformStyles Failed to transform CSS. JSHandle@error',
+	},
 ];
 
 /**
@@ -186,7 +192,7 @@ const pageEvents = [];
 // The Jest timeout is increased because these tests are a bit slow
 jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
 // Set default timeout for Puppeteer waits. (Default: 30 sec)
-page.setDefaultTimeout( 5000 );
+page.setDefaultTimeout( 5_000 );
 // Set default timeout for individual expect-puppeteer assertions. (Default: 1000)
 setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 1000 } );
 

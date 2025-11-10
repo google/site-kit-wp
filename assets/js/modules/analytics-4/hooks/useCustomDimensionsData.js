@@ -31,16 +31,16 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
-} from '../datastore/constants';
-import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
-import { isInvalidCustomDimensionError } from '../utils/custom-dimensions';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { isInvalidCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import useFormValue from '@/js/hooks/useFormValue';
 
 /**
  * Gets custom dimensions data and state.
@@ -85,11 +85,9 @@ export default function useCustomDimensionsData( {
 			)
 	);
 
-	const isAutoCreatingCustomDimensions = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_CUSTOM_DIMENSIONS_CREATE,
-			'isAutoCreatingCustomDimensions'
-		)
+	const isAutoCreatingCustomDimensions = useFormValue(
+		FORM_CUSTOM_DIMENSIONS_CREATE,
+		'isAutoCreatingCustomDimensions'
 	);
 
 	const isCreatingCustomDimensions = useSelect( ( select ) => {

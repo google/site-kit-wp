@@ -47,17 +47,18 @@ import {
 	DialogTitle,
 	CircularProgress,
 } from 'googlesitekit-components';
-import { MODULES_ADS, PLUGINS } from '../../datastore/constants';
-import { MODULE_SLUG_ADS } from '../../constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import WooLogoIcon from '../../../../../svg/graphics/woo-logo.svg';
-import ExternalIcon from '../../../../../svg/icons/external.svg';
-import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
-import useViewContext from '../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../util';
+import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import WooLogoIcon from '@/svg/graphics/woo-logo.svg';
+import ExternalIcon from '@/svg/icons/external.svg';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import P from '@/js/components/Typography/P';
 
 export default function WooCommerceRedirectModal( {
 	dialogActive,
@@ -230,7 +231,7 @@ export default function WooCommerceRedirectModal( {
 					: __( 'Using the WooCommerce plugin?', 'google-site-kit' ) }
 			</DialogTitle>
 			<DialogContent>
-				<p>
+				<P>
 					{ isGoogleForWooCommerceAdsConnected ? (
 						<Fragment>
 							{ __(
@@ -249,7 +250,7 @@ export default function WooCommerceRedirectModal( {
 							'google-site-kit'
 						)
 					) }
-				</p>
+				</P>
 			</DialogContent>
 			<DialogFooter>
 				<Button
@@ -260,6 +261,7 @@ export default function WooCommerceRedirectModal( {
 							<CircularProgress size={ 14 } />
 						) : undefined
 					}
+					disabled={ !! isSaving }
 					tertiary
 				>
 					{ isGoogleForWooCommerceAdsConnected
@@ -295,7 +297,8 @@ export default function WooCommerceRedirectModal( {
 					target={
 						isGoogleForWooCommerceAdsConnected ? '_self' : '_blank'
 					}
-					tertiary
+					disabled={ !! isSaving }
+					tertiary={ ! isGoogleForWooCommerceAdsConnected }
 				>
 					{ isGoogleForWooCommerceAdsConnected
 						? __( 'View current Ads account', 'google-site-kit' )
@@ -312,7 +315,7 @@ export default function WooCommerceRedirectModal( {
 WooCommerceRedirectModal.propTypes = {
 	dialogActive: PropTypes.bool.isRequired,
 	onDismiss: PropTypes.func,
-	onClose: PropTypes.func.isRequired,
+	onClose: PropTypes.func,
 	onContinue: PropTypes.func,
 	onBeforeSetupCallback: PropTypes.func,
 };

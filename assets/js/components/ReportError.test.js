@@ -24,16 +24,17 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideUserInfo,
+	waitForDefaultTimeouts,
 } from '../../../tests/js/utils';
 import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../util/errors';
-import { fireEvent, render } from '../../../tests/js/test-utils';
+} from '@/js/util/errors';
+import { act, fireEvent, render } from '../../../tests/js/test-utils';
 import ReportError from './ReportError';
-import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../modules/analytics-4/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../googlesitekit/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 
 describe( 'ReportError', () => {
 	let registry;
@@ -94,7 +95,7 @@ describe( 'ReportError', () => {
 		invalidateResolutionSpy.mockReset();
 	} );
 
-	it( 'renders the error message', () => {
+	it( 'renders the error message', async () => {
 		const { container } = render(
 			<ReportError
 				moduleSlug={ moduleName }
@@ -112,6 +113,8 @@ describe( 'ReportError', () => {
 		expect( container.querySelector( 'p' ).textContent ).toEqual(
 			'Test error message'
 		);
+
+		await act( waitForDefaultTimeouts );
 	} );
 
 	it( 'renders the error message without HTML tags', async () => {

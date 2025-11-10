@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
-import { getLocale, isNumeric } from '../../../util';
+import { getLocale, isNumeric } from '@/js/util';
 
 export const selectors = {
 	/**

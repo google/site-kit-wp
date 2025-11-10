@@ -36,13 +36,13 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
-} from '../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	isValidAccountID,
 	isValidPropertySelection,
-} from '../../utils/validation';
-import { trackEvent } from '../../../../util';
-import useViewContext from '../../../../hooks/useViewContext';
+} from '@/js/modules/analytics-4/utils/validation';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function PropertySelect( props ) {
 	const {
@@ -56,7 +56,7 @@ export default function PropertySelect( props ) {
 	);
 
 	const properties = useSelect( ( select ) =>
-		hasModuleAccess !== false && ! isDisabled
+		hasModuleAccess && ! isDisabled
 			? select( MODULES_ANALYTICS_4 ).getPropertySummaries( accountID ) ||
 			  []
 			: null
@@ -106,7 +106,13 @@ export default function PropertySelect( props ) {
 	if ( ! isValidAccountID( accountID ) ) {
 		return null;
 	} else if ( isLoading ) {
-		return <ProgressBar smallHeight={ 80 } desktopHeight={ 88 } small />;
+		return (
+			<ProgressBar
+				mobileVerticalSpacing={ 76 }
+				desktopVerticalSpacing={ 84 }
+				small
+			/>
+		);
 	}
 
 	const isValidSelection =

@@ -15,7 +15,7 @@ exports[`PopularContentWidget should render correctly with the expected metrics 
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Most popular content by pageviews
           </h3>
@@ -139,7 +139,7 @@ exports[`PopularContentWidget should render the generic error variant when the r
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Most popular content by pageviews
         </h2>
@@ -154,7 +154,7 @@ exports[`PopularContentWidget should render the generic error variant when the r
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Data loading failed
         </h3>
@@ -201,7 +201,7 @@ exports[`PopularContentWidget should render the insufficient permissions error v
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Most popular content by pageviews
         </h2>
@@ -216,7 +216,7 @@ exports[`PopularContentWidget should render the insufficient permissions error v
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Insufficient permissions
         </h3>
@@ -267,7 +267,7 @@ exports[`PopularContentWidget should render the loading state while resolving th
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Most popular content by pageviews
           </h3>

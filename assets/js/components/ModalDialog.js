@@ -40,7 +40,7 @@ import {
 	DialogTitle,
 	SpinnerButton,
 } from 'googlesitekit-components';
-import ExclamationIcon from '../../svg/icons/warning.svg';
+import ExclamationIcon from '@/svg/icons/warning.svg';
 
 function ModalDialog( {
 	className = '',

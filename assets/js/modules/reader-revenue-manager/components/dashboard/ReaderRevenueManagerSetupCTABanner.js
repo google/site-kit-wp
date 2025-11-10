@@ -31,13 +31,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '../../constants';
-import { useShowTooltip } from '../../../../components/AdminMenuTooltip';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import { WEEK_IN_SECONDS } from '../../../../util';
-import SetupCTA from '../../../../googlesitekit/notifications/components/layout/SetupCTA';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { WEEK_IN_SECONDS } from '@/js/util';
+import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
 import BannerSVGDesktop from '@/svg/graphics/banner-rrm-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-rrm-setup-cta-mobile.svg?url';
 
@@ -95,18 +95,22 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 					),
 					onClick: onSetupCallback,
 					inProgress: isSaving,
+					dismissOnClick: true,
+					dismissOptions: {
+						skipHidingFromQueue: true,
+					},
 				} }
 				dismissButton={ {
 					label: isDismissalFinal
 						? __( 'Don’t show again', 'google-site-kit' )
 						: __( 'Maybe later', 'google-site-kit' ),
 					onClick: showTooltip,
+					dismissOptions: {
+						expiresInSeconds: isDismissalFinal
+							? 0
+							: 2 * WEEK_IN_SECONDS,
+					},
 					disabled: isSaving,
-				} }
-				dismissOptions={ {
-					expiresInSeconds: isDismissalFinal
-						? 0
-						: 2 * WEEK_IN_SECONDS,
 				} }
 				svg={ {
 					desktop: BannerSVGDesktop,

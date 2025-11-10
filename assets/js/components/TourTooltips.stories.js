@@ -34,7 +34,7 @@ import { Button } from 'googlesitekit-components';
 import Link from './../components/Link';
 import TourTooltips from './../components/TourTooltips';
 import { CORE_USER } from './../googlesitekit/datastore/user/constants';
-import { WithTestRegistry } from './../../../tests/js/utils';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { CORE_UI } from './../googlesitekit/datastore/ui/constants';
 
 // Create Mock WP Dashboard component to decouple tests to prevent future false negative.
@@ -362,10 +362,10 @@ function MockWPDashboard() {
 function TourControls() {
 	const { receiveGetDismissedTours } = useDispatch( CORE_USER );
 	const { setValue } = useDispatch( CORE_UI );
-	const reset = () => {
+	function reset() {
 		receiveGetDismissedTours( [] );
 		setValue( 'feature-step', 0 );
-	};
+	}
 
 	return (
 		<div style={ { textAlign: 'right' } }>
@@ -415,12 +415,12 @@ function Template() {
 		body: JSON.stringify( [ 'feature' ] ),
 		status: 200,
 	} );
-	const setupRegistry = ( registry ) => {
+	function setupRegistry( registry ) {
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
-	};
+	}
 
 	return (
-		<WithTestRegistry callback={ setupRegistry }>
+		<WithRegistrySetup func={ setupRegistry }>
 			<TourControls />
 			<MockWPDashboard />
 			<TourTooltips
@@ -428,7 +428,7 @@ function Template() {
 				tourID="feature"
 				gaEventCategory="storybook"
 			/>
-		</WithTestRegistry>
+		</WithRegistrySetup>
 	);
 }
 

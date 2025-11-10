@@ -39,17 +39,18 @@ import {
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../../constants';
-import { Grid, Row, Cell } from '../../../../../material-components';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
-import { setItem } from '../../../../../googlesitekit/api/cache';
-import { trackEvent } from '../../../../../util';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { Grid, Row, Cell } from '@/js/material-components';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import { trackEvent } from '@/js/util';
 import ContentAutoUpdate from './ContentAutoUpdate';
-import SupportLink from '../../../../../components/SupportLink';
-import useViewContext from '../../../../../hooks/useViewContext';
+import SupportLink from '@/js/components/SupportLink';
+import P from '@/js/components/Typography/P';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function AdSenseConnectCTA( { onDismissModule } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -118,6 +119,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 		await setItem( 'module_setup', MODULE_SLUG_ADSENSE, { ttl: 300 } );
 
 		navigateTo( response.moduleReauthURL );
+		return null;
 	}, [ activateModule, navigateTo, setInternalServerError, viewContext ] );
 
 	const handleCompleteSetup = useCallback(
@@ -150,6 +152,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 								<SpinnerButton
 									onClick={ handleConnect }
 									isSaving={ isConnectingAdSense }
+									disabled={ isConnectingAdSense }
 								>
 									{ __( 'Connect now', 'google-site-kit' ) }
 								</SpinnerButton>
@@ -176,7 +179,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 						{ ...cellProps }
 						className="googlesitekit-setup-module__footer-text"
 					>
-						<p>
+						<P>
 							{ createInterpolateElement(
 								__(
 									'AdSense accounts are <a>subject to review and approval</a> by the Google AdSense team',
@@ -192,7 +195,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 									),
 								}
 							) }
-						</p>
+						</P>
 					</Cell>
 				</Row>
 			</Grid>

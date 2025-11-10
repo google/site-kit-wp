@@ -30,10 +30,10 @@ import {
 	createRegistrySelector,
 	createReducer,
 } from 'googlesitekit-data';
-import { createFetchStore } from '../../data/create-fetch-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { CORE_SITE } from './constants';
-import { CORE_USER } from '../user/constants';
-import { actions as errorStoreActions } from '../../data/create-error-store';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 const { clearError, receiveError } = errorStoreActions;
 
 const { getRegistry } = commonActions;
@@ -163,7 +163,7 @@ const baseInitialState = {
 
 const baseActions = {
 	/**
-	 * Saves the Consent Mode settings.
+	 * Saves the consent mode settings.
 	 *
 	 * @since 1.122.0
 	 *
@@ -179,11 +179,11 @@ const baseActions = {
 	},
 
 	/**
-	 * Sets the Consent Mode enabled status.
+	 * Sets the consent mode enabled status.
 	 *
 	 * @since 1.122.0
 	 *
-	 * @param {string} enabled Consent Mode enabled status.
+	 * @param {string} enabled Consent mode enabled status.
 	 * @return {Object} Redux-style action.
 	 */
 	setConsentModeEnabled( enabled ) {
@@ -294,23 +294,23 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 
 const baseSelectors = {
 	/**
-	 * Gets the Consent Mode settings.
+	 * Gets the consent mode settings.
 	 *
 	 * @since 1.122.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object|undefined} Consent Mode settings, or `undefined` if not loaded.
+	 * @return {Object|undefined} Consent mode settings, or `undefined` if not loaded.
 	 */
 	getConsentModeSettings: ( state ) => {
 		return state.consentMode.settings;
 	},
 
 	/**
-	 * Gets the Consent Mode enabled status.
+	 * Gets the consent mode enabled status.
 	 *
 	 * @since 1.122.0
 	 *
-	 * @return {boolean|undefined} Consent Mode enabled status, or `undefined` if not loaded.
+	 * @return {boolean|undefined} Consent mode enabled status, or `undefined` if not loaded.
 	 */
 	isConsentModeEnabled: createRegistrySelector( ( select ) => () => {
 		const { enabled } = select( CORE_SITE ).getConsentModeSettings() || {};
@@ -319,12 +319,12 @@ const baseSelectors = {
 	} ),
 
 	/**
-	 * Gets the WP Consent Mode API info.
+	 * Gets the WP consent mode API info.
 	 *
 	 * @since 1.122.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object|undefined} WP Consent Mode API info, or `undefined` if not loaded.
+	 * @return {Object|undefined} WP consent mode API info, or `undefined` if not loaded.
 	 */
 	getConsentAPIInfo: ( state ) => {
 		return state.consentMode.apiInfo;
@@ -336,7 +336,7 @@ const baseSelectors = {
 	 * @since 1.132.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object|undefined} WP Consent Mode API response, or `undefined` if not loaded.
+	 * @return {Object|undefined} WP consent mode API response, or `undefined` if not loaded.
 	 */
 	getApiInstallResponse: ( state ) => {
 		return state.consentMode.apiInstallResponse;
@@ -348,7 +348,7 @@ const baseSelectors = {
 	 * @since 1.132.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|undefined} Gets the value if WP Consent Mode API is currently fetching, or `undefined` if not loaded.
+	 * @return {boolean|undefined} Gets the value if WP consent mode API is currently fetching, or `undefined` if not loaded.
 	 */
 	isApiFetching: ( state ) => {
 		return state.consentMode.isApiFetching;

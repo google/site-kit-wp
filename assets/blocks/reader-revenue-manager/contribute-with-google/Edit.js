@@ -25,8 +25,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { select } from 'googlesitekit-data';
-import { ButtonEdit } from '../common';
-import { MODULES_READER_REVENUE_MANAGER } from '../../../js/modules/reader-revenue-manager/datastore/constants';
+import { ButtonEdit } from '@/blocks/reader-revenue-manager/common';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 /**
  * Contribute with Google Block Edit component.

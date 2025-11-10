@@ -24,7 +24,7 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	provideCurrentSurvey,
 	provideTracking,
@@ -37,7 +37,7 @@ import {
 	multiQuestionFakeConditionsSurvey,
 	singleQuestionSurvey,
 	singleQuestionSurveyWithNoFollowUp,
-} from '../__fixtures__';
+} from '@/js/components/surveys/__fixtures__';
 
 function Template( { setupRegistry = () => {}, ...args } ) {
 	return (
@@ -117,11 +117,11 @@ export default {
 	title: 'Components/Surveys/CurrentSurvey',
 	decorators: [
 		( Story, { parameters } ) => {
-			const commonSetup = ( registry ) => {
+			function commonSetup( registry ) {
 				mockSurveyEventResponse();
 				provideCurrentSurvey( registry, parameters.survey );
 				provideTracking( registry, parameters.trackingEnabled );
-			};
+			}
 			return (
 				<WithRegistrySetup func={ commonSetup }>
 					<Story />

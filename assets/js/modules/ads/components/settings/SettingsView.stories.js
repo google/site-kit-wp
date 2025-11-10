@@ -20,10 +20,10 @@
  * Internal dependencies
  */
 import SettingsView from './SettingsView';
-import { Cell, Grid, Row } from '../../../../material-components';
-import { MODULES_ADS } from '../../datastore/constants';
-import { MODULE_SLUG_ADS } from '../../constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
@@ -70,11 +70,17 @@ GTGEnabled.parameters = {
 	features: [ 'googleTagGateway' ],
 };
 
+export const WithEnhancedConversionsNotice = Template.bind( null );
+WithEnhancedConversionsNotice.storyName = 'With enhanced conversions notice';
+WithEnhancedConversionsNotice.parameters = {
+	features: [ 'gtagUserData' ],
+};
+
 export default {
 	title: 'Modules/Ads/Settings/SettingsView',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ADS,
@@ -100,7 +106,7 @@ export default {
 						isGTGHealthy: args.googleTagGateway || false,
 						isScriptAccessEnabled: args.googleTagGateway || false,
 					} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
@@ -119,7 +125,7 @@ PaxConnected.parameters = {
 };
 PaxConnected.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			// Unset the value set in the previous scenario.
 			registry.dispatch( MODULES_ADS ).setConversionID( null );
 
@@ -127,7 +133,7 @@ PaxConnected.decorators = [
 				paxConversionID: 'AW-54321',
 				extCustomerID: 'C-872756827HGFSD',
 			} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>

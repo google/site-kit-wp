@@ -19,16 +19,17 @@
 module.exports = {
 	rules: {
 		'sitekit/acronym-case': [ 'error' ],
-		'sitekit/jsdoc-third-person': [ 'error' ],
+		'sitekit/function-declaration-consistency': [ 'error' ],
+		'sitekit/jsdoc-capitalization': [ 'error' ],
 		'sitekit/jsdoc-fullstop': [ 'error' ],
 		'sitekit/jsdoc-newlines': [ 'error' ],
+		'sitekit/jsdoc-no-unnamed-boolean-params': [ 'error' ],
 		'sitekit/jsdoc-requires-since': [ 'error' ],
-		'sitekit/jsdoc-capitalization': [ 'error' ],
 		'sitekit/jsdoc-tag-grouping': [ 'error' ],
 		'sitekit/jsdoc-tag-order': [ 'error' ],
-		'sitekit/no-yield-dispatch': [ 'error' ],
-		'sitekit/no-direct-date': [ 'error' ],
-		'sitekit/jsdoc-no-unnamed-boolean-params': [ 'error' ],
+		'sitekit/jsdoc-third-person': [ 'error' ],
 		'sitekit/no-boolean-props-before-values': [ 'error' ],
+		'sitekit/no-direct-date': [ 'error' ],
+		'sitekit/no-yield-dispatch': [ 'error' ],
 	},
 };

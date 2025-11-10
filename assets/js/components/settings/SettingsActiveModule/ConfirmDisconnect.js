@@ -20,26 +20,27 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useEvent } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { useState, useEffect, useCallback } from '@wordpress/element';
+import { useState, useCallback } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import RefocusableModalDialog from '../../RefocusableModalDialog';
-import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { clearCache } from '../../../googlesitekit/api/cache';
-import { listFormat, trackEvent } from '../../../util';
-import useViewContext from '../../../hooks/useViewContext';
+import RefocusableModalDialog from '@/js/components/RefocusableModalDialog';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { clearCache } from '@/js/googlesitekit/api/cache';
+import { listFormat, trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function ConfirmDisconnect( { slug } ) {
 	const viewContext = useViewContext();
@@ -69,18 +70,16 @@ export default function ConfirmDisconnect( { slug } ) {
 		setValue( dialogActiveKey, false );
 	}, [ dialogActiveKey, setValue ] );
 
-	useEffect( () => {
-		const onKeyPress = ( event ) => {
+	const onKeyPress = useCallback(
+		( event ) => {
 			if ( ESCAPE === event.keyCode && dialogActive ) {
 				onClose();
 			}
-		};
+		},
+		[ dialogActive, onClose ]
+	);
 
-		global.addEventListener( 'keydown', onKeyPress );
-		return () => {
-			global.removeEventListener( 'keydown', onKeyPress );
-		};
-	}, [ dialogActive, onClose ] );
+	useEvent( 'keydown', onKeyPress );
 
 	const { deactivateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );

@@ -20,21 +20,26 @@
  * Internal dependencies
  */
 import AMPContainerSelect from './AMPContainerSelect';
-import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
+import {
+	fireEvent,
+	render,
+	act,
+	waitForDefaultTimeouts,
+} from '../../../../../../tests/js/test-utils';
 import {
 	MODULES_TAGMANAGER,
 	CONTEXT_WEB,
 	CONTEXT_AMP,
 	CONTAINER_CREATE,
-} from '../../datastore/constants';
-import { AMP_MODE_PRIMARY } from '../../../../googlesitekit/datastore/site/constants';
+} from '@/js/modules/tagmanager/datastore/constants';
+import { AMP_MODE_PRIMARY } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideSiteInfo,
 	untilResolved,
 } from '../../../../../../tests/js/utils';
-import * as factories from '../../datastore/__factories__';
+import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
 
 describe( 'AMPContainerSelect', () => {
 	let registry;
@@ -168,9 +173,12 @@ describe( 'AMPContainerSelect', () => {
 			.dispatch( MODULES_TAGMANAGER )
 			.finishResolution( 'getContainers', [ accountID ] );
 
-		const { container, getByText } = render( <AMPContainerSelect />, {
-			registry,
-		} );
+		const { container, getByText, waitForRegistry } = render(
+			<AMPContainerSelect />,
+			{
+				registry,
+			}
+		);
 
 		expect(
 			registry.select( MODULES_TAGMANAGER ).getAMPContainerID()
@@ -198,6 +206,11 @@ describe( 'AMPContainerSelect', () => {
 		expect(
 			registry.select( MODULES_TAGMANAGER ).getInternalAMPContainerID()
 		).toBe( ampContainer.containerId ); // eslint-disable-line sitekit/acronym-case
+
+		// Ensure any pending async updates from the enhanced Select finish before unmount,
+		// preventing setState on unmounted component warnings in Jest.
+		await waitForRegistry();
+		await waitForDefaultTimeouts();
 	} );
 
 	it( 'should render a loading state while accounts have not been loaded', () => {

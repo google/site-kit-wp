@@ -26,29 +26,28 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../../datastore/constants';
-import useNotificationEvents from '../../hooks/useNotificationEvents';
-import Banner from '../../../../components/Banner';
-import LearnMoreLink from '../../../../components/Banner/LearnMoreLink';
-import CTAButton from '../../../../components/Banner/CTAButton';
-import DismissButton from '../../../../components/Banner/DismissButton';
-import { Cell, Grid, Row } from '../../../../material-components';
-import WarningDesktopSVG from '@/svg/graphics/warning-banner.svg?url';
-import ErrorDesktopSVG from '@/svg/graphics/error-banner.svg?url';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import Banner from '@/js/components/Banner';
+import LearnMoreLink from '@/js/components/Banner/LearnMoreLink';
+import CTAButton from '@/js/components/Banner/CTAButton';
+import DismissButton from '@/js/components/Banner/DismissButton';
+import { Cell, Grid, Row } from '@/js/material-components';
+import WarningDesktopSVG from '@/svg/graphics/banner-warning.svg?url';
+import ErrorDesktopSVG from '@/svg/graphics/banner-error.svg?url';
 
 export const TYPES = {
 	INFO: 'info',
 	ERROR: 'error',
 	WARNING: 'warning',
 };
+
 export default function BannerNotification( {
 	notificationID,
 	type = TYPES.INFO,
 	learnMoreLink,
 	dismissButton,
 	ctaButton,
-	dismissOnCTAClick,
-	dismissOptions,
 	gaTrackingEventArgs,
 	...props
 } ) {
@@ -59,38 +58,39 @@ export default function BannerNotification( {
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const handleDismissWithTrackEvent = async ( event ) => {
+	async function handleDismissWithTrackEvent( event ) {
 		await dismissButton?.onClick?.( event );
 		trackEvents.dismiss(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
-		dismissNotification( notificationID, {
-			...dismissOptions,
-		} );
-	};
 
-	const handleCTAClickWithTrackEvent = async ( event ) => {
+		dismissNotification( notificationID, {
+			...dismissButton?.dismissOptions,
+		} );
+	}
+
+	async function handleCTAClickWithTrackEvent( event ) {
 		trackEvents.confirm(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
 		await ctaButton?.onClick?.( event );
 
-		if ( dismissOnCTAClick ) {
+		if ( ctaButton?.dismissOnClick ) {
 			dismissNotification( notificationID, {
-				...dismissOptions,
+				...ctaButton?.dismissOptions,
 			} );
 		}
-	};
+	}
 
-	const handleLearnMoreClickWithTrackEvent = async ( event ) => {
+	async function handleLearnMoreClickWithTrackEvent( event ) {
 		trackEvents.clickLearnMore(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
 		await learnMoreLink?.onClick?.( event );
-	};
+	}
 
 	let SVGData = props?.svg;
 
@@ -117,7 +117,7 @@ export default function BannerNotification( {
 				`googlesitekit-banner-notification--${ type }`
 			) }
 		>
-			<Grid>
+			<Grid className="googlesitekit-page-content">
 				<Row>
 					<Cell size={ 12 }>
 						<Banner
@@ -152,13 +152,12 @@ export default function BannerNotification( {
 BannerNotification.propTypes = {
 	notificationID: PropTypes.string.isRequired,
 	type: PropTypes.oneOf( Object.values( TYPES ) ),
+	titleIcon: PropTypes.node,
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
 	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
 	ctaButton: PropTypes.shape( CTAButton.propTypes ),
-	dismissOnCTAClick: PropTypes.bool,
-	dismissOptions: PropTypes.object,
 	gaTrackingEventArgs: PropTypes.shape( {
 		category: PropTypes.string,
 		label: PropTypes.string,

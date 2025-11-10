@@ -25,16 +25,20 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { getPostTypesString, getProductIDLabel } from '../../utils/settings';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import {
+	getPostTypesString,
+	getProductIDLabel,
+} from '@/js/modules/reader-revenue-manager/utils/settings';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	SNIPPET_MODES,
 	MODULE_SLUG_READER_REVENUE_MANAGER,
-} from '../../constants';
-import DisplaySetting from '../../../../components/DisplaySetting';
-import { PublicationOnboardingStateNotice } from '../common';
+} from '@/js/modules/reader-revenue-manager/constants';
+import DisplaySetting from '@/js/components/DisplaySetting';
+import { PublicationOnboardingStateNotice } from '@/js/modules/reader-revenue-manager/components/common';
+import Typography from '@/js/components/Typography';
 
 export default function SettingsView() {
 	const publicationID = useSelect( ( select ) =>
@@ -99,18 +103,28 @@ export default function SettingsView() {
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--reader-revenue-manager">
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Publication', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ publicationID } />
 					</p>
 				</div>
 
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Default Product ID', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ productID } />
 					</p>
@@ -121,9 +135,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Display CTAs', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting
 							value={
@@ -135,12 +154,17 @@ export default function SettingsView() {
 
 				{ 'post_types' === snippetMode && (
 					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
+						<Typography
+							as="h5"
+							size="medium"
+							type="label"
+							className="googlesitekit-settings-module__meta-item-type"
+						>
 							{ __(
 								'Content type to display CTAs',
 								'google-site-kit'
 							) }
-						</h5>
+						</Typography>
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting value={ postTypes } />
 						</p>

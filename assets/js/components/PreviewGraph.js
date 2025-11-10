@@ -24,14 +24,20 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import UpArrow from '../../svg/icons/arrow-up.svg';
+import UpArrow from '@/svg/icons/arrow-up.svg';
+import Typography from './Typography';
 
 export default function PreviewGraph( { title, GraphSVG, showIcons } ) {
 	return (
 		<div className="googlesitekit-analytics-cta__preview-graph">
-			<h3 className="googlesitekit-analytics-cta__preview-graph--title">
+			<Typography
+				as="h3"
+				size="small"
+				type="body"
+				className="googlesitekit-analytics-cta__preview-graph--title"
+			>
 				{ title }
-			</h3>
+			</Typography>
 			<div>
 				<GraphSVG />
 			</div>

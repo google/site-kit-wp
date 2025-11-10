@@ -28,7 +28,7 @@ import {
 } from '../../../tests/js/utils';
 import { fireEvent, render } from '../../../tests/js/test-utils';
 import FeatureTours from './FeatureTours';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 describe( 'FeatureTours', () => {
 	let registry;

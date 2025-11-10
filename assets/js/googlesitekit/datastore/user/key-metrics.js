@@ -58,14 +58,14 @@ import {
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from './constants';
-import { CORE_SITE } from '../../datastore/site/constants';
-import { CORE_MODULES } from '../../modules/datastore/constants';
-import { CORE_WIDGETS } from '../../widgets/datastore/constants';
-import { ENUM_CONVERSION_EVENTS } from '../../../modules/analytics-4/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import { ENUM_CONVERSION_EVENTS } from '@/js/modules/analytics-4/datastore/constants';
 
-import { createFetchStore } from '../../data/create-fetch-store';
-import { actions as errorStoreActions } from '../../data/create-error-store';
-import { KEY_METRICS_WIDGETS } from '../../../components/KeyMetrics/key-metrics-widgets';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 
 const { receiveError, clearError } = errorStoreActions;
 
@@ -74,6 +74,12 @@ const SET_KEY_METRICS_SETTING = 'SET_KEY_METRICS_SETTING';
 const baseInitialState = {
 	keyMetricsSettings: undefined,
 };
+
+const fetchStoreReducerCallback = createReducer(
+	( state, keyMetricsSettings ) => {
+		state.keyMetricsSettings = keyMetricsSettings;
+	}
+);
 
 const fetchGetKeyMetricsSettingsStore = createFetchStore( {
 	baseName: 'getKeyMetricsSettings',
@@ -84,20 +90,14 @@ const fetchGetKeyMetricsSettingsStore = createFetchStore( {
 			// make requests to Google APIs so it's not a slow request.
 			useCache: false,
 		} ),
-	reducerCallback: ( state, keyMetricsSettings ) => ( {
-		...state,
-		keyMetricsSettings,
-	} ),
+	reducerCallback: fetchStoreReducerCallback,
 } );
 
 const fetchSaveKeyMetricsSettingsStore = createFetchStore( {
 	baseName: 'saveKeyMetricsSettings',
 	controlCallback: ( settings ) =>
 		set( 'core', 'user', 'key-metrics', { settings } ),
-	reducerCallback: ( state, keyMetricsSettings ) => ( {
-		...state,
-		keyMetricsSettings,
-	} ),
+	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
 	validateParams: ( settings ) => {
 		invariant( isPlainObject( settings ), 'Settings should be an object.' );
@@ -328,7 +328,7 @@ const baseSelectors = {
 			const userInputSettings =
 				select( CORE_USER ).getUserInputSettings();
 
-			const showConversionTailoredMetrics = ( events ) => {
+			function showConversionTailoredMetrics( events ) {
 				return events.some(
 					( event ) =>
 						userInputSettings?.includeConversionEvents?.values?.includes(
@@ -339,7 +339,7 @@ const baseSelectors = {
 								event
 							) )
 				);
-			};
+			}
 
 			return {
 				publish_blog: [

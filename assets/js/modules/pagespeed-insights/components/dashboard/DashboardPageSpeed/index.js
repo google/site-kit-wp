@@ -33,9 +33,9 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button, ProgressBar } from 'googlesitekit-components';
 import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
-import { trackEvent } from '../../../../../util/tracking';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import { trackEvent } from '@/js/util/tracking';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	MODULES_PAGESPEED_INSIGHTS,
 	STRATEGY_MOBILE,
@@ -45,8 +45,8 @@ import {
 	DATA_SRC_RECOMMENDATIONS,
 	UI_STRATEGY,
 	UI_DATA_SOURCE,
-} from '../../../datastore/constants';
-import useViewContext from '../../../../../hooks/useViewContext';
+} from '@/js/modules/pagespeed-insights/datastore/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import Loading from './Loading';
 import Header from './Header';
 import Footer from './Footer';
@@ -259,6 +259,7 @@ export default function DashboardPageSpeed() {
 					ref={ trackingRef }
 					isFetching={ isFetching }
 					updateActiveTab={ updateActiveTab }
+					recommendations={ recommendations }
 				/>
 
 				{ isFetching && (

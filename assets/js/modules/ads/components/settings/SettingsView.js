@@ -24,23 +24,27 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_ADS } from '../../datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import DisplaySetting from '../../../../components/DisplaySetting';
-import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import DisplaySetting from '@/js/components/DisplaySetting';
+import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
+import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
 import { useFeature } from './../../../../hooks/useFeature';
-import SettingsStatuses from '../../../../components/settings/SettingsStatuses';
+import SettingsStatuses from '@/js/components/settings/SettingsStatuses';
+import Typography from '@/js/components/Typography';
 
 export default function SettingsView() {
 	const paxEnabled = useFeature( 'adsPax' );
 	const gtgEnabled = useFeature( 'googleTagGateway' );
+	const gtagUserDataEnabled = useFeature( 'gtagUserData' );
 
 	const conversionID = useSelect( ( select ) =>
 		select( MODULES_ADS ).getConversionID()
@@ -96,48 +100,63 @@ export default function SettingsView() {
 			</div>
 
 			{ ! isAdBlockerActive && (
-				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Conversion ID', 'google-site-kit' ) }
-					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						{ conversionIDValue === '' &&
-							__( 'None', 'google-site-kit' ) }
-						{ conversionIDValue ||
-							( typeof conversionIDValue === 'undefined' && (
-								<DisplaySetting value={ conversionIDValue } />
-							) ) }
-					</p>
-				</div>
-			) }
-
-			{ ! isAdBlockerActive && isPaxView && (
-				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Customer ID', 'google-site-kit' ) }
-					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						{ extCustomerID === '' &&
-							__( 'None', 'google-site-kit' ) }
-						{ extCustomerID ||
-							( typeof extCustomerID === 'undefined' && (
-								<DisplaySetting value={ extCustomerID } />
-							) ) }
-					</p>
-				</div>
+				<Fragment>
+					<div className="googlesitekit-settings-module__meta-item">
+						<Typography
+							as="h5"
+							size="medium"
+							type="label"
+							className="googlesitekit-settings-module__meta-item-type"
+						>
+							{ __( 'Conversion ID', 'google-site-kit' ) }
+						</Typography>
+						<p className="googlesitekit-settings-module__meta-item-data">
+							{ conversionIDValue === '' &&
+								__( 'None', 'google-site-kit' ) }
+							{ conversionIDValue ||
+								( typeof conversionIDValue === 'undefined' && (
+									<DisplaySetting
+										value={ conversionIDValue }
+									/>
+								) ) }
+						</p>
+					</div>
+					{ isPaxView && (
+						<div className="googlesitekit-settings-module__meta-item">
+							<Typography
+								as="h5"
+								size="medium"
+								type="body"
+								className="googlesitekit-settings-module__meta-item-type"
+							>
+								{ __( 'Customer ID', 'google-site-kit' ) }
+							</Typography>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								{ extCustomerID === '' &&
+									__( 'None', 'google-site-kit' ) }
+								{ extCustomerID ||
+									( typeof extCustomerID === 'undefined' && (
+										<DisplaySetting
+											value={ extCustomerID }
+										/>
+									) ) }
+							</p>
+						</div>
+					) }
+				</Fragment>
 			) }
 
 			<SettingsStatuses
-				statuses={
-					gtgEnabled
+				statuses={ [
+					{
+						label: __(
+							'Plugin conversion tracking',
+							'google-site-kit'
+						),
+						status: isConversionTrackingEnabled,
+					},
+					...( gtgEnabled
 						? [
-								{
-									label: __(
-										'Enhanced Conversion Tracking',
-										'google-site-kit'
-									),
-									status: isConversionTrackingEnabled,
-								},
 								{
 									label: __(
 										'Google tag gateway for advertisers',
@@ -146,17 +165,11 @@ export default function SettingsView() {
 									status: isGTGEnabled,
 								},
 						  ]
-						: [
-								{
-									label: __(
-										'Conversion Tracking',
-										'google-site-kit'
-									),
-									status: isConversionTrackingEnabled,
-								},
-						  ]
-				}
+						: [] ),
+				] }
 			/>
+
+			{ gtagUserDataEnabled && <EnhancedConversionsSettingsNotice /> }
 		</div>
 	);
 }

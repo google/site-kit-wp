@@ -27,7 +27,7 @@ import { withQuery } from '@storybook/addon-queryparams';
 import { provideModules } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import ModuleSetupSuccessNotification from './ModuleSetupSuccessNotification';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -53,9 +53,9 @@ export default {
 	decorators: [
 		withQuery,
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

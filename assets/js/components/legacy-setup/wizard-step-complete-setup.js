@@ -31,8 +31,10 @@ import { Component } from '@wordpress/element';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { Cell, Grid, Row } from '../../material-components';
-import { trackEvent } from '../../util';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 class WizardStepCompleteSetup extends Component {
 	constructor( props ) {
@@ -54,20 +56,20 @@ class WizardStepCompleteSetup extends Component {
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
-							<h2
-								className="
-									googlesitekit-heading-3
-									googlesitekit-wizard-step__title
-								"
+							<Typography
+								as="h3"
+								className="googlesitekit-wizard-step__title"
+								size="small"
+								type="headline"
 							>
 								{ __( 'Congratulations!', 'google-site-kit' ) }
-							</h2>
-							<p>
+							</Typography>
+							<P>
 								{ __(
 									'You successfully completed the Site Kit setup and connected Search Console. Check the dashboard for more services to connect.',
 									'google-site-kit'
 								) }
-							</p>
+							</P>
 							<div className="googlesitekit-wizard-step__action">
 								<Button
 									id="wizard-step-five-proceed"

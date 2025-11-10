@@ -42,17 +42,18 @@ import {
 	createRegistryControl,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import {
 	CORE_MODULES,
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
 } from './constants';
-import { CORE_SITE } from '../../datastore/site/constants';
-import { CORE_USER } from '../../datastore/user/constants';
-import { createFetchStore } from '../../data/create-fetch-store';
-import { listFormat } from '../../../util';
-import DefaultSettingsSetupIncomplete from '../../../components/settings/DefaultSettingsSetupIncomplete';
-import { createValidatedAction } from '../../data/utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { listFormat } from '@/js/util';
+import DefaultSettingsSetupIncomplete from '@/js/components/settings/DefaultSettingsSetupIncomplete';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
@@ -63,6 +64,7 @@ const RECEIVE_CHECK_REQUIREMENTS_SUCCESS = 'RECEIVE_CHECK_REQUIREMENTS_SUCCESS';
 const RECEIVE_RECOVERABLE_MODULES = 'RECEIVE_RECOVERABLE_MODULES';
 const RECEIVE_SHARED_OWNERSHIP_MODULES = 'RECEIVE_SHARED_OWNERSHIP_MODULES';
 const CLEAR_RECOVERED_MODULES = 'CLEAR_RECOVERED_MODULES';
+const RECEIVE_INLINE_MODULES_DATA = 'RECEIVE_INLINE_MODULES_DATA';
 
 const moduleDefaults = {
 	slug: '',
@@ -139,15 +141,12 @@ const fetchGetModulesStore = createFetchStore( {
 			useCache: false,
 		} );
 	},
-	reducerCallback: ( state, modules ) => {
-		return {
-			...state,
-			isAwaitingModulesRefresh: false,
-			serverDefinitions: modules.reduce( ( acc, module ) => {
-				return { ...acc, [ module.slug ]: module };
-			}, {} ),
-		};
-	},
+	reducerCallback: createReducer( ( state, modules ) => {
+		state.isAwaitingModulesRefresh = false;
+		state.serverDefinitions = modules.reduce( ( acc, module ) => {
+			return { ...acc, [ module.slug ]: module };
+		}, {} );
+	} ),
 } );
 
 const fetchSetModuleActivationStore = createFetchStore( {
@@ -158,14 +157,11 @@ const fetchSetModuleActivationStore = createFetchStore( {
 			active,
 		} );
 	},
-	reducerCallback: ( state ) => {
+	reducerCallback: createReducer( ( state ) => {
 		// Updated module activation state is handled by re-fetching module
 		// data instead, so this reducer just sets the below flag.
-		return {
-			...state,
-			isAwaitingModulesRefresh: true,
-		};
-	},
+		state.isAwaitingModulesRefresh = true;
+	} ),
 	argsToParams: ( slug, active ) => {
 		return {
 			slug,
@@ -183,15 +179,9 @@ const fetchCheckModuleAccessStore = createFetchStore( {
 	controlCallback: ( { slug } ) => {
 		return set( 'core', 'modules', 'check-access', { slug } );
 	},
-	reducerCallback: ( state, { access }, { slug } ) => {
-		return {
-			...state,
-			moduleAccess: {
-				...state.moduleAccess,
-				[ slug ]: access,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, { access }, { slug } ) => {
+		state.moduleAccess[ slug ] = access;
+	} ),
 	argsToParams: ( slug ) => {
 		return { slug };
 	},
@@ -205,12 +195,9 @@ const fetchRecoverModulesStore = createFetchStore( {
 	controlCallback: ( { slugs } ) => {
 		return set( 'core', 'modules', 'recover-modules', { slugs } );
 	},
-	reducerCallback: ( state, recoveredModules ) => {
-		return {
-			...state,
-			recoveredModules,
-		};
-	},
+	reducerCallback: createReducer( ( state, recoveredModules ) => {
+		state.recoveredModules = recoveredModules;
+	} ),
 	argsToParams: ( slugs ) => {
 		return { slugs };
 	},
@@ -231,6 +218,7 @@ const baseInitialState = {
 	recoverableModules: undefined,
 	sharedOwnershipModules: undefined,
 	recoveredModules: undefined,
+	inlineModulesData: undefined,
 };
 
 const baseActions = {
@@ -572,6 +560,32 @@ const baseActions = {
 			type: CLEAR_RECOVERED_MODULES,
 		};
 	},
+
+	/**
+	 * Receives inline modules data.
+	 * Stores inline modules data in the datastore.
+	 *
+	 * Because this is frequently-accessed data, this is usually sourced
+	 * from a global variable (`_googlesitekitModulesData`), set by PHP
+	 * in the `before_print` callback for `googlesitekit-modules`.
+	 *
+	 * @since 1.162.0
+	 * @private
+	 *
+	 * @param {Object} inlineModulesData Inline modules data, usually supplied via a global variable from PHP.
+	 * @return {Object} Action for RECEIVE_INLINE_MODULES_DATA.
+	 */
+	receiveInlineModulesData: createValidatedAction(
+		( inlineModulesData ) => {
+			invariant( inlineModulesData, 'inlineModulesData is required' );
+		},
+		( inlineModulesData ) => {
+			return {
+				payload: { inlineModulesData },
+				type: RECEIVE_INLINE_MODULES_DATA,
+			};
+		}
+	),
 };
 
 export const baseControls = {
@@ -593,7 +607,7 @@ export const baseControls = {
 
 				// If a storeName wasn't specified on registerModule we assume there is no store for this module
 				if ( ! storeName ) {
-					return;
+					return null;
 				}
 
 				if ( select( storeName )?.getAdminReauthURL ) {
@@ -606,7 +620,7 @@ export const baseControls = {
 	),
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case REGISTER_MODULE: {
 			const { slug, settings } = payload;
@@ -615,74 +629,70 @@ const baseReducer = ( state, { type, payload } ) => {
 				global.console.warn(
 					`Could not register module with slug "${ slug }". Module "${ slug }" is already registered.`
 				);
-				return state;
+				return;
 			}
 
-			return {
-				...state,
-				clientDefinitions: {
-					...state.clientDefinitions,
-					[ slug ]: settings,
-				},
-			};
+			state.clientDefinitions[ slug ] = settings;
+			break;
 		}
 
 		case RECEIVE_CHECK_REQUIREMENTS_ERROR: {
 			const { slug, error } = payload;
 
-			return {
-				...state,
-				checkRequirementsResults: {
-					...state.checkRequirementsResults,
-					[ slug ]: error,
-				},
-			};
+			state.checkRequirementsResults[ slug ] = error;
+			break;
 		}
 
 		case RECEIVE_CHECK_REQUIREMENTS_SUCCESS: {
 			const { slug } = payload;
-			return {
-				...state,
-				checkRequirementsResults: {
-					...state.checkRequirementsResults,
-					[ slug ]: true,
-				},
-			};
+
+			state.checkRequirementsResults[ slug ] = true;
+			break;
 		}
 
 		case RECEIVE_RECOVERABLE_MODULES: {
 			const { recoverableModules } = payload;
-			return {
-				...state,
-				recoverableModules,
-			};
+
+			state.recoverableModules = recoverableModules;
+			break;
 		}
 
 		case RECEIVE_SHARED_OWNERSHIP_MODULES: {
 			const { sharedOwnershipModules } = payload;
-			return {
-				...state,
-				sharedOwnershipModules,
-			};
+
+			state.sharedOwnershipModules = sharedOwnershipModules;
+			break;
 		}
 
 		case CLEAR_RECOVERED_MODULES: {
-			return {
-				...state,
-				recoveredModules: undefined,
-			};
+			state.recoveredModules = undefined;
+			break;
 		}
 
-		default: {
-			return state;
+		case RECEIVE_INLINE_MODULES_DATA: {
+			const { inlineModulesData } = payload;
+
+			state.inlineModulesData = inlineModulesData;
+			break;
 		}
+
+		default:
+			break;
 	}
-};
+} );
 
 function* waitForModules() {
 	const { resolveSelect } = yield commonActions.getRegistry();
 
 	yield commonActions.await( resolveSelect( CORE_MODULES ).getModules() );
+}
+
+function* waitForModulesInlineData() {
+	const { resolveSelect } = yield commonActions.getRegistry();
+
+	yield commonActions.await(
+		resolveSelect( CORE_MODULES ).getInlineModulesData()
+	);
 }
 
 const baseResolvers = {
@@ -763,6 +773,25 @@ const baseResolvers = {
 		}
 	},
 
+	*hasModuleOwnership( slug ) {
+		const { select, resolveSelect } = yield commonActions.getRegistry();
+
+		const hasOwnership = select( CORE_MODULES ).hasModuleOwnership( slug );
+
+		if ( hasOwnership !== undefined ) {
+			return;
+		}
+
+		const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+
+		yield commonActions.await(
+			Promise.all( [
+				resolveSelect( CORE_USER ).getUser(),
+				resolveSelect( storeName ).getSettings(),
+			] )
+		);
+	},
+
 	*getRecoverableModules() {
 		const registry = yield commonActions.getRegistry();
 		const modules = yield commonActions.await(
@@ -804,7 +833,25 @@ const baseResolvers = {
 		);
 	},
 
+	*getInlineModulesData() {
+		const registry = yield commonActions.getRegistry();
+
+		if ( registry.select( CORE_MODULES ).getInlineModulesData() ) {
+			return;
+		}
+
+		if ( ! global._googlesitekitModulesData ) {
+			return;
+		}
+
+		yield baseActions.receiveInlineModulesData(
+			global._googlesitekitModulesData
+		);
+	},
+
 	getModule: waitForModules,
+
+	getModuleInlineData: waitForModulesInlineData,
 
 	isModuleActive: waitForModules,
 
@@ -1478,8 +1525,9 @@ const baseSelectors = {
 
 		const modules = Object.keys( recoverableModules );
 
-		const getRecoveryError = ( module ) =>
-			recoveredModules?.error?.[ module ];
+		function getRecoveryError( module ) {
+			return recoveredModules?.error?.[ module ];
+		}
 
 		return modules
 			.filter( ( module ) => !! getRecoveryError( module ) )
@@ -1575,6 +1623,44 @@ const baseSelectors = {
 			}
 
 			return select( CORE_USER ).getAccountChooserURL( module.homepage );
+		}
+	),
+
+	/**
+	 * Gets inline modules data.
+	 *
+	 * Returns all inline modules data that was loaded from the global variable.
+	 *
+	 * @since 1.162.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Inline modules data object; `undefined` if not loaded.
+	 */
+	getInlineModulesData: ( state ) => {
+		return state.inlineModulesData;
+	},
+
+	/**
+	 * Gets inline data for a specific module.
+	 *
+	 * Returns inline data for the specified module slug.
+	 *
+	 * @since 1.162.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(Object|undefined)} Module inline data object; `undefined` if not loaded.
+	 */
+	getModuleInlineData: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const inlineModulesData =
+				select( CORE_MODULES ).getInlineModulesData();
+
+			if ( inlineModulesData === undefined ) {
+				return undefined;
+			}
+
+			return inlineModulesData[ slug ];
 		}
 	),
 };

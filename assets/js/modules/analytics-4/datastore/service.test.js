@@ -31,7 +31,7 @@ import {
 	REPORT_ARGS_NAV_KEY,
 	REPORT_ARGS_SELECTED_DIMENSION_KEY,
 	REPORT_ARGS_SELECTED_METRIC_KEY,
-} from '../constants';
+} from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'module/analytics-4 service store', () => {

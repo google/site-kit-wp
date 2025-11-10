@@ -31,21 +31,18 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { Cell } from '../../../../../../material-components';
-import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
+import { Cell } from '@/js/material-components';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { ActivateAnalyticsCTA } from '../../../common';
-import CreateKeyEventCTA from '../CreateKeyEventCTA';
-import RecoverableModules from '../../../../../../components/RecoverableModules';
-import {
-	BREAKPOINT_SMALL,
-	useBreakpoint,
-} from '../../../../../../hooks/useBreakpoint';
+import { ActivateAnalyticsCTA } from '@/js/modules/search-console/components/common';
+import CreateKeyEventCTA from '@/js/modules/search-console/components/dashboard/SearchFunnelWidgetGA4/CreateKeyEventCTA';
+import RecoverableModules from '@/js/components/RecoverableModules';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { getCellProps } from './utils';
 
 export default function OptionalCells( {
 	canViewSharedAnalytics4,
-	error,
+	errors,
 	showGA4,
 	showKeyEventsCTA,
 	showRecoverableGA4,
@@ -84,11 +81,11 @@ export default function OptionalCells( {
 			{ ! showRecoverableGA4 &&
 				canViewSharedAnalytics4 &&
 				analyticsModuleActiveAndConnected &&
-				error && (
+				errors.length > 0 && (
 					<Cell { ...halfCellProps }>
 						<WidgetReportError
 							moduleSlug="analytics-4"
-							error={ error }
+							error={ errors }
 						/>
 					</Cell>
 				) }
@@ -114,7 +111,7 @@ export default function OptionalCells( {
 
 OptionalCells.propTypes = {
 	canViewSharedAnalytics4: PropTypes.bool.isRequired,
-	error: PropTypes.object,
+	error: PropTypes.arrayOf( PropTypes.object ),
 	showGA4: PropTypes.bool.isRequired,
 	showKeyEventsCTA: PropTypes.bool.isRequired,
 	showRecoverableGA4: PropTypes.bool,

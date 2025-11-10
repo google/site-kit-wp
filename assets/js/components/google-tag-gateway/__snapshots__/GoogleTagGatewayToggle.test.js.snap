@@ -204,6 +204,7 @@ exports[`GoogleTagGatewayToggle should render in loading state if the server req
     <div
       class="mdc-linear-progress googlesitekit-google-tag-gateway-toggle__progress mdc-linear-progress--indeterminate mdc-linear-progress--small"
       role="progressbar"
+      style="height: 4px;"
     >
       <div
         class="mdc-linear-progress__buffering-dots"

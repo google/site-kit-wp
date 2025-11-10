@@ -29,15 +29,15 @@ import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 	STRATEGY_ZIP,
-} from '../../../utils/data-mock';
-import { properties } from '../../../datastore/__fixtures__';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
-import { DAY_IN_SECONDS } from '../../../../../util';
-import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { properties } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import ModulePopularPagesWidgetGA4 from '.';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../tests/js/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 
 const reportOptions = [
 	{
@@ -254,7 +254,7 @@ export default {
 	title: 'Modules/Analytics4/Widgets/ModulePopularPagesWidgetGA4',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ANALYTICS_4,
@@ -271,7 +271,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

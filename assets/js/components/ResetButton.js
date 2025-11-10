@@ -27,21 +27,20 @@ import {
 	useEffect,
 	useState,
 } from '@wordpress/element';
-import { ESCAPE } from '@wordpress/keycodes';
-import { useDebounce } from '../hooks/useDebounce';
+import { useDebounce } from '@/js/hooks/useDebounce';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import ModalDialog from './ModalDialog';
-import { clearCache } from '../googlesitekit/api/cache';
+import { clearCache } from '@/js/googlesitekit/api/cache';
 import Portal from './Portal';
 import Link from './Link';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
-import { trackEvent } from '../util/tracking';
-import useViewContext from '../hooks/useViewContext';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { trackEvent } from '@/js/util/tracking';
+import useViewContext from '@/js/hooks/useViewContext';
 
 function ResetButton( { children } ) {
 	const postResetURL = useSelect( ( select ) =>
@@ -72,28 +71,6 @@ function ResetButton( { children } ) {
 			debouncedSetInProgress( false );
 		}
 	}, [ isDoingReset, isNavigatingToPostResetURL, debouncedSetInProgress ] );
-
-	useEffect( () => {
-		const handleCloseModal = ( event ) => {
-			if ( ESCAPE === event.keyCode ) {
-				// Only close the modal if the "Escape" key is pressed.
-				setDialogActive( false );
-			}
-		};
-
-		if ( dialogActive ) {
-			// When the dialogActive changes and it is set to true(has opened), add the event listener.
-			global.addEventListener( 'keyup', handleCloseModal, false );
-		}
-		// Remove the event listener when the dialog is removed; there's no need
-		// to have it attached when it won't be used.
-		return () => {
-			if ( dialogActive ) {
-				// When the dialogActive is true(is open) and its value changes, remove the event listener.
-				global.removeEventListener( 'keyup', handleCloseModal );
-			}
-		};
-	}, [ dialogActive ] );
 
 	const { reset } = useDispatch( CORE_SITE );
 	const { navigateTo } = useDispatch( CORE_LOCATION );

@@ -31,6 +31,19 @@ class FakeConversionEventProvider extends Conversion_Events_Provider {
 	}
 
 	/**
+	 * Gets the enhanced conversion event names.
+	 *
+	 * @since 1.165.0
+	 *
+	 * @return array List of enhanced conversion event names.
+	 */
+	public function get_enhanced_event_names() {
+		return array(
+			'test-event',
+		);
+	}
+
+	/**
 	 * Registers the script for the provider.
 	 *
 	 * @since 1.126.0

@@ -27,7 +27,7 @@ import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import {
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_RETURNING_VISITORS,
-} from '../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import ChangeMetricsLink from './ChangeMetricsLink';
 
 function Template() {
@@ -43,7 +43,7 @@ export default {
 	component: ChangeMetricsLink,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry );
 				provideKeyMetrics( registry, {
 					widgetSlugs: [
@@ -51,7 +51,7 @@ export default {
 						KM_ANALYTICS_RETURNING_VISITORS,
 					],
 				} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

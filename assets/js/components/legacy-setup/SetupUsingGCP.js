@@ -34,18 +34,19 @@ import { compose } from '@wordpress/compose';
 import { withSelect } from 'googlesitekit-data';
 import { set } from 'googlesitekit-api';
 import { Button } from 'googlesitekit-components';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	PERMISSION_SETUP,
 	CORE_USER,
-} from '../../googlesitekit/datastore/user/constants';
-import { Cell, Grid, Row } from '../../material-components';
-import Header from '../Header';
-import Layout from '../layout/Layout';
-import { clearCache } from '../../googlesitekit/api/cache';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
+import Header from '@/js/components/Header';
+import Layout from '@/js/components/layout/Layout';
+import { clearCache } from '@/js/googlesitekit/api/cache';
 import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
-import HelpMenu from '../help/HelpMenu';
+import HelpMenu from '@/js/components/help/HelpMenu';
+import Typography from '@/js/components/Typography';
 
 class SetupUsingGCP extends Component {
 	constructor( props ) {
@@ -207,7 +208,7 @@ class SetupUsingGCP extends Component {
 
 		if ( this.isSetupFinished() ) {
 			delay(
-				function () {
+				() => {
 					global.location.replace( redirectURL );
 				},
 				500,
@@ -322,12 +323,17 @@ class SetupUsingGCP extends Component {
 												<Grid>
 													<Row>
 														<Cell size={ 12 }>
-															<h1 className="googlesitekit-setup__title">
+															<Typography
+																as="h1"
+																className="googlesitekit-setup__title"
+																size="large"
+																type="headline"
+															>
 																{ __(
 																	'Authenticate Site Kit',
 																	'google-site-kit'
 																) }
-															</h1>
+															</Typography>
 															<p className="googlesitekit-setup__description">
 																{ __(
 																	'Please sign into your Google account to begin.',

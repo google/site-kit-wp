@@ -15,7 +15,7 @@ exports[`TopConvertingTrafficSourceWidget renders correctly with no data in the 
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Top converting traffic source
           </h3>
@@ -74,7 +74,7 @@ exports[`TopConvertingTrafficSourceWidget should render correctly with the expec
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Top converting traffic source
           </h3>
@@ -130,7 +130,7 @@ exports[`TopConvertingTrafficSourceWidget should render the generic error varian
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top converting traffic source
         </h2>
@@ -145,7 +145,7 @@ exports[`TopConvertingTrafficSourceWidget should render the generic error varian
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Data loading failed
         </h3>
@@ -192,7 +192,7 @@ exports[`TopConvertingTrafficSourceWidget should render the insufficient permiss
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top converting traffic source
         </h2>
@@ -207,7 +207,7 @@ exports[`TopConvertingTrafficSourceWidget should render the insufficient permiss
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Insufficient permissions
         </h3>
@@ -258,7 +258,7 @@ exports[`TopConvertingTrafficSourceWidget should render the loading state while 
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Top converting traffic source
           </h3>

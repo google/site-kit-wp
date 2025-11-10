@@ -35,20 +35,20 @@ import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	MODULES_SEARCH_CONSOLE,
 	DATE_RANGE_OFFSET,
-} from '../../../datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../../../constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import PreviewBlock from '../../../../../components/PreviewBlock';
+} from '@/js/modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import PreviewBlock from '@/js/components/PreviewBlock';
 import Header from './Header';
 import Footer from './Footer';
 import Overview from './Overview';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import useViewOnly from '../../../../../hooks/useViewOnly';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
-} from '../../../../analytics-4/datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import Chart from './Chart';
 
@@ -301,21 +301,21 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 		);
 	} );
 
-	const ga4Error = useSelect( ( select ) => {
+	const ga4Errors = useSelect( ( select ) => {
 		if ( ! isGA4Connected || showRecoverableAnalytics ) {
-			return null;
+			return [];
 		}
 
 		const { getErrorForSelector } = select( MODULES_ANALYTICS_4 );
 
-		return (
-			getErrorForSelector( 'getReport', [ ga4OverviewArgs ] ) ||
-			getErrorForSelector( 'getReport', [ ga4StatsArgs ] ) ||
+		return [
+			getErrorForSelector( 'getReport', [ ga4OverviewArgs ] ),
+			getErrorForSelector( 'getReport', [ ga4StatsArgs ] ),
 			getErrorForSelector( 'getReport', [
 				ga4VisitorsOverviewAndStatsArgs,
-			] ) ||
-			getErrorForSelector( 'getKeyEvents', [] )
-		);
+			] ),
+			getErrorForSelector( 'getKeyEvents', [] ),
+		].filter( Boolean );
 	} );
 
 	const isGA4GatheringData = useInViewSelect(
@@ -375,7 +375,7 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 				handleStatsSelection={ setSelectedStats }
 				selectedStats={ selectedStats }
 				dateRangeLength={ dateRangeLength }
-				error={ ga4Error }
+				errors={ ga4Errors }
 				WidgetReportError={ WidgetReportError }
 				showRecoverableAnalytics={ showRecoverableAnalytics }
 			/>

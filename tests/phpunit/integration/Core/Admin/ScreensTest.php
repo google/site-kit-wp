@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Admin;
 
@@ -77,7 +75,7 @@ class ScreensTest extends TestCase {
 
 		ob_start();
 		do_action( $hookname );
-		$this->assertEmpty( ob_get_clean() );
+		$this->assertEmpty( ob_get_clean(), 'Admin notices should be removed on Site Kit admin pages.' );
 	}
 
 	/**
@@ -98,7 +96,7 @@ class ScreensTest extends TestCase {
 
 		ob_start();
 		do_action( $hookname );
-		$this->assertNotEmpty( ob_get_clean() );
+		$this->assertNotEmpty( ob_get_clean(), 'Admin notices should not be removed outside Site Kit admin pages.' );
 	}
 
 
@@ -184,6 +182,6 @@ class ScreensTest extends TestCase {
 			$menu_order = apply_filters( 'menu_order', $given_menu_order );
 		}
 
-		$this->assertEquals( $expected_order, $menu_order );
+		$this->assertEquals( $expected_order, $menu_order, 'Menu order should match expected order for Site Kit.' );
 	}
 }

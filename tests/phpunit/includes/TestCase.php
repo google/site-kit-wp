@@ -71,6 +71,10 @@ class TestCase extends WP_UnitTestCase {
 			10,
 			2
 		);
+
+		// Initialize the global $wp_scripts and $wp_styles, which are cleared in tear_down.
+		wp_scripts();
+		wp_styles();
 	}
 
 	/**
@@ -80,6 +84,11 @@ class TestCase extends WP_UnitTestCase {
 		parent::tear_down();
 		// Clear screen related globals.
 		unset( $GLOBALS['current_screen'], $GLOBALS['taxnow'], $GLOBALS['typenow'] );
+
+		// Clean up scripts and styles hooks to avoid interference between tests.
+		global $wp_scripts, $wp_styles;
+		$wp_scripts = null;
+		$wp_styles  = null;
 	}
 
 	/**
@@ -227,6 +236,21 @@ class TestCase extends WP_UnitTestCase {
 		$intersection = array_intersect_key( $array_to_check, $subset );
 
 		$this->assertEqualSetsWithIndex( $subset, $intersection, $message );
+	}
+
+	/**
+	 * Asserts that the non-associative array (list) subset is within the given array.
+	 *
+	 * Replacement for PHPUnit's deprecated assertArraySubset in PHPUnit 8.
+	 *
+	 * @param array  $subset            Partial array.
+	 * @param array  $array_to_check    Array to check includes the partial.
+	 * @param string $message Optional. Message to display when the assertion fails.
+	 */
+	protected function assertListIntersection( array $subset, array $array_to_check, $message = '' ) {
+		$intersection = array_intersect( $array_to_check, $subset );
+
+		$this->assertEqualSets( $subset, $intersection, $message );
 	}
 
 	protected function assertOptionNotExists( $option ) {

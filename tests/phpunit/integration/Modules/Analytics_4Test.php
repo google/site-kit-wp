@@ -9,15 +9,12 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules;
 
 use Closure;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
-use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
@@ -33,6 +30,8 @@ use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
@@ -159,8 +158,11 @@ class Analytics_4Test extends TestCase {
 
 	public function test_register() {
 		remove_all_filters( 'googlesitekit_auth_scopes' );
+		remove_all_filters( 'googlesitekit_feature_metrics' );
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'web_stories_story_head' );
+
+		$this->assertFalse( has_filter( 'googlesitekit_feature_metrics' ), 'There should be no filter for features metrics initially.' );
 
 		$this->analytics->register();
 
@@ -170,12 +172,14 @@ class Analytics_4Test extends TestCase {
 				$this->analytics->get_scopes(),
 				array( 'https://www.googleapis.com/auth/tagmanager.readonly' )
 			),
-			apply_filters( 'googlesitekit_auth_scopes', array() )
+			apply_filters( 'googlesitekit_auth_scopes', array() ),
+			'Analytics 4 should add required scopes to authentication'
 		);
 
 		// Test actions for tracking opt-out are added.
-		$this->assertTrue( has_action( 'wp_head' ) );
-		$this->assertTrue( has_action( 'web_stories_story_head' ) );
+		$this->assertTrue( has_action( 'wp_head' ), 'Analytics 4 should add tracking opt-out action to wp_head' );
+		$this->assertTrue( has_action( 'web_stories_story_head' ), 'Analytics 4 should add tracking opt-out action to web_stories_story_head' );
+		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
 	}
 
 	public function test_register__reset_adsense_link_settings() {
@@ -197,8 +201,8 @@ class Analytics_4Test extends TestCase {
 
 		$settings = $this->analytics->get_settings()->get();
 
-		$this->assertFalse( $settings['adSenseLinked'] );
-		$this->assertEquals( $settings['adSenseLinkedLastSyncedAt'], 0 );
+		$this->assertFalse( $settings['adSenseLinked'], 'AdSense linked status should be reset to false when property ID changes' );
+		$this->assertEquals( $settings['adSenseLinkedLastSyncedAt'], 0, 'AdSense linked last synced timestamp should be reset to 0 when property ID changes' );
 	}
 
 	public function test_register__reset_ads_link_settings() {
@@ -220,8 +224,8 @@ class Analytics_4Test extends TestCase {
 
 		$settings = $this->analytics->get_settings()->get();
 
-		$this->assertFalse( $settings['adsLinked'] );
-		$this->assertEquals( $settings['adsLinkedLastSyncedAt'], 0 );
+		$this->assertFalse( $settings['adsLinked'], 'Ads linked status should be reset to false when property ID changes' );
+		$this->assertEquals( $settings['adsLinkedLastSyncedAt'], 0, 'Ads linked last synced timestamp should be reset to 0 when property ID changes' );
 	}
 
 	public function test_register__reset_resource_data_availability_date__on_property_id_change() {
@@ -234,9 +238,9 @@ class Analytics_4Test extends TestCase {
 			$test_resource_data_availability_transient_property,
 		) = $this->set_test_resource_data_availability_dates();
 
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ) );
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ), 'Audience resource data availability transient should exist before property ID change' );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ), 'Custom dimension resource data availability transient should exist before property ID change' );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ), 'Property resource data availability transient should exist before property ID change' );
 
 		$this->analytics->get_settings()->merge(
 			array(
@@ -244,9 +248,9 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertFalse( get_transient( $test_resource_data_availability_transient_audience ) );
-		$this->assertFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
-		$this->assertFalse( get_transient( $test_resource_data_availability_transient_property ) );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_audience ), 'Audience resource data availability transient should be cleared when property ID changes' );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ), 'Custom dimension resource data availability transient should be cleared when property ID changes' );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_property ), 'Property resource data availability transient should be cleared when property ID changes' );
 	}
 
 	public function test_register__reset_resource_data_availability_date__on_measurement_id_change() {
@@ -259,9 +263,9 @@ class Analytics_4Test extends TestCase {
 			$test_resource_data_availability_transient_property,
 		) = $this->set_test_resource_data_availability_dates();
 
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ) );
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ), 'Audience resource data availability transient should exist before measurement ID change' );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ), 'Custom dimension resource data availability transient should exist before measurement ID change' );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ), 'Property resource data availability transient should exist before measurement ID change' );
 
 		$this->analytics->get_settings()->merge(
 			array(
@@ -269,9 +273,9 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertFalse( get_transient( $test_resource_data_availability_transient_audience ) );
-		$this->assertFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
-		$this->assertFalse( get_transient( $test_resource_data_availability_transient_property ) );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_audience ), 'Audience resource data availability transient should be cleared when measurement ID changes' );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ), 'Custom dimension resource data availability transient should be cleared when measurement ID changes' );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_property ), 'Property resource data availability transient should be cleared when measurement ID changes' );
 	}
 
 	public function test_register__reset_resource_data_availability_date__on_available_audiences_change() {
@@ -285,9 +289,9 @@ class Analytics_4Test extends TestCase {
 			$test_resource_data_availability_transient_property,
 		) = $this->set_test_resource_data_availability_dates();
 
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ) );
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ), 'Audience resource data availability transient should be set initially.' );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ), 'Custom dimension resource data availability transient should be set initially.' );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ), 'Property resource data availability transient should be set initially.' );
 
 		// Should not reset audience when it is available.
 		$audience_settings = new Audience_Settings( $this->options );
@@ -304,7 +308,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ), 'Audience transient should remain set when audience is still available.' );
 
 		// Should reset audience when it is no longer available.
 		$audience_settings->set(
@@ -317,11 +321,11 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertFalse( get_transient( $test_resource_data_availability_transient_audience ) );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_audience ), 'Audience transient should be reset when audience is no longer available.' );
 
 		// Should not reset other resources.
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ), 'Custom dimension transient should remain set when only audience changes.' );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ), 'Property transient should remain set when only audience changes.' );
 	}
 
 	public function test_register__reset_resource_data_availability_date__on_deactivation() {
@@ -334,15 +338,15 @@ class Analytics_4Test extends TestCase {
 			$test_resource_data_availability_transient_property,
 		) = $this->set_test_resource_data_availability_dates();
 
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ) );
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ), 'Audience resource data availability transient should be set initially.' );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ), 'Custom dimension resource data availability transient should be set initially.' );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ), 'Property resource data availability transient should be set initially.' );
 
 		$this->analytics->on_deactivation();
 
-		$this->assertFalse( get_transient( $test_resource_data_availability_transient_audience ) );
-		$this->assertFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
-		$this->assertFalse( get_transient( $test_resource_data_availability_transient_property ) );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_audience ), 'Audience resource data availability transient should be cleared on deactivation.' );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ), 'Custom dimension resource data availability transient should be cleared on deactivation.' );
+		$this->assertFalse( get_transient( $test_resource_data_availability_transient_property ), 'Property resource data availability transient should be cleared on deactivation.' );
 	}
 
 	public function test_register__if_analytics_is_active_sync_adsense_link_settings() {
@@ -361,11 +365,12 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEquals(
 			did_action( Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED ),
-			1
+			1,
+			'AdSense linked synchronization cron action should be triggered once.'
 		);
 	}
 
-	public function test_handle_provisioning_callback() {
+	private function set_up_handle_provisioning_callback_test() {
 		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$analytics = new Analytics_4( $context );
 
@@ -394,6 +399,21 @@ class Analytics_4Test extends TestCase {
 		$method = $class->getMethod( 'handle_provisioning_callback' );
 		$method->setAccessible( true );
 
+		return array(
+			'method'                      => $method,
+			'analytics'                   => $analytics,
+			'dashboard_url'               => $dashboard_url,
+			'admin_id'                    => $admin_id,
+			'account_ticked_id_transient' => $account_ticked_id_transient,
+		);
+	}
+
+	public function test_handle_provisioning_callback__account_ticket_id_mismatch() {
+		$test_variables = $this->set_up_handle_provisioning_callback_test();
+		$method         = $test_variables['method'];
+		$analytics      = $test_variables['analytics'];
+		$dashboard_url  = $test_variables['dashboard_url'];
+
 		// Results in an error for a mismatch (or no account ticket ID stored from before at all).
 		try {
 			$method->invokeArgs( $analytics, array() );
@@ -401,9 +421,18 @@ class Analytics_4Test extends TestCase {
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
 				add_query_arg( 'error_code', 'account_ticket_id_mismatch', $dashboard_url ),
-				$redirect->get_location()
+				$redirect->get_location(),
+				'Should redirect to dashboard with account ticket ID mismatch error.'
 			);
 		}
+	}
+
+	public function test_handle_provisioning_callback__user_cancel() {
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$dashboard_url               = $test_variables['dashboard_url'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
 
 		// Results in an error when there is an error parameter.
 		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
@@ -414,12 +443,21 @@ class Analytics_4Test extends TestCase {
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
 				add_query_arg( 'error_code', 'user_cancel', $dashboard_url ),
-				$redirect->get_location()
+				$redirect->get_location(),
+				'Should redirect to dashboard with user cancel error.'
 			);
 			// Ensure transient was deleted by the method despite error.
-			$this->assertFalse( get_transient( $account_ticked_id_transient ) );
+			$this->assertFalse( get_transient( $account_ticked_id_transient ), 'Account ticket transient should be deleted when user cancels.' );
 		}
 		unset( $_GET['error'] );
+	}
+
+	public function test_handle_provisioning_callback__success() {
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$admin_id                    = $test_variables['admin_id'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
 
 		// Intercept Google API requests to avoid failures.
 		FakeHttp::fake_google_http_handler(
@@ -443,17 +481,85 @@ class Analytics_4Test extends TestCase {
 					),
 					admin_url( 'admin.php' )
 				),
-				$redirect->get_location()
+				$redirect->get_location(),
+				'Should redirect to dashboard with authentication success notification.'
 			);
 
 			// Ensure transient was deleted by the method.
-			$this->assertFalse( get_transient( $account_ticked_id_transient ) );
+			$this->assertFalse( get_transient( $account_ticked_id_transient ), 'Account ticket transient should be deleted on successful provisioning.' );
 			// Ensure settings were set correctly.
 			$settings = $analytics->get_settings()->get();
 
-			$this->assertEquals( $_GET['accountId'], $settings['accountID'] );
-			$this->assertEquals( $admin_id, $settings['ownerID'] );
+			$this->assertEquals( $_GET['accountId'], $settings['accountID'], 'Account ID should be set from GET parameter.' );
+			$this->assertEquals( $admin_id, $settings['ownerID'], 'Owner ID should be set to admin user ID.' );
 		}
+	}
+
+	/**
+	 * @dataProvider data_handle_provisioning_callback_show_progress
+	 */
+	public function test_handle_provisioning_callback__with_setup_flow_refresh_feature_flag_enabled( $params ) {
+		$this->enable_feature( 'setupFlowRefresh' );
+
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$admin_id                    = $test_variables['admin_id'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
+
+		// Intercept Google API requests to avoid failures.
+		FakeHttp::fake_google_http_handler(
+			$analytics->get_client()
+		);
+
+		// Results in an dashboard redirect on success, with new data being stored.
+		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
+		$_GET['accountId'] = '12345678';
+
+		if ( isset( $params['providedValue'] ) ) {
+			$_GET['show_progress'] = $params['providedValue'];
+		}
+
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected redirect to the Key Metrics Setup screen' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg(
+					array(
+						'page'         => 'googlesitekit-key-metrics-setup',
+						'showProgress' => $params['expectedValue'],
+					),
+					admin_url( 'admin.php' )
+				),
+				$redirect->get_location(),
+				'Should redirect to the Key Metrics Setup screen.'
+			);
+
+			// Ensure transient was deleted by the method.
+			$this->assertFalse( get_transient( $account_ticked_id_transient ), 'Account ticket transient should be deleted on successful provisioning.' );
+			// Ensure settings were set correctly.
+			$settings = $analytics->get_settings()->get();
+
+			$this->assertEquals( $_GET['accountId'], $settings['accountID'], 'Account ID should be set from GET parameter.' );
+			$this->assertEquals( $admin_id, $settings['ownerID'], 'Owner ID should be set to admin user ID.' );
+		}
+	}
+
+	public function data_handle_provisioning_callback_show_progress() {
+		return array(
+			array(
+				'with show_progress provided' => array(
+					'providedValue' => '1',
+					'expectedValue' => 'true',
+				),
+			),
+			array(
+				'with show_progress not provided' => array(
+					'expectedValue' => null,
+				),
+			),
+		);
 	}
 
 	public function test_provision_property_webdatastream() {
@@ -565,7 +671,8 @@ class Analytics_4Test extends TestCase {
 				'lostConversionEventsLastUpdateAt' => 0,
 				'newConversionEventsLastUpdateAt'  => 0,
 			),
-			$options->get( Settings::OPTION )
+			$options->get( Settings::OPTION ),
+			'Analytics settings should be initialized with account ID and default values before property provisioning.'
 		);
 
 		$method = new ReflectionMethod( Analytics_4::class, 'provision_property_webdatastream' );
@@ -598,7 +705,8 @@ class Analytics_4Test extends TestCase {
 				'lostConversionEventsLastUpdateAt' => 0,
 				'newConversionEventsLastUpdateAt'  => 0,
 			),
-			$options->get( Settings::OPTION )
+			$options->get( Settings::OPTION ),
+			'Analytics settings should be updated with property, web data stream, and measurement IDs after successful provisioning.'
 		);
 	}
 
@@ -730,7 +838,8 @@ class Analytics_4Test extends TestCase {
 				'lostConversionEventsLastUpdateAt' => 0,
 				'newConversionEventsLastUpdateAt'  => 0,
 			),
-			$options->get( Settings::OPTION )
+			$options->get( Settings::OPTION ),
+			'Analytics settings should be initialized with account ID and default values before property provisioning with failing container lookup.'
 		);
 
 		$method = new ReflectionMethod( Analytics_4::class, 'provision_property_webdatastream' );
@@ -744,7 +853,8 @@ class Analytics_4Test extends TestCase {
 				'googleTagContainerID'    => '',
 				'googleTagLastSyncedAtMs' => 0,
 			),
-			$options->get( Settings::OPTION )
+			$options->get( Settings::OPTION ),
+			'Google Tag settings should remain empty when container lookup fails.'
 		);
 	}
 
@@ -863,7 +973,8 @@ class Analytics_4Test extends TestCase {
 				'lostConversionEventsLastUpdateAt' => 0,
 				'newConversionEventsLastUpdateAt'  => 0,
 			),
-			$options->get( Settings::OPTION )
+			$options->get( Settings::OPTION ),
+			'Analytics settings should be initialized with account ID and default values before property provisioning.'
 		);
 
 		$account_ticket = new Analytics_4\Account_Ticket();
@@ -899,7 +1010,8 @@ class Analytics_4Test extends TestCase {
 				'lostConversionEventsLastUpdateAt' => 0,
 				'newConversionEventsLastUpdateAt'  => 0,
 			),
-			$options->get( Settings::OPTION )
+			$options->get( Settings::OPTION ),
+			'Analytics settings should be updated with property, web data stream, and measurement IDs after successful provisioning.'
 		);
 
 		// Reduce the handler calls to only those for enhanced measurement settings.
@@ -911,11 +1023,12 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Ensure the enhanced measurement settings request was made.
-		$this->assertCount( 1, $enhanced_measurement_settings_requests );
+		$this->assertCount( 1, $enhanced_measurement_settings_requests, 'Should make exactly one enhanced measurement settings request.' );
 		list( $request ) = array_values( $enhanced_measurement_settings_requests );
 		$this->assertArrayIntersection(
 			array( 'streamEnabled' => true ),
-			$request['params']
+			$request['params'],
+			'Enhanced measurement settings request should include streamEnabled parameter.'
 		);
 	}
 
@@ -966,13 +1079,13 @@ class Analytics_4Test extends TestCase {
 
 		$response = $this->analytics->set_data( 'create-account-ticket', $data );
 
-		$this->assertWPError( $response );
-		$this->assertEquals( 'missing_required_param', $response->get_error_code() );
-		$this->assertEquals( "Request parameter is empty: $required_param.", $response->get_error_message() );
+		$this->assertWPError( $response, 'Should return error when required parameter is missing.' );
+		$this->assertEquals( 'missing_required_param', $response->get_error_code(), 'Error code should be missing_required_param for empty required parameter.' );
+		$this->assertEquals( "Request parameter is empty: $required_param.", $response->get_error_message(), 'Error message should indicate which parameter is empty.' );
 		// Ensure transient is not set in the event of a failure.
-		$this->assertFalse( get_transient( Analytics_4::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID ) );
+		$this->assertFalse( get_transient( Analytics_4::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID ), 'Account ticket transient should not be set when request fails.' );
 		// Ensure remote request was not made.
-		$this->assertNull( $provision_account_ticket_request );
+		$this->assertNull( $provision_account_ticket_request, 'Remote request should not be made when required parameter is missing.' );
 	}
 
 	public function test_create_account_ticket() {
@@ -1020,29 +1133,132 @@ class Analytics_4Test extends TestCase {
 
 		$response = $this->analytics->set_data( 'create-account-ticket', $data );
 		// Assert that the Analytics edit scope is required.
-		$this->assertWPError( $response );
-		$this->assertEquals( 'missing_required_scopes', $response->get_error_code() );
+		$this->assertWPError( $response, 'Should return error when required parameter is missing.' );
+		$this->assertEquals( 'missing_required_scopes', $response->get_error_code(), 'Error code should be missing_required_scopes when Analytics edit scope is not granted.' );
 		$this->grant_scope( Analytics_4::EDIT_SCOPE );
 
 		$response = $this->analytics->set_data( 'create-account-ticket', $data );
 
 		// Assert request was made with expected arguments.
-		$this->assertNotWPError( $response );
+		$this->assertNotWPError( $response, 'Account ticket creation should succeed when all required parameters are provided.' );
 		$account_ticket_request = new Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest(
 			json_decode( $provision_account_ticket_request->getBody()->getContents(), true ) // must be array to hydrate model.
 		);
-		$this->assertEquals( $account_display_name, $account_ticket_request->getAccount()->getDisplayName() );
-		$this->assertEquals( $region_code, $account_ticket_request->getAccount()->getRegionCode() );
+		$this->assertEquals( $account_display_name, $account_ticket_request->getAccount()->getDisplayName(), 'Account display name should match the provided value.' );
+		$this->assertEquals( $region_code, $account_ticket_request->getAccount()->getRegionCode(), 'Account region code should match the provided value.' );
 		$redirect_uri = $this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri'];
-		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri() );
+		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri(), 'Redirect URI should match the analytics redirect URI from site fields.' );
 
 		// Assert transient is set with params.
 		$account_ticket_params = get_transient( Analytics_4::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );
-		$this->assertEquals( $account_ticket_id, $account_ticket_params['id'] );
-		$this->assertEquals( $property_display_name, $account_ticket_params['property_name'] );
-		$this->assertEquals( $stream_display_name, $account_ticket_params['data_stream_name'] );
-		$this->assertEquals( $timezone, $account_ticket_params['timezone'] );
-		$this->assertEquals( true, $account_ticket_params['enhanced_measurement_stream_enabled'] );
+		$this->assertEquals( $account_ticket_id, $account_ticket_params['id'], 'Account ticket ID should be stored in transient.' );
+		$this->assertEquals( $property_display_name, $account_ticket_params['property_name'], 'Property display name should be stored in transient.' );
+		$this->assertEquals( $stream_display_name, $account_ticket_params['data_stream_name'], 'Stream display name should be stored in transient.' );
+		$this->assertEquals( $timezone, $account_ticket_params['timezone'], 'Timezone should be stored in transient.' );
+		$this->assertEquals( true, $account_ticket_params['enhanced_measurement_stream_enabled'], 'Enhanced measurement stream enabled should be stored in transient.' );
+	}
+
+	/**
+	 * @dataProvider data_create_account_ticket_show_progress
+	 */
+	public function test_create_account_ticket__with_setup_flow_refresh_feature_flag_enabled( $params ) {
+		$this->enable_feature( 'setupFlowRefresh' );
+
+		$account_ticket_id     = 'test-account-ticket-id';
+		$account_display_name  = 'test account name';
+		$region_code           = 'US';
+		$property_display_name = 'test property name';
+		$stream_display_name   = 'test stream name';
+		$timezone              = 'UTC';
+
+		$provision_account_ticket_request = null;
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) use ( &$provision_account_ticket_request, $account_ticket_id ) {
+				$url = parse_url( $request->getUri() );
+
+				if ( 'sitekit.withgoogle.com' !== $url['host'] ) {
+					return new FulfilledPromise( new Response( 200 ) );
+				}
+
+				switch ( $url['path'] ) {
+					case '/v1beta/accounts:provisionAccountTicket':
+						$provision_account_ticket_request = $request;
+
+						$response = new GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse();
+						$response->setAccountTicketId( $account_ticket_id );
+
+						return new FulfilledPromise( new Response( 200, array(), json_encode( $response ) ) );
+
+					default:
+						throw new Exception( 'Not implemented' );
+				}
+			}
+		);
+
+		$this->analytics->register();
+		$data = array(
+			'displayName'                      => $account_display_name,
+			'regionCode'                       => $region_code,
+			'propertyName'                     => $property_display_name,
+			'dataStreamName'                   => $stream_display_name,
+			'timezone'                         => $timezone,
+			'enhancedMeasurementStreamEnabled' => true,
+		);
+
+		if ( isset( $params['showProgressProvidedValue'] ) ) {
+			$data['showProgress'] = $params['showProgressProvidedValue'];
+		}
+
+		$response = $this->analytics->set_data( 'create-account-ticket', $data );
+		// Assert that the Analytics edit scope is required.
+		$this->assertWPError( $response, 'Should return error when required parameter is missing.' );
+		$this->assertEquals( 'missing_required_scopes', $response->get_error_code(), 'Error code should be missing_required_scopes when Analytics edit scope is not granted.' );
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
+
+		$response = $this->analytics->set_data( 'create-account-ticket', $data );
+
+		// Assert request was made with expected arguments.
+		$this->assertNotWPError( $response, 'Account ticket creation should succeed when all required parameters are provided.' );
+		$account_ticket_request = new Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest(
+			json_decode( $provision_account_ticket_request->getBody()->getContents(), true ) // must be array to hydrate model.
+		);
+		$this->assertEquals( $account_display_name, $account_ticket_request->getAccount()->getDisplayName(), 'Account display name should match the provided value.' );
+		$this->assertEquals( $region_code, $account_ticket_request->getAccount()->getRegionCode(), 'Account region code should match the provided value.' );
+		$redirect_uri = $this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri'];
+		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri(), 'Redirect URI should match the analytics redirect URI from site fields.' );
+		$this->assertEquals( $params['showProgressExpectedValue'], $account_ticket_request->getShowProgress(), 'The `showProgress` field should match the expected value' );
+
+		// Assert transient is set with params.
+		$account_ticket_params = get_transient( Analytics_4::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );
+		$this->assertEquals( $account_ticket_id, $account_ticket_params['id'], 'Account ticket ID should be stored in transient.' );
+		$this->assertEquals( $property_display_name, $account_ticket_params['property_name'], 'Property display name should be stored in transient.' );
+		$this->assertEquals( $stream_display_name, $account_ticket_params['data_stream_name'], 'Stream display name should be stored in transient.' );
+		$this->assertEquals( $timezone, $account_ticket_params['timezone'], 'Timezone should be stored in transient.' );
+		$this->assertEquals( true, $account_ticket_params['enhanced_measurement_stream_enabled'], 'Enhanced measurement stream enabled should be stored in transient.' );
+	}
+
+	public function data_create_account_ticket_show_progress() {
+		return array(
+			array(
+				'with showProgress provided as true' => array(
+					'showProgressProvidedValue' => true,
+					'showProgressExpectedValue' => true,
+				),
+			),
+			array(
+				'with showProgress provided as false' => array(
+					'showProgressProvidedValue' => false,
+					'showProgressExpectedValue' => false,
+				),
+			),
+			// When the value for `showProgress` is not provided, it should default to `false`.
+			'with showProgress not provided' => array(
+				array(
+					'showProgressExpectedValue' => false,
+				),
+			),
+		);
 	}
 
 	public function test_get_scopes() {
@@ -1050,7 +1266,8 @@ class Analytics_4Test extends TestCase {
 			array(
 				'https://www.googleapis.com/auth/analytics.readonly',
 			),
-			$this->analytics->get_scopes()
+			$this->analytics->get_scopes(),
+			'Analytics 4 should require analytics.readonly scope.'
 		);
 	}
 
@@ -1065,7 +1282,8 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEqualSets(
 			$expected_scopes,
-			apply_filters( 'googlesitekit_auth_scopes', array() )
+			apply_filters( 'googlesitekit_auth_scopes', array() ),
+			'Auth scopes should match expected scopes based on granted scopes.'
 		);
 	}
 
@@ -1099,11 +1317,113 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	/**
+	 * @dataProvider data_scope_with_setupRefreshFlow_enabled
+	 */
+	public function test_auth_scopes_with_setupRefreshFlow( array $granted_scopes, $is_authenticated, $is_connected, array $expected_scopes ) {
+		$this->enable_feature( 'setupFlowRefresh' );
+		remove_all_filters( 'googlesitekit_auth_scopes' );
+
+		$this->analytics->register();
+
+		// Configure authentication state.
+		if ( $is_authenticated ) {
+			$this->authentication->token()->set( array( 'access_token' => 'test-access-token' ) );
+		} else {
+			$this->authentication->token()->delete();
+		}
+
+		// Configure connection state if requested.
+		if ( $is_connected ) {
+			$this->analytics->get_settings()->merge(
+				array(
+					'accountID'       => '12345678',
+					'propertyID'      => '87654321',
+					'webDataStreamID' => '1234567890',
+					'measurementID'   => 'A1B2C3D4E5',
+				)
+			);
+		}
+
+		$this->authentication->get_oauth_client()->set_granted_scopes( $granted_scopes );
+
+		$this->assertEqualSets(
+			$expected_scopes,
+			apply_filters( 'googlesitekit_auth_scopes', array() ),
+			'Auth scopes should match expected scopes based on granted scopes, authentication and connection state when setupFlowRefresh feature is enabled.'
+		);
+	}
+
+	public function data_scope_with_setupRefreshFlow_enabled() {
+		return array(
+			'unauthenticated: analytics + tag manager granted' => array(
+				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+				false,
+				false,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'unauthenticated: analytics granted'         => array(
+				array( Analytics_4::READONLY_SCOPE ),
+				false,
+				false,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'unauthenticated: no scopes granted'         => array(
+				array(),
+				false,
+				false,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'authenticated not connected: analytics + tag manager granted' => array(
+				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+				true,
+				false,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'authenticated not connected: analytics granted' => array(
+				array( Analytics_4::READONLY_SCOPE ),
+				true,
+				false,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'authenticated not connected: no scopes granted' => array(
+				array(),
+				true,
+				false,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'authenticated connected: analytics + tag manager granted (no edit granted)' => array(
+				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+				true,
+				true,
+				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'authenticated connected: analytics granted (no tagmanager)' => array(
+				array( Analytics_4::READONLY_SCOPE ),
+				true,
+				true,
+				array( Analytics_4::READONLY_SCOPE ),
+			),
+			'authenticated connected: no scopes granted' => array(
+				array(),
+				true,
+				true,
+				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'authenticated connected: edit + analytics granted (no tagmanager)' => array(
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE ),
+				true,
+				true,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE ),
+			),
+		);
+	}
+
 	public function test_is_connected() {
 		$options   = new Options( $this->context );
 		$analytics = new Analytics_4( $this->context, $options );
 
-		$this->assertFalse( $analytics->is_connected() );
+		$this->assertFalse( $analytics->is_connected(), 'Analytics 4 should not be connected when no settings are configured' );
 
 		$options->set(
 			Settings::OPTION,
@@ -1115,7 +1435,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertTrue( $analytics->is_connected() );
+		$this->assertTrue( $analytics->is_connected(), 'Analytics 4 should be connected when all required settings are configured' );
 	}
 
 	public function test_data_available_reset_on_property_change() {
@@ -1132,7 +1452,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertFalse( $this->analytics->is_data_available() );
+		$this->assertFalse( $this->analytics->is_data_available(), 'Data availability should be reset when property ID changes' );
 	}
 
 	public function test_data_available_reset_on_measurement_id_change() {
@@ -1149,7 +1469,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertFalse( $this->analytics->is_data_available() );
+		$this->assertFalse( $this->analytics->is_data_available(), 'Data availability should be reset when measurement ID changes' );
 	}
 
 	public function test_available_custom_dimensions_reset_on_property_id_change() {
@@ -1164,7 +1484,7 @@ class Analytics_4Test extends TestCase {
 
 		// Assert that the availableCustomDimensions are set correctly before the change.
 		$initial_settings = $this->analytics->get_settings()->get();
-		$this->assertEquals( array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ), $initial_settings['availableCustomDimensions'] );
+		$this->assertEquals( array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ), $initial_settings['availableCustomDimensions'], 'Available custom dimensions should be set correctly before property ID change.' );
 
 		// When: The propertyID is changed.
 		$this->analytics->get_settings()->merge(
@@ -1175,7 +1495,7 @@ class Analytics_4Test extends TestCase {
 
 		// Then: The availableCustomDimensions should be reset to null.
 		$settings = $this->analytics->get_settings()->get();
-		$this->assertNull( $settings['availableCustomDimensions'] );
+		$this->assertNull( $settings['availableCustomDimensions'], 'Available custom dimensions should be reset to null when property ID changes' );
 	}
 
 	public function test_only_googlesitekit_prefixed_dimensions_are_retained() {
@@ -1199,7 +1519,8 @@ class Analytics_4Test extends TestCase {
 		// Then: Only the dimensions with the 'googlesitekit_' prefix should be retained.
 		$this->assertEquals(
 			array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ),
-			$current_settings['availableCustomDimensions']
+			$current_settings['availableCustomDimensions'],
+			'Only custom dimensions with googlesitekit_ prefix should be retained.'
 		);
 	}
 
@@ -1232,8 +1553,8 @@ class Analytics_4Test extends TestCase {
 		$analytics->set_data_available();
 		$analytics->on_deactivation();
 
-		$this->assertOptionNotExists( Settings::OPTION );
-		$this->assertFalse( $analytics->is_data_available() );
+		$this->assertOptionNotExists( Settings::OPTION, 'Analytics 4 settings option should be removed on deactivation' );
+		$this->assertFalse( $analytics->is_data_available(), 'Data availability should be reset on deactivation' );
 	}
 
 	public function test_get_datapoints() {
@@ -1243,21 +1564,23 @@ class Analytics_4Test extends TestCase {
 				'accounts',
 				'ads-links',
 				'adsense-links',
+				'batch-report',
 				'container-lookup',
 				'container-destinations',
 				'google-tag-settings',
 				'key-events',
 				'create-property',
 				'create-webdatastream',
-				'pivot-report',
 				'properties',
 				'property',
+				'has-property-access',
 				'report',
 				'webdatastreams',
 				'webdatastreams-batch',
 				'create-account-ticket',
 				'enhanced-measurement-settings',
 				'create-custom-dimension',
+				'set-is-web-data-stream-unavailable',
 				'sync-custom-dimensions',
 				'custom-dimension-data-available',
 				'set-google-tag-id-mismatch',
@@ -1267,7 +1590,8 @@ class Analytics_4Test extends TestCase {
 				'save-resource-data-availability-date',
 				'sync-audiences',
 			),
-			$this->analytics->get_datapoints()
+			$this->analytics->get_datapoints(),
+			'Analytics 4 module should expose the expected datapoints'
 		);
 	}
 
@@ -1278,21 +1602,23 @@ class Analytics_4Test extends TestCase {
 				'accounts',
 				'ads-links',
 				'adsense-links',
+				'batch-report',
 				'container-lookup',
 				'container-destinations',
 				'google-tag-settings',
 				'key-events',
 				'create-property',
 				'create-webdatastream',
-				'pivot-report',
 				'properties',
 				'property',
+				'has-property-access',
 				'report',
 				'webdatastreams',
 				'webdatastreams-batch',
 				'create-account-ticket',
 				'enhanced-measurement-settings',
 				'create-custom-dimension',
+				'set-is-web-data-stream-unavailable',
 				'sync-custom-dimensions',
 				'custom-dimension-data-available',
 				'set-google-tag-id-mismatch',
@@ -1302,7 +1628,8 @@ class Analytics_4Test extends TestCase {
 				'save-resource-data-availability-date',
 				'sync-audiences',
 			),
-			$this->analytics->get_datapoints()
+			$this->analytics->get_datapoints(),
+			'Analytics 4 module should expose the expected datapoints with conversion reporting'
 		);
 	}
 	public function test_get_debug_fields() {
@@ -1316,12 +1643,12 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_measurement_id',
 				'analytics_4_use_snippet',
 				'analytics_4_available_custom_dimensions',
-				'analytics_4_ads_conversion_id',
 				'analytics_4_ads_linked',
 				'analytics_4_ads_linked_last_synced_at',
 				'analytics_4_site_kit_audiences',
 			),
-			array_keys( $this->analytics->get_debug_fields() )
+			array_keys( $this->analytics->get_debug_fields() ),
+			'Analytics 4 module should expose the expected debug fields'
 		);
 	}
 
@@ -1331,7 +1658,6 @@ class Analytics_4Test extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'analytics_4_account_id',
-				'analytics_4_ads_conversion_id',
 				'analytics_4_available_custom_dimensions',
 				'analytics_4_measurement_id',
 				'analytics_4_property_id',
@@ -1341,7 +1667,8 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_site_kit_audiences',
 				'analytics_4_ads_linked_last_synced_at',
 			),
-			array_keys( $this->analytics->get_debug_fields() )
+			array_keys( $this->analytics->get_debug_fields() ),
+			'Analytics 4 module should expose the expected debug fields when AdSense is disabled'
 		);
 	}
 
@@ -1359,7 +1686,6 @@ class Analytics_4Test extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'analytics_4_account_id',
-				'analytics_4_ads_conversion_id',
 				'analytics_4_available_custom_dimensions',
 				'analytics_4_measurement_id',
 				'analytics_4_property_id',
@@ -1371,7 +1697,83 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_adsense_linked_last_synced_at',
 				'analytics_4_site_kit_audiences',
 			),
-			array_keys( $this->analytics->get_debug_fields() )
+			array_keys( $this->analytics->get_debug_fields() ),
+			'Analytics 4 module should expose the expected debug fields when AdSense is enabled'
+		);
+	}
+
+	/**
+	 * @dataProvider data_feature_metrics_settings
+	 *
+	 * @param array $settings               Settings to set.
+	 * @param array $expected_feature_metrics Expected feature metrics.
+	 * @param string $message                Message for the assertion.
+	 */
+	public function test_get_feature_metrics( $settings, $expected_feature_metrics, $message ) {
+		$this->analytics->register();
+		$this->analytics->get_settings()->merge( $settings['analytics_settings'] ?? array() );
+		$this->audience_settings->merge(
+			$settings['audience_settings'] ?? array()
+		);
+		( new AdSense_Settings( $this->options ) )->set(
+			array(
+				'accountSetupComplete' => $settings['analytics_settings']['adSenseLinked'] ?? false,
+				'siteSetupComplete'    => $settings['analytics_settings']['adSenseLinked'] ?? false,
+			)
+		);
+
+		$feature_metrics = $this->analytics->get_feature_metrics();
+		$this->assertEquals( $expected_feature_metrics, $feature_metrics, $message );
+	}
+
+	public function data_feature_metrics_settings() {
+		$activated_audience_segmentation_settings = array(
+			'availableAudiences'                   => array(
+				array(
+					'name' => 'properties/12345678/audiences/12345',
+				),
+				array(
+					'name' => 'properties/12345678/audiences/67890',
+				),
+			),
+			'availableAudiencesLastSyncedAt'       => time(),
+			'audienceSegmentationSetupCompletedBy' => 2,
+		);
+
+		return array(
+			'default values when audience segmentation is not setup and adsense is unlinked' => array(
+				array(),
+				array(
+					'audseg_setup_completed'   => false,
+					'audseg_audience_count'    => 0,
+					'analytics_adsense_linked' => false,
+				),
+				'When settings are not set, feature metrics should be false or zero by default.',
+			),
+			'when audience segmentation is setup' => array(
+				array(
+					'audience_settings' => $activated_audience_segmentation_settings,
+				),
+				array(
+					'audseg_setup_completed'   => true,
+					'audseg_audience_count'    => 2,
+					'analytics_adsense_linked' => false,
+				),
+				'When audience settings are set, feature metrics should reflect them.',
+			),
+			'when adsense is linked'              => array(
+				array(
+					'analytics_settings' => array(
+						'adSenseLinked' => true,
+					),
+				),
+				array(
+					'audseg_setup_completed'   => false,
+					'audseg_audience_count'    => 0,
+					'analytics_adsense_linked' => true,
+				),
+				'When adsense is linked, feature metrics should reflect it.',
+			),
 		);
 	}
 
@@ -1424,11 +1826,12 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertNotWPError( $data );
+		$this->assertNotWPError( $data, 'Google tag settings should be retrieved successfully when measurement ID is provided.' );
 
 		$this->assertEquals(
 			$tag_ids_data[1],
-			$data['googleTagID']
+			$data['googleTagID'],
+			'Google tag ID should match the expected value from tag IDs data.'
 		);
 	}
 
@@ -1561,30 +1964,32 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertNotWPError( $data );
+		$this->assertNotWPError( $data, 'Analytics report should be retrieved successfully when all required parameters are provided.' );
 
 		// Verify the reports are returned by checking a metric value.
-		$this->assertEquals( 'some-value', $data['modelData'][0]['rows'][0]['metricValues'][0]['value'] );
+		$this->assertEquals( 'some-value', $data['modelData'][0]['rows'][0]['metricValues'][0]['value'], 'Report should return expected metric value.' );
 
 		// Verify the request URL and params were correctly generated.
-		$this->assertCount( 1, $this->request_handler_calls );
+		$this->assertCount( 1, $this->request_handler_calls, 'Should have exactly one request handler call for Analytics report.' );
 
 		$request_url = $this->request_handler_calls[0]['url'];
 
-		$this->assertEquals( 'analyticsdata.googleapis.com', $request_url['host'] );
-		$this->assertEquals( '/v1beta/properties/123456789:runReport', $request_url['path'] );
+		$this->assertEquals( 'analyticsdata.googleapis.com', $request_url['host'], 'Request host should be analyticsdata.googleapis.com.' );
+		$this->assertEquals( '/v1beta/properties/123456789:runReport', $request_url['path'], 'Request path should match expected runReport endpoint.' );
 
 		$request_params = $this->request_handler_calls[0]['params'];
 
 		// Verify the request params that are set by default.
 		$this->assertEquals(
 			'properties/123456789',
-			$request_params['property']
+			$request_params['property'],
+			'Request property parameter should match expected value.'
 		);
 
 		$this->assertEquals(
 			1,
-			$request_params['keepEmptyRows']
+			$request_params['keepEmptyRows'],
+			'Request keepEmptyRows parameter should be set to 1 by default.'
 		);
 
 		$this->assertEquals(
@@ -1593,7 +1998,8 @@ class Analytics_4Test extends TestCase {
 				'MINIMUM',
 				'MAXIMUM',
 			),
-			$request_params['metricAggregations']
+			$request_params['metricAggregations'],
+			'Request metricAggregations parameter should include default aggregations.'
 		);
 
 		// Verify the request params that are derived from the input parameters.
@@ -1607,7 +2013,8 @@ class Analytics_4Test extends TestCase {
 					'expression' => 'totalUsers',
 				),
 			),
-			$request_params['metrics']
+			$request_params['metrics'],
+			'Request metrics parameter should match expected format with both string and array inputs.'
 		);
 
 		$this->assertEquals(
@@ -1621,12 +2028,14 @@ class Analytics_4Test extends TestCase {
 					'endDate'   => '2022-11-02',
 				),
 			),
-			$request_params['dateRanges']
+			$request_params['dateRanges'],
+			'Request dateRanges parameter should include both primary and comparison date ranges.'
 		);
 
 		$this->assertEquals(
 			321,
-			$request_params['limit']
+			$request_params['limit'],
+			'Request limit parameter should match the provided limit value.'
 		);
 
 		$this->assertEquals(
@@ -1638,7 +2047,8 @@ class Analytics_4Test extends TestCase {
 					'name' => 'pageTitle',
 				),
 			),
-			$request_params['dimensions']
+			$request_params['dimensions'],
+			'Expected dimensions array for string input.'
 		);
 
 		$this->assertEquals(
@@ -1689,7 +2099,8 @@ class Analytics_4Test extends TestCase {
 					),
 				),
 			),
-			$request_params['dimensionFilter']
+			$request_params['dimensionFilter'],
+			'Request dimensionFilter parameter should match expected filter structure with multiple filter types.'
 		);
 
 		$this->assertEquals(
@@ -1710,7 +2121,8 @@ class Analytics_4Test extends TestCase {
 					),
 				),
 			),
-			$request_params['metricFilter']
+			$request_params['metricFilter'],
+			'Request metricFilter parameter should match expected numeric filter structure.'
 		);
 
 		$this->assertEquals(
@@ -1734,216 +2146,8 @@ class Analytics_4Test extends TestCase {
 					'desc'      => '',
 				),
 			),
-			$request_params['orderBys']
-		);
-	}
-
-	/**
-	 * @dataProvider data_access_token
-	 *
-	 * When an access token is provided, the user will be authenticated for the test.
-	 *
-	 * @param string $access_token Access token, or empty string if none.
-	 */
-	public function test_get_pivot_report( $access_token ) {
-		$this->setup_user_authentication( $access_token );
-
-		$property_id = '123456789';
-
-		$this->analytics->get_settings()->merge(
-			array(
-				'propertyID' => $property_id,
-			)
-		);
-
-		// Grant scopes so request doesn't fail.
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->analytics->get_scopes()
-		);
-
-		FakeHttp::fake_google_http_handler(
-			$this->analytics->get_client(),
-			$this->create_fake_http_handler( $property_id )
-		);
-
-		$this->analytics->register();
-
-		// Fetch a pivot report with all input parameters.
-		$data = $this->analytics->get_data(
-			'pivot-report',
-			array(
-				'startDate'        => '2022-11-02',
-				'endDate'          => '2022-11-04',
-				'metrics'          => array(
-					array(
-						'name' => 'totalUsers',
-					),
-				),
-				'dimensions'       => array(
-					'city',
-					'operatingSystem',
-				),
-				'dimensionFilters' => array(
-					'operatingSystem' => array(
-						'city',
-						'operatingSystem',
-					),
-				),
-				'pivots'           => array(
-					array(
-						'fieldNames' => array( 'operatingSystem' ),
-						'limit'      => 3,
-					),
-					array(
-						'fieldNames' => array( 'city' ),
-						'limit'      => 2,
-						'orderby'    => array(
-							array(
-								'metric' => array(
-									'metricName' => 'totalUsers',
-								),
-								'desc'   => true,
-							),
-						),
-					),
-				),
-			)
-		);
-
-		$this->assertNotWPError( $data );
-
-		// Verify the reports are returned by checking a metric value.
-		$this->assertEquals( 'some-value', $data['modelData'][0]['rows'][0]['metricValues'][0]['value'] );
-
-		// Verify the request URL and params were correctly generated.
-		$this->assertCount( 1, $this->request_handler_calls );
-
-		$request_url = $this->request_handler_calls[0]['url'];
-
-		$this->assertEquals( 'analyticsdata.googleapis.com', $request_url['host'] );
-		$this->assertEquals( '/v1beta/properties/123456789:runPivotReport', $request_url['path'] );
-
-		$request_params = $this->request_handler_calls[0]['params'];
-
-		// Verify the request params that are set by default.
-		$this->assertEquals(
-			'properties/123456789',
-			$request_params['property']
-		);
-
-		$this->assertEquals(
-			1,
-			$request_params['keepEmptyRows']
-		);
-
-		// Verify the request params that are derived from the input parameters.
-		$this->assertEquals(
-			array(
-				array(
-					'name' => 'totalUsers',
-				),
-			),
-			$request_params['metrics']
-		);
-
-		$this->assertEquals(
-			array(
-				array(
-					'startDate' => '2022-11-02',
-					'endDate'   => '2022-11-04',
-				),
-			),
-			$request_params['dateRanges']
-		);
-
-		$this->assertEquals(
-			array(
-				array(
-					'name' => 'city',
-				),
-				array(
-					'name' => 'operatingSystem',
-				),
-				// The hostName dimension will be auto added to every request because
-				// we add a dimension filter in Analytics_4/Report/Request to
-				// the data to the WordPress site URL.
-				array(
-					'name' => 'hostName',
-				),
-			),
-			$request_params['dimensions']
-		);
-
-		$this->assertEquals(
-			array(
-				'andGroup' => array(
-					'expressions' => array(
-						// Site URLs are added as dimension filters as above because
-						// we add a dimension filter in Analytics_4/Report/Request to
-						// the data to the WordPress site URL.
-								array(
-
-									'filter' =>
-									array(
-										'fieldName'    => 'hostName',
-										'inListFilter' =>
-										array(
-											'values' =>
-											array(
-												'example.org',
-												'www.example.org',
-											),
-										),
-
-									),
-								),
-						array(
-							'filter' => array(
-								'fieldName'    => 'operatingSystem',
-								'inListFilter' => array(
-									'values' => array(
-										'city',
-										'operatingSystem',
-									),
-								),
-							),
-						),
-					),
-				),
-			),
-			$request_params['dimensionFilter']
-		);
-
-		$this->assertEquals(
-			array(
-				array(
-					'fieldNames'         => array( 'operatingSystem' ),
-					'limit'              => 3,
-					'metricAggregations' => array(
-						'TOTAL',
-						'MINIMUM',
-						'MAXIMUM',
-					),
-				),
-				array(
-					'fieldNames'         => array( 'city' ),
-					'limit'              => 2,
-					'orderBys'           => array(
-						array(
-							'metric' => array(
-								'metricName' => 'totalUsers',
-							),
-							'desc'   => true,
-						),
-					),
-					'metricAggregations' => array(
-						'TOTAL',
-						'MINIMUM',
-						'MAXIMUM',
-					),
-				),
-			),
-			$request_params['pivots']
+			$request_params['orderBys'],
+			'Request orderBys parameter should match expected ordering structure.'
 		);
 	}
 
@@ -1992,7 +2196,8 @@ class Analytics_4Test extends TestCase {
 					'endDate'   => $this->days_ago_date_string( 1 ),
 				),
 			),
-			$request_params['dateRanges']
+			$request_params['dateRanges'],
+			'Default date range should be 28 days ago to 1 day ago when no date range is specified.'
 		);
 	}
 
@@ -2040,7 +2245,8 @@ class Analytics_4Test extends TestCase {
 					'name' => 'totalUsers',
 				),
 			),
-			$request_params['metrics']
+			$request_params['metrics'],
+			'Metrics parameter should be parsed correctly when provided as comma-separated string.'
 		);
 	}
 
@@ -2089,7 +2295,8 @@ class Analytics_4Test extends TestCase {
 					'expression' => 'totalUsers',
 				),
 			),
-			$request_params['metrics']
+			$request_params['metrics'],
+			'Metrics parameter should be formatted correctly when provided as single object.'
 		);
 	}
 
@@ -2138,7 +2345,8 @@ class Analytics_4Test extends TestCase {
 					'name' => 'pageTitle',
 				),
 			),
-			$request_params['dimensions']
+			$request_params['dimensions'],
+			'Expected dimensions array for string input.'
 		);
 	}
 
@@ -2186,7 +2394,225 @@ class Analytics_4Test extends TestCase {
 					'name' => 'pageTitle',
 				),
 			),
-			$request_params['dimensions']
+			$request_params['dimensions'],
+			'Expected dimensions array for single object input.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_get_batch_report( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$this->fake_handler_and_invoke_register_method( $property_id );
+
+		$data = $this->analytics->get_data(
+			'batch-report',
+			array(
+				'requests' => array(
+					array(
+						'metrics'    => array( 'sessions' ),
+						'dimensions' => array( 'sessionDefaultChannelGrouping' ),
+						'url'        => 'https://example.org/batch-1/',
+					),
+					array(
+						'metrics'          => array(
+							array(
+								'name'       => 'total',
+								'expression' => 'totalUsers',
+							),
+						),
+						'dimensionFilters' => array(
+							'sessionDefaultChannelGrouping' => 'Organic Search',
+						),
+						'limit'            => 50,
+					),
+				),
+			)
+		);
+
+		$this->assertNotWPError( $data, 'Batch report request should succeed when parameters are valid.' );
+
+		$this->assertEquals( 'batch-value-1', $data['reports'][0]['rows'][0]['metricValues'][0]['value'], 'First batch report should include expected metric value.' );
+		$this->assertEquals( 'sessionDefaultChannelGrouping', $data['reports'][0]['dimensionHeaders'][0]['name'], 'First batch report should expose expected dimension header.' );
+		$this->assertEquals( 'batch-value-2', $data['reports'][1]['rows'][0]['metricValues'][0]['value'], 'Second batch report should include expected metric value.' );
+		$this->assertEquals( 'newVsReturning', $data['reports'][1]['dimensionHeaders'][1]['name'], 'Second batch report should expose expected secondary dimension header.' );
+
+		$this->assertCount( 1, $this->request_handler_calls, 'Batch report request should result in a single HTTP request.' );
+
+		$request_url    = $this->request_handler_calls[0]['url'];
+		$request_params = $this->request_handler_calls[0]['params'];
+
+		$this->assertEquals( 'analyticsdata.googleapis.com', $request_url['host'], 'Batch report request host should be analyticsdata.googleapis.com.' );
+		$this->assertEquals( "/v1beta/properties/$property_id:batchRunReports", $request_url['path'], 'Batch report request path should match the batchRunReports endpoint.' );
+
+		$this->assertArrayHasKey( 'requests', $request_params, 'Batch report payload should include requests key.' );
+		$this->assertCount( 2, $request_params['requests'], 'Batch report payload should include two requests.' );
+
+		$first_request  = $request_params['requests'][0];
+		$second_request = $request_params['requests'][1];
+
+		$this->assertEquals(
+			array(
+				array(
+					'name' => 'sessions',
+				),
+			),
+			$first_request['metrics'],
+			'First batch request should include expected metrics.'
+		);
+
+		$this->assertEquals(
+			array(
+				array(
+					'name' => 'sessionDefaultChannelGrouping',
+				),
+			),
+			$first_request['dimensions'],
+			'First batch request should include expected dimensions.'
+		);
+
+		$this->assertEquals(
+			1,
+			$first_request['keepEmptyRows'],
+			'First batch request should default keepEmptyRows to 1.'
+		);
+
+		$page_path_filters = array_filter(
+			$first_request['dimensionFilter']['andGroup']['expressions'],
+			function ( $expression ) {
+				return isset( $expression['filter']['fieldName'] ) && 'pagePath' === $expression['filter']['fieldName'];
+			}
+		);
+		$this->assertNotEmpty( $page_path_filters, 'First batch request should include a pagePath filter when URL is provided.' );
+
+		$page_path_filters = array_values( $page_path_filters );
+		$page_path_filter  = $page_path_filters[0];
+		$this->assertEquals( 'https://example.org/batch-1/', $page_path_filter['filter']['stringFilter']['value'], 'First batch request should retain provided URL in pagePath filter.' );
+
+		$this->assertEquals(
+			50,
+			$second_request['limit'],
+			'Second batch request should pass through the provided limit.'
+		);
+
+		$this->assertEquals(
+			array(
+				array(
+					'name'       => 'total',
+					'expression' => 'totalUsers',
+				),
+			),
+			$second_request['metrics'],
+			'Second batch request should include expected metrics.'
+		);
+
+		$this->assertArrayHasKey(
+			'dimensionFilter',
+			$second_request,
+			'Second batch request should include dimension filters by default.'
+		);
+
+		$channel_filters = array_filter(
+			$second_request['dimensionFilter']['andGroup']['expressions'],
+			function ( $expression ) {
+				return isset( $expression['filter']['fieldName'] ) && 'sessionDefaultChannelGrouping' === $expression['filter']['fieldName'];
+			}
+		);
+		$this->assertNotEmpty( $channel_filters, 'Second batch request should include provided dimension filter.' );
+
+		$channel_filters = array_values( $channel_filters );
+		$channel_filter  = $channel_filters[0];
+		$this->assertEquals(
+			'Organic Search',
+			$channel_filter['filter']['stringFilter']['value'],
+			'Second batch request should retain provided dimension filter value.'
+		);
+	}
+
+	public function test_get_batch_report__requires_requests_parameter() {
+		$this->setup_user_authentication( 'valid-auth-token' );
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '123456789',
+			)
+		);
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$this->analytics->register();
+
+		$data = $this->analytics->get_data( 'batch-report', array() );
+
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: requests.', $data, 'Batch report should require a requests parameter.' );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code(), 'Error code should be missing_required_param when requests parameter is empty.' );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ), 'Error data should include status 400 for missing requests parameter.' );
+	}
+
+	/**
+	 * @dataProvider data_invalid_batch_report_requests
+	 *
+	 * @param mixed  $invalid_requests Invalid requests value.
+	 * @param string $message          Assertion message for the scenario.
+	 */
+	public function test_get_batch_report__invalid_requests_parameter( $invalid_requests, $message ) {
+		$this->setup_user_authentication( 'valid-auth-token' );
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '123456789',
+			)
+		);
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$this->analytics->register();
+
+		$data = $this->analytics->get_data(
+			'batch-report',
+			array(
+				'requests' => $invalid_requests,
+			)
+		);
+
+		$this->assertWPErrorWithMessage( 'Batch report requests must be an array with 1-5 requests.', $data, $message );
+		$this->assertEquals( 'invalid_batch_size', $data->get_error_code(), $message );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_batch_size' ), 'Error data should include status 400 for invalid batch size.' );
+	}
+
+	public function data_invalid_batch_report_requests() {
+		return array(
+			'requests not array' => array(
+				'not-an-array',
+				'Batch report should reject non-array requests parameter.',
+			),
+			'too many requests'  => array(
+				array_fill( 0, 6, array( 'metrics' => array( 'sessions' ) ) ),
+				'Batch report should reject request arrays longer than five entries.',
+			),
 		);
 	}
 
@@ -2202,8 +2628,8 @@ class Analytics_4Test extends TestCase {
 
 		$data = $this->analytics->get_data( 'report', array() );
 
-		$this->assertWPErrorWithMessage( 'Site Kit can’t access the relevant data from Analytics because you haven’t granted all permissions requested during setup.', $data );
-		$this->assertEquals( 'missing_required_scopes', $data->get_error_code() );
+		$this->assertWPErrorWithMessage( 'Site Kit can’t access the relevant data from Analytics because you haven’t granted all permissions requested during setup.', $data, 'Should return error when Analytics permissions are insufficient.' );
+		$this->assertEquals( 'missing_required_scopes', $data->get_error_code(), 'Error code should be missing_required_scopes when Analytics permissions are insufficient.' );
 	}
 
 	/**
@@ -2230,9 +2656,9 @@ class Analytics_4Test extends TestCase {
 
 		$data = $this->analytics->get_data( 'report', array() );
 
-		$this->assertWPErrorWithMessage( 'Request parameter is empty: metrics.', $data );
-		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: metrics.', $data, 'Should return error when metrics parameter is empty.' );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code(), 'Error code should be missing_required_param when metrics parameter is empty.' );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ), 'Error data should include status 400 for missing metrics parameter.' );
 	}
 
 	/**
@@ -2296,8 +2722,8 @@ class Analytics_4Test extends TestCase {
 					array( 'metrics' => $metrics )
 				);
 
-				$this->assertWPErrorWithMessage( "Metric name should match the expression ^[a-zA-Z0-9_]+$: $invalid_name", $data );
-				$this->assertEquals( 'invalid_analytics_4_report_metrics', $data->get_error_code() );
+				$this->assertWPErrorWithMessage( "Metric name should match the expression ^[a-zA-Z0-9_]+$: $invalid_name", $data, 'Should return error when metric name contains invalid characters.' );
+				$this->assertEquals( 'invalid_analytics_4_report_metrics', $data->get_error_code(), 'Error code should be invalid_analytics_4_report_metrics for invalid metric names.' );
 			}
 		}
 	}
@@ -2376,8 +2802,8 @@ class Analytics_4Test extends TestCase {
 					array( 'metrics' => $metrics )
 				);
 
-				$this->assertWPErrorWithMessage( "Metric names should match the expression ^[a-zA-Z0-9_]+$: $invalid_name, $invalid_name", $data );
-				$this->assertEquals( 'invalid_analytics_4_report_metrics', $data->get_error_code() );
+				$this->assertWPErrorWithMessage( "Metric names should match the expression ^[a-zA-Z0-9_]+$: $invalid_name, $invalid_name", $data, 'Should return error when metric name contains invalid characters.' );
+				$this->assertEquals( 'invalid_analytics_4_report_metrics', $data->get_error_code(), 'Error code should be invalid_analytics_4_report_metrics for invalid metric names.' );
 			}
 		}
 	}
@@ -2394,7 +2820,7 @@ class Analytics_4Test extends TestCase {
 		$this->set_shareable_metrics( 'sessions', 'totalUsers' );
 
 		$this->enable_shared_credentials();
-		$this->assertTrue( $this->analytics->is_shareable() );
+		$this->assertTrue( $this->analytics->is_shareable(), 'Analytics module should be shareable when shared credentials are enabled.' );
 
 		$data = $this->analytics->get_data(
 			'report',
@@ -2409,8 +2835,8 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertWPErrorWithMessage( 'Unsupported metrics requested: invalidMetric, anotherInvalidMetric', $data );
-		$this->assertEquals( 'invalid_analytics_4_report_metrics', $data->get_error_code() );
+		$this->assertWPErrorWithMessage( 'Unsupported metrics requested: invalidMetric, anotherInvalidMetric', $data, 'Should return error when metric name contains invalid characters.' );
+		$this->assertEquals( 'invalid_analytics_4_report_metrics', $data->get_error_code(), 'Error code should be invalid_analytics_4_report_metrics for invalid metric names.' );
 	}
 
 	public function test_report__shared_dimension_validation() {
@@ -2426,7 +2852,7 @@ class Analytics_4Test extends TestCase {
 		$this->set_shareable_dimensions( 'date', 'pageTitle' );
 
 		$this->enable_shared_credentials();
-		$this->assertTrue( $this->analytics->is_shareable() );
+		$this->assertTrue( $this->analytics->is_shareable(), 'Analytics module should be shareable when shared credentials are enabled.' );
 
 		$data = $this->analytics->get_data(
 			'report',
@@ -2439,8 +2865,8 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertWPErrorWithMessage( 'Unsupported dimensions requested: invalidDimension, anotherInvalidDimension', $data );
-		$this->assertEquals( 'invalid_analytics_4_report_dimensions', $data->get_error_code() );
+		$this->assertWPErrorWithMessage( 'Unsupported dimensions requested: invalidDimension, anotherInvalidDimension', $data, 'Should return error when dimension name contains invalid characters.' );
+		$this->assertEquals( 'invalid_analytics_4_report_dimensions', $data->get_error_code(), 'Error code should be invalid_analytics_4_report_dimensions for invalid dimension names.' );
 	}
 
 	/**
@@ -2467,9 +2893,9 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertWPErrorWithMessage( 'No connected Google Analytics property ID.', $data );
-		$this->assertEquals( 'missing_required_setting', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 500 ), $data->get_error_data( 'missing_required_setting' ) );
+		$this->assertWPErrorWithMessage( 'No connected Google Analytics property ID.', $data, 'Should return error when no property ID is configured.' );
+		$this->assertEquals( 'missing_required_setting', $data->get_error_code(), 'Error code should be missing_required_setting when no property ID is configured.' );
+		$this->assertEquals( array( 'status' => 500 ), $data->get_error_data( 'missing_required_setting' ), 'Error data should include status 500 for missing required setting.' );
 	}
 
 	/**
@@ -2505,18 +2931,18 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertNotWPError( $data );
+		$this->assertNotWPError( $data, 'Analytics report should be retrieved successfully when all required parameters are provided.' );
 
 		// Verify the key events are returned by checking an event name.
-		$this->assertEquals( 'some-event', $data[0]['eventName'] );
+		$this->assertEquals( 'some-event', $data[0]['eventName'], 'Key events should return expected event name.' );
 
 		// Verify the request URL and params were correctly generated.
-		$this->assertCount( 1, $this->request_handler_calls );
+		$this->assertCount( 1, $this->request_handler_calls, 'Should have exactly one request handler call for Analytics report.' );
 
 		$request_url = $this->request_handler_calls[0]['url'];
 
-		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
-		$this->assertEquals( "/v1beta/properties/$property_id/keyEvents", $request_url['path'] );
+		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'], 'Request host should be analyticsadmin.googleapis.com.' );
+		$this->assertEquals( "/v1beta/properties/$property_id/keyEvents", $request_url['path'], 'Request path should match expected keyEvents endpoint.' );
 	}
 
 	public function test_get_enhanced_measurement_settings__required_params() {
@@ -2529,9 +2955,9 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Verify that the propertyID is required.
-		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $data );
-		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $data, 'Should return error when propertyID is empty.' );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code(), 'Error code should be missing_required_param when propertyID is empty.' );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ), 'Error data should include status 400 for missing propertyID parameter.' );
 
 		$data = $this->analytics->get_data(
 			'enhanced-measurement-settings',
@@ -2541,9 +2967,9 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Verify that the webDataStreamID is required.
-		$this->assertWPErrorWithMessage( 'Request parameter is empty: webDataStreamID.', $data );
-		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: webDataStreamID.', $data, 'Should return error when propertyID is empty.' );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code(), 'Error code should be missing_required_param when propertyID is empty.' );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ), 'Error data should include status 400 for missing propertyID parameter.' );
 	}
 
 	public function test_get_enhanced_measurement_settings() {
@@ -2575,7 +3001,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertNotWPError( $data );
+		$this->assertNotWPError( $data, 'Analytics report should be retrieved successfully when all required parameters are provided.' );
 
 		$data_array = (array) $data;
 
@@ -2594,19 +3020,19 @@ class Analytics_4Test extends TestCase {
 		);
 
 		foreach ( $keys as $key ) {
-			$this->assertArrayHasKey( $key, $data_array );
+			$this->assertArrayHasKey( $key, $data_array, 'Enhanced measurement settings response should contain expected key.' );
 		}
 
 		// Verify the enhanced measurement settings are returned by checking a field value.
-		$this->assertEquals( true, $data['streamEnabled'] );
+		$this->assertEquals( true, $data['streamEnabled'], 'Enhanced measurement stream should be enabled.' );
 
 		// Verify the request URL and params were correctly generated.
-		$this->assertCount( 1, $this->request_handler_calls );
+		$this->assertCount( 1, $this->request_handler_calls, 'Should have exactly one request handler call for Analytics report.' );
 
 		$request_url = $this->request_handler_calls[0]['url'];
 
-		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
-		$this->assertEquals( "/v1alpha/properties/$property_id/dataStreams/$web_data_stream_id/enhancedMeasurementSettings", $request_url['path'] );
+		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'], 'Enhanced measurement settings request host should be analyticsadmin.googleapis.com.' );
+		$this->assertEquals( "/v1alpha/properties/$property_id/dataStreams/$web_data_stream_id/enhancedMeasurementSettings", $request_url['path'], 'Enhanced measurement settings request path should match expected endpoint.' );
 	}
 
 	public function test_set_enhanced_measurement_settings__required_params() {
@@ -2633,7 +3059,7 @@ class Analytics_4Test extends TestCase {
 
 		// Verify that the EDIT_SCOPE is required.
 		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics web data stream on your behalf.', $data );
-		$this->assertEquals( 'missing_required_scopes', $data->get_error_code() );
+		$this->assertEquals( 'missing_required_scopes', $data->get_error_code(), 'Error code should be missing_required_scopes when Analytics edit scope is not granted for enhanced measurement settings.' );
 		$this->assertEquals(
 			array(
 				'scopes' => array(
@@ -2641,7 +3067,8 @@ class Analytics_4Test extends TestCase {
 				),
 				'status' => 403,
 			),
-			$data->get_error_data( 'missing_required_scopes' )
+			$data->get_error_data( 'missing_required_scopes' ),
+			'Error data should contain required scopes and status 403 when Analytics edit scope is not granted for enhanced measurement settings.'
 		);
 
 		// Grant EDIT_SCOPE so request doesn't fail.
@@ -2655,8 +3082,8 @@ class Analytics_4Test extends TestCase {
 
 		// Verify that the propertyID is required.
 		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $data );
-		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code(), 'Error code should be missing_required_param when propertyID is empty.' );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ), 'Error data should include status 400 for missing propertyID parameter.' );
 
 		// Call set_data with only the propertyID parameter.
 		$data = $this->analytics->set_data(
@@ -2668,8 +3095,8 @@ class Analytics_4Test extends TestCase {
 
 		// Verify that the webDataStreamID is required.
 		$this->assertWPErrorWithMessage( 'Request parameter is empty: webDataStreamID.', $data );
-		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code(), 'Error code should be missing_required_param when propertyID is empty.' );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ), 'Error data should include status 400 for missing propertyID parameter.' );
 
 		// Call set_data with only propertyID and webDataStreamID parameters.
 		$data = $this->analytics->set_data(
@@ -2682,8 +3109,8 @@ class Analytics_4Test extends TestCase {
 
 		// Verify that the enhancedMeasurementSettings object is required.
 		$this->assertWPErrorWithMessage( 'Request parameter is empty: enhancedMeasurementSettings.', $data );
-		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code(), 'Error code should be missing_required_param when propertyID is empty.' );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ), 'Error data should include status 400 for missing propertyID parameter.' );
 
 		// Call set_data with invalid enhancedMeasurementSettings fields.
 		$data = $this->analytics->set_data(
@@ -2699,8 +3126,8 @@ class Analytics_4Test extends TestCase {
 
 		// Verify that the enhancedMeasurementSettings object is required.
 		$this->assertWPErrorWithMessage( 'Invalid properties in enhancedMeasurementSettings: invalidField.', $data );
-		$this->assertEquals( 'invalid_property_name', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_property_name' ) );
+		$this->assertEquals( 'invalid_property_name', $data->get_error_code(), 'Error code should be invalid_property_name when enhanced measurement settings contain invalid properties.' );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_property_name' ), 'Error data should include status 400 for invalid property names in enhanced measurement settings.' );
 	}
 
 	public function test_set_enhanced_measurement_settings() {
@@ -2726,7 +3153,7 @@ class Analytics_4Test extends TestCase {
 		);
 
 		// Assert request was made with expected arguments.
-		$this->assertNotWPError( $response );
+		$this->assertNotWPError( $response, 'Account ticket creation should succeed when all required parameters are provided.' );
 
 		$response_array = (array) $response;
 
@@ -2745,19 +3172,19 @@ class Analytics_4Test extends TestCase {
 		);
 
 		foreach ( $keys as $key ) {
-			$this->assertArrayHasKey( $key, $response_array );
+			$this->assertArrayHasKey( $key, $response_array, "Enhanced measurement settings response should contain $key key." );
 		}
 
 		// Verify the enhanced measurement settings are returned by checking a field value.
-		$this->assertEquals( true, $response_array['streamEnabled'] );
+		$this->assertEquals( true, $response_array['streamEnabled'], 'Enhanced measurement stream should be enabled in response.' );
 
 		// Verify the request URL and params were correctly generated.
-		$this->assertCount( 1, $this->request_handler_calls );
+		$this->assertCount( 1, $this->request_handler_calls, 'Should have exactly one request handler call for Analytics report.' );
 
 		$request_url = $this->request_handler_calls[0]['url'];
 
-		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
-		$this->assertEquals( "/v1alpha/properties/$property_id/dataStreams/$web_data_stream_id/enhancedMeasurementSettings", $request_url['path'] );
+		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'], 'Enhanced measurement settings request host should be analyticsadmin.googleapis.com.' );
+		$this->assertEquals( "/v1alpha/properties/$property_id/dataStreams/$web_data_stream_id/enhancedMeasurementSettings", $request_url['path'], 'Enhanced measurement settings request path should match expected endpoint.' );
 	}
 
 	public function test_create_custom_dimension__required_params() {
@@ -2782,7 +3209,7 @@ class Analytics_4Test extends TestCase {
 
 		// Verify that the EDIT_SCOPE is required.
 		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to create a new Analytics custom dimension on your behalf.', $data );
-		$this->assertEquals( 'missing_required_scopes', $data->get_error_code() );
+		$this->assertEquals( 'missing_required_scopes', $data->get_error_code(), 'Error code should be missing_required_scopes when Analytics edit scope is not granted for custom dimension creation.' );
 		$this->assertEquals(
 			array(
 				'scopes' => array(
@@ -2790,7 +3217,8 @@ class Analytics_4Test extends TestCase {
 				),
 				'status' => 403,
 			),
-			$data->get_error_data( 'missing_required_scopes' )
+			$data->get_error_data( 'missing_required_scopes' ),
+			'Error data should include required scopes and status 403 when Analytics edit scope is not granted for custom dimension creation.'
 		);
 
 		// Grant EDIT_SCOPE so request doesn't fail.
@@ -2804,8 +3232,8 @@ class Analytics_4Test extends TestCase {
 
 		// Verify that the propertyID is required.
 		$this->assertWPErrorWithMessage( 'Request parameter is empty: propertyID.', $data );
-		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code(), 'Error code should be missing_required_param when propertyID is empty.' );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ), 'Error data should include status 400 for missing propertyID parameter.' );
 
 		// Call set_data with only the propertyID parameter.
 		$data = $this->analytics->set_data(
@@ -2817,8 +3245,8 @@ class Analytics_4Test extends TestCase {
 
 		// Verify that the customDimension object is required.
 		$this->assertWPErrorWithMessage( 'Request parameter is empty: customDimension.', $data );
-		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code(), 'Error code should be missing_required_param when propertyID is empty.' );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ), 'Error data should include status 400 for missing propertyID parameter.' );
 
 		// Call set_data with invalid customDimension fields.
 		$data = $this->analytics->set_data(
@@ -2833,8 +3261,8 @@ class Analytics_4Test extends TestCase {
 
 		// Verify that the keys are valid for the customDimension object.
 		$this->assertWPErrorWithMessage( 'Invalid properties in customDimension: invalidField.', $data );
-		$this->assertEquals( 'invalid_property_name', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_property_name' ) );
+		$this->assertEquals( 'invalid_property_name', $data->get_error_code(), 'Error code should be invalid_property_name when custom dimension contains invalid properties.' );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_property_name' ), 'Error data should include status 400 for invalid property names in custom dimension.' );
 
 		// Call set_data with invalid scope.
 		$data = $this->analytics->set_data(
@@ -2853,8 +3281,8 @@ class Analytics_4Test extends TestCase {
 
 		// Verify that scope has a valid value.
 		$this->assertWPErrorWithMessage( 'Invalid scope: invalidValue.', $data );
-		$this->assertEquals( 'invalid_scope', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_scope' ) );
+		$this->assertEquals( 'invalid_scope', $data->get_error_code(), 'Error code should be invalid_scope when scope value is invalid.' );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_scope' ), 'Error data should include status 400 for invalid scope.' );
 	}
 
 	public function test_create_custom_dimension() {
@@ -2880,7 +3308,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertNotWPError( $response );
+		$this->assertNotWPError( $response, 'Custom dimension creation should succeed when all required parameters are provided.' );
 
 		$response_array = (array) $response;
 
@@ -2888,21 +3316,21 @@ class Analytics_4Test extends TestCase {
 		$keys = array_keys( $custom_dimension );
 
 		foreach ( $keys as $key ) {
-			$this->assertArrayHasKey( $key, $response_array );
+			$this->assertArrayHasKey( $key, $response_array, "Custom dimension response should contain $key key." );
 		}
 
 		// Validate the response against the expected mock value.
 		foreach ( $custom_dimension as $key => $value ) {
-			$this->assertEquals( $value, $response_array[ $key ] );
+			$this->assertEquals( $value, $response_array[ $key ], "Custom dimension $key should match expected value." );
 		}
 
 		// Verify the request URL and params were correctly generated.
-		$this->assertCount( 1, $this->request_handler_calls );
+		$this->assertCount( 1, $this->request_handler_calls, 'Should have exactly one request handler call for Analytics report.' );
 
 		$request_url = $this->request_handler_calls[0]['url'];
 
-		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
-		$this->assertEquals( "/v1beta/properties/$property_id/customDimensions", $request_url['path'] );
+		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'], 'Custom dimension request host should be analyticsadmin.googleapis.com.' );
+		$this->assertEquals( "/v1beta/properties/$property_id/customDimensions", $request_url['path'], 'Custom dimension request path should match expected endpoint.' );
 	}
 
 	public function test_create_custom_dimension__without_optional_fields() {
@@ -2943,8 +3371,8 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertNotWPError( $response );
-		$this->assertEquals( $raw_custom_dimension, (array) $response->toSimpleObject() );
+		$this->assertNotWPError( $response, 'Custom dimension creation should succeed when only required fields are provided.' );
+		$this->assertEquals( $raw_custom_dimension, (array) $response->toSimpleObject(), 'Response should match the raw custom dimension data.' );
 	}
 
 	public function test_sync_custom_dimensions() {
@@ -2971,15 +3399,15 @@ class Analytics_4Test extends TestCase {
 		$this->assertNotWPError( $response );
 
 		// Verify the response is an array of custom dimension names.
-		$this->assertEquals( array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ), $response );
+		$this->assertEquals( array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ), $response, 'Sync custom dimensions should return expected dimension names.' );
 
 		// Verify the request URL and params were correctly generated.
-		$this->assertCount( 1, $this->request_handler_calls );
+		$this->assertCount( 1, $this->request_handler_calls, 'Should have exactly one request handler call for Analytics report.' );
 
 		$request_url = $this->request_handler_calls[0]['url'];
 
-		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'] );
-		$this->assertEquals( "/v1beta/properties/$property_id/customDimensions", $request_url['path'] );
+		$this->assertEquals( 'analyticsadmin.googleapis.com', $request_url['host'], 'Sync custom dimensions request host should be analyticsadmin.googleapis.com.' );
+		$this->assertEquals( "/v1beta/properties/$property_id/customDimensions", $request_url['path'], 'Sync custom dimensions request path should match expected endpoint.' );
 	}
 
 	/**
@@ -3079,24 +3507,70 @@ class Analytics_4Test extends TestCase {
 						)
 					);
 
-				case "/v1beta/properties/$property_id:runPivotReport":
-					// Return a mock pivot report.
+				case "/v1beta/properties/$property_id:batchRunReports":
 					return new FulfilledPromise(
 						new Response(
 							200,
 							array(),
 							json_encode(
 								array(
-									'kind' => 'analyticsData#runPivotReport',
-									array(
-										'rows' => array(
-											array(
-												'metricValues' => array(
-													array(
-														'value' => 'some-value',
+									'kind'    => 'analyticsData#batchRunReports',
+									'reports' => array(
+										array(
+											'kind'     => 'analyticsData#runReport',
+											'dimensionHeaders' => array(
+												array( 'name' => 'sessionDefaultChannelGrouping' ),
+												array( 'name' => 'date' ),
+											),
+											'metricHeaders' => array(
+												array(
+													'name' => 'sessions',
+													'type' => 'TYPE_INTEGER',
+												),
+											),
+											'rows'     => array(
+												array(
+													'dimensionValues' => array(
+														array( 'value' => 'Organic Search' ),
+														array( 'value' => '2024-07-10' ),
+													),
+													'metricValues'    => array(
+														array( 'value' => 'batch-value-1' ),
 													),
 												),
 											),
+											'totals'   => array(),
+											'maximums' => array(),
+											'minimums' => array(),
+											'metadata' => array( 'timeZone' => 'UTC' ),
+										),
+										array(
+											'kind'     => 'analyticsData#runReport',
+											'dimensionHeaders' => array(
+												array( 'name' => 'date' ),
+												array( 'name' => 'newVsReturning' ),
+											),
+											'metricHeaders' => array(
+												array(
+													'name' => 'activeUsers',
+													'type' => 'TYPE_INTEGER',
+												),
+											),
+											'rows'     => array(
+												array(
+													'dimensionValues' => array(
+														array( 'value' => '2024-07-10' ),
+														array( 'value' => 'returning' ),
+													),
+													'metricValues'    => array(
+														array( 'value' => 'batch-value-2' ),
+													),
+												),
+											),
+											'totals'   => array(),
+											'maximums' => array(),
+											'minimums' => array(),
+											'metadata' => array( 'timeZone' => 'UTC' ),
 										),
 									),
 								)
@@ -3366,9 +3840,6 @@ class Analytics_4Test extends TestCase {
 	 * @param bool $is_content_creator
 	 */
 	public function test_tracking_opt_out_snippet( $settings, $logged_in, $is_tracking_active, $is_content_creator = false ) {
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
 		wp_styles(); // Prevent potential ->queue of non-object error.
 
 		// Remove irrelevant script from throwing errors in CI from readfile().
@@ -3393,39 +3864,39 @@ class Analytics_4Test extends TestCase {
 
 		$head_html = $this->capture_action( 'wp_head' );
 		// Confidence check.
-		$this->assertNotEmpty( $head_html );
+		$this->assertNotEmpty( $head_html, 'Head HTML should not be empty when wp_head action is triggered.' );
 
 		// Whether or not tracking is disabled should not affect the output of the GA4 snippet.
 		if ( $settings['measurementID'] && $settings['googleTagID'] && $settings['useSnippet'] ) {
-			$this->assertStringContainsString( "id={$settings['googleTagID']}", $head_html );
+			$this->assertStringContainsString( "id={$settings['googleTagID']}", $head_html, 'Head HTML should contain Google Tag ID when both measurement ID and Google Tag ID are configured.' );
 		} elseif ( $settings['measurementID'] && ! $settings['googleTagID'] && $settings['useSnippet'] ) {
-			$this->assertStringContainsString( "id={$settings['measurementID']}", $head_html );
+			$this->assertStringContainsString( "id={$settings['measurementID']}", $head_html, 'Head HTML should contain measurement ID when only measurement ID is configured.' );
 		} else {
-			$this->assertStringNotContainsString( "id={$settings['googleTagID']}", $head_html );
+			$this->assertStringNotContainsString( "id={$settings['googleTagID']}", $head_html, 'Head HTML should not contain Google Tag ID when snippet is not used.' );
 		}
 
 		if ( ! $settings['measurementID'] ) {
-			$this->assertStringNotContainsString( 'ga-disable', $head_html );
+			$this->assertStringNotContainsString( 'ga-disable', $head_html, 'Head HTML should not contain tracking opt-out snippet when measurement ID is not set.' );
 		}
 
 		if ( $is_tracking_active ) {
 			// When tracking is active, the opt out snippet should not be present.
-			$this->assertStringNotContainsString( 'ga-disable', $head_html );
+			$this->assertStringNotContainsString( 'ga-disable', $head_html, 'Head HTML should not contain tracking opt-out snippet when tracking is active.' );
 
 			// When tracking is active, the `googlesitekit_analytics_tracking_opt_out` action should not be called.
-			$this->assertEquals( 0, did_action( 'googlesitekit_analytics_tracking_opt_out' ) );
+			$this->assertEquals( 0, did_action( 'googlesitekit_analytics_tracking_opt_out' ), 'Analytics tracking opt-out action should not be triggered initially.' );
 		} else {
 			if ( empty( $settings['measurementID'] ) ) {
 				// When measurementID is not set, the opt out snippet should not be present.
-				$this->assertStringNotContainsString( 'ga-disable', $head_html );
+				$this->assertStringNotContainsString( 'ga-disable', $head_html, 'Head HTML should not contain tracking opt-out snippet when measurement ID is not set.' );
 			} else {
 				// When tracking is disabled and measurementID is set, the opt out snippet should be present.
 				// Ensure the opt-out snippet contains the configured measurement ID (not GT tag) when it is set.
-				$this->assertStringContainsString( 'window["ga-disable-' . $settings['measurementID'] . '"] = true', $head_html );
+				$this->assertStringContainsString( 'window["ga-disable-' . $settings['measurementID'] . '"] = true', $head_html, 'Head HTML should contain tracking opt-out snippet when tracking is disabled and measurement ID is set.' );
 			}
 
 			// When tracking is disabled, the `googlesitekit_analytics_tracking_opt_out` action should be called.
-			$this->assertEquals( 1, did_action( 'googlesitekit_analytics_tracking_opt_out' ) );
+			$this->assertEquals( 1, did_action( 'googlesitekit_analytics_tracking_opt_out' ), 'Analytics tracking opt-out action should be triggered when tracking is disabled.' );
 		}
 	}
 
@@ -3516,11 +3987,11 @@ class Analytics_4Test extends TestCase {
 
 	public function test_register_allow_tracking_disabled() {
 		remove_all_filters( 'googlesitekit_allow_tracking_disabled' );
-		$this->assertFalse( has_filter( 'googlesitekit_allow_tracking_disabled' ) );
+		$this->assertFalse( has_filter( 'googlesitekit_allow_tracking_disabled' ), 'Allow tracking disabled filter should not be hooked initially.' );
 
 		$this->analytics->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_allow_tracking_disabled' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_allow_tracking_disabled' ), 'Allow tracking disabled filter should be hooked after module registration.' );
 	}
 
 	public function test_allow_tracking_disabled() {
@@ -3528,8 +3999,8 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->register();
 
 		// Ensure disabling tracking is allowed when the snippet is used.
-		$this->assertTrue( $this->analytics->get_settings()->get()['useSnippet'] );
-		$this->assertTrue( apply_filters( 'googlesitekit_allow_tracking_disabled', false ) );
+		$this->assertTrue( $this->analytics->get_settings()->get()['useSnippet'], 'Analytics snippet should be enabled by default.' );
+		$this->assertTrue( apply_filters( 'googlesitekit_allow_tracking_disabled', false ), 'Tracking should be allowed to be disabled when snippet is used.' );
 
 		$settings = array(
 			'useSnippet' => false,
@@ -3538,10 +4009,10 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->get_settings()->merge( $settings );
 
 		// Ensure disabling tracking is disallowed when the snippet is not used.
-		$this->assertFalse( apply_filters( 'googlesitekit_allow_tracking_disabled', false ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_allow_tracking_disabled', false ), 'Tracking should not be allowed to be disabled when snippet is not used.' );
 
 		// Ensure disabling tracking does not change if its already allowed.
-		$this->assertTrue( apply_filters( 'googlesitekit_allow_tracking_disabled', true ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_allow_tracking_disabled', true ), 'Tracking should remain allowed when already allowed.' );
 	}
 
 	public function test_get_custom_dimensions_data() {
@@ -3562,12 +4033,12 @@ class Analytics_4Test extends TestCase {
 		// Returns an empty array if the current page type is not singular.
 		$wp_query = new WP_Query();
 		$data     = $method->invoke( $this->analytics );
-		$this->assertEmpty( $data );
+		$this->assertEmpty( $data, 'Custom dimension data should be empty when page type is not singular.' );
 
 		// Ensure the `'googlesitekit_post_categories'` key is not present
 		// if the page does not return categories or encounters an error
 		// retrieving categories.
-		$this->assertFalse( array_key_exists( 'googlesitekit_post_categories', $data ) );
+		$this->assertFalse( array_key_exists( 'googlesitekit_post_categories', $data ), 'Post categories key should not exist when page type is not singular.' );
 
 		// Change the current page to be singular.
 		$category1_id = $this->factory()->category->create( array( 'name' => 'Category 1' ) );
@@ -3586,12 +4057,12 @@ class Analytics_4Test extends TestCase {
 
 		// Returns an empty array if no custom dimensions are added to settings.
 		$data = $method->invoke( $this->analytics );
-		$this->assertEmpty( $data );
+		$this->assertEmpty( $data, 'Custom dimension data should be empty when no custom dimensions are configured.' );
 
 		// Returns only post type if the queried object is not in the allowed post types list.
 		$this->analytics->get_settings()->merge( $settings );
 		$data = $method->invoke( $this->analytics );
-		$this->assertEquals( array( 'googlesitekit_post_type' => $post_type ), $data );
+		$this->assertEquals( array( 'googlesitekit_post_type' => $post_type ), $data, 'Custom dimension data should contain post type for the given post.' );
 
 		// Returns correct data when all conditions are met.
 		add_filter( 'googlesitekit_custom_dimension_valid_post_types', $hook );
@@ -3606,7 +4077,8 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_date'       => get_the_date( 'Ymd', $wp_query->queried_object ),
 				'googlesitekit_post_categories' => 'Category 1; Category 3',
 			),
-			$data
+			$data,
+			'Custom dimension data should contain all expected fields when all conditions are met.'
 		);
 	}
 
@@ -3615,7 +4087,7 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertArrayNotHasKey( 'analytics-4', $inline_modules_data );
+		$this->assertArrayNotHasKey( 'analytics-4', $inline_modules_data, 'Analytics module should not be present in inline data when not connected.' );
 	}
 
 	public function test_inline_custom_dimension_data_initial_state__module_connected() {
@@ -3635,7 +4107,7 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'] );
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'], 'Analytics inline module data should contain customDimensionsDataAvailable key when module is connected.' );
 
 		$this->assertEquals(
 			array(
@@ -3644,7 +4116,8 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
 			),
-			$inline_modules_data['analytics-4']['customDimensionsDataAvailable']
+			$inline_modules_data['analytics-4']['customDimensionsDataAvailable'],
+			'Custom dimensions data available should be initialized with all dimensions set to false when module is connected but no data is available.'
 		);
 	}
 
@@ -3664,8 +4137,8 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertArrayHasKey( 'analytics-4', $inline_modules_data );
-		$this->assertArrayHasKey( 'resourceAvailabilityDates', $inline_modules_data['analytics-4'] );
+		$this->assertArrayHasKey( 'analytics-4', $inline_modules_data, 'Inline modules data should contain analytics-4 module data.' );
+		$this->assertArrayHasKey( 'resourceAvailabilityDates', $inline_modules_data['analytics-4'], 'Analytics inline module data should contain resourceAvailabilityDates key.' );
 
 		$this->assertEquals(
 			array(
@@ -3673,7 +4146,8 @@ class Analytics_4Test extends TestCase {
 				'customDimension' => array(),
 				'property'        => array(),
 			),
-			$inline_modules_data['analytics-4']['resourceAvailabilityDates']
+			$inline_modules_data['analytics-4']['resourceAvailabilityDates'],
+			'Resource availability dates should be initialized with empty arrays when no resources are available.'
 		);
 
 		list(
@@ -3696,7 +4170,8 @@ class Analytics_4Test extends TestCase {
 					$test_resource_slug_property => 20201231,
 				),
 			),
-			$inline_modules_data['analytics-4']['resourceAvailabilityDates']
+			$inline_modules_data['analytics-4']['resourceAvailabilityDates'],
+			'Resource availability dates should contain the expected test resource slugs with their availability dates.'
 		);
 	}
 
@@ -3730,11 +4205,11 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertEquals( true, $response );
+		$this->assertEquals( true, $response, 'Custom dimension data available should be set to true.' );
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'] );
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'], 'Analytics inline module data should contain customDimensionsDataAvailable key when custom dimension data is available.' );
 
 		$this->assertEquals(
 			array(
@@ -3743,7 +4218,8 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
 			),
-			$inline_modules_data['analytics-4']['customDimensionsDataAvailable']
+			$inline_modules_data['analytics-4']['customDimensionsDataAvailable'],
+			'Custom dimensions data available should show post_author as true and others as false after setting custom dimension data available.'
 		);
 	}
 
@@ -3779,7 +4255,7 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'] );
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'], 'Analytics inline module data should contain customDimensionsDataAvailable key when custom dimension data is available after measurement ID change.' );
 
 		$this->assertEquals(
 			array(
@@ -3788,7 +4264,8 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
 			),
-			$inline_modules_data['analytics-4']['customDimensionsDataAvailable']
+			$inline_modules_data['analytics-4']['customDimensionsDataAvailable'],
+			'Custom dimensions data available should remain unchanged after measurement ID change.'
 		);
 
 		$this->analytics->get_settings()->merge(
@@ -3799,7 +4276,7 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'] );
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'], 'Analytics inline module data should contain customDimensionsDataAvailable key when custom dimension data is available after measurement ID change.' );
 		$this->assertEquals(
 			array(
 				'googlesitekit_post_author'     => false,
@@ -3807,7 +4284,8 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
 			),
-			$inline_modules_data['analytics-4']['customDimensionsDataAvailable']
+			$inline_modules_data['analytics-4']['customDimensionsDataAvailable'],
+			'Custom dimensions data available should remain unchanged after measurement ID change when module is still connected.'
 		);
 	}
 
@@ -3852,7 +4330,8 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
 			),
-			$custom_dimensions_data_available->get_data_availability()
+			$custom_dimensions_data_available->get_data_availability(),
+			'Custom dimensions data available should show post_author as true and others as false before module deactivation.'
 		);
 
 		$this->analytics->on_deactivation();
@@ -3864,7 +4343,8 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
 			),
-			$custom_dimensions_data_available->get_data_availability()
+			$custom_dimensions_data_available->get_data_availability(),
+			'Custom dimensions data available should be reset to all false after module deactivation.'
 		);
 	}
 
@@ -3885,7 +4365,7 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertEquals( false, $inline_modules_data['analytics-4']['tagIDMismatch'] );
+		$this->assertEquals( false, $inline_modules_data['analytics-4']['tagIDMismatch'], 'Tag ID mismatch should be false when no mismatch exists.' );
 	}
 
 	public function test_inline_tag_id_mismatch__source_correct_value_from_transient() {
@@ -3905,14 +4385,50 @@ class Analytics_4Test extends TestCase {
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertEquals( false, $inline_modules_data['analytics-4']['tagIDMismatch'] );
+		$this->assertEquals( false, $inline_modules_data['analytics-4']['tagIDMismatch'], 'Tag ID mismatch should be false when no transient is set.' );
 
 		$transients = new Transients( $this->context );
 		$transients->set( 'googlesitekit_inline_tag_id_mismatch', true );
 
 		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
 
-		$this->assertEquals( true, $inline_modules_data['analytics-4']['tagIDMismatch'] );
+		$this->assertEquals( true, $inline_modules_data['analytics-4']['tagIDMismatch'], 'Tag ID mismatch should be true when transient is set.' );
+	}
+
+	public function test_inline_conversion_reporting_events_detection_not_connected() {
+		$this->analytics->register();
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertArrayNotHasKey( 'analytics-4', $inline_modules_data, 'Analytics module should not be present in inline data when not connected for conversion reporting events.' );
+	}
+
+	public function test_inline_conversion_reporting_events_detection_connected() {
+		$this->analytics->register();
+
+		// Ensure the module is connected.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'A1B2C3D4E5',
+			)
+		);
+
+		$transients = new Transients( $this->context );
+
+		$transients->set( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT, array( 'detect_event_1', 'detect_event_2' ) );
+		$transients->set( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT, array( 'lost_event' ) );
+		$transients->set( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT, array( 'events' => array( 'new_badge_event_1', 'new_badge_event_2', 'new_badge_event_3' ) ) );
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertEquals( array( 'detect_event_1', 'detect_event_2' ), $inline_modules_data['analytics-4']['newEvents'], 'New events should be included in inline module data from detected events transient.' );
+		$this->assertEquals( array( 'lost_event' ), $inline_modules_data['analytics-4']['lostEvents'], 'Lost events should be included in inline module data.' );
+		$this->assertEquals( array( 'new_badge_event_1', 'new_badge_event_2', 'new_badge_event_3' ), $inline_modules_data['analytics-4']['newBadgeEvents'], 'New badge events should be included in inline module data from new badge events transient.' );
 	}
 
 	public function test_get_data__adsense_links() {
@@ -3948,11 +4464,11 @@ class Analytics_4Test extends TestCase {
 		$result = $this->analytics->get_data( 'adsense-links', array( 'propertyID' => '12345' ) );
 
 		// Should return array with `GoogleAnalyticsAdminV1alphaAdSenseLink` as defined in the mock response.
-		$this->assertNotWPError( $result );
-		$this->assertContainsOnlyInstancesOf( Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaAdSenseLink::class, $result );
+		$this->assertNotWPError( $result, 'AdSense links request should succeed when propertyID is provided.' );
+		$this->assertContainsOnlyInstancesOf( Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaAdSenseLink::class, $result, 'AdSense links result should contain only GoogleAnalyticsAdminV1alphaAdSenseLink instances.' );
 		$adsense_link = $result[0];
-		$this->assertEquals( 'properties/12345/adSenseLinks/12345', $adsense_link->getName() );
-		$this->assertEquals( 'ca-pub-12345', $adsense_link->getAdClientCode() );
+		$this->assertEquals( 'properties/12345/adSenseLinks/12345', $adsense_link->getName(), 'AdSense link name should match expected value.' );
+		$this->assertEquals( 'ca-pub-12345', $adsense_link->getAdClientCode(), 'AdSense link client code should match expected value.' );
 	}
 
 	public function test_set_data__save_resource_data_availability_date() {
@@ -3966,9 +4482,9 @@ class Analytics_4Test extends TestCase {
 			$test_resource_data_availability_transient_property,
 		) = $this->set_test_resource_data_availability_dates();
 
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ) );
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ) );
-		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ) );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_audience ), 'Audience transient should be set.' );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_custom_dimension ), 'Custom dimension transient should be set.' );
+		$this->assertNotFalse( get_transient( $test_resource_data_availability_transient_property ), 'Property transient should be set.' );
 
 		// Test missing required parameters.
 		$data = $this->analytics->set_data(
@@ -3976,7 +4492,7 @@ class Analytics_4Test extends TestCase {
 			array()
 		);
 
-		$this->assertWPErrorWithMessage( 'Request parameter is empty: resourceType.', $data );
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: resourceType.', $data, 'Should return error when resourceType parameter is missing.' );
 
 		$data = $this->analytics->set_data(
 			'save-resource-data-availability-date',
@@ -3985,7 +4501,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertWPErrorWithMessage( 'Request parameter is empty: resourceSlug.', $data );
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: resourceSlug.', $data, 'Should return error when resourceSlug parameter is missing.' );
 
 		$data = $this->analytics->set_data(
 			'save-resource-data-availability-date',
@@ -3995,7 +4511,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertWPErrorWithMessage( 'Request parameter is empty: date.', $data );
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: date.', $data, 'Should return error when date parameter is missing.' );
 
 		// Test invalid resource type.
 		$data = $this->analytics->set_data(
@@ -4007,7 +4523,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertWPErrorWithMessage( 'Invalid parameter: resourceType.', $data );
+		$this->assertWPErrorWithMessage( 'Invalid parameter: resourceType.', $data, 'Should return error when resourceType is invalid.' );
 
 		// Test invalid resource slug.
 		$data = $this->analytics->set_data(
@@ -4019,7 +4535,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertWPErrorWithMessage( 'Invalid parameter: resourceSlug.', $data );
+		$this->assertWPErrorWithMessage( 'Invalid parameter: resourceSlug.', $data, 'Should return error when resourceSlug is invalid.' );
 
 		// Test invalid date.
 		$data = $this->analytics->set_data(
@@ -4031,7 +4547,7 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertWPErrorWithMessage( 'Invalid parameter: date.', $data );
+		$this->assertWPErrorWithMessage( 'Invalid parameter: date.', $data, 'Should return error when date parameter is invalid.' );
 	}
 
 	public function test_create_audience__required_scope() {
@@ -4048,7 +4564,7 @@ class Analytics_4Test extends TestCase {
 
 		// Verify that the EDIT_SCOPE is required.
 		$this->assertWPErrorWithMessage( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', $data );
-		$this->assertEquals( 'missing_required_scopes', $data->get_error_code() );
+		$this->assertEquals( 'missing_required_scopes', $data->get_error_code(), 'Error code should be missing_required_scopes when Analytics edit scope is not granted for audience creation.' );
 		$this->assertEquals(
 			array(
 				'scopes' => array(
@@ -4056,7 +4572,8 @@ class Analytics_4Test extends TestCase {
 				),
 				'status' => 403,
 			),
-			$data->get_error_data( 'missing_required_scopes' )
+			$data->get_error_data( 'missing_required_scopes' ),
+			'Error data should include required scopes and status 403 for missing required scopes.'
 		);
 	}
 
@@ -4077,8 +4594,8 @@ class Analytics_4Test extends TestCase {
 
 		// Verify that the audience object is required.
 		$this->assertWPErrorWithMessage( 'Request parameter is empty: audience.', $data );
-		$this->assertEquals( 'missing_required_param', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ) );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code(), 'Error code should be missing_required_param when audience parameter is empty.' );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ), 'Error data should include status 400 for missing audience parameter.' );
 	}
 
 	public function test_create_audience__valid_audience_keys() {
@@ -4101,8 +4618,8 @@ class Analytics_4Test extends TestCase {
 
 		// Verify that the keys are valid for the audience object.
 		$this->assertWPErrorWithMessage( 'Invalid properties in audience: invalidField.', $data );
-		$this->assertEquals( 'invalid_property_name', $data->get_error_code() );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_property_name' ) );
+		$this->assertEquals( 'invalid_property_name', $data->get_error_code(), 'Error code should be invalid_property_name when audience contains invalid properties.' );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_property_name' ), 'Error data should include status 400 for invalid property names in audience.' );
 	}
 
 	public function get_audience() {
@@ -4303,10 +4820,10 @@ class Analytics_4Test extends TestCase {
 		$this->fake_handler_and_invoke_register_method( $property_id );
 
 		$data = $this->analytics->set_data( 'sync-audiences', array() );
-		$this->assertWPError( $data );
-		$this->assertEquals( 'forbidden', $data->get_error_code() );
-		$this->assertEquals( 'User must be authenticated to sync audiences.', $data->get_error_message() );
-		$this->assertEquals( array( 'status' => 403 ), $data->get_error_data() );
+		$this->assertWPError( $data, 'Should return error when user is not authenticated for audience sync.' );
+		$this->assertEquals( 'forbidden', $data->get_error_code(), 'Error code should be forbidden when user is not authenticated.' );
+		$this->assertEquals( 'User must be authenticated to sync audiences.', $data->get_error_message(), 'Error message should indicate authentication requirement.' );
+		$this->assertEquals( array( 'status' => 403 ), $data->get_error_data(), 'Error data should include status 403 for forbidden access.' );
 	}
 
 	/**
@@ -4356,13 +4873,15 @@ class Analytics_4Test extends TestCase {
 		// Verify that the module setting is not set yet.
 		$this->assertEquals(
 			$this->audience_settings->get()['availableAudiences'],
-			null
+			null,
+			'Available audiences should be null before sync.'
 		);
 
 		// Verify that a sync timestamp has not been set yet.
 		$this->assertEquals(
 			$this->audience_settings->get()['availableAudiencesLastSyncedAt'],
-			0
+			0,
+			'Sync timestamp should be 0 before sync.'
 		);
 
 		$data = $this->analytics->set_data( 'sync-audiences', array() );
@@ -4378,20 +4897,23 @@ class Analytics_4Test extends TestCase {
 				'audienceType',
 				'audienceSlug',
 			),
-			array_keys( $data[0] )
+			array_keys( $data[0] ),
+			'Sync audiences response should contain expected audience structure keys.'
 		);
 
 		// Verify that the module setting is updated with correct values
 		// including various audience types and slugs.
 		$this->assertEquals(
 			$this->audience_settings->get()['availableAudiences'],
-			$expected_available_audiences
+			$expected_available_audiences,
+			'Available audiences should be updated with expected audience data.'
 		);
 
 		// Verify that a sync timestamp has been set.
 		$this->assertGreaterThan(
 			0,
-			$this->audience_settings->get()['availableAudiencesLastSyncedAt']
+			$this->audience_settings->get()['availableAudiencesLastSyncedAt'],
+			'Sync timestamp should be set after successful audience sync.'
 		);
 	}
 
@@ -4419,18 +4941,18 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->set_data( 'sync-audiences', array() );
 		$debug_fields = $this->analytics->get_debug_fields();
 
-		$this->assertArrayHasKey( 'analytics_4_site_kit_audiences', $debug_fields );
+		$this->assertArrayHasKey( 'analytics_4_site_kit_audiences', $debug_fields, 'Debug fields should contain analytics_4_site_kit_audiences key.' );
 
 		$audience_field = $debug_fields['analytics_4_site_kit_audiences'];
 
-		$this->assertEquals( 'Analytics: Site created audiences', $audience_field['label'] );
+		$this->assertEquals( 'Analytics: Site created audiences', $audience_field['label'], 'Audience field label should match expected value.' );
 
 		if ( $this->authentication->is_authenticated() ) {
-			$this->assertEquals( 'New visitors, Returning visitors', $audience_field['value'] );
-			$this->assertEquals( 'New visitors, Returning visitors', $audience_field['debug'] );
+			$this->assertEquals( 'New visitors, Returning visitors', $audience_field['value'], 'Audience field value should show available audiences when authenticated.' );
+			$this->assertEquals( 'New visitors, Returning visitors', $audience_field['debug'], 'Audience field debug should show available audiences when authenticated.' );
 		} else {
-			$this->assertEquals( 'None', $audience_field['value'] );
-			$this->assertEquals( 'none', $audience_field['debug'] );
+					$this->assertEquals( 'None', $audience_field['value'], 'Audience field value should be None when no audiences exist.' );
+			$this->assertEquals( 'none', $audience_field['debug'], 'Audience field debug should be none when no audiences exist.' );
 		}
 	}
 
@@ -4448,11 +4970,11 @@ class Analytics_4Test extends TestCase {
 		remove_all_filters( 'amp_post_template_data' );
 
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'amp_print_analytics' ) );
-		$this->assertFalse( has_action( 'wp_footer' ) );
-		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
-		$this->assertFalse( has_action( 'web_stories_print_analytics' ) );
-		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+		$this->assertFalse( has_action( 'amp_print_analytics' ), 'AMP analytics action should not be hooked when module is not connected.' );
+		$this->assertFalse( has_action( 'wp_footer' ), 'WP footer action should not be hooked when module is not connected.' );
+		$this->assertFalse( has_action( 'amp_post_template_footer' ), 'AMP post template footer action should not be hooked when module is not connected.' );
+		$this->assertFalse( has_action( 'web_stories_print_analytics' ), 'Web stories analytics action should not be hooked when module is not connected.' );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should not be hooked when module is not connected.' );
 
 		$analytics->get_settings()->merge(
 			array(
@@ -4464,11 +4986,11 @@ class Analytics_4Test extends TestCase {
 		);
 
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'amp_print_analytics' ) );
-		$this->assertTrue( has_action( 'wp_footer' ) );
-		$this->assertTrue( has_action( 'amp_post_template_footer' ) );
-		$this->assertTrue( has_action( 'web_stories_print_analytics' ) );
-		$this->assertTrue( has_filter( 'amp_post_template_data' ) );
+		$this->assertTrue( has_action( 'amp_print_analytics' ), 'AMP analytics action should be hooked when module is connected.' );
+		$this->assertTrue( has_action( 'wp_footer' ), 'WP footer action should be hooked when module is connected.' );
+		$this->assertTrue( has_action( 'amp_post_template_footer' ), 'AMP post template footer action should be hooked when module is connected.' );
+		$this->assertTrue( has_action( 'web_stories_print_analytics' ), 'Web stories analytics action should be hooked when module is connected.' );
+		$this->assertTrue( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should be hooked when module is connected.' );
 
 		remove_all_actions( 'amp_print_analytics' );
 		remove_all_actions( 'wp_footer' );
@@ -4479,21 +5001,21 @@ class Analytics_4Test extends TestCase {
 		// Tag not hooked when blocked.
 		add_filter( 'googlesitekit_analytics-4_tag_amp_blocked', '__return_true' );
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'amp_print_analytics' ) );
-		$this->assertFalse( has_action( 'wp_footer' ) );
-		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
-		$this->assertFalse( has_action( 'web_stories_print_analytics' ) );
-		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+		$this->assertFalse( has_action( 'amp_print_analytics' ), 'AMP analytics action should not be hooked when tag is blocked.' );
+		$this->assertFalse( has_action( 'wp_footer' ), 'WP footer action should not be hooked when tag is blocked.' );
+		$this->assertFalse( has_action( 'amp_post_template_footer' ), 'AMP post template footer action should not be hooked when tag is blocked.' );
+		$this->assertFalse( has_action( 'web_stories_print_analytics' ), 'Web stories analytics action should not be hooked when tag is blocked.' );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should not be hooked when tag is blocked.' );
 
 		// Tag not hooked when only AMP blocked
 		add_filter( 'googlesitekit_analytics-4_tag_blocked', '__return_false' );
 		add_filter( 'googlesitekit_analytics-4_tag_amp_blocked', '__return_true' );
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'amp_print_analytics' ) );
-		$this->assertFalse( has_action( 'wp_footer' ) );
-		$this->assertFalse( has_action( 'amp_post_template_footer' ) );
-		$this->assertFalse( has_action( 'web_stories_print_analytics' ) );
-		$this->assertFalse( has_filter( 'amp_post_template_data' ) );
+		$this->assertFalse( has_action( 'amp_print_analytics' ), 'AMP analytics action should not be hooked when only AMP is blocked.' );
+		$this->assertFalse( has_action( 'wp_footer' ), 'WP footer action should not be hooked when only AMP is blocked.' );
+		$this->assertFalse( has_action( 'amp_post_template_footer' ), 'AMP post template footer action should not be hooked when only AMP is blocked.' );
+		$this->assertFalse( has_action( 'web_stories_print_analytics' ), 'Web stories analytics action should not be hooked when only AMP is blocked.' );
+		$this->assertFalse( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should not be hooked when only AMP is blocked.' );
 	}
 
 	public function test_register_template_redirect_non_amp() {
@@ -4506,7 +5028,7 @@ class Analytics_4Test extends TestCase {
 		remove_all_actions( 'googlesitekit_setup_gtag' );
 
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'googlesitekit_setup_gtag' ) );
+		$this->assertFalse( has_action( 'googlesitekit_setup_gtag' ), 'GTag setup action should not be hooked when module is not connected.' );
 
 		$analytics->get_settings()->merge(
 			array(
@@ -4518,19 +5040,19 @@ class Analytics_4Test extends TestCase {
 		);
 
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
+		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ), 'GTag setup action should be hooked when module is connected.' );
 
 		// Tag not hooked when blocked.
 		remove_all_actions( 'googlesitekit_setup_gtag' );
 		add_filter( 'googlesitekit_analytics-4_tag_blocked', '__return_true' );
 		do_action( 'template_redirect' );
-		$this->assertFalse( has_action( 'googlesitekit_setup_gtag' ) );
+		$this->assertFalse( has_action( 'googlesitekit_setup_gtag' ), 'GTag setup action should not be hooked when tag is blocked.' );
 
 		// Tag hooked when only AMP blocked.
 		add_filter( 'googlesitekit_analytics-4_tag_blocked', '__return_false' );
 		add_filter( 'googlesitekit_analytics-4_tag_amp_blocked', '__return_true' );
 		do_action( 'template_redirect' );
-		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
+		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ), 'GTag setup action should be hooked when only AMP is blocked.' );
 	}
 
 	public function test_register__googlesitekit_ads_measurement_connection_checks() {
@@ -4542,7 +5064,8 @@ class Analytics_4Test extends TestCase {
 			array(
 				array( $this->analytics, 'check_ads_measurement_connection' ),
 			),
-			apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() )
+			apply_filters( 'googlesitekit_ads_measurement_connection_checks', array() ),
+			'Analytics 4 should register its ads measurement connection check function.'
 		);
 	}
 
@@ -4554,7 +5077,8 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEquals(
 			$expected,
-			$this->analytics->check_ads_measurement_connection()
+			$this->analytics->check_ads_measurement_connection(),
+			'Ads measurement connection check should return expected result based on settings.'
 		);
 	}
 
@@ -4617,9 +5141,6 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-		wp_scripts()->done       = array();
 		remove_all_actions( 'template_redirect' );
 		$analytics->register();
 
@@ -4636,12 +5157,12 @@ class Analytics_4Test extends TestCase {
 
 		$output = $this->capture_action( '__test_print_scripts' );
 
-		$this->assertStringContainsString( 'https://www.googletagmanager.com/gtag/js?id=A1B2C3D4E5', $output );
+		$this->assertStringContainsString( 'https://www.googletagmanager.com/gtag/js?id=A1B2C3D4E5', $output, 'Output should contain the Google Tag Manager script URL with measurement ID.' );
 
 		if ( $test_parameters['expected_block_on_consent'] ) {
-			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output, 'Output should contain block-on-consent attribute when enabled.' );
 		} else {
-			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output, 'Output should not contain block-on-consent attribute when disabled.' );
 		}
 	}
 
@@ -4689,12 +5210,12 @@ class Analytics_4Test extends TestCase {
 
 		$output = $this->capture_action( 'wp_footer' );
 
-		$this->assertStringContainsString( '<amp-analytics', $output );
+		$this->assertStringContainsString( '<amp-analytics', $output, 'Output should contain AMP analytics tag.' );
 
 		if ( $enabled ) {
-			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output, 'Output should contain block-on-consent attribute when enabled.' );
 		} else {
-			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output, 'Output should not contain block-on-consent attribute when disabled.' );
 		}
 	}
 
@@ -4777,7 +5298,7 @@ class Analytics_4Test extends TestCase {
 		);
 		$analytics_settings = $this->audience_settings->get();
 		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
-			$this->assertEquals( $activated_audience_segmentation_settings[ $key ], $analytics_settings[ $key ] );
+			$this->assertEquals( $activated_audience_segmentation_settings[ $key ], $analytics_settings[ $key ], "{$key} should be set to activated value before deactivation." );
 		}
 
 		// Simulate deactivation effect.
@@ -4787,7 +5308,7 @@ class Analytics_4Test extends TestCase {
 		$audience_settings = $this->audience_settings->get();
 
 		foreach ( array_keys( $default_audience_segmentation_settings ) as $key ) {
-			$this->assertEquals( $default_audience_segmentation_settings[ $key ], $audience_settings[ $key ] );
+			$this->assertEquals( $default_audience_segmentation_settings[ $key ], $audience_settings[ $key ], "{$key} should be reset to default value after deactivation." );
 		}
 	}
 
@@ -4889,6 +5410,65 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_get_inline_data() {
+		// Test when module is not connected.
+		$analytics = new Analytics_4( $this->context );
+		$analytics->register();
+
+		remove_all_filters( 'googlesitekit_inline_modules_data' );
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$this->assertSame( array(), $inline_modules_data, 'Inline data should be empty when module is not connected.' );
+
+		// Test when module is connected.
+		$this->analytics->get_settings()->merge(
+			array(
+				'accountID'       => 'abc',
+				'propertyID'      => '123456789',
+				'webDataStreamID' => '1',
+				'measurementID'   => 'G-AAAABBBBCC',
+			)
+		);
+
+		// Set up test data in transients.
+		$transients = new Transients( $this->context );
+		$transients->set( 'googlesitekit_inline_tag_id_mismatch', 'test-mismatch' );
+		$transients->set( 'googlesitekit_web_data_stream_unavailable_1', true );
+		$transients->set(
+			Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT,
+			array( 'event1', 'event2' )
+		);
+		$transients->set(
+			Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT,
+			array( 'lost_event1' )
+		);
+		$transients->set(
+			Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT,
+			array( 'events' => array( 'badge_event1' ) )
+		);
+
+		$analytics->register();
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		// Verify the structure exists and contains expected keys.
+		$this->assertArrayHasKey( 'analytics-4', $inline_modules_data, 'Inline data should contain analytics-4 key.' );
+		$analytics_data = $inline_modules_data['analytics-4'];
+
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $analytics_data, 'Inline data should contain customDimensionsDataAvailable key.' );
+		$this->assertArrayHasKey( 'resourceAvailabilityDates', $analytics_data, 'Inline data should contain resourceAvailabilityDates key.' );
+		$this->assertArrayHasKey( 'tagIDMismatch', $analytics_data, 'Inline data should contain tagIDMismatch key.' );
+		$this->assertArrayHasKey( 'newEvents', $analytics_data, 'Inline data should contain newEvents key.' );
+		$this->assertArrayHasKey( 'lostEvents', $analytics_data, 'Inline data should contain lostEvents key.' );
+		$this->assertArrayHasKey( 'newBadgeEvents', $analytics_data, 'Inline data should contain newBadgeEvents key.' );
+		$this->assertArrayHasKey( 'isWebDataStreamUnavailable', $analytics_data, 'Inline data should contain isWebDataStreamUnavailable key.' );
+
+		// Verify the transient data.
+		$this->assertSame( 'test-mismatch', $analytics_data['tagIDMismatch'], 'Inline data should contain tagIDMismatch value.' );
+		$this->assertSame( array( 'event1', 'event2' ), $analytics_data['newEvents'], 'Inline data should contain newEvents value.' );
+		$this->assertSame( array( 'lost_event1' ), $analytics_data['lostEvents'], 'Inline data should contain lostEvents value.' );
+		$this->assertSame( array( 'badge_event1' ), $analytics_data['newBadgeEvents'], 'Inline data should contain newBadgeEvents value.' );
+		$this->assertSame( true, $analytics_data['isWebDataStreamUnavailable'], 'Inline data should contain isWebDataStreamUnavailable value.' );
+	}
+
 	/**
 	 * @return Module_With_Scopes
 	 */
@@ -4917,11 +5497,15 @@ class Analytics_4Test extends TestCase {
 		return $this->analytics;
 	}
 
-	protected function set_up_check_service_entity_access( Module $module ) {
+	protected function set_up_check_service_entity_access( Module_With_Settings $module ) {
 		$module->get_settings()->merge(
 			array(
 				'propertyID' => '123456789',
 			)
+		);
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
 		);
 	}
 

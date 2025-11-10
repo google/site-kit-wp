@@ -32,8 +32,9 @@ import { Fragment } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { Checkbox } from 'googlesitekit-components';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import Errors from './Errors';
+import P from '@/js/components/Typography/P';
 
 export default function AdditionalDescription( {
 	inProgress,
@@ -106,21 +107,21 @@ export default function AdditionalDescription( {
 								</Checkbox>
 							</div>
 						) ) }
-					<p className="googlesitekit-publisher-win__desc">
+					<P>
 						{ __(
 							'By recovering the selected modules, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
 							'google-site-kit'
 						) }
-					</p>
+					</P>
 				</Fragment>
 			) }
 			{ ! hasMultipleRecoverableModules && (
-				<p className="googlesitekit-publisher-win__desc">
+				<P>
 					{ __(
 						'By recovering the module, you will restore access for other users by sharing access via your Google account. This does not make any changes to external services and can be managed at any time via the dashboard sharing settings.',
 						'google-site-kit'
 					) }
-				</p>
+				</P>
 			) }
 			{ Object.keys( recoveryErrors ).length > 0 && (
 				<Errors recoveryErrors={ recoveryErrors } />

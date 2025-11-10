@@ -36,14 +36,15 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	RESET_PUBLICATIONS,
-} from '../../datastore/constants';
-import ExternalIcon from '../../../../../svg/icons/external.svg';
-import SupportLink from '../../../../components/SupportLink';
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import ExternalIcon from '@/svg/icons/external.svg';
+import SupportLink from '@/js/components/SupportLink';
+import Typography from '@/js/components/Typography';
 
 export default function PublicationCreate( { onCompleteSetup } ) {
 	const publications = useSelect( ( select ) =>
@@ -82,12 +83,17 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 		<div className="googlesitekit-setup-module__publication-create-screen">
 			{ ! hasPublication && (
 				<Fragment>
-					<h3 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+					<Typography
+						as="h3"
+						type="body"
+						size="medium"
+						className="googlesitekit-setup-module__title"
+					>
 						{ __(
 							'To complete your Reader Revenue Manager account setup you will need to create a publication and set up Reader Revenue Manager in Publisher Center.',
 							'google-site-kit'
 						) }
-					</h3>
+					</Typography>
 					<p className="googlesitekit-setup-module__description">
 						{ createInterpolateElement(
 							__(
@@ -124,12 +130,17 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 			) }
 			{ hasPublication && (
 				<Fragment>
-					<h3 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+					<Typography
+						as="h3"
+						type="body"
+						size="medium"
+						className="googlesitekit-setup-module__title"
+					>
 						{ __(
 							'You have successfully created your publication and it is now awaiting review. This might take up to 2 weeks.',
 							'google-site-kit'
 						) }
-					</h3>
+					</Typography>
 					<div className="googlesitekit-setup-module__action">
 						<SpinnerButton onClick={ handleCompleteSetupClick }>
 							{ __( 'Complete setup', 'google-site-kit' ) }

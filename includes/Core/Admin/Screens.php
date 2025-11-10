@@ -84,9 +84,9 @@ final class Screens {
 	 */
 	public function __construct(
 		Context $context,
-		Assets $assets = null,
-		Modules $modules = null,
-		Authentication $authentication = null
+		?Assets $assets = null,
+		?Modules $modules = null,
+		?Authentication $authentication = null
 	) {
 		$this->context        = $context;
 		$this->assets         = $assets ?: new Assets( $this->context );
@@ -500,6 +500,15 @@ final class Screens {
 						exit;
 					}
 				},
+			)
+		);
+
+		$screens[] = new Screen(
+			self::PREFIX . 'key-metrics-setup',
+			array(
+				'title'       => __( 'Key Metrics Setup', 'google-site-kit' ),
+				'capability'  => Permissions::MANAGE_OPTIONS,
+				'parent_slug' => self::PARENT_SLUG_NULL,
 			)
 		);
 

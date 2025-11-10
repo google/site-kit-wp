@@ -134,10 +134,10 @@ abstract class Module {
 	 */
 	public function __construct(
 		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Authentication $authentication = null,
-		Assets $assets = null
+		?Options $options = null,
+		?User_Options $user_options = null,
+		?Authentication $authentication = null,
+		?Assets $assets = null
 	) {
 		$this->context        = $context;
 		$this->options        = $options ?: new Options( $this->context );
@@ -294,7 +294,13 @@ abstract class Module {
 			throw new Invalid_Datapoint_Exception();
 		}
 
-		return new Datapoint( $definitions[ $datapoint_id ] );
+		$datapoint = $definitions[ $datapoint_id ];
+
+		if ( $datapoint instanceof Datapoint ) {
+			return $datapoint;
+		}
+
+		return new Datapoint( $datapoint );
 	}
 
 	/**
@@ -357,11 +363,13 @@ abstract class Module {
 				$restore_defers[] = $oauth_client->get_client()->withDefer( true );
 
 				$current_user = wp_get_current_user();
-				// Adds the current user to the active consumers list.
-				$oauth_client->add_active_consumer( $current_user );
 			}
 
-			$request = $this->create_data_request( $data );
+			if ( $datapoint instanceof Executable_Datapoint ) {
+				$request = $datapoint->create_request( $data );
+			} else {
+				$request = $this->create_data_request( $data );
+			}
 
 			if ( is_wp_error( $request ) ) {
 				return $request;
@@ -386,6 +394,10 @@ abstract class Module {
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
+		}
+
+		if ( $datapoint instanceof Executable_Datapoint ) {
+			return $datapoint->parse_response( $response, $data );
 		}
 
 		return $this->parse_data_response( $data, $response );
@@ -772,8 +784,12 @@ abstract class Module {
 	public function is_shareable() {
 		if ( $this instanceof Module_With_Owner && $this->is_connected() ) {
 			$datapoints = $this->get_datapoint_definitions();
-			foreach ( $datapoints as $details ) {
-				if ( ! empty( $details['shareable'] ) ) {
+			foreach ( $datapoints as $datapoint ) {
+				if ( $datapoint instanceof Shareable_Datapoint ) {
+					return $datapoint->is_shareable();
+				}
+
+				if ( ! empty( $datapoint['shareable'] ) ) {
 					return true;
 				}
 			}

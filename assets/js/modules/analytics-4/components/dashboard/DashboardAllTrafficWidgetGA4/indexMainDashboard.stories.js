@@ -20,25 +20,24 @@
  * Internal dependencies
  */
 import {
-	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	WithTestRegistry,
 } from '../../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 	provideAnalyticsReportWithoutDateRangeData,
-} from '../../../utils/data-mock';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { dateSub, DAY_IN_SECONDS } from '../../../../../util';
-import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
-import * as __fixtures__ from '../../../datastore/__fixtures__';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../tests/js/utils/zeroReports';
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { dateSub, DAY_IN_SECONDS } from '@/js/util';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as __fixtures__ from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import DashboardAllTrafficWidgetGA4 from '.';
 import {
 	limitResponseToSingleDate,
@@ -322,14 +321,10 @@ export const NoDataInComparisonDateRange = Template.bind( {} );
 NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
 NoDataInComparisonDateRange.args = {
 	setupRegistry: ( registry ) => {
-		allTrafficReportOptions.forEach( ( options, index ) => {
-			if ( index === 0 ) {
-				provideReportWithIncreasedOtherDimension( registry, options );
-			} else {
-				provideAnalyticsReportWithoutDateRangeData( registry, options, {
-					emptyRowBehavior: 'remove',
-				} );
-			}
+		allTrafficReportOptions.forEach( ( options ) => {
+			provideAnalyticsReportWithoutDateRangeData( registry, options, {
+				emptyRowBehavior: 'remove',
+			} );
 		} );
 	},
 };
@@ -340,31 +335,33 @@ export default {
 	component: DashboardAllTrafficWidgetGA4,
 	decorators: [
 		( Story, { args } ) => {
-			const registry = createTestRegistry();
-			// Activate the module.
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ANALYTICS_4,
-					active: true,
-					connected: true,
-				},
-			] );
+			function setupRegistry( registry ) {
+				// Activate the module.
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+				] );
 
-			provideModuleRegistrations( registry );
+				provideModuleRegistrations( registry );
 
-			// Set some site information.
-			provideSiteInfo( registry );
-			provideUserAuthentication( registry );
+				// Set some site information.
+				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
 
-			registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-06' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-06' );
 
-			// Call story-specific setup.
-			args.setupRegistry( registry );
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			}
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

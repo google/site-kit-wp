@@ -1,5 +1,5 @@
 /**
- * Settings Consent Mode styles.
+ * Settings consent mode styles.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -46,7 +46,7 @@
 				padding: $grid-gap-desktop;
 			}
 
-			h4 {
+			.googlesitekit-typography {
 				font-size: $fs-title-md;
 				font-weight: $fw-medium;
 				line-height: $lh-title-md;
@@ -61,7 +61,7 @@
 			line-height: $lh-body-sm;
 		}
 
-		.googlesitekit-settings-notice {
+		.googlesitekit-notice {
 			display: flex;
 			flex-direction: column;
 
@@ -69,7 +69,7 @@
 				flex-direction: row;
 			}
 
-			.googlesitekit-settings-notice__icon {
+			.googlesitekit-notice__icon {
 				align-self: start;
 				margin-bottom: 6px;
 
@@ -101,6 +101,10 @@
 		flex-direction: column;
 		gap: 10px;
 		justify-content: center;
+
+		.googlesitekit-notice {
+			margin: 1.5em 0;
+		}
 	}
 
 	.googlesitekit-settings-consent-mode-requirement__consent-api-detected-wrapper {

@@ -19,9 +19,11 @@ use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Settings;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Tests\Core\Modules\FakeModule;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -42,6 +44,10 @@ class Debug_DataTest extends TestCase {
 		$fake_module = new FakeModule( $context, $options, $user_options );
 		$fake_module->set_force_active( true ); // necessary to add sharing fields
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
+
+		// Ensure email reporting settings are registered so defaults are available.
+		$email_reporting_settings = new Email_Reporting_Settings( $options );
+		$email_reporting_settings->register();
 
 		return new Debug_Data( $context, $options, $user_options, $authentication, $modules, $permissions );
 	}
@@ -68,6 +74,72 @@ class Debug_DataTest extends TestCase {
 
 		$this->assertArrayHasKey( 'consent_mode', $info['google-site-kit']['fields'] );
 		$this->assertArrayHasKey( 'consent_api', $info['google-site-kit']['fields'] );
+	}
+
+	public function test_email_reports_fields__present_when_feature_flag_enabled() {
+		$reset_feature = $this->enable_feature( 'proactiveUserEngagement' );
+
+		remove_all_filters( 'debug_information' );
+
+		$debug_data = $this->new_debug_data();
+		$debug_data->register();
+
+		$info   = apply_filters( 'debug_information', array() );
+		$fields = $info['google-site-kit']['fields'];
+
+		$this->assertArrayHasKey(
+			'email_reports_status',
+			$fields,
+			'Email Reports status field should be present.'
+		);
+		$this->assertArrayHasKey(
+			'email_reports_subscribers',
+			$fields,
+			'Email Reports subscribers field should be present.'
+		);
+		$this->assertArrayHasKey(
+			'email_reports_deliverability',
+			$fields,
+			'Email Reports deliverability field should be present.'
+		);
+		$this->assertArrayHasKey(
+			'email_reports_last_sent',
+			$fields,
+			'Email Reports last sent field should be present.'
+		);
+
+		$reset_feature();
+	}
+
+	public function test_email_reports_fields__absent_when_feature_flag_disabled() {
+		remove_all_filters( 'debug_information' );
+
+		$debug_data = $this->new_debug_data();
+		$debug_data->register();
+
+		$info   = apply_filters( 'debug_information', array() );
+		$fields = $info['google-site-kit']['fields'];
+
+		$this->assertArrayNotHasKey(
+			'email_reports_status',
+			$fields,
+			'Email Reports status field should not be present when the feature flag is disabled.'
+		);
+		$this->assertArrayNotHasKey(
+			'email_reports_subscribers',
+			$fields,
+			'Email Reports subscribers field should not be present when the feature flag is disabled.'
+		);
+		$this->assertArrayNotHasKey(
+			'email_reports_deliverability',
+			$fields,
+			'Email Reports deliverability field should not be present when the feature flag is disabled.'
+		);
+		$this->assertArrayNotHasKey(
+			'email_reports_last_sent',
+			$fields,
+			'Email Reports last sent field should not be present when the feature flag is disabled.'
+		);
 	}
 
 	/**
@@ -207,5 +279,26 @@ class Debug_DataTest extends TestCase {
 		$info = apply_filters( 'debug_information', array() );
 		$this->assertArrayHasKey( 'google-site-kit', $info );
 		$this->assertEquals( 'Setup and Disabled', $info['google-site-kit']['fields']['key_metrics_status']['value'] );
+	}
+
+	public function test_gtg_fields() {
+		$this->enable_feature( 'googleTagGateway' );
+		( new Google_Tag_Gateway( new Context( __FILE__ ) ) )->register();
+
+		remove_all_filters( 'debug_information' );
+		$debug_data = $this->new_debug_data();
+		$debug_data->register();
+
+		$info = apply_filters( 'debug_information', array() );
+
+		$this->assertListIntersection(
+			array(
+				'google_tag_gateway_is_enabled',
+				'google_tag_gateway_is_gtg_healthy',
+				'google_tag_gateway_is_script_access_enabled',
+			),
+			array_keys( $info['google-site-kit']['fields'] ),
+			'Failed to assert one or more GTG fields were included in the list of Site Kit fields'
+		);
 	}
 }

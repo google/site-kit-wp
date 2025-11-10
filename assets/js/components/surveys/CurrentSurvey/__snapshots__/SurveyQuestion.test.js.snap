@@ -16,7 +16,9 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
       <div
         class="googlesitekit-survey__header-details"
       >
-        <h3>
+        <h3
+          class="googlesitekit-typography googlesitekit-typography--headline googlesitekit-typography--small"
+        >
           What are your favorite pizza toppings?
         </h3>
         <button
@@ -35,7 +37,7 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
+              d="M12 13.06l3.712 3.713 1.061-1.06L13.061 12l3.712-3.712-1.06-1.06L12 10.938 8.288 7.227l-1.061 1.06L10.939 12l-3.712 3.712 1.06 1.061L12 13.061z"
             />
           </svg>
         </button>
@@ -65,12 +67,13 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             >
               <svg
                 class="mdc-checkbox__checkmark"
-                viewBox="0 0 24 24"
+                viewBox="0 0 12 9"
               >
                 <path
                   class="mdc-checkbox__checkmark-path"
-                  d="M1.73,12.91 8.1,19.28 22.79,4.59"
+                  d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
                   fill="none"
+                  stroke="none"
                 />
               </svg>
               <div
@@ -107,12 +110,13 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             >
               <svg
                 class="mdc-checkbox__checkmark"
-                viewBox="0 0 24 24"
+                viewBox="0 0 12 9"
               >
                 <path
                   class="mdc-checkbox__checkmark-path"
-                  d="M1.73,12.91 8.1,19.28 22.79,4.59"
+                  d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
                   fill="none"
+                  stroke="none"
                 />
               </svg>
               <div
@@ -149,12 +153,13 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             >
               <svg
                 class="mdc-checkbox__checkmark"
-                viewBox="0 0 24 24"
+                viewBox="0 0 12 9"
               >
                 <path
                   class="mdc-checkbox__checkmark-path"
-                  d="M1.73,12.91 8.1,19.28 22.79,4.59"
+                  d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
                   fill="none"
+                  stroke="none"
                 />
               </svg>
               <div
@@ -191,12 +196,13 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             >
               <svg
                 class="mdc-checkbox__checkmark"
-                viewBox="0 0 24 24"
+                viewBox="0 0 12 9"
               >
                 <path
                   class="mdc-checkbox__checkmark-path"
-                  d="M1.73,12.91 8.1,19.28 22.79,4.59"
+                  d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
                   fill="none"
+                  stroke="none"
                 />
               </svg>
               <div
@@ -233,12 +239,13 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             >
               <svg
                 class="mdc-checkbox__checkmark"
-                viewBox="0 0 24 24"
+                viewBox="0 0 12 9"
               >
                 <path
                   class="mdc-checkbox__checkmark-path"
-                  d="M1.73,12.91 8.1,19.28 22.79,4.59"
+                  d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
                   fill="none"
+                  stroke="none"
                 />
               </svg>
               <div
@@ -275,12 +282,13 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             >
               <svg
                 class="mdc-checkbox__checkmark"
-                viewBox="0 0 24 24"
+                viewBox="0 0 12 9"
               >
                 <path
                   class="mdc-checkbox__checkmark-path"
-                  d="M1.73,12.91 8.1,19.28 22.79,4.59"
+                  d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
                   fill="none"
+                  stroke="none"
                 />
               </svg>
               <div
@@ -360,7 +368,9 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
       <div
         class="googlesitekit-survey__header-details"
       >
-        <h3>
+        <h3
+          class="googlesitekit-typography googlesitekit-typography--headline googlesitekit-typography--small"
+        >
           If you are really happy, this survey will show a different completion!
         </h3>
         <button
@@ -379,7 +389,7 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
+              d="M12 13.06l3.712 3.713 1.061-1.06L13.061 12l3.712-3.712-1.06-1.06L12 10.938 8.288 7.227l-1.061 1.06L10.939 12l-3.712 3.712 1.06 1.061L12 13.061z"
             />
           </svg>
         </button>
@@ -402,7 +412,9 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p>
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
             Unhappy
           </p>
         </div>
@@ -417,7 +429,9 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p>
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
             Dissatisfied
           </p>
         </div>
@@ -432,7 +446,9 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p>
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
             Neutral
           </p>
         </div>
@@ -447,7 +463,9 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p>
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
             Satisfied
           </p>
         </div>
@@ -462,7 +480,9 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p>
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
             Delighted
           </p>
         </div>
@@ -488,7 +508,9 @@ exports[`SurveyQuestion should render a single select question correctly 1`] = `
       <div
         class="googlesitekit-survey__header-details"
       >
-        <h3>
+        <h3
+          class="googlesitekit-typography googlesitekit-typography--headline googlesitekit-typography--small"
+        >
           Based on your experience so far, how satisfied are you with Site Kit?
         </h3>
         <button
@@ -507,7 +529,7 @@ exports[`SurveyQuestion should render a single select question correctly 1`] = `
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
+              d="M12 13.06l3.712 3.713 1.061-1.06L13.061 12l3.712-3.712-1.06-1.06L12 10.938 8.288 7.227l-1.061 1.06L10.939 12l-3.712 3.712 1.06 1.061L12 13.061z"
             />
           </svg>
         </button>
@@ -784,7 +806,9 @@ exports[`SurveyQuestion should render an open text question correctly 1`] = `
       <div
         class="googlesitekit-survey__header-details"
       >
-        <h3>
+        <h3
+          class="googlesitekit-typography googlesitekit-typography--headline googlesitekit-typography--small"
+        >
           How satisfied are you with Site Kit?
         </h3>
         <button
@@ -803,7 +827,7 @@ exports[`SurveyQuestion should render an open text question correctly 1`] = `
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
+              d="M12 13.06l3.712 3.713 1.061-1.06L13.061 12l3.712-3.712-1.06-1.06L12 10.938 8.288 7.227l-1.061 1.06L10.939 12l-3.712 3.712 1.06 1.061L12 13.061z"
             />
           </svg>
         </button>

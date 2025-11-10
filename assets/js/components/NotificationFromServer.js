@@ -32,33 +32,37 @@ import { ReactNode } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Notification } from '../googlesitekit/notifications/components';
-import SimpleNotification from '../googlesitekit/notifications/components/layout/SimpleNotification';
-import Description from '../googlesitekit/notifications/components/common/Description';
-import ActionsCTALinkDismiss from '../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
-import Link from './Link';
+import BannerNotification, {
+	TYPES,
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import { HOUR_IN_SECONDS } from '@/js/util';
 
 /**
- * Renders a notification from the server, usually from a
- * `select( CORE_SITE ).getNotifications()` selector call.
+ * Maps props received from the server (e.g. from a `select( CORE_SITE ).getNotifications()`
+ * selector call) to the props expected by the new BannerNotification component.
  *
  * @since 1.157.0
  *
- * @param {Object}     props                Component props.
- * @param {string}     props.id             Notification ID/slug.
- * @param {string}     props.title          Notification title/heading.
- * @param {?ReactNode} props.content        Decsription for notification.
- * @param {string}     props.ctaLabel       Label for the call-to-action button.
- * @param {?string}    props.ctaTarget      `target` for the call-to-action link, e.g. `_blank`. Optional.
- * @param {?string}    props.ctaURL         URL for the call-to-action link.
- * @param {?boolean}   props.dismissible    Whether the notification is dismissible. Optional.
- * @param {?string}    props.dismissLabel   Label for the dismiss button. Optional.
- * @param {?string}    props.learnMoreLabel Label for the "Learn More" link. Optional.
- * @param {?string}    props.learnMoreURL   URL for the "Learn More" link. Optional.
+ * @param {Object}     props                     Component props.
+ * @param {string}     props.id                  Notification ID/slug.
+ * @param {?ReactNode} props.titleIcon           Icon to display above the title.
+ * @param {string}     props.title               Notification title/heading.
+ * @param {?ReactNode} props.content             Description for notification.
+ * @param {string}     props.ctaLabel            Label for the call-to-action button.
+ * @param {?string}    props.ctaTarget           `target` for the call-to-action link, e.g. `_blank`. Optional.
+ * @param {?string}    props.ctaURL              URL for the call-to-action link.
+ * @param {?boolean}   props.dismissible         Whether the notification is dismissible. Optional.
+ * @param {?string}    props.dismissLabel        Label for the dismiss button. Optional.
+ * @param {?string}    props.learnMoreLabel      Label for the "Learn More" link. Optional.
+ * @param {?string}    props.learnMoreURL        URL for the "Learn More" link. Optional.
+ * @param {?Function}  props.onCTAClick          Callback to run when CTA is clicked. Optional.
+ * @param {?Function}  props.onDismissClick      Callback to run when the Dismiss button is clicked. Optional.
+ * @param {?Object}    props.gaTrackingEventArgs Custom GA tracking event category and label options. Optional.
  * @return {JSX.Element} Notification component.
  */
 function NotificationFromServer( {
 	id,
+	titleIcon,
 	title,
 	content,
 	ctaLabel,
@@ -68,41 +72,53 @@ function NotificationFromServer( {
 	dismissLabel,
 	learnMoreLabel,
 	learnMoreURL,
+	onCTAClick,
+	onDismissClick,
+	gaTrackingEventArgs,
 } ) {
+	// Notifications from the server should not be dismissed permanently in the database.
+	// CoreSiteBannerNotifications are "marked as accepted/dismissed" on the server.
+	// AdSense Alerts are not dismissed permanently either, they keep coming back until the
+	// issue that raises the alert is resolved. Thus we expire the dismissal after an hour,
+	// which was the behaviour prevalent in the legacy BannerNotification component that cached
+	// dismissals for an hour in browser storage.
+	const dismissOptions = {
+		expiresInSeconds: HOUR_IN_SECONDS,
+	};
+
 	return (
-		<Notification
-			className="googlesitekit-notification-from-server"
-			id={ id }
-		>
-			<SimpleNotification
-				title={ title }
-				description={
-					<Description
-						learnMoreLink={
-							<Link href={ learnMoreURL } external>
-								{ learnMoreLabel }
-							</Link>
-						}
-						text={ content }
-					/>
-				}
-				actions={
-					<ActionsCTALinkDismiss
-						id={ id }
-						ctaLabel={ ctaLabel }
-						ctaURL={ ctaURL }
-						ctaTarget={ ctaTarget }
-						dismissLabel={
-							dismissible && dismissLabel
-								? dismissLabel
-								: undefined
-						}
-						dismissExpires={ 1 }
-						dismissOnCTAClick
-					/>
-				}
-			/>
-		</Notification>
+		<BannerNotification
+			notificationID={ id }
+			type={ TYPES.WARNING }
+			titleIcon={ titleIcon ? titleIcon : undefined }
+			title={ title }
+			description={ content }
+			learnMoreLink={
+				learnMoreURL
+					? {
+							label: learnMoreLabel,
+							href: learnMoreURL,
+					  }
+					: undefined
+			}
+			ctaButton={ {
+				label: ctaLabel,
+				href: ctaURL,
+				target: ctaTarget,
+				onClick: onCTAClick,
+				dismissOptions,
+			} }
+			dismissButton={
+				dismissible
+					? {
+							label: dismissLabel,
+							onClick: onDismissClick,
+							dismissOptions,
+					  }
+					: undefined
+			}
+			gaTrackingEventArgs={ gaTrackingEventArgs }
+		/>
 	);
 }
 
@@ -117,6 +133,9 @@ NotificationFromServer.propTypes = {
 	dismissLabel: PropTypes.string,
 	learnMoreLabel: PropTypes.string,
 	learnMoreURL: PropTypes.string,
+	onCTAClick: PropTypes.func,
+	onDismissClick: PropTypes.func,
+	gaTrackingEventArgs: PropTypes.object,
 };
 
 export default NotificationFromServer;

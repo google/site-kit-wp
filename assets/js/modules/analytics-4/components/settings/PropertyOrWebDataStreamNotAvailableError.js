@@ -30,9 +30,9 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { isValidPropertyID } from '../../utils/validation';
-import ErrorNotice from '../../../../components/ErrorNotice';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { isValidPropertyID } from '@/js/modules/analytics-4/utils/validation';
+import ErrorNotice from '@/js/components/ErrorNotice';
 
 export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 	const { hasModuleAccess, isDisabled } = props;
@@ -50,7 +50,7 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 	);
 
 	const properties = useSelect( ( select ) =>
-		hasModuleAccess !== false && ! isDisabled
+		hasModuleAccess && ! isDisabled
 			? select( MODULES_ANALYTICS_4 ).getPropertySummaries( accountID )
 			: []
 	);
@@ -60,7 +60,7 @@ export default function PropertyOrWebDataStreamNotAvailableError( props ) {
 	);
 
 	const webDataStreams = useSelect( ( select ) =>
-		isValidPropertyID( propertyID ) && hasModuleAccess !== false
+		isValidPropertyID( propertyID ) && hasModuleAccess
 			? select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID )
 			: []
 	);

@@ -32,7 +32,7 @@ import invariant from 'invariant';
  * @param {number} args.dateRangeLength Date range length of report segments.
  * @return {Object} Object with keys for `compareRange` and `currentRange`.
  */
-export const partitionReport = ( report, { dateRangeLength } ) => {
+export function partitionReport( report, { dateRangeLength } ) {
 	invariant(
 		Array.isArray( report ),
 		'report must be an array to partition.'
@@ -52,4 +52,4 @@ export const partitionReport = ( report, { dateRangeLength } ) => {
 		// and may be shorter (where older data is not available yet) which is fine.
 		compareRange: report.slice( _dateRangeLength * 2, _dateRangeLength ),
 	};
-};
+}

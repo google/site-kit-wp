@@ -24,13 +24,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { useSelect } from 'googlesitekit-data';
-import Layout from '../layout/Layout';
-import BannerNotification from '../notifications/BannerNotification';
+import Layout from '@/js/components/layout/Layout';
 import SetupModule from './SetupModule';
-import { Cell, Grid, Row } from '../../material-components';
-import AwardSVG from '../../../svg/graphics/award.svg';
+import { Cell, Grid, Row } from '@/js/material-components';
+import Notice from '@/js/components/Notice';
+import { TYPES } from '@/js/components/Notice/constants';
 
 export default function SettingsInactiveModules() {
 	const modules = useSelect( ( select ) =>
@@ -48,7 +48,7 @@ export default function SettingsInactiveModules() {
 
 	if ( inactiveModules.length === 0 ) {
 		return (
-			<BannerNotification
+			<Notice
 				id="no-more-modules"
 				title={ __(
 					'Congrats, you’ve connected all services!',
@@ -58,10 +58,7 @@ export default function SettingsInactiveModules() {
 					'We’re working on adding new services to Site Kit by Google all the time, so please check back in the future',
 					'google-site-kit'
 				) }
-				format="small"
-				SmallImageSVG={ AwardSVG }
-				type="win-success"
-				rounded
+				type={ TYPES.SUCCESS }
 			/>
 		);
 	}

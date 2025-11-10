@@ -31,9 +31,11 @@ import { forwardRef, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Row, Cell } from '../../../../../material-components';
+import { Row, Cell } from '@/js/material-components';
 import ContentSVG from './ContentSVG';
-import AdSenseIcon from '../../../../../../svg/graphics/adsense.svg';
+import AdSenseIcon from '@/svg/graphics/adsense.svg';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 	const stageContent = [
@@ -78,13 +80,18 @@ const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 							<AdSenseIcon width="33" height="33" />
 						</div>
 
-						<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+						<Typography
+							as="h3"
+							className="googlesitekit-setup-module__title"
+							size="small"
+							type="headline"
+						>
 							{ _x(
 								'AdSense',
 								'Service name',
 								'google-site-kit'
 							) }
-						</h2>
+						</Typography>
 					</div>
 				</Cell>
 			</Row>
@@ -111,8 +118,14 @@ const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 								>
 									<div className="googlesitekit-setup-module--adsense__stage-caption-indicator" />
 									<div>
-										<h4>{ title }</h4>
-										<p>{ description }</p>
+										<Typography
+											as="h4"
+											size="large"
+											type="title"
+										>
+											{ title }
+										</Typography>
+										<P>{ description }</P>
 									</div>
 								</li>
 							)

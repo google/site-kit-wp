@@ -40,29 +40,30 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
-import AdsIcon from '../../../../../svg/graphics/ads.svg';
+import AdsIcon from '@/svg/graphics/ads.svg';
 import SetupFormPAX from './SetupFormPAX';
-import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import {
 	ADWORDS_SCOPE,
 	MODULES_ADS,
 	SUPPORT_CONTENT_SCOPE,
-} from '../../datastore/constants';
-import useQueryArg from '../../../../hooks/useQueryArg';
-import PAXEmbeddedApp from '../common/PAXEmbeddedApp';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+} from '@/js/modules/ads/datastore/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import PAXEmbeddedApp from '@/js/modules/ads/components/common/PAXEmbeddedApp';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	PAX_PARAM_SETUP_STEP,
 	PAX_SETUP_STEP,
 	PAX_SETUP_SUCCESS_NOTIFICATION,
-} from '../../pax/constants';
-import { Cell, Row } from '../../../../material-components';
-import { WooCommerceRedirectModal } from '../common';
-import Link from '../../../../components/Link';
-import useViewContext from '../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../util';
+} from '@/js/modules/ads/pax/constants';
+import { Cell, Row } from '@/js/material-components';
+import { WooCommerceRedirectModal } from '@/js/modules/ads/components/common';
+import Link from '@/js/components/Link';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import Typography from '@/js/components/Typography';
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );
@@ -98,6 +99,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		return select( CORE_LOCATION ).isNavigatingTo( oAuthURL );
 	} );
 
+	const { triggerSurvey } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const {
 		setPaxConversionID,
@@ -149,6 +151,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 		}
 
 		trackEvent( `${ viewContext }_pax`, 'pax_campaign_created' );
+		triggerSurvey( 'pax_campaign_created' );
 
 		setUserID( customerData.userId );
 		setCustomerID( customerData.customerId );
@@ -178,7 +181,11 @@ export default function SetupMainPAX( { finishSetup } ) {
 				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
 			}
 		);
-		await trackEvent( `${ viewContext }_pax`, 'pax_setup_completed' );
+		await Promise.all( [
+			trackEvent( `${ viewContext }_pax`, 'pax_setup_completed' ),
+			triggerSurvey( 'pax_setup_completed' ),
+		] );
+
 		finishSetup( redirectURL );
 	}, [ registry, finishSetup, viewContext ] );
 
@@ -188,6 +195,19 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const isWooCommerceActivated = useSelect( ( select ) =>
 		select( MODULES_ADS ).isWooCommerceActivated()
 	);
+
+	const isGoogleForWooCommerceAdsConnected = useSelect( ( select ) => {
+		const hasGoogleForWooCommerceAdsAccount =
+			select( MODULES_ADS ).hasGoogleForWooCommerceAdsAccount();
+		const isGoogleForWooCommerceActive =
+			select( MODULES_ADS ).isGoogleForWooCommerceActivated();
+
+		return (
+			isWooCommerceActivated &&
+			isGoogleForWooCommerceActive &&
+			hasGoogleForWooCommerceAdsAccount
+		);
+	} );
 
 	const createAccount = useCallback( () => {
 		if ( ! hasAdwordsScope ) {
@@ -201,9 +221,10 @@ export default function SetupMainPAX( { finishSetup } ) {
 	const onLaunch = useCallback(
 		( app ) => {
 			trackEvent( `${ viewContext }_pax`, 'pax_launch' );
+			triggerSurvey( 'pax_launch' );
 			paxAppRef.current = app;
 		},
-		[ viewContext ]
+		[ viewContext, triggerSurvey ]
 	);
 
 	const onSetupCallback = useCallback( async () => {
@@ -213,10 +234,14 @@ export default function SetupMainPAX( { finishSetup } ) {
 		}
 
 		// awaiting because `createAccount` may trigger a navigation.
-		await trackEvent( viewContext, 'start_setup_pax' );
+		await Promise.all( [
+			trackEvent( viewContext, 'start_setup_pax' ),
+			triggerSurvey( 'start_setup_pax' ),
+		] );
 
 		createAccount();
 	}, [
+		triggerSurvey,
 		isWooCommerceActivated,
 		isWooCommerceRedirectModalDismissed,
 		setOpenDialog,
@@ -253,9 +278,14 @@ export default function SetupMainPAX( { finishSetup } ) {
 					<AdsIcon width="40" height="40" />
 				</div>
 
-				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+				<Typography
+					as="h3"
+					size="small"
+					type="headline"
+					className="googlesitekit-setup-module__title"
+				>
 					{ _x( 'Ads', 'Service name', 'google-site-kit' ) }
-				</h2>
+				</Typography>
 			</div>
 			<div className="googlesitekit-setup-module__step">
 				<AdBlockerWarning moduleSlug="ads" />
@@ -286,12 +316,16 @@ export default function SetupMainPAX( { finishSetup } ) {
 								lgSize={ 5 }
 								className="align-top"
 							>
-								<h3>
+								<Typography
+									as="h3"
+									type="headline"
+									size="small"
+								>
 									{ __(
 										'Set up a new Ads account',
 										'google-site-kit'
 									) }
-								</h3>
+								</Typography>
 								<p className="instructions">
 									{ createInterpolateElement(
 										__(
@@ -330,12 +364,16 @@ export default function SetupMainPAX( { finishSetup } ) {
 								</span>
 							</Cell>
 							<Cell smSize={ 8 } mdSize={ 8 } lgSize={ 5 }>
-								<h3>
+								<Typography
+									as="h3"
+									type="headline"
+									size="small"
+								>
 									{ __(
 										'Connect an existing Ads account',
 										'google-site-kit'
 									) }
-								</h3>
+								</Typography>
 								<p className="instructions">
 									{ createInterpolateElement(
 										__(
@@ -367,7 +405,11 @@ export default function SetupMainPAX( { finishSetup } ) {
 			</div>
 			{ openDialog && (
 				<WooCommerceRedirectModal
-					onClose={ () => setOpenDialog( false ) }
+					onClose={
+						isGoogleForWooCommerceAdsConnected
+							? null
+							: () => setOpenDialog( false )
+					}
 					onContinue={ createAccount }
 					dialogActive
 				/>

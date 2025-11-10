@@ -32,10 +32,14 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { commonActions, createRegistrySelector } from 'googlesitekit-data';
+import {
+	commonActions,
+	createRegistrySelector,
+	createReducer,
+} from 'googlesitekit-data';
 import { CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
-import { normalizeURL, untrailingslashit } from '../../../util';
-import { negateDefined } from '../../../util/negate';
+import { normalizeURL, untrailingslashit } from '@/js/util';
+import { negateDefined } from '@/js/util/negate';
 
 function getSiteInfoProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -154,9 +158,9 @@ export const actions = {
 
 export const controls = {};
 
-export const reducer = ( state, { payload, type } ) => {
+export const reducer = createReducer( ( state, { payload, type } ) => {
 	switch ( type ) {
-		case RECEIVE_SITE_INFO: {
+		case RECEIVE_SITE_INFO:
 			const {
 				adminURL,
 				ampMode,
@@ -174,6 +178,7 @@ export const reducer = ( state, { payload, type } ) => {
 				siteName,
 				siteLocale,
 				timezone,
+				startOfWeek,
 				usingProxy,
 				webStoriesActive,
 				proxySupportLinkURL,
@@ -192,87 +197,82 @@ export const reducer = ( state, { payload, type } ) => {
 				isMultisite,
 			} = payload.siteInfo;
 
-			return {
-				...state,
-				siteInfo: {
-					adminURL,
-					ampMode,
-					currentEntityID: parseInt( currentEntityID, 10 ),
-					currentEntityTitle,
-					currentEntityType,
-					currentEntityURL,
-					homeURL,
-					proxyPermissionsURL,
-					proxySetupURL,
-					referenceSiteURL,
-					setupErrorCode,
-					setupErrorMessage,
-					setupErrorRedoURL,
-					siteName,
-					siteLocale,
-					timezone,
-					usingProxy,
-					webStoriesActive,
-					proxySupportLinkURL,
-					widgetsAdminURL,
-					postTypes,
-					wpVersion,
-					updateCoreURL,
-					changePluginAutoUpdatesCapacity,
-					siteKitAutoUpdatesEnabled,
-					pluginBasename,
-					productPostType,
-					keyMetricsSetupCompletedBy,
-					keyMetricsSetupNew,
-					consentModeRegions,
-					anyoneCanRegister,
-					isMultisite,
-				},
+			state.siteInfo = {
+				adminURL,
+				ampMode,
+				currentEntityID: parseInt( currentEntityID, 10 ),
+				currentEntityTitle,
+				currentEntityType,
+				currentEntityURL,
+				homeURL,
+				proxyPermissionsURL,
+				proxySetupURL,
+				referenceSiteURL,
+				setupErrorCode,
+				setupErrorMessage,
+				setupErrorRedoURL,
+				siteName,
+				siteLocale,
+				timezone,
+				startOfWeek,
+				usingProxy,
+				webStoriesActive,
+				proxySupportLinkURL,
+				widgetsAdminURL,
+				postTypes,
+				wpVersion,
+				updateCoreURL,
+				changePluginAutoUpdatesCapacity,
+				siteKitAutoUpdatesEnabled,
+				pluginBasename,
+				productPostType,
+				keyMetricsSetupCompletedBy,
+				keyMetricsSetupNew,
+				consentModeRegions,
+				anyoneCanRegister,
+				isMultisite,
 			};
+			break;
+
+		case RECEIVE_PERMALINK_PARAM: {
+			state.permaLink = payload.permaLink;
+			break;
 		}
 
-		case RECEIVE_PERMALINK_PARAM:
-			const { permaLink } = payload;
-			return {
-				...state,
-				permaLink,
-			};
+		case SET_SITE_KIT_AUTO_UPDATES_ENABLED: {
+			if ( ! state.siteInfo ) {
+				state.siteInfo = {};
+			}
 
-		case SET_SITE_KIT_AUTO_UPDATES_ENABLED:
-			const { siteKitAutoUpdatesEnabled } = payload;
-			return {
-				...state,
-				siteInfo: {
-					...state.siteInfo,
-					siteKitAutoUpdatesEnabled,
-				},
-			};
+			state.siteInfo.siteKitAutoUpdatesEnabled =
+				payload.siteKitAutoUpdatesEnabled;
 
-		case SET_KEY_METRICS_SETUP_COMPLETED_BY:
-			const { keyMetricsSetupCompletedBy } = payload;
-			return {
-				...state,
-				siteInfo: {
-					...state.siteInfo,
-					keyMetricsSetupCompletedBy,
-				},
-			};
-
-		case SET_SETUP_ERROR_CODE:
-			const { setupErrorCode } = payload;
-			return {
-				...state,
-				siteInfo: {
-					...state.siteInfo,
-					setupErrorCode,
-				},
-			};
-
-		default: {
-			return state;
+			break;
 		}
+
+		case SET_KEY_METRICS_SETUP_COMPLETED_BY: {
+			if ( ! state.siteInfo ) {
+				state.siteInfo = {};
+			}
+
+			state.siteInfo.keyMetricsSetupCompletedBy =
+				payload.keyMetricsSetupCompletedBy;
+			break;
+		}
+
+		case SET_SETUP_ERROR_CODE: {
+			if ( ! state.siteInfo ) {
+				state.siteInfo = {};
+			}
+
+			state.siteInfo.setupErrorCode = payload.setupErrorCode;
+			break;
+		}
+
+		default:
+			break;
 	}
-};
+} );
 
 export const resolvers = {
 	*getSiteInfo() {
@@ -303,6 +303,7 @@ export const resolvers = {
 			siteName,
 			siteLocale,
 			timezone,
+			startOfWeek,
 			usingProxy,
 			webStoriesActive,
 			proxySupportLinkURL,
@@ -345,6 +346,7 @@ export const resolvers = {
 			siteName,
 			siteLocale,
 			timezone,
+			startOfWeek,
 			postTypes,
 			usingProxy: !! usingProxy,
 			webStoriesActive,
@@ -636,6 +638,18 @@ export const selectors = {
 	 * @return {(string|undefined)} The timezone.
 	 */
 	getTimezone: getSiteInfoProperty( 'timezone' ),
+
+	/**
+	 * Gets the WordPress "start of week" option for the site.
+	 *
+	 * 0 = Sunday, 1 = Monday, ... 6 = Saturday.
+	 *
+	 * @since 1.164.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(number|undefined)} The start of week index, or undefined while loading.
+	 */
+	getStartOfWeek: getSiteInfoProperty( 'startOfWeek' ),
 
 	/**
 	 * Returns true if this site is using the proxy service.

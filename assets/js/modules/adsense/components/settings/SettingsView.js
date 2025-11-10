@@ -26,12 +26,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import DisplaySetting from '../../../../components/DisplaySetting';
+import DisplaySetting from '@/js/components/DisplaySetting';
 import { ProgressBar } from 'googlesitekit-components';
-import Link from '../../../../components/Link';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { ErrorNotices } from '../common';
+import Link from '@/js/components/Link';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { ErrorNotices } from '@/js/modules/adsense/components/common';
 import {
 	getAccountStatusLabel,
 	getSiteStatusLabel,
@@ -39,7 +39,8 @@ import {
 	getAutoAdsDisabledMessage,
 } from './utils';
 import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
-import VisuallyHidden from '../../../../components/VisuallyHidden';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
+import Typography from '@/js/components/Typography';
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>
@@ -122,25 +123,27 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Publisher ID', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ accountID } />
 					</p>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Account Status', 'google-site-kit' ) }
-					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						{ accountStatusLabel }
-					</p>
-				</div>
-				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Site Status', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ siteStatusLabel + ' ' }
 						<Link
@@ -160,9 +163,30 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
+						{ __( 'Account Status', 'google-site-kit' ) }
+					</Typography>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ accountStatusLabel }
+					</p>
+				</div>
+			</div>
+
+			<div className="googlesitekit-settings-module__meta-items">
+				<div className="googlesitekit-settings-module__meta-item">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'AdSense Code', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ snippetLabel }
 					</p>
@@ -171,9 +195,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Excluded from ads', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ autoAdsDisabledMessage }
 					</p>
@@ -183,9 +212,14 @@ export default function SettingsView() {
 			{ webStoriesActive && (
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
+						<Typography
+							as="h5"
+							size="medium"
+							type="label"
+							className="googlesitekit-settings-module__meta-item-type"
+						>
 							{ __( 'Web Stories Ad Unit', 'google-site-kit' ) }
-						</h5>
+						</Typography>
 						<p className="googlesitekit-settings-module__meta-item-data">
 							{ ! webStoriesAdUnit && (
 								<span>{ __( 'None', 'google-site-kit' ) }</span>
@@ -200,15 +234,20 @@ export default function SettingsView() {
 
 			{ adBlockingRecoverySetupStatus?.length > 0 && (
 				<div className="googlesitekit-settings-module__meta-items">
-					{ loading && <ProgressBar height={ 90 } small /> }
+					{ loading && <ProgressBar verticalSpacing={ 86 } small /> }
 					{ ! loading && (
 						<div className="googlesitekit-settings-module__meta-item">
-							<h5 className="googlesitekit-settings-module__meta-item-type">
+							<Typography
+								as="h5"
+								size="medium"
+								type="label"
+								className="googlesitekit-settings-module__meta-item-type"
+							>
 								{ __(
 									'Ad blocking recovery',
 									'google-site-kit'
 								) }
-							</h5>
+							</Typography>
 							{ ! useAdBlockingRecoverySnippet && (
 								<p className="googlesitekit-settings-module__meta-item-data">
 									{ __(
@@ -257,7 +296,7 @@ export default function SettingsView() {
 
 			{ ! adBlockingRecoverySetupStatus?.length && (
 				<Fragment>
-					{ loading && <ProgressBar height={ 135 } small /> }
+					{ loading && <ProgressBar verticalSpacing={ 131 } small /> }
 					{ ! loading && <AdBlockingRecoverySetupCTANotice /> }
 				</Fragment>
 			) }

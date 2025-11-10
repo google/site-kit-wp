@@ -22,19 +22,19 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import PopularKeywordsWidget from './PopularKeywordsWidget';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../../constants';
-import { provideSearchConsoleMockReport } from '../../util/data-mock';
-import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { provideSearchConsoleMockReport } from '@/js/modules/search-console/util/data-mock';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../googlesitekit/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
+} from '@/js/googlesitekit/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 
 const reportOptions = {
 	startDate: '2020-08-11',
@@ -154,7 +154,7 @@ export default {
 	title: 'Key Metrics/PopularKeywordsWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_SEARCH_CONSOLE,
@@ -175,7 +175,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

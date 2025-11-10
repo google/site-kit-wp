@@ -31,10 +31,12 @@ import { Fragment } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
-import { ErrorNotices } from '../../common';
-import SetupUseSnippetSwitch from '../SetupUseSnippetSwitch';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { ErrorNotices } from '@/js/modules/adsense/components/common';
+import SetupUseSnippetSwitch from '@/js/modules/adsense/components/setup/SetupUseSnippetSwitch';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 export default function SetupAccountSiteUI( {
 	heading,
 	description,
@@ -49,13 +51,18 @@ export default function SetupAccountSiteUI( {
 
 	return (
 		<Fragment>
-			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
+			<Typography
+				as="h3"
+				type="title"
+				size="large"
+				className="googlesitekit-setup-module__title"
+			>
 				{ heading }
-			</h3>
+			</Typography>
 
 			<ErrorNotices />
 
-			<p>{ description }</p>
+			<P>{ description }</P>
 
 			<SetupUseSnippetSwitch />
 

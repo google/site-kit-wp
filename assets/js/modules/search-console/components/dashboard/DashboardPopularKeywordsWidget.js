@@ -28,18 +28,18 @@ import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_SEARCH_CONSOLE,
-} from '../../datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import PreviewTable from '../../../../components/PreviewTable';
-import SourceLink from '../../../../components/SourceLink';
-import { generateDateRangeArgs } from '../../util';
-import TableOverflowContainer from '../../../../components/TableOverflowContainer';
-import ReportTable from '../../../../components/ReportTable';
-import Link from '../../../../components/Link';
-import { numFmt } from '../../../../util';
-import { ZeroDataMessage } from '../common';
-import useViewOnly from '../../../../hooks/useViewOnly';
+} from '@/js/modules/search-console/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import PreviewTable from '@/js/components/PreviewTable';
+import SourceLink from '@/js/components/SourceLink';
+import { generateDateRangeArgs } from '@/js/modules/search-console/util';
+import TableOverflowContainer from '@/js/components/TableOverflowContainer';
+import ReportTable from '@/js/components/ReportTable';
+import Link from '@/js/components/Link';
+import { numFmt } from '@/js/util';
+import { ZeroDataMessage } from '@/js/modules/search-console/components/common';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 export default function DashboardPopularKeywordsWidget( props ) {
 	const { Widget, WidgetReportError } = props;
@@ -132,8 +132,11 @@ export default function DashboardPopularKeywordsWidget( props ) {
 		);
 	}
 
+	const columnClassName =
+		'googlesitekit-typography googlesitekit-typography--title ';
 	const tableColumns = [
 		{
+			columnHeaderClassName: `${ columnClassName } googlesitekit-typography--medium`,
 			title: url
 				? __( 'Top search queries for your page', 'google-site-kit' )
 				: __( 'Top search queries for your site', 'google-site-kit' ),
@@ -177,6 +180,7 @@ export default function DashboardPopularKeywordsWidget( props ) {
 			},
 		},
 		{
+			columnHeaderClassName: `${ columnClassName } googlesitekit-typography--small`,
 			title: __( 'Clicks', 'google-site-kit' ),
 			description: __(
 				'Number of times users clicked on your content in search results',
@@ -189,6 +193,7 @@ export default function DashboardPopularKeywordsWidget( props ) {
 			},
 		},
 		{
+			columnHeaderClassName: `${ columnClassName } googlesitekit-typography--small`,
 			title: __( 'Impressions', 'google-site-kit' ),
 			description: __(
 				'Counted each time your content appears in search results',

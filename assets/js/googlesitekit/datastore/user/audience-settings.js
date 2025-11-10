@@ -34,15 +34,15 @@ import {
 	combineStores,
 	createReducer,
 } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
-import { createFetchStore } from '../../data/create-fetch-store';
-import { createValidatedAction } from '../../data/utils';
-import { actions as errorStoreActions } from '../../data/create-error-store';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { CORE_USER } from './constants';
 
 const { receiveError, clearError } = errorStoreActions;
 
-const validateUserAudienceSettings = ( settings ) => {
+function validateUserAudienceSettings( settings ) {
 	invariant(
 		isPlainObject( settings ),
 		'Audience settings should be an object.'
@@ -55,7 +55,7 @@ const validateUserAudienceSettings = ( settings ) => {
 		typeof settings.isAudienceSegmentationWidgetHidden === 'boolean',
 		'Audience segmentation widget visibility should be a boolean.'
 	);
-};
+}
 
 const fetchStoreReducerCallback = createReducer(
 	( state, audienceSettings ) => {

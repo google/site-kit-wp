@@ -32,27 +32,27 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
-import { numFmt } from '../../../../../util';
-import whenActive from '../../../../../util/when-active';
-import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
-import DetailsPermaLinks from '../../../../../components/DetailsPermaLinks';
-import ReportTable from '../../../../../components/ReportTable';
-import PreviewTable from '../../../../../components/PreviewTable';
-import { ZeroDataMessage } from '../../common';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { numFmt } from '@/js/util';
+import whenActive from '@/js/util/when-active';
+import TableOverflowContainer from '@/js/components/TableOverflowContainer';
+import DetailsPermaLinks from '@/js/components/DetailsPermaLinks';
+import ReportTable from '@/js/components/ReportTable';
+import PreviewTable from '@/js/components/PreviewTable';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import Header from './Header';
 import Footer from './Footer';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../../../../hooks/useBreakpoint';
-import useViewOnly from '../../../../../hooks/useViewOnly';
+} from '@/js/hooks/useBreakpoint';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 function ModulePopularPagesWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;
@@ -145,8 +145,12 @@ function ModulePopularPagesWidgetGA4( props ) {
 		);
 	}
 
+	const columnClassName =
+		'googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small';
+
 	const tableColumns = [
 		{
+			columnHeaderClassName: columnClassName,
 			title: __( 'Title', 'google-site-kit' ),
 			description: __( 'Page Title', 'google-site-kit' ),
 			primary: true,
@@ -177,6 +181,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			},
 		},
 		{
+			columnHeaderClassName: columnClassName,
 			title: __( 'Pageviews', 'google-site-kit' ),
 			description: __( 'Pageviews', 'google-site-kit' ),
 			field: 'metricValues.0.value',
@@ -187,6 +192,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			},
 		},
 		{
+			columnHeaderClassName: columnClassName,
 			title: __( 'Sessions', 'google-site-kit' ),
 			description: __( 'Sessions', 'google-site-kit' ),
 			field: 'metricValues.1.value',
@@ -198,6 +204,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			},
 		},
 		{
+			columnHeaderClassName: columnClassName,
 			title: __( 'Engagement Rate', 'google-site-kit' ),
 			description: __( 'Engagement Rate', 'google-site-kit' ),
 			field: 'metricValues.2.value',
@@ -207,6 +214,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			},
 		},
 		{
+			columnHeaderClassName: columnClassName,
 			title: __( 'Session Duration', 'google-site-kit' ),
 			description: __( 'Session Duration', 'google-site-kit' ),
 			field: 'metricValues.3.value',

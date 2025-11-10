@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import LoadingWrapper from '../LoadingWrapper';
+import LoadingWrapper from '@/js/components/LoadingWrapper';
 
 export default function UserInputPreviewAnswers( {
 	loading,

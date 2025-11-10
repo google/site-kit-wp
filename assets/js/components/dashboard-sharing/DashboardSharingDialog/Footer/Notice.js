@@ -26,7 +26,7 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 export default function Notice() {
 	const canSubmitSharingChanges = useSelect( ( select ) =>
@@ -41,30 +41,33 @@ export default function Notice() {
 
 	return (
 		<p className="googlesitekit-dashboard-sharing-settings__notice">
-			{ haveSharingSettingsChangedManagement &&
-				canSubmitSharingChanges &&
-				createInterpolateElement(
-					__(
-						'By clicking <strong>Apply</strong>, you will give other authenticated admins of your site permission to manage view-only access to Site Kit dashboard data from the chosen Google service',
-						'google-site-kit'
-					),
-					{
-						span: <span />,
-						strong: <strong />,
-					}
-				) }
+			{ haveSharingSettingsChangedManagement && canSubmitSharingChanges && (
+				<span>
+					{ createInterpolateElement(
+						__(
+							'By clicking <strong>Apply</strong>, you will give other authenticated admins of your site permission to manage view-only access to Site Kit dashboard data from the chosen Google service',
+							'google-site-kit'
+						),
+						{
+							strong: <strong />,
+						}
+					) }
+				</span>
+			) }
 			{ ! haveSharingSettingsChangedManagement &&
 				canSubmitSharingChanges &&
-				haveSharingSettingsChangedRoles &&
-				createInterpolateElement(
-					__(
-						'By clicking <strong>Apply</strong>, you’re granting the selected roles view-only access to data from the Google services you’ve connected via your account',
-						'google-site-kit'
-					),
-					{
-						span: <span />,
-						strong: <strong />,
-					}
+				haveSharingSettingsChangedRoles && (
+					<span>
+						{ createInterpolateElement(
+							__(
+								'By clicking <strong>Apply</strong>, you’re granting the selected roles view-only access to data from the Google services you’ve connected via your account',
+								'google-site-kit'
+							),
+							{
+								strong: <strong />,
+							}
+						) }
+					</span>
 				) }
 		</p>
 	);

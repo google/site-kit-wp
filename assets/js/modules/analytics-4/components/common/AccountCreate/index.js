@@ -17,10 +17,22 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
+import classnames from 'classnames';
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState, useEffect } from '@wordpress/element';
+import {
+	useCallback,
+	useState,
+	useEffect,
+	createInterpolateElement,
+} from '@wordpress/element';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -28,32 +40,40 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
 import { invalidateCache } from 'googlesitekit-api';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
+import { useFeature } from '@/js/hooks/useFeature';
 import {
 	FORM_ACCOUNT_CREATE,
 	EDIT_SCOPE,
 	GTM_SCOPE,
 	MODULES_ANALYTICS_4,
-} from '../../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
-import { trackEvent } from '../../../../../util';
-import { getAccountDefaults as getAccountDefaults } from '../../../utils/account';
-import { Cell } from '../../../../../material-components';
-import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
+import { trackEvent } from '@/js/util';
+import { getAccountDefaults as getAccountDefaults } from '@/js/modules/analytics-4/utils/account';
+import { Cell } from '@/js/material-components';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import TimezoneSelect from './TimezoneSelect';
 import AccountField from './AccountField';
 import PropertyField from './PropertyField';
 import CountrySelect from './CountrySelect';
 import WebDataStreamField from './WebDataStreamField';
-import EnhancedMeasurementSwitch from '../EnhancedMeasurementSwitch';
-import useViewContext from '../../../../../hooks/useViewContext';
-import SetupEnhancedConversionTrackingNotice from '../../../../../components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
+import { EnhancedMeasurementSwitch } from '@/js/modules/analytics-4/components/common';
+import useViewContext from '@/js/hooks/useViewContext';
+import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
+import Typography from '@/js/components/Typography';
+import useFormValue from '@/js/hooks/useFormValue';
+import P from '@/js/components/Typography/P';
+import Link from '@/js/components/Link';
+import Null from '@/js/components/Null';
 
-export default function AccountCreate() {
+export default function AccountCreate( { className } ) {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const accounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountSummaries()
@@ -82,9 +102,7 @@ export default function AccountCreate() {
 	const hasAccountCreateForm = useSelect( ( select ) =>
 		select( CORE_FORMS ).hasForm( FORM_ACCOUNT_CREATE )
 	);
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'autoSubmit' )
-	);
+	const autoSubmit = useFormValue( FORM_ACCOUNT_CREATE, 'autoSubmit' );
 	const siteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
@@ -94,6 +112,11 @@ export default function AccountCreate() {
 	const timezone = useSelect( ( select ) =>
 		select( CORE_SITE ).getTimezone()
 	);
+	const pluginConversionsDocumentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'plugin-conversion-tracking'
+		);
+	} );
 
 	const viewContext = useViewContext();
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -130,6 +153,8 @@ export default function AccountCreate() {
 			);
 		}
 	}, [ hasAccountCreateForm, siteName, siteURL, timezone, setValues ] );
+
+	const showProgress = getQueryArg( location.href, 'showProgress' );
 
 	const handleSubmit = useCallback( async () => {
 		const scopes = [];
@@ -173,7 +198,9 @@ export default function AccountCreate() {
 			'proxy'
 		);
 
-		const { error } = await createAccount();
+		const { error } = await createAccount( {
+			showProgress: showProgress === 'true',
+		} );
 		if ( ! error ) {
 			setConversionTrackingEnabled( true );
 			await saveConversionTrackingSettings();
@@ -185,6 +212,7 @@ export default function AccountCreate() {
 		setValues,
 		viewContext,
 		createAccount,
+		showProgress,
 		setPermissionScopeError,
 		setConversionTrackingEnabled,
 		saveConversionTrackingSettings,
@@ -214,23 +242,27 @@ export default function AccountCreate() {
 		return <ProgressBar />;
 	}
 
+	const isInitialSetupFlow = !! showProgress && setupFlowRefreshEnabled;
+
 	return (
-		<div>
+		<div className={ className }>
 			<StoreErrorNotices
 				moduleSlug="analytics-4"
 				storeName={ MODULES_ANALYTICS_4 }
 			/>
 
-			<h3 className="googlesitekit-heading-4">
-				{ __( 'Create your Analytics account', 'google-site-kit' ) }
-			</h3>
+			{ ! isInitialSetupFlow && (
+				<Typography as="h3" type="title" size="large">
+					{ __( 'Create your Analytics account', 'google-site-kit' ) }
+				</Typography>
+			) }
 
-			<p>
+			<P size={ isInitialSetupFlow ? 'large' : undefined }>
 				{ __(
 					'We’ve pre-filled the required information for your new account. Confirm or edit any details:',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 
 			<div className="googlesitekit-setup-module__inputs">
 				<Cell size={ 6 }>
@@ -245,9 +277,13 @@ export default function AccountCreate() {
 			</div>
 
 			<div className="googlesitekit-setup-module__inputs">
-				<CountrySelect />
+				<Cell size={ 6 }>
+					<CountrySelect />
+				</Cell>
 
-				<TimezoneSelect />
+				<Cell size={ 6 }>
+					<TimezoneSelect />
+				</Cell>
 			</div>
 
 			<div className="googlesitekit-setup-module__inputs">
@@ -256,16 +292,35 @@ export default function AccountCreate() {
 					className="googlesitekit-margin-bottom-0"
 				/>
 
-				<SetupEnhancedConversionTrackingNotice
-					className="googlesitekit-margin-top-0"
-					message={ __(
-						'To track how visitors interact with your site, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
-						'google-site-kit'
+				<SetupPluginConversionTrackingNotice
+					className={ classnames( {
+						'googlesitekit-margin-top-0': ! isInitialSetupFlow,
+					} ) }
+					message={ createInterpolateElement(
+						__(
+							'To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings. <LearnMoreLink />',
+							'google-site-kit'
+						),
+						{
+							LearnMoreLink: setupFlowRefreshEnabled ? (
+								<Link
+									href={ pluginConversionsDocumentationURL }
+									external
+								>
+									{ __( 'Learn more', 'google-site-kit' ) }
+								</Link>
+							) : (
+								<Null />
+							),
+						}
 					) }
 				/>
 			</div>
 
-			<p>
+			<P
+				className="googlesitekit-analytics-setup__analytics-create-account-info"
+				size={ isInitialSetupFlow ? 'small' : undefined }
+			>
 				{ hasRequiredScope && (
 					<span>
 						{ __(
@@ -282,7 +337,7 @@ export default function AccountCreate() {
 						) }
 					</span>
 				) }
-			</p>
+			</P>
 
 			<div className="googlesitekit-setup-module__action">
 				<Button
@@ -305,3 +360,7 @@ export default function AccountCreate() {
 		</div>
 	);
 }
+
+AccountCreate.propTypes = {
+	className: PropTypes.string,
+};

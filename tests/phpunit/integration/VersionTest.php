@@ -6,9 +6,7 @@
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
- */
-
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+ * */
 
 namespace Google\Site_Kit\Tests;
 
@@ -70,13 +68,25 @@ class VersionTest extends TestCase {
 			// Using preg_match, not preg_match_all, will only return the first occurrence of
 			// the match which is important for the changelog.txt file which has multiple
 			// version numbers and we only want to check the first.
-			$version_numbers[] = $matches[1];
+			if ( isset( $matches[1] ) ) {
+				$version_numbers[] = $matches[1];
+			} else {
+				$this->fail( "No version number found in $file with pattern $pattern" );
+			}
 		}
 
 		// Verify the number of version numbers found matches the number of version occurrences.
-		$this->assertEquals( count( $version_numbers ), count( $version_occurrences ) );
+		$this->assertEquals(
+			count( $version_numbers ),
+			count( $version_occurrences ),
+			'Number of version numbers found should match the number of version occurrences'
+		);
 
 		// Assert all version numbers are the same in the array.
-		$this->assertEquals( 1, count( array_unique( $version_numbers ) ) );
+		$this->assertEquals(
+			1,
+			count( array_unique( $version_numbers ) ),
+			'All version numbers should be identical across all files'
+		);
 	}
 }

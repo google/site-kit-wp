@@ -25,9 +25,10 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { createRegistrySelector } from 'googlesitekit-data';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
+import { sanitizeProvisioningParams } from '@/js/modules/sign-in-with-google/utils/provisioning';
 
 export const selectors = {
 	/**
@@ -86,7 +87,7 @@ export const selectors = {
 			};
 
 			return select( MODULES_SIGN_IN_WITH_GOOGLE ).getServiceURL( {
-				query,
+				query: sanitizeProvisioningParams( query ),
 			} );
 		}
 	),

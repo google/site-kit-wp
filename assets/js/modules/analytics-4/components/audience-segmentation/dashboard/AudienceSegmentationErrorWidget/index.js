@@ -30,15 +30,15 @@ import { useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import whenActive from '../../../../../../util/when-active';
+import whenActive from '@/js/util/when-active';
 import { useDispatch } from 'googlesitekit-data';
-import { isInsufficientPermissionsError } from '../../../../../../util/errors';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { AUDIENCE_INFO_NOTICE_HIDE_UI } from '../InfoNoticeWidget/constants';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { AUDIENCE_INFO_NOTICE_HIDE_UI } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/InfoNoticeWidget/constants';
 import ErrorWidgetContent from './ErrorWidgetContent';
-import withIntersectionObserver from '../../../../../../util/withIntersectionObserver';
-import { trackEvent } from '../../../../../../util';
-import useViewContext from '../../../../../../hooks/useViewContext';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const ErrorWidgetContentWithIntersectionObserver =
@@ -49,6 +49,7 @@ function AudienceSegmentationErrorWidget( {
 	errors,
 	onRetry,
 	showRetryButton,
+	failedAudiences,
 } ) {
 	const viewContext = useViewContext();
 
@@ -60,7 +61,7 @@ function AudienceSegmentationErrorWidget( {
 		isInsufficientPermissionsError
 	);
 
-	const handleRetry = () => {
+	function handleRetry() {
 		trackEvent(
 			`${ viewContext }_audiences-all-tiles`,
 			'data_loading_error_retry'
@@ -68,7 +69,7 @@ function AudienceSegmentationErrorWidget( {
 			setValue( AUDIENCE_INFO_NOTICE_HIDE_UI, false );
 			onRetry?.();
 		} );
-	};
+	}
 
 	useEffect( () => {
 		// Set UI key to hide the info notice.
@@ -80,6 +81,7 @@ function AudienceSegmentationErrorWidget( {
 			Widget={ Widget }
 			errors={ errorsArray }
 			onRetry={ handleRetry }
+			failedAudiences={ failedAudiences }
 			onRequestAccess={ () => {
 				trackEvent(
 					`${ viewContext }_audiences-all-tiles`,
@@ -106,6 +108,7 @@ AudienceSegmentationErrorWidget.propTypes = {
 	] ).isRequired,
 	onRetry: PropTypes.func,
 	showRetryButton: PropTypes.bool,
+	failedAudiences: PropTypes.arrayOf( PropTypes.string ),
 };
 
 export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(

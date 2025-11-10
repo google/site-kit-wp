@@ -36,6 +36,7 @@ class Google_Proxy {
 	const OAUTH2_AUTH_URI           = '/o/oauth2/auth/';
 	const OAUTH2_DELETE_SITE_URI    = '/o/oauth2/delete-site/';
 	const SETUP_URI                 = '/v2/site-management/setup/';
+	const SETUP_V3_URI              = '/v3/site-management/setup/';
 	const PERMISSIONS_URI           = '/site-management/permissions/';
 	const FEATURES_URI              = '/site-management/features/';
 	const SURVEY_TRIGGER_URI        = '/survey/trigger/';
@@ -139,7 +140,12 @@ class Google_Proxy {
 			throw new Exception( __( 'Missing site_id or site_code parameter for setup URL.', 'google-site-kit' ) );
 		}
 
-		return add_query_arg( $query_params, $this->url( self::SETUP_URI ) );
+		return add_query_arg(
+			$query_params,
+			$this->url(
+				Feature_Flags::enabled( 'setupFlowRefresh' ) ? self::SETUP_V3_URI : self::SETUP_URI
+			)
+		);
 	}
 
 	/**
@@ -348,6 +354,10 @@ class Google_Proxy {
 			'service_version'  => 'v2',
 		);
 
+		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			$metadata['service_version'] = 'v3';
+		}
+
 		/**
 		 * Filters the setup mode.
 		 *
@@ -359,27 +369,6 @@ class Google_Proxy {
 
 		return $metadata;
 	}
-
-	/**
-	 * Fetch site fields
-	 *
-	 * @since 1.22.0
-	 *
-	 * @param Credentials $credentials Credentials instance.
-	 * @return array|WP_Error The response as an associative array or WP_Error on failure.
-	 */
-	
-
-	/**
-	 * Are site fields synced
-	 *
-	 * @since 1.22.0
-	 *
-	 * @param Credentials $credentials Credentials instance.
-	 *
-	 * @return boolean|WP_Error Boolean do the site fields match or WP_Error on failure.
-	 */
-	
 
 	/**
 	 * Gets user fields.
@@ -448,7 +437,7 @@ class Google_Proxy {
 	 * @param string      $mode        Sync mode.
 	 * @return string|WP_Error Redirect URL on success, otherwise an error.
 	 */
-	private function send_site_fields( Credentials $credentials = null, $mode = 'async' ) {
+	private function send_site_fields( ?Credentials $credentials = null, $mode = 'async' ) {
 		$response = $this->request(
 			self::OAUTH2_SITE_URI,
 			$credentials,

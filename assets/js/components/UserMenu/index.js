@@ -19,18 +19,12 @@
 /**
  * External dependencies
  */
-import { useClickAway } from 'react-use';
+import { useClickAway, useEvent } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import {
-	Fragment,
-	useState,
-	useRef,
-	useEffect,
-	useCallback,
-} from '@wordpress/element';
+import { Fragment, useState, useRef, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
 
@@ -39,23 +33,29 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, Menu } from 'googlesitekit-components';
-import ModalDialog from '../ModalDialog';
-import { trackEvent } from '../../util';
-import { clearCache } from '../../googlesitekit/api/cache';
-import Portal from '../Portal';
+import ModalDialog from '@/js/components/ModalDialog';
+import { trackEvent } from '@/js/util';
+import { clearCache } from '@/js/googlesitekit/api/cache';
+import Portal from '@/js/components/Portal';
 import Details from './Details';
 import Item from './Item';
-import DisconnectIcon from '../../../svg/icons/disconnect.svg';
-import ManageSitesIcon from '../../../svg/icons/manage-sites.svg';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '../../modules/analytics-4/datastore/constants';
-import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
-import useViewContext from '../../hooks/useViewContext';
+import DisconnectIcon from '@/svg/icons/disconnect.svg';
+import ManageSitesIcon from '@/svg/icons/manage-sites.svg';
+import ManageEmailReportsIcon from '@/svg/icons/manage-email-reports.svg';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '@/js/modules/analytics-4/datastore/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
+import useViewContext from '@/js/hooks/useViewContext';
+import useFormValue from '@/js/hooks/useFormValue';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function UserMenu() {
+	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
+
 	const proxyPermissionsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxyPermissionsURL()
 	);
@@ -71,12 +71,9 @@ export default function UserMenu() {
 			googlesitekit_context: 'revoked',
 		} )
 	);
-
-	const isAutoCreatingCustomDimensionsForAudience = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
-			'isAutoCreatingCustomDimensionsForAudience'
-		)
+	const isAutoCreatingCustomDimensionsForAudience = useFormValue(
+		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+		'isAutoCreatingCustomDimensionsForAudience'
 	);
 
 	const [ dialogActive, toggleDialog ] = useState( false );
@@ -93,25 +90,22 @@ export default function UserMenu() {
 		menuButtonRef.current?.focus();
 	} );
 
-	const handleClose = () => {
+	const handleClose = useCallback( () => {
 		toggleDialog( false );
 		setMenuOpen( false );
-	};
+	}, [ toggleDialog, setMenuOpen ] );
 
-	useEffect( () => {
-		const handleEscapeKeyPress = ( e ) => {
+	const handleEscapeKeyPress = useCallback(
+		( e ) => {
 			// Close if Escape key is pressed.
 			if ( ESCAPE === e.keyCode ) {
 				handleClose();
 			}
-		};
+		},
+		[ handleClose ]
+	);
 
-		global.addEventListener( 'keyup', handleEscapeKeyPress );
-
-		return () => {
-			global.removeEventListener( 'keyup', handleEscapeKeyPress );
-		};
-	}, [] );
+	useEvent( 'keyup', handleEscapeKeyPress );
 
 	const handleMenu = useCallback( () => {
 		if ( ! menuOpen ) {
@@ -125,6 +119,8 @@ export default function UserMenu() {
 		toggleDialog( ! dialogActive );
 		setMenuOpen( false );
 	}, [ dialogActive ] );
+
+	const { setValue } = useDispatch( CORE_UI );
 
 	const handleMenuItemSelect = useCallback(
 		async ( _index, event ) => {
@@ -145,6 +141,9 @@ export default function UserMenu() {
 				case 'disconnect':
 					handleDialog();
 					break;
+				case 'manage-email-reports':
+					setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+					break;
 				default:
 					handleMenu();
 			}
@@ -154,6 +153,7 @@ export default function UserMenu() {
 			handleMenu,
 			handleDialog,
 			navigateTo,
+			setValue,
 			viewContext,
 		]
 	);
@@ -272,6 +272,21 @@ export default function UserMenu() {
 					<li>
 						<Details />
 					</li>
+					{ emailReportingEnabled && (
+						<li
+							id="manage-email-reports"
+							className="mdc-list-item"
+							role="menuitem"
+						>
+							<Item
+								icon={ <ManageEmailReportsIcon width="24" /> }
+								label={ __(
+									'Manage email reports',
+									'google-site-kit'
+								) }
+							/>
+						</li>
+					) }
 					{ !! proxyPermissionsURL && (
 						<li
 							id="manage-sites"
@@ -279,7 +294,7 @@ export default function UserMenu() {
 							role="menuitem"
 						>
 							<Item
-								icon={ <ManageSitesIcon width="22" /> }
+								icon={ <ManageSitesIcon width="24" /> }
 								label={ __(
 									'Manage Sites',
 									'google-site-kit'
@@ -293,7 +308,7 @@ export default function UserMenu() {
 						role="menuitem"
 					>
 						<Item
-							icon={ <DisconnectIcon width="22" /> }
+							icon={ <DisconnectIcon width="24" /> }
 							label={ __( 'Disconnect', 'google-site-kit' ) }
 						/>
 					</li>

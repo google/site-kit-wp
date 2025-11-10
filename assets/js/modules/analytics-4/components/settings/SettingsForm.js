@@ -31,22 +31,25 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { TrackingExclusionSwitches } from '../common';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../constants';
+import { TrackingExclusionSwitches } from '@/js/modules/analytics-4/components/common';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { TYPES } from '@/js/components/Notice/constants';
 import SettingsControls from './SettingsControls';
-import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
-import EntityOwnershipChangeNotice from '../../../../components/settings/EntityOwnershipChangeNotice';
-import GoogleTagGatewayToggle from '../../../../components/google-tag-gateway/GoogleTagGatewayToggle';
-import Link from '../../../../components/Link';
-import SettingsGroup from '../../../../components/settings/SettingsGroup';
-import { isValidAccountID } from '../../utils/validation';
-import { useFeature } from '../../../../hooks/useFeature';
+import ConversionTrackingToggle from '@/js/components/conversion-tracking/ConversionTrackingToggle';
+import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
+import EntityOwnershipChangeNotice from '@/js/components/settings/EntityOwnershipChangeNotice';
+import GoogleTagGatewayToggle from '@/js/components/google-tag-gateway/GoogleTagGatewayToggle';
+import Link from '@/js/components/Link';
+import SettingsGroup from '@/js/components/settings/SettingsGroup';
+import { isValidAccountID } from '@/js/modules/analytics-4/utils/validation';
+import { useFeature } from '@/js/hooks/useFeature';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const gtgEnabled = useFeature( 'googleTagGateway' );
+	const gtagUserDataEnabled = useFeature( 'gtagUserData' );
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
@@ -54,7 +57,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 
 	const conversionTrackingDocumentationURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL(
-			'enhanced-conversion-tracking'
+			'plugin-conversion-tracking'
 		)
 	);
 
@@ -79,7 +82,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				<ConversionTrackingToggle>
 					{ createInterpolateElement(
 						__(
-							'To track the performance of your campaigns, Site Kit will enable enhanced conversion tracking. <a>Learn more</a>',
+							'To track the performance of your campaigns, Site Kit will enable plugin conversion tracking. <a>Learn more</a>',
 							'google-site-kit'
 						),
 						{
@@ -97,6 +100,11 @@ export default function SettingsForm( { hasModuleAccess } ) {
 					) }
 				</ConversionTrackingToggle>
 				{ gtgEnabled && <GoogleTagGatewayToggle /> }
+				{ gtagUserDataEnabled && (
+					<EnhancedConversionsSettingsNotice
+						type={ TYPES.INFO_ALT }
+					/>
+				) }
 			</SettingsGroup>
 		</Fragment>
 	);

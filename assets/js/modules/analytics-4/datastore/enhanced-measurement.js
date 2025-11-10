@@ -37,10 +37,13 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '../constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { isValidPropertyID, isValidWebDataStreamID } from '../utils/validation';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import {
+	isValidPropertyID,
+	isValidWebDataStreamID,
+} from '@/js/modules/analytics-4/utils/validation';
 
 const enhancedMeasurementSettingsFields = [
 	'name',
@@ -415,6 +418,8 @@ const baseResolvers = {
 		}
 	},
 };
+baseResolvers.isEnhancedMeasurementStreamEnabled =
+	baseResolvers.getEnhancedMeasurementSettings;
 
 const baseSelectors = {
 	/**

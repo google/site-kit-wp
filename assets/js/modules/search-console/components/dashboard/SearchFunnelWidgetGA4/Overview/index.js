@@ -30,17 +30,17 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { Grid, Row } from '../../../../../../material-components';
-import { trackEvent } from '../../../../../../util';
-import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
+import { Grid, Row } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
-} from '../../../../../../hooks/useDashboardType';
+} from '@/js/hooks/useDashboardType';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import useViewOnly from '../../../../../../hooks/useViewOnly';
-import useViewContext from '../../../../../../hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import useViewContext from '@/js/hooks/useViewContext';
 import OptionalCells from './OptionalCells';
 import DataBlocks from './DataBlocks';
 
@@ -53,7 +53,7 @@ export default function Overview( props ) {
 		selectedStats,
 		handleStatsSelection,
 		dateRangeLength,
-		error,
+		errors,
 		WidgetReportError,
 		showRecoverableAnalytics,
 	} = props;
@@ -97,7 +97,7 @@ export default function Overview( props ) {
 	const showGA4 =
 		canViewSharedAnalytics4 &&
 		ga4ModuleConnected &&
-		! error &&
+		! errors.length &&
 		! showRecoverableAnalytics;
 
 	const onGA4NewBadgeLearnMoreClick = useCallback( () => {
@@ -134,7 +134,7 @@ export default function Overview( props ) {
 
 				<OptionalCells
 					canViewSharedAnalytics4={ canViewSharedAnalytics4 }
-					error={ error }
+					errors={ errors }
 					showGA4={ showGA4 }
 					showKeyEventsCTA={ showKeyEventsCTA }
 					showRecoverableAnalytics={ showRecoverableAnalytics }
@@ -152,6 +152,6 @@ Overview.propTypes = {
 	searchConsoleData: PropTypes.arrayOf( PropTypes.object ),
 	selectedStats: PropTypes.number.isRequired,
 	handleStatsSelection: PropTypes.func.isRequired,
-	error: PropTypes.object,
+	errors: PropTypes.arrayOf( PropTypes.object ),
 	WidgetReportError: PropTypes.elementType.isRequired,
 };

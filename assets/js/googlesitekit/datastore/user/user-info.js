@@ -31,9 +31,13 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { commonActions, createRegistrySelector } from 'googlesitekit-data';
+import {
+	createReducer,
+	commonActions,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { CORE_USER } from './constants';
-import { escapeURI } from '../../../util/escape-uri';
+import { escapeURI } from '@/js/util/escape-uri';
 
 const RECEIVE_CONNECT_URL = 'RECEIVE_CONNECT_URL';
 const RECEIVE_USER_INFO = 'RECEIVE_USER_INFO';
@@ -153,48 +157,32 @@ export const actions = {
 
 export const controls = {};
 
-export const reducer = ( state, { type, payload } ) => {
+export const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case RECEIVE_CONNECT_URL: {
-			const { connectURL } = payload;
-			return {
-				...state,
-				connectURL,
-			};
-		}
-		case RECEIVE_USER_INFO: {
-			const { user } = payload;
-			return {
-				...state,
-				user,
-			};
-		}
-		case RECEIVE_USER_INITIAL_SITE_KIT_VERSION: {
-			const { initialVersion } = payload;
-			return {
-				...state,
-				initialVersion,
-			};
-		}
-		case RECEIVE_USER_IS_VERIFIED: {
-			const { verified } = payload;
-			return {
-				...state,
-				verified,
-			};
-		}
-		case RECEIVE_IS_USER_INPUT_COMPLETED: {
-			const { isUserInputCompleted } = payload;
-			return {
-				...state,
-				isUserInputCompleted,
-			};
-		}
-		default: {
-			return state;
-		}
+		case RECEIVE_CONNECT_URL:
+			state.connectURL = payload.connectURL;
+			break;
+
+		case RECEIVE_USER_INFO:
+			state.user = payload.user;
+			break;
+
+		case RECEIVE_USER_INITIAL_SITE_KIT_VERSION:
+			state.initialVersion = payload.initialVersion;
+			break;
+
+		case RECEIVE_USER_IS_VERIFIED:
+			state.verified = payload.verified;
+			break;
+
+		case RECEIVE_IS_USER_INPUT_COMPLETED:
+			state.isUserInputCompleted = payload.isUserInputCompleted;
+			break;
+
+		default:
+			break;
 	}
-};
+} );
 
 export const resolvers = {
 	*getConnectURL() {

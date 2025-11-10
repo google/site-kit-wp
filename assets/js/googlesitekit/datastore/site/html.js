@@ -32,12 +32,13 @@ import { isURL, addQueryArgs } from '@wordpress/url';
 import {
 	commonActions,
 	combineStores,
+	createReducer,
 	createRegistryControl,
 } from 'googlesitekit-data';
 import { set } from 'googlesitekit-api';
 import { CORE_SITE } from './constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { extractExistingTag } from '../../../util/tag';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { extractExistingTag } from '@/js/util/tag';
 
 const fetchHTMLForURLStore = createFetchStore( {
 	baseName: 'getHTMLForURL',
@@ -76,15 +77,9 @@ const fetchHTMLForURLStore = createFetchStore( {
 			return null;
 		}
 	},
-	reducerCallback: ( state, htmlForURL, { url } ) => {
-		return {
-			...state,
-			htmlForURL: {
-				...state.htmlForURL,
-				[ url ]: htmlForURL,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, htmlForURL, { url } ) => {
+		state.htmlForURL[ url ] = htmlForURL;
+	} ),
 } );
 
 // Actions
@@ -164,24 +159,17 @@ const baseControls = {
 	),
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case RESET_HTML_FOR_URL: {
+		case RESET_HTML_FOR_URL:
 			const { url } = payload;
-			return {
-				...state,
-				htmlForURL: {
-					...state.htmlForURL,
-					[ url ]: undefined,
-				},
-			};
-		}
+			state.htmlForURL[ url ] = undefined;
+			break;
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 export const baseResolvers = {
 	*getHTMLForURL( url ) {

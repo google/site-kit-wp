@@ -32,27 +32,30 @@ import { Fragment, useCallback, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { CORE_NOTIFICATIONS } from '../../../../../googlesitekit/notifications/datastore/constants';
-import { NOTIFICATION_AREAS } from '../../../../../googlesitekit/notifications/constants';
-import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '../../../datastore/constants';
-import { SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION } from '../settings/SettingsCardVisitorGroups/SetupSuccess';
-import useViewContext from '../../../../../hooks/useViewContext';
-import { useShowTooltip } from '../../../../../components/AdminMenuTooltip';
-import { WEEK_IN_SECONDS } from '../../../../../util';
-import useEnableAudienceGroup from '../../../hooks/useEnableAudienceGroup';
-import AudienceErrorModal from '../../audience-segmentation/dashboard/AudienceErrorModal';
-import SetupCTA from '../../../../../googlesitekit/notifications/components/layout/SetupCTA';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
+import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '@/js/modules/analytics-4/datastore/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import { WEEK_IN_SECONDS } from '@/js/util';
+import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudienceGroup';
+import AudienceErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceErrorModal';
+import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
 import BannerSVGDesktop from '@/svg/graphics/banner-audience-segmentation-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-audience-segmentation-setup-cta-mobile.svg?url';
-import { MODULE_SLUG_ANALYTICS_4 } from '../../../constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import whenActive from '@/js/util/when-active';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import AudienceSegmentationSetupSuccessSubtleNotification, {
 	AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
 } from './AudienceSegmentationSetupSuccessSubtleNotification';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
@@ -61,7 +64,7 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 	const viewContext = useViewContext();
 	const trackEventCategory = `${ viewContext }_audiences-setup-cta-dashboard`;
 
-	const { dismissNotification, registerNotification } =
+	const { dismissNotification, registerNotification, pinNotification } =
 		useDispatch( CORE_NOTIFICATIONS );
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -84,16 +87,12 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
 
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			AUDIENCE_SEGMENTATION_SETUP_FORM,
-			'autoSubmit'
-		)
+	const autoSubmit = useFormValue(
+		AUDIENCE_SEGMENTATION_SETUP_FORM,
+		'autoSubmit'
 	);
 
 	const [ showErrorModal, setShowErrorModal ] = useState( false );
-
-	const { dismissItem } = useDispatch( CORE_USER );
 
 	const onSuccess = useCallback( () => {
 		registerNotification(
@@ -101,22 +100,25 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 			{
 				Component: AudienceSegmentationSetupSuccessSubtleNotification,
 				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-				isDismissible: true,
 			}
 		);
 		dismissNotification( id );
-		// Dismiss success notification in settings.
-		dismissItem( SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION );
-	}, [ registerNotification, dismissNotification, id, dismissItem ] );
+	}, [ registerNotification, dismissNotification, id ] );
 
 	const onError = useCallback( () => {
 		setShowErrorModal( true );
 	}, [ setShowErrorModal ] );
 
+	const onOAuthNavigation = useCallback(
+		() => pinNotification( id, NOTIFICATION_GROUPS.SETUP_CTAS ),
+		[ id, pinNotification ]
+	);
+
 	const { apiErrors, failedAudiences, isSaving, onEnableGroups } =
 		useEnableAudienceGroup( {
 			onSuccess,
 			onError,
+			onOAuthNavigation,
 		} );
 
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );
@@ -133,6 +135,10 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 
 	const setupErrorCode = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorCode()
+	);
+
+	const learnMoreLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'visitor-groups' )
 	);
 
 	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
@@ -156,6 +162,9 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 						'Understand what brings new visitors to your site and keeps them coming back. Site Kit can now group your site visitors into relevant segments like "new" and "returning". To set up these new groups, Site Kit needs to update your Google Analytics property.',
 						'google-site-kit'
 					) }
+					learnMoreLink={ {
+						href: learnMoreLink,
+					} }
 					ctaButton={ {
 						label: isSaving
 							? __( 'Enabling groups', 'google-site-kit' )
@@ -170,11 +179,11 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 							: __( 'Maybe later', 'google-site-kit' ),
 						onClick: showTooltip,
 						disabled: isSaving,
-					} }
-					dismissOptions={ {
-						expiresInSeconds: isDismissalFinal
-							? 0
-							: 2 * WEEK_IN_SECONDS,
+						dismissOptions: {
+							expiresInSeconds: isDismissalFinal
+								? 0
+								: 2 * WEEK_IN_SECONDS,
+						},
 					} }
 					svg={ {
 						desktop: BannerSVGDesktop,

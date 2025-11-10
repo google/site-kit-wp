@@ -86,12 +86,12 @@ class Settings extends Module_Settings {
 	 */
 	protected function get_default() {
 		return array(
-			'clientID'         => '',
-			'text'             => self::TEXT_SIGN_IN_WITH_GOOGLE['value'],
-			'theme'            => self::THEME_LIGHT['value'],
-			'shape'            => self::SHAPE_RECTANGULAR['value'],
-			'oneTapEnabled'    => false,
-			'oneTapOnAllPages' => false,
+			'clientID'                  => '',
+			'text'                      => self::TEXT_SIGN_IN_WITH_GOOGLE['value'],
+			'theme'                     => self::THEME_LIGHT['value'],
+			'shape'                     => self::SHAPE_RECTANGULAR['value'],
+			'oneTapEnabled'             => false,
+			'showNextToCommentsEnabled' => false,
 		);
 	}
 
@@ -152,8 +152,8 @@ class Settings extends Module_Settings {
 				$option['oneTapEnabled'] = (bool) $option['oneTapEnabled'];
 			}
 
-			if ( isset( $option['oneTapOnAllPages'] ) ) {
-				$option['oneTapOnAllPages'] = (bool) $option['oneTapOnAllPages'];
+			if ( isset( $option['showNextToCommentsEnabled'] ) ) {
+				$option['showNextToCommentsEnabled'] = (bool) $option['showNextToCommentsEnabled'];
 			}
 
 			return $option;

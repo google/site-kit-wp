@@ -30,10 +30,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import SupportLink from '../../../../components/SupportLink';
-import { ErrorNotices } from '../common';
-import { trackEvent } from '../../../../util';
-import useViewContext from '../../../../hooks/useViewContext';
+import SupportLink from '@/js/components/SupportLink';
+import { ErrorNotices } from '@/js/modules/adsense/components/common';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function SetupAccountNoClient() {
 	const viewContext = useViewContext();
@@ -44,16 +46,21 @@ export default function SetupAccountNoClient() {
 
 	return (
 		<Fragment>
-			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
+			<Typography
+				as="h3"
+				type="title"
+				size="large"
+				className="googlesitekit-setup-module__title"
+			>
 				{ __(
 					'Looks like you need to upgrade your AdSense account',
 					'google-site-kit'
 				) }
-			</h3>
+			</Typography>
 
 			<ErrorNotices />
 
-			<p>
+			<P>
 				{ createInterpolateElement(
 					__(
 						'To start using AdSense on your website, you need to upgrade your account to add “AdSense for content”. <a>Learn more</a>',
@@ -72,7 +79,7 @@ export default function SetupAccountNoClient() {
 						),
 					}
 				) }
-			</p>
+			</P>
 
 			<div className="googlesitekit-setup-module__action">
 				<Button

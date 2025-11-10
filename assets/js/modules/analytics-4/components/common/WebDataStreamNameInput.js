@@ -33,19 +33,20 @@ import { isURL } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
-} from '../../datastore/constants';
-import AccessibleWarningIcon from '../../../../components/AccessibleWarningIcon';
+} from '@/js/modules/analytics-4/datastore/constants';
+import AccessibleWarningIcon from '@/js/components/AccessibleWarningIcon';
 import { TextField } from 'googlesitekit-components';
 import {
 	isValidPropertyID,
 	isValidWebDataStreamName,
-} from '../../utils/validation';
+} from '@/js/modules/analytics-4/utils/validation';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function WebDataStreamNameInput() {
 	const propertyID = useSelect( ( select ) =>
@@ -54,9 +55,7 @@ export default function WebDataStreamNameInput() {
 	const webDataStreamID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
-	const webDataStreamName = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, 'webDataStreamName' )
-	);
+	const webDataStreamName = useFormValue( FORM_SETUP, 'webDataStreamName' );
 	const webDataStreamAlreadyExists = useSelect( ( select ) =>
 		isValidPropertyID( propertyID )
 			? select( MODULES_ANALYTICS_4 ).doesWebDataStreamExist(

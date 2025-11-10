@@ -37,23 +37,24 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MINUTE_IN_SECONDS, WEEK_IN_SECONDS } from '../../../../util';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { DAY_IN_SECONDS, MINUTE_IN_SECONDS, WEEK_IN_SECONDS } from '@/js/util';
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
 	MODULES_ADS,
-} from '../../datastore/constants';
-import { MODULE_SLUG_ADS } from '../../constants';
-import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
-import { WooCommerceRedirectModal } from '../common';
-import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
-import { useShowTooltip } from '../../../../components/AdminMenuTooltip';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import SetupCTA from '../../../../googlesitekit/notifications/components/layout/SetupCTA';
+} from '@/js/modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import { WooCommerceRedirectModal } from '@/js/modules/ads/components/common';
+import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
 import BannerSVGDesktop from '@/svg/graphics/banner-ads-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-ads-setup-cta-mobile.svg?url';
 import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
+import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
 
 export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );
@@ -92,13 +93,6 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const markNotificationDismissed = useCallback( () => {
-		dismissNotification( id, {
-			skipHidingFromQueue: true,
-			expiresInSeconds: 2 * WEEK_IN_SECONDS,
-		} );
-	}, [ id, dismissNotification ] );
-
 	const { setCacheItem } = useDispatch( CORE_SITE );
 	const dismissWooCommerceRedirectModal = useCallback( () => {
 		setCacheItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY, true, {
@@ -108,22 +102,25 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 
 	const activateModule = useActivateModuleCallback( MODULE_SLUG_ADS );
 
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
 	const onSetupCallback = useCallback( () => {
+		triggerSurvey( 'accept_ads_setup_cta' );
+
 		if (
 			! shouldShowWooCommerceRedirectModal ||
 			isWooCommerceRedirectModalDismissed
 		) {
 			setIsSaving( true );
-			markNotificationDismissed();
 			activateModule();
 			return;
 		}
 
 		setOpenDialog( true );
 	}, [
+		triggerSurvey,
 		shouldShowWooCommerceRedirectModal,
 		activateModule,
-		markNotificationDismissed,
 		isWooCommerceRedirectModalDismissed,
 	] );
 
@@ -189,16 +186,21 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 					onClick: onSetupCallback,
 					disabled: isAdBlockerActive || isSaving || openDialog,
 					inProgress: isSaving,
+					dismissOnClick: true,
+					dismissOptions: {
+						expiresInSeconds: 2 * WEEK_IN_SECONDS,
+						skipHidingFromQueue: true,
+					},
 				} }
 				dismissButton={ {
 					label: dismissLabel,
 					onClick: showTooltip,
 					disabled: isSaving,
-				} }
-				dismissOptions={ {
-					expiresInSeconds: isDismissalFinal
-						? 0
-						: 2 * WEEK_IN_SECONDS,
+					dismissOptions: {
+						expiresInSeconds: isDismissalFinal
+							? 0
+							: 2 * WEEK_IN_SECONDS,
+					},
 				} }
 				svg={ {
 					desktop: BannerSVGDesktop,
@@ -208,12 +210,16 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 			/>
 			{ openDialog && (
 				<WooCommerceRedirectModal
-					onDismiss={ markNotificationDismissed }
+					onDismiss={ () => dismissNotification( id ) }
 					onClose={ onModalClose }
 					onBeforeSetupCallback={ dismissWooCommerceRedirectModal }
 					dialogActive
 				/>
 			) }
+			<SurveyViewTrigger
+				triggerID="view_ads_setup_cta"
+				ttl={ DAY_IN_SECONDS }
+			/>
 		</Notification>
 	);
 }

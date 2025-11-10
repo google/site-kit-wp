@@ -26,7 +26,7 @@ import { useState } from '@wordpress/element';
  */
 import { useSelect, useRegistry } from 'googlesitekit-data';
 import { Button, TextField } from 'googlesitekit-components';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { provideUserInfo } from '../../../tests/js/utils';
 
 export function AccountChooser() {
@@ -35,9 +35,9 @@ export function AccountChooser() {
 	);
 	const registry = useRegistry();
 	const email = useSelect( ( select ) => select( CORE_USER ).getEmail() );
-	const onEmailChange = ( { target } ) => {
+	function onEmailChange( { target } ) {
 		provideUserInfo( registry, { email: target.value } );
-	};
+	}
 
 	const accountChooserURL = useSelect( ( select ) =>
 		select( CORE_USER ).getAccountChooserURL( destURL )

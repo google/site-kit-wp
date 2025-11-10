@@ -25,10 +25,10 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { WEEK_IN_SECONDS } from '../../util';
-import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { WEEK_IN_SECONDS } from '@/js/util';
+import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
 
 export default function SetupCompletedSurveyTrigger() {
 	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>

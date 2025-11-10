@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Assets;
 
 use Google\Site_Kit\Context;
@@ -21,32 +19,25 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class ScriptTest extends TestCase {
 
-	public function set_up() {
-		parent::set_up();
-
-		wp_scripts()->registered = array();
-		wp_scripts()->queue      = array();
-	}
-
 	public function test_get_handle() {
 		$script = new Script( 'test-handle', array() );
 
-		$this->assertEquals( 'test-handle', $script->get_handle() );
+		$this->assertEquals( 'test-handle', $script->get_handle(), 'Script handle should match the provided handle.' );
 	}
 
 	public function test_register() {
 		$script = new Script( 'test-handle', array() );
 
-		$this->assertFalse( wp_script_is( 'test-handle', 'registered' ) );
-		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'script_execution' ) );
-		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'group' ) );
+		$this->assertFalse( wp_script_is( 'test-handle', 'registered' ), 'Script should not be registered initially.' );
+		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'script_execution' ), 'Script execution should not be set initially.' );
+		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'group' ), 'Script group should not be set initially.' );
 
 		$script->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertTrue( wp_script_is( 'test-handle', 'registered' ) );
-		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'script_execution' ) );
+		$this->assertTrue( wp_script_is( 'test-handle', 'registered' ), 'Script should be registered after registration.' );
+		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'script_execution' ), 'Script execution should remain false by default.' );
 		// Scripts are registered in footer by default; footer scripts are added to group 1
-		$this->assertEquals( 1, wp_scripts()->get_data( 'test-handle', 'group' ) );
+		$this->assertEquals( 1, wp_scripts()->get_data( 'test-handle', 'group' ), 'Script should be in footer group by default.' );
 	}
 
 	public function test_register_with_before_print_callback() {
@@ -62,7 +53,7 @@ class ScriptTest extends TestCase {
 		);
 
 		$script->before_print();
-		$this->assertCount( 1, $invocations );
+		$this->assertCount( 1, $invocations, 'Before print callback should be invoked once.' );
 	}
 
 	public function test_register_with_execution() {
@@ -72,11 +63,11 @@ class ScriptTest extends TestCase {
 				'execution' => 'async',
 			)
 		);
-		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'script_execution' ) );
+		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'script_execution' ), 'Script execution should not be set initially.' );
 
 		$script->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertEquals( 'async', wp_scripts()->get_data( 'test-handle', 'script_execution' ) );
+		$this->assertEquals( 'async', wp_scripts()->get_data( 'test-handle', 'script_execution' ), 'Script execution should be set to async.' );
 	}
 
 	public function test_register_with_in_footer() {
@@ -87,11 +78,11 @@ class ScriptTest extends TestCase {
 			)
 		);
 		// Scripts are registered in footer by default; footer scripts are added to group 1
-		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'group' ) );
+		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'group' ), 'Script group should not be set initially.' );
 
 		$script->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'group' ) );
+		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'group' ), 'Script should not be in footer group when in_footer is false.' );
 	}
 
 	public function test_registered_src() {
@@ -116,16 +107,16 @@ class ScriptTest extends TestCase {
 
 	public function test_enqueue() {
 		$script = new Script( 'test-handle', array() );
-		$this->assertFalse( wp_script_is( 'test-handle', 'enqueued' ) );
+		$this->assertFalse( wp_script_is( 'test-handle', 'enqueued' ), 'Script should not be enqueued initially.' );
 
 		$script->enqueue();
 
 		// Must be registered first
-		$this->assertFalse( wp_script_is( 'test-handle', 'enqueued' ) );
+		$this->assertFalse( wp_script_is( 'test-handle', 'enqueued' ), 'Script should not be enqueued without registration.' );
 
 		$script->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$script->enqueue();
 
-		$this->assertTrue( wp_script_is( 'test-handle', 'enqueued' ) );
+		$this->assertTrue( wp_script_is( 'test-handle', 'enqueued' ), 'Script should be enqueued after registration and enqueue.' );
 	}
 }

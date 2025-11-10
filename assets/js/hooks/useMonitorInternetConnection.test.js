@@ -25,7 +25,7 @@ import {
 	renderHook,
 	waitForTimeouts,
 } from '../../../tests/js/test-utils';
-import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { useMonitorInternetConnection } from './useMonitorInternetConnection';
 
 describe( 'useMonitorInternetConnection', () => {
@@ -33,12 +33,12 @@ describe( 'useMonitorInternetConnection', () => {
 	let store;
 	let originalNavigatorOnline;
 
-	const mockOnlineStatus = ( status = true ) => {
+	function setNavigatorOnlineStatus( status = true ) {
 		Object.defineProperty( navigator, 'onLine', {
 			value: status,
 			writable: true,
 		} );
-	};
+	}
 
 	const connectionCheckEndpoint = '/google-site-kit/v1/?_locale=user';
 
@@ -50,21 +50,16 @@ describe( 'useMonitorInternetConnection', () => {
 		registry = createTestRegistry();
 
 		store = registry.stores[ CORE_UI ].store;
-	} );
 
-	afterEach( () => {
-		mockOnlineStatus();
+		setNavigatorOnlineStatus( true );
 	} );
 
 	beforeAll( () => {
-		originalNavigatorOnline = Object.getOwnPropertyDescriptor(
-			navigator,
-			'onLine'
-		);
+		originalNavigatorOnline = navigator.onLine;
 	} );
 
 	afterAll( () => {
-		Object.defineProperty( navigator, 'onLine', originalNavigatorOnline );
+		setNavigatorOnlineStatus( originalNavigatorOnline );
 	} );
 
 	it( 'should set online status correctly', () => {
@@ -81,7 +76,7 @@ describe( 'useMonitorInternetConnection', () => {
 		renderHook( () => useMonitorInternetConnection(), { registry } );
 
 		await act( async () => {
-			mockOnlineStatus( false );
+			setNavigatorOnlineStatus( false );
 			global.window.dispatchEvent( new Event( 'offline' ) );
 			// Wait for fetch to complete.
 			// waitForRegistry() is not suitable to use here as no state changes occur.
@@ -109,7 +104,7 @@ describe( 'useMonitorInternetConnection', () => {
 
 		// Simulate going offline.
 		await act( async () => {
-			mockOnlineStatus( false );
+			setNavigatorOnlineStatus( false );
 			global.window.dispatchEvent( new Event( 'offline' ) );
 			// Wait for fetch to complete.
 			// waitForRegistry() is not suitable to use here as no state changes occur.
@@ -120,7 +115,7 @@ describe( 'useMonitorInternetConnection', () => {
 
 		// Simulate going back online.
 		await act( async () => {
-			mockOnlineStatus();
+			setNavigatorOnlineStatus( true );
 			global.window.dispatchEvent( new Event( 'online' ) );
 			// Wait for fetch to complete.
 			// waitForRegistry() is not suitable to use here as no state changes occur.
@@ -159,7 +154,7 @@ describe( 'useMonitorInternetConnection', () => {
 			body: connectionCheckResponse,
 		} );
 
-		mockOnlineStatus( false );
+		setNavigatorOnlineStatus( false );
 
 		registry.dispatch( CORE_UI ).setIsOnline( false );
 
@@ -169,7 +164,7 @@ describe( 'useMonitorInternetConnection', () => {
 		jest.advanceTimersByTime( 14999 );
 
 		// Enable online status so we can verify the interval via the fetch.
-		mockOnlineStatus( true );
+		setNavigatorOnlineStatus( true );
 
 		// No fetch should happen when offline until the interval is reached.
 		expect( fetchMock ).toHaveBeenCalledTimes( 0 );
@@ -188,7 +183,7 @@ describe( 'useMonitorInternetConnection', () => {
 		} );
 
 		renderHook( () => useMonitorInternetConnection(), { registry } );
-		mockOnlineStatus( true );
+		setNavigatorOnlineStatus( true );
 
 		await act( async () => {
 			global.window.dispatchEvent( new Event( 'online' ) );

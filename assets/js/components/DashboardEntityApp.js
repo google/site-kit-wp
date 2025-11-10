@@ -32,13 +32,14 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import Header from './Header';
+import P from './Typography/P';
 import {
 	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
 	CONTEXT_ENTITY_DASHBOARD_CONTENT,
 	CONTEXT_ENTITY_DASHBOARD_SPEED,
 	CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
-} from '../googlesitekit/widgets/default-contexts';
-import WidgetContextRenderer from '../googlesitekit/widgets/components/WidgetContextRenderer';
+} from '@/js/googlesitekit/widgets/default-contexts';
+import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
@@ -47,24 +48,28 @@ import {
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
-} from '../googlesitekit/constants';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import Link from './Link';
 import VisuallyHidden from './VisuallyHidden';
-import { Cell, Grid, Row } from '../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 import PageHeader from './PageHeader';
 import Layout from './layout/Layout';
-import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
-import ScrollEffect from './ScrollEffect';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
-import useViewOnly from '../hooks/useViewOnly';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import OfflineNotification from './notifications/OfflineNotification';
-import { useMonitorInternetConnection } from '../hooks/useMonitorInternetConnection';
+import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
+import CoreDashboardEffects from './CoreDashboardEffects';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
+import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
+import { useFeature } from '@/js/hooks/useFeature';
 
 function DashboardEntityApp() {
 	const viewOnlyDashboard = useViewOnly();
+
+	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
 
 	const viewableModules = useSelect( ( select ) => {
 		if ( ! viewOnlyDashboard ) {
@@ -139,7 +144,7 @@ function DashboardEntityApp() {
 	if ( currentEntityURL === null ) {
 		return (
 			<div className="googlesitekit-widget-context googlesitekit-module-page googlesitekit-entity-dashboard">
-				<ScrollEffect />
+				<CoreDashboardEffects />
 				<ModuleDashboardEffects />
 				<Grid>
 					<Row>
@@ -165,7 +170,7 @@ function DashboardEntityApp() {
 									<Grid>
 										<Row>
 											<Cell size={ 12 }>
-												<p>
+												<P>
 													{ createInterpolateElement(
 														sprintf(
 															/* translators: %s: current entity URL. */
@@ -196,7 +201,7 @@ function DashboardEntityApp() {
 															),
 														}
 													) }
-												</p>
+												</P>
 											</Cell>
 										</Row>
 									</Grid>
@@ -212,7 +217,7 @@ function DashboardEntityApp() {
 	}
 	return (
 		<Fragment>
-			<ScrollEffect />
+			<CoreDashboardEffects />
 			<ModuleDashboardEffects />
 			<Header showNavigation>
 				<EntitySearchInput />
@@ -221,40 +226,44 @@ function DashboardEntityApp() {
 				<HelpMenu />
 			</Header>
 
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_TRAFFIC }
-				slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_CONTENT }
-				slug={ CONTEXT_ENTITY_DASHBOARD_CONTENT }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_CONTENT,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_SPEED }
-				slug={ CONTEXT_ENTITY_DASHBOARD_SPEED }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_SPEED,
-				} ) }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_MONETIZATION }
-				slug={ CONTEXT_ENTITY_DASHBOARD_MONETIZATION }
-				className={ classnames( {
-					'googlesitekit-widget-context--last':
-						lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
-				} ) }
-			/>
+			<div className="googlesitekit-page-content">
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_TRAFFIC }
+					slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
+					} ) }
+				/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_CONTENT }
+					slug={ CONTEXT_ENTITY_DASHBOARD_CONTENT }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_CONTENT,
+					} ) }
+				/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_SPEED }
+					slug={ CONTEXT_ENTITY_DASHBOARD_SPEED }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_SPEED,
+					} ) }
+				/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_MONETIZATION }
+					slug={ CONTEXT_ENTITY_DASHBOARD_MONETIZATION }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
+					} ) }
+				/>
 
-			<OfflineNotification />
+				<OfflineNotification />
+			</div>
+
+			{ emailReportingEnabled && <UserSettingsSelectionPanel /> }
 		</Fragment>
 	);
 }

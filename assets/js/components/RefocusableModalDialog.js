@@ -49,7 +49,7 @@ function setupFocusTracker() {
 		return;
 	}
 
-	const captureActiveElementOnClick = ( event ) => {
+	function captureActiveElementOnClick( event ) {
 		// Store the clicked (or keyboard-activated) element when user clicks.
 		// This will be the element that was clicked right before the dialog opens.
 		const nearestParentButtonOrAnchor =
@@ -62,7 +62,7 @@ function setupFocusTracker() {
 		) {
 			previouslyClickedElement = nearestParentButtonOrAnchor;
 		}
-	};
+	}
 
 	global.document.addEventListener(
 		'mousedown',

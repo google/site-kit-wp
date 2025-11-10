@@ -31,29 +31,33 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { useShowTooltip } from '../../../../components/AdminMenuTooltip';
-import Link from '../../../../components/Link';
-import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { useInView } from '../../../../hooks/useInView';
-import useViewContext from '../../../../hooks/useViewContext';
-import useViewOnly from '../../../../hooks/useViewOnly';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import Link from '@/js/components/Link';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useInView } from '@/js/hooks/useInView';
+import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	DAY_IN_SECONDS,
 	WEEK_IN_SECONDS,
 	stringToDate,
 	trackEvent,
-} from '../../../../util';
-import whenActive from '../../../../util/when-active';
+} from '@/js/util';
+import whenActive from '@/js/util/when-active';
 import {
 	AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
 	MODULES_ADSENSE,
-} from '../../datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '../../constants';
-import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
-import SurveyViewTrigger from '../../../../components/surveys/SurveyViewTrigger';
-import Banner from '../../../../components/Banner';
+} from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import {
+	ACCOUNT_STATUS_READY,
+	SITE_STATUS_READY,
+} from '@/js/modules/adsense/util';
+import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
+import Banner from '@/js/components/Banner';
+import P from '@/js/components/Typography/P';
 import BannerSVGDesktop from '@/svg/graphics/banner-ad-blocking-recovery-setup-cta-mobile.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-ad-blocking-recovery-setup-cta.svg?url';
 
@@ -131,6 +135,12 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 	const { dismissPrompt } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
+	const isNavigatingToRecoveryPageURL = useSelect(
+		( select ) =>
+			recoveryPageURL &&
+			select( CORE_LOCATION ).isNavigatingTo( recoveryPageURL )
+	);
+
 	const referenceDateInMilliseconds = stringToDate( referenceDate ).getTime();
 	const setupCompletedTimestampInMilliseconds =
 		setupCompletedTimestamp * 1000;
@@ -158,7 +168,7 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 		}
 	}, [ inView, shouldShowWidget, viewContext ] );
 
-	const handleCTAClick = async () => {
+	async function handleCTAClick() {
 		await trackEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'confirm_notification'
@@ -168,9 +178,9 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 		return new Promise( () => {
 			// We are intentionally letting this promise unresolved.
 		} );
-	};
+	}
 
-	const handleDismissClick = async () => {
+	async function handleDismissClick() {
 		trackEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'dismiss_notification'
@@ -188,14 +198,14 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 			// For the third dismissal, dismiss permanently.
 			await dismissPrompt( AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY );
 		}
-	};
+	}
 
-	const handleLearnMoreClick = () => {
+	function handleLearnMoreClick() {
 		trackEvent(
 			`${ viewContext }_adsense-abr-cta-widget`,
 			'click_learn_more_link'
 		);
-	};
+	}
 
 	if ( ! shouldShowWidget ) {
 		return <WidgetNull />;
@@ -217,11 +227,11 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 				) }
 				description={
 					<Fragment>
-						<p>
+						<P>
 							{ __(
 								'Display a message to give site visitors with an ad blocker the option to allow ads on your site.',
 								'google-site-kit'
-							) }
+							) }{ ' ' }
 							<Link
 								onClick={ handleLearnMoreClick }
 								href={ learnMoreURL }
@@ -229,13 +239,13 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 							>
 								{ __( 'Learn more', 'google-site-kit' ) }
 							</Link>
-						</p>
-						<p>
+						</P>
+						<P>
 							{ __(
 								'Publishers see up to 1 in 5 users choose to allow ads once they encounter an ad blocking recovery message*',
 								'google-site-kit'
 							) }
-						</p>
+						</P>
 					</Fragment>
 				}
 				dismissButton={ {
@@ -248,6 +258,7 @@ function AdBlockingRecoverySetupCTAWidget( { Widget, WidgetNull } ) {
 				ctaButton={ {
 					label: __( 'Set up now', 'google-site-kit' ),
 					onClick: handleCTAClick,
+					disabled: isNavigatingToRecoveryPageURL,
 				} }
 				svg={ {
 					desktop: BannerSVGDesktop,

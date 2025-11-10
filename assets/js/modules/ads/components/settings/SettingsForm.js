@@ -26,20 +26,24 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_ADS } from '../../datastore/constants';
-import ConversionTrackingToggle from '../../../../components/conversion-tracking/ConversionTrackingToggle';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { ConversionIDTextField } from '../common';
-import { useFeature } from '../../../../hooks/useFeature';
-import DisplaySetting from '../../../../components/DisplaySetting';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Link from '../../../../components/Link';
-import SettingsGroup from '../../../../components/settings/SettingsGroup';
-import GoogleTagGatewayToggle from '../../../../components/google-tag-gateway/GoogleTagGatewayToggle';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import { TYPES } from '@/js/components/Notice/constants';
+import ConversionTrackingToggle from '@/js/components/conversion-tracking/ConversionTrackingToggle';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { ConversionIDTextField } from '@/js/modules/ads/components/common';
+import { useFeature } from '@/js/hooks/useFeature';
+import DisplaySetting from '@/js/components/DisplaySetting';
+import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import Link from '@/js/components/Link';
+import SettingsGroup from '@/js/components/settings/SettingsGroup';
+import GoogleTagGatewayToggle from '@/js/components/google-tag-gateway/GoogleTagGatewayToggle';
+import Typography from '@/js/components/Typography';
 
 export default function SettingsForm() {
 	const paxEnabled = useFeature( 'adsPax' );
 	const gtgEnabled = useFeature( 'googleTagGateway' );
+	const gtagUserDataEnabled = useFeature( 'gtagUserData' );
 
 	const conversionID = useSelect( ( select ) =>
 		select( MODULES_ADS ).getConversionID()
@@ -55,7 +59,7 @@ export default function SettingsForm() {
 
 	const conversionTrackingDocumentationURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL(
-			'enhanced-conversion-tracking'
+			'plugin-conversion-tracking'
 		)
 	);
 
@@ -82,9 +86,14 @@ export default function SettingsForm() {
 			{ isPaxView && (
 				<div>
 					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
+						<Typography
+							as="h5"
+							size="small"
+							type="label"
+							className="googlesitekit-settings-module__meta-item-type"
+						>
 							{ __( 'Conversion ID', 'google-site-kit' ) }
-						</h5>
+						</Typography>
 						<p className="googlesitekit-settings-module__meta-item-data">
 							{ conversionIDValue === '' &&
 								__( 'None', 'google-site-kit' ) }
@@ -97,9 +106,14 @@ export default function SettingsForm() {
 						</p>
 					</div>
 					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
+						<Typography
+							as="h5"
+							size="medium"
+							type="label"
+							className="googlesitekit-settings-module__meta-item-type"
+						>
 							{ __( 'Customer ID', 'google-site-kit' ) }
-						</h5>
+						</Typography>
 						<p className="googlesitekit-settings-module__meta-item-data">
 							{ extCustomerID === '' &&
 								__( 'None', 'google-site-kit' ) }
@@ -118,7 +132,7 @@ export default function SettingsForm() {
 				<ConversionTrackingToggle>
 					{ createInterpolateElement(
 						__(
-							'To track the performance of your campaigns, Site Kit will enable enhanced conversion tracking. <a>Learn more</a>',
+							'To track the performance of your campaigns, Site Kit will enable plugin conversion tracking. <a>Learn more</a>',
 							'google-site-kit'
 						),
 						{
@@ -136,6 +150,11 @@ export default function SettingsForm() {
 					) }
 				</ConversionTrackingToggle>
 				{ gtgEnabled && <GoogleTagGatewayToggle /> }
+				{ gtagUserDataEnabled && (
+					<EnhancedConversionsSettingsNotice
+						type={ TYPES.INFO_ALT }
+					/>
+				) }
 			</SettingsGroup>
 		</div>
 	);

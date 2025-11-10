@@ -26,13 +26,13 @@ import { __ } from '@wordpress/i18n';
  */
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
-import TagManagerIcon from '../../../svg/graphics/tagmanager.svg';
+import TagManagerIcon from '@/svg/graphics/tagmanager.svg';
 import { MODULES_TAGMANAGER } from './datastore/constants';
 import { MODULE_SLUG_TAGMANAGER } from './constants';
 
 export { registerStore } from './datastore';
 
-export const registerModule = ( modules ) => {
+export function registerModule( modules ) {
 	modules.registerModule( MODULE_SLUG_TAGMANAGER, {
 		storeName: MODULES_TAGMANAGER,
 		SettingsEditComponent: SettingsEdit,
@@ -46,4 +46,4 @@ export const registerModule = ( modules ) => {
 			),
 		],
 	} );
-};
+}

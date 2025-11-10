@@ -24,9 +24,9 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
-import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import SetupErrorMessageNotification from './SetupErrorMessageNotification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -103,13 +103,13 @@ AdditionalScopeError.args = {
 AdditionalScopeError.scenario = {};
 
 export default {
-	title: 'Components/ErrorNotifications',
+	title: 'Components/Notifications/Errors/SetupErrorMessageNotification',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

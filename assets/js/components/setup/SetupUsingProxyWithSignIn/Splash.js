@@ -24,7 +24,6 @@ import punycode from 'punycode';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { getQueryArg } from '@wordpress/url';
 
@@ -32,21 +31,21 @@ import { getQueryArg } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import WelcomeSVG from '../../../../svg/graphics/welcome.svg';
-import WelcomeAnalyticsSVG from '../../../../svg/graphics/welcome-analytics.svg';
-import Link from '../../Link';
-import ActivateAnalyticsNotice from '../ActivateAnalyticsNotice';
-import CompatibilityChecks from '../CompatibilityChecks';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { useFeature } from '@/js/hooks/useFeature';
+import LegacySplashContent from '@/js/components/setup/SetupUsingProxyWithSignIn/LegacySplashContent';
+import SplashContent from '@/js/components/setup/SetupUsingProxyWithSignIn/SplashContent';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
-} from '../../../googlesitekit/datastore/user/constants';
-import { Cell, Grid, Row } from '../../../material-components';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { Grid } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 export default function Splash( { children } ) {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	const analyticsModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( MODULE_SLUG_ANALYTICS_4 )
 	);
@@ -72,10 +71,6 @@ export default function Splash( { children } ) {
 	const changedURLHelpLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'url-has-changed' )
 	);
-
-	const cellDetailsProp = analyticsModuleActive
-		? { smSize: 4, mdSize: 8, lgSize: 6 }
-		: { smSize: 4, mdSize: 8, lgSize: 8 };
 
 	let title;
 	let description;
@@ -112,6 +107,8 @@ export default function Splash( { children } ) {
 			'google-site-kit'
 		);
 		showLearnMoreLink = true;
+	} else if ( setupFlowRefreshEnabled ) {
+		title = __( 'Let’s get started!', 'google-site-kit' );
 	} else {
 		title = __( 'Set up Site Kit', 'google-site-kit' );
 		description = __(
@@ -120,92 +117,33 @@ export default function Splash( { children } ) {
 		);
 	}
 
+	const classname = setupFlowRefreshEnabled
+		? 'googlesitekit-splash'
+		: 'googlesitekit-setup__splash';
+
+	const SplashComponent = setupFlowRefreshEnabled
+		? SplashContent
+		: LegacySplashContent;
+
+	const splashProps = {
+		analyticsModuleActive,
+		secondAdminLearnMoreLink,
+		homeURL,
+		analyticsModuleAvailable,
+		disconnectedReason,
+		title,
+		description,
+		getHelpURL,
+		connectedProxyURL,
+		showLearnMoreLink,
+	};
+
 	return (
-		<section className="googlesitekit-setup__splash">
+		<section className={ classname }>
 			<Grid>
-				<Row className="googlesitekit-setup__content">
-					<Cell
-						smSize={ 4 }
-						mdSize={ 8 }
-						lgSize={ ! analyticsModuleActive ? 4 : 6 }
-						className="googlesitekit-setup__icon"
-					>
-						{ analyticsModuleActive && (
-							<WelcomeSVG width="570" height="336" />
-						) }
-						{ ! analyticsModuleActive && (
-							<WelcomeAnalyticsSVG height="167" width="175" />
-						) }
-					</Cell>
-
-					<Cell { ...cellDetailsProp }>
-						<h1 className="googlesitekit-setup__title">
-							{ title }
-						</h1>
-
-						<p className="googlesitekit-setup__description">
-							{ ! showLearnMoreLink && description }
-
-							{ showLearnMoreLink &&
-								createInterpolateElement(
-									sprintf(
-										/* translators: 1: The description. 2: The learn more link. */
-										__(
-											'%1$s <Link>%2$s</Link>',
-											'google-site-kit'
-										),
-										description,
-										__( 'Learn more', 'google-site-kit' )
-									),
-									{
-										Link: (
-											<Link
-												href={
-													secondAdminLearnMoreLink
-												}
-												external
-											/>
-										),
-									}
-								) }
-						</p>
-						{ getHelpURL && (
-							<Link href={ getHelpURL } external>
-								{ __( 'Get help', 'google-site-kit' ) }
-							</Link>
-						) }
-						{ DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ===
-							disconnectedReason &&
-							connectedProxyURL !== homeURL && (
-								<p>
-									{ sprintf(
-										/* translators: %s: Previous Connected Proxy URL */
-										__(
-											'— Old URL: %s',
-											'google-site-kit'
-										),
-										connectedProxyURL
-									) }
-									<br />
-									{ sprintf(
-										/* translators: %s: Connected Proxy URL */
-										__(
-											'— New URL: %s',
-											'google-site-kit'
-										),
-										homeURL
-									) }
-								</p>
-							) }
-
-						{ analyticsModuleAvailable &&
-							! analyticsModuleActive && (
-								<ActivateAnalyticsNotice />
-							) }
-
-						<CompatibilityChecks>{ children }</CompatibilityChecks>
-					</Cell>
-				</Row>
+				<SplashComponent { ...splashProps }>
+					{ children }
+				</SplashComponent>
 			</Grid>
 		</section>
 	);

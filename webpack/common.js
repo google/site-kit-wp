@@ -25,7 +25,6 @@ const path = require( 'path' );
 /**
  * External dependencies
  */
-const TerserPlugin = require( 'terser-webpack-plugin' );
 const features = require( '../feature-flags.json' );
 
 const rootDir = path.resolve( __dirname, '..' );
@@ -36,9 +35,9 @@ exports.formattedFeaturesToPHPArray = features
 	.map( ( feature ) => `'${ feature }'` )
 	.join( ',' );
 
-const projectPath = ( relativePath ) => {
+function projectPath( relativePath ) {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
-};
+}
 
 exports.projectPath = projectPath;
 
@@ -90,12 +89,12 @@ exports.manifestArgs = ( mode ) => ( {
 	fileName: path.resolve( rootDir, 'dist/manifest.php' ),
 	seed: manifestSeed,
 	generate( seedObj, files ) {
-		const entry = ( filename, hash ) => {
+		function entry( filename, hash ) {
 			if ( mode === 'production' ) {
 				return [ filename, null ];
 			}
 			return [ filename, hash ];
-		};
+		}
 		files.forEach( ( file ) => {
 			if ( file.name.match( /\.css$/ ) ) {
 				// CSS file paths contain the destination directory which needs to be stripped
@@ -164,10 +163,6 @@ exports.siteKitExternals = siteKitExternals;
 
 exports.externals = { ...siteKitExternals };
 
-const noAMDParserRule = { parser: { amd: false } };
-
-exports.noAMDParserRule = noAMDParserRule;
-
 const svgRule = {
 	test: /\.svg$/,
 	oneOf: [
@@ -192,7 +187,6 @@ const svgRule = {
 exports.svgRule = svgRule;
 
 exports.createRules = ( mode ) => [
-	noAMDParserRule,
 	svgRule,
 	{
 		test: /\.js$/,
@@ -205,35 +199,11 @@ exports.createRules = ( mode ) => [
 					babelrc: false,
 					configFile: false,
 					cacheDirectory: true,
-					presets: [ '@wordpress/default', '@babel/preset-react' ],
+					presets: [ '@wordpress/babel-preset-default' ],
 				},
 			},
 		],
-		...noAMDParserRule,
 	},
-	{
-		test: /\.mjs$/,
-		include: /node_modules/,
-		type: 'javascript/auto',
-	},
-];
-
-exports.createMinimizerRules = ( mode ) => [
-	new TerserPlugin( {
-		parallel: true,
-		sourceMap: mode !== 'production',
-		cache: true,
-		terserOptions: {
-			// We preserve function names that start with capital letters as
-			// they're _likely_ component names, and these are useful to have
-			// in tracebacks and error messages.
-			keep_fnames: /__|_x|_n|_nx|sprintf|^[A-Z].+$/,
-			output: {
-				comments: /translators:/i,
-			},
-		},
-		extractComments: false,
-	} ),
 ];
 
 // Get the app version from the google-site-kit.php file - optional chaining operator not supported here

@@ -24,7 +24,7 @@ import { useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import NewBadge from '../NewBadge';
+import NewBadge from '@/js/components/NewBadge';
 import SelectionPanel from './SelectionPanel';
 import SelectionPanelFooter from './SelectionPanelFooter';
 import SelectionPanelHeader from './SelectionPanelHeader';

@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 const mockShowTooltip = jest.fn();
-jest.mock( '../../../../components/AdminMenuTooltip', () => ( {
+jest.mock( '../../../../components/AdminScreenTooltip', () => ( {
 	__esModule: true,
 	default: jest.fn(),
 	useShowTooltip: jest.fn( () => mockShowTooltip ),
@@ -38,12 +38,12 @@ import {
 import {
 	ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY,
 	MODULE_SLUG_ADSENSE,
-} from '../../constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { withActive } from '../../../../googlesitekit/modules/datastore/__fixtures__';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+} from '@/js/modules/adsense/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { withActive } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 
 describe( 'AdSenseConnectCTA', () => {
 	let registry;
