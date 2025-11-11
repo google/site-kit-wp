@@ -27,16 +27,15 @@ use Google\Site_Kit\Modules\Analytics_4\Audience_Settings as Module_Audience_Set
 class Analytics_4_Report_Options extends Report_Options {
 
 	/**
-	 * Lead-related conversion events.
+	 * Ecommerce conversion events.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @var string[]
 	 */
-	private $lead_events = array(
-		'submit_lead_form',
-		'contact',
-		'generate_lead',
+	private $ecommerce_events = array(
+		'add_to_cart',
+		'purchase',
 	);
 
 	/**
@@ -82,7 +81,7 @@ class Analytics_4_Report_Options extends Report_Options {
 					array( 'name' => 'eventCount' ),
 				),
 				'dimensionFilters' => array(
-					'eventName' => $this->lead_events,
+					'eventName' => $this->ecommerce_events,
 				),
 				'keepEmptyRows'    => false,
 			),
