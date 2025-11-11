@@ -199,13 +199,6 @@ setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 1000 } );
 // Add custom matchers specific to Site Kit.
 expect.extend( customMatchers );
 
-// Ensure structuredClone available in browser context for E2E tests.
-page.evaluateOnNewDocument( () => {
-	if ( typeof window.structuredClone !== 'function' ) {
-		window.structuredClone = cloneDeep;
-	}
-} );
-
 /**
  * Adds an event listener to the page to handle additions of page event
  * handlers, to assure that they are removed at test teardown.
@@ -420,6 +413,13 @@ async function observeRestResponse( res ) {
 // other posts/comments/etc. aren't dirtying tests and tests don't depend on
 // each other's side-effects.
 beforeAll( async () => {
+	// Ensure structuredClone available in browser context for E2E tests.
+	page.evaluateOnNewDocument( () => {
+		if ( typeof window.structuredClone !== 'function' ) {
+			window.structuredClone = cloneDeep;
+		}
+	} );
+
 	capturePageEventsForTearDown();
 	optOutOfEventTracking();
 	enablePageDialogAccept();
