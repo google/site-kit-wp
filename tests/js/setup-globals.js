@@ -3,6 +3,7 @@
  */
 import intlLocalesSupported from 'intl-locales-supported';
 import intl from 'intl';
+import { cloneDeep } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -89,7 +90,5 @@ global.innerHeight = 768;
 
 // Polyfill for `structuredClone` in Node.js environments that do not support it yet.
 if ( typeof global.structuredClone !== 'function' ) {
-	global.structuredClone = ( value ) => {
-		return JSON.parse( JSON.stringify( value ) );
-	};
+	global.structuredClone = cloneDeep;
 }
