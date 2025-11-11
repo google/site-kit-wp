@@ -1,0 +1,78 @@
+<?php
+/**
+ * Class Google\Site_Kit\Core\Email_Reporting\Report_Options\AdSense_Report_Options
+ *
+ * @package   Google\Site_Kit\Core\Email_Reporting\Report_Options
+ * @copyright 2025 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
+
+namespace Google\Site_Kit\Core\Email_Reporting\Report_Options;
+
+/**
+ * Builds AdSense-focused report option payloads for email reporting.
+ *
+ * This leverages Analytics 4 linked AdSense data (totalAdRevenue/adSourceName).
+ *
+ * @since n.e.x.t
+ * @access private
+ * @ignore
+ */
+class AdSense_Report_Options extends Report_Options {
+
+	/**
+	 * Linked AdSense account ID.
+	 *
+	 * @var string
+	 */
+	private $account_id;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param array  $date_range    Current period range array.
+	 * @param array  $compare_range Optional. Compare period range array.
+	 * @param string $account_id    Optional. Connected AdSense account ID. Default empty.
+	 */
+	public function __construct( $date_range, $compare_range = array(), $account_id = '' ) {
+		parent::__construct( $date_range, $compare_range );
+
+		$this->account_id = $account_id;
+	}
+
+	/**
+	 * Gets report options for total AdSense earnings.
+	 *
+	 * @return array
+	 */
+	public function get_total_earnings_report_options() {
+		$options = array(
+			'metrics' => array(
+				array( 'name' => 'totalAdRevenue' ),
+			),
+		);
+
+		$ad_source_filter = $this->get_ad_source_filter();
+		if ( $ad_source_filter ) {
+			$options['dimensionFilters'] = array(
+				'adSourceName' => $ad_source_filter,
+			);
+		}
+
+		return $this->with_current_range( $options, true );
+	}
+
+	/**
+	 * Builds the AdSense ad source filter value.
+	 *
+	 * @return string
+	 */
+	private function get_ad_source_filter() {
+		if ( empty( $this->account_id ) ) {
+			return '';
+		}
+
+		return sprintf( 'Google AdSense account (%s)', $this->account_id );
+	}
+}
