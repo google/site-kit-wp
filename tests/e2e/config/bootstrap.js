@@ -414,9 +414,9 @@ async function observeRestResponse( res ) {
 // each other's side-effects.
 beforeAll( async () => {
 	// Ensure structuredClone available in browser context for E2E tests.
-	page.evaluateOnNewDocument( () => {
-		if ( typeof global.structuredClone === 'undefined' ) {
-			global.structuredClone = ( val ) =>
+	await page.evaluateOnNewDocument( () => {
+		if ( typeof window.structuredClone === 'undefined' ) {
+			window.structuredClone = ( val ) =>
 				JSON.parse( JSON.stringify( val ) );
 		}
 	} );
