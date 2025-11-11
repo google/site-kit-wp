@@ -55,11 +55,13 @@ class Has_Multiple_Admins {
 		add_action(
 			'user_register',
 			function ( $user_id, $userdata ) {
-				if ( 'administrator' !== $userdata['role'] ) {
+				if ( isset( $userdata['role'] ) && 'administrator' !== $userdata['role'] ) {
 					return;
 				}
 				$this->transients->delete( self::OPTION );
-			}
+			},
+			10,
+			2
 		);
 
 		add_action(
@@ -69,7 +71,9 @@ class Has_Multiple_Admins {
 					return;
 				}
 				$this->transients->delete( self::OPTION );
-			}
+			},
+			10,
+			3
 		);
 
 		add_action(
@@ -79,7 +83,9 @@ class Has_Multiple_Admins {
 					return;
 				}
 				$this->transients->delete( self::OPTION );
-			}
+			},
+			10,
+			3
 		);
 	}
 
