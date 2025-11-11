@@ -52,7 +52,7 @@ describe( 'Site Kit dashboard post search', () => {
 	// See: https://github.com/google/site-kit-wp/issues/7738
 	//
 	// eslint-disable-next-line jest/no-disabled-tests
-	it.skip( 'shows the admin menu when dismissing the AdSense Connect CTA and showing the tooltip while on a mobile viewport', async () => {
+	it( 'shows the admin menu when dismissing the AdSense Connect CTA and showing the tooltip while on a mobile viewport', async () => {
 		// This is a test to provide a safety net that will let us know if the hack introduced in #6924 stops working in a future WordPress release.
 
 		// Set the page to a mobile viewport, as the scenario we want to test is the case where the admin menu is initially hidden, and then shown in response to user interaction.

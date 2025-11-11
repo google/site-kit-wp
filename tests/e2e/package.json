@@ -2,6 +2,9 @@
 	"scripts": {
 		"pretest": "./bin/local-env/env-check.sh && ./bin/test-docker-connectivity",
 		"test": "cross-env NODE_OPTIONS=--experimental-abortcontroller WP_BASE_URL=http://localhost:9002 ./script.js",
+		"pretest:playwright": "./bin/local-env/env-check.sh && ./bin/test-docker-connectivity",
+		"test:playwright": "cross-env WP_BASE_URL=http://localhost:9002 playwright test --config=playwright.config.js --workers=4",
+		"test:playwright:interactive": "cross-env WP_BASE_URL=http://localhost:9002 playwright test --config=playwright.config.js --workers=4 --headed",
 		"test:interactive": "npm run test -- --puppeteer-interactive",
 		"test:watch": "npm run test -- --watch",
 		"test:watch:interactive": "npm run test -- --watch --puppeteer-interactive",
@@ -17,8 +20,10 @@
 		}
 	},
 	"dependencies": {
+		"@playwright/test": "^1.48.2",
 		"@wordpress/babel-preset-default": "^8.23.0",
 		"@wordpress/e2e-test-utils": "^4.11.0",
+		"@wordpress/e2e-test-utils-playwright": "^1.34.0",
 		"@wordpress/jest-console": "^8.23.0",
 		"amphtml-validator": "^1.0.35",
 		"babel-jest": "^29.7.0",
