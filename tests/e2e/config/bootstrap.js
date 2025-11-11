@@ -199,6 +199,14 @@ setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 1000 } );
 // Add custom matchers specific to Site Kit.
 expect.extend( customMatchers );
 
+// Ensure structuredClone available in browser context for E2E tests.
+page.addInitScript( () => {
+	if ( typeof window.structuredClone !== 'function' ) {
+		window.structuredClone = ( value ) =>
+			JSON.parse( JSON.stringify( value ) );
+	}
+} );
+
 /**
  * Adds an event listener to the page to handle additions of page event
  * handlers, to assure that they are removed at test teardown.
