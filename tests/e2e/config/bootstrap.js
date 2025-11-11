@@ -20,7 +20,7 @@
  * External dependencies
  */
 import { setDefaultOptions } from 'expect-puppeteer';
-import { get, cloneDeep } from 'lodash';
+import { get } from 'lodash';
 import { ConsoleMessage } from 'puppeteer';
 
 /**
@@ -415,8 +415,9 @@ async function observeRestResponse( res ) {
 beforeAll( async () => {
 	// Ensure structuredClone available in browser context for E2E tests.
 	page.evaluateOnNewDocument( () => {
-		if ( typeof window.structuredClone !== 'function' ) {
-			window.structuredClone = cloneDeep;
+		if ( typeof global.structuredClone === 'undefined' ) {
+			global.structuredClone = ( val ) =>
+				JSON.parse( JSON.stringify( val ) );
 		}
 	} );
 
