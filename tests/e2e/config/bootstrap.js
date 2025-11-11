@@ -20,7 +20,7 @@
  * External dependencies
  */
 import { setDefaultOptions } from 'expect-puppeteer';
-import { get } from 'lodash';
+import { get, cloneDeep } from 'lodash';
 import { ConsoleMessage } from 'puppeteer';
 
 /**
@@ -202,8 +202,7 @@ expect.extend( customMatchers );
 // Ensure structuredClone available in browser context for E2E tests.
 page.evaluateOnNewDocument( () => {
 	if ( typeof window.structuredClone !== 'function' ) {
-		window.structuredClone = ( value ) =>
-			JSON.parse( JSON.stringify( value ) );
+		window.structuredClone = cloneDeep;
 	}
 } );
 
