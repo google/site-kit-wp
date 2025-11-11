@@ -200,7 +200,7 @@ setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 1000 } );
 expect.extend( customMatchers );
 
 // Ensure structuredClone available in browser context for E2E tests.
-page.addInitScript( () => {
+page.evaluateOnNewDocument( () => {
 	if ( typeof window.structuredClone !== 'function' ) {
 		window.structuredClone = ( value ) =>
 			JSON.parse( JSON.stringify( value ) );
