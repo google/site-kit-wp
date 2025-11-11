@@ -52,6 +52,9 @@ class Has_Multiple_Admins {
 	 * @since n.e.x.t
 	 */
 	public function register() {
+		// We skip deleting the transient, only if we are sure that the user
+		// being registered is not an admin. The $userdata parameter is only available in WP 5.8+,
+		// so we do not rely on it.
 		add_action(
 			'user_register',
 			function ( $user_id, $userdata = null ) {
