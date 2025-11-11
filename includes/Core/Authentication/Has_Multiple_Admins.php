@@ -47,6 +47,43 @@ class Has_Multiple_Admins {
 	}
 
 	/**
+	 * Registers functionality through WordPress hooks.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function register() {
+		add_action(
+			'user_register',
+			function ( $user_id, $userdata ) {
+				if ( 'administrator' !== $userdata['role'] ) {
+					return;
+				}
+				$this->transients->delete( self::OPTION );
+			}
+		);
+
+		add_action(
+			'deleted_user',
+			function ( $user_id, $reassign, $user ) {
+				if ( ! in_array( 'administrator', (array) $user->roles, true ) ) {
+					return;
+				}
+				$this->transients->delete( self::OPTION );
+			}
+		);
+
+		add_action(
+			'set_user_role',
+			function ( $user_id, $role, $old_roles ) {
+				if ( in_array( 'administrator', (array) $old_roles, true ) || 'administrator' !== $role ) {
+					return;
+				}
+				$this->transients->delete( self::OPTION );
+			}
+		);
+	}
+
+	/**
 	 * Returns a flag indicating whether the current site has multiple users.
 	 *
 	 * @since 1.29.0
