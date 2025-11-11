@@ -52,9 +52,9 @@ class Has_Multiple_Admins {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		// We skip deleting the transient, only if we are sure that the user
-		// being registered is not an admin. The $userdata parameter is only available in WP 5.8+,
-		// so we do not rely on it.
+		// We skip clearing the transient cache, only if we are sure that the user
+		// being registered is not an admin. The $userdata parameter is only
+		// available in WP 5.8+, so we do not rely on it.
 		add_action(
 			'user_register',
 			function ( $user_id, $userdata = null ) {
@@ -67,10 +67,13 @@ class Has_Multiple_Admins {
 			2
 		);
 
+		// We skip clearing the transient cache, only if we are sure that the user
+		// being deleted is not an admin. The $user parameter is only available
+		// in WP 5.5+, so we do not rely on it.
 		add_action(
 			'deleted_user',
 			function ( $user_id, $reassign, $user ) {
-				if ( ! in_array( 'administrator', (array) $user->roles, true ) ) {
+				if ( is_array( $user->roles ) && ! in_array( 'administrator', $user->roles, true ) ) {
 					return;
 				}
 				$this->transients->delete( self::OPTION );
@@ -79,10 +82,12 @@ class Has_Multiple_Admins {
 			3
 		);
 
+		// We skip clearing the transient cache, only if we are sure that the role
+		// change does not involve an admin role.
 		add_action(
 			'set_user_role',
 			function ( $user_id, $role, $old_roles ) {
-				if ( in_array( 'administrator', (array) $old_roles, true ) || 'administrator' !== $role ) {
+				if ( ! in_array( 'administrator', (array) $old_roles, true ) && 'administrator' !== $role ) {
 					return;
 				}
 				$this->transients->delete( self::OPTION );
