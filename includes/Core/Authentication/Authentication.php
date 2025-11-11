@@ -331,7 +331,6 @@ final class Authentication implements Provides_Feature_Metrics {
 				}
 
 				$user['connectURL']           = esc_url_raw( $this->get_connect_url() );
-				$user['hasMultipleAdmins']    = $this->has_multiple_admins->get();
 				$user['initialVersion']       = $this->initial_version->get();
 				$user['isUserInputCompleted'] = ! $this->user_input->are_settings_empty();
 				$user['verified']             = $this->verification->has();
