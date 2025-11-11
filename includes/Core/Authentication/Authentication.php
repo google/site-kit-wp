@@ -277,6 +277,7 @@ final class Authentication implements Provides_Feature_Metrics {
 		$this->verification_file()->register();
 		$this->verification_meta()->register();
 		$this->has_connected_admins->register();
+		$this->has_multiple_admins->register();
 		$this->owner_id->register();
 		$this->connected_proxy_url->register();
 		$this->disconnected_reason->register();
