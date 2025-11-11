@@ -54,7 +54,7 @@ class Has_Multiple_Admins {
 	public function register() {
 		add_action(
 			'user_register',
-			function ( $user_id, $userdata ) {
+			function ( $user_id, $userdata = null ) {
 				if ( isset( $userdata['role'] ) && 'administrator' !== $userdata['role'] ) {
 					return;
 				}
