@@ -65,7 +65,7 @@ class Has_Multiple_Admins {
 			$user_query   = new WP_User_Query( $user_query_args );
 			$admins_count = $user_query->get_total();
 
-			$this->transients->get( self::OPTION, $admins_count, HOUR_IN_SECONDS );
+			$this->transients->set( self::OPTION, $admins_count, HOUR_IN_SECONDS );
 		}
 
 		return $admins_count > 1;
