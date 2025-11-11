@@ -72,8 +72,8 @@ class Has_Multiple_Admins {
 		// in WP 5.5+, so we do not rely on it.
 		add_action(
 			'deleted_user',
-			function ( $user_id, $reassign, $user ) {
-				if ( is_array( $user->roles ) && ! in_array( 'administrator', $user->roles, true ) ) {
+			function ( $user_id, $reassign, $user = null ) {
+				if ( isset( $user->roles ) && is_array( $user->roles ) && ! in_array( 'administrator', $user->roles, true ) ) {
 					return;
 				}
 				$this->transients->delete( self::OPTION );
