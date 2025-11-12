@@ -16,6 +16,12 @@
  * limitations under the License.
  */
 
+// eslint-disable-next-line no-undef
+if ( typeof globalThis.structuredClone === 'undefined' ) {
+	// eslint-disable-next-line no-undef
+	globalThis.structuredClone = ( val ) => JSON.parse( JSON.stringify( val ) );
+}
+
 /**
  * External dependencies
  */
