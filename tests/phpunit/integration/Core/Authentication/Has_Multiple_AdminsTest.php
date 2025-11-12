@@ -35,6 +35,10 @@ class Has_Multiple_AdminsTest extends TestCase {
 		parent::set_up();
 		$this->context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->transients = new Transients( $this->context );
+
+		remove_all_actions( 'deleted_user' );
+		remove_all_actions( 'add_user_role' );
+		remove_all_actions( 'remove_user_role' );
 	}
 
 	public function test_get() {
