@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Core\Storage\Transients;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use WP_User_Query;
 
 /**
@@ -21,6 +22,8 @@ use WP_User_Query;
  * @ignore
  */
 class Has_Multiple_Admins {
+
+	use Method_Proxy_Trait;
 
 	/**
 	 * The option_name for this transient.
@@ -52,34 +55,9 @@ class Has_Multiple_Admins {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		// We skip clearing the transient cache, only if we are sure that the user
-		// being deleted is not an admin. The $user parameter is only available
-		// in WP 5.5+, so we do not rely on it.
-		add_action(
-			'deleted_user',
-			function ( $user_id, $reassign, $user = null ) {
-				if ( isset( $user->roles ) && is_array( $user->roles ) && ! in_array( 'administrator', $user->roles, true ) ) {
-					return;
-				}
-				$this->transients->delete( self::OPTION );
-			},
-			10,
-			3
-		);
-
-		// We skip clearing the transient cache, only if we are sure that the role
-		// change does not involve an admin role.
-		add_action(
-			'set_user_role',
-			function ( $user_id, $role, $old_roles ) {
-				if ( ! in_array( 'administrator', (array) $old_roles, true ) && 'administrator' !== $role ) {
-					return;
-				}
-				$this->transients->delete( self::OPTION );
-			},
-			10,
-			3
-		);
+		add_action( 'deleted_user', $this->get_method_proxy( 'handle_user_deletion' ), 10, 3 );
+		add_action( 'add_user_role', $this->get_method_proxy( 'handle_role_change' ), 10, 2 );
+		add_action( 'remove_user_role', $this->get_method_proxy( 'handle_role_change' ), 10, 2 );
 	}
 
 	/**
