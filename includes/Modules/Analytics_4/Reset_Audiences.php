@@ -135,6 +135,7 @@ class Reset_Audiences {
 						array(
 							'configuredAudiences' => null,
 							'didSetAudiences'     => false,
+							'isAudienceSegmentationWidgetHidden' => false,
 						),
 					);
 				}
