@@ -61,6 +61,7 @@ use Google\Site_Kit\Modules\Analytics_4\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
@@ -700,10 +701,16 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'service'   => 'analyticsadmin',
 				'shareable' => true,
 			),
-			'POST:create-account-ticket'                => array(
-				'service'                => 'analyticsprovisioning',
-				'scopes'                 => array( self::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
+			'POST:create-account-ticket'                => new Create_Account_Ticket(
+				array(
+					'credentials'               => $this->authentication->credentials()->get(),
+					'provisioning_redirect_uri' => $this->get_provisioning_redirect_uri(),
+					'service'                   => function () {
+						return $this->get_service( 'analyticsprovisioning' );
+					},
+					'scopes'                    => array( self::EDIT_SCOPE ),
+					'request_scopes_message'    => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
+				),
 			),
 			'GET:google-tag-settings'                   => array(
 				'service' => 'tagmanager',
@@ -1222,40 +1229,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 						$property_id,
 						$post_body
 					);
-			case 'POST:create-account-ticket':
-				if ( empty( $data['displayName'] ) ) {
-					throw new Missing_Required_Param_Exception( 'displayName' );
-				}
-				if ( empty( $data['regionCode'] ) ) {
-					throw new Missing_Required_Param_Exception( 'regionCode' );
-				}
-				if ( empty( $data['propertyName'] ) ) {
-					throw new Missing_Required_Param_Exception( 'propertyName' );
-				}
-				if ( empty( $data['dataStreamName'] ) ) {
-					throw new Missing_Required_Param_Exception( 'dataStreamName' );
-				}
-				if ( empty( $data['timezone'] ) ) {
-					throw new Missing_Required_Param_Exception( 'timezone' );
-				}
-
-				$account = new GoogleAnalyticsAdminV1betaAccount();
-				$account->setDisplayName( $data['displayName'] );
-				$account->setRegionCode( $data['regionCode'] );
-
-				$credentials            = $this->authentication->credentials()->get();
-				$account_ticket_request = new Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest();
-				$account_ticket_request->setSiteId( $credentials['oauth2_client_id'] );
-				$account_ticket_request->setSiteSecret( $credentials['oauth2_client_secret'] );
-				$account_ticket_request->setRedirectUri( $this->get_provisioning_redirect_uri() );
-				$account_ticket_request->setAccount( $account );
-
-				if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-					$account_ticket_request->setShowProgress( isset( $data['showProgress'] ) ? (bool) $data['showProgress'] : false );
-				}
-
-				return $this->get_service( 'analyticsprovisioning' )
-					->accounts->provisionAccountTicket( $account_ticket_request );
 			case 'POST:create-property':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -1892,22 +1865,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				return (array) $response->getGoogleAdsLinks();
 			case 'GET:adsense-links':
 				return (array) $response->getAdsenseLinks();
-			case 'POST:create-account-ticket':
-				$account_ticket = new Account_Ticket();
-				$account_ticket->set_id( $response->getAccountTicketId() );
-				// Required in create_data_request.
-				$account_ticket->set_property_name( $data['propertyName'] );
-				$account_ticket->set_data_stream_name( $data['dataStreamName'] );
-				$account_ticket->set_timezone( $data['timezone'] );
-				$account_ticket->set_enhanced_measurement_stream_enabled( ! empty( $data['enhancedMeasurementStreamEnabled'] ) );
-				// Cache the create ticket id long enough to verify it upon completion of the terms of service.
-				set_transient(
-					self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id(),
-					$account_ticket->to_array(),
-					15 * MINUTE_IN_SECONDS
-				);
-
-				return $response;
 			case 'POST:create-property':
 				return self::filter_property_with_ids( $response );
 			case 'POST:create-webdatastream':
