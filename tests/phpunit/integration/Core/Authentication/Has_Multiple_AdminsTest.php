@@ -63,7 +63,7 @@ class Has_Multiple_AdminsTest extends TestCase {
 		$this->assertTrue( $has_multiple_admins->get(), 'Should return true when there are multiple admin users' );
 	}
 
-	public function test_register__deleted_user_hook() {
+	public function test_get__on_delete_user() {
 		$has_multiple_admins = new Has_Multiple_Admins( $this->transients );
 		$has_multiple_admins->register();
 
@@ -83,7 +83,7 @@ class Has_Multiple_AdminsTest extends TestCase {
 		$this->assertFalse( $has_multiple_admins->get(), 'Should return false when there is only one admin user left' );
 	}
 
-	public function test_register__set_user_role_hook() {
+	public function test_get__on_set_role() {
 		$has_multiple_admins = new Has_Multiple_Admins( $this->transients );
 		$has_multiple_admins->register();
 
