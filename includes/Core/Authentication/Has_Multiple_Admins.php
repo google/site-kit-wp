@@ -53,21 +53,6 @@ class Has_Multiple_Admins {
 	 */
 	public function register() {
 		// We skip clearing the transient cache, only if we are sure that the user
-		// being registered is not an admin. The $userdata parameter is only
-		// available in WP 5.8+, so we do not rely on it.
-		add_action(
-			'user_register',
-			function ( $user_id, $userdata = null ) {
-				if ( isset( $userdata['role'] ) && 'administrator' !== $userdata['role'] ) {
-					return;
-				}
-				$this->transients->delete( self::OPTION );
-			},
-			10,
-			2
-		);
-
-		// We skip clearing the transient cache, only if we are sure that the user
 		// being deleted is not an admin. The $user parameter is only available
 		// in WP 5.5+, so we do not rely on it.
 		add_action(
