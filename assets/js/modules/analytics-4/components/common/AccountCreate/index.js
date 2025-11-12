@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import classnames from 'classnames';
 import { __ } from '@wordpress/i18n';
 import {
 	useCallback,
@@ -293,9 +292,6 @@ export default function AccountCreate( { className } ) {
 				/>
 
 				<SetupPluginConversionTrackingNotice
-					className={ classnames( {
-						'googlesitekit-margin-top-0': ! isInitialSetupFlow,
-					} ) }
 					message={ createInterpolateElement(
 						__(
 							'To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings. <LearnMoreLink />',
@@ -319,7 +315,7 @@ export default function AccountCreate( { className } ) {
 
 			<P
 				className="googlesitekit-analytics-setup__analytics-create-account-info"
-				size={ isInitialSetupFlow ? 'small' : undefined }
+				size={ setupFlowRefreshEnabled ? 'small' : undefined }
 			>
 				{ hasRequiredScope && (
 					<span>
