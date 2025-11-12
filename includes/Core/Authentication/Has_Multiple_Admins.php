@@ -56,6 +56,7 @@ class Has_Multiple_Admins {
 	 */
 	public function register() {
 		add_action( 'deleted_user', $this->get_method_proxy( 'handle_user_deletion' ), 10, 3 );
+		add_action( 'set_user_role', $this->get_method_proxy( 'handle_set_user_role' ), 10, 3 );
 		add_action( 'add_user_role', $this->get_method_proxy( 'handle_add_remove_role' ), 10, 2 );
 		add_action( 'remove_user_role', $this->get_method_proxy( 'handle_add_remove_role' ), 10, 2 );
 	}
@@ -102,6 +103,32 @@ class Has_Multiple_Admins {
 	 */
 	public function handle_user_deletion( $user_id, $reassign, $user = null ) {
 		if ( isset( $user ) && ! in_array( 'administrator', $user->roles, true ) ) {
+			return;
+		}
+		$this->transients->delete( self::OPTION );
+	}
+
+	/**
+	 * Clears transient cache when a user is added or updated
+	 *
+	 * Executed by the `set_user_role` hook. `WP_User::set_role()` is used when
+	 * adding a new user as well as updating an existing user's profile (so we do not
+	 * have to specifically hook into `user_register` or `profile_update` hooks).
+	 * Furthermore, `WP_User::set_role()` calls `remove_role()` and `add_role()` internally,
+	 * but only after WordPress 6.0. So we still have to hook into `set_user_role` to cover
+	 * all versions before it.
+	 * We skip clearing the transient cache only if we are sure that we aren't
+	 * changing a role from or to the 'administrator' role.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int    $user_id   User ID.
+	 * @param string $role      New role.
+	 * @param array  $old_roles Old roles.
+	 * @return void
+	 */
+	public function handle_set_user_role( $user_id, $role, $old_roles = array() ) {
+		if ( ! in_array( 'administrator', (array) $old_roles, true ) && 'administrator' !== $role ) {
 			return;
 		}
 		$this->transients->delete( self::OPTION );
