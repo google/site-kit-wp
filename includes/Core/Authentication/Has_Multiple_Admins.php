@@ -154,7 +154,7 @@ class Has_Multiple_Admins {
 	 * @return void
 	 */
 	protected function handle_add_remove_role( $user_id, $role ) {
-		if ( isset( $role ) && 'administrator' !== $role ) {
+		if ( 'administrator' !== $role ) {
 			return;
 		}
 		$this->transients->delete( self::OPTION );
