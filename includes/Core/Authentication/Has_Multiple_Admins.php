@@ -120,11 +120,30 @@ class Has_Multiple_Admins {
 	 * @param int     $user_id User ID.
 	 * @param bool    $reassign Whether the user's posts are being reassigned.
 	 * @param WP_User $user    User object.
-	 *
 	 * @return void
 	 */
 	public function handle_user_deletion( $user_id, $reassign, $user = null ) {
 		if ( isset( $user->roles ) && is_array( $user->roles ) && ! in_array( 'administrator', $user->roles, true ) ) {
+			return;
+		}
+		$this->transients->delete( self::OPTION );
+	}
+
+	/**
+	 * Handles user role changes.
+	 *
+	 * Executed by the `add_user_role` and `remove_user_role` hooks.
+	 * We skip clearing the transient cache only if we are sure that
+	 * the role being added/removed is 'administrator'.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int    $user_id User ID.
+	 * @param string $role    Role being added/removed.
+	 * @return void
+	 */
+	public function handle_role_change( $user_id, $role ) {
+		if ( isset( $role ) && 'administrator' !== $role ) {
 			return;
 		}
 		$this->transients->delete( self::OPTION );
