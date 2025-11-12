@@ -419,13 +419,23 @@ async function observeRestResponse( res ) {
 // other posts/comments/etc. aren't dirtying tests and tests don't depend on
 // each other's side-effects.
 beforeAll( async () => {
-	// Ensure structuredClone available in browser context for E2E tests.
 	await page.evaluateOnNewDocument( () => {
-		if ( typeof window.structuredClone === 'undefined' ) {
-			window.structuredClone = ( val ) =>
-				JSON.parse( JSON.stringify( val ) );
+		try {
+			if ( typeof window.structuredClone !== 'function' ) {
+				window.structuredClone = ( val ) =>
+					JSON.parse( JSON.stringify( val ) );
+			}
+		} catch ( e ) {
+			// eslint-disable-next-line no-console
+			console.warn( 'structuredClone polyfill failed:', e );
 		}
 	} );
+
+	const hasStructuredClone = await page.evaluate(
+		() => typeof structuredClone
+	);
+	// eslint-disable-next-line no-console
+	console.log( 'structuredClone in browser:', hasStructuredClone );
 
 	capturePageEventsForTearDown();
 	optOutOfEventTracking();
