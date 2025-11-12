@@ -101,7 +101,7 @@ class Has_Multiple_Admins {
 	 * @return void
 	 */
 	public function handle_user_deletion( $user_id, $reassign, $user = null ) {
-		if ( isset( $user->roles ) && is_array( $user->roles ) && ! in_array( 'administrator', $user->roles, true ) ) {
+		if ( isset( $user ) && ! in_array( 'administrator', $user->roles, true ) ) {
 			return;
 		}
 		$this->transients->delete( self::OPTION );
