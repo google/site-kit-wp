@@ -60,6 +60,7 @@ import GatheringDataNotice, {
 	NOTICE_STYLE,
 } from '@/js/components/GatheringDataNotice';
 import useViewContext from '@/js/hooks/useViewContext';
+import usePieChartSlices from './hooks/usePieChartSlices';
 import { getTooltipHelp } from './utils';
 
 export default function UserDimensionsPieChart( props ) {
@@ -309,7 +310,15 @@ export default function UserDimensionsPieChart( props ) {
 		},
 	} );
 
-	const { slices } = UserDimensionsPieChart.chartOptions;
+	const getPieChartSlices = usePieChartSlices();
+
+	const options = cloneDeep( UserDimensionsPieChart.chartOptions );
+
+	const slices = getPieChartSlices(
+		dataMap.slice( 1 ).map( ( [ rowDimensionValue ] ) => rowDimensionValue )
+	);
+
+	options.slices = slices;
 
 	function onLegendClick( index ) {
 		if ( ! chartWrapperRef.current ) {
@@ -469,8 +478,6 @@ export default function UserDimensionsPieChart( props ) {
 			} );
 		}
 	}
-
-	const options = cloneDeep( UserDimensionsPieChart.chartOptions );
 
 	let labels = {
 		sessionDefaultChannelGrouping: __(
@@ -715,13 +722,6 @@ UserDimensionsPieChart.chartOptions = {
 	pieSliceTextStyle: {
 		color: '#131418',
 		fontSize: 12,
-	},
-	slices: {
-		0: { color: '#fece72' },
-		1: { color: '#a983e6' },
-		2: { color: '#bed4ff' },
-		3: { color: '#ee92da' },
-		4: { color: '#ff9b7a' },
 	},
 	title: null,
 	tooltip: {
