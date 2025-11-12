@@ -132,31 +132,24 @@ class Email_Report_Section_BuilderTest extends TestCase {
 			array_keys( $result ),
 			'Sections should be a numerically indexed list without module keys.'
 		);
-		$sections = array_map(
-			static function ( Email_Report_Data_Section_Part $section ) {
-				return $section->to_array();
-			},
-			$result
-		);
-
 		// Check GA4 section
-		$ga4_section = $sections[0];
+		$ga4_section = $result[0];
 
-		$this->assertSame( 'how_many_people_are_finding_and_visiting_my_site', $ga4_section['section_key'], 'GA4 section key should use section slug.' );
-		$this->assertSame( 'How many people are finding and visiting my site?', $ga4_section['title'], 'GA4 section title should come from payload.' );
-		$this->assertSame( array( 'Total Visitors', 'New Visitors' ), $ga4_section['labels'], 'GA4 labels should be translated from metric names.' );
-		$this->assertSame( array( '1234', '5678' ), $ga4_section['values'], 'GA4 totals should be normalized.' );
-		$this->assertSame( array( '23.40%', '18.29%' ), $ga4_section['trends'], 'GA4 trends should represent percentage change from previous period.' );
-		$this->assertSame( $expected_date_range, $ga4_section['date_range'], 'GA4 date range should come from email log meta.' );
+		$this->assertSame( 'how_many_people_are_finding_and_visiting_my_site', $ga4_section->get_section_key(), 'GA4 section key should use section slug.' );
+		$this->assertSame( 'How many people are finding and visiting my site?', $ga4_section->get_title(), 'GA4 section title should come from payload.' );
+		$this->assertSame( array( 'Total Visitors', 'New Visitors' ), $ga4_section->get_labels(), 'GA4 labels should be translated from metric names.' );
+		$this->assertSame( array( '1234', '5678' ), $ga4_section->get_values(), 'GA4 totals should be normalized.' );
+		$this->assertSame( array( '23.40%', '18.29%' ), $ga4_section->get_trends(), 'GA4 trends should represent percentage change from previous period.' );
+		$this->assertSame( $expected_date_range, $ga4_section->get_date_range(), 'GA4 date range should come from email log meta.' );
 
 		// Check Search Console section
-		$sc_section = $sections[1];
+		$sc_section = $result[1];
 
-		$this->assertSame( 'how_many_people_are_finding_and_visiting_my_site', $sc_section['section_key'], 'Search Console section key should use payload key.' );
-		$this->assertSame( 'How many people are finding and visiting my site?', $sc_section['title'], 'Search Console section title should come from payload.' );
-		$this->assertSame( array( 'Total clicks from Search', 'Total impressions in Search' ), $sc_section['labels'], 'Search Console labels should be translated.' );
-		$this->assertSame( array( '1250', '21370' ), $sc_section['values'], 'Search Console totals should be aggregated as expected.' );
-		$this->assertNull( $sc_section['trends'], 'Search Console section should not include trends until implemented in V1.' ); // TODO: Update to visualise trends in PUE V1.
-		$this->assertSame( $expected_date_range, $sc_section['date_range'], 'Search Console date range should come from email log meta.' );
+		$this->assertSame( 'how_many_people_are_finding_and_visiting_my_site', $sc_section->get_section_key(), 'Search Console section key should use payload key.' );
+		$this->assertSame( 'How many people are finding and visiting my site?', $sc_section->get_title(), 'Search Console section title should come from payload.' );
+		$this->assertSame( array( 'Total clicks from Search', 'Total impressions in Search' ), $sc_section->get_labels(), 'Search Console labels should be translated.' );
+		$this->assertSame( array( '1250', '21370' ), $sc_section->get_values(), 'Search Console totals should be aggregated as expected.' );
+		$this->assertNull( $sc_section->get_trends(), 'Search Console section should not include trends until implemented in V1.' ); // TODO: Update to visualise trends in PUE V1.
+		$this->assertSame( $expected_date_range, $sc_section->get_date_range(), 'Search Console date range should come from email log meta.' );
 	}
 }

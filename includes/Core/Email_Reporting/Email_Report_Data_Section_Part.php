@@ -87,66 +87,14 @@ class Email_Report_Data_Section_Part {
 			throw new InvalidArgumentException( 'section_data must be an array' );
 		}
 
-		if ( ! is_string( $section_data['title'] ) || '' === $section_data['title'] ) {
-			throw new InvalidArgumentException( 'title must be a non-empty string' );
-		}
+		$this->set_title( isset( $section_data['title'] ) ? $section_data['title'] : null );
+		$this->set_labels( isset( $section_data['labels'] ) ? $section_data['labels'] : null );
+		$this->set_values( isset( $section_data['values'] ) ? $section_data['values'] : null );
+		$this->set_trends( isset( $section_data['trends'] ) ? $section_data['trends'] : null );
+		$this->set_date_range( isset( $section_data['date_range'] ) ? $section_data['date_range'] : null );
+		$this->set_dashboard_link( isset( $section_data['dashboard_link'] ) ? $section_data['dashboard_link'] : null );
 
-		if ( ! array_key_exists( 'labels', $section_data ) || ! is_array( $section_data['labels'] ) ) {
-			throw new InvalidArgumentException( 'labels must be an array' );
-		}
-
-		if ( ! array_key_exists( 'values', $section_data ) || ! is_array( $section_data['values'] ) ) {
-			throw new InvalidArgumentException( 'values must be an array' );
-		}
-
-		$this->labels = array_map( 'strval', $section_data['labels'] );
-		$this->values = array_map( 'strval', $section_data['values'] );
-
-		$trends = array_key_exists( 'trends', $section_data ) ? $section_data['trends'] : null;
-
-		if ( null !== $trends ) {
-			if ( ! is_array( $trends ) ) {
-				throw new InvalidArgumentException( 'trends must be an array or null' );
-			}
-			$this->trends = array_map( 'strval', $trends );
-		}
-
-		$date_range = array_key_exists( 'date_range', $section_data ) ? $section_data['date_range'] : null;
-
-		if ( null !== $date_range ) {
-			if ( ! is_array( $date_range ) ) {
-				throw new InvalidArgumentException( 'date_range must be an array or null' );
-			}
-			// Validate presence of keys if provided.
-			foreach ( array( 'startDate', 'endDate' ) as $required_key ) {
-				if ( empty( $date_range[ $required_key ] ) ) {
-					throw new InvalidArgumentException( 'date_range must contain startDate and endDate' );
-				}
-			}
-			$compare_start_provided = array_key_exists( 'compareStartDate', $date_range );
-			$compare_end_provided   = array_key_exists( 'compareEndDate', $date_range );
-			if ( $compare_start_provided xor $compare_end_provided ) {
-				throw new InvalidArgumentException( 'date_range must contain both compareStartDate and compareEndDate when comparison dates are provided' );
-			}
-			$this->date_range = array(
-				'startDate' => (string) $date_range['startDate'],
-				'endDate'   => (string) $date_range['endDate'],
-			);
-			if ( $compare_start_provided && $compare_end_provided ) {
-				$this->date_range['compareStartDate'] = (string) $date_range['compareStartDate'];
-				$this->date_range['compareEndDate']   = (string) $date_range['compareEndDate'];
-			}
-		}
-
-		$dashboard_link = array_key_exists( 'dashboard_link', $section_data ) ? $section_data['dashboard_link'] : null;
-
-		if ( null !== $dashboard_link && ! is_string( $dashboard_link ) ) {
-			throw new InvalidArgumentException( 'dashboard_link must be a string or null' );
-		}
-
-		$this->section_key    = $section_key;
-		$this->title          = $section_data['title'];
-		$this->dashboard_link = $dashboard_link;
+		$this->section_key = $section_key;
 	}
 
 	/**
@@ -227,22 +175,142 @@ class Email_Report_Data_Section_Part {
 	}
 
 	/**
-	 * Gets the array representation of the section part.
+	 * Validates and assigns title.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @param string $title Title.
+	 * @return void
+	 *
+	 * @throws InvalidArgumentException When validation fails.
 	 */
-	public function to_array() {
-		return array(
-			'section_key'    => $this->get_section_key(),
-			'title'          => $this->get_title(),
-			'labels'         => $this->get_labels(),
-			'values'         => $this->get_values(),
-			'trends'         => $this->get_trends(),
-			'date_range'     => $this->get_date_range(),
-			'dashboard_link' => $this->get_dashboard_link(),
+	private function set_title( $title ) {
+		if ( ! is_string( $title ) || '' === $title ) {
+			throw new InvalidArgumentException( 'title must be a non-empty string' );
+		}
+
+		$this->title = $title;
+	}
+
+	/**
+	 * Validates and assigns labels.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $labels Labels.
+	 * @return void
+	 *
+	 * @throws InvalidArgumentException When validation fails.
+	 */
+	private function set_labels( $labels ) {
+		if ( ! is_array( $labels ) ) {
+			throw new InvalidArgumentException( 'labels must be an array' );
+		}
+
+		$this->labels = array_map( 'strval', $labels );
+	}
+
+	/**
+	 * Validates and assigns values.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $values Values.
+	 * @return void
+	 *
+	 * @throws InvalidArgumentException When validation fails.
+	 */
+	private function set_values( $values ) {
+		if ( ! is_array( $values ) ) {
+			throw new InvalidArgumentException( 'values must be an array' );
+		}
+
+		$this->values = array_map( 'strval', $values );
+	}
+
+	/**
+	 * Validates and assigns trends.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array|null $trends Trends data.
+	 * @return void
+	 *
+	 * @throws InvalidArgumentException When validation fails.
+	 */
+	private function set_trends( $trends ) {
+		if ( null === $trends ) {
+			$this->trends = null;
+			return;
+		}
+
+		if ( ! is_array( $trends ) ) {
+			throw new InvalidArgumentException( 'trends must be an array or null' );
+		}
+
+		$this->trends = array_map( 'strval', $trends );
+	}
+
+	/**
+	 * Validates and assigns date range.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array|null $date_range Date range data.
+	 * @return void
+	 *
+	 * @throws InvalidArgumentException When validation fails.
+	 */
+	private function set_date_range( $date_range ) {
+		if ( null === $date_range ) {
+			$this->date_range = null;
+			return;
+		}
+
+		if ( ! is_array( $date_range ) ) {
+			throw new InvalidArgumentException( 'date_range must be an array or null' );
+		}
+
+		// Validate presence of keys if provided.
+		foreach ( array( 'startDate', 'endDate' ) as $required_key ) {
+			if ( empty( $date_range[ $required_key ] ) ) {
+				throw new InvalidArgumentException( 'date_range must contain startDate and endDate' );
+			}
+		}
+
+		$compare_start_provided = array_key_exists( 'compareStartDate', $date_range );
+		$compare_end_provided   = array_key_exists( 'compareEndDate', $date_range );
+		if ( $compare_start_provided xor $compare_end_provided ) {
+			throw new InvalidArgumentException( 'date_range must contain both compareStartDate and compareEndDate when comparison dates are provided' );
+		}
+
+		$this->date_range = array(
+			'startDate' => (string) $date_range['startDate'],
+			'endDate'   => (string) $date_range['endDate'],
 		);
+
+		if ( $compare_start_provided && $compare_end_provided ) {
+			$this->date_range['compareStartDate'] = (string) $date_range['compareStartDate'];
+			$this->date_range['compareEndDate']   = (string) $date_range['compareEndDate'];
+		}
+	}
+
+	/**
+	 * Validates and assigns dashboard link.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string|null $dashboard_link Dashboard link.
+	 * @return void
+	 *
+	 * @throws InvalidArgumentException When validation fails.
+	 */
+	private function set_dashboard_link( $dashboard_link ) {
+		if ( null !== $dashboard_link && ! is_string( $dashboard_link ) ) {
+			throw new InvalidArgumentException( 'dashboard_link must be a string or null' );
+		}
+
+		$this->dashboard_link = $dashboard_link;
 	}
 
 	/**

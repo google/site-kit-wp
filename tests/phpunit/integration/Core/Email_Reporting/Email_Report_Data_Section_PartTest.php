@@ -16,7 +16,7 @@ use InvalidArgumentException;
 
 class Email_Report_Data_Section_PartTest extends TestCase {
 
-	public function test_getters_and_to_array() {
+	public function test_getters() {
 		$section = new Email_Report_Data_Section_Part(
 			'traffic_sources',
 			array(
@@ -52,22 +52,6 @@ class Email_Report_Data_Section_PartTest extends TestCase {
 		$this->assertSame( 'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard#/module/analytics-4', $section->get_dashboard_link(), 'Dashboard link should match constructor argument.' );
 
 		$this->assertFalse( $section->is_empty(), 'Section with values should not be empty' );
-
-		$as_array = $section->to_array();
-
-		$this->assertSame(
-			array(
-				'section_key'    => $section->get_section_key(),
-				'title'          => $section->get_title(),
-				'labels'         => $section->get_labels(),
-				'values'         => $section->get_values(),
-				'trends'         => $section->get_trends(),
-				'date_range'     => $section->get_date_range(),
-				'dashboard_link' => $section->get_dashboard_link(),
-			),
-			$as_array,
-			'Array representation should mirror getter output.'
-		);
 	}
 
 	public function test_is_empty_true_when_values_empty() {
