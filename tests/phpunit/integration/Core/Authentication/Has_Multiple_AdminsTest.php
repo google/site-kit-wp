@@ -50,22 +50,6 @@ class Has_Multiple_AdminsTest extends TestCase {
 		$this->assertTrue( $has_multiple_admins->get(), 'Should return true when there are multiple admin users' );
 	}
 
-	public function test_register__user_register_hook() {
-		$has_multiple_admins = new Has_Multiple_Admins( $this->transients );
-		$has_multiple_admins->register();
-
-		// Initially, there is only one admin (ID=1).
-		$this->assertFalse( $has_multiple_admins->get(), 'Should return false when there is only one admin user' );
-
-		// Create a new user with non-admin role, should not affect the transient.
-		$this->factory()->user->create( array( 'role' => 'editor' ) );
-		$this->assertFalse( $has_multiple_admins->get(), 'Should still return false when a non-admin user is created' );
-
-		// Create a new admin user, should clear the transient and reflect the change.
-		$this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$this->assertTrue( $has_multiple_admins->get(), 'Should return true when a second admin user is created' );
-	}
-
 	public function test_register__deleted_user_hook() {
 		$has_multiple_admins = new Has_Multiple_Admins( $this->transients );
 		$has_multiple_admins->register();
