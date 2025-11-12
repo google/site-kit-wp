@@ -110,7 +110,12 @@ class Has_Multiple_Admins {
 	/**
 	 * Handles user role changes.
 	 *
-	 * Executed by the `add_user_role` and `remove_user_role` hooks.
+	 * Executed by the `add_user_role` and `remove_user_role` hooks. These hooks
+	 * are called internally by `WP_User::add_role()` and `WP_User::remove_role()`
+	 * respectively. From WordPress 6.0, these hooks are always called even
+	 * when the more generic `WP_User::set_role()` is used when adding or updating
+	 * a user. However, for backwards compatibility with earlier versions, we still
+	 * have to clear the cache and hook into `set_user_role` separately.
 	 * We skip clearing the transient cache only if we are sure that
 	 * the role being added/removed is 'administrator'.
 	 *
