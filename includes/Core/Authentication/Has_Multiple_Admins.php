@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use WP_User;
 use WP_User_Query;
 
 /**
@@ -102,7 +103,7 @@ class Has_Multiple_Admins {
 	 * @return void
 	 */
 	protected function handle_user_deletion( $user_id, $reassign, $user = null ) {
-		if ( isset( $user ) && ! in_array( 'administrator', $user->roles, true ) ) {
+		if ( $user instanceof WP_User && ! in_array( 'administrator', $user->roles, true ) ) {
 			return;
 		}
 		$this->transients->delete( self::OPTION );
