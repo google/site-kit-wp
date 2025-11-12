@@ -41,6 +41,15 @@ class Has_Multiple_AdminsTest extends TestCase {
 		remove_all_actions( 'remove_user_role' );
 	}
 
+	public function test_register() {
+		$has_multiple_admins = new Has_Multiple_Admins( $this->transients );
+		$has_multiple_admins->register();
+
+		$this->assertTrue( has_action( 'deleted_user' ), 'deleted_user action should be registered' );
+		$this->assertTrue( has_action( 'add_user_role' ), 'add_user_role action should be registered' );
+		$this->assertTrue( has_action( 'remove_user_role' ), 'remove_user_role action should be registered' );
+	}
+
 	public function test_get() {
 		$has_multiple_admins = new Has_Multiple_Admins( $this->transients );
 
