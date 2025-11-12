@@ -52,6 +52,7 @@ class Has_Multiple_AdminsTest extends TestCase {
 
 	public function test_get__on_add_user() {
 		$has_multiple_admins = new Has_Multiple_Admins( $this->transients );
+		$has_multiple_admins->register();
 
 		// Verify we have only one admin user to start with.
 		$this->assertCount( 1, get_users( array( 'role' => 'administrator' ) ), 'There should be one admin user to begin with' );
@@ -63,7 +64,8 @@ class Has_Multiple_AdminsTest extends TestCase {
 		$this->factory()->user->create( array( 'role' => 'administrator' ) );
 
 		// Check that we have multiple admins now.
-		$this->assertTrue( $has_multiple_admins->get(), 'Should return true when there are multiple admin users' );
+		$this->assertTrue( $has_multiple_admins->get(), 'Should return true when there are two admin users' );
+		$this->assertEquals( 2, $this->transients->get( Has_Multiple_Admins::OPTION ), 'Transient should be updated to two admins' );
 	}
 
 	public function test_get__on_delete_user() {
