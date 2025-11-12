@@ -106,4 +106,27 @@ class Has_Multiple_Admins {
 
 		return $admins_count > 1;
 	}
+
+	/**
+	 * Handles user deletion.
+	 *
+	 * Executed by the `deleted_user` hook.
+	 * We skip clearing the transient cache, only if we are sure that the user
+	 * being deleted is not an admin. The $user parameter is only available
+	 * in WP 5.5+, so we do not rely on it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int     $user_id User ID.
+	 * @param bool    $reassign Whether the user's posts are being reassigned.
+	 * @param WP_User $user    User object.
+	 *
+	 * @return void
+	 */
+	public function handle_user_deletion( $user_id, $reassign, $user = null ) {
+		if ( isset( $user->roles ) && is_array( $user->roles ) && ! in_array( 'administrator', $user->roles, true ) ) {
+			return;
+		}
+		$this->transients->delete( self::OPTION );
+	}
 }
