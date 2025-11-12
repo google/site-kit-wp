@@ -196,6 +196,7 @@ const baseResolvers = {
 		}
 	},
 };
+baseResolvers.isItemDismissed = baseResolvers.getDismissedItems;
 
 const baseSelectors = {
 	/**

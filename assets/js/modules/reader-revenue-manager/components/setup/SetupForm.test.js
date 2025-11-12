@@ -73,6 +73,36 @@ describe( 'SetupForm', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should not silently fail when there is an error', async () => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( [] );
+
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveError(
+			{
+				code: 'test-error-code',
+				message: 'Test error message',
+				data: {},
+			},
+			'getPublications'
+		);
+
+		const { container, getByText, waitForRegistry } = render(
+			<SetupForm onCompleteSetup={ () => {} } />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+
+		expect(
+			getByText( 'Error: Test error message (Please try again.)' )
+		).toBeInTheDocument();
+	} );
+
 	it( 'should change instruction text based on number of publications', async () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )

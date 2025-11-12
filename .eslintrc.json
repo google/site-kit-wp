@@ -18,7 +18,7 @@
       "error",
       {
         "ignore": [
-          "^@wordpress-core\/?.*"
+          "^@wordpress-core/?.*"
         ]
       }
     ],
@@ -120,7 +120,8 @@
         "usePrettierrc": true
       }
     ],
-    "react/jsx-no-useless-fragment": "error"
+    "react/jsx-no-useless-fragment": "error",
+    "consistent-return": "error"
   },
   "settings": {
     "import/core-modules": [

@@ -19,7 +19,11 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+} from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
 /**
@@ -27,12 +31,15 @@ import { __, _x } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
+import Link from '@/js/components/Link';
 import OptIn from '@/js/components/OptIn';
 import ResetButton from '@/js/components/ResetButton';
+import StepHint from '@/js/components/setup/StepHint';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from '@/js/components/setup/constants';
+import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 
@@ -41,7 +48,10 @@ export default function Actions( {
 	onButtonClick,
 	complete,
 	inProgressFeedback,
+	ctaFeedback,
 } ) {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	const viewContext = useViewContext();
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -71,8 +81,16 @@ export default function Actions( {
 		} );
 	}, [ dashboardURL, dismissItem, navigateTo, viewContext ] );
 
+	const learnMoreLink = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'setup-connect-google-account'
+		);
+	} );
+
 	return (
 		<Fragment>
+			{ ctaFeedback }
+
 			<OptIn />
 
 			<div className="googlesitekit-start-setup-wrap">
@@ -104,6 +122,29 @@ export default function Actions( {
 					<ResetButton />
 				) }
 			</div>
+			{ setupFlowRefreshEnabled && (
+				<StepHint
+					leadingText={ __(
+						'Why is this required?',
+						'google-site-kit'
+					) }
+					tooltipText={ createInterpolateElement(
+						__(
+							'Site Kit needs to connect to your Google account to access data from Google products like Search Console or Analytics and display it on your dashboard. <a>Learn more</a>',
+							'google-site-kit'
+						),
+						{
+							a: (
+								<Link
+									href={ learnMoreLink }
+									external
+									hideExternalIndicator
+								/>
+							),
+						}
+					) }
+				/>
+			) }
 		</Fragment>
 	);
 }

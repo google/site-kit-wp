@@ -16,7 +16,8 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
+use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Modules\AdSense;
@@ -36,9 +37,10 @@ use Exception;
  * @access private
  * @ignore
  */
-final class Modules {
+final class Modules implements Provides_Feature_Metrics {
 
 	use Method_Proxy_Trait;
+	use Feature_Metrics_Trait;
 
 	const OPTION_ACTIVE_MODULES = 'googlesitekit_active_modules';
 
@@ -207,6 +209,8 @@ final class Modules {
 				return $body;
 			}
 		);
+
+		$this->register_feature_metrics();
 
 		$available_modules = $this->get_available_modules();
 		array_walk(
@@ -837,6 +841,29 @@ final class Modules {
 	}
 
 	/**
+	 * Lists connected modules that have a shared role.
+	 *
+	 * @since 1.163.0
+	 *
+	 * @return array Array of module slugs.
+	 */
+	public function list_shared_modules() {
+		$connected_modules = $this->get_connected_modules();
+		$sharing_settings  = $this->get_module_sharing_settings();
+
+		$shared_slugs = array();
+
+		foreach ( $connected_modules as $slug => $module ) {
+			$shared_roles = $sharing_settings->get_shared_roles( $slug );
+			if ( ! empty( $shared_roles ) ) {
+				$shared_slugs[] = $slug;
+			}
+		}
+
+		return $shared_slugs;
+	}
+
+	/**
 	 * Checks the given module is recoverable.
 	 *
 	 * A module is recoverable if:
@@ -970,5 +997,18 @@ final class Modules {
 	 */
 	public function delete_dashboard_sharing_settings() {
 		return $this->options->delete( Module_Sharing_Settings::OPTION );
+	}
+
+	/**
+	 * Gets feature metrics for the modules.
+	 *
+	 * @since 1.163.0
+	 *
+	 * @return array Feature metrics data.
+	 */
+	public function get_feature_metrics() {
+		return array(
+			'shared_modules' => $this->list_shared_modules(),
+		);
 	}
 }

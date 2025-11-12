@@ -103,3 +103,58 @@ async function isPromiseResolved( promise ) {
 		( await Promise.race( [ promise, Promise.resolve( CONTROL ) ] ) )
 	);
 }
+
+/**
+ * Returns a function which can process N asynchronous requirements in sequence, stopping at the first to return false.
+ *
+ * @since n.e.x.t
+ *
+ * @param {...Function} requirements Async requirement function checks.
+ * @return {function(): Promise<boolean>} Function which processes all requirements in sequence.
+ */
+export function asyncRequireAll( ...requirements ) {
+	return async function ( ...args ) {
+		for ( const predicate of requirements ) {
+			if ( false === ( await predicate( ...args ) ) ) {
+				return false;
+			}
+		}
+		return true;
+	};
+}
+
+/**
+ * Returns a function which can process N asynchronous requirements in sequence, stopping at the first to return true.
+ *
+ * If any predicates return true, it returns true, otherwise it returns false.
+ *
+ * @since n.e.x.t
+ *
+ * @param {...Function} requirements Async requirement function checks.
+ * @return {function(): Promise<boolean>} Function which processes all requirements in sequence.
+ */
+export function asyncRequireAny( ...requirements ) {
+	return async function ( ...args ) {
+		for ( const predicate of requirements ) {
+			if ( true === ( await predicate( ...args ) ) ) {
+				return true;
+			}
+		}
+		return false;
+	};
+}
+
+/**
+ * Returns a predicate function which proxies the given function and returns `true` only if the given function's return equals the given value.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*}        want Value to match against predicate return.
+ * @param {Function} func Function to proxy and check return value of.
+ * @return {function(): Promise<boolean>} Predicate function.
+ */
+export function asyncRequire( want, func ) {
+	return async function ( ...args ) {
+		return want === ( await func( ...args ) );
+	};
+}

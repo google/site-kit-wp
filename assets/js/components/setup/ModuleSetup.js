@@ -36,15 +36,22 @@ import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { deleteItem } from '@/js/googlesitekit/api/cache';
 import { trackEvent } from '@/js/util';
+import { useFeature } from '@/js/hooks/useFeature';
+import useQueryArg from '@/js/hooks/useQueryArg';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import { Cell, Grid, Row } from '@/js/material-components';
 import Header from '@/js/components/Header';
 import ModuleSetupFooter from './ModuleSetupFooter';
+import ExitSetup from '@/js/components/setup/ExitSetup';
+import ProgressIndicator from '@/js/components/ProgressIndicator';
 
 export default function ModuleSetup( { moduleSlug } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const [ showProgress ] = useQueryArg( 'showProgress' );
 
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
@@ -109,10 +116,24 @@ export default function ModuleSetup( { moduleSlug } ) {
 
 	const { SetupComponent } = module;
 
+	const isInitialSetupFlow =
+		setupFlowRefreshEnabled &&
+		moduleSlug === MODULE_SLUG_ANALYTICS_4 &&
+		showProgress === 'true';
+
 	return (
 		<Fragment>
-			<Header>
-				<HelpMenu />
+			<Header
+				subHeader={
+					isInitialSetupFlow ? (
+						<ProgressIndicator
+							currentSegment={ 3 }
+							totalSegments={ 6 }
+						/>
+					) : null
+				}
+			>
+				{ isInitialSetupFlow ? <ExitSetup /> : <HelpMenu /> }
 			</Header>
 			<div className="googlesitekit-setup">
 				<Grid>
@@ -122,12 +143,14 @@ export default function ModuleSetup( { moduleSlug } ) {
 								<Grid>
 									<Row>
 										<Cell size={ 12 }>
-											<p className="googlesitekit-setup__intro-title">
-												{ __(
-													'Connect Service',
-													'google-site-kit'
-												) }
-											</p>
+											{ ! isInitialSetupFlow && (
+												<p className="googlesitekit-setup__intro-title">
+													{ __(
+														'Connect Service',
+														'google-site-kit'
+													) }
+												</p>
+											) }
 											<SetupComponent
 												module={ module }
 												finishSetup={ finishSetup }
@@ -136,15 +159,18 @@ export default function ModuleSetup( { moduleSlug } ) {
 									</Row>
 								</Grid>
 
-								<ModuleSetupFooter
-									module={ module }
-									onCancel={ onCancelButtonClick }
-									onComplete={
-										typeof onCompleteSetup === 'function'
-											? onCompleteSetupCallback
-											: undefined
-									}
-								/>
+								{ ! isInitialSetupFlow && (
+									<ModuleSetupFooter
+										module={ module }
+										onCancel={ onCancelButtonClick }
+										onComplete={
+											typeof onCompleteSetup ===
+											'function'
+												? onCompleteSetupCallback
+												: undefined
+										}
+									/>
+								) }
 							</section>
 						</Cell>
 					</Row>

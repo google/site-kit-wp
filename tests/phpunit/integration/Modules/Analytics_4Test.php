@@ -158,8 +158,11 @@ class Analytics_4Test extends TestCase {
 
 	public function test_register() {
 		remove_all_filters( 'googlesitekit_auth_scopes' );
+		remove_all_filters( 'googlesitekit_feature_metrics' );
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'web_stories_story_head' );
+
+		$this->assertFalse( has_filter( 'googlesitekit_feature_metrics' ), 'There should be no filter for features metrics initially.' );
 
 		$this->analytics->register();
 
@@ -176,6 +179,7 @@ class Analytics_4Test extends TestCase {
 		// Test actions for tracking opt-out are added.
 		$this->assertTrue( has_action( 'wp_head' ), 'Analytics 4 should add tracking opt-out action to wp_head' );
 		$this->assertTrue( has_action( 'web_stories_story_head' ), 'Analytics 4 should add tracking opt-out action to web_stories_story_head' );
+		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
 	}
 
 	public function test_register__reset_adsense_link_settings() {
@@ -366,7 +370,7 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_handle_provisioning_callback() {
+	private function set_up_handle_provisioning_callback_test() {
 		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$analytics = new Analytics_4( $context );
 
@@ -395,6 +399,21 @@ class Analytics_4Test extends TestCase {
 		$method = $class->getMethod( 'handle_provisioning_callback' );
 		$method->setAccessible( true );
 
+		return array(
+			'method'                      => $method,
+			'analytics'                   => $analytics,
+			'dashboard_url'               => $dashboard_url,
+			'admin_id'                    => $admin_id,
+			'account_ticked_id_transient' => $account_ticked_id_transient,
+		);
+	}
+
+	public function test_handle_provisioning_callback__account_ticket_id_mismatch() {
+		$test_variables = $this->set_up_handle_provisioning_callback_test();
+		$method         = $test_variables['method'];
+		$analytics      = $test_variables['analytics'];
+		$dashboard_url  = $test_variables['dashboard_url'];
+
 		// Results in an error for a mismatch (or no account ticket ID stored from before at all).
 		try {
 			$method->invokeArgs( $analytics, array() );
@@ -406,6 +425,14 @@ class Analytics_4Test extends TestCase {
 				'Should redirect to dashboard with account ticket ID mismatch error.'
 			);
 		}
+	}
+
+	public function test_handle_provisioning_callback__user_cancel() {
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$dashboard_url               = $test_variables['dashboard_url'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
 
 		// Results in an error when there is an error parameter.
 		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
@@ -423,6 +450,14 @@ class Analytics_4Test extends TestCase {
 			$this->assertFalse( get_transient( $account_ticked_id_transient ), 'Account ticket transient should be deleted when user cancels.' );
 		}
 		unset( $_GET['error'] );
+	}
+
+	public function test_handle_provisioning_callback__success() {
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$admin_id                    = $test_variables['admin_id'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
 
 		// Intercept Google API requests to avoid failures.
 		FakeHttp::fake_google_http_handler(
@@ -458,6 +493,73 @@ class Analytics_4Test extends TestCase {
 			$this->assertEquals( $_GET['accountId'], $settings['accountID'], 'Account ID should be set from GET parameter.' );
 			$this->assertEquals( $admin_id, $settings['ownerID'], 'Owner ID should be set to admin user ID.' );
 		}
+	}
+
+	/**
+	 * @dataProvider data_handle_provisioning_callback_show_progress
+	 */
+	public function test_handle_provisioning_callback__with_setup_flow_refresh_feature_flag_enabled( $params ) {
+		$this->enable_feature( 'setupFlowRefresh' );
+
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$admin_id                    = $test_variables['admin_id'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
+
+		// Intercept Google API requests to avoid failures.
+		FakeHttp::fake_google_http_handler(
+			$analytics->get_client()
+		);
+
+		// Results in an dashboard redirect on success, with new data being stored.
+		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
+		$_GET['accountId'] = '12345678';
+
+		if ( isset( $params['providedValue'] ) ) {
+			$_GET['show_progress'] = $params['providedValue'];
+		}
+
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected redirect to the Key Metrics Setup screen' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg(
+					array(
+						'page'         => 'googlesitekit-key-metrics-setup',
+						'showProgress' => $params['expectedValue'],
+					),
+					admin_url( 'admin.php' )
+				),
+				$redirect->get_location(),
+				'Should redirect to the Key Metrics Setup screen.'
+			);
+
+			// Ensure transient was deleted by the method.
+			$this->assertFalse( get_transient( $account_ticked_id_transient ), 'Account ticket transient should be deleted on successful provisioning.' );
+			// Ensure settings were set correctly.
+			$settings = $analytics->get_settings()->get();
+
+			$this->assertEquals( $_GET['accountId'], $settings['accountID'], 'Account ID should be set from GET parameter.' );
+			$this->assertEquals( $admin_id, $settings['ownerID'], 'Owner ID should be set to admin user ID.' );
+		}
+	}
+
+	public function data_handle_provisioning_callback_show_progress() {
+		return array(
+			array(
+				'with show_progress provided' => array(
+					'providedValue' => '1',
+					'expectedValue' => 'true',
+				),
+			),
+			array(
+				'with show_progress not provided' => array(
+					'expectedValue' => null,
+				),
+			),
+		);
 	}
 
 	public function test_provision_property_webdatastream() {
@@ -1056,6 +1158,109 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( true, $account_ticket_params['enhanced_measurement_stream_enabled'], 'Enhanced measurement stream enabled should be stored in transient.' );
 	}
 
+	/**
+	 * @dataProvider data_create_account_ticket_show_progress
+	 */
+	public function test_create_account_ticket__with_setup_flow_refresh_feature_flag_enabled( $params ) {
+		$this->enable_feature( 'setupFlowRefresh' );
+
+		$account_ticket_id     = 'test-account-ticket-id';
+		$account_display_name  = 'test account name';
+		$region_code           = 'US';
+		$property_display_name = 'test property name';
+		$stream_display_name   = 'test stream name';
+		$timezone              = 'UTC';
+
+		$provision_account_ticket_request = null;
+		FakeHttp::fake_google_http_handler(
+			$this->analytics->get_client(),
+			function ( Request $request ) use ( &$provision_account_ticket_request, $account_ticket_id ) {
+				$url = parse_url( $request->getUri() );
+
+				if ( 'sitekit.withgoogle.com' !== $url['host'] ) {
+					return new FulfilledPromise( new Response( 200 ) );
+				}
+
+				switch ( $url['path'] ) {
+					case '/v1beta/accounts:provisionAccountTicket':
+						$provision_account_ticket_request = $request;
+
+						$response = new GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse();
+						$response->setAccountTicketId( $account_ticket_id );
+
+						return new FulfilledPromise( new Response( 200, array(), json_encode( $response ) ) );
+
+					default:
+						throw new Exception( 'Not implemented' );
+				}
+			}
+		);
+
+		$this->analytics->register();
+		$data = array(
+			'displayName'                      => $account_display_name,
+			'regionCode'                       => $region_code,
+			'propertyName'                     => $property_display_name,
+			'dataStreamName'                   => $stream_display_name,
+			'timezone'                         => $timezone,
+			'enhancedMeasurementStreamEnabled' => true,
+		);
+
+		if ( isset( $params['showProgressProvidedValue'] ) ) {
+			$data['showProgress'] = $params['showProgressProvidedValue'];
+		}
+
+		$response = $this->analytics->set_data( 'create-account-ticket', $data );
+		// Assert that the Analytics edit scope is required.
+		$this->assertWPError( $response, 'Should return error when required parameter is missing.' );
+		$this->assertEquals( 'missing_required_scopes', $response->get_error_code(), 'Error code should be missing_required_scopes when Analytics edit scope is not granted.' );
+		$this->grant_scope( Analytics_4::EDIT_SCOPE );
+
+		$response = $this->analytics->set_data( 'create-account-ticket', $data );
+
+		// Assert request was made with expected arguments.
+		$this->assertNotWPError( $response, 'Account ticket creation should succeed when all required parameters are provided.' );
+		$account_ticket_request = new Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest(
+			json_decode( $provision_account_ticket_request->getBody()->getContents(), true ) // must be array to hydrate model.
+		);
+		$this->assertEquals( $account_display_name, $account_ticket_request->getAccount()->getDisplayName(), 'Account display name should match the provided value.' );
+		$this->assertEquals( $region_code, $account_ticket_request->getAccount()->getRegionCode(), 'Account region code should match the provided value.' );
+		$redirect_uri = $this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri'];
+		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri(), 'Redirect URI should match the analytics redirect URI from site fields.' );
+		$this->assertEquals( $params['showProgressExpectedValue'], $account_ticket_request->getShowProgress(), 'The `showProgress` field should match the expected value' );
+
+		// Assert transient is set with params.
+		$account_ticket_params = get_transient( Analytics_4::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );
+		$this->assertEquals( $account_ticket_id, $account_ticket_params['id'], 'Account ticket ID should be stored in transient.' );
+		$this->assertEquals( $property_display_name, $account_ticket_params['property_name'], 'Property display name should be stored in transient.' );
+		$this->assertEquals( $stream_display_name, $account_ticket_params['data_stream_name'], 'Stream display name should be stored in transient.' );
+		$this->assertEquals( $timezone, $account_ticket_params['timezone'], 'Timezone should be stored in transient.' );
+		$this->assertEquals( true, $account_ticket_params['enhanced_measurement_stream_enabled'], 'Enhanced measurement stream enabled should be stored in transient.' );
+	}
+
+	public function data_create_account_ticket_show_progress() {
+		return array(
+			array(
+				'with showProgress provided as true' => array(
+					'showProgressProvidedValue' => true,
+					'showProgressExpectedValue' => true,
+				),
+			),
+			array(
+				'with showProgress provided as false' => array(
+					'showProgressProvidedValue' => false,
+					'showProgressExpectedValue' => false,
+				),
+			),
+			// When the value for `showProgress` is not provided, it should default to `false`.
+			'with showProgress not provided' => array(
+				array(
+					'showProgressExpectedValue' => false,
+				),
+			),
+		);
+	}
+
 	public function test_get_scopes() {
 		$this->assertEqualSets(
 			array(
@@ -1108,6 +1313,108 @@ class Analytics_4Test extends TestCase {
 					Analytics_4::READONLY_SCOPE,
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_scope_with_setupRefreshFlow_enabled
+	 */
+	public function test_auth_scopes_with_setupRefreshFlow( array $granted_scopes, $is_authenticated, $is_connected, array $expected_scopes ) {
+		$this->enable_feature( 'setupFlowRefresh' );
+		remove_all_filters( 'googlesitekit_auth_scopes' );
+
+		$this->analytics->register();
+
+		// Configure authentication state.
+		if ( $is_authenticated ) {
+			$this->authentication->token()->set( array( 'access_token' => 'test-access-token' ) );
+		} else {
+			$this->authentication->token()->delete();
+		}
+
+		// Configure connection state if requested.
+		if ( $is_connected ) {
+			$this->analytics->get_settings()->merge(
+				array(
+					'accountID'       => '12345678',
+					'propertyID'      => '87654321',
+					'webDataStreamID' => '1234567890',
+					'measurementID'   => 'A1B2C3D4E5',
+				)
+			);
+		}
+
+		$this->authentication->get_oauth_client()->set_granted_scopes( $granted_scopes );
+
+		$this->assertEqualSets(
+			$expected_scopes,
+			apply_filters( 'googlesitekit_auth_scopes', array() ),
+			'Auth scopes should match expected scopes based on granted scopes, authentication and connection state when setupFlowRefresh feature is enabled.'
+		);
+	}
+
+	public function data_scope_with_setupRefreshFlow_enabled() {
+		return array(
+			'unauthenticated: analytics + tag manager granted' => array(
+				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+				false,
+				false,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'unauthenticated: analytics granted'         => array(
+				array( Analytics_4::READONLY_SCOPE ),
+				false,
+				false,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'unauthenticated: no scopes granted'         => array(
+				array(),
+				false,
+				false,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'authenticated not connected: analytics + tag manager granted' => array(
+				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+				true,
+				false,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'authenticated not connected: analytics granted' => array(
+				array( Analytics_4::READONLY_SCOPE ),
+				true,
+				false,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'authenticated not connected: no scopes granted' => array(
+				array(),
+				true,
+				false,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'authenticated connected: analytics + tag manager granted (no edit granted)' => array(
+				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+				true,
+				true,
+				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'authenticated connected: analytics granted (no tagmanager)' => array(
+				array( Analytics_4::READONLY_SCOPE ),
+				true,
+				true,
+				array( Analytics_4::READONLY_SCOPE ),
+			),
+			'authenticated connected: no scopes granted' => array(
+				array(),
+				true,
+				true,
+				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
+			),
+			'authenticated connected: edit + analytics granted (no tagmanager)' => array(
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE ),
+				true,
+				true,
+				array( Analytics_4::READONLY_SCOPE, Analytics_4::EDIT_SCOPE ),
 			),
 		);
 	}
@@ -1257,15 +1564,16 @@ class Analytics_4Test extends TestCase {
 				'accounts',
 				'ads-links',
 				'adsense-links',
+				'batch-report',
 				'container-lookup',
 				'container-destinations',
 				'google-tag-settings',
 				'key-events',
 				'create-property',
 				'create-webdatastream',
-				'non-shareable-report',
 				'properties',
 				'property',
+				'has-property-access',
 				'report',
 				'webdatastreams',
 				'webdatastreams-batch',
@@ -1294,15 +1602,16 @@ class Analytics_4Test extends TestCase {
 				'accounts',
 				'ads-links',
 				'adsense-links',
+				'batch-report',
 				'container-lookup',
 				'container-destinations',
 				'google-tag-settings',
 				'key-events',
 				'create-property',
 				'create-webdatastream',
-				'non-shareable-report',
 				'properties',
 				'property',
+				'has-property-access',
 				'report',
 				'webdatastreams',
 				'webdatastreams-batch',
@@ -1390,6 +1699,81 @@ class Analytics_4Test extends TestCase {
 			),
 			array_keys( $this->analytics->get_debug_fields() ),
 			'Analytics 4 module should expose the expected debug fields when AdSense is enabled'
+		);
+	}
+
+	/**
+	 * @dataProvider data_feature_metrics_settings
+	 *
+	 * @param array $settings               Settings to set.
+	 * @param array $expected_feature_metrics Expected feature metrics.
+	 * @param string $message                Message for the assertion.
+	 */
+	public function test_get_feature_metrics( $settings, $expected_feature_metrics, $message ) {
+		$this->analytics->register();
+		$this->analytics->get_settings()->merge( $settings['analytics_settings'] ?? array() );
+		$this->audience_settings->merge(
+			$settings['audience_settings'] ?? array()
+		);
+		( new AdSense_Settings( $this->options ) )->set(
+			array(
+				'accountSetupComplete' => $settings['analytics_settings']['adSenseLinked'] ?? false,
+				'siteSetupComplete'    => $settings['analytics_settings']['adSenseLinked'] ?? false,
+			)
+		);
+
+		$feature_metrics = $this->analytics->get_feature_metrics();
+		$this->assertEquals( $expected_feature_metrics, $feature_metrics, $message );
+	}
+
+	public function data_feature_metrics_settings() {
+		$activated_audience_segmentation_settings = array(
+			'availableAudiences'                   => array(
+				array(
+					'name' => 'properties/12345678/audiences/12345',
+				),
+				array(
+					'name' => 'properties/12345678/audiences/67890',
+				),
+			),
+			'availableAudiencesLastSyncedAt'       => time(),
+			'audienceSegmentationSetupCompletedBy' => 2,
+		);
+
+		return array(
+			'default values when audience segmentation is not setup and adsense is unlinked' => array(
+				array(),
+				array(
+					'audseg_setup_completed'   => false,
+					'audseg_audience_count'    => 0,
+					'analytics_adsense_linked' => false,
+				),
+				'When settings are not set, feature metrics should be false or zero by default.',
+			),
+			'when audience segmentation is setup' => array(
+				array(
+					'audience_settings' => $activated_audience_segmentation_settings,
+				),
+				array(
+					'audseg_setup_completed'   => true,
+					'audseg_audience_count'    => 2,
+					'analytics_adsense_linked' => false,
+				),
+				'When audience settings are set, feature metrics should reflect them.',
+			),
+			'when adsense is linked'              => array(
+				array(
+					'analytics_settings' => array(
+						'adSenseLinked' => true,
+					),
+				),
+				array(
+					'audseg_setup_completed'   => false,
+					'audseg_audience_count'    => 0,
+					'analytics_adsense_linked' => true,
+				),
+				'When adsense is linked, feature metrics should reflect it.',
+			),
 		);
 	}
 
@@ -2012,6 +2396,223 @@ class Analytics_4Test extends TestCase {
 			),
 			$request_params['dimensions'],
 			'Expected dimensions array for single object input.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_access_token
+	 *
+	 * When an access token is provided, the user will be authenticated for the test.
+	 *
+	 * @param string $access_token Access token, or empty string if none.
+	 */
+	public function test_get_batch_report( $access_token ) {
+		$this->setup_user_authentication( $access_token );
+
+		$property_id = '123456789';
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
+		// Grant scopes so request doesn't fail.
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$this->fake_handler_and_invoke_register_method( $property_id );
+
+		$data = $this->analytics->get_data(
+			'batch-report',
+			array(
+				'requests' => array(
+					array(
+						'metrics'    => array( 'sessions' ),
+						'dimensions' => array( 'sessionDefaultChannelGrouping' ),
+						'url'        => 'https://example.org/batch-1/',
+					),
+					array(
+						'metrics'          => array(
+							array(
+								'name'       => 'total',
+								'expression' => 'totalUsers',
+							),
+						),
+						'dimensionFilters' => array(
+							'sessionDefaultChannelGrouping' => 'Organic Search',
+						),
+						'limit'            => 50,
+					),
+				),
+			)
+		);
+
+		$this->assertNotWPError( $data, 'Batch report request should succeed when parameters are valid.' );
+
+		$this->assertEquals( 'batch-value-1', $data['reports'][0]['rows'][0]['metricValues'][0]['value'], 'First batch report should include expected metric value.' );
+		$this->assertEquals( 'sessionDefaultChannelGrouping', $data['reports'][0]['dimensionHeaders'][0]['name'], 'First batch report should expose expected dimension header.' );
+		$this->assertEquals( 'batch-value-2', $data['reports'][1]['rows'][0]['metricValues'][0]['value'], 'Second batch report should include expected metric value.' );
+		$this->assertEquals( 'newVsReturning', $data['reports'][1]['dimensionHeaders'][1]['name'], 'Second batch report should expose expected secondary dimension header.' );
+
+		$this->assertCount( 1, $this->request_handler_calls, 'Batch report request should result in a single HTTP request.' );
+
+		$request_url    = $this->request_handler_calls[0]['url'];
+		$request_params = $this->request_handler_calls[0]['params'];
+
+		$this->assertEquals( 'analyticsdata.googleapis.com', $request_url['host'], 'Batch report request host should be analyticsdata.googleapis.com.' );
+		$this->assertEquals( "/v1beta/properties/$property_id:batchRunReports", $request_url['path'], 'Batch report request path should match the batchRunReports endpoint.' );
+
+		$this->assertArrayHasKey( 'requests', $request_params, 'Batch report payload should include requests key.' );
+		$this->assertCount( 2, $request_params['requests'], 'Batch report payload should include two requests.' );
+
+		$first_request  = $request_params['requests'][0];
+		$second_request = $request_params['requests'][1];
+
+		$this->assertEquals(
+			array(
+				array(
+					'name' => 'sessions',
+				),
+			),
+			$first_request['metrics'],
+			'First batch request should include expected metrics.'
+		);
+
+		$this->assertEquals(
+			array(
+				array(
+					'name' => 'sessionDefaultChannelGrouping',
+				),
+			),
+			$first_request['dimensions'],
+			'First batch request should include expected dimensions.'
+		);
+
+		$this->assertEquals(
+			1,
+			$first_request['keepEmptyRows'],
+			'First batch request should default keepEmptyRows to 1.'
+		);
+
+		$page_path_filters = array_filter(
+			$first_request['dimensionFilter']['andGroup']['expressions'],
+			function ( $expression ) {
+				return isset( $expression['filter']['fieldName'] ) && 'pagePath' === $expression['filter']['fieldName'];
+			}
+		);
+		$this->assertNotEmpty( $page_path_filters, 'First batch request should include a pagePath filter when URL is provided.' );
+
+		$page_path_filters = array_values( $page_path_filters );
+		$page_path_filter  = $page_path_filters[0];
+		$this->assertEquals( 'https://example.org/batch-1/', $page_path_filter['filter']['stringFilter']['value'], 'First batch request should retain provided URL in pagePath filter.' );
+
+		$this->assertEquals(
+			50,
+			$second_request['limit'],
+			'Second batch request should pass through the provided limit.'
+		);
+
+		$this->assertEquals(
+			array(
+				array(
+					'name'       => 'total',
+					'expression' => 'totalUsers',
+				),
+			),
+			$second_request['metrics'],
+			'Second batch request should include expected metrics.'
+		);
+
+		$this->assertArrayHasKey(
+			'dimensionFilter',
+			$second_request,
+			'Second batch request should include dimension filters by default.'
+		);
+
+		$channel_filters = array_filter(
+			$second_request['dimensionFilter']['andGroup']['expressions'],
+			function ( $expression ) {
+				return isset( $expression['filter']['fieldName'] ) && 'sessionDefaultChannelGrouping' === $expression['filter']['fieldName'];
+			}
+		);
+		$this->assertNotEmpty( $channel_filters, 'Second batch request should include provided dimension filter.' );
+
+		$channel_filters = array_values( $channel_filters );
+		$channel_filter  = $channel_filters[0];
+		$this->assertEquals(
+			'Organic Search',
+			$channel_filter['filter']['stringFilter']['value'],
+			'Second batch request should retain provided dimension filter value.'
+		);
+	}
+
+	public function test_get_batch_report__requires_requests_parameter() {
+		$this->setup_user_authentication( 'valid-auth-token' );
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '123456789',
+			)
+		);
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$this->analytics->register();
+
+		$data = $this->analytics->get_data( 'batch-report', array() );
+
+		$this->assertWPErrorWithMessage( 'Request parameter is empty: requests.', $data, 'Batch report should require a requests parameter.' );
+		$this->assertEquals( 'missing_required_param', $data->get_error_code(), 'Error code should be missing_required_param when requests parameter is empty.' );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ), 'Error data should include status 400 for missing requests parameter.' );
+	}
+
+	/**
+	 * @dataProvider data_invalid_batch_report_requests
+	 *
+	 * @param mixed  $invalid_requests Invalid requests value.
+	 * @param string $message          Assertion message for the scenario.
+	 */
+	public function test_get_batch_report__invalid_requests_parameter( $invalid_requests, $message ) {
+		$this->setup_user_authentication( 'valid-auth-token' );
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '123456789',
+			)
+		);
+
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$this->analytics->get_scopes()
+		);
+
+		$this->analytics->register();
+
+		$data = $this->analytics->get_data(
+			'batch-report',
+			array(
+				'requests' => $invalid_requests,
+			)
+		);
+
+		$this->assertWPErrorWithMessage( 'Batch report requests must be an array with 1-5 requests.', $data, $message );
+		$this->assertEquals( 'invalid_batch_size', $data->get_error_code(), $message );
+		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_batch_size' ), 'Error data should include status 400 for invalid batch size.' );
+	}
+
+	public function data_invalid_batch_report_requests() {
+		return array(
+			'requests not array' => array(
+				'not-an-array',
+				'Batch report should reject non-array requests parameter.',
+			),
+			'too many requests'  => array(
+				array_fill( 0, 6, array( 'metrics' => array( 'sessions' ) ) ),
+				'Batch report should reject request arrays longer than five entries.',
+			),
 		);
 	}
 
@@ -2899,6 +3500,77 @@ class Analytics_4Test extends TestCase {
 													),
 												),
 											),
+										),
+									),
+								)
+							)
+						)
+					);
+
+				case "/v1beta/properties/$property_id:batchRunReports":
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode(
+								array(
+									'kind'    => 'analyticsData#batchRunReports',
+									'reports' => array(
+										array(
+											'kind'     => 'analyticsData#runReport',
+											'dimensionHeaders' => array(
+												array( 'name' => 'sessionDefaultChannelGrouping' ),
+												array( 'name' => 'date' ),
+											),
+											'metricHeaders' => array(
+												array(
+													'name' => 'sessions',
+													'type' => 'TYPE_INTEGER',
+												),
+											),
+											'rows'     => array(
+												array(
+													'dimensionValues' => array(
+														array( 'value' => 'Organic Search' ),
+														array( 'value' => '2024-07-10' ),
+													),
+													'metricValues'    => array(
+														array( 'value' => 'batch-value-1' ),
+													),
+												),
+											),
+											'totals'   => array(),
+											'maximums' => array(),
+											'minimums' => array(),
+											'metadata' => array( 'timeZone' => 'UTC' ),
+										),
+										array(
+											'kind'     => 'analyticsData#runReport',
+											'dimensionHeaders' => array(
+												array( 'name' => 'date' ),
+												array( 'name' => 'newVsReturning' ),
+											),
+											'metricHeaders' => array(
+												array(
+													'name' => 'activeUsers',
+													'type' => 'TYPE_INTEGER',
+												),
+											),
+											'rows'     => array(
+												array(
+													'dimensionValues' => array(
+														array( 'value' => '2024-07-10' ),
+														array( 'value' => 'returning' ),
+													),
+													'metricValues'    => array(
+														array( 'value' => 'batch-value-2' ),
+													),
+												),
+											),
+											'totals'   => array(),
+											'maximums' => array(),
+											'minimums' => array(),
+											'metadata' => array( 'timeZone' => 'UTC' ),
 										),
 									),
 								)

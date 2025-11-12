@@ -71,12 +71,8 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      # npm@7 is the minimum version required for this repository.
-      # TODO: Remove this step once our node base version comes with npm@7 or greater.
-      - name: Install npm globally
-        run: npm run install-global-npm
       - name: npm install
-        run: npm ci
+        run: npm i -w assets -w storybook -w tests/js --include-workspace-root
       - name: Build Storybook
         run: npm run build:storybook
       - name: Upload artifacts
@@ -136,6 +132,38 @@ jobs:
         env:
           TARGET_DIR: ${{ steps.branch-target.outputs.dir }}${{ steps.pr-target.outputs.dir }}
 
+  add-comment-to-pr:
+    name: Add comment to PR
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: deploy-storybook
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Check the comment exists
+        id: find-comment
+        uses: peter-evans/find-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: github-actions[bot]
+          body-includes: Storybook is ready
+      - name: Get comment body
+        id: get-comment-body
+        # Setting a multi-line output requires escaping line-feeds. See <https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings>.
+        run: |
+          body="Storybook is ready:
+          - View [Storybook](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/index.html)"
+          delimiter="${body//$'\n'/'%0A'}"
+          echo "body<<${delimiter}" >> "$GITHUB_OUTPUT"
+          echo "$body" >> "$GITHUB_OUTPUT"
+          echo "${delimiter}" >> "$GITHUB_OUTPUT"
+      - name: Create comment on PR with link to Storybook
+        if: ${{ steps.find-comment.outputs.comment-id == '' }}
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: ${{ steps.get-comment-body.outputs.body }}
+
   test-storybook:
     name: Test Storybook
     runs-on: ubuntu-latest
@@ -164,11 +192,8 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      # npm@7 is the minimum version required for this repository.
-      # TODO: Remove this step once our node base version comes with npm@7 or greater.
-      - name: Install npm globally
-        run: npm run install-global-npm
       - name: npm install
-        run: npm ci
-      - name: Test Storybook
-        run: npm run test:storybook
+        run: npm i -w assets -w storybook -w tests/js --include-workspace-root
+      # TODO: #10473 will complete the migration to Storybook test-runner as storyshots is deprecated.
+      # - name: Test Storybook
+      #   run: npm run test:storybook

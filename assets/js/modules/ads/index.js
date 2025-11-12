@@ -52,6 +52,9 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
+import EnhancedConversionsNotification, {
+	ENHANCED_CONVERSIONS_NOTIFICATION_ADS,
+} from './components/notifications/EnhancedConversionsNotification';
 
 export { registerStore } from './datastore';
 
@@ -176,9 +179,6 @@ export const ADS_NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			await Promise.all( [
-				// The isPromptDismissed selector relies on the resolution
-				// of the getDismissedPrompts() resolver.
-				resolveSelect( CORE_USER ).getDismissedPrompts(),
 				// isGoogleForWooCommerceLinked is relying
 				// on the data being resolved in getModuleData() selector.
 				resolveSelect( MODULES_ADS ).getModuleData(),
@@ -191,21 +191,38 @@ export const ADS_NOTIFICATIONS = {
 			] );
 
 			const { isModuleConnected } = select( CORE_MODULES );
-			const { isPromptDismissed } = select( CORE_USER );
 			const { hasGoogleForWooCommerceAdsAccount } = select( MODULES_ADS );
 
 			const isAdsConnected = isModuleConnected( MODULE_SLUG_ADS );
-			const isDismissed = isPromptDismissed( 'ads-setup-cta' );
 
 			return (
 				isAdsConnected === false &&
-				isDismissed === false &&
 				hasGoogleForWooCommerceAdsAccount() === false
 			);
 		},
 		isDismissible: true,
 		dismissRetries: 1,
 		featureFlag: 'adsPax',
+	},
+	[ ENHANCED_CONVERSIONS_NOTIFICATION_ADS ]: {
+		Component: EnhancedConversionsNotification,
+		priority: PRIORITY.INFO,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: async ( { resolveSelect } ) => {
+			const adsConnected = await resolveSelect(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ADS );
+
+			if ( ! adsConnected ) {
+				return false;
+			}
+
+			return true;
+		},
+		isDismissible: true,
+		featureFlag: 'gtagUserData',
 	},
 };
 

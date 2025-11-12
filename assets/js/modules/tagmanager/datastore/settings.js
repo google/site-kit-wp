@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isEqual, pick } from 'lodash';
 
 /**
  * Internal dependencies
@@ -53,6 +54,8 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { createStrictSelect } from '@/js/googlesitekit/data/utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID =
@@ -150,6 +153,32 @@ export async function submitChanges( { select, dispatch } ) {
 		).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 		if ( analyticsModuleConnected ) {
 			await dispatch( MODULES_ANALYTICS_4 ).fetchGetSettings();
+		}
+	}
+
+	if ( select( CORE_SITE ).haveGoogleTagGatewaySettingsChanged() ) {
+		const { error } = await dispatch(
+			CORE_SITE
+		).saveGoogleTagGatewaySettings();
+
+		if ( error ) {
+			return { error };
+		}
+
+		if (
+			select( CORE_SITE ).isGoogleTagGatewayEnabled() &&
+			! select( CORE_NOTIFICATIONS ).isNotificationDismissed(
+				GTG_SETUP_CTA_BANNER_NOTIFICATION
+			)
+		) {
+			const { error: dismissError } =
+				( await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
+					GTG_SETUP_CTA_BANNER_NOTIFICATION
+				) ) || {};
+
+			if ( dismissError ) {
+				return { error: dismissError };
+			}
 		}
 	}
 
@@ -252,4 +281,31 @@ export function validateCanSubmitChanges( select ) {
 			);
 		}
 	}
+}
+
+export function rollbackChanges( { select, dispatch } ) {
+	if ( select( MODULES_TAGMANAGER ).haveSettingsChanged() ) {
+		dispatch( MODULES_TAGMANAGER ).rollbackSettings();
+		dispatch( CORE_SITE ).resetGoogleTagGatewaySettings();
+	}
+}
+
+export function validateHaveSettingsChanged( select, state, keys ) {
+	const { settings, savedSettings } = state;
+	const haveGoogleTagGatewaySettingsChanged =
+		select( CORE_SITE ).haveGoogleTagGatewaySettingsChanged();
+
+	if ( keys ) {
+		invariant(
+			isEqual( pick( settings, keys ), pick( savedSettings, keys ) ) ||
+				haveGoogleTagGatewaySettingsChanged,
+			INVARIANT_SETTINGS_NOT_CHANGED
+		);
+	}
+
+	invariant(
+		! isEqual( settings, savedSettings ) ||
+			haveGoogleTagGatewaySettingsChanged,
+		INVARIANT_SETTINGS_NOT_CHANGED
+	);
 }

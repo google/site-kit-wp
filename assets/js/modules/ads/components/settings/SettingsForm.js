@@ -27,11 +27,13 @@ import { createInterpolateElement } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import { TYPES } from '@/js/components/Notice/constants';
 import ConversionTrackingToggle from '@/js/components/conversion-tracking/ConversionTrackingToggle';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { ConversionIDTextField } from '@/js/modules/ads/components/common';
 import { useFeature } from '@/js/hooks/useFeature';
 import DisplaySetting from '@/js/components/DisplaySetting';
+import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Link from '@/js/components/Link';
 import SettingsGroup from '@/js/components/settings/SettingsGroup';
@@ -41,6 +43,7 @@ import Typography from '@/js/components/Typography';
 export default function SettingsForm() {
 	const paxEnabled = useFeature( 'adsPax' );
 	const gtgEnabled = useFeature( 'googleTagGateway' );
+	const gtagUserDataEnabled = useFeature( 'gtagUserData' );
 
 	const conversionID = useSelect( ( select ) =>
 		select( MODULES_ADS ).getConversionID()
@@ -56,7 +59,7 @@ export default function SettingsForm() {
 
 	const conversionTrackingDocumentationURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL(
-			'enhanced-conversion-tracking'
+			'plugin-conversion-tracking'
 		)
 	);
 
@@ -147,6 +150,11 @@ export default function SettingsForm() {
 					) }
 				</ConversionTrackingToggle>
 				{ gtgEnabled && <GoogleTagGatewayToggle /> }
+				{ gtagUserDataEnabled && (
+					<EnhancedConversionsSettingsNotice
+						type={ TYPES.INFO_ALT }
+					/>
+				) }
 			</SettingsGroup>
 		</div>
 	);

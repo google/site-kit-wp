@@ -24,9 +24,14 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { createReducer, createRegistrySelector } from 'googlesitekit-data';
+import {
+	commonActions,
+	createReducer,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4, RESOURCE_TYPES } from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 function getModuleDataProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -52,12 +57,12 @@ export const initialState = {
 
 export const actions = {
 	/**
-	 * Stores conversion reporting inline data in the datastore.
+	 * Stores module data in the datastore.
 	 *
 	 * @since 1.148.0
 	 * @private
 	 *
-	 * @param {Object} data Inline data, usually supplied via a global variable from PHP.
+	 * @param {Object} data Module data object.
 	 * @return {Object} Redux-style action.
 	 */
 	receiveModuleData( data ) {
@@ -114,15 +119,19 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 			} = payload;
 
 			// Replace empty array value with empty object in resourceAvailabilityDates object.
-			Object.keys( resourceAvailabilityDates || {} ).forEach( ( key ) => {
-				if ( Array.isArray( resourceAvailabilityDates[ key ] ) ) {
-					resourceAvailabilityDates[ key ] = {};
-				}
-			} );
+			const replacedResourceAvailabilityDates = Object.entries(
+				resourceAvailabilityDates || {}
+			).reduce(
+				( acc, [ key, value ] ) => ( {
+					...acc,
+					[ key ]: Array.isArray( value ) ? {} : value,
+				} ),
+				{}
+			);
 
 			const moduleData = {
 				hasMismatchedTag: !! tagIDMismatch,
-				resourceAvailabilityDates,
+				resourceAvailabilityDates: replacedResourceAvailabilityDates,
 				customDimensionsDataAvailable,
 				newEvents,
 				lostEvents,
@@ -155,15 +164,20 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 		}
 
 		default: {
-			return state;
+			break;
 		}
 	}
 } );
 
 export const resolvers = {
 	*getModuleData() {
-		const moduleData =
-			global._googlesitekitModulesData?.[ MODULE_SLUG_ANALYTICS_4 ];
+		const { resolveSelect } = yield commonActions.getRegistry();
+
+		const moduleData = yield commonActions.await(
+			resolveSelect( CORE_MODULES ).getModuleInlineData(
+				MODULE_SLUG_ANALYTICS_4
+			)
+		);
 
 		if ( ! moduleData ) {
 			return;

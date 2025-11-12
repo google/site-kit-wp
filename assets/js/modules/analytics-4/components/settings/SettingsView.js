@@ -33,6 +33,7 @@ import {
 import OptionalSettingsView from './OptionalSettingsView';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import DisplaySetting, { BLANK_SPACE } from '@/js/components/DisplaySetting';
+import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
 import Link from '@/js/components/Link';
 import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { escapeURI } from '@/js/util/escape-uri';
@@ -47,6 +48,7 @@ import Typography from '@/js/components/Typography';
 
 export default function SettingsView() {
 	const gtgEnabled = useFeature( 'googleTagGateway' );
+	const gtagUserDataEnabled = useFeature( 'gtagUserData' );
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
@@ -281,6 +283,8 @@ export default function SettingsView() {
 						: [] ),
 				] }
 			/>
+
+			{ gtagUserDataEnabled && <EnhancedConversionsSettingsNotice /> }
 		</div>
 	);
 }

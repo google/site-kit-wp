@@ -28,6 +28,7 @@ import {
 	provideSiteInfo,
 	provideModules,
 	provideUserCapabilities,
+	provideUserAuthentication,
 	provideModuleRegistrations,
 	act,
 } from '../../../../../../tests/js/test-utils';
@@ -82,6 +83,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		provideModules( registry );
 		provideModuleRegistrations( registry );
 		provideUserCapabilities( registry );
+		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
@@ -447,9 +449,12 @@ describe( 'WooCommerceRedirectModal', () => {
 		} );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-		const { getByText, waitForRegistry } = render( <ModalComponent />, {
-			registry,
-		} );
+		const { getByText, getByRole, waitForRegistry } = render(
+			<ModalComponent />,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -460,6 +465,8 @@ describe( 'WooCommerceRedirectModal', () => {
 		await act( async () => {
 			await fireEvent.click( viewCurrentAdsAccountButton );
 		} );
+
+		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
 
 		expect( dismissNotificationSpy ).toHaveBeenCalled();
 

@@ -29,6 +29,8 @@ import {
 	createTestRegistry,
 	fireEvent,
 	provideModules,
+	provideUserAuthentication,
+	provideUserCapabilities,
 	provideUserInfo,
 	render,
 } from '../../../../../../../tests/js/test-utils';
@@ -87,6 +89,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 				setupComplete: true,
 			},
 		] );
+		provideUserAuthentication( registry );
 
 		const userID = registry.select( CORE_USER ).getID();
 
@@ -234,7 +237,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			expect( isActive ).toBe( false );
 		} );
 
-		it( 'is active when the view context is view only but the module can be viewed', async () => {
+		it( 'is active when the user is not authenticated but the module can be viewed', async () => {
 			provideModules( registry, [
 				{
 					slug: MODULE_SLUG_ANALYTICS_4,
@@ -243,9 +246,11 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 					shareable: true,
 				},
 			] );
-			registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+			provideUserAuthentication( registry, { authenticated: false } );
+			provideUserCapabilities( registry, {
 				'googlesitekit_read_shared_module_data::["analytics-4"]': true,
 			} );
+
 			const isActive = await notification.checkRequirements(
 				registry,
 				VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
@@ -253,7 +258,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 			expect( isActive ).toBe( true );
 		} );
 
-		it( 'is not active when the view context is view only but the module cannot be viewed', async () => {
+		it( 'is not active when the user is not authenticated but the module cannot be viewed', async () => {
 			provideModules( registry, [
 				{
 					slug: MODULE_SLUG_ANALYTICS_4,
@@ -262,9 +267,11 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 					shareable: true,
 				},
 			] );
-			registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+			provideUserAuthentication( registry, { authenticated: false } );
+			provideUserCapabilities( registry, {
 				'googlesitekit_read_shared_module_data::["analytics-4"]': false,
 			} );
+
 			const isActive = await notification.checkRequirements(
 				registry,
 				VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY

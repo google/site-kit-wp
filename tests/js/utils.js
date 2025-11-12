@@ -228,6 +228,7 @@ export function provideUserInfo( registry, extraData = {} ) {
 		name: 'Wapuu WordPress',
 		full_name: 'Wapuu WordPress PhD',
 		email: 'wapuu.wordpress@gmail.com',
+		wpEmail: 'wapuu.wordpress@gmail.com',
 		picture:
 			'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
 	};
@@ -676,6 +677,40 @@ export function waitForTimeouts( timeout ) {
 }
 
 /**
+ * Checks if fake timers are currently active.
+ *
+ * @since 1.163.0
+ *
+ * @return {boolean} Whether fake timers are active.
+ */
+export function isUsingFakeTimers() {
+	// Check if `setTimeout()` is mocked (works in all Jest versions).
+	let fakeTimersActive = jest.isMockFunction( setTimeout );
+
+	// Additional check for Jest 29+ - check if advance functions exist.
+	// These functions only exist when fake timers are enabled, and check
+	// the global `setTimeout()` properties without calling warning-generating functions.
+	if (
+		! fakeTimersActive &&
+		typeof jest.advanceTimersByTime === 'function'
+	) {
+		// In fake timer mode, `setTimeout()` has additional properties.
+		try {
+			fakeTimersActive =
+				setTimeout._isMockFunction === true ||
+				typeof setTimeout.clock !== 'undefined' ||
+				Object.prototype.hasOwnProperty.call(
+					setTimeout,
+					'_timerConfig'
+				);
+		} catch ( error ) {
+			fakeTimersActive = false;
+		}
+	}
+	return fakeTimersActive;
+}
+
+/**
  * Creates a function that allows extra time for registry updates to have completed.
  *
  * @since 1.39.0
@@ -685,10 +720,7 @@ export function waitForTimeouts( timeout ) {
  * @return {Function} Function to await all registry updates since creation.
  */
 export function createWaitForRegistry( registry ) {
-	if (
-		process.env.NODE_ENV === 'test' &&
-		jest.isMockFunction( setTimeout )
-	) {
+	if ( isUsingFakeTimers() ) {
 		// Fail if attempted to use.
 		return () => {
 			throw new Error(

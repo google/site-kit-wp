@@ -91,6 +91,12 @@ GTGEnabled.parameters = {
 	features: [ 'googleTagGateway' ],
 };
 
+export const WithEnhancedConversionsNotice = Template.bind( null );
+WithEnhancedConversionsNotice.storyName = 'With enhanced conversions notice';
+WithEnhancedConversionsNotice.parameters = {
+	features: [ 'gtagUserData' ],
+};
+
 export default {
 	title: 'Modules/Analytics4/Settings/SettingsView',
 	decorators: [
@@ -115,11 +121,10 @@ export default {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setEnhancedMeasurementStreamEnabled( {
-						propertyID,
-						webDataStreamID,
-						enabled: true,
-					} );
+					.receiveGetEnhancedMeasurementSettings(
+						fixtures.defaultEnhancedMeasurementSettings,
+						{ propertyID, webDataStreamID }
+					);
 
 				if ( args.enhancedConversionTracking !== 'resolving' ) {
 					registry

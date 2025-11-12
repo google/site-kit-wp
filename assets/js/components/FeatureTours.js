@@ -48,7 +48,8 @@ export default function FeatureTours() {
 
 	useEffect( () => {
 		if ( ! tour ) {
-			return;
+			// Return noop cleanup function to satisfy consistent-return rule.
+			return () => {};
 		}
 
 		const dashboardElement = document.getElementById(
@@ -56,7 +57,8 @@ export default function FeatureTours() {
 		);
 
 		if ( ! dashboardElement ) {
-			return;
+			// Return noop cleanup function to satisfy consistent-return rule.
+			return () => {};
 		}
 
 		const observer = new ResizeObserver( () => {

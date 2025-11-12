@@ -18,7 +18,6 @@
 		"test": "npm run -w tests/js test:js:watch",
 		"test:visualtest": "npm run -w tests/backstop test:visualtest",
 		"test:visualapprove": "npm run -w tests/backstop test:visualapprove",
-		"test:analyze": "npm run build:production -- --env.ANALYZE",
 		"test:js": "npm run -w tests/js test:js",
 		"test:js:watch": "npm run -w tests/js test:js:watch",
 		"test:storybook": "jest --config=./tests/js/jest.config.js --testMatch '<rootDir>/storybook/stories.test.js'",
@@ -37,7 +36,6 @@
 		"env:start": "npm run -w tests/e2e start",
 		"env:stop": "npm run -w tests/e2e stop",
 		"env:reset-site": "npm run -w tests/e2e reset-site",
-		"install-global-npm": "npm install -g npm@7.24.2",
 		"postinstall": "patch-package",
 		"preinstall": "./bin/check-node-version.js",
 		"typecheck": "tsc --noEmit"
@@ -79,6 +77,7 @@
 		"@wordpress/stylelint-config": "^21.0.0",
 		"archiver": "^5.0.2",
 		"babel-eslint": "^10.1.0",
+		"babel-loader": "^9.2.1",
 		"eslint": "^7.32.0",
 		"eslint-import-resolver-alias": "^1.1.2",
 		"eslint-plugin-filenames": "^1.3.2",
@@ -107,7 +106,8 @@
 		"stylelint-declaration-strict-value": "^1.9.0",
 		"stylelint-order": "^5.0.0",
 		"stylelint-scss": "^4.3.0",
-		"typescript": "^5.9.2"
+		"typescript": "^5.9.2",
+		"webpack-cli": "^6.0.1"
 	},
 	"workspaces": [
 		"assets",

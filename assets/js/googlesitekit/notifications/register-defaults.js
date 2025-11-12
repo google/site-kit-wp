@@ -84,11 +84,14 @@ import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
 	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
 } from '@/js/components/OverlayNotification/LinkAnalyticsAndAdSenseAccountsOverlayNotification';
+import SetUpEmailReportingOverlayNotification, {
+	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
+} from '@/js/components/email-reporting/SetUpEmailReportingOverlayNotification';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'authentication-error': {
 		Component: UnsatisfiedScopesAlert,
-		priority: PRIORITY.ERROR_LOW,
+		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -99,9 +102,6 @@ export const DEFAULT_NOTIFICATIONS = {
 		],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			await Promise.all( [
-				// The getSetupErrorMessage selector relies on the resolution
-				// of the getSiteInfo() resolver.
-				resolveSelect( CORE_SITE ).getSiteInfo(),
 				// The isAuthenticated(), hasScope() and getUnsatisfiedScopes() selectors
 				// rely on the resolution of getAuthentication().
 				resolveSelect( CORE_USER ).getAuthentication(),
@@ -109,9 +109,6 @@ export const DEFAULT_NOTIFICATIONS = {
 				// of the getModules() resolver.
 				resolveSelect( CORE_MODULES ).getModules(),
 			] );
-
-			const setupErrorMessage =
-				select( CORE_SITE ).getSetupErrorMessage();
 
 			const isAuthenticated = select( CORE_USER ).isAuthenticated();
 
@@ -133,7 +130,6 @@ export const DEFAULT_NOTIFICATIONS = {
 
 			return (
 				unsatisfiedScopes?.length &&
-				! setupErrorMessage &&
 				isAuthenticated &&
 				! showUnsatisfiedScopesAlertGTE
 			);
@@ -142,7 +138,7 @@ export const DEFAULT_NOTIFICATIONS = {
 	},
 	'authentication-error-gte': {
 		Component: UnsatisfiedScopesAlertGTE,
-		priority: PRIORITY.ERROR_LOW,
+		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -153,9 +149,6 @@ export const DEFAULT_NOTIFICATIONS = {
 		],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			await Promise.all( [
-				// The getSetupErrorMessage selector relies on the resolution
-				// of the getSiteInfo() resolver.
-				resolveSelect( CORE_SITE ).getSiteInfo(),
 				// The isAuthenticated() and hasScope() selectors
 				// rely on the resolution of getAuthentication().
 				resolveSelect( CORE_USER ).getAuthentication(),
@@ -163,9 +156,6 @@ export const DEFAULT_NOTIFICATIONS = {
 				// of the getModules() resolver.
 				resolveSelect( CORE_MODULES ).getModules(),
 			] );
-
-			const setupErrorMessage =
-				select( CORE_SITE ).getSetupErrorMessage();
 
 			const isAuthenticated = select( CORE_USER ).isAuthenticated();
 
@@ -180,17 +170,13 @@ export const DEFAULT_NOTIFICATIONS = {
 			const showUnsatisfiedScopesAlertGTE =
 				ga4ModuleConnected && ! hasTagManagerReadScope;
 
-			return (
-				! setupErrorMessage &&
-				isAuthenticated &&
-				showUnsatisfiedScopesAlertGTE
-			);
+			return isAuthenticated && showUnsatisfiedScopesAlertGTE;
 		},
 		isDismissible: false,
 	},
 	setup_plugin_error: {
 		Component: SetupErrorMessageNotification,
-		priority: PRIORITY.ERROR_HIGH,
+		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -828,6 +814,29 @@ export const DEFAULT_NOTIFICATIONS = {
 				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
 
 			return isAdSenseLinked === false;
+		},
+	},
+	[ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION ]: {
+		Component: SetUpEmailReportingOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		featureFlag: 'proactiveUserEngagement',
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			const settings = await resolveSelect(
+				CORE_USER
+			).getEmailReportingSettings();
+
+			if ( settings === undefined || settings?.subscribed ) {
+				return false;
+			}
+
+			return ! select( CORE_USER ).isEmailReportingSubscribed();
 		},
 	},
 };

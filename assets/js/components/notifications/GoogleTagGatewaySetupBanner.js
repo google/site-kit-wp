@@ -35,7 +35,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { useShowTooltip } from '@/js/components/AdminMenuTooltip';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -62,10 +62,6 @@ export default function GoogleTagGatewaySetupBanner( { id, Notification } ) {
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
 	};
 	const showTooltip = useShowTooltip( tooltipSettings );
-
-	const usingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
 
 	const { dismissNotification, registerNotification } =
 		useDispatch( CORE_NOTIFICATIONS );
@@ -109,10 +105,8 @@ export default function GoogleTagGatewaySetupBanner( { id, Notification } ) {
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 	const handleView = useCallback( () => {
-		if ( usingProxy ) {
-			triggerSurvey( 'view_gtg_setup_cta', { ttl: DAY_IN_SECONDS } );
-		}
-	}, [ triggerSurvey, usingProxy ] );
+		triggerSurvey( 'view_gtg_setup_cta', { ttl: DAY_IN_SECONDS } );
+	}, [ triggerSurvey ] );
 
 	return (
 		<Notification onView={ handleView }>

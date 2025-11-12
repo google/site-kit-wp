@@ -133,10 +133,10 @@ export default function DashboardPopularKeywordsWidget( props ) {
 	}
 
 	const columnClassName =
-		'googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--medium';
+		'googlesitekit-typography googlesitekit-typography--title ';
 	const tableColumns = [
 		{
-			columnHeaderClassName: columnClassName,
+			columnHeaderClassName: `${ columnClassName } googlesitekit-typography--medium`,
 			title: url
 				? __( 'Top search queries for your page', 'google-site-kit' )
 				: __( 'Top search queries for your site', 'google-site-kit' ),
@@ -180,7 +180,7 @@ export default function DashboardPopularKeywordsWidget( props ) {
 			},
 		},
 		{
-			columnHeaderClassName: columnClassName,
+			columnHeaderClassName: `${ columnClassName } googlesitekit-typography--small`,
 			title: __( 'Clicks', 'google-site-kit' ),
 			description: __(
 				'Number of times users clicked on your content in search results',
@@ -193,7 +193,7 @@ export default function DashboardPopularKeywordsWidget( props ) {
 			},
 		},
 		{
-			columnHeaderClassName: columnClassName,
+			columnHeaderClassName: `${ columnClassName } googlesitekit-typography--small`,
 			title: __( 'Impressions', 'google-site-kit' ),
 			description: __(
 				'Counted each time your content appears in search results',

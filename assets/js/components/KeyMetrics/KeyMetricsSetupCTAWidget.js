@@ -38,7 +38,7 @@ import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import whenActive from '@/js/util/when-active';
-import { useShowTooltip } from '@/js/components/AdminMenuTooltip';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import { trackEvent, WEEK_IN_SECONDS } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
 import useDisplayCTAWidget from './hooks/useDisplayCTAWidget';
@@ -71,10 +71,6 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
-	const usingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
-
 	useEffect( () => {
 		if ( ! inView || hasBeenInView ) {
 			return;
@@ -85,12 +81,10 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 			'view_notification'
 		);
 
-		if ( usingProxy ) {
-			triggerSurvey( 'view_kmw_setup_cta', { ttl: WEEK_IN_SECONDS } );
-		}
+		triggerSurvey( 'view_kmw_setup_cta', { ttl: WEEK_IN_SECONDS } );
 
 		setHasBeenInView( true );
-	}, [ inView, hasBeenInView, viewContext, usingProxy, triggerSurvey ] );
+	}, [ inView, hasBeenInView, viewContext, triggerSurvey ] );
 
 	const tooltipSettings = {
 		tooltipSlug: KEY_METRICS_SETUP_CTA_WIDGET_SLUG,

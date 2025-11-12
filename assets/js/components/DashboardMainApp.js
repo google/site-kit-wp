@@ -48,8 +48,9 @@ import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
-import ScrollEffect from './ScrollEffect';
 import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
+import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
+import { useFeature } from '@/js/hooks/useFeature';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_KEY_METRICS,
@@ -66,6 +67,7 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import OfflineNotification from './notifications/OfflineNotification';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
+import CoreDashboardEffects from './CoreDashboardEffects';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
 import useQueryArg from '@/js/hooks/useQueryArg';
@@ -77,7 +79,7 @@ import {
 	NOTIFICATION_GROUPS,
 	NOTIFICATION_AREAS,
 } from '@/js/googlesitekit/notifications/constants';
-import { AdminMenuTooltip } from './AdminMenuTooltip';
+import { AdminScreenTooltip } from './AdminScreenTooltip';
 import useFormValue from '@/js/hooks/useFormValue';
 
 export default function DashboardMainApp() {
@@ -226,6 +228,8 @@ export default function DashboardMainApp() {
 		);
 	} );
 
+	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
+
 	useMonitorInternetConnection();
 
 	let lastWidgetAnchor = null;
@@ -244,10 +248,10 @@ export default function DashboardMainApp() {
 
 	return (
 		<Fragment>
-			<ScrollEffect />
+			<CoreDashboardEffects />
 			<ModuleDashboardEffects />
 
-			<AdminMenuTooltip />
+			<AdminScreenTooltip />
 
 			<Header showNavigation>
 				<EntitySearchInput />
@@ -327,6 +331,8 @@ export default function DashboardMainApp() {
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
+
+			{ emailReportingEnabled && <UserSettingsSelectionPanel /> }
 
 			{ configuredAudiences && <AudienceSelectionPanel /> }
 

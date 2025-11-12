@@ -82,6 +82,7 @@ describe( 'googlesitekit.api', () => {
 		expect( usingCache() ).toEqual( true );
 	} );
 
+	/* eslint-disable consistent-return */
 	describe( 'get', () => {
 		it( 'should throw an error when required arguments are missing', async () => {
 			try {
@@ -385,7 +386,9 @@ describe( 'googlesitekit.api', () => {
 			}
 		} );
 	} );
+	/* eslint-enable consistent-return */
 
+	/* eslint-disable consistent-return */
 	describe( 'set', () => {
 		it( 'should throw an error when required arguments are missing', async () => {
 			try {
@@ -655,6 +658,7 @@ describe( 'googlesitekit.api', () => {
 			}
 		} );
 	} );
+	/* eslint-enable consistent-return */
 
 	describe( 'invalidateCache', () => {
 		it( 'should remove all cached items when called', async () => {

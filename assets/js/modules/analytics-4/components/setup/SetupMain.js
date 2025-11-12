@@ -20,12 +20,13 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
-import { _x } from '@wordpress/i18n';
-import { useEffect, useState } from '@wordpress/element';
+import { _x, __ } from '@wordpress/i18n';
+import { Fragment, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -44,7 +45,10 @@ import {
 	AccountCreate,
 	AccountCreateLegacy,
 } from '@/js/modules/analytics-4/components/common';
+import ToastNotice from '@/js/components/ToastNotice';
 import Typography from '@/js/components/Typography';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) =>
@@ -95,19 +99,29 @@ export default function SetupMain( { finishSetup } ) {
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
 
-	const isCreateAccount = ACCOUNT_CREATE === accountID;
+	const isCreateAccount =
+		ACCOUNT_CREATE === accountID ||
+		( Array.isArray( accounts ) && ! accounts.length );
+
+	const [ showProgress ] = useQueryArg( 'showProgress' );
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
+	const isInitialSetupFlow = !! showProgress && setupFlowRefreshEnabled;
+
+	const [ searchConsoleSetupSuccess, setSearchConsoleSetupSuccess ] =
+		useQueryArg( 'searchConsoleSetupSuccess' );
+
+	const showSearchConsoleSetupSuccessToast =
+		!! searchConsoleSetupSuccess && setupFlowRefreshEnabled;
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
 	if ( ! hasResolvedAccounts || isMatchedAccount ) {
 		viewComponent = <ProgressBar />;
-	} else if (
-		isCreateAccount ||
-		( Array.isArray( accounts ) && ! accounts.length )
-	) {
+	} else if ( isCreateAccount ) {
 		viewComponent = usingProxy ? (
-			<AccountCreate />
+			<AccountCreate className="googlesitekit-analytics-setup__form" />
 		) : (
 			<AccountCreateLegacy />
 		);
@@ -116,25 +130,68 @@ export default function SetupMain( { finishSetup } ) {
 	}
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
-			<div className="googlesitekit-setup-module__step">
-				<div className="googlesitekit-setup-module__logo">
-					<AnalyticsIcon width="40" height="40" />
-				</div>
+		<Fragment>
+			<div
+				className={ classnames(
+					'googlesitekit-setup-module googlesitekit-setup-module--analytics',
+					{
+						'googlesitekit-feature--setupFlowRefresh':
+							setupFlowRefreshEnabled,
+					}
+				) }
+			>
+				<div className="googlesitekit-setup-module__step">
+					{ isInitialSetupFlow ? (
+						<Typography
+							as="h1"
+							className="googlesitekit-setup__title"
+							size="medium"
+							type="headline"
+						>
+							{ isCreateAccount
+								? __(
+										'Create your Analytics account',
+										'google-site-kit'
+								  )
+								: __( 'Set up Analytics', 'google-site-kit' ) }
+						</Typography>
+					) : (
+						<Fragment>
+							<div className="googlesitekit-setup-module__logo">
+								<AnalyticsIcon width="40" height="40" />
+							</div>
 
-				<Typography
-					as="h3"
-					className="googlesitekit-setup-module__title"
-					size="small"
-					type="headline"
-				>
-					{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-				</Typography>
+							<Typography
+								as="h3"
+								className="googlesitekit-setup-module__title"
+								size="small"
+								type="headline"
+							>
+								{ _x(
+									'Analytics',
+									'Service name',
+									'google-site-kit'
+								) }
+							</Typography>
+						</Fragment>
+					) }
+				</div>
+				<div className="googlesitekit-setup-module__step">
+					{ viewComponent }
+				</div>
 			</div>
-			<div className="googlesitekit-setup-module__step">
-				{ viewComponent }
-			</div>
-		</div>
+			{ showSearchConsoleSetupSuccessToast && (
+				<ToastNotice
+					title={ __(
+						'Search Console was successfully set up',
+						'google-site-kit'
+					) }
+					onDismiss={ () =>
+						setSearchConsoleSetupSuccess( undefined )
+					}
+				/>
+			) }
+		</Fragment>
 	);
 }
 

@@ -32,6 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
@@ -46,7 +47,8 @@ import {
 	ACTIVATION_STEP_SUCCESS,
 	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
 } from '@/js/modules/analytics-4/constants';
-import { useShowTooltip } from '@/js/components/AdminMenuTooltip/useShowTooltip';
+import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip/useShowTooltip';
 import ProcessingBanner from './ProcessingBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
@@ -68,6 +70,7 @@ export default function EnhancedMeasurementActivationBanner( {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
+	const { unpinNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const tooltipSettings = {
 		tooltipSlug: ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
@@ -96,8 +99,10 @@ export default function EnhancedMeasurementActivationBanner( {
 			return;
 		}
 
+		await unpinNotification( id, NOTIFICATION_GROUPS.SETUP_CTAS );
+
 		setStep( ACTIVATION_STEP_SUCCESS );
-	}, [ setValues, submitChanges ] );
+	}, [ id, setValues, submitChanges, unpinNotification ] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
