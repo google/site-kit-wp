@@ -101,7 +101,7 @@ class Has_Multiple_Admins {
 	 * @param WP_User $user    User object.
 	 * @return void
 	 */
-	public function handle_user_deletion( $user_id, $reassign, $user = null ) {
+	protected function handle_user_deletion( $user_id, $reassign, $user = null ) {
 		if ( isset( $user ) && ! in_array( 'administrator', $user->roles, true ) ) {
 			return;
 		}
@@ -127,7 +127,7 @@ class Has_Multiple_Admins {
 	 * @param array  $old_roles Old roles.
 	 * @return void
 	 */
-	public function handle_set_user_role( $user_id, $role, $old_roles = array() ) {
+	protected function handle_set_user_role( $user_id, $role, $old_roles = array() ) {
 		if ( ! in_array( 'administrator', (array) $old_roles, true ) && 'administrator' !== $role ) {
 			return;
 		}
@@ -152,7 +152,7 @@ class Has_Multiple_Admins {
 	 * @param string $role    Role being added/removed.
 	 * @return void
 	 */
-	public function handle_add_remove_role( $user_id, $role ) {
+	protected function handle_add_remove_role( $user_id, $role ) {
 		if ( isset( $role ) && 'administrator' !== $role ) {
 			return;
 		}
