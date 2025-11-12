@@ -56,8 +56,8 @@ class Has_Multiple_Admins {
 	 */
 	public function register() {
 		add_action( 'deleted_user', $this->get_method_proxy( 'handle_user_deletion' ), 10, 3 );
-		add_action( 'add_user_role', $this->get_method_proxy( 'handle_role_change' ), 10, 2 );
-		add_action( 'remove_user_role', $this->get_method_proxy( 'handle_role_change' ), 10, 2 );
+		add_action( 'add_user_role', $this->get_method_proxy( 'handle_add_remove_role' ), 10, 2 );
+		add_action( 'remove_user_role', $this->get_method_proxy( 'handle_add_remove_role' ), 10, 2 );
 	}
 
 	/**
@@ -120,7 +120,7 @@ class Has_Multiple_Admins {
 	 * @param string $role    Role being added/removed.
 	 * @return void
 	 */
-	public function handle_role_change( $user_id, $role ) {
+	public function handle_add_remove_role( $user_id, $role ) {
 		if ( isset( $role ) && 'administrator' !== $role ) {
 			return;
 		}
