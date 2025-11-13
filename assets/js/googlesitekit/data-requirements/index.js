@@ -24,7 +24,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 /**
  * Returns a function that checks if the current user has the given scope.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @param {string} scope Scope to check.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the current user has the given scope.
@@ -40,7 +40,7 @@ export function requireScope( scope ) {
 /**
  * Returns a function that checks if the current user is authenticated.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether or not the current user is authenticated.
  */
@@ -55,7 +55,7 @@ export function requireIsAuthenticated() {
 /**
  * Returns a function that checks if the current user can view the given shared module.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @param {string} slug Module slug to test.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the current user can view the given shared module.
@@ -71,7 +71,7 @@ export function requireCanViewSharedModule( slug ) {
 /**
  * Returns a function that checks if the given module is connected.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @param {string} slug Module slug to test.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the given module is connected or not.
@@ -88,7 +88,7 @@ export function requireModuleConnected( slug ) {
 /**
  * Returns a function that checks if the current user is the owner of the given module.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @param {string} slug Module slug to test.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the given module is owned by the current user or not.
@@ -102,7 +102,7 @@ export function requireModuleOwnership( slug ) {
 /**
  * Returns a function that checks if the current user has access to the given module.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @param {string} slug Module slug to test.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the current user has access to the given module or not.
@@ -116,7 +116,7 @@ export function requireModuleAccess( slug ) {
 /**
  * Returns a function that checks if the given item is dismissed.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @param {string} item Dismissible item ID.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the given item is dismissed or not.
@@ -129,7 +129,7 @@ export function requireItemDismissed( item ) {
 /**
  * Returns a function that checks if the audience segmentation widget is hidden.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the widget is hidden or not.
  */

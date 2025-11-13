@@ -43,7 +43,7 @@ class Email_Reporting {
 	/**
 	 * User_Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 * @var User_Options
 	 */
 	protected $user_options;
@@ -51,7 +51,7 @@ class Email_Reporting {
 	/**
 	 * User_Email_Reporting_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 * @var User_Email_Reporting_Settings
 	 */
 	protected $user_settings;
@@ -67,7 +67,7 @@ class Email_Reporting {
 	/**
 	 * Email_Log instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 * @var Email_Log
 	 */
 	protected $email_log;
