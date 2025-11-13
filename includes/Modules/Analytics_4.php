@@ -62,6 +62,7 @@ use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Account_Ticket;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
@@ -718,10 +719,15 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 			),
-			'POST:create-property'                      => array(
-				'service'                => 'analyticsadmin',
-				'scopes'                 => array( self::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
+			'POST:create-property'                      => new Create_Property(
+				array(
+					'reference_site_url'     => $this->context->get_reference_site_url(),
+					'service'                => function () {
+						return $this->get_service( 'analyticsadmin' );
+					},
+					'scopes'                 => array( self::EDIT_SCOPE ),
+					'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
+				)
 			),
 			'POST:create-webdatastream'                 => array(
 				'service'                => 'analyticsadmin',
@@ -1229,22 +1235,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 						$property_id,
 						$post_body
 					);
-			case 'POST:create-property':
-				if ( ! isset( $data['accountID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
-						array( 'status' => 400 )
-					);
-				}
-
-				$options = array(
-					'displayName' => $data['displayName'],
-					'timezone'    => $data['timezone'],
-				);
-
-				return $this->create_property( $data['accountID'], $options );
 			case 'POST:create-webdatastream':
 				if ( ! isset( $data['propertyID'] ) ) {
 					return new WP_Error(
@@ -1865,8 +1855,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				return (array) $response->getGoogleAdsLinks();
 			case 'GET:adsense-links':
 				return (array) $response->getAdsenseLinks();
-			case 'POST:create-property':
-				return self::filter_property_with_ids( $response );
 			case 'POST:create-webdatastream':
 				return self::filter_webdatastream_with_ids( $response );
 			case 'GET:properties':
