@@ -12,67 +12,20 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints;
 
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Modules\Sign_In_With_Google\Compatibility_Checks\Compatibility_Checks as Checks;
-use Google\Site_Kit\Modules\Sign_In_With_Google\Datapoint\Compatibility_Checks;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
-use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
-use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
-use Google\Site_Kit\Core\Modules\Module_With_Owner;
-use Google\Site_Kit\Core\Modules\Module_With_Scopes;
-use Google\Site_Kit\Core\Modules\Module_With_Settings;
-use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Tags\GTag;
-use Google\Site_Kit\Modules\AdSense;
-use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
-use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
-use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
-use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
-use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
-use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
-use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
-use Google\Site_Kit\Modules\Analytics_4\Settings;
-use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
-use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
-use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
-use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
-use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
-use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
-use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
-use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\FakeHttp;
-use Google\Site_Kit\Tests\ModulesHelperTrait;
-use Google\Site_Kit\Tests\MutableInput;
-use Google\Site_Kit\Tests\UserAuthenticationTrait;
 use Google\Site_Kit_Dependencies\Google\Service\Exception;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaListAudiencesResponse;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaCustomDimension;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaKeyEvent;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListCustomDimensionsResponse;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListKeyEventsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty;
-use Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaAdSenseLink;
-use Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaListAdSenseLinksResponse;
-use WP_Query;
 use WP_User;
-use ReflectionMethod;
-use WP_Error;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Account_Ticket;
 
 /**
@@ -146,24 +99,12 @@ class Create_Account_TicketTest extends TestCase {
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
 			function ( Request $request ) {
-				$url = parse_url( $request->getUri() );
+				$this->provision_account_ticket_request = $request;
 
-				if ( 'sitekit.withgoogle.com' !== $url['host'] ) {
-					return new FulfilledPromise( new Response( 200 ) );
-				}
+				$response = new GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse();
+				$response->setAccountTicketId( 'test-account-ticket-id' );
 
-				switch ( $url['path'] ) {
-					case '/v1beta/accounts:provisionAccountTicket':
-						$this->provision_account_ticket_request = $request;
-
-						$response = new GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse();
-						$response->setAccountTicketId( 'test-account-ticket-id' );
-
-						return new FulfilledPromise( new Response( 200, array(), json_encode( $response ) ) );
-
-					default:
-						throw new Exception( 'Not implemented' );
-				}
+				return new FulfilledPromise( new Response( 200, array(), json_encode( $response ) ) );
 			}
 		);
 
@@ -183,7 +124,7 @@ class Create_Account_TicketTest extends TestCase {
 	/**
 	 * @dataProvider required_parameters
 	 */
-	public function test_validates_required_params( $required_param ) {
+	public function test_create_request_validates_required_params( $required_param ) {
 		$data = array(
 			'displayName'    => 'test account name',
 			'regionCode'     => 'US',
@@ -228,6 +169,7 @@ class Create_Account_TicketTest extends TestCase {
 		$request      = $this->datapoint->create_request( $data_request );
 		$this->analytics->get_client()->execute( $request );
 
+		$this->assertEquals( 'https://sitekit.withgoogle.com/v1beta/accounts:provisionAccountTicket', $this->provision_account_ticket_request->getUri()->__toString(), 'The request should be made to the correct endpoint.' );
 		$account_ticket_request = new Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest(
 			json_decode( $this->provision_account_ticket_request->getBody()->getContents(), true ) // must be array to hydrate model.
 		);
