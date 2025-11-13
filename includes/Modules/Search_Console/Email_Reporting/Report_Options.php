@@ -46,8 +46,8 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @return array
 	 */
-	public function get_total_impressions_report_options() {
-		return $this->get_search_funnel_report_options();
+	public function get_total_impressions_options() {
+		return $this->get_search_funnel_options();
 	}
 
 	/**
@@ -57,8 +57,8 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @return array
 	 */
-	public function get_total_clicks_report_options() {
-		return $this->get_search_funnel_report_options();
+	public function get_total_clicks_options() {
+		return $this->get_search_funnel_options();
 	}
 
 	/**
@@ -68,7 +68,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @return array
 	 */
-	public function get_top_ctr_keywords_report_options() {
+	public function get_top_ctr_keywords_options() {
 		$current_range = $this->get_current_range_values();
 
 		return array(
@@ -86,7 +86,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @return array
 	 */
-	public function get_top_pages_by_clicks_report_options() {
+	public function get_top_pages_by_clicks_options() {
 		$current_range = $this->get_current_range_values();
 
 		return array(
@@ -104,7 +104,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @return array
 	 */
-	private function get_search_funnel_report_options() {
+	private function get_search_funnel_options() {
 		$combined_range = $this->get_combined_range();
 
 		return array(
