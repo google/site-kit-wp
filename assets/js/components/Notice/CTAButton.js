@@ -31,8 +31,8 @@ export default function CTAButton( {
 	inProgress,
 	onClick,
 	href,
-	external,
-	hideExternalIndicator,
+	external = false,
+	hideExternalIndicator = false,
 } ) {
 	let trailingIconToUse;
 	if ( external && ! hideExternalIndicator ) {
@@ -45,7 +45,7 @@ export default function CTAButton( {
 			isSaving={ inProgress }
 			onClick={ onClick }
 			href={ href }
-			target={ external ? '_blank' : '_self' }
+			target={ external ? '_blank' : undefined }
 			trailingIcon={ trailingIconToUse }
 		>
 			{ label }
