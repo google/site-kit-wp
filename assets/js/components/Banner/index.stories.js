@@ -83,7 +83,7 @@ function Template() {
 									an ad blocker the option to allow ads on
 									your site. Site Kit will place an ad
 									blocking recovery tag on your site.{ ' ' }
-									<Link>Learn more</Link>
+									<Link external>Learn more</Link>
 								</p>
 								<p>
 									Publishers see up to 1 in 5 users choose to
