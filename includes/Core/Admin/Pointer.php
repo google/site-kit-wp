@@ -64,6 +64,8 @@ final class Pointer {
 				'target_id'       => '',
 				'position'        => 'top',
 				'active_callback' => null,
+				'buttons'         => null,
+				'class'           => '',
 			)
 		);
 	}
@@ -88,6 +90,28 @@ final class Pointer {
 	 */
 	public function get_title() {
 		return $this->args['title'];
+	}
+
+	/**
+	 * Gets the pointer buttons.
+	 *
+	 * @since 1.166.0
+	 *
+	 * @return string Pointer buttons.
+	 */
+	public function get_buttons() {
+		return $this->args['buttons'];
+	}
+
+	/**
+	 * Gets the pointer custom class.
+	 *
+	 * @since 1.166.0
+	 *
+	 * @return string|array Pointer custom class.
+	 */
+	public function get_class() {
+		return $this->args['class'];
 	}
 
 	/**

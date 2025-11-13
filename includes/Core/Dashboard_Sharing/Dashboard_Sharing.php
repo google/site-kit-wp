@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Dashboard_Sharing;
 
+use Google\Site_Kit\Context;
+
 /**
  * Class for handling Dashboard Sharing.
  *
@@ -31,9 +33,12 @@ class Dashboard_Sharing {
 	 *
 	 * @since 1.82.0
 	 * @since 1.158.0 Remove $user_options and $context params.
+	 * @since 1.166.0 Restore $context param.
+	 *
+	 * @param Context $context Plugin context.
 	 */
-	public function __construct() {
-		$this->view_only_pointer = new View_Only_Pointer();
+	public function __construct( Context $context ) {
+		$this->view_only_pointer = new View_Only_Pointer( $context );
 	}
 
 	/**

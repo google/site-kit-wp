@@ -50,20 +50,28 @@ class Email_Reporting {
 	protected $modules;
 
 	/**
-	 * User options instance.
-	 *
-	 * @since n.e.x.t
-	 * @var User_Options
-	 */
-	protected $user_options;
-
-	/**
 	 * Email_Reporting_Settings instance.
 	 *
 	 * @since 1.162.0
 	 * @var Email_Reporting_Settings
 	 */
 	protected $settings;
+
+	/**
+	 * User_Options instance.
+	 *
+	 * @since 1.166.0
+	 * @var User_Options
+	 */
+	protected $user_options;
+
+	/**
+	 * User_Email_Reporting_Settings instance.
+	 *
+	 * @since 1.166.0
+	 * @var User_Email_Reporting_Settings
+	 */
+	protected $user_settings;
 
 	/**
 	 * REST_Email_Reporting_Controller instance.
@@ -76,7 +84,7 @@ class Email_Reporting {
 	/**
 	 * Email_Log instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 * @var Email_Log
 	 */
 	protected $email_log;
@@ -113,15 +121,15 @@ class Email_Reporting {
 		?Options $options = null,
 		?User_Options $user_options = null
 	) {
-		$this->context      = $context;
-		$this->modules      = $modules;
-		$this->options      = $options ?: new Options( $this->context );
-		$this->user_options = $user_options ?: new User_Options( $this->context );
-		$this->settings     = new Email_Reporting_Settings( $this->options );
+		$this->context       = $context;
+		$this->modules       = $modules;
+		$this->options       = $options ?: new Options( $this->context );
+		$this->user_options  = $user_options ?: new User_Options( $this->context );
+		$this->settings      = new Email_Reporting_Settings( $this->options );
+		$this->user_settings = new User_Email_Reporting_Settings( $this->user_options );
 
-		$user_settings          = new User_Email_Reporting_Settings( $this->user_options );
 		$frequency_planner      = new Frequency_Planner();
-		$subscribed_users_query = new Subscribed_Users_Query( $user_settings, $this->modules );
+		$subscribed_users_query = new Subscribed_Users_Query( $this->user_settings, $this->modules );
 
 		$this->rest_controller = new REST_Email_Reporting_Controller( $this->settings );
 		$this->email_log       = new Email_Log( $this->context );
@@ -137,6 +145,9 @@ class Email_Reporting {
 	public function register() {
 		$this->settings->register();
 		$this->rest_controller->register();
+
+		// Register WP admin pointer for Email Reporting onboarding.
+		( new Email_Reporting_Pointer( $this->context, $this->user_options, $this->user_settings ) )->register();
 		$this->email_log->register();
 
 		if ( $this->settings->is_email_reporting_enabled() ) {

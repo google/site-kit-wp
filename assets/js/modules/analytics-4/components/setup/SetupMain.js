@@ -99,7 +99,9 @@ export default function SetupMain( { finishSetup } ) {
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
 
-	const isCreateAccount = ACCOUNT_CREATE === accountID;
+	const isCreateAccount =
+		ACCOUNT_CREATE === accountID ||
+		( Array.isArray( accounts ) && ! accounts.length );
 
 	const [ showProgress ] = useQueryArg( 'showProgress' );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
@@ -117,12 +119,9 @@ export default function SetupMain( { finishSetup } ) {
 	// when the component initially loads and has yet to start fetching accounts.
 	if ( ! hasResolvedAccounts || isMatchedAccount ) {
 		viewComponent = <ProgressBar />;
-	} else if (
-		isCreateAccount ||
-		( Array.isArray( accounts ) && ! accounts.length )
-	) {
+	} else if ( isCreateAccount ) {
 		viewComponent = usingProxy ? (
-			<AccountCreate />
+			<AccountCreate className="googlesitekit-analytics-setup__form" />
 		) : (
 			<AccountCreateLegacy />
 		);
@@ -149,7 +148,12 @@ export default function SetupMain( { finishSetup } ) {
 							size="medium"
 							type="headline"
 						>
-							{ __( 'Set up Analytics', 'google-site-kit' ) }
+							{ isCreateAccount
+								? __(
+										'Create your Analytics account',
+										'google-site-kit'
+								  )
+								: __( 'Set up Analytics', 'google-site-kit' ) }
 						</Typography>
 					) : (
 						<Fragment>
