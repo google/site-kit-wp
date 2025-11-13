@@ -1,16 +1,16 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Core\Email_Reporting\Report_Options\AdSense_Report_OptionsTest
+ * Class Google\Site_Kit\Tests\Modules\AdSense\Email_Reporting\Report_OptionsTest
  *
- * @package   Google\Site_Kit\Tests\Core\Email_Reporting
+ * @package   Google\Site_Kit\Tests\Modules\AdSense\Email_Reporting
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\Core\Email_Reporting\Report_Options;
+namespace Google\Site_Kit\Tests\Modules\AdSense\Email_Reporting;
 
-use Google\Site_Kit\Core\Email_Reporting\Report_Options\AdSense_Report_Options;
+use Google\Site_Kit\Modules\AdSense\Email_Reporting\AdSense_Report_Options;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
