@@ -1,16 +1,17 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Email_Reporting\Report_Options\Analytics_4_Report_Options
+ * Class Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Report_Options
  *
- * @package   Google\Site_Kit\Core\Email_Reporting\Report_Options
+ * @package   Google\Site_Kit\Modules\Analytics_4\Email_Reporting
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Email_Reporting\Report_Options;
+namespace Google\Site_Kit\Modules\Analytics_4\Email_Reporting;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Email_Reporting\Report_Options\Report_Options;
 use Google\Site_Kit\Core\Storage\Options as Core_Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User\Audience_Settings as User_Audience_Settings;
