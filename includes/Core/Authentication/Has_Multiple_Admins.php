@@ -53,7 +53,7 @@ class Has_Multiple_Admins {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 */
 	public function register() {
 		add_action( 'deleted_user', $this->get_method_proxy( 'handle_user_deletion' ), 10, 3 );
@@ -95,7 +95,7 @@ class Has_Multiple_Admins {
 	 * being deleted is not an admin. The $user parameter is only available
 	 * in WP 5.5+, so we do not rely on it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @param int     $user_id User ID.
 	 * @param bool    $reassign Whether the user's posts are being reassigned.
@@ -121,7 +121,7 @@ class Has_Multiple_Admins {
 	 * We skip clearing the transient cache only if we are sure that we aren't
 	 * changing a role from or to the 'administrator' role.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @param int    $user_id   User ID.
 	 * @param string $role      New role.
@@ -147,7 +147,7 @@ class Has_Multiple_Admins {
 	 * We skip clearing the transient cache only if we are sure that
 	 * the role being added/removed is 'administrator'.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @param int    $user_id User ID.
 	 * @param string $role    Role being added/removed.

@@ -105,7 +105,7 @@ class Pointers {
 	 * Prints script for a given pointer.
 	 *
 	 * @since 1.83.0
-	 * @since n.e.x.t Updated to support buttons and header dismiss icon.
+	 * @since 1.166.0 Updated to support buttons and header dismiss icon.
 	 *
 	 * @param Pointer $pointer Pointer to print.
 	 */

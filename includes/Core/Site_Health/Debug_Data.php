@@ -694,7 +694,7 @@ class Debug_Data {
 	/**
 	 * Gets Email Reports Site Health fields.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @return array
 	 */

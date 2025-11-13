@@ -33,7 +33,7 @@ class Dashboard_Sharing {
 	 *
 	 * @since 1.82.0
 	 * @since 1.158.0 Remove $user_options and $context params.
-	 * @since n.e.x.t Restore $context param.
+	 * @since 1.166.0 Restore $context param.
 	 *
 	 * @param Context $context Plugin context.
 	 */
