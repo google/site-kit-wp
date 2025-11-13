@@ -8,7 +8,7 @@
 
 namespace Google\Site_Kit\Tests\Modules\Search_Console\Email_Reporting;
 
-use Google\Site_Kit\Modules\Search_Console\Email_Reporting\Search_Console_Report_Helper;
+use Google\Site_Kit\Modules\Search_Console\Email_Reporting\Report_Helper as Search_Console_Report_Helper;
 use Google\Site_Kit\Tests\TestCase;
 
 /**

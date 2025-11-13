@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Search_Console\Email_Reporting\Search_Console_Report_Helper
+ * Class Google\Site_Kit\Modules\Search_Console\Email_Reporting\Report_Helper
  *
  * @package   Google\Site_Kit\Modules\Search_Console\Email_Reporting
  * @copyright 2025 Google LLC
@@ -17,7 +17,7 @@ namespace Google\Site_Kit\Modules\Search_Console\Email_Reporting;
  * @access private
  * @ignore
  */
-class Search_Console_Report_Helper {
+class Report_Helper {
 
 	/**
 	 * Sorts Search Console rows by a given field.

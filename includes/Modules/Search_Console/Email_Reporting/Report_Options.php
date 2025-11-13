@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Search_Console\Email_Reporting;
 
-use Google\Site_Kit\Core\Email_Reporting\Report_Options\Report_Options;
+use Google\Site_Kit\Core\Email_Reporting\Report_Options\Report_Options as Base_Report_Options;
 
 /**
  * Builds Search Console report option payloads for email reporting.
@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Email_Reporting\Report_Options\Report_Options;
  * @access private
  * @ignore
  */
-class Search_Console_Report_Options extends Report_Options {
+class Report_Options extends Base_Report_Options {
 
 	/**
 	 * Constructor.

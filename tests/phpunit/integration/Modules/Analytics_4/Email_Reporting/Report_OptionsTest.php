@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User\Audience_Settings as User_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings as Module_Audience_Settings;
-use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Analytics_4_Report_Options;
+use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Report_Options as Analytics_4_Report_Options;
 use Google\Site_Kit\Tests\TestCase;
 
 /**

@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Modules\AdSense\Email_Reporting;
 
-use Google\Site_Kit\Core\Email_Reporting\Report_Options\Report_Options;
+use Google\Site_Kit\Core\Email_Reporting\Report_Options\Report_Options as Base_Report_Options;
 
 /**
  * Builds AdSense-focused report option payloads for email reporting.
@@ -21,7 +21,7 @@ use Google\Site_Kit\Core\Email_Reporting\Report_Options\Report_Options;
  * @access private
  * @ignore
  */
-class AdSense_Report_Options extends Report_Options {
+class Report_Options extends Base_Report_Options {
 
 	/**
 	 * Linked AdSense account ID.

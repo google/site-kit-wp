@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Modules\AdSense\Email_Reporting;
 
-use Google\Site_Kit\Modules\AdSense\Email_Reporting\AdSense_Report_Options;
+use Google\Site_Kit\Modules\AdSense\Email_Reporting\Report_Options as AdSense_Report_Options;
 use Google\Site_Kit\Tests\TestCase;
 
 /**

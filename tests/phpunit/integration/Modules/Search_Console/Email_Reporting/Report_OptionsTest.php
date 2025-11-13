@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Modules\Search_Console\Email_Reporting;
 
-use Google\Site_Kit\Modules\Search_Console\Email_Reporting\Search_Console_Report_Options;
+use Google\Site_Kit\Modules\Search_Console\Email_Reporting\Report_Options as Search_Console_Report_Options;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
