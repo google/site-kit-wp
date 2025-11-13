@@ -168,10 +168,12 @@ class Setup_Test extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_conditionally_syncs_site_fields
+	 * @dataProvider data_conditionally_throws_error
 	 */
-	public function test_handle_action_setup_start__wp_error( $has_credentials ) {
-		$redirect_url = 'https://sitekit.withgoogle.com/test-page';
+	public function test_handle_action_setup_start__wp_error( $params ) {
+		$has_credentials     = $params['has_credentials'];
+		$error_code          = $params['error_code'];
+		$expected_error_code = $params['expected_error_code'];
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
@@ -192,7 +194,7 @@ class Setup_Test extends TestCase {
 		// Fake a WP_Error IF a request is made to the Google Proxy server.
 		add_filter(
 			'pre_http_request',
-			function ( $preempt, $args, $url ) use ( $context, &$proxy_server_requests, $has_credentials ) {
+			function ( $preempt, $args, $url ) use ( $context, &$proxy_server_requests, $has_credentials, $error_code ) {
 				if ( ( new Google_Proxy( $context ) )->url( Google_Proxy::OAUTH2_SITE_URI ) !== $url ) {
 					return $preempt;
 				}
@@ -202,7 +204,7 @@ class Setup_Test extends TestCase {
 				// Using the two cases for $has_credentials, we can test the error message
 				// and the fallback to an error code when there is no message.
 				$error_message = $has_credentials ? 'Test error message.' : null;
-				return new WP_Error( 'test_error_code', $error_message );
+				return new WP_Error( $error_code, $error_message );
 			},
 			10,
 			3
@@ -214,11 +216,12 @@ class Setup_Test extends TestCase {
 		} catch ( RedirectException $redirect ) {
 			$this->fail( 'Expected WPDieException!' );
 		} catch ( WPDieException $exception ) {
-			$error = $has_credentials ? 'Test error message.' : 'test_error_code';
+			$error = $has_credentials ? 'Test error message.' : $error_code;
 			$this->assertStringContainsString(
 				sprintf(
-					'The request to the authentication proxy has failed with an error: %s <a href="https://sitekit.withgoogle.com/support?error_id=request_to_auth_proxy_failed" target="_blank">Get help</a>.',
-					$error
+					'The request to the authentication proxy has failed with an error: %1$s <a href="https://sitekit.withgoogle.com/support?error_id=%2$s" target="_blank">Get help</a>.',
+					$error,
+					$expected_error_code
 				),
 				$exception->getMessage(),
 				'Should show appropriate error message for proxy request failure.'
@@ -226,6 +229,39 @@ class Setup_Test extends TestCase {
 		}
 
 		$this->assertCount( 1, $proxy_server_requests, 'Should have exactly one proxy server request.' );
+	}
+
+	public function data_conditionally_throws_error() {
+		return array(
+			'with credentials and custom error code'     => array(
+				array(
+					'has_credentials'     => true,
+					'error_code'          => 'test_error_code',
+					'expected_error_code' => 'test_error_code',
+				),
+			),
+			'with credentials and default error code'    => array(
+				array(
+					'has_credentials'     => true,
+					'error_code'          => 'request_failed',
+					'expected_error_code' => 'request_to_auth_proxy_failed',
+				),
+			),
+			'without credentials and custom error code'  => array(
+				array(
+					'has_credentials'     => false,
+					'error_code'          => 'test_error_code',
+					'expected_error_code' => 'test_error_code',
+				),
+			),
+			'without credentials and default error code' => array(
+				array(
+					'has_credentials'     => false,
+					'error_code'          => 'request_failed',
+					'expected_error_code' => 'request_to_auth_proxy_failed',
+				),
+			),
+		);
 	}
 
 	/**
