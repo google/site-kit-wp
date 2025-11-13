@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Search_Console\Email_Reporting\Report_Helper
+ * Class Google\Site_Kit\Modules\Search_Console\Email_Reporting\Report_Data_Processor
  *
  * @package   Google\Site_Kit\Modules\Search_Console\Email_Reporting
  * @copyright 2025 Google LLC
@@ -11,13 +11,13 @@
 namespace Google\Site_Kit\Modules\Search_Console\Email_Reporting;
 
 /**
- * Helper utilities for Search Console email reporting data processing.
+ * Processes Search Console data for email reporting (sorting, partitioning, summarizing).
  *
  * @since n.e.x.t
  * @access private
  * @ignore
  */
-class Report_Helper {
+class Report_Data_Processor {
 
 	/**
 	 * Sorts Search Console rows by a given field.
