@@ -53,7 +53,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @return array
 	 */
-	public function get_total_earnings_report_options() {
+	public function get_total_earnings_options() {
 		$options = array(
 			'metrics' => array(
 				array( 'name' => 'totalAdRevenue' ),
