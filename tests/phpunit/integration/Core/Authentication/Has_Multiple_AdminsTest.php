@@ -76,18 +76,18 @@ class Has_Multiple_AdminsTest extends TestCase {
 		$this->assertCount( 1, get_users( array( 'role' => 'administrator' ) ), 'There should be one admin user to begin with' );
 
 		// Create a second admin user and one non-admin user.
-		$admin_id_2   = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$non_admin_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		$admin_2   = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$non_admin = $this->factory()->user->create_and_get( array( 'role' => 'editor' ) );
 
 		// Now we have multiple admins.
 		$this->assertTrue( $has_multiple_admins->get(), 'Should return true when there are multiple admin users' );
 
 		// Delete a non-admin user, should not affect the transient.
-		wp_delete_user( $non_admin_id );
+		wp_delete_user( $non_admin->ID );
 		$this->assertTrue( $has_multiple_admins->get(), 'Should still return true when a non-admin user is deleted' );
 
 		// Delete one of the admin users, should clear the transient and reflect the change.
-		wp_delete_user( $admin_id_2 );
+		wp_delete_user( $admin_2->ID );
 		$this->assertFalse( $has_multiple_admins->get(), 'Should return false when there is only one admin user left' );
 	}
 
@@ -99,22 +99,20 @@ class Has_Multiple_AdminsTest extends TestCase {
 		$this->assertCount( 1, get_users( array( 'role' => 'administrator' ) ), 'There should be one admin user to begin with' );
 
 		// Create a second admin user and one non-admin user.
-		$admin_id_2   = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$non_admin_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		$admin_2   = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$non_admin = $this->factory()->user->create_and_get( array( 'role' => 'editor' ) );
 
 		// Now we have multiple admins.
 		$this->assertTrue( $has_multiple_admins->get(), 'Should return true when there are multiple admin users' );
 		$this->assertEquals( 2, $this->transients->get( Has_Multiple_Admins::OPTION ), 'Transient should be updated to two admins' );
 
 		// Change a non-admin user to another non-admin role, should not affect the transient.
-		$user = new WP_User( $non_admin_id );
-		$user->set_role( 'author' );
+		$non_admin->set_role( 'author' );
 		$this->assertTrue( $has_multiple_admins->get(), 'Should still return true when a non-admin user role is changed' );
 		$this->assertEquals( 2, $this->transients->get( Has_Multiple_Admins::OPTION ), 'Transient should still be two admins' );
 
 		// Change one of the admin users to a non-admin role, should clear the transient and reflect the change.
-		$user = new WP_User( $admin_id_2 );
-		$user->set_role( 'editor' );
+		$admin_2->set_role( 'editor' );
 		$this->assertFalse( $has_multiple_admins->get(), 'Should return false when there is only one admin user left' );
 		$this->assertEquals( 1, $this->transients->get( Has_Multiple_Admins::OPTION ), 'Transient should be updated to one admin' );
 	}
@@ -127,27 +125,25 @@ class Has_Multiple_AdminsTest extends TestCase {
 		$this->assertCount( 1, get_users( array( 'role' => 'administrator' ) ), 'There should be one admin user to begin with' );
 
 		// Create a second admin user and one non-admin user.
-		$admin_id_2   = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$non_admin_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		$admin_2   = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$non_admin = $this->factory()->user->create_and_get( array( 'role' => 'editor' ) );
 
 		// Now we have multiple admins.
 		$this->assertTrue( $has_multiple_admins->get(), 'Should return true when there are multiple admin users' );
 		$this->assertEquals( 2, $this->transients->get( Has_Multiple_Admins::OPTION ), 'Transient should be updated to two admins' );
 
 		// Remove 'administrator' role from one of the admin users, should clear the transient and reflect the change.
-		$user = new WP_User( $admin_id_2 );
-		$user->remove_role( 'administrator' );
+		$admin_2->remove_role( 'administrator' );
 		$this->assertFalse( $has_multiple_admins->get(), 'Should return false when there is only one admin user left' );
 		$this->assertEquals( 1, $this->transients->get( Has_Multiple_Admins::OPTION ), 'Transient should be updated to one admin' );
 
 		// Add 'administrator' role back to the same user, should clear the transient and reflect the change.
-		$user->add_role( 'administrator' );
+		$admin_2->add_role( 'administrator' );
 		$this->assertTrue( $has_multiple_admins->get(), 'Should return true when there are multiple admin users again' );
 		$this->assertEquals( 2, $this->transients->get( Has_Multiple_Admins::OPTION ), 'Transient should be updated to two admins again' );
 
 		// Change a non-admin user role to 'administrator', should clear the transient and reflect the change.
-		$user = new WP_User( $non_admin_id );
-		$user->add_role( 'administrator' );
+		$non_admin->add_role( 'administrator' );
 		$this->assertTrue( $has_multiple_admins->get(), 'Should return true when there are multiple admin users' );
 		$this->assertEquals( 3, $this->transients->get( Has_Multiple_Admins::OPTION ), 'Transient should be updated to three admins' );
 	}
