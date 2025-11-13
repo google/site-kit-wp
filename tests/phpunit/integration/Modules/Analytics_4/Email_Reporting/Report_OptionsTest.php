@@ -54,7 +54,7 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 
 	public function test_total_visitors_report_includes_compare_dates() {
 		$builder = $this->create_builder();
-		$options = $builder->get_total_visitors_report_options();
+		$options = $builder->get_total_visitors_options();
 
 		$this->assertArrayHasKey( 'startDate', $options, 'Total visitors report should include startDate.' );
 		$this->assertArrayHasKey( 'endDate', $options, 'Total visitors report should include endDate.' );
@@ -77,7 +77,7 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 		);
 
 		$builder = $this->create_builder( $date_range );
-		$options = $builder->get_total_visitors_report_options();
+		$options = $builder->get_total_visitors_options();
 
 		$this->assertSame( '2024-02-01', $options['startDate'], 'Start date should match provided date range.' );
 		$this->assertSame( '2024-02-07', $options['endDate'], 'End date should match provided date range.' );
@@ -87,7 +87,7 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 
 	public function test_products_added_to_cart_report_orders_by_metric() {
 		$builder = $this->create_builder();
-		$options = $builder->get_products_added_to_cart_report_options();
+		$options = $builder->get_products_added_to_cart_options();
 
 		$this->assertEquals(
 			array(
@@ -111,7 +111,7 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 
 	public function test_top_categories_uses_custom_dimension() {
 		$builder = $this->create_builder();
-		$options = $builder->get_top_categories_report_options();
+		$options = $builder->get_top_categories_options();
 
 		$expected_dimension = sprintf(
 			'customEvent:%s',
@@ -139,7 +139,7 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 			)
 		);
 		$builder = $this->create_builder();
-		$options = $builder->get_new_visitors_report_options();
+		$options = $builder->get_new_visitors_options();
 
 		$this->assertSame(
 			'audienceResourceName',
@@ -160,7 +160,7 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 
 	public function test_returning_visitors_falls_back_without_audience() {
 		$builder = $this->create_builder();
-		$options = $builder->get_returning_visitors_report_options();
+		$options = $builder->get_returning_visitors_options();
 
 		$this->assertSame(
 			'newVsReturning',
@@ -174,10 +174,10 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 		);
 	}
 
-	public function test_get_custom_audiences_report_options_returns_empty_array_when_missing() {
+	public function test_get_custom_audiences_options_returns_empty_array_when_missing() {
 		$this->reset_audience_settings();
 		$builder = $this->create_builder();
-		$options = $builder->get_custom_audiences_report_options();
+		$options = $builder->get_custom_audiences_options();
 
 		$this->assertSame(
 			array(
@@ -189,7 +189,7 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 		);
 	}
 
-	public function test_get_custom_audiences_report_options_builds_expected_payload() {
+	public function test_get_custom_audiences_options_builds_expected_payload() {
 		$resource_one = 'properties/12345/audiences/1';
 		$resource_two = 'properties/12345/audiences/2';
 		$this->set_configured_audiences( array( $resource_one, $resource_two, $resource_one ) );
@@ -208,7 +208,7 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 
 		$builder = $this->create_builder();
 
-		$result = $builder->get_custom_audiences_report_options();
+		$result = $builder->get_custom_audiences_options();
 
 		$this->assertArrayHasKey( 'options', $result, 'Custom audiences payload should include options key.' );
 		$this->assertArrayHasKey( 'audiences', $result, 'Custom audiences payload should include audiences key.' );

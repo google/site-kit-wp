@@ -20,7 +20,7 @@ class Search_Console_Report_OptionsTest extends TestCase {
 
 	public function test_total_impressions_span_combined_range() {
 		$builder = new Search_Console_Report_Options( $this->get_date_range_payload() );
-		$options = $builder->get_total_impressions_report_options();
+		$options = $builder->get_total_impressions_options();
 
 		$this->assertArrayHasKey( 'startDate', $options, 'Total impressions request should include startDate.' );
 		$this->assertArrayHasKey( 'endDate', $options, 'Total impressions request should include endDate.' );
@@ -30,7 +30,7 @@ class Search_Console_Report_OptionsTest extends TestCase {
 
 	public function test_top_pages_use_current_range() {
 		$builder = new Search_Console_Report_Options( $this->get_date_range_payload() );
-		$options = $builder->get_top_pages_by_clicks_report_options();
+		$options = $builder->get_top_pages_by_clicks_options();
 
 		$this->assertArrayHasKey( 'startDate', $options, 'Top pages request should include startDate.' );
 		$this->assertArrayHasKey( 'endDate', $options, 'Top pages request should include endDate.' );
@@ -48,11 +48,11 @@ class Search_Console_Report_OptionsTest extends TestCase {
 
 		$builder = new Search_Console_Report_Options( $date_range );
 
-		$pages_options = $builder->get_top_pages_by_clicks_report_options();
+		$pages_options = $builder->get_top_pages_by_clicks_options();
 		$this->assertSame( '2024-04-01', $pages_options['startDate'], 'Top pages request should use provided start date.' );
 		$this->assertSame( '2024-04-10', $pages_options['endDate'], 'Top pages request should use provided end date.' );
 
-		$impressions_options = $builder->get_total_impressions_report_options();
+		$impressions_options = $builder->get_total_impressions_options();
 		$this->assertSame( '2024-03-20', $impressions_options['startDate'], 'Combined range should start with compare period.' );
 		$this->assertSame( '2024-04-10', $impressions_options['endDate'], 'Combined range should end with current period end.' );
 	}

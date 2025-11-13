@@ -21,7 +21,7 @@ class AdSense_Report_OptionsTest extends TestCase {
 	public function test_total_earnings_includes_ad_source_filter_when_account_present() {
 		$date_range = $this->get_date_range_payload();
 		$builder    = new AdSense_Report_Options( $date_range, array(), 'pub-1234567890' );
-		$options    = $builder->get_total_earnings_report_options();
+		$options    = $builder->get_total_earnings_options();
 
 		$this->assertArrayHasKey( 'dimensionFilters', $options, 'AdSense earnings request should include dimension filters when account is linked.' );
 		$this->assertSame(
@@ -34,7 +34,7 @@ class AdSense_Report_OptionsTest extends TestCase {
 	public function test_total_earnings_skips_filter_without_account() {
 		$date_range = $this->get_date_range_payload();
 		$builder    = new AdSense_Report_Options( $date_range, array(), '' );
-		$options    = $builder->get_total_earnings_report_options();
+		$options    = $builder->get_total_earnings_options();
 
 		$this->assertArrayNotHasKey( 'dimensionFilters', $options, 'AdSense earnings request should skip filters when no account ID is set.' );
 	}
@@ -48,7 +48,7 @@ class AdSense_Report_OptionsTest extends TestCase {
 		);
 
 		$builder = new AdSense_Report_Options( $date_range, array(), 'pub-1234567890' );
-		$options = $builder->get_total_earnings_report_options();
+		$options = $builder->get_total_earnings_options();
 
 		$this->assertSame( '2024-03-01', $options['startDate'], 'Custom date range should set expected start date.' );
 		$this->assertSame( '2024-03-10', $options['endDate'], 'Custom date range should set expected end date.' );
