@@ -13,7 +13,11 @@ namespace Google\Site_Kit\Tests\Core\Admin;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Screens;
 use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Tests\MutableInput;
 
 /**
  * ScreensTest
@@ -21,6 +25,8 @@ use Google\Site_Kit\Tests\TestCase;
  * @group Admin
  */
 class ScreensTest extends TestCase {
+
+	use Fake_Site_Connection_Trait;
 
 	/**
 	 * Screens object
@@ -32,11 +38,21 @@ class ScreensTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$assets  = new Assets( $context );
+		$context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
 
+		// Fake setup and authentication for access to dashboard.
+		$this->fake_proxy_site_connection();
+		remove_all_filters( 'googlesitekit_setup_complete' );
+		$authentication = new Authentication( $context );
+		$authentication->verification()->set( true );
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'test-access-token' ) );
+
+		$assets        = new Assets( $context );
 		$this->screens = new Screens( $context, $assets );
 	}
+
 
 	public function data_removal_of_admin_notices() {
 		return array(
@@ -183,5 +199,115 @@ class ScreensTest extends TestCase {
 		}
 
 		$this->assertEquals( $expected_order, $menu_order, 'Menu order should match expected order for Site Kit.' );
+	}
+
+	/**
+	 * Set the `isAnalyticsSetupComplete` flag for the current user.
+	 *
+	 * @param bool|null $is_complete Value for isAnalyticsSetupComplete (true/false/null).
+	 */
+	private function set_analytics_setup_complete( $is_complete ) {
+		global $wpdb;
+		$meta_key = $wpdb->get_blog_prefix() . 'googlesitekit_initial_setup';
+		update_user_meta( get_current_user_id(), $meta_key, array( 'isAnalyticsSetupComplete' => $is_complete ) );
+	}
+
+	/**
+	 * Helper to load dashboard screen (simulate load- hook) capturing redirect.
+	 *
+	 * @return \Google\Site_Kit\Tests\Exception\RedirectException|null
+	 */
+	private function load_dashboard_screen() {
+		$this->screens->register();
+		do_action( 'admin_menu' );
+
+		foreach ( array_keys( $this->force_get_property( $this->screens, 'screens' ) ) as $hook_suffix ) {
+			if ( strpos( $hook_suffix, 'googlesitekit-dashboard' ) !== false ) {
+				try {
+					do_action( "load-{$hook_suffix}" );
+				} catch ( \Google\Site_Kit\Tests\Exception\RedirectException $e ) {
+					return $e;
+				}
+				return null;
+			}
+		}
+		return null;
+	}
+
+	public function test_dashboard_initialize() {
+		$this->set_analytics_setup_complete( false );
+
+		$redirect = $this->load_dashboard_screen();
+
+		$this->assertNull( $redirect, 'Should not redirect.' );
+	}
+
+	public function test_dashboard_initialize__no_redirect_when_setup_complete_with_setupFlowRefresh_enabled() {
+		$this->enable_feature( 'setupFlowRefresh' );
+		$this->set_analytics_setup_complete( true );
+
+		$redirect = $this->load_dashboard_screen();
+
+		$this->assertNull( $redirect, 'Should not redirect when Analytics setup is complete.' );
+	}
+
+	public function test_dashboard_initialize__redirect_to_analytics_setup_screen_when_setup_incomplete_and_ga4_not_connected_with_setupFlowRefresh_enabled() {
+		$this->enable_feature( 'setupFlowRefresh' );
+		$this->set_analytics_setup_complete( false );
+
+		$redirect = $this->load_dashboard_screen();
+
+		$this->assertNotNull( $redirect, 'Should redirect to the Analytics setup screen when setup is incomplete and Analytics is not connected.' );
+		$this->assertStringContainsString( 'page=googlesitekit-dashboard', $redirect->get_location(), 'Redirect should include dashboard page.' );
+		$this->assertStringContainsString( 'slug=analytics-4', $redirect->get_location(), 'Redirect should include analytics-4 slug.' );
+		$this->assertStringContainsString( 'showProgress=true', $redirect->get_location(), 'Redirect should include showProgress.' );
+		$this->assertStringContainsString( 'reAuth=true', $redirect->get_location(), 'Redirect should include reAuth.' );
+	}
+
+	public function test_dashboard_initialize__analytics_setup_screen_does_not_redirect_to_itself_with_setupFlowRefresh_enabled() {
+		$this->enable_feature( 'setupFlowRefresh' );
+		$this->set_analytics_setup_complete( false );
+
+		// Recreate Screens with MutableInput context so query params are accessible.
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$assets         = new Assets( $context );
+		$authentication = new Authentication( $context );
+		$authentication->verification()->set( true );
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'test-access-token' ) );
+
+		$this->screens = new Screens( $context, $assets, new Modules( $context ), $authentication );
+
+		$_GET['slug']         = 'analytics-4';
+		$_GET['reAuth']       = '1';
+		$_GET['showProgress'] = '1';
+
+		$redirect = $this->load_dashboard_screen();
+
+		$this->assertNull( $redirect, 'Analytics setup screen should not redirect to itself.' );
+	}
+
+	public function test_dashboard_initialize__redirect_to_key_metrics_setup_screen_when_setup_incomplete_and_ga4_connected_with_setupFlowRefresh_enabled() {
+		$this->enable_feature( 'setupFlowRefresh' );
+		$this->set_analytics_setup_complete( false );
+
+		// Activate the `analytics-4` module.
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'analytics-4' ) );
+
+		// Provide minimal settings to consider it connected.
+		update_option(
+			'googlesitekit_analytics-4_settings',
+			array(
+				'accountID'       => '123',
+				'propertyID'      => '456',
+				'webDataStreamID' => '789',
+				'measurementID'   => 'G-ABC',
+			)
+		);
+
+		$redirect = $this->load_dashboard_screen();
+
+		$this->assertNotNull( $redirect, 'Should redirect to the Key Metrics setup screen when setup is incomplete and Analytics is connected.' );
+		$this->assertStringContainsString( 'page=googlesitekit-key-metrics-setup', $redirect->get_location(), 'Redirect should include key-metrics-setup page.' );
+		$this->assertStringContainsString( 'showProgress=true', $redirect->get_location(), 'Redirect should include showProgress param.' );
 	}
 }
