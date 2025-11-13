@@ -202,14 +202,14 @@ class ScreensTest extends TestCase {
 	}
 
 	/**
-	 * Set the initial setup setting for the current user.
+	 * Set the `isAnalyticsSetupComplete` flag for the current user.
 	 *
-	 * @param bool|null $complete Value for isAnalyticsSetupComplete (true/false/null).
+	 * @param bool|null $is_complete Value for isAnalyticsSetupComplete (true/false/null).
 	 */
-	private function set_initial_setup_setting( $complete ) {
+	private function set_analytics_setup_complete( $is_complete ) {
 		global $wpdb;
 		$meta_key = $wpdb->get_blog_prefix() . 'googlesitekit_initial_setup';
-		update_user_meta( get_current_user_id(), $meta_key, array( 'isAnalyticsSetupComplete' => $complete ) );
+		update_user_meta( get_current_user_id(), $meta_key, array( 'isAnalyticsSetupComplete' => $is_complete ) );
 	}
 
 	/**
@@ -221,7 +221,7 @@ class ScreensTest extends TestCase {
 		$this->screens->register();
 		do_action( 'admin_menu' );
 
-		foreach ( $this->force_get_property( $this->screens, 'screens' ) as $hook_suffix => $screen ) {
+		foreach ( array_keys( $this->force_get_property( $this->screens, 'screens' ) ) as $hook_suffix ) {
 			if ( strpos( $hook_suffix, 'googlesitekit-dashboard' ) !== false ) {
 				try {
 					do_action( "load-{$hook_suffix}" );
@@ -235,7 +235,7 @@ class ScreensTest extends TestCase {
 	}
 
 	public function test_dashboard_initialize() {
-		$this->set_initial_setup_setting( false );
+		$this->set_analytics_setup_complete( false );
 
 		$redirect = $this->load_dashboard_screen();
 
@@ -244,7 +244,7 @@ class ScreensTest extends TestCase {
 
 	public function test_dashboard_initialize__no_redirect_when_setup_complete_with_setupFlowRefresh_enabled() {
 		$this->enable_feature( 'setupFlowRefresh' );
-		$this->set_initial_setup_setting( true );
+		$this->set_analytics_setup_complete( true );
 
 		$redirect = $this->load_dashboard_screen();
 
@@ -253,7 +253,7 @@ class ScreensTest extends TestCase {
 
 	public function test_dashboard_initialize__redirect_to_analytics_setup_screen_when_setup_incomplete_and_ga4_not_connected_with_setupFlowRefresh_enabled() {
 		$this->enable_feature( 'setupFlowRefresh' );
-		$this->set_initial_setup_setting( false );
+		$this->set_analytics_setup_complete( false );
 
 		$redirect = $this->load_dashboard_screen();
 
@@ -266,7 +266,7 @@ class ScreensTest extends TestCase {
 
 	public function test_dashboard_initialize__analytics_setup_screen_does_not_redirect_to_itself_with_setupFlowRefresh_enabled() {
 		$this->enable_feature( 'setupFlowRefresh' );
-		$this->set_initial_setup_setting( false );
+		$this->set_analytics_setup_complete( false );
 
 		// Recreate Screens with MutableInput context so query params are accessible.
 		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
@@ -288,7 +288,7 @@ class ScreensTest extends TestCase {
 
 	public function test_dashboard_initialize__redirect_to_key_metrics_setup_screen_when_setup_incomplete_and_ga4_connected_with_setupFlowRefresh_enabled() {
 		$this->enable_feature( 'setupFlowRefresh' );
-		$this->set_initial_setup_setting( false );
+		$this->set_analytics_setup_complete( false );
 
 		// Activate the `analytics-4` module.
 		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'analytics-4' ) );

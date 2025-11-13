@@ -14,7 +14,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Screen;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit\Tests\Exception\RedirectException;
 
 /**
  * @group Admin
