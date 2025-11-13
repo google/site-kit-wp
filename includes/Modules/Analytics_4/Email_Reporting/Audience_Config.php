@@ -1,14 +1,14 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Email_Reporting\Report_Options\Audience_Config
+ * Class Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Audience_Config
  *
- * @package   Google\Site_Kit
+ * @package   Google\Site_Kit\Modules\Analytics_4\Email_Reporting
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Email_Reporting\Report_Options;
+namespace Google\Site_Kit\Modules\Analytics_4\Email_Reporting;
 
 use Google\Site_Kit\Core\User\Audience_Settings as User_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings as Module_Audience_Settings;
