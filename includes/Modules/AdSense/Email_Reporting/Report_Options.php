@@ -1,14 +1,16 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Email_Reporting\Report_Options\AdSense_Report_Options
+ * Class Google\Site_Kit\Modules\AdSense\Email_Reporting\Report_Options
  *
- * @package   Google\Site_Kit\Core\Email_Reporting\Report_Options
+ * @package   Google\Site_Kit\Modules\AdSense\Email_Reporting
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Email_Reporting\Report_Options;
+namespace Google\Site_Kit\Modules\AdSense\Email_Reporting;
+
+use Google\Site_Kit\Core\Email_Reporting\Report_Options\Report_Options;
 
 /**
  * Builds AdSense-focused report option payloads for email reporting.
@@ -24,6 +26,8 @@ class AdSense_Report_Options extends Report_Options {
 	/**
 	 * Linked AdSense account ID.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @var string
 	 */
 	private $account_id;
@@ -31,18 +35,21 @@ class AdSense_Report_Options extends Report_Options {
 	/**
 	 * Constructor.
 	 *
-	 * @param array  $date_range    Current period range array.
-	 * @param array  $compare_range Optional. Compare period range array.
-	 * @param string $account_id    Optional. Connected AdSense account ID. Default empty.
+	 * @since n.e.x.t
+	 *
+	 * @param array|null $date_range    Current period range array.
+	 * @param array      $compare_range Optional. Compare period range array.
+	 * @param string     $account_id    Optional. Connected AdSense account ID. Default empty.
 	 */
 	public function __construct( $date_range, $compare_range = array(), $account_id = '' ) {
 		parent::__construct( $date_range, $compare_range );
-
 		$this->account_id = $account_id;
 	}
 
 	/**
 	 * Gets report options for total AdSense earnings.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @return array
 	 */
@@ -65,6 +72,8 @@ class AdSense_Report_Options extends Report_Options {
 
 	/**
 	 * Builds the AdSense ad source filter value.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @return string
 	 */
