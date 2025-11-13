@@ -1,14 +1,14 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Email_Reporting\Report_Options\Search_Console_Report_Helper
+ * Class Google\Site_Kit\Modules\Search_Console\Email_Reporting\Search_Console_Report_Helper
  *
- * @package   Google\Site_Kit\Core\Email_Reporting\Report_Options
+ * @package   Google\Site_Kit\Modules\Search_Console\Email_Reporting
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Email_Reporting\Report_Options;
+namespace Google\Site_Kit\Modules\Search_Console\Email_Reporting;
 
 /**
  * Helper utilities for Search Console email reporting data processing.
