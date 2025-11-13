@@ -59,12 +59,14 @@
 				}
 			}
 
-			.googlesitekit-settings-module__one-tap,
-			.googlesitekit-settings-module__show-next-to-comments {
-				@media (min-width: $bp-xlarge) {
+			.googlesitekit-settings-module__one-tap {
+				@media (min-width: $bp-desktop) {
 					margin-top: $grid-gap-desktop;
 				}
+			}
 
+			.googlesitekit-settings-module__one-tap,
+			.googlesitekit-settings-module__show-next-to-comments {
 				border-bottom: none;
 
 				.mdc-switch {
@@ -97,11 +99,15 @@
 				.mdc-layout-grid {
 					.mdc-layout-grid__inner {
 						margin-bottom: $grid-gap-desktop;
+
+						@media (min-width: $bp-nonTablet) {
+							margin-bottom: 0;
+						}
 					}
 				}
 
 				&.googlesitekit-sign-in-with-google-settings-fields__stretch-form {
-					@media (min-width: $bp-xlarge) {
+					@media (min-width: $bp-nonTablet) {
 						display: flex;
 						flex-direction: column;
 						height: 100%;
@@ -111,7 +117,7 @@
 					}
 
 					> .mdc-layout-grid__inner:last-child {
-						@media (min-width: $bp-desktop) {
+						@media (min-width: $bp-nonTablet) {
 							margin-bottom: 0;
 						}
 

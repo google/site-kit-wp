@@ -33,6 +33,7 @@ import { Grid, Row, Cell } from '@/js/material-components';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	ANALYTICS_NOTICE_FORM_NAME,
 	ANALYTICS_NOTICE_CHECKBOX,
@@ -54,6 +55,7 @@ export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { activateModule } = useDispatch( CORE_MODULES );
+	const { saveInitialSetupSettings } = useDispatch( CORE_USER );
 
 	const proxySetupURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxySetupURL()
@@ -88,6 +90,10 @@ export default function SetupUsingProxyWithSignIn() {
 					if ( setupFlowRefreshEnabled ) {
 						moduleReauthURL = addQueryArgs( moduleReauthURL, {
 							showProgress: true,
+						} );
+
+						await saveInitialSetupSettings( {
+							isAnalyticsSetupComplete: false,
 						} );
 					}
 				}
@@ -130,6 +136,7 @@ export default function SetupUsingProxyWithSignIn() {
 			activateModule,
 			viewContext,
 			setupFlowRefreshEnabled,
+			saveInitialSetupSettings,
 			navigateTo,
 		]
 	);

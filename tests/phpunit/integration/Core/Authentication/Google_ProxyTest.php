@@ -14,8 +14,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Tests\MethodSpy;
-use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use WP_Error;
@@ -562,6 +560,68 @@ class Google_ProxyTest extends TestCase {
 		);
 
 		$this->assertEqualSetsWithIndex( $expected_success_response, $response, 'Survey event should return expected response data.' );
+	}
+
+	/**
+	 * @dataProvider data_errors
+	 */
+	public function test_request_returns_error_for_invalid_response( $params ) {
+		$error_code             = $params['error_code'];
+		$error_message          = $params['error_message'];
+		$expected_error_code    = $params['expected_error_code'];
+		$expected_error_message = $params['expected_error_message'];
+
+		$this->mock_http_request(
+			$this->google_proxy->url( Google_Proxy::OAUTH2_SITE_URI ),
+			array(
+				'error_code' => $error_code,
+				'error'      => $error_message,
+			),
+			404,
+		);
+
+		$response = $this->google_proxy->register_site();
+
+		$this->assertWPError( $response );
+		$this->assertEquals( $expected_error_code, $response->get_error_code(), 'Error response should contain error code.' );
+		$this->assertEquals( $expected_error_message, $response->get_error_message(), 'Error response should contain error message.' );
+	}
+
+	public function data_errors() {
+		return array(
+			'no error code or message' => array(
+				array(
+					'error_code'             => null,
+					'error_message'          => null,
+					'expected_error_code'    => 'request_failed',
+					'expected_error_message' => '',
+				),
+			),
+			'error code only'          => array(
+				array(
+					'error_code'             => 'test_error_code',
+					'error_message'          => null,
+					'expected_error_code'    => 'test_error_code',
+					'expected_error_message' => '',
+				),
+			),
+			'error message only'       => array(
+				array(
+					'error_code'             => null,
+					'error_message'          => 'test_error_message',
+					'expected_error_code'    => 'request_failed',
+					'expected_error_message' => 'test_error_message',
+				),
+			),
+			'error code and message'   => array(
+				array(
+					'error_code'             => 'test_error_code',
+					'error_message'          => 'test_error_message',
+					'expected_error_code'    => 'test_error_code',
+					'expected_error_message' => 'test_error_message',
+				),
+			),
+		);
 	}
 
 	/**
