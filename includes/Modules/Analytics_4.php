@@ -63,6 +63,7 @@ use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
@@ -70,7 +71,6 @@ use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurement
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAdSenseLinksService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAudiencesService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedMeasurementService;
-use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
@@ -87,7 +87,6 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension as Googl
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Metric as Google_Service_AnalyticsData_Metric;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaAudience;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaAccount;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaCustomDimension;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
@@ -729,10 +728,15 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
 				)
 			),
-			'POST:create-webdatastream'                 => array(
-				'service'                => 'analyticsadmin',
-				'scopes'                 => array( self::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics web data stream for this site on your behalf.', 'google-site-kit' ),
+			'POST:create-webdatastream'                 => new Create_Webdatastream(
+				array(
+					'reference_site_url'     => $this->context->get_reference_site_url(),
+					'service'                => function () {
+						return $this->get_service( 'analyticsadmin' );
+					},
+					'scopes'                 => array( self::EDIT_SCOPE ),
+					'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics web data stream for this site on your behalf.', 'google-site-kit' ),
+				)
 			),
 			'GET:properties'                            => array( 'service' => 'analyticsadmin' ),
 			'GET:property'                              => array( 'service' => 'analyticsadmin' ),
@@ -1235,21 +1239,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 						$property_id,
 						$post_body
 					);
-			case 'POST:create-webdatastream':
-				if ( ! isset( $data['propertyID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
-						array( 'status' => 400 )
-					);
-				}
-
-				$options = array(
-					'displayName' => $data['displayName'],
-				);
-
-				return $this->create_webdatastream( $data['propertyID'], $options );
 			case 'GET:properties':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -1855,8 +1844,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				return (array) $response->getGoogleAdsLinks();
 			case 'GET:adsense-links':
 				return (array) $response->getAdsenseLinks();
-			case 'POST:create-webdatastream':
-				return self::filter_webdatastream_with_ids( $response );
 			case 'GET:properties':
 				return Sort::case_insensitive_list_sort(
 					array_map( array( self::class, 'filter_property_with_ids' ), $response->getProperties() ),

@@ -20,7 +20,6 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Tests\FakeHttp;
-use Google\Site_Kit_Dependencies\Google\Service\Exception;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProvisionAccountTicketResponse;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
@@ -113,11 +112,11 @@ class Create_Account_TicketTest extends TestCase {
 
 	public function required_parameters() {
 		return array(
-			'displayName'    => array( 'displayName' ),
-			'regionCode'     => array( 'regionCode' ),
-			'propertyName'   => array( 'propertyName' ),
-			'dataStreamName' => array( 'dataStreamName' ),
-			'timezone'       => array( 'timezone' ),
+			array( 'displayName' ),
+			array( 'regionCode' ),
+			array( 'propertyName' ),
+			array( 'dataStreamName' ),
+			array( 'timezone' ),
 		);
 	}
 

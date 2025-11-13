@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints\Create_PropertyTest
+ * Class Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints\Create_WebdatastreamTest
  *
  * @package   Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints
  * @copyright 2025 Google LLC
@@ -25,29 +25,29 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
 use WP_User;
-use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 
 /**
  * @group Modules
  * @group Analytics_4
  * @group Datapoints
  */
-class Create_PropertyTest extends TestCase {
+class Create_WebdatastreamTest extends TestCase {
 
 	/**
-	 * Create_Property datapoint instance.
+	 * Create_Webdatastream datapoint instance.
 	 *
-	 * @var Create_Property
+	 * @var Create_Webdatastream
 	 */
 	private $datapoint;
 
 	/**
-	 * Create property request instance.
+	 * Create web data stream request instance.
 	 *
 	 * @var Request
 	 */
-	private $create_property_request;
+	private $create_webdatastream_request;
 
 	/**
 	 * Analytics_4 instance.
@@ -55,6 +55,7 @@ class Create_PropertyTest extends TestCase {
 	 * @var Analytics_4
 	 */
 	private $analytics;
+
 
 	public function set_up() {
 		parent::set_up();
@@ -69,34 +70,35 @@ class Create_PropertyTest extends TestCase {
 		$this->analytics->get_client()->withDefer( true );
 		$service = new Google_Service_GoogleAnalyticsAdmin( $this->analytics->get_client() );
 
-		$this->datapoint = new Create_Property(
+		$this->datapoint = new Create_Webdatastream(
 			array(
 				'reference_site_url'     => $context->get_reference_site_url(),
 				'service'                => function () use ( $service ) {
 					return $service;
 				},
 				'scopes'                 => array( Analytics_4::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics web data stream for this site on your behalf.', 'google-site-kit' ),
 			),
 		);
 
 		FakeHttp::fake_google_http_handler(
 			$this->analytics->get_client(),
 			function ( Request $request ) {
-				$this->create_property_request = $request;
+				$this->create_webdatastream_request = $request;
 
-				$response = new GoogleAnalyticsAdminV1betaProperty();
-				$response->setParent( 'accounts/123456' );
-				$response->setName( 'properties/234567' );
+				$response = new GoogleAnalyticsAdminV1betaDataStream();
+				$response->setName( 'properties/234567/dataStreams/345678' );
 
 				return new FulfilledPromise( new Response( 200, array(), json_encode( $response ) ) );
 			}
 		);
+
+		wp_set_current_user( $user->ID );
 	}
 
 	public function required_parameters() {
 		return array(
-			array( 'accountID' ),
+			array( 'propertyID' ),
 		);
 	}
 
@@ -105,14 +107,13 @@ class Create_PropertyTest extends TestCase {
 	 */
 	public function test_create_request_validates_required_params( $required_param ) {
 		$data = array(
-			'accountID'   => '123456',
+			'propertyID'  => '123456',
 			'displayName' => 'test display name',
-			'timezone'    => 'UTC',
 		);
 		// Remove the required parameter under test.
 		unset( $data[ $required_param ] );
 
-		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'create-property', $data );
+		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'create-webdatastream', $data );
 
 		try {
 			$this->datapoint->create_request( $data_request );
@@ -124,74 +125,53 @@ class Create_PropertyTest extends TestCase {
 
 
 	public function test_create_request() {
-		$this->create_property_request = null;
+		$this->create_webdatastream_request = null;
 
 		$data = array(
-			'accountID'   => '123456',
-			'displayName' => 'test display name',
-			'timezone'    => 'UTC',
-		);
-
-		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'create-property', $data );
-		$request      = $this->datapoint->create_request( $data_request );
-		$this->analytics->get_client()->execute( $request );
-		$this->assertEquals( 'https://analyticsadmin.googleapis.com/v1beta/properties', $this->create_property_request->getUri()->__toString(), 'The request should be made to the correct endpoint.' );
-		$property_request = new GoogleAnalyticsAdminV1betaProperty( json_decode( $this->create_property_request->getBody()->getContents(), true ) );
-		$this->assertEquals( 'accounts/123456', $property_request->getParent(), 'Account ID should match the provided value.' );
-		$this->assertEquals( 'test display name', $property_request->getDisplayName(), 'Display name should match the provided value.' );
-		$this->assertEquals( 'UTC', $property_request->getTimeZone(), 'Timezone should match the provided value.' );
-	}
-
-	public function test_create_request_falls_back_to_site_options_for_timezone() {
-		$this->create_property_request = null;
-
-		$data = array(
-			'accountID'   => '123456',
+			'propertyID'  => '123456',
 			'displayName' => 'test display name',
 		);
 
-		update_option( 'timezone_string', 'GMT' );
-
-		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'create-property', $data );
+		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'create-webdatastream', $data );
 		$request      = $this->datapoint->create_request( $data_request );
 		$this->analytics->get_client()->execute( $request );
-
-		$property_request = new GoogleAnalyticsAdminV1betaProperty( json_decode( $this->create_property_request->getBody()->getContents(), true ) );
-		$this->assertEquals( 'GMT', $property_request->getTimeZone(), 'Timezone should match the site option value.' );
+		$this->assertEquals( 'https://analyticsadmin.googleapis.com/v1beta/properties/123456/dataStreams', $this->create_webdatastream_request->getUri()->__toString(), 'The request should be made to the correct endpoint.' );
+		$webdatastream_request = new GoogleAnalyticsAdminV1betaDataStream( json_decode( $this->create_webdatastream_request->getBody()->getContents(), true ) );
+		$this->assertEquals( 'WEB_DATA_STREAM', $webdatastream_request->getType(), 'Type should be "WEB_DATA_STREAM".' );
+		$this->assertEquals( 'http://example.org', $webdatastream_request->getWebStreamData()->getDefaultUri(), 'The URI should match the site\'s.' );
+		$this->assertEquals( 'test display name', $webdatastream_request->getDisplayName(), 'Display name should match the provided value.' );
 	}
 
 	public function test_create_request_falls_back_to_reference_site_url_for_display_name() {
-		$this->create_property_request = null;
+		$this->create_webdatastream_request = null;
 
 		$data = array(
-			'accountID' => '123456',
-			'timezone'  => 'UTC',
+			'propertyID' => '123456',
 		);
 
-		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'create-property', $data );
+		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'create-webdatastream', $data );
 		$request      = $this->datapoint->create_request( $data_request );
 		$this->analytics->get_client()->execute( $request );
 
-		$property_request = new GoogleAnalyticsAdminV1betaProperty( json_decode( $this->create_property_request->getBody()->getContents(), true ) );
-		$this->assertEquals( 'example.org', $property_request->getDisplayName(), 'Display name should match the provided value.' );
+		$webdatastream_request = new GoogleAnalyticsAdminV1betaDataStream( json_decode( $this->create_webdatastream_request->getBody()->getContents(), true ) );
+		$this->assertEquals( 'example.org', $webdatastream_request->getDisplayName(), 'Display name should match the provided value.' );
 	}
 
 	public function test_parse_response() {
-		$this->create_property_request = null;
+		$this->create_webdatastream_request = null;
 
 		$data = array(
-			'accountID'   => '123456',
+			'propertyID'  => '123456',
 			'displayName' => 'test display name',
-			'timezone'    => 'UTC',
 		);
 
-		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'create-property', $data );
+		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'create-webdatastream', $data );
 		$request      = $this->datapoint->create_request( $data_request );
 		$response     = $this->datapoint->parse_response( $this->analytics->get_client()->execute( $request ), $data_request );
 
-		$this->assertNotWPError( $response, 'Property creation should succeed when all required parameters are provided.' );
+		$this->assertNotWPError( $response, 'Web data stream creation should succeed when all required parameters are provided.' );
 		$this->assertEquals( 'stdClass', get_class( $response ), 'Parsed response should be an stdClass object.' );
-		$this->assertEquals( '234567', $response->_id, 'Parsed response should have the parsed property ID.' );
-		$this->assertEquals( '123456', $response->_accountID, 'Parsed response should have the parsed account ID.' );
+		$this->assertEquals( '345678', $response->_id, 'Parsed response should have the parsed web data stream ID.' );
+		$this->assertEquals( '234567', $response->_propertyID, 'Parsed response should have the parsed property ID.' );
 	}
 }
