@@ -1,31 +1,24 @@
 <?php
-/**
- * Class Google\Site_Kit\Tests\Modules\Search_Console\Email_Reporting\Report_HelperTest
- *
- * @package   Google\Site_Kit\Tests\Modules\Search_Console\Email_Reporting
- * © 2025 Google LLC
- */
-
 namespace Google\Site_Kit\Tests\Modules\Search_Console\Email_Reporting;
 
-use Google\Site_Kit\Modules\Search_Console\Email_Reporting\Report_Helper as Search_Console_Report_Helper;
+use Google\Site_Kit\Modules\Search_Console\Email_Reporting\Report_Data_Processor as Search_Console_Report_Data_Processor;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
  * @group Email_Reporting
  */
-class Search_Console_Report_HelperTest extends TestCase {
+class Search_Console_Report_Data_ProcessorTest extends TestCase {
 
 	/**
-	 * Helper instance.
+	 * Processor instance.
 	 *
-	 * @var Search_Console_Report_Helper
+	 * @var Search_Console_Report_Data_Processor
 	 */
 	private $helper;
 
 	public function set_up() {
 		parent::set_up();
-		$this->helper = new Search_Console_Report_Helper();
+		$this->helper = new Search_Console_Report_Data_Processor();
 	}
 
 	public function test_sort_rows__by_field_orders_descending_by_default() {
