@@ -75,7 +75,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @return array
 	 */
-	public function get_total_conversion_events_report_options() {
+	public function get_total_conversion_events_options() {
 		return $this->with_current_range(
 			array(
 				'metrics'          => array(
@@ -97,7 +97,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @return array
 	 */
-	public function get_products_added_to_cart_report_options() {
+	public function get_products_added_to_cart_options() {
 		return $this->with_current_range(
 			array(
 				'metrics'       => array(
@@ -125,7 +125,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @return array
 	 */
-	public function get_purchases_report_options() {
+	public function get_purchases_options() {
 		return $this->with_current_range(
 			array(
 				'metrics'       => array(
@@ -153,7 +153,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @return array
 	 */
-	public function get_total_visitors_report_options() {
+	public function get_total_visitors_options() {
 		return $this->with_current_range(
 			array(
 				'metrics' => array(
@@ -171,8 +171,8 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @return array
 	 */
-	public function get_new_visitors_report_options() {
-		return $this->site_kit_audience_report_options( 'new-visitors', 'new' );
+	public function get_new_visitors_options() {
+		return $this->build_audience_report_options( 'new-visitors', 'new' );
 	}
 
 	/**
@@ -182,8 +182,8 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @return array
 	 */
-	public function get_returning_visitors_report_options() {
-		return $this->site_kit_audience_report_options( 'returning-visitors', 'returning' );
+	public function get_returning_visitors_options() {
+		return $this->build_audience_report_options( 'returning-visitors', 'returning' );
 	}
 
 	/**
@@ -196,7 +196,7 @@ class Report_Options extends Base_Report_Options {
 	 *     @type array $audiences Audience metadata (resourceName/displayName) in configured order.
 	 * }
 	 */
-	public function get_custom_audiences_report_options() {
+	public function get_custom_audiences_options() {
 		$audience_data = $this->audience_config->get_configured_audiences();
 
 		if ( empty( $audience_data['resource_names'] ) ) {
@@ -235,7 +235,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @return array
 	 */
-	public function get_traffic_channels_report_options() {
+	public function get_traffic_channels_options() {
 		return $this->with_current_range(
 			array(
 				'metrics'       => array(
@@ -264,7 +264,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @return array
 	 */
-	public function get_popular_content_report_options() {
+	public function get_popular_content_options() {
 		return $this->with_current_range(
 			array(
 				'metrics'       => array(
@@ -292,7 +292,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @return array
 	 */
-	public function get_top_authors_report_options() {
+	public function get_top_authors_options() {
 		return $this->with_current_range(
 			array(
 				'metrics'       => array(
@@ -325,7 +325,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @return array
 	 */
-	public function get_top_categories_report_options() {
+	public function get_top_categories_options() {
 		return $this->with_current_range(
 			array(
 				'metrics'       => array(
@@ -360,7 +360,7 @@ class Report_Options extends Base_Report_Options {
 	 * @param string $fallback_segment Fallback segment value for newVsReturning.
 	 * @return array
 	 */
-	private function site_kit_audience_report_options( $audience_slug, $fallback_segment ) {
+	private function build_audience_report_options( $audience_slug, $fallback_segment ) {
 		$site_kit_audiences = $this->audience_config->get_site_kit_audience_map();
 		$resource_name      = $site_kit_audiences[ $audience_slug ] ?? '';
 
