@@ -118,23 +118,3 @@ export function shortenURL( url, maxChars ) {
 	const extraChars = shortenedURL.length - Math.floor( maxChars ) + 1; // 1 is the length of "…".
 	return '…' + shortenedURL.substr( extraChars );
 }
-
-/**
- * Removes a query parameter from a URL.
- *
- * @since n.e.x.t
- *
- * @param {string} url   The URL to remove the query parameter from.
- * @param {string} param The query parameter to remove.
- * @return {string} The URL without the query param.
- */
-export function removeParamFromURL( url, param ) {
-	// Wrapped in try catch to avoid exceptions in the rare case the URL is invalid.
-	try {
-		const urlObject = new URL( url );
-		urlObject.searchParams.delete( param );
-		return urlObject.toString();
-	} catch {
-		return url;
-	}
-}

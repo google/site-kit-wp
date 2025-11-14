@@ -27,6 +27,7 @@ import { uniqWith } from 'lodash';
  */
 import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
+import { removeQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -39,7 +40,6 @@ import {
 } from '@/js/util/errors';
 import { getInsufficientPermissionsErrorDescription } from '@/js/util/insufficient-permissions-error-description';
 import { purify } from '@/js/util/purify';
-import { removeParamFromURL } from '@/js/util/urls';
 import CTA from './notifications/CTA';
 import ReportErrorActions from './ReportErrorActions';
 import useViewOnly from '@/js/hooks/useViewOnly';
@@ -93,12 +93,15 @@ export default function ReportError( { moduleSlug, error } ) {
 		errors.map( ( err ) => ( {
 			...err,
 			message: getMessage( err ),
-			reconnectURL: err.data?.reconnectURL,
+			// The `code` parameter contains a session ID which can vary
+			// between requests, so we ignore it when comparing.
+			reconnectURL: err.data?.reconnectURL
+				? removeQueryArgs( err.data?.reconnectURL, 'code' )
+				: undefined,
 		} ) ),
 		( errorA, errorB ) =>
 			errorA.message === errorB.message &&
-			removeParamFromURL( errorA.reconnectURL, 'code' ) ===
-				removeParamFromURL( errorB.reconnectURL, 'code' )
+			errorA.reconnectURL === errorB.reconnectURL
 	);
 
 	const hasInsufficientPermissionsError = errors.some( ( err ) =>

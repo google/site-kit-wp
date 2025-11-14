@@ -571,7 +571,7 @@ describe( 'ReportError', () => {
 		expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 4 );
 	} );
 
-	it( 'should group errors based on `reconnectURL`', async () => {
+	it( 'it should not list error descriptions with the same `reconnectURL`s', async () => {
 		const { container } = render(
 			<ReportError
 				moduleSlug={ moduleName }
