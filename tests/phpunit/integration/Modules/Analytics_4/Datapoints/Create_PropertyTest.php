@@ -150,14 +150,19 @@ class Create_PropertyTest extends TestCase {
 			'displayName' => 'test display name',
 		);
 
-		update_option( 'timezone_string', 'GMT' );
+		add_filter(
+			'option_timezone_string',
+			function () {
+				return 'GMT+1';
+			}
+		);
 
 		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'create-property', $data );
 		$request      = $this->datapoint->create_request( $data_request );
 		$this->analytics->get_client()->execute( $request );
 
 		$property_request = new GoogleAnalyticsAdminV1betaProperty( json_decode( $this->create_property_request->getBody()->getContents(), true ) );
-		$this->assertEquals( 'GMT', $property_request->getTimeZone(), 'Timezone should match the site option value.' );
+		$this->assertEquals( 'GMT+1', $property_request->getTimeZone(), 'Timezone should match the site option value.' );
 	}
 
 	public function test_create_request_falls_back_to_reference_site_url_for_display_name() {
