@@ -208,7 +208,11 @@
         "jsdoc/require-returns-type": "off",
         "jsdoc/require-returns": "off",
         "jsdoc/no-undefined-types": "off",
-        "jsdoc/valid-types": "off"
+        "jsdoc/valid-types": "off",
+        "react/function-component-definition": "off",
+        "sitekit/function-declaration-consistency": "off",
+        "sitekit/jsdoc-third-person": "off",
+        "valid-jsdoc": "off"
       }
     },
     {

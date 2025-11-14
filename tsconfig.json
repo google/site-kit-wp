@@ -2,11 +2,10 @@
   "compilerOptions": {
     "allowJs": true,
     "baseUrl": ".",
+    "checkJs": false,
     "jsx": "preserve",
     "noImplicitAny": true,
-    "target": "es5",
     "noEmit": true,
-    "resolveJsonModule": true,
     "paths": {
       "@/*": [
         "./assets/*"
@@ -29,7 +28,10 @@
       "googlesitekit-widgets": [
         "./assets/js/googlesitekit-widgets"
       ],
-    }
+    },
+    "resolveJsonModule": true,
+    "strictNullChecks": true,
+    "target": "es5"
   },
   "exclude": [
     "coverage",

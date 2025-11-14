@@ -15,11 +15,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -28,19 +23,38 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Link from '@/js/components/Link';
+import { FC } from 'react';
 
-export default function LearnMoreLink( {
+/**
+ * A "Learn More" link component, usually used to append "Learn more" with a
+ * specified URL to content like a paragraph.
+ *
+ * @since 1.153.0
+ */
+const LearnMoreLink: FC< {
+	href: string;
+	className?: string;
+	label?: string;
+	external?: boolean;
+	onClick?: () => void;
+} > = ( {
 	href,
 	className,
 	label = __( 'Learn more', 'google-site-kit' ),
 	external = true,
 	onClick = () => {},
-} ) {
+} ) => {
+	// Return null if no href is provided.
+	//
+	// This arguably shouldn't be optional, but until all usage of this
+	// component are via typed code, we need this safeguard.
 	if ( ! href ) {
 		return null;
 	}
 
 	return (
+		// @ts-expect-error `Link` component is not currently typed, so this
+		// results in an error.
 		<Link
 			href={ href }
 			className={ className }
@@ -50,12 +64,6 @@ export default function LearnMoreLink( {
 			{ label }
 		</Link>
 	);
-}
-
-LearnMoreLink.propTypes = {
-	href: PropTypes.string.isRequired,
-	className: PropTypes.string,
-	label: PropTypes.string,
-	external: PropTypes.bool,
-	onClick: PropTypes.func,
 };
+
+export default LearnMoreLink;
