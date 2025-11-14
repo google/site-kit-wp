@@ -189,6 +189,26 @@
       "globals": {
         "browser": true,
         "page": true
+      },
+      "rules": {
+        "jsdoc/check-tag-names": "error",
+        "jsdoc/check-types": "off",
+        "jsdoc/check-line-alignment": [
+          "error",
+          "always"
+        ],
+        "jsdoc/require-description": "error",
+        "jsdoc/require-description-complete-sentence": "off",
+        "jsdoc/require-param": "off",
+        "jsdoc/require-param-description": "off",
+        "jsdoc/require-param-name": "off",
+        "jsdoc/require-param-type": "off",
+        "jsdoc/require-returns-check": "off",
+        "jsdoc/require-returns-description": "off",
+        "jsdoc/require-returns-type": "off",
+        "jsdoc/require-returns": "off",
+        "jsdoc/no-undefined-types": "off",
+        "jsdoc/valid-types": "off"
       }
     },
     {
