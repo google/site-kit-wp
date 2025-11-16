@@ -431,11 +431,54 @@ class Google_ProxyTest extends TestCase {
 				'connected_modules'      => 'site-verification search-console pagespeed-insights',
 				'php_version'            => phpversion(),
 				'feature_metrics'        => array(),
+				'amp_mode'               => '', // No AMP mode by default.
 			),
 			$this->request_args['body'],
 			'Get features request body should contain site credentials and platform information.'
 		);
 		$this->assertEqualSetsWithIndex( $expected_success_response, $features, 'Get features should return expected feature data.' );
+	}
+
+	public function test_get_features_with_amp_primary() {
+		// Remove the filter being added by Modules::register() or any other class during bootstrap.
+		remove_all_filters( 'googlesitekit_feature_metrics' );
+
+		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
+
+		$amp_primary_context = $this->get_amp_primary_context();
+		$google_proxy        = new Google_Proxy( $amp_primary_context );
+
+		$expected_url              = $google_proxy->url( Google_Proxy::FEATURES_URI );
+		$expected_success_response = array(
+			'test.featureName' => array( 'enabled' => true ),
+		);
+
+		$this->mock_http_request( $expected_url, $expected_success_response );
+		$google_proxy->get_features( $credentials, new OAuth_Client( $amp_primary_context, null, null, $credentials, $google_proxy ) );
+
+		// Ensure amp_mode is set to 'primary'.
+		$this->assertEquals( 'primary', $this->request_args['body']['amp_mode'], 'Get features request should include primary amp_mode.' );
+	}
+
+	public function test_get_features_with_amp_secondary() {
+		// Remove the filter being added by Modules::register() or any other class during bootstrap.
+		remove_all_filters( 'googlesitekit_feature_metrics' );
+
+		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
+
+		$amp_secondary_context = $this->get_amp_secondary_context();
+		$google_proxy          = new Google_Proxy( $amp_secondary_context );
+
+		$expected_url              = $google_proxy->url( Google_Proxy::FEATURES_URI );
+		$expected_success_response = array(
+			'test.featureName' => array( 'enabled' => true ),
+		);
+
+		$this->mock_http_request( $expected_url, $expected_success_response );
+		$google_proxy->get_features( $credentials, new OAuth_Client( $amp_secondary_context, null, null, $credentials, $google_proxy ) );
+
+		// Ensure amp_mode is set to 'secondary'.
+		$this->assertEquals( 'secondary', $this->request_args['body']['amp_mode'], 'Get features request should include secondary amp_mode.' );
 	}
 
 	public function test_count_connected_users() {
