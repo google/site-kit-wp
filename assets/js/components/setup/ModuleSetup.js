@@ -115,6 +115,11 @@ export default function ModuleSetup( { moduleSlug } ) {
 		await trackEvent( 'moduleSetup', 'cancel_module_setup', moduleSlug );
 	}, [ moduleSlug ] );
 
+	const isInitialSetupFlow =
+		setupFlowRefreshEnabled &&
+		moduleSlug === MODULE_SLUG_ANALYTICS_4 &&
+		showProgress === 'true';
+
 	useMount( () => {
 		if ( isInitialSetupFlow ) {
 			trackEvent(
@@ -133,11 +138,6 @@ export default function ModuleSetup( { moduleSlug } ) {
 	}
 
 	const { SetupComponent } = module;
-
-	const isInitialSetupFlow =
-		setupFlowRefreshEnabled &&
-		moduleSlug === MODULE_SLUG_ANALYTICS_4 &&
-		showProgress === 'true';
 
 	return (
 		<Fragment>
