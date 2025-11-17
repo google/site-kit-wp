@@ -23,23 +23,6 @@ use Google\Site_Kit\Core\Email_Reporting\Report_Options\Report_Options as Base_R
 class Report_Options extends Base_Report_Options {
 
 	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array|null $date_range    Current period range array.
-	 * @param array      $compare_range Optional. Compare period range array.
-	 * @throws \InvalidArgumentException When the date range payload is missing.
-	 */
-	public function __construct( $date_range = null, $compare_range = array() ) {
-		if ( null === $date_range ) {
-			throw new \InvalidArgumentException( 'Email reporting date range is required.' );
-		}
-
-		parent::__construct( $date_range, $compare_range );
-	}
-
-	/**
 	 * Gets report options for total impressions.
 	 *
 	 * @since n.e.x.t
