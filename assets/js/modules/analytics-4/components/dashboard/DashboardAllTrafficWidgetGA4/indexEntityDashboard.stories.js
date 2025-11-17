@@ -165,11 +165,10 @@ EntityDashboardLoaded.args = {
 		} );
 	},
 };
-// TODO: Restore this test
-// (see: https://github.com/google/site-kit-wp/issues/11619) once the
-// underlying issue with Google Charts in VRT tests is diagnosed + resolved.
-//
-// EntityDashboardLoaded.scenario = {};
+EntityDashboardLoaded.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 200,
+};
 
 export const EntityDashboardLoading = Template.bind( {} );
 EntityDashboardLoading.storyName = 'Loading';
@@ -224,7 +223,10 @@ EntityDashboardDataUnavailable.args = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	},
 };
-EntityDashboardDataUnavailable.scenario = {};
+EntityDashboardDataUnavailable.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 200,
+};
 
 export const EntityDashboardZeroData = Template.bind( {} );
 EntityDashboardZeroData.storyName = 'Zero Data';
@@ -265,7 +267,10 @@ EntityDashboardZeroData.args = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	},
 };
-EntityDashboardZeroData.scenario = {};
+EntityDashboardZeroData.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 200,
+};
 
 export const EntityDashboardError = Template.bind( {} );
 EntityDashboardError.storyName = 'Error';
@@ -309,11 +314,10 @@ EntityDashboardOneRowOfData.args = {
 		} );
 	},
 };
-// TODO: Restore this test
-// (see: https://github.com/google/site-kit-wp/issues/11619) once the
-// underlying issue with Google Charts in VRT tests is diagnosed + resolved.
-//
-// EntityDashboardOneRowOfData.scenario = {};
+EntityDashboardOneRowOfData.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 200,
+};
 
 export const NoDataInComparisonDateRange = Template.bind( {} );
 NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
@@ -326,11 +330,10 @@ NoDataInComparisonDateRange.args = {
 		} );
 	},
 };
-// TODO: Restore this test
-// (see: https://github.com/google/site-kit-wp/issues/11619) once the
-// underlying issue with Google Charts in VRT tests is diagnosed + resolved.
-//
-// NoDataInComparisonDateRange.scenario = {};
+NoDataInComparisonDateRange.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 200,
+};
 
 export default {
 	title: 'Modules/Analytics4/Widgets/All Traffic Widget GA4/Entity Dashboard',

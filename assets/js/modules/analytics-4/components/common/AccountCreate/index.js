@@ -294,7 +294,7 @@ export default function AccountCreate( { className } ) {
 
 				<SetupPluginConversionTrackingNotice
 					className={ classnames( {
-						'googlesitekit-margin-top-0': ! isInitialSetupFlow,
+						'googlesitekit-margin-top-0': ! setupFlowRefreshEnabled,
 					} ) }
 					message={ createInterpolateElement(
 						__(
@@ -319,7 +319,7 @@ export default function AccountCreate( { className } ) {
 
 			<P
 				className="googlesitekit-analytics-setup__analytics-create-account-info"
-				size={ isInitialSetupFlow ? 'small' : undefined }
+				size={ setupFlowRefreshEnabled ? 'small' : undefined }
 			>
 				{ hasRequiredScope && (
 					<span>

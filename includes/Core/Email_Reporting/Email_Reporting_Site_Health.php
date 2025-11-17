@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_S
 /**
  * Class responsible for exposing Email Reporting data to Site Health.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class Email_Reporting_Site_Health {
 	/**
 	 * Email reporting settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 * @var Email_Reporting_Settings
 	 */
 	private $settings;
@@ -33,7 +33,7 @@ class Email_Reporting_Site_Health {
 	/**
 	 * User options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 * @var User_Options
 	 */
 	private $user_options;
@@ -41,7 +41,7 @@ class Email_Reporting_Site_Health {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @param Email_Reporting_Settings $settings     Email reporting settings.
 	 * @param User_Options             $user_options User options instance.
@@ -54,7 +54,7 @@ class Email_Reporting_Site_Health {
 	/**
 	 * Gets Email Reports debug fields for Site Health.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @return array
 	 */
@@ -115,7 +115,7 @@ class Email_Reporting_Site_Health {
 	/**
 	 * Gets the number of subscribed users.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @return int
 	 */
@@ -146,7 +146,7 @@ class Email_Reporting_Site_Health {
 	/**
 	 * Gets the post IDs for the latest email log batch.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @return array<int>
 	 */
@@ -199,7 +199,7 @@ class Email_Reporting_Site_Health {
 	/**
 	 * Builds the deliverability field details.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @param array<int> $post_ids Post IDs belonging to the latest batch.
 	 * @return array
@@ -248,7 +248,7 @@ class Email_Reporting_Site_Health {
 	/**
 	 * Builds the last sent field details.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @param array<int> $post_ids Post IDs belonging to the latest batch.
 	 * @return array
@@ -296,7 +296,7 @@ class Email_Reporting_Site_Health {
 	/**
 	 * Gets the list of email log statuses considered for Site Health summaries.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @return string[]
 	 */

@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 /**
  * Registers the internal Email Reporting log storage.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  * @access private
  * @ignore
  */
@@ -192,7 +192,7 @@ final class Email_Log {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 */
 	public function register() {
 		add_action( 'init', $this->get_method_proxy_once( 'register_email_log' ) );
@@ -201,7 +201,7 @@ final class Email_Log {
 	/**
 	 * Registers the email log post type, statuses, and meta.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 */
 	protected function register_email_log() {
 		$this->register_post_type();
@@ -212,7 +212,7 @@ final class Email_Log {
 	/**
 	 * Registers the internal email log post type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 */
 	protected function register_post_type() {
 		if ( post_type_exists( self::POST_TYPE ) ) {
@@ -233,7 +233,7 @@ final class Email_Log {
 	/**
 	 * Registers internal delivery statuses.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 */
 	protected function register_post_statuses() {
 		$statuses = array(
@@ -259,7 +259,7 @@ final class Email_Log {
 	/**
 	 * Registers meta data for the email log post type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 */
 	protected function register_post_meta() {
 		$auth_callback = array( __CLASS__, 'meta_auth_callback' );
@@ -325,7 +325,7 @@ final class Email_Log {
 	 *
 	 * Allows only known scheduling frequencies, normalizing strings to lowercase.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @param mixed $value Meta value.
 	 * @return string Sanitized value.
@@ -347,7 +347,7 @@ final class Email_Log {
 	 * Strips unsafe characters and limits identifier string length so IDs
 	 * remain index-safe in MySQL databases.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @param mixed $value Meta value.
 	 * @return string Sanitized value.
@@ -361,7 +361,7 @@ final class Email_Log {
 	/**
 	 * Sanitizes the send attempts meta value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @param mixed $value Meta value.
 	 * @return int Sanitized value.
@@ -379,7 +379,7 @@ final class Email_Log {
 	 *
 	 * Converts WP_Error instances and other payloads into JSON for storage.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @param mixed $value Meta value.
 	 * @return string Sanitized value.
@@ -422,7 +422,7 @@ final class Email_Log {
 	 *
 	 * Extracts known timestamps, coercing them to integers before encoding.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @param mixed $value Meta value.
 	 * @return string Sanitized value.
@@ -455,7 +455,7 @@ final class Email_Log {
 	 * Ensures only internal workflows (cron/init) or administrators touch the
 	 * private log metadata so the CPT stays non-public.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @return bool
 	 */

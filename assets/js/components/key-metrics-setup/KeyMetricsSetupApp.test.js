@@ -23,8 +23,8 @@ import {
 	fireEvent,
 	provideSiteInfo,
 	freezeFetch,
-	muteFetch,
 	waitForTimeouts,
+	waitFor,
 } from '../../../../tests/js/test-utils';
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -51,8 +51,8 @@ describe( 'KeyMetricsSetupApp', () => {
 		'^/google-site-kit/v1/core/user/data/user-input-settings'
 	);
 
-	const audienceSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/audience-settings'
+	const initialSetupSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/initial-setup-settings'
 	);
 
 	// The `UserInputSelectOptions` automatically focuses the first radio/checkbox
@@ -78,7 +78,15 @@ describe( 'KeyMetricsSetupApp', () => {
 			status: 200,
 		} );
 
-		muteFetch( audienceSettingsEndpoint );
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+			configuredAudiences: null,
+			isAudienceSegmentationWidgetHidden: false,
+			didSetAudiences: false,
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetInitialSetupSettings( {
+			isAnalyticsSetupComplete: false,
+		} );
 
 		registry
 			.dispatch( CORE_MODULES )
@@ -166,6 +174,10 @@ describe( 'KeyMetricsSetupApp', () => {
 		global.location.href =
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup&showProgress=true';
 
+		fetchMock.postOnce( initialSetupSettingsEndpoint, {
+			body: { settings: { isAnalyticsSetupComplete: true } },
+		} );
+
 		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
 			body: {
 				purpose: {
@@ -186,17 +198,59 @@ describe( 'KeyMetricsSetupApp', () => {
 		fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
 		fireEvent.click( getByRole( 'button', { name: 'Complete setup' } ) );
 
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
+			);
+		} );
+	} );
+
+	it( 'should call saveInitialSetupSettings with isAnalyticsSetupComplete:true after successful setup', async () => {
+		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
+			body: {
+				purpose: {
+					values: [ 'publish_blog' ],
+					scope: 'site',
+				},
+			},
+			status: 200,
+		} );
+
+		fetchMock.postOnce( initialSetupSettingsEndpoint, {
+			body: { settings: { isAnalyticsSetupComplete: true } },
+			status: 200,
+		} );
+
+		const { getByRole, waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
 		await waitForRegistry();
 
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
-		);
+		fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
+		fireEvent.click( getByRole( 'button', { name: 'Complete setup' } ) );
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( initialSetupSettingsEndpoint, {
+				method: 'POST',
+				body: {
+					data: {
+						settings: { isAnalyticsSetupComplete: true },
+					},
+				},
+			} );
+		} );
 	} );
 
 	it( 'should navigate to the dashboard with notification and slug params when saving is successful and not in the initial setup flow', async () => {
 		global.location.href =
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup';
 
+		fetchMock.postOnce( initialSetupSettingsEndpoint, {
+			body: { settings: { isAnalyticsSetupComplete: true } },
+		} );
+
 		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
 			body: {
 				purpose: {
@@ -217,11 +271,11 @@ describe( 'KeyMetricsSetupApp', () => {
 		fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
 		fireEvent.click( getByRole( 'button', { name: 'Complete setup' } ) );
 
-		await waitForRegistry();
-
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=authentication_success&slug=analytics-4'
-		);
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=authentication_success&slug=analytics-4'
+			);
+		} );
 	} );
 
 	it( 'should show an error when the save fails', async () => {
