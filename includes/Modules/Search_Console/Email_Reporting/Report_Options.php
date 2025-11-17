@@ -44,7 +44,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Report request options array for impressions.
 	 */
 	public function get_total_impressions_options() {
 		return $this->get_search_funnel_options();
@@ -55,7 +55,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Report request options array for clicks.
 	 */
 	public function get_total_clicks_options() {
 		return $this->get_search_funnel_options();
@@ -66,7 +66,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Report request options array for CTR keywords.
 	 */
 	public function get_top_ctr_keywords_options() {
 		$current_range = $this->get_current_range_values();
@@ -84,7 +84,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Report request options array for top pages.
 	 */
 	public function get_top_pages_by_clicks_options() {
 		$current_range = $this->get_current_range_values();
@@ -102,7 +102,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Report request options array spanning both periods.
 	 */
 	private function get_search_funnel_options() {
 		$combined_range = $this->get_combined_range();
