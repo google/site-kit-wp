@@ -94,9 +94,10 @@ export default function ReportError( { moduleSlug, error } ) {
 			...err,
 			message: getMessage( err ),
 			// The `code` parameter contains a session ID which can vary
-			// between requests, so we ignore it when comparing.
+			// between requests, so we ignore it for comparison below.
+			// To use the original `reconnectURL` elsewhere, use `err.data.reconnectURL`.
 			reconnectURL: err.data?.reconnectURL
-				? removeQueryArgs( err.data?.reconnectURL, 'code' )
+				? removeQueryArgs( err.data.reconnectURL, 'code' )
 				: undefined,
 		} ) ),
 		( errorA, errorB ) =>
