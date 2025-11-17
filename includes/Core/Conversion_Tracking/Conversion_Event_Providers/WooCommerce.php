@@ -455,6 +455,17 @@ class WooCommerce extends Conversion_Events_Provider {
 			return '';
 		}
 
+		// Check if the original input started with + (user explicitly provided country code).
+		$original_started_with_plus = strpos( trim( $phone ), '+' ) === 0;
+
+		// Remove any non-digit characters.
+		$phone_digits = preg_replace( '/[^0-9]/', '', $phone );
+
+		// Skip if phone is empty after cleaning.
+		if ( empty( $phone_digits ) ) {
+			return '';
+		}
+
 		// Try to use WooCommerce's country calling codes for proper E.164 formatting.
 		if ( class_exists( 'WC_Countries' ) && ! empty( $country ) ) {
 			$countries    = new \WC_Countries();
@@ -462,16 +473,30 @@ class WooCommerce extends Conversion_Events_Provider {
 
 			// If we have a valid calling code, format to E.164.
 			if ( ! empty( $calling_code ) ) {
-				// Remove any non-digit characters and leading zeros.
-				$phone = ltrim( preg_replace( '/[^0-9]/', '', $phone ), '0' );
+				// Extract country code digits (without the + sign).
+				$country_code_digits = ltrim( $calling_code, '+' );
 
-				// Skip if phone is empty after cleaning.
-				if ( empty( $phone ) ) {
-					return '';
+				// Check if the phone number already starts with the billing country code.
+				if ( strpos( $phone_digits, $country_code_digits ) === 0 ) {
+					// Phone already has the correct country code, just add + and validate.
+					$phone = '+' . $phone_digits;
+				} elseif ( $original_started_with_plus ) {
+					// User explicitly entered a +, indicating they provided their own country code.
+					// Trust their input and use their number as-is.
+					$phone = '+' . $phone_digits;
+				} else {
+					// No country code detected, treat as national number.
+					// Remove leading zeros from the national number.
+					$phone_digits = ltrim( $phone_digits, '0' );
+
+					// Skip if phone is empty after removing leading zeros.
+					if ( empty( $phone_digits ) ) {
+						return '';
+					}
+
+					// Prepend the calling code (which already includes the + sign).
+					$phone = $calling_code . $phone_digits;
 				}
-
-				// Prepend the calling code (which already includes the + sign).
-				$phone = $calling_code . $phone;
 
 				// Validate the number is the correct length (11-15 digits including +).
 				if ( strlen( $phone ) < 11 || strlen( $phone ) > 15 ) {
