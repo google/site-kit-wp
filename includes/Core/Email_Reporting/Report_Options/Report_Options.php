@@ -65,7 +65,7 @@ abstract class Report_Options {
 	 *
 	 * @param array $options         Base report options.
 	 * @param bool  $include_compare Optional. Whether to include compare dates. Default false.
-	 * @return array
+	 * @return array Report request options array with applied date ranges.
 	 */
 	protected function with_current_range( $options, $include_compare = false ) {
 		$options['startDate'] = $this->current_range['startDate'];
@@ -84,7 +84,7 @@ abstract class Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Combined date range spanning compare start to current end.
 	 */
 	protected function get_combined_range() {
 		return array(
@@ -98,7 +98,7 @@ abstract class Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Current period range array.
 	 */
 	protected function get_current_range_values() {
 		return $this->current_range;
@@ -109,7 +109,7 @@ abstract class Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Compare period range array.
 	 */
 	protected function get_compare_range_values() {
 		return $this->compare_range;
@@ -123,7 +123,7 @@ abstract class Report_Options {
 	 * @param array  $range Potential date range.
 	 * @param string $label Human friendly label used in exceptions.
 	 * @throws \InvalidArgumentException When required start or end dates are absent.
-	 * @return array
+	 * @return array Normalized date range array.
 	 */
 	private function normalize_range( $range, $label ) {
 		if ( empty( $range['startDate'] ) || empty( $range['endDate'] ) ) {
@@ -145,7 +145,7 @@ abstract class Report_Options {
 	 *
 	 * @param array $date_range    Current period range (possibly containing compare keys).
 	 * @param array $compare_range Explicit compare range override.
-	 * @return array
+	 * @return array Compare range payload.
 	 */
 	private function extract_compare_range( $date_range, $compare_range ) {
 		if ( ! empty( $compare_range ) ) {
