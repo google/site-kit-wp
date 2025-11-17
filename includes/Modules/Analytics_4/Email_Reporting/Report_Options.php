@@ -53,14 +53,14 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Context $context       Plugin context.
 	 * @param array   $date_range    Current period range array.
 	 * @param array   $compare_range Optional. Compare period range array.
+	 * @param Context $context       Plugin context.
 	 */
 	public function __construct(
-		Context $context,
 		$date_range,
-		$compare_range = array()
+		$compare_range = array(),
+		Context $context
 	) {
 		parent::__construct( $date_range, $compare_range );
 		$user_settings         = new User_Audience_Settings( new User_Options( $context ) );
@@ -73,7 +73,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Report request options array.
 	 */
 	public function get_total_conversion_events_options() {
 		return $this->with_current_range(
@@ -95,7 +95,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Report request options array.
 	 */
 	public function get_products_added_to_cart_options() {
 		return $this->with_current_range(
@@ -123,7 +123,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Report request options array.
 	 */
 	public function get_purchases_options() {
 		return $this->with_current_range(
@@ -151,7 +151,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Report request options array.
 	 */
 	public function get_total_visitors_options() {
 		return $this->with_current_range(
@@ -169,7 +169,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Report request options array.
 	 */
 	public function get_new_visitors_options() {
 		return $this->build_audience_report_options( 'new-visitors', 'new' );
@@ -180,7 +180,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Report request options array.
 	 */
 	public function get_returning_visitors_options() {
 		return $this->build_audience_report_options( 'returning-visitors', 'returning' );
@@ -191,10 +191,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array {
-	 *     @type array $options   Report options array (empty array if no audiences configured).
-	 *     @type array $audiences Audience metadata (resourceName/displayName) in configured order.
-	 * }
+	 * @return array Report payload, holding report options array and audience metadata.
 	 */
 	public function get_custom_audiences_options() {
 		$audience_data = $this->audience_config->get_configured_audiences();
@@ -233,7 +230,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Report request options array.
 	 */
 	public function get_traffic_channels_options() {
 		return $this->with_current_range(
@@ -262,7 +259,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Report request options array.
 	 */
 	public function get_popular_content_options() {
 		return $this->with_current_range(
@@ -290,7 +287,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Report request options array.
 	 */
 	public function get_top_authors_options() {
 		return $this->with_current_range(
@@ -323,7 +320,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Report request options array.
 	 */
 	public function get_top_categories_options() {
 		return $this->with_current_range(
@@ -358,7 +355,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @param string $audience_slug    Audience slug (e.g. 'new-visitors').
 	 * @param string $fallback_segment Fallback segment value for newVsReturning.
-	 * @return array
+	 * @return array Report request options array.
 	 */
 	private function build_audience_report_options( $audience_slug, $fallback_segment ) {
 		$site_kit_audiences = $this->audience_config->get_site_kit_audience_map();

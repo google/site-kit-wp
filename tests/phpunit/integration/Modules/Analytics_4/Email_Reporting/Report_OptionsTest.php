@@ -261,7 +261,7 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 			$date_range = $this->get_default_date_range();
 		}
 
-		return new Analytics_4_Report_Options( $this->context, $date_range, $compare_range );
+		return new Analytics_4_Report_Options( $date_range, $compare_range, $this->context );
 	}
 
 	/**
