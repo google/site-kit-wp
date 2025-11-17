@@ -60,10 +60,7 @@ class Report_Data_Processor {
 	 *
 	 * @param array $rows          Combined-period rows returned from the API.
 	 * @param int   $period_length Number of days within a period.
-	 * @return array {
-	 *     @type array $compare Rows for the earlier period.
-	 *     @type array $current Rows for the current period.
-	 * }
+	 * @return array Partitioned rows, holding rows for earlier and current periods.
 	 */
 	public function partition_rows_by_period( array $rows, $period_length ) {
 		if ( $period_length <= 0 || empty( $rows ) ) {
@@ -93,10 +90,7 @@ class Report_Data_Processor {
 	 * @param array  $rows          Combined-period rows returned from the API.
 	 * @param string $field         Field name to sum (e.g. impressions, clicks, ctr).
 	 * @param int    $period_length Number of days within a period.
-	 * @return array {
-	 *     @type float $compare Sum for the compare period.
-	 *     @type float $current Sum for the current period.
-	 * }
+	 * @return array Period totals, holding summed field values for compare and current periods.
 	 */
 	public function sum_field_by_period( array $rows, $field, $period_length ) {
 		$partitioned = $this->partition_rows_by_period( $rows, $period_length );
@@ -114,7 +108,7 @@ class Report_Data_Processor {
 	 *
 	 * @param array  $rows  Row list.
 	 * @param string $field Field name.
-	 * @return float
+	 * @return float Aggregated numeric total for the requested field.
 	 */
 	private function sum_rows_field( array $rows, $field ) {
 		$total = 0.0;
