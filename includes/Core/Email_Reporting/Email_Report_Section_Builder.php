@@ -189,7 +189,7 @@ class Email_Report_Section_Builder {
 				continue;
 			}
 
-			$type = isset( $value_types[ $index ] ) ? $value_types[ $index ] : 'TYPE_STANDARD';
+			$type     = isset( $value_types[ $index ] ) ? $value_types[ $index ] : 'TYPE_STANDARD';
 			$output[] = $this->format_metric_value( $value, $type );
 		}
 		return $output;
