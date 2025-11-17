@@ -20,7 +20,7 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 class Email_Report_Payload_Processor {
 
 	/**
-	 * Processes GA4 batch reports using helper structure.
+	 * Processes batch reports into a normalized structure.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -33,7 +33,7 @@ class Email_Report_Payload_Processor {
 
 		if ( isset( $batch_results['reports'] ) && is_array( $batch_results['reports'] ) ) {
 			$reports = $batch_results['reports'];
-		} elseif ( $this->is_sequential_array( $batch_results ) ) {
+		} elseif ( wp_is_numeric_array( $batch_results ) ) {
 			$reports = $batch_results;
 		} else {
 			foreach ( $batch_results as $value ) {
@@ -122,7 +122,7 @@ class Email_Report_Payload_Processor {
 	}
 
 	/**
-	 * Processes a single GA4 report into a normalized structure.
+	 * Processes a single report into a normalized structure.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -185,7 +185,7 @@ class Email_Report_Payload_Processor {
 	}
 
 	/**
-	 * Extracts totals from a GA4 report.
+	 * Extracts totals from the report payload.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -221,7 +221,7 @@ class Email_Report_Payload_Processor {
 	}
 
 	/**
-	 * Extracts rows from a GA4 report into a normalized structure.
+	 * Extracts rows from the report payload into a normalized structure.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -373,21 +373,5 @@ class Email_Report_Payload_Processor {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Determines whether an array uses sequential integer keys starting at zero.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $data Array to test.
-	 * @return bool
-	 */
-	private function is_sequential_array( $data ) {
-		if ( empty( $data ) ) {
-			return true;
-		}
-
-		return array_keys( $data ) === range( 0, count( $data ) - 1 );
 	}
 }

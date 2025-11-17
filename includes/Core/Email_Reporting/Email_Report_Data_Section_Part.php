@@ -102,7 +102,7 @@ class Email_Report_Data_Section_Part {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string
+	 * @return string Section key.
 	 */
 	public function get_section_key() {
 		return $this->section_key;
@@ -113,7 +113,7 @@ class Email_Report_Data_Section_Part {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string
+	 * @return string Title.
 	 */
 	public function get_title() {
 		return $this->title;
@@ -124,7 +124,7 @@ class Email_Report_Data_Section_Part {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Labels list.
 	 */
 	public function get_labels() {
 		return $this->labels;
@@ -135,7 +135,7 @@ class Email_Report_Data_Section_Part {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Values list.
 	 */
 	public function get_values() {
 		return $this->values;
@@ -146,7 +146,7 @@ class Email_Report_Data_Section_Part {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array|null
+	 * @return array|null Trends list or null.
 	 */
 	public function get_trends() {
 		return $this->trends;
@@ -157,7 +157,7 @@ class Email_Report_Data_Section_Part {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array|null
+	 * @return array|null Date range data or null.
 	 */
 	public function get_date_range() {
 		return $this->date_range;
@@ -168,7 +168,7 @@ class Email_Report_Data_Section_Part {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string|null
+	 * @return string|null Dashboard link or null.
 	 */
 	public function get_dashboard_link() {
 		return $this->dashboard_link;
@@ -180,7 +180,6 @@ class Email_Report_Data_Section_Part {
 	 * @since n.e.x.t
 	 *
 	 * @param string $title Title.
-	 * @return void
 	 *
 	 * @throws InvalidArgumentException When validation fails.
 	 */
@@ -198,7 +197,6 @@ class Email_Report_Data_Section_Part {
 	 * @since n.e.x.t
 	 *
 	 * @param array $labels Labels.
-	 * @return void
 	 *
 	 * @throws InvalidArgumentException When validation fails.
 	 */
@@ -216,7 +214,6 @@ class Email_Report_Data_Section_Part {
 	 * @since n.e.x.t
 	 *
 	 * @param array $values Values.
-	 * @return void
 	 *
 	 * @throws InvalidArgumentException When validation fails.
 	 */
@@ -234,7 +231,6 @@ class Email_Report_Data_Section_Part {
 	 * @since n.e.x.t
 	 *
 	 * @param array|null $trends Trends data.
-	 * @return void
 	 *
 	 * @throws InvalidArgumentException When validation fails.
 	 */
@@ -257,7 +253,6 @@ class Email_Report_Data_Section_Part {
 	 * @since n.e.x.t
 	 *
 	 * @param array|null $date_range Date range data.
-	 * @return void
 	 *
 	 * @throws InvalidArgumentException When validation fails.
 	 */
@@ -301,7 +296,6 @@ class Email_Report_Data_Section_Part {
 	 * @since n.e.x.t
 	 *
 	 * @param string|null $dashboard_link Dashboard link.
-	 * @return void
 	 *
 	 * @throws InvalidArgumentException When validation fails.
 	 */
@@ -317,7 +311,7 @@ class Email_Report_Data_Section_Part {
 	 * Whether the section is empty (no values or all empty strings).
 	 *
 	 * @since n.e.x.t
-	 * @return bool
+	 * @return bool Whether the section is empty.
 	 */
 	public function is_empty() {
 		if ( empty( $this->values ) ) {
