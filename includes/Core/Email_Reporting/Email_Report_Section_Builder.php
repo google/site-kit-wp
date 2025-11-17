@@ -184,11 +184,12 @@ class Email_Report_Section_Builder {
 	protected function normalize_values( $values, $value_types = array() ) {
 		$output = array();
 		foreach ( $values as $index => $value ) {
-			$type = isset( $value_types[ $index ] ) ? $value_types[ $index ] : 'TYPE_STANDARD';
 			if ( null === $value ) {
 				$output[] = null;
 				continue;
 			}
+
+			$type = isset( $value_types[ $index ] ) ? $value_types[ $index ] : 'TYPE_STANDARD';
 			$output[] = $this->format_metric_value( $value, $type );
 		}
 		return $output;
