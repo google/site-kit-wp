@@ -122,6 +122,22 @@ class Email_Reporting_SchedulerTest extends TestCase {
 		$this->assertSame( $first, $second, 'Scheduling the same fallback twice should reuse the original timestamp for frequency "' . $frequency . '".' );
 	}
 
+	public function test_schedule_cleanup_schedules_monthly_event() {
+		$before = time();
+
+		$this->scheduler->schedule_cleanup();
+
+		$scheduled = wp_next_scheduled( Email_Reporting_Scheduler::ACTION_CLEANUP );
+
+		$this->assertNotFalse( $scheduled, 'Cleanup event should be scheduled.' );
+		$this->assertGreaterThanOrEqual( $before, $scheduled, 'Cleanup event should not be scheduled in the past.' );
+		$this->assertLessThanOrEqual( $before + 2, $scheduled, 'Cleanup event should run immediately on first schedule.' );
+
+		$this->scheduler->schedule_cleanup();
+
+		$this->assertSame( $scheduled, wp_next_scheduled( Email_Reporting_Scheduler::ACTION_CLEANUP ), 'Cleanup scheduling should be idempotent.' );
+	}
+
 	public function test_unschedule_all_clears_events() {
 		$this->scheduler->schedule_initiator_once( Email_Reporting_Settings::FREQUENCY_WEEKLY );
 		$worker_timestamp   = time();
@@ -135,10 +151,11 @@ class Email_Reporting_SchedulerTest extends TestCase {
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Initiator hook should be unscheduled for weekly frequency.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_WORKER, array( 'batch', Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp ) ), 'Worker hook should be unscheduled for batch "batch".' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_FALLBACK, array( Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Fallback hook should be unscheduled for weekly frequency.' );
+		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_CLEANUP ), 'Cleanup hook should be unscheduled.' );
 	}
 
 	private function clear_scheduled_events() {
-		foreach ( array( Email_Reporting_Scheduler::ACTION_INITIATOR, Email_Reporting_Scheduler::ACTION_WORKER, Email_Reporting_Scheduler::ACTION_FALLBACK ) as $hook ) {
+		foreach ( array( Email_Reporting_Scheduler::ACTION_INITIATOR, Email_Reporting_Scheduler::ACTION_WORKER, Email_Reporting_Scheduler::ACTION_FALLBACK, Email_Reporting_Scheduler::ACTION_CLEANUP ) as $hook ) {
 			wp_unschedule_hook( $hook );
 		}
 	}
