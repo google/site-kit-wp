@@ -49,4 +49,5 @@ export default {
 		isVerified: true,
 		hasSearchConsoleProperty: true,
 	},
+	locale: 'en_US',
 };
