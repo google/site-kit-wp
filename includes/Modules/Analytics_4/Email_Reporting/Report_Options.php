@@ -54,12 +54,12 @@ class Report_Options extends Base_Report_Options {
 	 * @since n.e.x.t
 	 *
 	 * @param array   $date_range    Current period range array.
-	 * @param array   $compare_range Optional. Compare period range array.
+	 * @param array   $compare_range Compare period range array.
 	 * @param Context $context       Plugin context.
 	 */
 	public function __construct(
 		$date_range,
-		$compare_range = array(),
+		$compare_range,
 		Context $context
 	) {
 		parent::__construct( $date_range, $compare_range );
