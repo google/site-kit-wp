@@ -56,10 +56,7 @@ final class Audience_Config {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array {
-	 *     @type array $resource_names Sanitized resource names.
-	 *     @type array $audiences      Audience metadata list (resourceName/displayName).
-	 * }
+	 * @return array Configured audience payload with sanitized resource names and audience metadata list.
 	 */
 	public function get_configured_audiences() {
 		$user_settings = $this->user_settings->get();
@@ -107,7 +104,7 @@ final class Audience_Config {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Associative map of Site Kit audience slugs to resource names.
 	 */
 	public function get_site_kit_audience_map() {
 		$available = $this->module_settings->get();
