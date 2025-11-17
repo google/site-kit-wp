@@ -51,7 +51,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array Report request options array.
 	 */
 	public function get_total_earnings_options() {
 		$options = array(
@@ -75,7 +75,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string
+	 * @return string Human-readable filter label referencing the linked AdSense account.
 	 */
 	private function get_ad_source_filter() {
 		if ( empty( $this->account_id ) ) {
