@@ -48,6 +48,9 @@ import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 const REGEX_REST_CONVERSION_TRACKING_SETTINGS = new RegExp(
 	'^/google-site-kit/v1/core/site/data/conversion-tracking'
 );
@@ -126,9 +129,6 @@ describe( 'AccountCreate', () => {
 			getByRole( 'button', { name: 'Create Account' } )
 		).toBeInTheDocument();
 	} );
-
-	const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-	mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 	describe( 'when clicking on Create Account', () => {
 		const accountTicketID = 'abc123';

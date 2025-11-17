@@ -70,10 +70,6 @@ import useFormValue from '@/js/hooks/useFormValue';
 import P from '@/js/components/Typography/P';
 import Link from '@/js/components/Link';
 import Null from '@/js/components/Null';
-import * as tracking from '@/js/util/tracking';
-
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 export default function AccountCreate( { className } ) {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
