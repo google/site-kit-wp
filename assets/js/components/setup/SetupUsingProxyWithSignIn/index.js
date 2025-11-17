@@ -82,7 +82,9 @@ export default function SetupUsingProxyWithSignIn() {
 				if ( ! error ) {
 					await trackEvent(
 						`${ viewContext }_setup`,
-						'start_setup_with_analytics'
+						setupFlowRefreshEnabled
+							? 'setup_flow_v3_start_with_analytics'
+							: 'start_setup_with_analytics'
 					);
 
 					moduleReauthURL = response.moduleReauthURL;
@@ -104,7 +106,9 @@ export default function SetupUsingProxyWithSignIn() {
 					setItem( 'start_user_setup', true ),
 					trackEvent(
 						`${ viewContext }_setup`,
-						'start_user_setup',
+						setupFlowRefreshEnabled
+							? 'setup_flow_v3_start_user_setup'
+							: 'start_user_setup',
 						'proxy'
 					),
 				] );
@@ -115,7 +119,9 @@ export default function SetupUsingProxyWithSignIn() {
 					setItem( 'start_site_setup', true ),
 					trackEvent(
 						`${ viewContext }_setup`,
-						'start_site_setup',
+						setupFlowRefreshEnabled
+							? 'setup_flow_v3_start_site_setup'
+							: 'start_site_setup',
 						'proxy'
 					),
 				] );
