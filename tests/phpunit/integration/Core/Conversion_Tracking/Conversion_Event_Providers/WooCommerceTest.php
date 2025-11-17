@@ -375,10 +375,10 @@ class WooCommerceTest extends TestCase {
 			),
 			// Test case 13: Maximum valid length.
 			'maximum valid length - 15 chars'             => array(
-				'phone'                => '+123456789012345', // Exactly 15 chars (including +).
+				'phone'                => '+12345678901234', // Exactly 15 chars (including +).
 				'country'              => 'US',
 				'country_calling_code' => '+1',
-				'expected'             => '+123456789012345',
+				'expected'             => '+12345678901234',
 			),
 			// Test case 14: National number that becomes too short after removing leading zeros.
 			'all zeros'                                   => array(
