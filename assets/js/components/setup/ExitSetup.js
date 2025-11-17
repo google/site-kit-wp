@@ -33,11 +33,11 @@ import { Button } from '@/js/googlesitekit-components';
 import { useDispatch, useSelect } from '@/js/googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { trackEvent } from '@/js/util';
+import { trackEvent, untrailingslashit } from '@/js/util';
 
 export default function ExitSetup( { gaTrackingEventArgs } ) {
 	const adminURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getAdminURL();
+		return untrailingslashit( select( CORE_SITE ).getAdminURL() );
 	} );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -49,7 +49,7 @@ export default function ExitSetup( { gaTrackingEventArgs } ) {
 			gaTrackingEventArgs.label
 		);
 
-		navigateTo( `${ adminURL }plugins.php` );
+		navigateTo( `${ adminURL }/plugins.php` );
 	}
 
 	return (
