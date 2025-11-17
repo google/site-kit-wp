@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\WC_Countries_Fake;
 
 class WooCommerceTest extends TestCase {
 
@@ -259,20 +260,17 @@ class WooCommerceTest extends TestCase {
 	/**
 	 * @dataProvider phone_normalization_data_provider
 	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
 	 */
 	public function test_get_normalized_phone( $phone, $country, $country_calling_code, $expected ) {
-		// Mock WC_Countries class.
-		$wc_countries_mock = $this->getMockBuilder( 'WC_Countries' )
-			->setMethods( array( 'get_country_calling_code' ) )
-			->getMock();
-
-		$wc_countries_mock->method( 'get_country_calling_code' )
-			->willReturn( $country_calling_code );
-
-		// Create a global WC_Countries class alias that returns our mock.
+		// Create a test double for WC_Countries using class_alias.
 		if ( ! class_exists( 'WC_Countries' ) ) {
-			class_alias( get_class( $wc_countries_mock ), 'WC_Countries' );
+			class_alias( 'Google\Site_Kit\Tests\WC_Countries_Fake', 'WC_Countries' );
 		}
+
+		// Set the calling code for this test iteration.
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- Using fake class property.
+		\WC_Countries::$test_calling_code = $country_calling_code;
 
 		$reflection = new \ReflectionClass( $this->woocommerce );
 		$method     = $reflection->getMethod( 'get_normalized_phone' );
