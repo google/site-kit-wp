@@ -151,16 +151,8 @@ final class Email_Log {
 			return null;
 		}
 
-		if ( is_numeric( $value ) ) {
-			$timestamp = (int) $value;
-			if ( $timestamp <= 0 ) {
-				return null;
-			}
-		} else {
-			$timestamp = strtotime( (string) $value );
-		}
-
-		if ( false === $timestamp ) {
+		$timestamp = is_numeric( $value ) ? (int) $value : strtotime( $value );
+		if ( empty( $timestamp ) || $timestamp < 0 ) {
 			return null;
 		}
 
