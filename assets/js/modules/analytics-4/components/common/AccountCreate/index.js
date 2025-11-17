@@ -70,6 +70,10 @@ import useFormValue from '@/js/hooks/useFormValue';
 import P from '@/js/components/Typography/P';
 import Link from '@/js/components/Link';
 import Null from '@/js/components/Null';
+import * as tracking from '@/js/util/tracking';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 export default function AccountCreate( { className } ) {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
@@ -155,6 +159,7 @@ export default function AccountCreate( { className } ) {
 	}, [ hasAccountCreateForm, siteName, siteURL, timezone, setValues ] );
 
 	const showProgress = getQueryArg( location.href, 'showProgress' );
+	const isInitialSetupFlow = !! showProgress && setupFlowRefreshEnabled;
 
 	const handleSubmit = useCallback( async () => {
 		const scopes = [];
@@ -192,11 +197,19 @@ export default function AccountCreate( { className } ) {
 		}
 
 		setValues( FORM_ACCOUNT_CREATE, { autoSubmit: false } );
-		await trackEvent(
-			`${ viewContext }_analytics`,
-			'create_account',
-			'proxy'
-		);
+
+		if ( isInitialSetupFlow ) {
+			await trackEvent(
+				`${ viewContext }_setup`,
+				'setup_flow_v3_create_analytics_account'
+			);
+		} else {
+			await trackEvent(
+				`${ viewContext }_analytics`,
+				'create_account',
+				'proxy'
+			);
+		}
 
 		const { error } = await createAccount( {
 			showProgress: showProgress === 'true',
@@ -210,10 +223,11 @@ export default function AccountCreate( { className } ) {
 		hasEditScope,
 		hasGTMScope,
 		setValues,
-		viewContext,
+		isInitialSetupFlow,
 		createAccount,
 		showProgress,
 		setPermissionScopeError,
+		viewContext,
 		setConversionTrackingEnabled,
 		saveConversionTrackingSettings,
 	] );
@@ -241,8 +255,6 @@ export default function AccountCreate( { className } ) {
 	) {
 		return <ProgressBar />;
 	}
-
-	const isInitialSetupFlow = !! showProgress && setupFlowRefreshEnabled;
 
 	return (
 		<div className={ className }>

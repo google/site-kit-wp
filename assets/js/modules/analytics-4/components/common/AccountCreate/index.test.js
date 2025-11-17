@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	cleanup,
 	createTestRegistry,
 	fireEvent,
 	muteFetch,
@@ -42,6 +43,8 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { createCacheKey } from '@/js/googlesitekit/api';
 import { getKeys, setItem } from '@/js/googlesitekit/api/cache';
 import AccountCreate from '.';
+import * as tracking from '@/js/util/tracking';
+import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
@@ -123,6 +126,9 @@ describe( 'AccountCreate', () => {
 			getByRole( 'button', { name: 'Create Account' } )
 		).toBeInTheDocument();
 	} );
+
+	const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+	mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 	describe( 'when clicking on Create Account', () => {
 		const accountTicketID = 'abc123';
@@ -311,6 +317,78 @@ describe( 'AccountCreate', () => {
 			expect( fetchMock ).toHaveFetched(
 				REGEX_REST_CONVERSION_TRACKING_SETTINGS
 			);
+		} );
+
+		describe( 'event tracking', () => {
+			beforeEach( () => {
+				mockTrackEvent.mockClear();
+				cleanup();
+			} );
+
+			it( 'should track initial setup flow create account event when showProgress=true', async () => {
+				global.location.href =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true';
+
+				( { getByRole, waitForRegistry, rerender } = render(
+					<AccountCreate />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MODULE_SETUP,
+						features: [ 'setupFlowRefresh' ],
+					}
+				) );
+
+				fireEvent.click(
+					getByRole( 'button', { name: 'Create Account' } )
+				);
+
+				await waitForRegistry();
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MODULE_SETUP }_setup`,
+					'setup_flow_v3_create_analytics_account'
+				);
+
+				const genericCreateAccountCall = mockTrackEvent.mock.calls.find(
+					( call ) =>
+						call[ 0 ]?.endsWith( '_analytics' ) &&
+						call[ 1 ] === 'create_account'
+				);
+				expect( genericCreateAccountCall ).toBeUndefined();
+			} );
+
+			it( 'should track generic create account event when showProgress is not true', async () => {
+				global.location.href =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true';
+				( { getByRole, waitForRegistry, rerender } = render(
+					<AccountCreate />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MODULE_SETUP,
+					}
+				) );
+
+				fireEvent.click(
+					getByRole( 'button', { name: 'Create Account' } )
+				);
+
+				await waitForRegistry();
+
+				const genericCreateAccountCall = mockTrackEvent.mock.calls.find(
+					( call ) =>
+						call[ 0 ]?.endsWith( '_analytics' ) &&
+						call[ 1 ] === 'create_account' &&
+						call[ 2 ] === 'proxy'
+				);
+				expect( genericCreateAccountCall ).toBeDefined();
+
+				const initialSetupCall = mockTrackEvent.mock.calls.find(
+					( call ) =>
+						call[ 0 ] === `${ VIEW_CONTEXT_MODULE_SETUP }_setup` &&
+						call[ 1 ] === 'setup_flow_v3_create_analytics_account'
+				);
+				expect( initialSetupCall ).toBeUndefined();
+			} );
 		} );
 	} );
 } );

@@ -41,6 +41,7 @@ import { deleteItem } from '@/js/googlesitekit/api/cache';
 import { trackEvent } from '@/js/util';
 import { useFeature } from '@/js/hooks/useFeature';
 import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import { Cell, Grid, Row } from '@/js/material-components';
 import Header from '@/js/components/Header';
@@ -49,6 +50,7 @@ import ExitSetup from '@/js/components/setup/ExitSetup';
 import ProgressIndicator from '@/js/components/ProgressIndicator';
 
 export default function ModuleSetup( { moduleSlug } ) {
+	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const [ showProgress ] = useQueryArg( 'showProgress' );
@@ -71,11 +73,18 @@ export default function ModuleSetup( { moduleSlug } ) {
 		async ( redirectURL ) => {
 			await deleteItem( 'module_setup' );
 
-			await trackEvent(
-				'moduleSetup',
-				'complete_module_setup',
-				moduleSlug
-			);
+			if ( isInitialSetupFlow ) {
+				await trackEvent(
+					`${ viewContext }_setup`,
+					'setup_flow_v3_complete_analytics_step'
+				);
+			} else {
+				await trackEvent(
+					'moduleSetup',
+					'complete_module_setup',
+					moduleSlug
+				);
+			}
 
 			if ( redirectURL ) {
 				navigateTo( redirectURL );
@@ -107,6 +116,15 @@ export default function ModuleSetup( { moduleSlug } ) {
 	}, [ moduleSlug ] );
 
 	useMount( () => {
+		if ( isInitialSetupFlow ) {
+			trackEvent(
+				`${ viewContext }_setup`,
+				'setup_flow_v3_view_analytics_step'
+			);
+
+			return;
+		}
+
 		trackEvent( 'moduleSetup', 'view_module_setup', moduleSlug );
 	} );
 

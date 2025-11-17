@@ -36,6 +36,10 @@ import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import * as tracking from '@/js/util/tracking';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'ModuleSetup', () => {
 	mockLocation();
@@ -43,6 +47,7 @@ describe( 'ModuleSetup', () => {
 	let registry;
 
 	beforeEach( () => {
+		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
@@ -175,6 +180,20 @@ describe( 'ModuleSetup', () => {
 			it( 'should match the snapshot', () => {
 				expect( container ).toMatchSnapshot();
 			} );
+
+			it( 'tracks only the initial setup analytics view event', () => {
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MODULE_SETUP }_setup`,
+					'setup_flow_v3_view_analytics_step'
+				);
+				const genericViewCall = mockTrackEvent.mock.calls.find(
+					( call ) =>
+						call[ 0 ] === 'moduleSetup' &&
+						call[ 1 ] === 'view_module_setup' &&
+						call[ 2 ] === MODULE_SLUG_ANALYTICS_4
+				);
+				expect( genericViewCall ).toBeUndefined();
+			} );
 		} );
 
 		describe( 'not initial setup flow', () => {
@@ -229,6 +248,20 @@ describe( 'ModuleSetup', () => {
 
 			it( 'should match the snapshot', () => {
 				expect( container ).toMatchSnapshot();
+			} );
+
+			it( 'tracks only the generic module setup view event', () => {
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					'moduleSetup',
+					'view_module_setup',
+					MODULE_SLUG_ANALYTICS_4
+				);
+				const initialAnalyticsCall = mockTrackEvent.mock.calls.find(
+					( call ) =>
+						call[ 0 ] === `${ VIEW_CONTEXT_MODULE_SETUP }_setup` &&
+						call[ 1 ] === 'setup_flow_v3_view_analytics_step'
+				);
+				expect( initialAnalyticsCall ).toBeUndefined();
 			} );
 		} );
 	} );
