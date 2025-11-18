@@ -83,14 +83,14 @@ class Email_Report_Payload_Processor {
 		if ( empty( $date_range['startDate'] ) || empty( $date_range['endDate'] ) ) {
 			return null;
 		}
-		$start = (string) $date_range['startDate'];
-		$end   = (string) $date_range['endDate'];
+		$start = $date_range['startDate'];
+		$end   = $date_range['endDate'];
 
 		$compare_start = null;
 		$compare_end   = null;
 		if ( array_key_exists( 'compareStartDate', $date_range ) && array_key_exists( 'compareEndDate', $date_range ) ) {
-			$compare_start = (string) $date_range['compareStartDate'];
-			$compare_end   = (string) $date_range['compareEndDate'];
+			$compare_start = $date_range['compareStartDate'];
+			$compare_end   = $date_range['compareEndDate'];
 		}
 
 		// Ensure dates are localized strings (Y-m-d) using site timezone.
