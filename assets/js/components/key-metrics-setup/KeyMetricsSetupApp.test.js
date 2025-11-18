@@ -34,6 +34,10 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import * as tracking from '@/js/util/tracking';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'KeyMetricsSetupApp', () => {
 	mockLocation();
@@ -63,6 +67,10 @@ describe( 'KeyMetricsSetupApp', () => {
 	}
 
 	beforeEach( () => {
+		// Reset location to ensure tests that rely on query args start clean (non-initial setup by default).
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup';
+
 		registry = createTestRegistry();
 
 		provideUserAuthentication( registry );
@@ -91,6 +99,9 @@ describe( 'KeyMetricsSetupApp', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveGetModules( withConnected( MODULE_SLUG_ANALYTICS_4 ) );
+
+		// Reset track event calls before each test.
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'should render correctly', async () => {
@@ -114,6 +125,37 @@ describe( 'KeyMetricsSetupApp', () => {
 		expect(
 			getByRole( 'button', { name: 'Complete setup' } )
 		).toBeInTheDocument();
+	} );
+
+	it( 'should track viewing key metrics step on mount (non-initial setup flow)', async () => {
+		const { waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			VIEW_CONTEXT_KEY_METRICS_SETUP,
+			'view_key_metrics_step'
+		);
+	} );
+
+	it( 'should track viewing key metrics step on mount (initial setup flow)', async () => {
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup&showProgress=true';
+
+		const { waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_KEY_METRICS_SETUP }_setup`,
+			'setup_flow_v3_view_key_metrics_step'
+		);
 	} );
 
 	it( 'should exclude the "Other" option from the options list', async () => {
@@ -167,6 +209,60 @@ describe( 'KeyMetricsSetupApp', () => {
 				method: 'POST',
 				body: { data: { settings: { purpose: [ 'publish_blog' ] } } },
 			}
+		);
+	} );
+
+	it( 'should track selecting an answer (non-initial setup flow)', async () => {
+		const { getByRole, waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
+		// Clear initial mount tracking event.
+		mockTrackEvent.mockClear();
+
+		fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
+
+		// Expect one of the calls to be the specific selection tracking event (additional events may fire).
+		expect( mockTrackEvent.mock.calls ).toEqual(
+			expect.arrayContaining( [
+				[
+					VIEW_CONTEXT_KEY_METRICS_SETUP,
+					'select_key_metrics_answer',
+					'publish_blog',
+				],
+			] )
+		);
+	} );
+
+	it( 'should track completing key metrics step when CTA clicked (non-initial setup flow)', async () => {
+		freezeFetch( coreUserInputSettingsEndpointRegExp );
+
+		const { getByRole, waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
+		// Clear mount event.
+		mockTrackEvent.mockClear();
+
+		fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
+		fireEvent.click( getByRole( 'button', { name: 'Complete setup' } ) );
+
+		// Expect events include selection and completion (order not enforced; other events may also occur).
+		expect( mockTrackEvent.mock.calls ).toEqual(
+			expect.arrayContaining( [
+				[
+					VIEW_CONTEXT_KEY_METRICS_SETUP,
+					'select_key_metrics_answer',
+					'publish_blog',
+				],
+				[ VIEW_CONTEXT_KEY_METRICS_SETUP, 'complete_key_metrics_step' ],
+			] )
 		);
 	} );
 
