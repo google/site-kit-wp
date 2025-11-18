@@ -300,7 +300,7 @@ class Email_Report_Data_Section_Part {
 	 * @throws InvalidArgumentException When validation fails.
 	 */
 	private function set_dashboard_link( $dashboard_link ) {
-		if ( null !== $dashboard_link && ! is_string( $dashboard_link ) ) {
+		if ( ! filter_var( $dashboard_link, FILTER_VALIDATE_URL ) ) {
 			throw new InvalidArgumentException( 'dashboard_link must be a string or null' );
 		}
 
