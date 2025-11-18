@@ -54,9 +54,8 @@ class Email_Report_Payload_Processor {
 				continue;
 			}
 
-			$report_id = isset( $report_configs[ $index ]['report_id'] )
-				? (string) $report_configs[ $index ]['report_id']
-				: ( isset( $report['reportId'] ) ? (string) $report['reportId'] : sprintf( 'report_%d', $index ) );
+			$report_id_value = $report_configs[ $index ]['report_id'] ?? ( $report['reportId'] ?? sprintf( 'report_%d', $index ) );
+			$report_id       = strval( $report_id_value );
 
 			$processed_reports[ $report_id ] = $this->process_single_report( $report );
 		}
@@ -70,7 +69,7 @@ class Email_Report_Payload_Processor {
 	 * @since n.e.x.t
 	 *
 	 * @param array|null $date_range Date meta, must contain startDate/endDate if provided.
-	 * @return array|null
+	 * @return array|null Date range array.
 	 */
 	public function compute_date_range( $date_range ) {
 		if ( ! is_array( $date_range ) ) {
@@ -80,14 +79,14 @@ class Email_Report_Payload_Processor {
 		if ( empty( $date_range['startDate'] ) || empty( $date_range['endDate'] ) ) {
 			return null;
 		}
-		$start = (string) $date_range['startDate'];
-		$end   = (string) $date_range['endDate'];
+		$start = strval( $date_range['startDate'] );
+		$end   = strval( $date_range['endDate'] );
 
 		$compare_start = null;
 		$compare_end   = null;
-		if ( array_key_exists( 'compareStartDate', $date_range ) && array_key_exists( 'compareEndDate', $date_range ) ) {
-			$compare_start = (string) $date_range['compareStartDate'];
-			$compare_end   = (string) $date_range['compareEndDate'];
+		if ( ! empty( $date_range['compareStartDate'] ) && ! empty( $date_range['compareEndDate'] ) ) {
+			$compare_start = strval( $date_range['compareStartDate'] );
+			$compare_end   = strval( $date_range['compareEndDate'] );
 		}
 
 		// Ensure dates are localized strings (Y-m-d) using site timezone.
@@ -158,7 +157,7 @@ class Email_Report_Payload_Processor {
 				if ( empty( $dimension['name'] ) ) {
 					continue;
 				}
-				$metadata['dimensions'][] = (string) $dimension['name'];
+				$metadata['dimensions'][] = strval( $dimension['name'] );
 			}
 		}
 
@@ -169,17 +168,17 @@ class Email_Report_Payload_Processor {
 					continue;
 				}
 				$metadata['metrics'][] = array(
-					'name' => (string) $metric['name'],
-					'type' => isset( $metric['type'] ) ? (string) $metric['type'] : 'TYPE_INTEGER',
+					'name' => strval( $metric['name'] ),
+					'type' => strval( $metric['type'] ?? 'TYPE_INTEGER' ),
 				);
 			}
 		}
 
 		if ( isset( $report['title'] ) ) {
-			$metadata['title'] = (string) $report['title'];
+			$metadata['title'] = strval( $report['title'] );
 		}
 
-		$metadata['row_count'] = isset( $report['rowCount'] ) ? (int) $report['rowCount'] : 0;
+		$metadata['row_count'] = intval( $report['rowCount'] ?? 0 );
 
 		return $metadata;
 	}
@@ -207,9 +206,9 @@ class Email_Report_Payload_Processor {
 
 			$total_values = array();
 			foreach ( $total_row['metricValues'] as $index => $metric_value ) {
-				$metric_header = isset( $metric_headers[ $index ] ) ? $metric_headers[ $index ] : array();
-				$metric_name   = isset( $metric_header['name'] ) ? (string) $metric_header['name'] : sprintf( 'metric_%d', $index );
-				$value         = isset( $metric_value['value'] ) ? $metric_value['value'] : null;
+				$metric_header = $metric_headers[ $index ] ?? array();
+				$metric_name   = strval( $metric_header['name'] ?? sprintf( 'metric_%d', $index ) );
+				$value         = $metric_value['value'] ?? null;
 
 				$total_values[ $metric_name ] = $value;
 			}
@@ -234,29 +233,29 @@ class Email_Report_Payload_Processor {
 		}
 
 		$processed_rows    = array();
-		$dimension_headers = isset( $report['dimensionHeaders'] ) ? $report['dimensionHeaders'] : array();
-		$metric_headers    = isset( $report['metricHeaders'] ) ? $report['metricHeaders'] : array();
+		$dimension_headers = $report['dimensionHeaders'] ?? array();
+		$metric_headers    = $report['metricHeaders'] ?? array();
 
 		foreach ( $report['rows'] as $row ) {
 			$processed_row = array();
 
 			if ( ! empty( $row['dimensionValues'] ) && is_array( $row['dimensionValues'] ) ) {
 				foreach ( $row['dimensionValues'] as $index => $dimension_value ) {
-					$dimension_header = isset( $dimension_headers[ $index ] ) ? $dimension_headers[ $index ] : array();
+					$dimension_header = $dimension_headers[ $index ] ?? array();
 					if ( empty( $dimension_header['name'] ) ) {
 						continue;
 					}
-					$processed_row['dimensions'][ $dimension_header['name'] ] = isset( $dimension_value['value'] ) ? $dimension_value['value'] : null;
+					$processed_row['dimensions'][ $dimension_header['name'] ] = $dimension_value['value'] ?? null;
 				}
 			}
 
 			if ( ! empty( $row['metricValues'] ) && is_array( $row['metricValues'] ) ) {
 				foreach ( $row['metricValues'] as $index => $metric_value ) {
-					$metric_header = isset( $metric_headers[ $index ] ) ? $metric_headers[ $index ] : array();
+					$metric_header = $metric_headers[ $index ] ?? array();
 					if ( empty( $metric_header['name'] ) ) {
 						continue;
 					}
-					$processed_row['metrics'][ $metric_header['name'] ] = isset( $metric_value['value'] ) ? $metric_value['value'] : null;
+					$processed_row['metrics'][ $metric_header['name'] ] = $metric_value['value'] ?? null;
 				}
 			}
 
@@ -275,7 +274,7 @@ class Email_Report_Payload_Processor {
 	 * @param string $dimension_name   Dimension name to match.
 	 * @param string $dimension_value  Expected dimension value.
 	 * @param array  $metric_names     Metrics to extract in order.
-	 * @return array
+	 * @return array Metric values.
 	 */
 	public function extract_metric_values_for_dimension( $rows, $dimension_name, $dimension_value, $metric_names ) {
 		foreach ( $rows as $row ) {
@@ -283,7 +282,7 @@ class Email_Report_Payload_Processor {
 				continue;
 			}
 
-			if ( (string) $row['dimensions'][ $dimension_name ] !== (string) $dimension_value ) {
+			if ( strval( $row['dimensions'][ $dimension_name ] ) !== strval( $dimension_value ) ) {
 				continue;
 			}
 
@@ -291,7 +290,7 @@ class Email_Report_Payload_Processor {
 			$values  = array();
 
 			foreach ( $metric_names as $metric_name ) {
-				$values[] = array_key_exists( $metric_name, $metrics ) ? $metrics[ $metric_name ] : null;
+				$values[] = $metrics[ $metric_name ] ?? null;
 			}
 
 			return $values;
@@ -307,7 +306,7 @@ class Email_Report_Payload_Processor {
 	 *
 	 * @param array $report       Processed report data.
 	 * @param array $metric_names Ordered list of metric names.
-	 * @return array
+	 * @return array Metric values and trends.
 	 */
 	public function compute_metric_values_and_trends( $report, $metric_names ) {
 		$values = array();
@@ -324,7 +323,7 @@ class Email_Report_Payload_Processor {
 		} elseif ( ! empty( $totals ) ) {
 			$primary_totals = reset( $totals );
 			foreach ( $metric_names as $metric_name ) {
-				$values[] = isset( $primary_totals[ $metric_name ] ) ? $primary_totals[ $metric_name ] : null;
+				$values[] = $primary_totals[ $metric_name ] ?? null;
 			}
 		}
 
@@ -337,8 +336,8 @@ class Email_Report_Payload_Processor {
 		if ( ! empty( $current_values ) && ! empty( $comparison_values ) ) {
 			$trends = array();
 			foreach ( $metric_names as $index => $metric_name ) {
-				$current    = isset( $current_values[ $index ] ) ? $current_values[ $index ] : null;
-				$comparison = isset( $comparison_values[ $index ] ) ? $comparison_values[ $index ] : null;
+				$current    = $current_values[ $index ] ?? null;
+				$comparison = $comparison_values[ $index ] ?? null;
 
 				$trends[] = $this->compute_trend( $current, $comparison );
 			}
@@ -348,8 +347,8 @@ class Email_Report_Payload_Processor {
 			$trends            = array();
 
 			foreach ( $metric_names as $metric_name ) {
-				$current    = isset( $primary_totals[ $metric_name ] ) ? $primary_totals[ $metric_name ] : null;
-				$comparison = isset( $comparison_totals[ $metric_name ] ) ? $comparison_totals[ $metric_name ] : null;
+				$current    = $primary_totals[ $metric_name ] ?? null;
+				$comparison = $comparison_totals[ $metric_name ] ?? null;
 
 				$trends[] = $this->compute_trend( $current, $comparison );
 			}
@@ -365,13 +364,19 @@ class Email_Report_Payload_Processor {
 	 *
 	 * @param mixed $current    Current value.
 	 * @param mixed $comparison Comparison value.
-	 * @return float|null
+	 * @return float|null Trend percentage.
 	 */
 	private function compute_trend( $current, $comparison ) {
-		if ( is_numeric( $current ) && is_numeric( $comparison ) && 0.0 !== (float) $comparison ) {
-			return ( (float) $current - (float) $comparison ) / (float) $comparison * 100;
+		if ( ! is_numeric( $current ) || ! is_numeric( $comparison ) ) {
+			return null;
 		}
 
-		return null;
+		$comparison_float = floatval( $comparison );
+
+		if ( 0.0 === $comparison_float ) {
+			return null;
+		}
+
+		return ( floatval( $current ) - $comparison_float ) / $comparison_float * 100;
 	}
 }

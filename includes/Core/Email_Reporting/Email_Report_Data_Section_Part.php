@@ -24,6 +24,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Unique section key.
 	 *
+	 * @since n.e.x.t
 	 * @var string
 	 */
 	private $section_key;
@@ -31,6 +32,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Section title.
 	 *
+	 * @since n.e.x.t
 	 * @var string
 	 */
 	private $title;
@@ -38,6 +40,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Labels for the section rows/series.
 	 *
+	 * @since n.e.x.t
 	 * @var array
 	 */
 	private $labels;
@@ -45,6 +48,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Values formatted as strings for output.
 	 *
+	 * @since n.e.x.t
 	 * @var array
 	 */
 	private $values;
@@ -52,6 +56,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Optional trends matching values.
 	 *
+	 * @since n.e.x.t
 	 * @var array|null
 	 */
 	private $trends;
@@ -59,6 +64,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Optional date range data.
 	 *
+	 * @since n.e.x.t
 	 * @var array|null
 	 */
 	private $date_range;
@@ -66,12 +72,15 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Optional dashboard deeplink URL.
 	 *
+	 * @since n.e.x.t
 	 * @var string|null
 	 */
 	private $dashboard_link;
 
 	/**
 	 * Constructor.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param string $section_key  Unique section key.
 	 * @param array  $section_data Section data (title, labels, values, optional trends, date_range, dashboard_link).
@@ -87,12 +96,12 @@ class Email_Report_Data_Section_Part {
 			throw new InvalidArgumentException( 'section_data must be an array' );
 		}
 
-		$this->set_title( isset( $section_data['title'] ) ? $section_data['title'] : null );
-		$this->set_labels( isset( $section_data['labels'] ) ? $section_data['labels'] : null );
-		$this->set_values( isset( $section_data['values'] ) ? $section_data['values'] : null );
-		$this->set_trends( isset( $section_data['trends'] ) ? $section_data['trends'] : null );
-		$this->set_date_range( isset( $section_data['date_range'] ) ? $section_data['date_range'] : null );
-		$this->set_dashboard_link( isset( $section_data['dashboard_link'] ) ? $section_data['dashboard_link'] : null );
+		$this->set_title( $section_data['title'] ?? null );
+		$this->set_labels( $section_data['labels'] ?? null );
+		$this->set_values( $section_data['values'] ?? null );
+		$this->set_trends( $section_data['trends'] ?? null );
+		$this->set_date_range( $section_data['date_range'] ?? null );
+		$this->set_dashboard_link( $section_data['dashboard_link'] ?? null );
 
 		$this->section_key = $section_key;
 	}
@@ -280,13 +289,13 @@ class Email_Report_Data_Section_Part {
 		}
 
 		$this->date_range = array(
-			'startDate' => (string) $date_range['startDate'],
-			'endDate'   => (string) $date_range['endDate'],
+			'startDate' => strval( $date_range['startDate'] ),
+			'endDate'   => strval( $date_range['endDate'] ),
 		);
 
 		if ( $compare_start_provided && $compare_end_provided ) {
-			$this->date_range['compareStartDate'] = (string) $date_range['compareStartDate'];
-			$this->date_range['compareEndDate']   = (string) $date_range['compareEndDate'];
+			$this->date_range['compareStartDate'] = strval( $date_range['compareStartDate'] );
+			$this->date_range['compareEndDate']   = strval( $date_range['compareEndDate'] );
 		}
 	}
 
@@ -319,7 +328,7 @@ class Email_Report_Data_Section_Part {
 		}
 
 		foreach ( $this->values as $value ) {
-			if ( '' !== trim( (string) $value ) ) {
+			if ( '' !== trim( strval( $value ) ) ) {
 				return false;
 			}
 		}

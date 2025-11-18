@@ -24,6 +24,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Plugin context instance.
 	 *
+	 * @since n.e.x.t
 	 * @var Context
 	 */
 	protected $context;
@@ -31,6 +32,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Label translations indexed by label key.
 	 *
+	 * @since n.e.x.t
 	 * @var array
 	 */
 	protected $label_translations;
@@ -38,6 +40,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Report processor instance.
 	 *
+	 * @since n.e.x.t
 	 * @var Email_Report_Payload_Processor
 	 */
 	protected $report_processor;
@@ -45,12 +48,14 @@ class Email_Report_Section_Builder {
 	/**
 	 * Constructor.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param Context                             $context          Plugin context.
 	 * @param Email_Report_Payload_Processor|null $report_processor Optional. Report processor instance.
 	 */
 	public function __construct( Context $context, ?Email_Report_Payload_Processor $report_processor = null ) {
 		$this->context            = $context;
-		$this->report_processor   = $report_processor ? $report_processor : new Email_Report_Payload_Processor();
+		$this->report_processor   = $report_processor ?? new Email_Report_Payload_Processor();
 		$this->label_translations = array(
 			// Analytics 4.
 			'totalUsers'  => __( 'Total Visitors', 'google-site-kit' ),
@@ -64,11 +69,14 @@ class Email_Report_Section_Builder {
 	/**
 	 * Build one or more section parts from raw payloads for a module.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param string   $module_slug Module slug (e.g. analytics-4) for the dashboard link only.
 	 * @param array    $raw_payloads Raw reports payloads.
 	 * @param string   $user_locale  User locale (e.g. en_US).
 	 * @param \WP_Post $email_log   Optional. Email log post instance containing date metadata.
 	 * @return Email_Report_Data_Section_Part[] Section parts for the provided module.
+	 * @throws \Exception If an error occurs while building sections.
 	 */
 	public function build_sections( $module_slug, $raw_payloads, $user_locale, $email_log = null ) {
 		$sections        = array();
@@ -79,12 +87,12 @@ class Email_Report_Section_Builder {
 			foreach ( $this->extract_sections_from_payloads( $raw_payloads ) as $section_payload ) {
 				list( $labels, $values, $trends ) = $this->normalize_section_payload_components( $section_payload );
 
-				$date_range = $log_date_range ? $log_date_range : $this->report_processor->compute_date_range( isset( $section_payload['date_range'] ) ? $section_payload['date_range'] : null );
+				$date_range = $log_date_range ? $log_date_range : $this->report_processor->compute_date_range( $section_payload['date_range'] ?? null );
 
 				$section = new Email_Report_Data_Section_Part(
-					isset( $section_payload['section_key'] ) ? (string) $section_payload['section_key'] : 'section',
+					strval( $section_payload['section_key'] ?? 'section' ),
 					array(
-						'title'          => isset( $section_payload['title'] ) ? (string) $section_payload['title'] : '',
+						'title'          => strval( $section_payload['title'] ?? '' ),
 						'labels'         => $labels,
 						'values'         => $values,
 						'trends'         => $trends,
@@ -99,10 +107,13 @@ class Email_Report_Section_Builder {
 
 				$sections[] = $section;
 			}
-		} finally {
+		} catch ( \Exception $exception ) {
 			if ( $switched_locale ) {
 				restore_previous_locale();
 			}
+
+			// Re-throw exception to the caller to prevent this email from being sent.
+			throw $exception;
 		}
 
 		return $sections;
@@ -111,12 +122,14 @@ class Email_Report_Section_Builder {
 	/**
 	 * Normalize labels with translations.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array $labels Labels.
-	 * @return array
+	 * @return array Normalized labels.
 	 */
 	protected function normalize_labels( $labels ) {
 		return array_map(
-			fn( $label ) => $this->label_translations[ $label ] ?? (string) $label,
+			fn( $label ) => $this->label_translations[ $label ] ?? strval( $label ),
 			$labels
 		);
 	}
@@ -124,8 +137,10 @@ class Email_Report_Section_Builder {
 	/**
 	 * Normalize trend values to localized percentage strings.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array $trends Trend values.
-	 * @return array|null
+	 * @return array|null Normalized trend values.
 	 */
 	protected function normalize_trends( $trends ) {
 		if ( ! is_array( $trends ) ) {
@@ -145,10 +160,10 @@ class Email_Report_Section_Builder {
 			}
 
 			if ( ! is_numeric( $trend ) ) {
-				$trend = (float) preg_replace( '/[^0-9+\-.]/', '', (string) $trend );
+				$trend = floatval( preg_replace( '/[^0-9+\-.]/', '', strval( $trend ) ) );
 			}
 
-			$number = (float) $trend;
+			$number = floatval( $trend );
 
 			$formatted = number_format_i18n( $number, 2 );
 
@@ -161,14 +176,17 @@ class Email_Report_Section_Builder {
 	/**
 	 * Normalize a section payload into discrete components.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array $section_payload Section payload data.
-	 * @return array
+	 * @return array Normalized section payload components.
 	 */
 	protected function normalize_section_payload_components( $section_payload ) {
-		$labels      = $this->normalize_labels( isset( $section_payload['labels'] ) ? $section_payload['labels'] : array() );
+		$labels      = $this->normalize_labels( $section_payload['labels'] ?? array() );
 		$value_types = isset( $section_payload['value_types'] ) && is_array( $section_payload['value_types'] ) ? $section_payload['value_types'] : array();
-		$values      = $this->normalize_values( isset( $section_payload['values'] ) ? $section_payload['values'] : array(), $value_types );
-		$trends      = isset( $section_payload['trends'] ) ? $this->normalize_trends( $section_payload['trends'] ) : null;
+		$values      = $this->normalize_values( $section_payload['values'] ?? array(), $value_types );
+		$trends_data = $section_payload['trends'] ?? null;
+		$trends      = null !== $trends_data ? $this->normalize_trends( $trends_data ) : null;
 
 		return array( $labels, $values, $trends );
 	}
@@ -177,9 +195,11 @@ class Email_Report_Section_Builder {
 	/**
 	 * Normalize values using metric formatter and localization.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array $values      Values.
 	 * @param array $value_types Optional. Metric types corresponding to each value.
-	 * @return array
+	 * @return array Normalized values.
 	 */
 	protected function normalize_values( $values, $value_types = array() ) {
 		$output = array();
@@ -189,7 +209,7 @@ class Email_Report_Section_Builder {
 				continue;
 			}
 
-			$type     = isset( $value_types[ $index ] ) ? $value_types[ $index ] : 'TYPE_STANDARD';
+			$type     = $value_types[ $index ] ?? 'TYPE_STANDARD';
 			$output[] = $this->format_metric_value( $value, $type );
 		}
 		return $output;
@@ -198,24 +218,26 @@ class Email_Report_Section_Builder {
 	/**
 	 * Formats a metric value according to type heuristics.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param mixed  $value Raw value.
 	 * @param string $type  Metric type identifier.
-	 * @return string
+	 * @return string Formatted metric value.
 	 */
 	protected function format_metric_value( $value, $type ) {
 		switch ( $type ) {
 			case 'TYPE_INTEGER':
-				return (int) $value;
+				return intval( $value );
 			case 'TYPE_FLOAT':
-				return (float) $value;
+				return floatval( $value );
 			case 'TYPE_SECONDS':
-				return $this->format_duration( (int) $value );
+				return $this->format_duration( intval( $value ) );
 			case 'TYPE_MILLISECONDS':
-				return $this->format_duration( (int) $value / 1000 );
+				return $this->format_duration( intval( $value ) / 1000 );
 			case 'TYPE_MINUTES':
-				return $this->format_duration( (int) $value * 60 );
+				return $this->format_duration( intval( $value ) * 60 );
 			case 'TYPE_HOURS':
-				return $this->format_duration( (int) $value * 3600 );
+				return $this->format_duration( intval( $value ) * 3600 );
 			case 'TYPE_STANDARD':
 			case 'TYPE_PERCENT':
 			case 'TYPE_TIME':
@@ -228,14 +250,16 @@ class Email_Report_Section_Builder {
 	/**
 	 * Formats a duration in seconds to HH:MM:SS string.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param int|float $seconds Duration in seconds.
-	 * @return string
+	 * @return string Formatted duration.
 	 */
 	protected function format_duration( $seconds ) {
-		$seconds = absint( round( (float) $seconds ) );
-		$hours   = (int) floor( $seconds / 3600 );
-		$minutes = (int) floor( ( $seconds % 3600 ) / 60 );
-		$remain  = (int) ( $seconds % 60 );
+		$seconds = absint( round( floatval( $seconds ) ) );
+		$hours   = intval( floor( $seconds / 3600 ) );
+		$minutes = intval( floor( ( $seconds % 3600 ) / 60 ) );
+		$remain  = intval( $seconds % 60 );
 
 		return sprintf( '%02d:%02d:%02d', $hours, $minutes, $remain );
 	}
@@ -243,18 +267,22 @@ class Email_Report_Section_Builder {
 	/**
 	 * Creates dashboard link for a module.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param string $module_slug Module slug.
-	 * @return string
+	 * @return string Dashboard link.
 	 */
 	protected function format_dashboard_link( $module_slug ) {
 		$dashboard_url = $this->context->admin_url( 'dashboard' );
-		return sprintf( '%s#/module/%s', $dashboard_url, rawurlencode( (string) $module_slug ) );
+		return sprintf( '%s#/module/%s', $dashboard_url, rawurlencode( strval( $module_slug ) ) );
 	}
 
 	/**
 	 * Extracts section-level payloads from raw payloads.
 	 *
 	 * Receiving raw report response array, return an array of structured section payloads.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param array $raw_payloads Raw payloads.
 	 * @return array[] Structured section payloads.
@@ -267,7 +295,8 @@ class Email_Report_Section_Builder {
 				continue;
 			}
 
-			$group_title = isset( $payload_group['title'] ) ? (string) $payload_group['title'] : null;
+			$group_title_value = $payload_group['title'] ?? null;
+			$group_title       = null !== $group_title_value ? strval( $group_title_value ) : null;
 
 			foreach ( $payload_group as $module_key => $module_payload ) {
 				if ( 'title' === $module_key ) {
@@ -278,11 +307,11 @@ class Email_Report_Section_Builder {
 					continue;
 				}
 
-				foreach ( $this->build_module_section_payloads( (string) $module_key, $module_payload ) as $section ) {
+				foreach ( $this->build_module_section_payloads( strval( $module_key ), $module_payload ) as $section ) {
 					if ( $group_title ) {
 						$section['title'] = $group_title;
 					} elseif ( empty( $section['title'] ) && isset( $section['section_key'] ) ) {
-						$section['title'] = (string) $section['section_key'];
+						$section['title'] = strval( $section['section_key'] );
 					}
 					$sections[] = $section;
 				}
@@ -295,9 +324,11 @@ class Email_Report_Section_Builder {
 	/**
 	 * Builds section payloads for a specific module payload.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param string $module_key     Module identifier.
 	 * @param array  $module_payload Module payload.
-	 * @return array
+	 * @return array Section payloads.
 	 */
 	protected function build_module_section_payloads( $module_key, $module_payload ) {
 		switch ( $module_key ) {
@@ -314,8 +345,10 @@ class Email_Report_Section_Builder {
 	/**
 	 * Builds section payloads from Analytics module data.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array $module_payload Module payload keyed by section slug.
-	 * @return array
+	 * @return array Section payloads.
 	 */
 	protected function build_sections_from_analytics_module( $module_payload ) {
 		$sections                = array();
@@ -336,9 +369,9 @@ class Email_Report_Section_Builder {
 			);
 
 			foreach ( $processed as $payload ) {
-				$payload_section_key = isset( $payload['section_key'] ) ? (string) $payload['section_key'] : '';
+				$payload_section_key = strval( $payload['section_key'] ?? '' );
 				if ( '' === $payload_section_key || 0 === strpos( $payload_section_key, 'report_' ) ) {
-					$payload['section_key'] = (string) $section_key;
+					$payload['section_key'] = strval( $section_key );
 				}
 				if ( empty( $payload['title'] ) ) {
 					$payload['title'] = '';
@@ -353,8 +386,10 @@ class Email_Report_Section_Builder {
 	/**
 	 * Builds section payloads from Search Console module data.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array $module_payload Module payload keyed by section slug.
-	 * @return array
+	 * @return array Section payloads.
 	 */
 	protected function build_sections_from_search_console_module( $module_payload ) {
 		$sections = array();
@@ -365,7 +400,7 @@ class Email_Report_Section_Builder {
 				continue;
 			}
 
-			$section = $this->build_section_payload_from_search_console( $rows, (string) $section_key );
+			$section = $this->build_section_payload_from_search_console( $rows, strval( $section_key ) );
 			if ( $section ) {
 				$sections[] = $section;
 			}
@@ -377,8 +412,10 @@ class Email_Report_Section_Builder {
 	/**
 	 * Normalizes analytics section input into reports and report configs.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param mixed $section_data Section payload.
-	 * @return array
+	 * @return array Normalized analytics section input.
 	 */
 	protected function normalize_analytics_section_input( $section_data ) {
 		$reports        = array();
@@ -413,8 +450,10 @@ class Email_Report_Section_Builder {
 	/**
 	 * Normalizes Search Console rows to an indexed array of row arrays.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param mixed $section_data Section payload.
-	 * @return array
+	 * @return array Normalized Search Console rows.
 	 */
 	protected function normalize_search_console_rows( $section_data ) {
 		if ( ! is_array( $section_data ) ) {
@@ -437,8 +476,10 @@ class Email_Report_Section_Builder {
 	/**
 	 * Determines whether an array uses sequential integer keys starting at zero.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param array $data Array to test.
-	 * @return bool
+	 * @return bool Whether the array uses sequential integer keys starting at zero.
 	 */
 	protected function is_sequential_array( $data ) {
 		if ( empty( $data ) ) {
@@ -450,6 +491,8 @@ class Email_Report_Section_Builder {
 
 	/**
 	 * Builds section payloads from processed GA4 reports.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param array $processed_reports Processed report data keyed by ID.
 	 * @return array Section payloads.
@@ -468,17 +511,17 @@ class Email_Report_Section_Builder {
 			$metric_names = array();
 
 			foreach ( $metrics as $metric_meta ) {
-				$metric_name    = (string) $metric_meta['name'];
+				$metric_name    = strval( $metric_meta['name'] );
 				$metric_names[] = $metric_name;
-				$labels[]       = (string) $metric_meta['name'];
-				$value_types[]  = isset( $metric_meta['type'] ) ? (string) $metric_meta['type'] : 'TYPE_STANDARD';
+				$labels[]       = strval( $metric_meta['name'] );
+				$value_types[]  = strval( $metric_meta['type'] ?? 'TYPE_STANDARD' );
 			}
 
 			list( $values, $trends ) = $this->report_processor->compute_metric_values_and_trends( $report, $metric_names );
 
 			$sections[] = array(
-				'section_key' => (string) $report_id,
-				'title'       => isset( $report['metadata']['title'] ) ? (string) $report['metadata']['title'] : '',
+				'section_key' => strval( $report_id ),
+				'title'       => strval( $report['metadata']['title'] ?? '' ),
 				'labels'      => $labels,
 				'values'      => $values,
 				'value_types' => $value_types,
@@ -493,6 +536,8 @@ class Email_Report_Section_Builder {
 
 	/**
 	 * Builds a section payload from Search Console report data.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param array  $search_console_data Search Console report rows.
 	 * @param string $section_key         Section key identifier.
@@ -514,7 +559,7 @@ class Email_Report_Section_Builder {
 			}
 
 			if ( '' === $title && isset( $row['title'] ) && is_string( $row['title'] ) ) {
-				$title = trim( (string) $row['title'] );
+				$title = trim( strval( $row['title'] ) );
 			}
 
 			foreach ( $row as $key => $value ) {
@@ -556,7 +601,7 @@ class Email_Report_Section_Builder {
 		}
 
 		return array(
-			'section_key' => (string) $section_key,
+			'section_key' => strval( $section_key ),
 			'title'       => $title,
 			'labels'      => $labels,
 			'values'      => $values,
