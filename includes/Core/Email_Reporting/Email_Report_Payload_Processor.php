@@ -98,7 +98,7 @@ class Email_Report_Payload_Processor {
 		if ( function_exists( 'wp_date' ) && $timezone ) {
 			$start_timestamp = strtotime( $start );
 			$end_timestamp   = strtotime( $end );
-			if ( false !== $start_timestamp && false !== $end_timestamp ) {
+			if ( $start_timestamp && $end_timestamp ) {
 				$start = wp_date( 'Y-m-d', $start_timestamp, $timezone );
 				$end   = wp_date( 'Y-m-d', $end_timestamp, $timezone );
 			}
