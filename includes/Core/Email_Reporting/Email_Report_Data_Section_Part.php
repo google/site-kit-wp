@@ -320,7 +320,7 @@ class Email_Report_Data_Section_Part {
 		}
 
 		foreach ( $this->values as $value ) {
-			if ( '' !== trim( (string) $value ) ) {
+			if ( '' !== trim( $value ) ) {
 				return false;
 			}
 		}
