@@ -161,7 +161,7 @@ class Email_Report_Payload_Processor {
 				if ( empty( $dimension['name'] ) ) {
 					continue;
 				}
-				$metadata['dimensions'][] = (string) $dimension['name'];
+				$metadata['dimensions'][] = $dimension['name'];
 			}
 		}
 
