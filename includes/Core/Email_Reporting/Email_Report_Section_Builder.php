@@ -90,9 +90,9 @@ class Email_Report_Section_Builder {
 				$date_range = $log_date_range ? $log_date_range : $this->report_processor->compute_date_range( $section_payload['date_range'] ?? null );
 
 				$section = new Email_Report_Data_Section_Part(
-					strval( $section_payload['section_key'] ?? 'section' ),
+					$section_payload['section_key'] ?? 'section',
 					array(
-						'title'          => strval( $section_payload['title'] ?? '' ),
+						'title'          => $section_payload['title'] ?? '',
 						'labels'         => $labels,
 						'values'         => $values,
 						'trends'         => $trends,
@@ -129,7 +129,7 @@ class Email_Report_Section_Builder {
 	 */
 	protected function normalize_labels( $labels ) {
 		return array_map(
-			fn( $label ) => $this->label_translations[ $label ] ?? strval( $label ),
+			fn( $label ) => $this->label_translations[ $label ] ?? $label,
 			$labels
 		);
 	}
@@ -160,7 +160,7 @@ class Email_Report_Section_Builder {
 			}
 
 			if ( ! is_numeric( $trend ) ) {
-				$trend = floatval( preg_replace( '/[^0-9+\-.]/', '', strval( $trend ) ) );
+				$trend = floatval( preg_replace( '/[^0-9+\-.]/', '', $trend ) );
 			}
 
 			$number = floatval( $trend );
@@ -274,7 +274,7 @@ class Email_Report_Section_Builder {
 	 */
 	protected function format_dashboard_link( $module_slug ) {
 		$dashboard_url = $this->context->admin_url( 'dashboard' );
-		return sprintf( '%s#/module/%s', $dashboard_url, rawurlencode( strval( $module_slug ) ) );
+		return sprintf( '%s#/module/%s', $dashboard_url, rawurlencode( $module_slug ) );
 	}
 
 	/**
@@ -296,7 +296,7 @@ class Email_Report_Section_Builder {
 			}
 
 			$group_title_value = $payload_group['title'] ?? null;
-			$group_title       = null !== $group_title_value ? strval( $group_title_value ) : null;
+			$group_title       = null !== $group_title_value ? $group_title_value : null;
 
 			foreach ( $payload_group as $module_key => $module_payload ) {
 				if ( 'title' === $module_key ) {
@@ -307,11 +307,11 @@ class Email_Report_Section_Builder {
 					continue;
 				}
 
-				foreach ( $this->build_module_section_payloads( strval( $module_key ), $module_payload ) as $section ) {
+				foreach ( $this->build_module_section_payloads( $module_key, $module_payload ) as $section ) {
 					if ( $group_title ) {
 						$section['title'] = $group_title;
 					} elseif ( empty( $section['title'] ) && isset( $section['section_key'] ) ) {
-						$section['title'] = strval( $section['section_key'] );
+						$section['title'] = $section['section_key'];
 					}
 					$sections[] = $section;
 				}
@@ -369,9 +369,9 @@ class Email_Report_Section_Builder {
 			);
 
 			foreach ( $processed as $payload ) {
-				$payload_section_key = strval( $payload['section_key'] ?? '' );
+				$payload_section_key = $payload['section_key'] ?? '';
 				if ( '' === $payload_section_key || 0 === strpos( $payload_section_key, 'report_' ) ) {
-					$payload['section_key'] = strval( $section_key );
+					$payload['section_key'] = $section_key;
 				}
 				if ( empty( $payload['title'] ) ) {
 					$payload['title'] = '';
@@ -400,7 +400,7 @@ class Email_Report_Section_Builder {
 				continue;
 			}
 
-			$section = $this->build_section_payload_from_search_console( $rows, strval( $section_key ) );
+			$section = $this->build_section_payload_from_search_console( $rows, $section_key );
 			if ( $section ) {
 				$sections[] = $section;
 			}
@@ -511,17 +511,17 @@ class Email_Report_Section_Builder {
 			$metric_names = array();
 
 			foreach ( $metrics as $metric_meta ) {
-				$metric_name    = strval( $metric_meta['name'] );
+				$metric_name    = $metric_meta['name'];
 				$metric_names[] = $metric_name;
-				$labels[]       = strval( $metric_meta['name'] );
-				$value_types[]  = strval( $metric_meta['type'] ?? 'TYPE_STANDARD' );
+				$labels[]       = $metric_meta['name'];
+				$value_types[]  = $metric_meta['type'] ?? 'TYPE_STANDARD';
 			}
 
 			list( $values, $trends ) = $this->report_processor->compute_metric_values_and_trends( $report, $metric_names );
 
 			$sections[] = array(
-				'section_key' => strval( $report_id ),
-				'title'       => strval( $report['metadata']['title'] ?? '' ),
+				'section_key' => $report_id,
+				'title'       => $report['metadata']['title'] ?? '',
 				'labels'      => $labels,
 				'values'      => $values,
 				'value_types' => $value_types,
@@ -559,7 +559,7 @@ class Email_Report_Section_Builder {
 			}
 
 			if ( '' === $title && isset( $row['title'] ) && is_string( $row['title'] ) ) {
-				$title = trim( strval( $row['title'] ) );
+				$title = trim( $row['title'] );
 			}
 
 			foreach ( $row as $key => $value ) {
@@ -601,7 +601,7 @@ class Email_Report_Section_Builder {
 		}
 
 		return array(
-			'section_key' => strval( $section_key ),
+			'section_key' => $section_key,
 			'title'       => $title,
 			'labels'      => $labels,
 			'values'      => $values,
