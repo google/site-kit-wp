@@ -176,10 +176,10 @@ class Email_Report_Payload_Processor {
 		}
 
 		if ( isset( $report['title'] ) ) {
-			$metadata['title'] = (string) $report['title'];
+			$metadata['title'] = $report['title'];
 		}
 
-		$metadata['row_count'] = isset( $report['rowCount'] ) ? (int) $report['rowCount'] : 0;
+		$metadata['row_count'] = isset( $report['rowCount'] ) ? $report['rowCount'] : 0;
 
 		return $metadata;
 	}
