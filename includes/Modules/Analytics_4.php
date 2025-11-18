@@ -580,7 +580,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
 			'analytics_4_web_data_stream_id'          => array(
-				'label' => __( 'Analytics: Web Data Stream ID', 'google-site-kit' ),
+				'label' => __( 'Analytics: Web data stream ID', 'google-site-kit' ),
 				'value' => $settings['webDataStreamID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['webDataStreamID'] ),
 			),
