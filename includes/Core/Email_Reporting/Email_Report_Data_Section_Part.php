@@ -311,6 +311,7 @@ class Email_Report_Data_Section_Part {
 	 * Whether the section is empty (no values or all empty strings).
 	 *
 	 * @since n.e.x.t
+	 *
 	 * @return bool Whether the section is empty.
 	 */
 	public function is_empty() {
