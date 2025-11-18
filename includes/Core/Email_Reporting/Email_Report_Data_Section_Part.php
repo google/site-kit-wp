@@ -244,7 +244,7 @@ class Email_Report_Data_Section_Part {
 			throw new InvalidArgumentException( 'trends must be an array or null' );
 		}
 
-		$this->trends = array_map( 'strval', $trends );
+		$this->trends = $trends;
 	}
 
 	/**
