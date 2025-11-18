@@ -273,8 +273,8 @@ class Email_Report_Data_Section_Part {
 			}
 		}
 
-		$compare_start_provided = array_key_exists( 'compareStartDate', $date_range );
-		$compare_end_provided   = array_key_exists( 'compareEndDate', $date_range );
+		$compare_start_provided = ! empty( $date_range[ 'compareStartDate' ]  );
+		$compare_end_provided   = ! empty( $date_range[ 'compareEndDate' ] );
 		if ( ! $compare_start_provided || ! $compare_end_provided ) {
 			throw new InvalidArgumentException( 'date_range must contain both compareStartDate and compareEndDate when comparison dates are provided' );
 		}
