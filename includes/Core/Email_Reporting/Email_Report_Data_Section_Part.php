@@ -280,13 +280,13 @@ class Email_Report_Data_Section_Part {
 		}
 
 		$this->date_range = array(
-			'startDate' => (string) $date_range['startDate'],
-			'endDate'   => (string) $date_range['endDate'],
+			'startDate' => $date_range['startDate'],
+			'endDate'   => $date_range['endDate'],
 		);
 
 		if ( $compare_start_provided && $compare_end_provided ) {
-			$this->date_range['compareStartDate'] = (string) $date_range['compareStartDate'];
-			$this->date_range['compareEndDate']   = (string) $date_range['compareEndDate'];
+			$this->date_range['compareStartDate'] = $date_range['compareStartDate'];
+			$this->date_range['compareEndDate']   = $date_range['compareEndDate'];
 		}
 	}
 
