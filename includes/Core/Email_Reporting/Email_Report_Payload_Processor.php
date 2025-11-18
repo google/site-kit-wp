@@ -54,9 +54,12 @@ class Email_Report_Payload_Processor {
 				continue;
 			}
 
-			$report_id = isset( $report_configs[ $index ]['report_id'] )
-				? (string) $report_configs[ $index ]['report_id']
-				: ( isset( $report['reportId'] ) ? (string) $report['reportId'] : sprintf( 'report_%d', $index ) );
+			$report_id = 'report_' . $index;
+			if ( isset( $report_configs[ $index ]['report_id'] ) ) {
+				$report_id = $report_configs[ $index ]['report_id'];
+			} else if ( isset( $report['reportId'] ) {
+				$report_id =  $report['reportId'];
+			}
 
 			$processed_reports[ $report_id ] = $this->process_single_report( $report );
 		}
