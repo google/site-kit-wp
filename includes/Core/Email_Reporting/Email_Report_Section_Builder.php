@@ -227,17 +227,17 @@ class Email_Report_Section_Builder {
 	protected function format_metric_value( $value, $type ) {
 		switch ( $type ) {
 			case 'TYPE_INTEGER':
-				return intval( $value );
+				return (string) intval( $value );
 			case 'TYPE_FLOAT':
-				return floatval( $value );
+				return (string) floatval( $value );
 			case 'TYPE_SECONDS':
-				return $this->format_duration( intval( $value ) );
+				return (string) $this->format_duration( intval( $value ) );
 			case 'TYPE_MILLISECONDS':
-				return $this->format_duration( intval( $value ) / 1000 );
+				return (string) $this->format_duration( intval( $value ) / 1000 );
 			case 'TYPE_MINUTES':
-				return $this->format_duration( intval( $value ) * 60 );
+				return (string) $this->format_duration( intval( $value ) * 60 );
 			case 'TYPE_HOURS':
-				return $this->format_duration( intval( $value ) * 3600 );
+				return (string) $this->format_duration( intval( $value ) * 3600 );
 			case 'TYPE_STANDARD':
 			case 'TYPE_PERCENT':
 			case 'TYPE_TIME':
@@ -597,7 +597,7 @@ class Email_Report_Section_Builder {
 
 		$values = array();
 		foreach ( $labels as $key ) {
-			$values[] = $values_by_key[ $key ];
+			$values[] = (string) $values_by_key[ $key ];
 		}
 
 		return array(
