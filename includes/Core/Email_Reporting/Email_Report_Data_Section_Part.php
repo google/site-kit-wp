@@ -205,7 +205,7 @@ class Email_Report_Data_Section_Part {
 			throw new InvalidArgumentException( 'labels must be an array' );
 		}
 
-		$this->labels = array_map( 'strval', $labels );
+		$this->labels = $labels;
 	}
 
 	/**
