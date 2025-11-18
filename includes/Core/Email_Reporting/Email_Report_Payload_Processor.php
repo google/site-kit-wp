@@ -105,7 +105,7 @@ class Email_Report_Payload_Processor {
 			if ( null !== $compare_start && null !== $compare_end ) {
 				$compare_start_timestamp = strtotime( $compare_start );
 				$compare_end_timestamp   = strtotime( $compare_end );
-				if ( false !== $compare_start_timestamp && false !== $compare_end_timestamp ) {
+				if ( $compare_start_timestamp && $compare_end_timestamp ) {
 					$compare_start = wp_date( 'Y-m-d', $compare_start_timestamp, $timezone );
 					$compare_end   = wp_date( 'Y-m-d', $compare_end_timestamp, $timezone );
 				}
