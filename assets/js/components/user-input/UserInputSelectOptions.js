@@ -53,6 +53,7 @@ export default function UserInputSelectOptions( {
 	next,
 	showInstructions,
 	alignLeftOptions,
+	onSelect,
 } ) {
 	const viewContext = useViewContext();
 	const values = useSelect(
@@ -115,6 +116,8 @@ export default function UserInputSelectOptions( {
 
 			const checkedValues = Array.from( newValues ).slice( 0, max );
 
+			onSelect?.( checkedValues );
+
 			trackEvent(
 				`${ viewContext }_kmw`,
 				gaEventName,
@@ -129,7 +132,15 @@ export default function UserInputSelectOptions( {
 
 			setUserInputSetting( slug, checkedValues );
 		},
-		[ max, setUserInputSetting, slug, values, viewContext, setValues ]
+		[
+			max,
+			setUserInputSetting,
+			slug,
+			values,
+			viewContext,
+			setValues,
+			onSelect,
+		]
 	);
 
 	const onKeyDown = useCallback(

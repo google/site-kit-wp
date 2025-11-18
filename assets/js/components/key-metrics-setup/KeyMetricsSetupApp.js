@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { omit } from 'lodash';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -62,8 +63,11 @@ import {
 } from '@/js/components/user-input/util/constants';
 import WarningSVG from '@/svg/icons/warning.svg';
 import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 export default function KeyMetricsSetupApp() {
+	const viewContext = useViewContext();
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
@@ -118,6 +122,15 @@ export default function KeyMetricsSetupApp() {
 
 	const isInitialSetupFlow = !! showProgress;
 
+	useMount( () => {
+		trackEvent(
+			isInitialSetupFlow ? `${ viewContext }_setup` : viewContext,
+			isInitialSetupFlow
+				? 'setup_flow_v3_view_key_metrics_step'
+				: 'view_key_metrics_step'
+		);
+	} );
+
 	const submitChanges = useCallback( async () => {
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
@@ -157,8 +170,30 @@ export default function KeyMetricsSetupApp() {
 			return;
 		}
 
+		trackEvent(
+			isInitialSetupFlow ? `${ viewContext }_setup` : viewContext,
+			isInitialSetupFlow
+				? 'setup_flow_v3_complete_key_metrics_step'
+				: 'complete_key_metrics_step'
+		);
+
 		submitChanges();
-	}, [ isBusy, isSyncing, submitChanges ] );
+	}, [ isBusy, isInitialSetupFlow, isSyncing, submitChanges, viewContext ] );
+
+	const onSelect = useCallback(
+		( checkedValues ) => {
+			const gaEventName = isInitialSetupFlow
+				? 'setup_flow_v3_select_key_metrics_answer'
+				: 'select_key_metrics_answer';
+
+			trackEvent(
+				isInitialSetupFlow ? `${ viewContext }_setup` : viewContext,
+				gaEventName,
+				checkedValues[ 0 ]
+			);
+		},
+		[ isInitialSetupFlow, viewContext ]
+	);
 
 	const { USER_INPUT_ANSWERS_PURPOSE } = getUserInputAnswers();
 
@@ -238,6 +273,7 @@ export default function KeyMetricsSetupApp() {
 											descriptions={
 												USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS
 											}
+											onSelect={ onSelect }
 										/>
 
 										{ error && (
