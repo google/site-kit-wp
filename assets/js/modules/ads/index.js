@@ -206,7 +206,7 @@ export const ADS_NOTIFICATIONS = {
 	},
 	[ ENHANCED_CONVERSIONS_NOTIFICATION_ADS ]: {
 		Component: EnhancedConversionsNotification,
-		priority: PRIORITY.INFO,
+		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
