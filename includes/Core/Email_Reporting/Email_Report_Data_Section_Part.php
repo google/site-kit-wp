@@ -214,7 +214,7 @@ class Email_Report_Data_Section_Part {
 			throw new InvalidArgumentException( 'labels must be an array' );
 		}
 
-		$this->labels = array_map( 'strval', $labels );
+		$this->labels = $labels;
 	}
 
 	/**
@@ -231,7 +231,7 @@ class Email_Report_Data_Section_Part {
 			throw new InvalidArgumentException( 'values must be an array' );
 		}
 
-		$this->values = array_map( 'strval', $values );
+		$this->values = $values;
 	}
 
 	/**
@@ -253,7 +253,7 @@ class Email_Report_Data_Section_Part {
 			throw new InvalidArgumentException( 'trends must be an array or null' );
 		}
 
-		$this->trends = array_map( 'strval', $trends );
+		$this->trends = $trends;
 	}
 
 	/**
@@ -282,20 +282,20 @@ class Email_Report_Data_Section_Part {
 			}
 		}
 
-		$compare_start_provided = array_key_exists( 'compareStartDate', $date_range );
-		$compare_end_provided   = array_key_exists( 'compareEndDate', $date_range );
-		if ( $compare_start_provided xor $compare_end_provided ) {
+		$compare_start_provided = ! empty( $date_range['compareStartDate'] );
+		$compare_end_provided   = ! empty( $date_range['compareEndDate'] );
+		if ( ! $compare_start_provided || ! $compare_end_provided ) {
 			throw new InvalidArgumentException( 'date_range must contain both compareStartDate and compareEndDate when comparison dates are provided' );
 		}
 
 		$this->date_range = array(
-			'startDate' => strval( $date_range['startDate'] ),
-			'endDate'   => strval( $date_range['endDate'] ),
+			'startDate' => $date_range['startDate'],
+			'endDate'   => $date_range['endDate'],
 		);
 
 		if ( $compare_start_provided && $compare_end_provided ) {
-			$this->date_range['compareStartDate'] = strval( $date_range['compareStartDate'] );
-			$this->date_range['compareEndDate']   = strval( $date_range['compareEndDate'] );
+			$this->date_range['compareStartDate'] = $date_range['compareStartDate'];
+			$this->date_range['compareEndDate']   = $date_range['compareEndDate'];
 		}
 	}
 
@@ -309,7 +309,7 @@ class Email_Report_Data_Section_Part {
 	 * @throws InvalidArgumentException When validation fails.
 	 */
 	private function set_dashboard_link( $dashboard_link ) {
-		if ( null !== $dashboard_link && ! is_string( $dashboard_link ) ) {
+		if ( ! filter_var( $dashboard_link, FILTER_VALIDATE_URL ) ) {
 			throw new InvalidArgumentException( 'dashboard_link must be a string or null' );
 		}
 
@@ -320,6 +320,7 @@ class Email_Report_Data_Section_Part {
 	 * Whether the section is empty (no values or all empty strings).
 	 *
 	 * @since n.e.x.t
+	 *
 	 * @return bool Whether the section is empty.
 	 */
 	public function is_empty() {
@@ -328,7 +329,7 @@ class Email_Report_Data_Section_Part {
 		}
 
 		foreach ( $this->values as $value ) {
-			if ( '' !== trim( strval( $value ) ) ) {
+			if ( '' !== trim( $value ) ) {
 				return false;
 			}
 		}

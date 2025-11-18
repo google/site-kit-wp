@@ -54,8 +54,12 @@ class Email_Report_Payload_Processor {
 				continue;
 			}
 
-			$report_id_value = $report_configs[ $index ]['report_id'] ?? ( $report['reportId'] ?? sprintf( 'report_%d', $index ) );
-			$report_id       = strval( $report_id_value );
+			$report_id = 'report_' . $index;
+			if ( isset( $report_configs[ $index ]['report_id'] ) ) {
+				$report_id = $report_configs[ $index ]['report_id'];
+			} elseif ( isset( $report['reportId'] ) ) {
+				$report_id = $report['reportId'];
+			}
 
 			$processed_reports[ $report_id ] = $this->process_single_report( $report );
 		}
@@ -79,14 +83,14 @@ class Email_Report_Payload_Processor {
 		if ( empty( $date_range['startDate'] ) || empty( $date_range['endDate'] ) ) {
 			return null;
 		}
-		$start = strval( $date_range['startDate'] );
-		$end   = strval( $date_range['endDate'] );
+		$start = $date_range['startDate'];
+		$end   = $date_range['endDate'];
 
 		$compare_start = null;
 		$compare_end   = null;
-		if ( ! empty( $date_range['compareStartDate'] ) && ! empty( $date_range['compareEndDate'] ) ) {
-			$compare_start = strval( $date_range['compareStartDate'] );
-			$compare_end   = strval( $date_range['compareEndDate'] );
+		if ( array_key_exists( 'compareStartDate', $date_range ) && array_key_exists( 'compareEndDate', $date_range ) ) {
+			$compare_start = $date_range['compareStartDate'];
+			$compare_end   = $date_range['compareEndDate'];
 		}
 
 		// Ensure dates are localized strings (Y-m-d) using site timezone.
@@ -94,14 +98,14 @@ class Email_Report_Payload_Processor {
 		if ( function_exists( 'wp_date' ) && $timezone ) {
 			$start_timestamp = strtotime( $start );
 			$end_timestamp   = strtotime( $end );
-			if ( false !== $start_timestamp && false !== $end_timestamp ) {
+			if ( $start_timestamp && $end_timestamp ) {
 				$start = wp_date( 'Y-m-d', $start_timestamp, $timezone );
 				$end   = wp_date( 'Y-m-d', $end_timestamp, $timezone );
 			}
 			if ( null !== $compare_start && null !== $compare_end ) {
 				$compare_start_timestamp = strtotime( $compare_start );
 				$compare_end_timestamp   = strtotime( $compare_end );
-				if ( false !== $compare_start_timestamp && false !== $compare_end_timestamp ) {
+				if ( $compare_start_timestamp && $compare_end_timestamp ) {
 					$compare_start = wp_date( 'Y-m-d', $compare_start_timestamp, $timezone );
 					$compare_end   = wp_date( 'Y-m-d', $compare_end_timestamp, $timezone );
 				}
@@ -157,7 +161,7 @@ class Email_Report_Payload_Processor {
 				if ( empty( $dimension['name'] ) ) {
 					continue;
 				}
-				$metadata['dimensions'][] = strval( $dimension['name'] );
+				$metadata['dimensions'][] = $dimension['name'];
 			}
 		}
 
@@ -168,17 +172,17 @@ class Email_Report_Payload_Processor {
 					continue;
 				}
 				$metadata['metrics'][] = array(
-					'name' => strval( $metric['name'] ),
-					'type' => strval( $metric['type'] ?? 'TYPE_INTEGER' ),
+					'name' => $metric['name'],
+					'type' => isset( $metric['type'] ) ? $metric['type'] : 'TYPE_INTEGER',
 				);
 			}
 		}
 
 		if ( isset( $report['title'] ) ) {
-			$metadata['title'] = strval( $report['title'] );
+			$metadata['title'] = $report['title'];
 		}
 
-		$metadata['row_count'] = intval( $report['rowCount'] ?? 0 );
+		$metadata['row_count'] = isset( $report['rowCount'] ) ? $report['rowCount'] : 0;
 
 		return $metadata;
 	}
@@ -207,7 +211,7 @@ class Email_Report_Payload_Processor {
 			$total_values = array();
 			foreach ( $total_row['metricValues'] as $index => $metric_value ) {
 				$metric_header = $metric_headers[ $index ] ?? array();
-				$metric_name   = strval( $metric_header['name'] ?? sprintf( 'metric_%d', $index ) );
+				$metric_name   = $metric_header['name'] ?? sprintf( 'metric_%d', $index );
 				$value         = $metric_value['value'] ?? null;
 
 				$total_values[ $metric_name ] = $value;
@@ -282,7 +286,7 @@ class Email_Report_Payload_Processor {
 				continue;
 			}
 
-			if ( strval( $row['dimensions'][ $dimension_name ] ) !== strval( $dimension_value ) ) {
+			if ( $row['dimensions'][ $dimension_name ] !== $dimension_value ) {
 				continue;
 			}
 
