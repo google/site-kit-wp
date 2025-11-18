@@ -222,7 +222,7 @@ class Email_Report_Data_Section_Part {
 			throw new InvalidArgumentException( 'values must be an array' );
 		}
 
-		$this->values = array_map( 'strval', $values );
+		$this->values = $values;
 	}
 
 	/**
