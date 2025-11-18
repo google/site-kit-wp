@@ -172,8 +172,8 @@ class Email_Report_Payload_Processor {
 					continue;
 				}
 				$metadata['metrics'][] = array(
-					'name' => (string) $metric['name'],
-					'type' => isset( $metric['type'] ) ? (string) $metric['type'] : 'TYPE_INTEGER',
+					'name' => $metric['name'],
+					'type' => isset( $metric['type'] ) ? $metric['type'] : 'TYPE_INTEGER',
 				);
 			}
 		}
