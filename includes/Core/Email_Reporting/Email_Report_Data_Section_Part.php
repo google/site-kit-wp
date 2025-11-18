@@ -284,7 +284,7 @@ class Email_Report_Data_Section_Part {
 
 		$compare_start_provided = ! empty( $date_range['compareStartDate'] );
 		$compare_end_provided   = ! empty( $date_range['compareEndDate'] );
-		if ( ! $compare_start_provided || ! $compare_end_provided ) {
+		if ( $compare_start_provided xor $compare_end_provided ) {
 			throw new InvalidArgumentException( 'date_range must contain both compareStartDate and compareEndDate when comparison dates are provided' );
 		}
 
@@ -309,8 +309,13 @@ class Email_Report_Data_Section_Part {
 	 * @throws InvalidArgumentException When validation fails.
 	 */
 	private function set_dashboard_link( $dashboard_link ) {
-		if ( ! filter_var( $dashboard_link, FILTER_VALIDATE_URL ) ) {
-			throw new InvalidArgumentException( 'dashboard_link must be a string or null' );
+		if ( null === $dashboard_link ) {
+			$this->dashboard_link = null;
+			return;
+		}
+
+		if ( ! is_string( $dashboard_link ) || ! filter_var( $dashboard_link, FILTER_VALIDATE_URL ) ) {
+			throw new InvalidArgumentException( 'dashboard_link must be a valid URL string or null' );
 		}
 
 		$this->dashboard_link = $dashboard_link;
