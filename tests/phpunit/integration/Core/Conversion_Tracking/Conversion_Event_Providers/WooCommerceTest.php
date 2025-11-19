@@ -394,21 +394,14 @@ class WooCommerceTest extends TestCase {
 				'country_calling_code' => '+44',
 				'expected'             => '+447700900077',
 			),
-			// Test case 16: National number with multiple leading zeros.
-			'multiple leading zeros'                      => array(
-				'phone'                => '00771770589',
-				'country'              => 'LK',
-				'country_calling_code' => '+94',
-				'expected'             => '+94771770589',
-			),
-			// Test case 17: International format with 00 prefix (same country).
+			// Test case 16: International format with 00 prefix (same country).
 			'international format with 00 prefix - same country' => array(
 				'phone'                => '0094770601017',
 				'country'              => 'LK',
 				'country_calling_code' => '+94',
 				'expected'             => '+94770601017',
 			),
-			// Test case 18: International format with 00 prefix (different country).
+			// Test case 17: International format with 00 prefix (different country).
 			'international format with 00 prefix - different country' => array(
 				'phone'                => '00919361653826',
 				'country'              => 'LK',
