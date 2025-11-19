@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Email_Reporting\Email_Log;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
@@ -113,12 +114,14 @@ class Reset {
 		$this->delete_user_options( 'site' );
 		$this->delete_post_meta( 'site' );
 		$this->delete_term_meta( 'site' );
+		$this->delete_posts( 'site' );
 
 		if ( $this->context->is_network_mode() ) {
 			$this->delete_options( 'network' );
 			$this->delete_user_options( 'network' );
 			$this->delete_post_meta( 'network' );
 			$this->delete_term_meta( 'network' );
+			$this->delete_posts( 'network' );
 		}
 
 		wp_cache_flush();
@@ -251,6 +254,53 @@ class Reset {
 				$wpdb->prepare(
 					"DELETE FROM {$prefix}termmeta WHERE `meta_key` LIKE %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					static::KEY_PATTERN
+				)
+			);
+		}
+	}
+
+	/**
+	 * Deletes all Site Kit custom post type posts.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $scope Scope of the deletion ('site' or 'network').
+	 */
+	private function delete_posts( $scope ) {
+		global $wpdb;
+
+		$sites = array();
+		if ( 'network' === $scope ) {
+			$sites = get_sites(
+				array(
+					'fields' => 'ids',
+					'number' => 9999999,
+				)
+			);
+		} elseif ( 'site' === $scope ) {
+			$sites[] = get_current_blog_id();
+		} else {
+			return;
+		}
+
+		foreach ( $sites as $site_id ) {
+			$prefix         = $wpdb->get_blog_prefix( $site_id );
+			$posts_table    = "{$prefix}posts";
+			$postmeta_table = "{$prefix}postmeta";
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM {$postmeta_table} WHERE post_id IN ( SELECT ID FROM {$posts_table} WHERE post_type = %s )", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					Email_Log::POST_TYPE
+				)
+			);
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM {$posts_table} WHERE post_type = %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					Email_Log::POST_TYPE
 				)
 			);
 		}

@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Email_Reporting\Email_Log;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Util\Reset;
 use Google\Site_Kit\Tests\Exception\RedirectException;
@@ -36,6 +37,13 @@ class ResetTest extends TestCase {
 	 */
 	protected $context_with_mutable_input;
 
+	/**
+	 * Indicates whether the email log post type and metadata were registered.
+	 *
+	 * @var bool
+	 */
+	protected $email_log_registered = false;
+
 	public function set_up() {
 		parent::set_up();
 
@@ -44,6 +52,15 @@ class ResetTest extends TestCase {
 		update_option( self::TEST_OPTION, 'test-value' );
 
 		$this->context_with_mutable_input = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+	}
+
+	public function tear_down() {
+		if ( $this->email_log_registered ) {
+			$this->unregister_email_log_dependencies();
+			$this->email_log_registered = false;
+		}
+
+		parent::tear_down();
 	}
 
 	public function test_all() {
@@ -77,6 +94,35 @@ class ResetTest extends TestCase {
 		$this->assertEquals( 'keep', get_term_meta( $term_id, 'googlesitekitkeep', true ), 'Term meta without underscore should be kept.' );
 		$this->assertEquals( 'keep', get_term_meta( $term_id, 'googlesitekit-keep', true ), 'Term meta with dash should be kept.' );
 		$this->assertEquals( '', get_term_meta( $term_id, 'googlesitekit_keep', true ), 'Term meta with underscore should be deleted.' );
+	}
+
+	public function test_all_deletes_email_log_posts() {
+		$this->register_email_log_dependencies();
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		$first_log = $this->factory()->post->create(
+			array(
+				'post_type'   => Email_Log::POST_TYPE,
+				'post_status' => Email_Log::STATUS_SCHEDULED,
+			)
+		);
+		add_post_meta( $first_log, Email_Log::META_BATCH_ID, 'batch-a' );
+
+		$second_log = $this->factory()->post->create(
+			array(
+				'post_type'   => Email_Log::POST_TYPE,
+				'post_status' => Email_Log::STATUS_FAILED,
+			)
+		);
+		add_post_meta( $second_log, Email_Log::META_SEND_ATTEMPTS, 2 );
+
+		$this->run_reset( $context );
+
+		$this->assertNull( get_post( $first_log ), 'Email log posts should be deleted after reset.' );
+		$this->assertNull( get_post( $second_log ), 'Email log posts should be deleted after reset.' );
+		$this->assertFalse( metadata_exists( 'post', $first_log, Email_Log::META_BATCH_ID ), 'Email log post meta should be deleted after reset.' );
+		$this->assertFalse( metadata_exists( 'post', $second_log, Email_Log::META_SEND_ATTEMPTS ), 'Email log post meta should be deleted after reset.' );
 	}
 
 	/**
@@ -205,5 +251,44 @@ class ResetTest extends TestCase {
 		$this->assertOptionsDeleted( $is_network_mode );
 		$this->assertUserOptionsDeleted( $user_id, $is_network_mode );
 		$this->assertTransientsDeleted( $is_network_mode );
+	}
+
+	private function register_email_log_dependencies() {
+		if ( $this->email_log_registered ) {
+			return;
+		}
+
+		$email_log       = new Email_Log( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$register_method = new \ReflectionMethod( Email_Log::class, 'register_email_log' );
+		$register_method->setAccessible( true );
+		$register_method->invoke( $email_log );
+
+		$this->email_log_registered = true;
+	}
+
+	private function unregister_email_log_dependencies() {
+		if ( function_exists( 'unregister_post_type' ) && post_type_exists( Email_Log::POST_TYPE ) ) {
+			unregister_post_type( Email_Log::POST_TYPE );
+		}
+
+		if ( function_exists( 'unregister_post_status' ) ) {
+			foreach ( array( Email_Log::STATUS_SENT, Email_Log::STATUS_FAILED, Email_Log::STATUS_SCHEDULED ) as $status ) {
+				unregister_post_status( $status );
+			}
+		}
+
+		if ( function_exists( 'unregister_meta_key' ) ) {
+			foreach (
+				array(
+					Email_Log::META_REPORT_FREQUENCY,
+					Email_Log::META_BATCH_ID,
+					Email_Log::META_SEND_ATTEMPTS,
+					Email_Log::META_ERROR_DETAILS,
+					Email_Log::META_REPORT_REFERENCE_DATES,
+				) as $meta_key
+			) {
+				unregister_meta_key( 'post', Email_Log::POST_TYPE, $meta_key );
+			}
+		}
 	}
 }
