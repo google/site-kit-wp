@@ -106,6 +106,14 @@ class Email_Reporting {
 	protected $initiator_task;
 
 	/**
+	 * Monitor task instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Monitor_Task
+	 */
+	protected $monitor_task;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.162.0
@@ -135,6 +143,7 @@ class Email_Reporting {
 		$this->email_log       = new Email_Log( $this->context );
 		$this->scheduler       = new Email_Reporting_Scheduler( $frequency_planner );
 		$this->initiator_task  = new Initiator_Task( $this->scheduler, $subscribed_users_query );
+		$this->monitor_task    = new Monitor_Task( $this->scheduler, $this->settings );
 	}
 
 	/**
@@ -152,9 +161,10 @@ class Email_Reporting {
 
 		if ( $this->settings->is_email_reporting_enabled() ) {
 			$this->scheduler->schedule_initiator_events();
+			$this->scheduler->schedule_monitor();
 
 			add_action( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $this->initiator_task, 'handle_callback_action' ), 10, 1 );
-
+			add_action( Email_Reporting_Scheduler::ACTION_MONITOR, array( $this->monitor_task, 'handle_monitor_action' ) );
 		} else {
 			$this->scheduler->unschedule_all();
 		}
@@ -166,6 +176,7 @@ class Email_Reporting {
 
 				if ( $is_enabled && ! $was_enabled ) {
 					$this->scheduler->schedule_initiator_events();
+					$this->scheduler->schedule_monitor();
 					return;
 				}
 
