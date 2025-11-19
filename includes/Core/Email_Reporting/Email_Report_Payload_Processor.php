@@ -88,7 +88,7 @@ class Email_Report_Payload_Processor {
 
 		$compare_start = null;
 		$compare_end   = null;
-		if ( array_key_exists( 'compareStartDate', $date_range ) && array_key_exists( 'compareEndDate', $date_range ) ) {
+		if ( ! empty( $date_range['compareStartDate'] ) && ! empty( $date_range['compareEndDate'] ) ) {
 			$compare_start = $date_range['compareStartDate'];
 			$compare_end   = $date_range['compareEndDate'];
 		}
