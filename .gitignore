@@ -6,6 +6,7 @@
 !.github
 !.vscode
 .vscode/*
+!.wordpress-org/
 !.vscode/extensions.json
 !.vscode/settings.json
 !.editorconfig
