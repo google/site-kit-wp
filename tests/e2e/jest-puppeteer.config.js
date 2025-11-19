@@ -24,9 +24,20 @@ module.exports = {
 		devtools: process.env.PUPPETEER_DEVTOOLS === 'true',
 		headless: process.env.PUPPETEER_HEADLESS !== 'false',
 		slowMo: parseInt( process.env.PUPPETEER_SLOWMO, 10 ) || 0,
+
+		// CI + modern Chromium require these args.
 		args: [
-			// https://peter.sh/experiments/chromium-command-line-switches/
-			'--disable-web-security', // Fixes SSL issues that may happen on when you run e2e localy.
+			'--disable-web-security',
+
+			// Required for GitHub Actions / Linux CI runners
+			'--no-sandbox',
+			'--disable-setuid-sandbox',
+
+			// Improve stability (recommended by WP core & Puppeteer docs)
+			'--disable-dev-shm-usage',
+			'--disable-gpu',
+			'--no-zygote',
+			'--single-process',
 		],
 	},
 	browserContext: 'default',
