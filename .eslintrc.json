@@ -191,6 +191,7 @@
         "page": true
       },
       "rules": {
+        "@typescript-eslint/ban-ts-comment": "off",
         "jsdoc/check-tag-names": "error",
         "jsdoc/check-types": "off",
         "jsdoc/check-line-alignment": [

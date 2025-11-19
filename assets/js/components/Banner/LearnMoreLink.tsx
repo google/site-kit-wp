@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -23,7 +28,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Link from '@/js/components/Link';
-import { FC } from 'react';
 
 /**
  * A "Learn More" link component, usually used to append "Learn more" with a
