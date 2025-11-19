@@ -23,16 +23,22 @@ class Email_Log_Cleanup {
 
 	/**
 	 * Maximum age for email logs before deletion (in seconds).
+	 *
+	 * @since n.e.x.t
 	 */
 	private const MAX_LOG_AGE = 6 * MONTH_IN_SECONDS;
 
 	/**
 	 * Number of posts to delete per batch.
+	 *
+	 * @since n.e.x.t
 	 */
 	private const DELETE_CHUNK_SIZE = 30;
 
 	/**
 	 * Settings instance.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @var Email_Reporting_Settings
 	 */
@@ -57,43 +63,14 @@ class Email_Log_Cleanup {
 	 * @since n.e.x.t
 	 */
 	public function handle_cleanup_action() {
-		if ( ! $this->settings->is_email_reporting_enabled() ) {
-			return;
-		}
-
 		$lock_handle = $this->acquire_lock();
 
-		if ( ! $lock_handle ) {
+		if ( ! $this->settings->is_email_reporting_enabled() || ! $lock_handle ) {
 			return;
 		}
 
 		try {
-			$cutoff = gmdate( 'Y-m-d', time() - self::MAX_LOG_AGE );
-
-			$statuses = array(
-				Email_Log::STATUS_SENT,
-				Email_Log::STATUS_FAILED,
-				Email_Log::STATUS_SCHEDULED,
-			);
-
-			$query = new WP_Query(
-				array(
-					'post_type'              => Email_Log::POST_TYPE,
-					'post_status'            => $statuses,
-					'fields'                 => 'ids',
-					'posts_per_page'         => -1,
-					'no_found_rows'          => true,
-					'cache_results'          => false,
-					'update_post_meta_cache' => false,
-					'update_post_term_cache' => false,
-					'date_query'             => array(
-						array(
-							'before' => $cutoff,
-							'column' => 'post_date_gmt',
-						),
-					),
-				)
-			);
+			$query = $this->build_cleanup_query();
 
 			if ( empty( $query->posts ) ) {
 				return;
@@ -107,6 +84,51 @@ class Email_Log_Cleanup {
 		} finally {
 			delete_transient( $lock_handle );
 		}
+	}
+
+	/**
+	 * Builds the cleanup query for expired email logs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return WP_Query Query instance for expired email log posts.
+	 */
+	private function build_cleanup_query() {
+		$cutoff = gmdate( 'Y-m-d', time() - self::MAX_LOG_AGE );
+
+		return new WP_Query(
+			array(
+				'post_type'              => Email_Log::POST_TYPE,
+				'post_status'            => $this->get_valid_statuses(),
+				'fields'                 => 'ids',
+				'posts_per_page'         => -1,
+				'no_found_rows'          => true,
+				'cache_results'          => false,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+				'date_query'             => array(
+					array(
+						'before' => $cutoff,
+						'column' => 'post_date_gmt',
+					),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Gets the list of valid email log post statuses.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[] Valid post statuses.
+	 */
+	private function get_valid_statuses() {
+		return array(
+			Email_Log::STATUS_SENT,
+			Email_Log::STATUS_FAILED,
+			Email_Log::STATUS_SCHEDULED,
+		);
 	}
 
 	/**

@@ -50,9 +50,7 @@ class Email_Reporting_Scheduler {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		if ( false === has_filter( 'cron_schedules', array( __CLASS__, 'register_monthly_schedule' ) ) ) {
-			add_filter( 'cron_schedules', array( __CLASS__, 'register_monthly_schedule' ) );
-		}
+		add_filter( 'cron_schedules', array( __CLASS__, 'register_monthly_schedule' ) );
 	}
 
 	/**
