@@ -9,6 +9,8 @@ on:
     paths:
       - '.github/workflows/js-css-lint-test.yml'
       - '**.js'
+      - '**.ts'
+      - '**.tsx'
       - '**.json'
       - '**.scss'
       - '.eslint*'
@@ -27,6 +29,8 @@ on:
     paths:
       - '.github/workflows/js-css-lint-test.yml'
       - '**.js'
+      - '**.ts'
+      - '**.tsx'
       - '**.json'
       - '**.scss'
       - '.eslint*'
@@ -74,6 +78,20 @@ jobs:
         run: npm i -w assets -w storybook -w tests/js -w tests/e2e --include-workspace-root
       - name: JS Lint
         run: npm run lint:js
+  typecheck:
+    name: Type check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: npm install
+        run: npm i -w assets -w storybook -w tests/js -w tests/e2e --include-workspace-root
+      - name: Type check
+        run: npm run typecheck
   js-test:
     name: JS Tests
     runs-on: ubuntu-latest
