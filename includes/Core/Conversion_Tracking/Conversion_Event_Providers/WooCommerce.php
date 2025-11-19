@@ -478,13 +478,19 @@ class WooCommerce extends Conversion_Events_Provider {
 
 				// Check if the phone number starts with 00 (international dialing format).
 				// This is commonly used instead of + in many countries.
-				$starts_with_00 = strpos( $phone_digits, '00' ) === 0 && strlen( $phone_digits ) > 2;
+				// To distinguish from national numbers with leading zeros, ensure that after
+				// stripping 00, there are at least 10 digits remaining (country code + number).
+				$starts_with_00_international = false;
+				if ( strpos( $phone_digits, '00' ) === 0 && strlen( $phone_digits ) > 2 ) {
+					$digits_after_00              = substr( $phone_digits, 2 );
+					$starts_with_00_international = strlen( $digits_after_00 ) >= 10;
+				}
 
 				// Check if the phone number already starts with the billing country code.
 				if ( strpos( $phone_digits, $country_code_digits ) === 0 ) {
 					// Phone already has the correct country code, just add + and validate.
 					$phone = '+' . $phone_digits;
-				} elseif ( $starts_with_00 ) {
+				} elseif ( $starts_with_00_international ) {
 					// Phone starts with 00 (international dialing format).
 					// Strip the 00 prefix and format as E.164.
 					// This handles any country code, not just the billing country.
