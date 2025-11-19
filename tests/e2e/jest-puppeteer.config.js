@@ -28,16 +28,14 @@ module.exports = {
 		// CI + modern Chromium require these args.
 		args: [
 			'--disable-web-security',
-
-			// Required for GitHub Actions / Linux CI runners
 			'--no-sandbox',
 			'--disable-setuid-sandbox',
-
-			// Improve stability (recommended by WP core & Puppeteer docs)
 			'--disable-dev-shm-usage',
 			'--disable-gpu',
 			'--no-zygote',
 			'--single-process',
+			'--disable-features=IsolateOrigins,site-per-process',
+			'--disable-site-isolation-trials',
 		],
 	},
 	browserContext: 'default',

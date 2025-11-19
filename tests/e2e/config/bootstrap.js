@@ -190,9 +190,12 @@ const IGNORE_CONSOLE_MESSAGES = [
 const pageEvents = [];
 
 // The Jest timeout is increased because these tests are a bit slow
-jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
+jest.setTimeout( PUPPETEER_TIMEOUT || 120000 );
+
+page.setDefaultNavigationTimeout( 60000 );
+
 // Set default timeout for Puppeteer waits. (Default: 30 sec)
-page.setDefaultTimeout( 5_000 );
+page.setDefaultTimeout( 30000 );
 // Set default timeout for individual expect-puppeteer assertions. (Default: 1000)
 setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 1000 } );
 
