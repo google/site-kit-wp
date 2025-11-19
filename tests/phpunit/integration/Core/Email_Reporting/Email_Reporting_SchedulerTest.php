@@ -122,6 +122,24 @@ class Email_Reporting_SchedulerTest extends TestCase {
 		$this->assertSame( $first, $second, 'Scheduling the same fallback twice should reuse the original timestamp for frequency "' . $frequency . '".' );
 	}
 
+	public function test_schedule_monitor_registers_daily_event_once() {
+		$before = time();
+
+		$this->scheduler->schedule_monitor();
+		$event = wp_get_scheduled_event( Email_Reporting_Scheduler::ACTION_MONITOR );
+
+		$this->assertNotFalse( $event, 'Monitor event should be created on first call.' );
+		$this->assertSame( 'daily', $event->schedule, 'Monitor event should recur daily.' );
+		$this->assertGreaterThanOrEqual( $before, $event->timestamp, 'Monitor event should run no earlier than the scheduling time.' );
+
+		$this->scheduler->schedule_monitor();
+		$this->assertSame(
+			$event->timestamp,
+			wp_next_scheduled( Email_Reporting_Scheduler::ACTION_MONITOR ),
+			'Monitor scheduling should be idempotent.'
+		);
+	}
+
 	public function test_unschedule_all_clears_events() {
 		$this->scheduler->schedule_initiator_once( Email_Reporting_Settings::FREQUENCY_WEEKLY );
 		$worker_timestamp   = time();
@@ -129,16 +147,18 @@ class Email_Reporting_SchedulerTest extends TestCase {
 
 		$this->scheduler->schedule_worker( 'batch', Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp );
 		$this->scheduler->schedule_fallback( Email_Reporting_Settings::FREQUENCY_WEEKLY, $fallback_timestamp );
+		$this->scheduler->schedule_monitor();
 
 		$this->scheduler->unschedule_all();
 
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Initiator hook should be unscheduled for weekly frequency.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_WORKER, array( 'batch', Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp ) ), 'Worker hook should be unscheduled for batch "batch".' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_FALLBACK, array( Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Fallback hook should be unscheduled for weekly frequency.' );
+		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_MONITOR ), 'Monitor hook should be unscheduled when clearing all events.' );
 	}
 
 	private function clear_scheduled_events() {
-		foreach ( array( Email_Reporting_Scheduler::ACTION_INITIATOR, Email_Reporting_Scheduler::ACTION_WORKER, Email_Reporting_Scheduler::ACTION_FALLBACK ) as $hook ) {
+		foreach ( array( Email_Reporting_Scheduler::ACTION_INITIATOR, Email_Reporting_Scheduler::ACTION_WORKER, Email_Reporting_Scheduler::ACTION_FALLBACK, Email_Reporting_Scheduler::ACTION_MONITOR ) as $hook ) {
 			wp_unschedule_hook( $hook );
 		}
 	}
