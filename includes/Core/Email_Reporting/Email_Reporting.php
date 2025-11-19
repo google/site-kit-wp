@@ -169,6 +169,7 @@ class Email_Reporting {
 		// Register WP admin pointer for Email Reporting onboarding.
 		( new Email_Reporting_Pointer( $this->context, $this->user_options, $this->user_settings ) )->register();
 		$this->email_log->register();
+		$this->scheduler->register();
 
 		add_action( Email_Reporting_Scheduler::ACTION_CLEANUP, array( $this->email_log_cleanup, 'handle_cleanup_action' ) );
 

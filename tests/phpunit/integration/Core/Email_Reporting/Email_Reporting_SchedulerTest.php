@@ -34,6 +34,7 @@ class Email_Reporting_SchedulerTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
+		$this->remove_monthly_schedule_filter();
 		$this->frequency_planner = new class( $this->offsets ) extends Frequency_Planner {
 
 			private $offsets;
@@ -53,7 +54,16 @@ class Email_Reporting_SchedulerTest extends TestCase {
 
 	public function tear_down() {
 		$this->clear_scheduled_events();
+		$this->remove_monthly_schedule_filter();
 		parent::tear_down();
+	}
+
+	public function test_register_adds_monthly_schedule_filter() {
+		$this->assertFalse( has_filter( 'cron_schedules', array( Email_Reporting_Scheduler::class, 'register_monthly_schedule' ) ), 'Monthly schedule filter should not be added.' );
+
+		$this->scheduler->register();
+
+		$this->assertNotFalse( has_filter( 'cron_schedules', array( Email_Reporting_Scheduler::class, 'register_monthly_schedule' ) ), 'Monthly schedule filter should be added.' );
 	}
 
 	public function test_schedule_initiator_events_schedules_each_frequency_once() {
@@ -124,6 +134,7 @@ class Email_Reporting_SchedulerTest extends TestCase {
 
 	public function test_schedule_cleanup_schedules_monthly_event() {
 		$before = time();
+		$this->scheduler->register();
 
 		$this->scheduler->schedule_cleanup();
 
@@ -158,5 +169,9 @@ class Email_Reporting_SchedulerTest extends TestCase {
 		foreach ( array( Email_Reporting_Scheduler::ACTION_INITIATOR, Email_Reporting_Scheduler::ACTION_WORKER, Email_Reporting_Scheduler::ACTION_FALLBACK, Email_Reporting_Scheduler::ACTION_CLEANUP ) as $hook ) {
 			wp_unschedule_hook( $hook );
 		}
+	}
+
+	private function remove_monthly_schedule_filter() {
+		remove_filter( 'cron_schedules', array( Email_Reporting_Scheduler::class, 'register_monthly_schedule' ) );
 	}
 }
