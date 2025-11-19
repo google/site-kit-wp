@@ -46,6 +46,12 @@ exports[`Ads EnhancedConversionsNotification should render the notification 1`] 
                   >
                     Learn more
                   </span>
+                  <span
+                    class="googlesitekit-icon-wrapper"
+                    style="margin-left: 5px;"
+                  >
+                    <svg />
+                  </span>
                 </a>
               </p>
             </div>
