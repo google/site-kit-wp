@@ -314,7 +314,7 @@ class Email_Report_Data_Section_Part {
 			return;
 		}
 
-		if ( ! is_string( $dashboard_link ) || ! filter_var( $dashboard_link, FILTER_VALIDATE_URL ) ) {
+		if ( ! filter_var( $dashboard_link, FILTER_VALIDATE_URL ) ) {
 			throw new InvalidArgumentException( 'dashboard_link must be a valid URL string or null' );
 		}
 
