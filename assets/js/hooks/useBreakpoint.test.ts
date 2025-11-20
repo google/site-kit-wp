@@ -27,7 +27,7 @@ import {
 import { useBreakpoint } from './useBreakpoint';
 
 describe( 'useBreakpoint', () => {
-	let originalViewportWidth;
+	let originalViewportWidth: number;
 
 	beforeEach( () => {
 		originalViewportWidth = getViewportWidth();
@@ -67,16 +67,20 @@ describe( 'useBreakpoint', () => {
 	] )( '%s', async ( _, viewportWidth, expected ) => {
 		let result;
 		await act( async () => {
-			( { result } = await renderHook( () => {
+			( { result } = ( await renderHook( () => {
 				setViewportWidth( viewportWidth );
 
 				global.window.dispatchEvent(
 					new global.window.Event( 'resize' )
 				);
 				return useBreakpoint();
-			} ) );
+				// The `renderHook` return type is not yet typed.
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			} ) ) as any );
 		} );
 
-		expect( result.current ).toEqual( expected );
+		// The `renderHook` return type is not yet typed.
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		expect( ( result as any )?.current ).toEqual( expected );
 	} );
 } );
