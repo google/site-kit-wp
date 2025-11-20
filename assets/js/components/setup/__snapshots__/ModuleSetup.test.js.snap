@@ -257,7 +257,7 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
                                     for="googlesitekit-select-17"
                                     style=""
                                   >
-                                    Web Data Stream
+                                    Web data stream
                                   </label>
                                 </div>
                                 <div
@@ -708,7 +708,7 @@ exports[`ModuleSetup Analytics 4 not initial setup flow should match the snapsho
                                     for="googlesitekit-select-38"
                                     style=""
                                   >
-                                    Web Data Stream
+                                    Web data stream
                                   </label>
                                 </div>
                                 <div
