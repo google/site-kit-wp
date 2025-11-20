@@ -571,6 +571,59 @@ describe( 'ReportError', () => {
 		expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 4 );
 	} );
 
+	it( 'should not list error descriptions with the same `reconnectURL`s', async () => {
+		const { container, waitForRegistry } = render(
+			<ReportError
+				moduleSlug={ moduleName }
+				error={ [
+					{
+						code: 'test_error',
+						message: 'Test error message',
+						data: {
+							reason: '',
+							reconnectURL: 'https://example.com/page?code=1',
+							status: 401,
+						},
+					},
+					{
+						code: 'test_error',
+						message: 'Test error message',
+						data: {
+							reason: '',
+							reconnectURL: 'https://example.com/page?code=2',
+							status: 401,
+						},
+					},
+					{
+						code: 'test_error',
+						message: 'Test error message 2',
+						data: {
+							reason: '',
+							reconnectURL: 'https://example.com/page2?code=1',
+							status: 401,
+						},
+					},
+				] }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		const errorDescriptionElement = container.querySelectorAll(
+			'.googlesitekit-cta__description'
+		);
+
+		// Verify the child element count for the error description element is two.
+		// However, the passed error array has three repetitive error objects.
+		// The second error is not listed because it has the same `message` and `reconnectURL`
+		// as the first one. Note that the `code` query parameter in the `reconnectURL` is
+		// ignored for comparison, as it is expected to be different for each URL.
+		expect( errorDescriptionElement[ 0 ].childElementCount ).toBe( 2 );
+	} );
+
 	it( 'should render `Get help` link without prefix text on non-retryable error', async () => {
 		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 			{

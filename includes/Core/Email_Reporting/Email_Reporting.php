@@ -106,6 +106,14 @@ class Email_Reporting {
 	protected $initiator_task;
 
 	/**
+	 * Worker task instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Worker_Task
+	 */
+	protected $worker_task;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.162.0
@@ -130,11 +138,14 @@ class Email_Reporting {
 
 		$frequency_planner      = new Frequency_Planner();
 		$subscribed_users_query = new Subscribed_Users_Query( $this->user_settings, $this->modules );
+		$max_execution_limiter  = new Max_Execution_Limiter( (int) ini_get( 'max_execution_time' ) );
+		$batch_query            = new Email_Log_Batch_Query();
 
 		$this->rest_controller = new REST_Email_Reporting_Controller( $this->settings );
 		$this->email_log       = new Email_Log( $this->context );
 		$this->scheduler       = new Email_Reporting_Scheduler( $frequency_planner );
 		$this->initiator_task  = new Initiator_Task( $this->scheduler, $subscribed_users_query );
+		$this->worker_task     = new Worker_Task( $max_execution_limiter, $batch_query, $this->scheduler );
 	}
 
 	/**
@@ -154,6 +165,7 @@ class Email_Reporting {
 			$this->scheduler->schedule_initiator_events();
 
 			add_action( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $this->initiator_task, 'handle_callback_action' ), 10, 1 );
+			add_action( Email_Reporting_Scheduler::ACTION_WORKER, array( $this->worker_task, 'handle_callback_action' ), 10, 3 );
 
 		} else {
 			$this->scheduler->unschedule_all();
