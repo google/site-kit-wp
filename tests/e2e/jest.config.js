@@ -21,6 +21,6 @@ module.exports = {
 	// Exclude uuid package from transformation ignore patterns because it uses ESM syntax
 	// that needs to be transformed by Babel for Jest to process correctly.
 	transformIgnorePatterns: [ '/node_modules/(?!(uuid)/)' ],
-	testPathIgnorePatterns: [ '.git', 'node_modules' ],
+	testPathIgnorePatterns: [ '.git', 'node_modules', '\\.playwright\\.' ],
 	verbose: true,
 };

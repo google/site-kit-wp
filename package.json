@@ -25,6 +25,8 @@
 		"test:e2e:interactive": "npm run -w tests/e2e test:interactive",
 		"test:e2e:watch": "npm run -w tests/e2e test:watch",
 		"test:e2e:watch:interactive": "npm run -w tests/e2e test:watch:interactive",
+		"test:e2e:playwright": "npm run -w tests/e2e test:playwright",
+		"test:e2e:playwright:interactive": "npm run -w tests/e2e test:playwright:interactive",
 		"storybook": "npm run -w storybook start",
 		"storybook:vrt": "npm run storybook -- --ci --quiet",
 		"backstopjs": "./bin/backstop",
