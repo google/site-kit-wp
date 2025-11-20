@@ -1,14 +1,14 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Util\Email
+ * Class Google\Site_Kit\Core\Email\Email
  *
- * @package   Google\Site_Kit\Core\Util
+ * @package   Google\Site_Kit\Core\Email
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Util;
+namespace Google\Site_Kit\Core\Email;
 
 use WP_Error;
 
