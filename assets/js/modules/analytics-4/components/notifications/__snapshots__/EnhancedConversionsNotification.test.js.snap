@@ -46,6 +46,12 @@ exports[`Analytics EnhancedConversionsNotification should render the notificatio
                   >
                     Learn more
                   </span>
+                  <span
+                    class="googlesitekit-icon-wrapper"
+                    style="margin-left: 5px;"
+                  >
+                    <svg />
+                  </span>
                 </a>
               </p>
             </div>

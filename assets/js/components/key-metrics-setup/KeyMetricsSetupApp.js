@@ -96,6 +96,9 @@ export default function KeyMetricsSetupApp() {
 			) || []
 	);
 
+	const { saveUserInputSettings, saveInitialSetupSettings } =
+		useDispatch( CORE_USER );
+
 	const isSyncing = useSelect( ( select ) => {
 		const isFetchingSyncAvailableCustomDimensions =
 			select(
@@ -108,7 +111,6 @@ export default function KeyMetricsSetupApp() {
 		return isFetchingSyncAvailableCustomDimensions || isSyncingAudiences;
 	} );
 
-	const { saveUserInputSettings } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	// Query arg derived state (declared before callbacks that depend on it).
@@ -120,8 +122,10 @@ export default function KeyMetricsSetupApp() {
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
 			const url = new URL( dashboardURL );
+			await saveInitialSetupSettings( {
+				isAnalyticsSetupComplete: true,
+			} );
 
-			// If not in the initial setup flow, append notification params for Analytics.
 			if ( ! isInitialSetupFlow ) {
 				url.searchParams.set(
 					'notification',
@@ -135,6 +139,7 @@ export default function KeyMetricsSetupApp() {
 	}, [
 		saveUserInputSettings,
 		dashboardURL,
+		saveInitialSetupSettings,
 		navigateTo,
 		isInitialSetupFlow,
 	] );

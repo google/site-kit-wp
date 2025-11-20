@@ -95,7 +95,7 @@ final class Pointer {
 	/**
 	 * Gets the pointer buttons.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @return string Pointer buttons.
 	 */
@@ -106,7 +106,7 @@ final class Pointer {
 	/**
 	 * Gets the pointer custom class.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @return string|array Pointer custom class.
 	 */

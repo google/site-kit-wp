@@ -134,7 +134,7 @@ describe( 'SetupForm', () => {
 
 		expect( getByText( 'Account' ) ).toBeInTheDocument();
 		expect( getByText( 'Property' ) ).toBeInTheDocument();
-		expect( getByText( 'Web Data Stream' ) ).toBeInTheDocument();
+		expect( getByText( 'Web data stream' ) ).toBeInTheDocument();
 	} );
 
 	it( 'renders the form correctly with setupFlowRefresh enabled', async () => {

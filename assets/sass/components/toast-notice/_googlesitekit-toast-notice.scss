@@ -24,6 +24,7 @@
 	left: $grid-gap-phone;
 	position: fixed;
 	right: $grid-gap-phone;
+	z-index: 1;
 
 	@media (min-width: $bp-tablet) {
 		bottom: 45px;
