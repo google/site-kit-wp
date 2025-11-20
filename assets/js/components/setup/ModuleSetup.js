@@ -55,6 +55,11 @@ export default function ModuleSetup( { moduleSlug } ) {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const [ showProgress ] = useQueryArg( 'showProgress' );
 
+	const isInitialSetupFlow =
+		setupFlowRefreshEnabled &&
+		moduleSlug === MODULE_SLUG_ANALYTICS_4 &&
+		showProgress === 'true';
+
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
@@ -97,7 +102,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 			);
 			navigateTo( adminURL );
 		},
-		[ registry, navigateTo, moduleSlug ]
+		[ registry, navigateTo, moduleSlug, viewContext, isInitialSetupFlow ]
 	);
 
 	const onCompleteSetup = module?.onCompleteSetup;
@@ -109,11 +114,6 @@ export default function ModuleSetup( { moduleSlug } ) {
 	const onCancelButtonClick = useCallback( async () => {
 		await trackEvent( 'moduleSetup', 'cancel_module_setup', moduleSlug );
 	}, [ moduleSlug ] );
-
-	const isInitialSetupFlow =
-		setupFlowRefreshEnabled &&
-		moduleSlug === MODULE_SLUG_ANALYTICS_4 &&
-		showProgress === 'true';
 
 	useMount( () => {
 		if ( isInitialSetupFlow ) {

@@ -325,7 +325,7 @@ describe( 'AccountCreate', () => {
 				cleanup();
 			} );
 
-			it( 'should track initial setup flow create account event when showProgress=true', async () => {
+			it( 'should track create account event during initial setup flow', async () => {
 				global.location.href =
 					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true';
 
@@ -357,7 +357,7 @@ describe( 'AccountCreate', () => {
 				expect( genericCreateAccountCall ).toBeUndefined();
 			} );
 
-			it( 'should track generic create account event when showProgress is not true', async () => {
+			it( 'should track generic create account event during non-initial setup flow', async () => {
 				global.location.href =
 					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true';
 				( { getByRole, waitForRegistry, rerender } = render(
