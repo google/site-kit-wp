@@ -123,7 +123,7 @@ export default function WebDataStreamNameInput() {
 				className={ classnames( {
 					'mdc-text-field--error': error,
 				} ) }
-				label={ __( 'Web Data Stream Name', 'google-site-kit' ) }
+				label={ __( 'Web data stream name', 'google-site-kit' ) }
 				helperText={ helperText }
 				trailingIcon={
 					error && (

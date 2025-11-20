@@ -122,7 +122,6 @@ export default function EnhancedConversionsSettingsNotice( {
 							id={ id }
 							label={ __( 'Learn more', 'google-site-kit' ) }
 							url={ documentationURL }
-							hideExternalIndicator
 						/>
 					),
 				}

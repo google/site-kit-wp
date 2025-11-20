@@ -27,7 +27,7 @@ exports[`WebDataStreamNameInput should render when option to create a new web da
             for="googlesitekit-textfield-0"
             style="transition-duration: 0s;"
           >
-            Web Data Stream Name
+            Web data stream name
           </label>
         </div>
         <div
@@ -66,7 +66,7 @@ exports[`WebDataStreamNameInput should show error state if web data stream name 
             for="googlesitekit-textfield-2"
             style="transition-duration: 0s;"
           >
-            Web Data Stream Name
+            Web data stream name
           </label>
         </div>
         <div
@@ -126,7 +126,7 @@ exports[`WebDataStreamNameInput should show error state if web data stream name 
             for="googlesitekit-textfield-3"
             style="transition-duration: 0s;"
           >
-            Web Data Stream Name
+            Web data stream name
           </label>
         </div>
         <div
