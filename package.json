@@ -75,8 +75,6 @@
 	},
 	"devDependencies": {
 		"@babel/preset-typescript": "^7.27.1",
-		"@storybook/addon-storyshots": "^6.5.16",
-		"@storybook/addon-storyshots-puppeteer": "^6.3.6",
 		"@typescript-eslint/parser": "^6.21.0",
 		"@typescript-eslint/eslint-plugin": "^6.21.0",
 		"@wordpress/browserslist-config": "^5.40.0",
