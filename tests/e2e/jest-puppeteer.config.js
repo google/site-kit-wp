@@ -18,14 +18,25 @@
 
 module.exports = {
 	launch: {
+		protocol: 'cdp',
 		// devtools, headless and slowmo properties inlined from @wordpress/script config/puppeteer.config.js v12.0.0.
 		// https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/scripts/config/puppeteer.config.js
 		devtools: process.env.PUPPETEER_DEVTOOLS === 'true',
 		headless: process.env.PUPPETEER_HEADLESS !== 'false',
 		slowMo: parseInt( process.env.PUPPETEER_SLOWMO, 10 ) || 0,
+
+		// CI + modern Chromium require these args.
 		args: [
-			// https://peter.sh/experiments/chromium-command-line-switches/
-			'--disable-web-security', // Fixes SSL issues that may happen on when you run e2e localy.
+			'--disable-web-security',
+			'--no-sandbox',
+			'--disable-setuid-sandbox',
+			'--disable-dev-shm-usage',
+			'--disable-gpu',
+			'--no-zygote',
+			'--single-process',
+			'--disable-features=IsolateOrigins,site-per-process',
+			'--disable-site-isolation-trials',
 		],
 	},
+	browserContext: 'default',
 };

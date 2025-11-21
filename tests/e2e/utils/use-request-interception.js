@@ -1,98 +1,53 @@
-/**
- * Adds a request handler for intercepting requests.
- *
- * Used intercept HTTP requests during tests with either a callback function
- * or a path:response mapping object.
- *
- * @since 1.0.0
- * @since 1.154.0 Added support for path:response mapping object to simplify request handling.
- *
- * @param {Function|Object} config Either a callback function or a path:response mapping object.
- * @return {Function} Function that can be called to remove the added handler function from the page.
- */
-export function useRequestInterception( config ) {
-	function requestHandler( request ) {
-		// Prevent errors for requests that happen after interception is disabled.
-		if ( ! request._allowInterception ) {
-			return;
-		}
+function useSharedRequestInterception( handlers ) {
+	let requestHandler;
 
-		// If config is a function, use the original callback pattern.
-		if ( typeof config === 'function' ) {
-			config( request );
-			return;
-		}
-
-		// Find matching path pattern.
-		const matchingPath = Object.keys( config ).find( ( pattern ) =>
-			request.url().match( pattern )
-		);
-
-		if ( matchingPath ) {
-			const response = config[ matchingPath ];
-
-			// Handle different response types.
-			if ( typeof response === 'function' ) {
-				// If response is a function, call it with the request.
-				response( request );
-			} else if ( response && typeof response === 'object' ) {
-				// If response is an object, use it directly.
-				request.respond( response );
-			} else {
-				// If response is invalid, continue the request.
-				request.continue();
+	function start() {
+		// eslint-disable-next-line consistent-return
+		requestHandler = ( request ) => {
+			if ( ! request.interceptResolutionState().enabled ) {
+				return;
 			}
-		} else {
-			// No matching path, continue the request.
-			request.continue();
+
+			if (
+				request.isNavigationRequest() &&
+				request.redirectChain().length > 0
+			) {
+				// eslint-disable-next-line consistent-return
+				return request.continue();
+			}
+
+			for ( const handler of handlers ) {
+				const result = handler( request );
+
+				if ( result === false ) {
+					// eslint-disable-next-line consistent-return
+					return;
+				}
+			}
+
+			// Prevent double-handling (Puppeteer v24 strict mode)
+			if ( ! request.isInterceptResolutionHandled() ) {
+				// eslint-disable-next-line consistent-return
+				return request.continue();
+			}
+		};
+
+		page.on( 'request', requestHandler );
+	}
+
+	function stop() {
+		if ( requestHandler ) {
+			page.removeListener( 'request', requestHandler );
 		}
 	}
 
-	page.on( 'request', requestHandler );
-
-	return () => {
-		page.off( 'request', requestHandler );
-	};
+	return { start, stop };
 }
 
-// TODO: Remove this function and it's usages as part of #6433.
-/**
- * Adds shared request handler for intercepting requests.
- *
- * Used intercept HTTP requests during tests with a custom handler function.
- * Returns a function that, when called, stops further request
- * handling/interception.
- *
- * @since 1.93.0
- *
- * @param {Array.<{isMatch: Function, getResponse: Function}>} requestCases An array of request cases to add to the shared request interception.
- * @return {Object} Methods that can be called to remove the added handler function from the page and add new request cases.
- */
-export function useSharedRequestInterception( requestCases ) {
-	const cases = [ ...requestCases ];
-	function requestHandler( request ) {
-		// Prevent errors for requests that happen after interception is disabled.
-		if ( ! request._allowInterception ) {
-			return;
-		}
-
-		const requestCase = cases.find( ( { isMatch } ) => {
-			return isMatch( request );
-		} );
-
-		if ( requestCase ) {
-			request.respond( requestCase.getResponse( request ) );
-		} else {
-			request.continue();
-		}
-	}
-
-	page.on( 'request', requestHandler );
-
-	return {
-		cleanUp: () => page.off( 'request', requestHandler ),
-		addRequestCases: ( newCases ) => {
-			cases.push( ...newCases );
-		},
-	};
+export function useRequestInterception( handler ) {
+	const interception = useSharedRequestInterception( [ handler ] );
+	interception.start();
+	return interception.stop;
 }
+
+export { useSharedRequestInterception };

@@ -189,6 +189,9 @@ const IGNORE_CONSOLE_MESSAGES = [
  */
 const pageEvents = [];
 
+page.waitForTimeout ??= ( ms ) =>
+	new Promise( ( res ) => setTimeout( res, ms ) );
+
 // The Jest timeout is increased because these tests are a bit slow
 jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
 // Set default timeout for Puppeteer waits. (Default: 30 sec)
