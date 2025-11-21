@@ -55,10 +55,6 @@ import BadgeWithTooltip from '@/js/components/BadgeWithTooltip';
 import useViewContext from '@/js/hooks/useViewContext';
 import AudienceTileZeroData from './AudienceTileZeroData';
 export default function AudienceTile( {
-	// TODO: The prop `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
-	// within `AudienceTilesWidget`. This should be removed once the `AudienceErrorModal` render is extracted
-	// from `AudienceTilePagesMetric` and it's rendered once at a higher level instead. See https://github.com/google/site-kit-wp/issues/9543.
-	audienceTileNumber = 0,
 	audienceSlug,
 	title,
 	infoTooltip,
@@ -284,7 +280,6 @@ export default function AudienceTile( {
 						( postTypeDimensionExists &&
 							! hasInvalidCustomDimensionError ) ) && (
 						<AudienceTilePagesMetric
-							audienceTileNumber={ audienceTileNumber }
 							audienceSlug={ audienceSlug }
 							TileIcon={ AudienceMetricIconTopContent }
 							title={ __(
@@ -303,7 +298,6 @@ export default function AudienceTile( {
 }
 
 AudienceTile.propTypes = {
-	audienceTileNumber: PropTypes.number,
 	audienceSlug: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),

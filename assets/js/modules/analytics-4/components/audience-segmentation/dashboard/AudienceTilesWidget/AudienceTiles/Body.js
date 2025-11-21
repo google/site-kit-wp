@@ -1,39 +1,22 @@
 /**
- * AudienceTilesWidget Body component.
- *
- * Site Kit by Google, Copyright 2025 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * AudienceTilesWidget Body component (clean rebuild).
  */
 
-/**
- * External dependencies
- */
 import PropTypes from 'prop-types';
-
-/**
- * WordPress dependencies
- */
 import { useCallback, useEffect } from '@wordpress/element';
-
-/**
- * Internal dependencies
- */
+import { addQueryArgs } from '@wordpress/url';
+import { __ } from '@wordpress/i18n';
 import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	MODULES_ANALYTICS_4,
+	EDIT_SCOPE,
+	CUSTOM_DIMENSION_DEFINITIONS,
+	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { isInvalidCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
-import { reportRowsWithSetValues } from '@/js/modules/analytics-4/utils/report-rows-with-set-values';
 import useAudienceTilesReports from '@/js/modules/analytics-4/hooks/useAudienceTilesReports';
 import {
 	BREAKPOINT_SMALL,
@@ -41,12 +24,15 @@ import {
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
 import useViewOnly from '@/js/hooks/useViewOnly';
+import useViewContext from '@/js/hooks/useViewContext';
 import AudienceSegmentationErrorWidget from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationErrorWidget';
-import AudienceTileLoading from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile/AudienceTileLoading';
-import AudienceTileError from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile/AudienceTileError';
-import AudienceTile from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile';
-import AudienceTooltipMessage from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTooltipMessage';
 import MaybePlaceholderTile from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/MaybePlaceholderTile';
+import AudienceTilesList from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTiles/AudienceTilesList';
+import AudienceErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceErrorModal';
+import useFormValue from '@/js/hooks/useFormValue';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '@/js/googlesitekit/widgets/default-areas';
+import { trackEvent } from '@/js/util';
 
 function hasZeroDataForAudience( report, dimensionName ) {
 	const audienceData = report?.rows?.find(
@@ -56,48 +42,33 @@ function hasZeroDataForAudience( report, dimensionName ) {
 	return totalUsers === 0;
 }
 
-export default function Body( {
-	activeTileIndex,
-	allTilesError,
-	individualTileErrors,
-	loading,
-	topCitiesReportsLoaded,
-	topContentReportsLoaded,
-	topContentPageTitlesReportsLoaded,
-	visibleAudiences,
-	Widget,
-} ) {
+function useAudienceTilesController( { allTilesError, loading } ) {
 	const breakpoint = useBreakpoint();
-	const isViewOnly = useViewOnly();
-
 	const isTabbedBreakpoint =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
+	const isViewOnly = useViewOnly();
+	const viewContext = useViewContext();
 
-	const audiences = useInViewSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences();
-	}, [] );
-
-	// An array of audience resource names.
+	const audiences = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences(),
+		[]
+	);
 	const configuredAudiences = useInViewSelect(
 		( select ) => select( CORE_USER ).getConfiguredAudiences(),
 		[]
 	);
-
 	const [ siteKitAudiences, otherAudiences ] = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getConfiguredSiteKitAndOtherAudiences()
 	) || [ [], [] ];
-
 	const isSiteKitAudiencePartialData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasAudiencePartialData( siteKitAudiences )
 	);
-
 	const partialDataStates = useInViewSelect(
 		( select ) =>
-			configuredAudiences?.reduce( ( acc, audienceResourceName ) => {
-				acc[ audienceResourceName ] =
-					select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
-						audienceResourceName
-					);
+			configuredAudiences?.reduce( ( acc, name ) => {
+				acc[ name ] =
+					select( MODULES_ANALYTICS_4 ).isAudiencePartialData( name );
 				return acc;
 			}, {} ),
 		[ configuredAudiences ]
@@ -122,115 +93,82 @@ export default function Body( {
 
 	function getAudienceTileMetrics( audienceResourceName ) {
 		const isSiteKitAudience = siteKitAudiences.some(
-			( audience ) => audience.name === audienceResourceName
+			( a ) => a.name === audienceResourceName
 		);
-
-		// Get the audience slug (e.g., 'new-visitors', 'returning-visitors').
 		const audienceSlug = siteKitAudiences.find(
-			( audience ) => audience.name === audienceResourceName
+			( a ) => a.name === audienceResourceName
 		)?.audienceSlug;
-
-		function findMetricsForDateRange( dateRange ) {
+		function find( range ) {
 			let row;
-
 			if ( isSiteKitAudience && isSiteKitAudiencePartialData ) {
-				// Determine the dimension value ('new' or 'returning') for Site Kit audiences.
-				const dimensionValue =
+				const dimValue =
 					audienceSlug === 'new-visitors' ? 'new' : 'returning';
-
 				row = siteKitAudiencesReport?.rows?.find(
 					( { dimensionValues } ) =>
-						dimensionValues?.[ 0 ]?.value === dimensionValue &&
-						dimensionValues?.[ 1 ]?.value === dateRange
+						dimensionValues?.[ 0 ]?.value === dimValue &&
+						dimensionValues?.[ 1 ]?.value === range
 				);
 			} else {
 				row = report?.rows?.find(
 					( { dimensionValues } ) =>
 						dimensionValues?.[ 0 ]?.value ===
 							audienceResourceName &&
-						dimensionValues?.[ 1 ]?.value === dateRange
+						dimensionValues?.[ 1 ]?.value === range
 				);
 			}
-
 			return [
-				Number( row?.metricValues?.[ 0 ]?.value || 0 ), // totalUsers
-				Number( row?.metricValues?.[ 1 ]?.value || 0 ), // sessionsPerUser
-				Number( row?.metricValues?.[ 2 ]?.value || 0 ), // screenPageViewsPerSession
-				Number( row?.metricValues?.[ 3 ]?.value || 0 ), // screenPageViews
+				Number( row?.metricValues?.[ 0 ]?.value || 0 ),
+				Number( row?.metricValues?.[ 1 ]?.value || 0 ),
+				Number( row?.metricValues?.[ 2 ]?.value || 0 ),
+				Number( row?.metricValues?.[ 3 ]?.value || 0 ),
 			];
 		}
-
-		const currentMetrics = findMetricsForDateRange( 'date_range_0' );
-		const previousMetrics = findMetricsForDateRange( 'date_range_1' );
-
-		return { current: currentMetrics, previous: previousMetrics };
+		return {
+			current: find( 'date_range_0' ),
+			previous: find( 'date_range_1' ),
+		};
 	}
 
-	function getAudienceTileData( audienceResourceName, audienceIndex ) {
-		const audienceName =
-			audiences?.filter(
-				( { name } ) => name === audienceResourceName
-			)?.[ 0 ]?.displayName || '';
-
-		const audienceSlug =
-			audiences?.filter(
-				( { name } ) => name === audienceResourceName
-			)?.[ 0 ]?.audienceSlug || '';
-
+	function getAudienceTileData( audienceResourceName, index ) {
+		const audience = audiences?.find(
+			( { name } ) => name === audienceResourceName
+		);
+		const audienceName = audience?.displayName || '';
+		const audienceSlug = audience?.audienceSlug || '';
 		const { current, previous } =
 			getAudienceTileMetrics( audienceResourceName );
-
-		const visitors = current[ 0 ];
-		const prevVisitors = previous[ 0 ];
-
-		const visitsPerVisitors = current[ 1 ];
-		const prevVisitsPerVisitors = previous[ 1 ];
-
-		const pagesPerVisit = current[ 2 ];
-		const prevPagesPerVisit = previous[ 2 ];
-
-		const pageviews = current[ 3 ];
-		const prevPageviews = previous[ 3 ];
-
-		const topCities = topCitiesReport?.[ audienceIndex ];
-
-		const topContent = topContentReport?.[ audienceIndex ];
-
+		const [ visitors, visitsPerVisitors, pagesPerVisit, pageviews ] =
+			current;
+		const [
+			prevVisitors,
+			prevVisitsPerVisitors,
+			prevPagesPerVisit,
+			prevPageviews,
+		] = previous;
+		const topCities = topCitiesReport?.[ index ];
+		const topContent = topContentReport?.[ index ];
 		const topContentTitles =
-			topContentPageTitlesReport?.[ audienceIndex ]?.rows?.reduce(
+			topContentPageTitlesReport?.[ index ]?.rows?.reduce(
 				( acc, row ) => {
 					acc[ row.dimensionValues[ 0 ].value ] =
 						row.dimensionValues[ 1 ].value;
-
 					return acc;
 				},
 				{}
 			) || {};
-
 		const isSiteKitAudience = siteKitAudiences.some(
-			( audience ) => audience.name === audienceResourceName
+			( a ) => a.name === audienceResourceName
 		);
-
 		let reportToCheck = report;
-		let dimensionValue = audienceResourceName;
-
+		let dimValue = audienceResourceName;
 		if ( isSiteKitAudience && isSiteKitAudiencePartialData ) {
-			// If it's a Site Kit audience in a partial data state, use the siteKitAudiencesReport.
 			reportToCheck = siteKitAudiencesReport;
-
-			// Determine the dimension value ('new' or 'returning') for Site Kit audiences.
-			dimensionValue =
-				audienceSlug === 'new-visitors' ? 'new' : 'returning';
+			dimValue = audienceSlug === 'new-visitors' ? 'new' : 'returning';
 		}
-
-		const isZeroData = hasZeroDataForAudience(
-			reportToCheck,
-			dimensionValue
-		);
+		const isZeroData = hasZeroDataForAudience( reportToCheck, dimValue );
 		const isPartialData = isSiteKitAudience
 			? false
 			: partialDataStates[ audienceResourceName ];
-
 		return {
 			audienceName,
 			audienceSlug,
@@ -258,6 +196,113 @@ export default function Body( {
 			isInvalidCustomDimensionError
 		);
 
+	const postTypeParam =
+		CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type.parameterName;
+	const isCreatingCustomDimension = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isCreatingCustomDimension( postTypeParam )
+	);
+	const isSyncingAvailableCustomDimensions = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isFetchingSyncAvailableCustomDimensions()
+	);
+	const customDimensionError = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getCreateCustomDimensionError(
+			postTypeParam
+		)
+	);
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getPropertyID()
+	);
+	const hasAnalyticsEditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
+
+	const isAutoCreatingCustomDimensionsForAudience = useFormValue(
+		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+		'isAutoCreatingCustomDimensionsForAudience'
+	);
+	const isRetryingCustomDimensionCreate = useFormValue(
+		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+		'isRetrying'
+	);
+	const autoSubmit = useFormValue(
+		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+		'autoSubmit'
+	);
+	const setupErrorCode = useSelect( ( select ) =>
+		select( CORE_SITE ).getSetupErrorCode()
+	);
+	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
+	const isSaving =
+		isAutoCreatingCustomDimensionsForAudience ||
+		isCreatingCustomDimension ||
+		isSyncingAvailableCustomDimensions;
+
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { setPermissionScopeError, clearPermissionScopeError } =
+		useDispatch( CORE_USER );
+	const { clearError } = useDispatch( MODULES_ANALYTICS_4 );
+	const { setSetupErrorCode } = useDispatch( CORE_SITE );
+
+	const redirectURL = addQueryArgs( global.location.href, {
+		notification: 'audience_segmentation',
+		widgetArea: AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+	} );
+	const errorRedirectURL = addQueryArgs( global.location.href, {
+		widgetArea: AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+	} );
+
+	const onCreateCustomDimension = useCallback(
+		( { isRetrying } = {} ) => {
+			setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
+				autoSubmit: true,
+				isRetrying,
+			} );
+			if ( ! hasAnalyticsEditScope ) {
+				setPermissionScopeError( {
+					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+					message: __(
+						'Additional permissions are required to create new audiences in Analytics.',
+						'google-site-kit'
+					),
+					data: {
+						status: 403,
+						scopes: [ EDIT_SCOPE ],
+						skipModal: true,
+						skipDefaultErrorNotifications: true,
+						redirectURL,
+						errorRedirectURL,
+					},
+				} );
+			}
+		},
+		[
+			hasAnalyticsEditScope,
+			redirectURL,
+			errorRedirectURL,
+			setPermissionScopeError,
+			setValues,
+		]
+	);
+
+	const onCancel = useCallback( () => {
+		setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
+			autoSubmit: false,
+			isRetrying: false,
+		} );
+		setSetupErrorCode( null );
+		clearPermissionScopeError();
+		clearError( 'createCustomDimension', [
+			propertyID,
+			CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
+		] );
+	}, [
+		clearError,
+		clearPermissionScopeError,
+		propertyID,
+		setSetupErrorCode,
+		setValues,
+	] );
+
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { fetchSyncAvailableCustomDimensions } =
 		useDispatch( MODULES_ANALYTICS_4 );
@@ -279,10 +324,65 @@ export default function Body( {
 		isViewOnly,
 	] );
 
-	// TODO: The variable `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
-	// within `AudienceTilesWidget`. This should be removed once the `AudienceErrorModal` render is extracted
-	// from `AudienceTilePagesMetric` and it's rendered once at a higher level instead. See https://github.com/google/site-kit-wp/issues/9543.
-	let audienceTileNumber = 0;
+	const showTilesList = ! allTilesError || loading;
+	const showErrorModal =
+		( ( customDimensionError && ! isSaving ) ||
+			( isRetryingCustomDimensionCreate &&
+				! isAutoCreatingCustomDimensionsForAudience ) ||
+			hasOAuthError ) &&
+		! allTilesError &&
+		! loading;
+
+	return {
+		// Data & reports
+		reportError,
+		totalPageviewsReportError,
+		totalPageviews,
+		hasInvalidCustomDimensionError,
+		customDimensionError,
+		isSaving,
+		hasOAuthError,
+		viewContext,
+		showTilesList,
+		showErrorModal,
+		isTabbedBreakpoint,
+		getAudienceTileData,
+		onCreateCustomDimension,
+		onCancel,
+		handleDismiss,
+	};
+}
+
+export default function Body( props ) {
+	const {
+		activeTileIndex,
+		allTilesError,
+		individualTileErrors,
+		loading,
+		topCitiesReportsLoaded,
+		topContentReportsLoaded,
+		topContentPageTitlesReportsLoaded,
+		visibleAudiences,
+		Widget,
+	} = props;
+	const controller = useAudienceTilesController( { allTilesError, loading } );
+	const {
+		reportError,
+		totalPageviewsReportError,
+		totalPageviews,
+		hasInvalidCustomDimensionError,
+		customDimensionError,
+		isSaving,
+		hasOAuthError,
+		viewContext,
+		showTilesList,
+		showErrorModal,
+		isTabbedBreakpoint,
+		getAudienceTileData,
+		onCreateCustomDimension,
+		onCancel,
+		handleDismiss,
+	} = controller;
 
 	return (
 		<div className="googlesitekit-widget-audience-tiles__body">
@@ -296,154 +396,54 @@ export default function Body( {
 					] }
 				/>
 			) }
-			{ ( allTilesError === false || loading ) &&
-				visibleAudiences.map( ( audienceResourceName, index ) => {
-					// Conditionally render only the selected audience tile on mobile.
-					if ( isTabbedBreakpoint && index !== activeTileIndex ) {
-						return null;
+			{ showTilesList && (
+				<AudienceTilesList
+					activeTileIndex={ activeTileIndex }
+					isTabbedBreakpoint={ isTabbedBreakpoint }
+					visibleAudiences={ visibleAudiences }
+					loading={ loading }
+					topCitiesReportsLoaded={ topCitiesReportsLoaded }
+					topContentReportsLoaded={ topContentReportsLoaded }
+					topContentPageTitlesReportsLoaded={
+						topContentPageTitlesReportsLoaded
 					}
-
-					const {
-						audienceName,
-						audienceSlug,
-						visitors,
-						prevVisitors,
-						visitsPerVisitors,
-						prevVisitsPerVisitors,
-						pagesPerVisit,
-						prevPagesPerVisit,
-						pageviews,
-						prevPageviews,
-						topCities,
-						topContent,
-						topContentTitles,
-						isZeroData,
-						isPartialData,
-					} = getAudienceTileData( audienceResourceName, index );
-
-					// Filter (not set) value from the top countries report if present.
-					const filteredTopCitiesRows = topCities?.rows
-						? reportRowsWithSetValues( topCities.rows )
-						: [];
-
-					// Return loading tile if data is not yet loaded.
-					if (
-						loading ||
-						! topCitiesReportsLoaded?.[ audienceResourceName ] ||
-						! topContentReportsLoaded?.[ audienceResourceName ] ||
-						! topContentPageTitlesReportsLoaded?.[
-							audienceResourceName
-						] ||
-						isZeroData === undefined ||
-						isPartialData === undefined
-					) {
-						return (
-							<Widget key={ audienceResourceName } noPadding>
-								<AudienceTileLoading />
-							</Widget>
+					individualTileErrors={ individualTileErrors }
+					totalPageviews={ totalPageviews }
+					hasInvalidCustomDimensionError={
+						hasInvalidCustomDimensionError
+					}
+					Widget={ Widget }
+					getAudienceTileData={ getAudienceTileData }
+					handleDismiss={ handleDismiss }
+				/>
+			) }
+			{ showErrorModal && (
+				<AudienceErrorModal
+					apiErrors={ [ customDimensionError ] }
+					title={ __( 'Failed to enable metric', 'google-site-kit' ) }
+					description={ __(
+						'Oops! Something went wrong. Retry enabling the metric.',
+						'google-site-kit'
+					) }
+					onRetry={ () => {
+						trackEvent(
+							`${ viewContext }_audiences-top-content-cta`,
+							'retry_enable_metric'
 						);
-					}
-
-					// If errored, skip rendering.
-					if (
-						individualTileErrors[ audienceResourceName ].length > 0
-					) {
-						return (
-							<AudienceTileError
-								key={ audienceResourceName }
-								audienceSlug={ audienceSlug }
-								errors={
-									individualTileErrors[ audienceResourceName ]
-								}
-							/>
+						onCreateCustomDimension( { isRetrying: true } );
+					} }
+					onCancel={ () => {
+						trackEvent(
+							`${ viewContext }_audiences-top-content-cta`,
+							'cancel_enable_metric'
 						);
-					}
-
-					return (
-						<AudienceTile
-							key={ audienceResourceName }
-							audienceTileNumber={ audienceTileNumber++ }
-							audienceSlug={ audienceSlug }
-							title={ audienceName }
-							infoTooltip={
-								<AudienceTooltipMessage
-									audienceName={ audienceName }
-									audienceSlug={ audienceSlug }
-								/>
-							}
-							visitors={ {
-								currentValue: visitors,
-								previousValue: prevVisitors,
-							} }
-							visitsPerVisitor={ {
-								currentValue: visitsPerVisitors,
-								previousValue: prevVisitsPerVisitors,
-							} }
-							pagesPerVisit={ {
-								currentValue: pagesPerVisit,
-								previousValue: prevPagesPerVisit,
-							} }
-							pageviews={ {
-								currentValue: pageviews,
-								previousValue: prevPageviews,
-							} }
-							percentageOfTotalPageViews={
-								totalPageviews !== 0
-									? pageviews / totalPageviews
-									: 0
-							}
-							topCities={ {
-								dimensionValues: [
-									filteredTopCitiesRows?.[ 0 ]
-										?.dimensionValues?.[ 0 ],
-									filteredTopCitiesRows?.[ 1 ]
-										?.dimensionValues?.[ 0 ],
-									filteredTopCitiesRows?.[ 2 ]
-										?.dimensionValues?.[ 0 ],
-								],
-								metricValues: [
-									filteredTopCitiesRows?.[ 0 ]
-										?.metricValues?.[ 0 ],
-									filteredTopCitiesRows?.[ 1 ]
-										?.metricValues?.[ 0 ],
-									filteredTopCitiesRows?.[ 2 ]
-										?.metricValues?.[ 0 ],
-								],
-								total: visitors,
-							} }
-							topContent={ {
-								dimensionValues: [
-									topContent?.rows?.[ 0 ]
-										?.dimensionValues?.[ 0 ],
-									topContent?.rows?.[ 1 ]
-										?.dimensionValues?.[ 0 ],
-									topContent?.rows?.[ 2 ]
-										?.dimensionValues?.[ 0 ],
-								],
-								metricValues: [
-									topContent?.rows?.[ 0 ]
-										?.metricValues?.[ 0 ],
-									topContent?.rows?.[ 1 ]
-										?.metricValues?.[ 0 ],
-									topContent?.rows?.[ 2 ]
-										?.metricValues?.[ 0 ],
-								],
-							} }
-							topContentTitles={ topContentTitles }
-							hasInvalidCustomDimensionError={
-								hasInvalidCustomDimensionError
-							}
-							Widget={ Widget }
-							audienceResourceName={ audienceResourceName }
-							isZeroData={ isZeroData }
-							isPartialData={ isPartialData }
-							isTileHideable={ visibleAudiences.length > 1 }
-							onHideTile={ () =>
-								handleDismiss( audienceResourceName )
-							}
-						/>
-					);
-				} ) }
+						onCancel();
+					} }
+					inProgress={ isSaving }
+					hasOAuthError={ hasOAuthError }
+					trackEventCategory={ `${ viewContext }_audiences-top-content-cta` }
+				/>
+			) }
 			{ ! isTabbedBreakpoint && (
 				<MaybePlaceholderTile
 					Widget={ Widget }
@@ -459,7 +459,7 @@ export default function Body( {
 Body.propTypes = {
 	activeTileIndex: PropTypes.number.isRequired,
 	allTilesError: PropTypes.bool.isRequired,
-	individualTileErrors: PropTypes.object,
+	individualTileErrors: PropTypes.object.isRequired,
 	loading: PropTypes.bool.isRequired,
 	topCitiesReportsLoaded: PropTypes.object.isRequired,
 	topContentReportsLoaded: PropTypes.object.isRequired,
