@@ -43,9 +43,6 @@ function hasZeroDataForAudience( report, dimensionName ) {
 }
 
 function useAudienceTilesController( { allTilesError, loading } ) {
-	const breakpoint = useBreakpoint();
-	const isTabbedBreakpoint =
-		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 	const isViewOnly = useViewOnly();
 	const viewContext = useViewContext();
 
@@ -345,7 +342,6 @@ function useAudienceTilesController( { allTilesError, loading } ) {
 		viewContext,
 		showTilesList,
 		showErrorModal,
-		isTabbedBreakpoint,
 		getAudienceTileData,
 		onCreateCustomDimension,
 		onCancel,
@@ -365,6 +361,8 @@ export default function Body( props ) {
 		visibleAudiences,
 		Widget,
 	} = props;
+	// Local breakpoint for placeholder tile visibility (AudienceTilesList computes its own internally).
+	const breakpoint = useBreakpoint();
 	const controller = useAudienceTilesController( { allTilesError, loading } );
 	const {
 		reportError,
@@ -377,7 +375,6 @@ export default function Body( props ) {
 		viewContext,
 		showTilesList,
 		showErrorModal,
-		isTabbedBreakpoint,
 		getAudienceTileData,
 		onCreateCustomDimension,
 		onCancel,
@@ -399,7 +396,6 @@ export default function Body( props ) {
 			{ showTilesList && (
 				<AudienceTilesList
 					activeTileIndex={ activeTileIndex }
-					isTabbedBreakpoint={ isTabbedBreakpoint }
 					visibleAudiences={ visibleAudiences }
 					loading={ loading }
 					topCitiesReportsLoaded={ topCitiesReportsLoaded }
@@ -444,7 +440,10 @@ export default function Body( props ) {
 					trackEventCategory={ `${ viewContext }_audiences-top-content-cta` }
 				/>
 			) }
-			{ ! isTabbedBreakpoint && (
+			{ ! (
+				breakpoint === BREAKPOINT_SMALL ||
+				breakpoint === BREAKPOINT_TABLET
+			) && (
 				<MaybePlaceholderTile
 					Widget={ Widget }
 					loading={ loading }

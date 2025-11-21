@@ -1,5 +1,10 @@
 import PropTypes from 'prop-types';
 import { Fragment } from '@wordpress/element';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '@/js/hooks/useBreakpoint';
 import AudienceTileLoading from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile/AudienceTileLoading';
 import AudienceTileError from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile/AudienceTileError';
 import AudienceTile from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile';
@@ -9,7 +14,6 @@ import { reportRowsWithSetValues } from '@/js/modules/analytics-4/utils/report-r
 function AudienceTilesList( props ) {
 	const {
 		activeTileIndex,
-		isTabbedBreakpoint,
 		visibleAudiences,
 		loading,
 		topCitiesReportsLoaded,
@@ -22,6 +26,11 @@ function AudienceTilesList( props ) {
 		getAudienceTileData,
 		handleDismiss,
 	} = props;
+
+	// Determine tabbed breakpoint locally to reduce prop drilling.
+	const breakpoint = useBreakpoint();
+	const isTabbedBreakpoint =
+		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
 	return (
 		<Fragment>
@@ -174,7 +183,6 @@ function AudienceTilesList( props ) {
 
 AudienceTilesList.propTypes = {
 	activeTileIndex: PropTypes.number.isRequired,
-	isTabbedBreakpoint: PropTypes.bool.isRequired,
 	visibleAudiences: PropTypes.array.isRequired,
 	loading: PropTypes.bool.isRequired,
 	topCitiesReportsLoaded: PropTypes.object.isRequired,
