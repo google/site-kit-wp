@@ -4,11 +4,15 @@ function useSharedRequestInterception( handlers ) {
 	function start() {
 		// eslint-disable-next-line consistent-return
 		requestHandler = ( request ) => {
-			// Replacement for _allowInterception
+			if ( ! request.interceptResolutionState().enabled ) {
+				return;
+			}
+
 			if (
 				request.isNavigationRequest() &&
 				request.redirectChain().length > 0
 			) {
+				// eslint-disable-next-line consistent-return
 				return request.continue();
 			}
 
@@ -23,6 +27,7 @@ function useSharedRequestInterception( handlers ) {
 
 			// Prevent double-handling (Puppeteer v24 strict mode)
 			if ( ! request.isInterceptResolutionHandled() ) {
+				// eslint-disable-next-line consistent-return
 				return request.continue();
 			}
 		};
