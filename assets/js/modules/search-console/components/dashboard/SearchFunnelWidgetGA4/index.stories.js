@@ -294,9 +294,9 @@ ReadyWithActivateAnalyticsCTA.args = {
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
 	},
 };
-
 ReadyWithActivateAnalyticsCTA.scenario = {
-	delay: 3000,
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
 };
 
 export const ReadyWithCompleteAnalyticsActivationCTA = Template.bind( {} );
@@ -336,9 +336,9 @@ ReadyWithCreateKeyEventCTA.args = {
 		}
 	},
 };
-
 ReadyWithCreateKeyEventCTA.scenario = {
-	delay: 3000,
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
 };
 
 export const Loading = Template.bind( {} );
@@ -485,7 +485,10 @@ NoDataInComparisonDateRange.args = {
 		}
 	},
 };
-NoDataInComparisonDateRange.scenario = {};
+NoDataInComparisonDateRange.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
+};
 
 export default {
 	title: 'Modules/SearchConsole/Widgets/SearchFunnelWidgetGA4',
