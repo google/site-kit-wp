@@ -114,23 +114,34 @@ class Email_Reporting {
 	protected $worker_task;
 
 	/**
+	 * Email reporting data requests instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Email_Reporting_Data_Requests
+	 */
+	protected $data_requests;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.162.0
 	 *
-	 * @param Context           $context      Plugin context.
-	 * @param Modules           $modules      Modules instance.
-	 * @param Options|null      $options      Optional. Options instance. Default is a new instance.
-	 * @param User_Options|null $user_options Optional. User options instance. Default is a new instance.
+	 * @param Context                       $context      Plugin context.
+	 * @param Modules                       $modules      Modules instance.
+	 * @param Email_Reporting_Data_Requests $data_requests Email reporting data requests.
+	 * @param Options|null                  $options      Optional. Options instance. Default is a new instance.
+	 * @param User_Options|null             $user_options Optional. User options instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Modules $modules,
+		Email_Reporting_Data_Requests $data_requests,
 		?Options $options = null,
 		?User_Options $user_options = null
 	) {
 		$this->context       = $context;
 		$this->modules       = $modules;
+		$this->data_requests = $data_requests;
 		$this->options       = $options ?: new Options( $this->context );
 		$this->user_options  = $user_options ?: new User_Options( $this->context );
 		$this->settings      = new Email_Reporting_Settings( $this->options );
