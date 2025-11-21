@@ -418,6 +418,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				);
 			} );
 
+			// @todo remove when duplicate requests fail tests automatically.
 			it( 'should make a single network request for enhanced measurement settings', async () => {
 				fetchMock.get(
 					enhancedMeasurementSettingsEndpoint,
@@ -558,6 +559,7 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 				expect( finalStreamEnabled ).toEqual( true );
 			} );
 
+			// @todo remove when duplicate requests fail tests automatically.
 			it( 'should make a single network request for enhanced measurement settings', async () => {
 				fetchMock.get(
 					enhancedMeasurementSettingsEndpoint,
