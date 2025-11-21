@@ -58,7 +58,7 @@ function hasArgInCLI( arg ) {
 	return getArgFromCLI( arg ) !== undefined;
 }
 
-const result = spawn( 'node', [ require.resolve( 'puppeteer/install' ) ], {
+const result = spawn( 'node', [ require.resolve( 'puppeteer' ) ], {
 	stdio: 'inherit',
 } );
 
