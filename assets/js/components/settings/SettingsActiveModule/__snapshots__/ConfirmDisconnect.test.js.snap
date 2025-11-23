@@ -1,0 +1,337 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ConfirmDisconnect should render the Ads Disconnect ModalDialog with a disconnect note component when it is passed 1`] = `
+<div>
+  <div
+    class="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--ads"
+  >
+    <div
+      aria-controls="googlesitekit-settings-module__content--ads"
+      aria-expanded="false"
+      aria-selected="false"
+      class="googlesitekit-settings-module__header"
+      id="googlesitekit-settings-module__header--ads"
+      role="tab"
+      tabindex="0"
+      to="/connected-services/ads"
+      type="button"
+    >
+      <div
+        class="mdc-layout-grid"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="googlesitekit-settings-module__heading mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone"
+          >
+            <h3
+              class="googlesitekit-typography googlesitekit-settings-module__title googlesitekit-typography--title googlesitekit-typography--large"
+            >
+              Ads
+            </h3>
+            <div
+              class="googlesitekit-settings-module__heading-badges"
+            >
+              <span
+                class="googlesitekit-badge googlesitekit-new-badge googlesitekit-badge--has-left-spacing"
+              >
+                New
+              </span>
+            </div>
+          </div>
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--align-right-tablet mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone"
+          >
+            <div
+              class="googlesitekit-settings-module__status googlesitekit-settings-module__status--connected"
+            >
+              <p
+                class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              >
+                Connected
+              </p>
+              <span
+                class="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected"
+              >
+                <svg />
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span
+        class="googlesitekit-icon-wrapper"
+      >
+        <svg />
+      </span>
+    </div>
+    <div
+      aria-describedby="mdc-dialog-content"
+      aria-labelledby="mdc-dialog-title"
+      aria-modal="true"
+      class="mdc-dialog mdc-dialog--opening googlesitekit-settings-module__confirm-disconnect-modal"
+      id="mdc-dialog"
+      role="alertdialog"
+      tabindex="-1"
+    >
+      <div
+        class="mdc-dialog__container"
+      >
+        <div
+          class="mdc-dialog__surface"
+        >
+          <h2
+            class="mdc-dialog__title"
+            id="mdc-dialog-title"
+          >
+            <svg />
+            Disconnect Ads from Site Kit?
+          </h2>
+          <div
+            class="mdc-dialog__content"
+            id="mdc-dialog-content"
+          >
+            <section
+              class="mdc-dialog__provides"
+              id="googlesitekit-dialog-description-0"
+            >
+              <ul
+                class="mdc-list mdc-list--underlined mdc-list--non-interactive"
+              >
+                <li
+                  class="mdc-list-item"
+                >
+                  <span
+                    class="mdc-list-item__text"
+                  >
+                    Tagging necessary for your ads campaigns to work will be disabled
+                  </span>
+                </li>
+                <li
+                  class="mdc-list-item"
+                >
+                  <span
+                    class="mdc-list-item__text"
+                  >
+                    Conversion tracking for your ads campaigns will be disabled
+                  </span>
+                </li>
+              </ul>
+            </section>
+            <section
+              class="mdc-dialog__notes"
+            >
+              <p
+                class="mdc-dialog__note"
+              >
+                <strong>
+                  Note:
+                </strong>
+                 Disconnecting Ads from Site Kit won’t remove your campaign from Ads. 
+                <br />
+                Visit 
+                <a
+                  aria-label="Ads (opens in a new tab)"
+                  class="googlesitekit-cta-link"
+                  href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fgoogle.com%2Fads&Email=test%40example.com"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    Ads
+                  </span>
+                </a>
+                 to manage your campaign settings
+              </p>
+            </section>
+          </div>
+          <footer
+            class="mdc-dialog__actions"
+          >
+            <button
+              class="mdc-button mdc-dialog__cancel-button mdc-button--tertiary"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Cancel
+              </span>
+            </button>
+            <button
+              class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised mdc-button--danger"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Disconnect
+              </span>
+            </button>
+          </footer>
+        </div>
+      </div>
+      <div
+        class="mdc-dialog__scrim"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ConfirmDisconnect should render the Ads Disconnect ModalDialog without a disconnect note component when it is not passed 1`] = `
+<div>
+  <div
+    class="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--ads"
+  >
+    <div
+      aria-controls="googlesitekit-settings-module__content--ads"
+      aria-expanded="false"
+      aria-selected="false"
+      class="googlesitekit-settings-module__header"
+      id="googlesitekit-settings-module__header--ads"
+      role="tab"
+      tabindex="0"
+      to="/connected-services/ads"
+      type="button"
+    >
+      <div
+        class="mdc-layout-grid"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="googlesitekit-settings-module__heading mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone"
+          >
+            <h3
+              class="googlesitekit-typography googlesitekit-settings-module__title googlesitekit-typography--title googlesitekit-typography--large"
+            >
+              Ads
+            </h3>
+            <div
+              class="googlesitekit-settings-module__heading-badges"
+            >
+              <span
+                class="googlesitekit-badge googlesitekit-new-badge googlesitekit-badge--has-left-spacing"
+              >
+                New
+              </span>
+            </div>
+          </div>
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--align-right-tablet mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-4-phone"
+          >
+            <div
+              class="googlesitekit-settings-module__status googlesitekit-settings-module__status--connected"
+            >
+              <p
+                class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+              >
+                Connected
+              </p>
+              <span
+                class="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected"
+              >
+                <svg />
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span
+        class="googlesitekit-icon-wrapper"
+      >
+        <svg />
+      </span>
+    </div>
+    <div
+      aria-describedby="mdc-dialog-content"
+      aria-labelledby="mdc-dialog-title"
+      aria-modal="true"
+      class="mdc-dialog mdc-dialog--opening googlesitekit-settings-module__confirm-disconnect-modal"
+      id="mdc-dialog"
+      role="alertdialog"
+      tabindex="-1"
+    >
+      <div
+        class="mdc-dialog__container"
+      >
+        <div
+          class="mdc-dialog__surface"
+        >
+          <h2
+            class="mdc-dialog__title"
+            id="mdc-dialog-title"
+          >
+            <svg />
+            Disconnect Ads from Site Kit?
+          </h2>
+          <div
+            class="mdc-dialog__content"
+            id="mdc-dialog-content"
+          >
+            <section
+              class="mdc-dialog__provides"
+              id="googlesitekit-dialog-description-1"
+            >
+              <ul
+                class="mdc-list mdc-list--underlined mdc-list--non-interactive"
+              >
+                <li
+                  class="mdc-list-item"
+                >
+                  <span
+                    class="mdc-list-item__text"
+                  >
+                    Tagging necessary for your ads campaigns to work will be disabled
+                  </span>
+                </li>
+                <li
+                  class="mdc-list-item"
+                >
+                  <span
+                    class="mdc-list-item__text"
+                  >
+                    Conversion tracking for your ads campaigns will be disabled
+                  </span>
+                </li>
+              </ul>
+            </section>
+          </div>
+          <footer
+            class="mdc-dialog__actions"
+          >
+            <button
+              class="mdc-button mdc-dialog__cancel-button mdc-button--tertiary"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Cancel
+              </span>
+            </button>
+            <button
+              class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised mdc-button--danger"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Disconnect
+              </span>
+            </button>
+          </footer>
+        </div>
+      </div>
+      <div
+        class="mdc-dialog__scrim"
+      />
+    </div>
+  </div>
+</div>
+`;
