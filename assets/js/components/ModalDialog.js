@@ -53,7 +53,7 @@ function ModalDialog( {
 	handleConfirm,
 	subtitle,
 	confirmButton = null,
-	note,
+	notes = [],
 	danger = false,
 	inProgress = false,
 	small = false,
@@ -101,22 +101,31 @@ function ModalDialog( {
 						</ul>
 					</section>
 				) }
-				{ note && (
-					<p className="mdc-dialog__note">
-						{ createInterpolateElement(
-							sprintf(
-								/* translators: %s is replaced with some sub-note text. */
-								__(
-									'<strong>Note:</strong> %s',
-									'google-site-kit'
-								),
-								note
-							),
-							{
-								strong: <strong />,
-							}
-						) }
-					</p>
+				{ notes.length && (
+					<section className="mdc-dialog__notes">
+						{ notes.map( ( Note, index ) => (
+							<p
+								className="mdc-dialog__note"
+								key={ `note-${ index }` }
+							>
+								{ typeof Note === 'string' &&
+									createInterpolateElement(
+										sprintf(
+											/* translators: %s is replaced with some sub-note text. */
+											__(
+												'<strong>Note:</strong> %s',
+												'google-site-kit'
+											),
+											Note
+										),
+										{
+											strong: <strong />,
+										}
+									) }
+								{ typeof Note === 'function' && <Note /> }
+							</p>
+						) ) }
+					</section>
 				) }
 			</DialogContent>
 			<DialogFooter>
@@ -163,7 +172,11 @@ ModalDialog.propTypes = {
 	onOpen: PropTypes.func,
 	onClose: PropTypes.func,
 	title: PropTypes.string,
+	provides: PropTypes.arrayOf( PropTypes.string ),
 	confirmButton: PropTypes.string,
+	notes: PropTypes.arrayOf(
+		PropTypes.oneOfType( [ PropTypes.string, PropTypes.elementType ] )
+	),
 	danger: PropTypes.bool,
 	small: PropTypes.bool,
 	medium: PropTypes.bool,
