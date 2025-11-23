@@ -79,6 +79,7 @@ const moduleDefaults = {
 	dependants: [],
 	order: 10,
 	features: [],
+	disconnectionNote: null,
 	Icon: null,
 	SettingsEditComponent: null,
 	SettingsViewComponent: null,
