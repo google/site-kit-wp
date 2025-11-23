@@ -101,7 +101,7 @@ function ModalDialog( {
 						</ul>
 					</section>
 				) }
-				{ notes.length && (
+				{ notes.length > 0 && (
 					<section className="mdc-dialog__notes">
 						{ notes.map( ( Note, index ) => (
 							<p
