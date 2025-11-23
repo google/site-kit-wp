@@ -126,17 +126,23 @@ export default function ConfirmDisconnect( { slug } ) {
 		name
 	);
 
-	let dependentModulesText = null;
+	const notes = [];
 	if ( dependentModules.length > 0 ) {
-		dependentModulesText = sprintf(
-			/* translators: 1: module name, 2: list of dependent modules */
-			__(
-				'these active modules depend on %1$s and will also be disconnected: %2$s',
-				'google-site-kit'
-			),
-			name,
-			listFormat( dependentModules )
+		notes.push(
+			sprintf(
+				/* translators: 1: module name, 2: list of dependent modules */
+				__(
+					'these active modules depend on %1$s and will also be disconnected: %2$s',
+					'google-site-kit'
+				),
+				name,
+				listFormat( dependentModules )
+			)
 		);
+	}
+
+	if ( module?.SettingsDisconnectNoteComponent ) {
+		notes.push( module.SettingsDisconnectNoteComponent );
 	}
 
 	return (
@@ -147,7 +153,7 @@ export default function ConfirmDisconnect( { slug } ) {
 			title={ title }
 			provides={ features }
 			handleConfirm={ handleDisconnect }
-			note={ dependentModulesText }
+			notes={ notes }
 			inProgress={ isDeactivating }
 			dialogActive
 			danger
