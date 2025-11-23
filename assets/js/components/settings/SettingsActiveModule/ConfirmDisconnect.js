@@ -147,7 +147,7 @@ export default function ConfirmDisconnect( { slug } ) {
 			title={ title }
 			provides={ features }
 			handleConfirm={ handleDisconnect }
-			dependentModules={ dependentModulesText }
+			note={ dependentModulesText }
 			inProgress={ isDeactivating }
 			dialogActive
 			danger

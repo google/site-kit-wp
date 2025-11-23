@@ -53,7 +53,7 @@ function ModalDialog( {
 	handleConfirm,
 	subtitle,
 	confirmButton = null,
-	dependentModules,
+	note,
 	danger = false,
 	inProgress = false,
 	small = false,
@@ -101,16 +101,16 @@ function ModalDialog( {
 						</ul>
 					</section>
 				) }
-				{ dependentModules && (
-					<p className="mdc-dialog__dependencies">
+				{ note && (
+					<p className="mdc-dialog__note">
 						{ createInterpolateElement(
 							sprintf(
-								/* translators: %s is replaced with the dependent modules. */
+								/* translators: %s is replaced with some sub-note text. */
 								__(
 									'<strong>Note:</strong> %s',
 									'google-site-kit'
 								),
-								dependentModules
+								note
 							),
 							{
 								strong: <strong />,

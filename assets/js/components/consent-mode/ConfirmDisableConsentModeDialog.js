@@ -109,7 +109,7 @@ export default function ConfirmDisableConsentModeDialog( {
 			handleCancel={ onCancel }
 			onClose={ onCancel }
 			provides={ provides }
-			dependentModules={ dependentModulesText }
+			note={ dependentModulesText }
 			confirmButton={ __( 'Disable', 'google-site-kit' ) }
 			dialogActive
 			danger
