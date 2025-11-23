@@ -861,10 +861,14 @@ describe( 'core/modules modules', () => {
 				function SettingsEditComponent() {
 					return 'edit';
 				}
+				function SettingsDisconnectNoteComponent() {
+					return 'disconnect note';
+				}
 
 				registry.dispatch( CORE_MODULES ).registerModule( moduleSlug, {
 					SettingsViewComponent,
 					SettingsEditComponent,
+					SettingsDisconnectNoteComponent,
 				} );
 
 				expect(
@@ -875,6 +879,10 @@ describe( 'core/modules modules', () => {
 					store.getState().clientDefinitions[ moduleSlug ]
 						.SettingsEditComponent
 				).toEqual( SettingsEditComponent );
+				expect(
+					store.getState().clientDefinitions[ moduleSlug ]
+						.SettingsDisconnectNoteComponent
+				).toEqual( SettingsDisconnectNoteComponent );
 			} );
 
 			it( 'accepts DashboardMainEffectComponent and DashboardEntityEffectComponent components for the module', () => {
