@@ -55,6 +55,7 @@ import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
 import EnhancedConversionsNotification, {
 	ENHANCED_CONVERSIONS_NOTIFICATION_ADS,
 } from './components/notifications/EnhancedConversionsNotification';
+import SettingsDisconnectNote from '@/js/modules/ads/components/settings/SettingsDisconnectNote';
 
 export { registerStore } from './datastore';
 
@@ -75,6 +76,9 @@ export function registerModule( modules ) {
 				'google-site-kit'
 			),
 		],
+		SettingsDisconnectNoteComponent: isFeatureEnabled( 'adsPax' )
+			? SettingsDisconnectNote
+			: undefined,
 		overrideSetupSuccessNotification: true,
 		checkRequirements: async ( registry ) => {
 			const adBlockerActive = await registry
