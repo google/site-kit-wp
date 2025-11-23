@@ -141,7 +141,7 @@ export default function ConfirmDisconnect( { slug } ) {
 		);
 	}
 
-	if ( module?.SettingsDisconnectNoteComponent ) {
+	if ( typeof module?.SettingsDisconnectNoteComponent === 'function' ) {
 		notes.push( module.SettingsDisconnectNoteComponent );
 	}
 
