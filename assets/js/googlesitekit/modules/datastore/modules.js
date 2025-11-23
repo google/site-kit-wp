@@ -79,7 +79,7 @@ const moduleDefaults = {
 	dependants: [],
 	order: 10,
 	features: [],
-	disconnectionNote: null,
+	SettingsDisconnectNoteComponent: null,
 	Icon: null,
 	SettingsEditComponent: null,
 	SettingsViewComponent: null,
@@ -329,6 +329,7 @@ const baseActions = {
 	 * @param {string}         [settings.name]                             Optional. Module name. Default is the slug.
 	 * @param {string}         [settings.description]                      Optional. Module description. Default empty string.
 	 * @param {Array.<string>} [settings.features]                         Optional. Module features. Default empty array.
+	 * @param {WPComponent}    [settings.SettingsDisconnectNoteComponent]  Optional. React component to render the sub note below the features list within the disconnect modal dialogue box. Default none.
 	 * @param {WPComponent}    [settings.Icon]                             Optional. React component to render module icon. Default none.
 	 * @param {number}         [settings.order]                            Optional. Numeric indicator for module order. Default 10.
 	 * @param {string}         [settings.homepage]                         Optional. Module homepage URL. Default empty string.
@@ -353,7 +354,7 @@ const baseActions = {
 				name,
 				description,
 				features,
-				disconnectionNote,
+				SettingsDisconnectNoteComponent,
 				Icon,
 				order,
 				homepage,
@@ -373,7 +374,7 @@ const baseActions = {
 				name,
 				description,
 				features,
-				disconnectionNote,
+				SettingsDisconnectNoteComponent,
 				Icon,
 				order,
 				homepage,
@@ -1300,36 +1301,6 @@ const baseSelectors = {
 			return Array.isArray( modules[ slug ]?.features )
 				? modules[ slug ].features
 				: [];
-		}
-	),
-
-	/**
-	 * Gets the module's disconnection note.
-	 *
-	 * Returns the disconnection note for the module.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @param {string} slug  Module slug.
-	 * @return {(string|undefined)} The disconnection note; `undefined` if state is still loading.
-	 */
-	getModuleDisconnectionNote: createRegistrySelector(
-		( select ) => ( state, slug ) => {
-			const module = select( CORE_MODULES ).getModule( slug );
-
-			// Return `undefined` if modules haven't been loaded yet.
-			if ( module === undefined ) {
-				return undefined;
-			}
-
-			// A module with this slug couldn't be found; return `null` to signify the
-			// "not found" state.
-			if ( module === null || module.disconnectionNote === null ) {
-				return null;
-			}
-
-			return module.disconnectionNote;
 		}
 	),
 
