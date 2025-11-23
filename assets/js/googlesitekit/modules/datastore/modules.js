@@ -1304,6 +1304,36 @@ const baseSelectors = {
 	),
 
 	/**
+	 * Gets the module's disconnection note.
+	 *
+	 * Returns the disconnection note for the module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(string|undefined)} The disconnection note; `undefined` if state is still loading.
+	 */
+	getModuleDisconnectionNote: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const module = select( CORE_MODULES ).getModule( slug );
+
+			// Return `undefined` if modules haven't been loaded yet.
+			if ( module === undefined ) {
+				return undefined;
+			}
+
+			// A module with this slug couldn't be found; return `null` to signify the
+			// "not found" state.
+			if ( module === null || module.disconnectionNote === null ) {
+				return null;
+			}
+
+			return module.disconnectionNote;
+		}
+	),
+
+	/**
 	 * Checks if the given module has access.
 	 *
 	 * @since 1.70.0
