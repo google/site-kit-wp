@@ -1243,11 +1243,22 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				$account->setDisplayName( $data['displayName'] );
 				$account->setRegionCode( $data['regionCode'] );
 
+				$redirect_uri = $this->get_provisioning_redirect_uri();
+
+				// Add `show_progress` query parameter if the feature flag is enabled
+				// and `showProgress` is set and truthy.
+				if (
+					Feature_Flags::enabled( 'setupFlowRefresh' ) &&
+					! empty( $data['showProgress'] )
+				) {
+					$redirect_uri = add_query_arg( 'show_progress', 'true', $redirect_uri );
+				}
+
 				$credentials            = $this->authentication->credentials()->get();
 				$account_ticket_request = new Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest();
 				$account_ticket_request->setSiteId( $credentials['oauth2_client_id'] );
 				$account_ticket_request->setSiteSecret( $credentials['oauth2_client_secret'] );
-				$account_ticket_request->setRedirectUri( $this->get_provisioning_redirect_uri() );
+				$account_ticket_request->setRedirectUri( $redirect_uri );
 				$account_ticket_request->setAccount( $account );
 
 				return $this->get_service( 'analyticsprovisioning' )
