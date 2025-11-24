@@ -202,7 +202,7 @@ const baseSelectors = {
 	/**
 	 * Gets whether Analytics 4 was ever connected.
 	 *
-	 * @since 1.165.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} TRUE if Analytics 4 was connected, FALSE if not, or `undefined` if not loaded yet.
