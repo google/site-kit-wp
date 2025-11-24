@@ -353,4 +353,33 @@ describe( 'admin tracking', () => {
 			} );
 		} );
 	} );
+
+	describe( 'config validation', () => {
+		afterEach( async () => await resetSiteKit() );
+
+		it( 'should include plugin_version in dataLayer when tracking is enabled', async () => {
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+			await toggleOptIn();
+			await setupSiteKit();
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
+
+			await expect( page ).toHaveTracking();
+
+			// Extract the plugin_version from the dataLayer.
+			const pluginVersion = await page.evaluate( () => {
+				const dataLayer = window._googlesitekitDataLayer || [];
+
+				const configEvent = dataLayer.find(
+					( event ) => event[ 0 ] === 'config'
+				);
+
+				return configEvent ? configEvent[ 2 ]?.plugin_version : null;
+			} );
+
+			// Validate the plugin version.
+			expect( pluginVersion ).toBeTruthy();
+			expect( typeof pluginVersion ).toBe( 'string' );
+			expect( pluginVersion ).toMatch( /^\d+\.\d+\.\d+/ );
+		} );
+	} );
 } );
