@@ -29,23 +29,32 @@ import { __ } from '@wordpress/i18n';
  */
 import Link from '@/js/components/Link';
 
+export interface LearnMoreLinkProps {
+	className?: string;
+	/**
+	 * Whether the link is external. External links open in a new tab and have
+	 * an external link icon next to them.
+	 */
+	external?: boolean;
+	/**
+	 * The URL the link should point to.
+	 */
+	href: string;
+	label?: string;
+	onClick?: () => void;
+}
+
 /**
  * A "Learn More" link component, usually used to append "Learn more" with a
  * specified URL to content like a paragraph.
  *
  * @since 1.153.0
  */
-const LearnMoreLink: FC< {
-	href: string;
-	className?: string;
-	label?: string;
-	external?: boolean;
-	onClick?: () => void;
-} > = ( {
-	href,
+const LearnMoreLink: FC< LearnMoreLinkProps > = ( {
 	className,
-	label = __( 'Learn more', 'google-site-kit' ),
 	external = true,
+	href,
+	label = __( 'Learn more', 'google-site-kit' ),
 	onClick = () => {},
 } ) => {
 	// Return null if no href is provided.
@@ -58,7 +67,7 @@ const LearnMoreLink: FC< {
 
 	return (
 		// @ts-expect-error `Link` component is not currently typed, so this
-		// results in an error.
+		// results in an error because we're supplying a `children` prop.
 		<Link
 			href={ href }
 			className={ className }
