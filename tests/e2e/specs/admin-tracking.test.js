@@ -367,15 +367,15 @@ describe( 'admin tracking', () => {
 			await expect( page ).toHaveTracking();
 
 			// Extract the plugin_version from the dataLayer.
-			const pluginVersion = await page.evaluate( () => {
-				const dataLayer = window[ DATA_LAYER ] || [];
+			const pluginVersion = await page.evaluate( ( dataLayerName ) => {
+				const dataLayer = window[ dataLayerName ] || [];
 
 				const configEvent = dataLayer.find(
 					( event ) => event[ 0 ] === 'config'
 				);
 
 				return configEvent ? configEvent[ 2 ]?.plugin_version : null;
-			} );
+			}, DATA_LAYER );
 
 			// Validate the plugin version.
 			expect( pluginVersion ).toBeTruthy();
