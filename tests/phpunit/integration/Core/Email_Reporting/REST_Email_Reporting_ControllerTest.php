@@ -45,7 +45,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options          = new Options( $context );
 		$this->settings   = new Email_Reporting_Settings( $options );
-		$this->controller = new REST_Email_Reporting_Controller( $this->settings );
+		$this->controller = new REST_Email_Reporting_Controller( $this->settings, $options );
 	}
 
 	public function tear_down() {
