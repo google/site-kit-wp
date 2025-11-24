@@ -70,6 +70,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$server     = rest_get_server();
 		$routes     = array(
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting',
+			'/' . REST_Routes::REST_ROOT . '/core/site/data/was-analytics-4-connected',
 		);
 		$get_routes = array_intersect( $routes, array_keys( $server->get_routes() ) );
 
