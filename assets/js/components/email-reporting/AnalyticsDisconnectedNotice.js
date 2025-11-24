@@ -35,7 +35,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 
 export const EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE_DISMISSED_ITEM =
-	'email-reporting-card-notice';
+	'email-reporting-analytics-disconnected-notice';
 
 export default function AnalyticsDisconnectedNotice() {
 	const isSubscribed = useSelect( ( select ) =>
