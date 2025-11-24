@@ -1228,7 +1228,7 @@ class Analytics_4Test extends TestCase {
 		$redirect_uri = $this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri'];
 
 		if ( $params['showProgressExpectedValue'] ) {
-			$redirect_uri = add_query_arg( 'show_progress', 'true', $redirect_uri );
+			$redirect_uri = add_query_arg( 'show_progress', 1, $redirect_uri );
 		}
 
 		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri(), 'Redirect URI should match the analytics redirect URI from site fields.' );

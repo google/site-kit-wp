@@ -95,7 +95,7 @@ class Create_Account_Ticket extends Datapoint implements Executable_Datapoint {
 			Feature_Flags::enabled( 'setupFlowRefresh' ) &&
 			! empty( $data_request->data['showProgress'] )
 		) {
-			$redirect_uri = add_query_arg( 'show_progress', 'true', $redirect_uri );
+			$redirect_uri = add_query_arg( 'show_progress', 1, $redirect_uri );
 		}
 
 		$account_ticket_request = new Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest();
