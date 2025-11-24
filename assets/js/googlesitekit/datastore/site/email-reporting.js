@@ -160,6 +160,17 @@ const baseResolvers = {
 			yield fetchGetEmailReportingSettingsStore.actions.fetchGetEmailReportingSettings();
 		}
 	},
+	*getWasAnalytics4Connected() {
+		const registry = yield commonActions.getRegistry();
+
+		const wasAnalytics4Connected = registry
+			.select( CORE_SITE )
+			.getWasAnalytics4Connected();
+
+		if ( wasAnalytics4Connected === undefined ) {
+			yield fetchGetWasAnalytics4Connected.actions.fetchGetWasAnalytics4Connected();
+		}
+	},
 };
 
 const baseSelectors = {
