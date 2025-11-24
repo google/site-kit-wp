@@ -71,13 +71,6 @@
       "error",
       15
     ],
-    "no-restricted-globals": [
-      "error",
-      {
-        "name": "window",
-        "message": "Use 'global' instead."
-      }
-    ],
     "no-use-before-define": [
       "error",
       {
@@ -228,9 +221,6 @@
         "page": true
       },
       "rules": {
-        "no-restricted-globals": [
-          "off"
-        ],
         "react-hooks/rules-of-hooks": "off"
       }
     },
