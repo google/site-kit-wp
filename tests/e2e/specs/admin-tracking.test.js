@@ -32,6 +32,7 @@ import {
 	setupSiteKit,
 	useRequestInterception,
 } from '../utils';
+import { DATA_LAYER } from '@/js/util/tracking/constants';
 
 async function toggleOptIn() {
 	await page.waitForSelector( '#googlesitekit-opt-in' );
@@ -367,7 +368,7 @@ describe( 'admin tracking', () => {
 
 			// Extract the plugin_version from the dataLayer.
 			const pluginVersion = await page.evaluate( () => {
-				const dataLayer = window._googlesitekitDataLayer || [];
+				const dataLayer = window[ DATA_LAYER ] || [];
 
 				const configEvent = dataLayer.find(
 					( event ) => event[ 0 ] === 'config'
