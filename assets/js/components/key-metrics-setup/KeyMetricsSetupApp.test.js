@@ -382,7 +382,7 @@ describe( 'KeyMetricsSetupApp', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should track an event when the user clicks the "Exit setup" button', async () => {
+		it( 'should track `setup_flow_v3_exit_setup` event when the user clicks the "Exit setup" button', async () => {
 			const { getByRole, waitForRegistry } = render(
 				<KeyMetricsSetupApp />,
 				{
@@ -410,7 +410,7 @@ describe( 'KeyMetricsSetupApp', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
 		} );
 
-		it( 'should track viewing key metrics step on mount (initial setup flow)', async () => {
+		it( 'should track `setup_flow_v3_view_key_metrics_step` event when key metric setup screen is mounted', async () => {
 			const { waitForRegistry } = render( <KeyMetricsSetupApp />, {
 				registry,
 				viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
@@ -424,7 +424,7 @@ describe( 'KeyMetricsSetupApp', () => {
 			);
 		} );
 
-		it( 'should navigate to the dashboard without notification and slug params when saving is successful and in the initial setup flow', async () => {
+		it( 'should navigate to the dashboard without notification and slug params when saving is successful', async () => {
 			fetchMock.postOnce( initialSetupSettingsEndpoint, {
 				body: { settings: { isAnalyticsSetupComplete: true } },
 			} );
@@ -463,7 +463,7 @@ describe( 'KeyMetricsSetupApp', () => {
 	} );
 
 	describe( 'non-initial setup flow', () => {
-		it( 'should navigate to the dashboard with notification and slug params when saving is successful and not in the initial setup flow', async () => {
+		it( 'should navigate to the dashboard with notification and slug params when saving is successful', async () => {
 			global.location.href =
 				'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup';
 
@@ -503,7 +503,7 @@ describe( 'KeyMetricsSetupApp', () => {
 			} );
 		} );
 
-		it( 'should track viewing key metrics step on mount (non-initial setup flow)', async () => {
+		it( 'should track `view_key_metrics_step` event viewing key metrics step', async () => {
 			const { waitForRegistry } = render( <KeyMetricsSetupApp />, {
 				registry,
 				viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
@@ -517,7 +517,7 @@ describe( 'KeyMetricsSetupApp', () => {
 			);
 		} );
 
-		it( 'should track selecting an answer (non-initial setup flow)', async () => {
+		it( 'should track `select_key_metrics_answer` event when an answer is selected', async () => {
 			const { getByRole, waitForRegistry } = render(
 				<KeyMetricsSetupApp />,
 				{
@@ -545,7 +545,7 @@ describe( 'KeyMetricsSetupApp', () => {
 			);
 		} );
 
-		it( 'should track completing key metrics step when CTA clicked (non-initial setup flow)', async () => {
+		it( 'should track `complete_key_metrics_step` event when completing key metrics step by clicking `Complete setup` CTA', async () => {
 			freezeFetch( coreUserInputSettingsEndpointRegExp );
 
 			const { getByRole, waitForRegistry } = render(
@@ -566,7 +566,6 @@ describe( 'KeyMetricsSetupApp', () => {
 				getByRole( 'button', { name: 'Complete setup' } )
 			);
 
-			// Expect events include selection and completion (order not enforced; other events may also occur).
 			expect( mockTrackEvent.mock.calls ).toEqual(
 				expect.arrayContaining( [
 					[
