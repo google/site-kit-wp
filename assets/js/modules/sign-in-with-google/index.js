@@ -157,7 +157,7 @@ export const SIGN_IN_WITH_GOOGLE_NOTIFICATIONS = {
 	'sign-in-with-google-compatibility-warning': {
 		Component: CompatibilityWarningSubtleNotification,
 		priority: PRIORITY.WARNING,
-		areaSlug: NOTIFICATION_AREAS.HEADER,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_SETTINGS,
