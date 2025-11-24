@@ -157,7 +157,7 @@ class Email_Reporting {
 		$max_execution_limiter  = new Max_Execution_Limiter( (int) ini_get( 'max_execution_time' ) );
 		$batch_query            = new Email_Log_Batch_Query();
 
-		$this->rest_controller   = new REST_Email_Reporting_Controller( $this->settings );
+		$this->rest_controller   = new REST_Email_Reporting_Controller( $this->settings, $this->options );
 		$this->email_log         = new Email_Log( $this->context );
 		$this->scheduler         = new Email_Reporting_Scheduler( $frequency_planner );
 		$this->initiator_task    = new Initiator_Task( $this->scheduler, $subscribed_users_query );
