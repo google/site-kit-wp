@@ -20,7 +20,7 @@
  * Escapes URI components in a template string as a tag function.
  *
  * ```
- * // Example; escape a redirect url:
+ * // Escape a redirect url:
  * const redirectTo = 'http://localhost/admin/';
  * const loginUrl = escapeURI`http://localhost/login?redirect=${ redirectTo }`;
  * ```
