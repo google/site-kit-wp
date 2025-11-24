@@ -24,6 +24,8 @@ import {
 	createTestRegistry,
 	provideUserAuthentication,
 	freezeFetch,
+	provideUserCapabilities,
+	provideModules,
 } from '../../../../tests/js/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -37,9 +39,12 @@ describe( 'SettingsEmailReporting', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		provideModules( registry );
 
 		// Prevent network request/resolver from running to avoid console errors.
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_SITE ).receiveGetWasAnalytics4Connected( true );
 	} );
 
 	it( 'should render the toggle with correct label', () => {
