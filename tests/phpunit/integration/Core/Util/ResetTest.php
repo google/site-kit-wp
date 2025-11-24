@@ -140,6 +140,67 @@ class ResetTest extends TestCase {
 		$this->run_reset( $context );
 	}
 
+	/**
+	 * @group ms-required
+	 */
+	public function test_network_mode_all_deletes_email_log_posts() {
+		$this->network_activate_site_kit();
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
+		$this->register_email_log_dependencies();
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->assertTrue( $context->is_network_mode(), 'Context should be in network mode when filter is enabled.' );
+
+		$blog_ids = array(
+			get_current_blog_id(),
+			$this->factory()->blog->create(),
+		);
+
+		$email_logs = array();
+		foreach ( $blog_ids as $blog_id ) {
+			$switched = false;
+
+			if ( get_current_blog_id() !== (int) $blog_id ) {
+				// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog
+				switch_to_blog( $blog_id );
+				$switched = true;
+			}
+
+			$email_logs[ $blog_id ] = $this->factory()->post->create(
+				array(
+					'post_type'   => Email_Log::POST_TYPE,
+					'post_status' => Email_Log::STATUS_FAILED,
+				)
+			);
+			add_post_meta( $email_logs[ $blog_id ], Email_Log::META_BATCH_ID, 'network-batch' );
+
+			if ( $switched ) {
+				restore_current_blog();
+			}
+		}
+
+		$this->run_reset( $context );
+
+		foreach ( $blog_ids as $blog_id ) {
+			$switched = false;
+
+			if ( get_current_blog_id() !== (int) $blog_id ) {
+				// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog
+				switch_to_blog( $blog_id );
+				$switched = true;
+			}
+
+			$log_id = $email_logs[ $blog_id ];
+			$this->assertNull( get_post( $log_id ), 'Email log posts in each site should be deleted after reset.' );
+			$this->assertFalse( metadata_exists( 'post', $log_id, Email_Log::META_BATCH_ID ), 'Email log post meta should be deleted for every site after reset.' );
+
+			if ( $switched ) {
+				restore_current_blog();
+			}
+		}
+	}
+
 	public function test_handle_reset_action_with_bad_nonce() {
 		remove_all_actions( 'admin_action_' . Reset::ACTION );
 		$reset = new Reset( $this->context_with_mutable_input );
@@ -268,12 +329,12 @@ class ResetTest extends TestCase {
 
 	private function unregister_email_log_dependencies() {
 		if ( function_exists( 'unregister_post_type' ) && post_type_exists( Email_Log::POST_TYPE ) ) {
-			unregister_post_type( Email_Log::POST_TYPE );
+			call_user_func( 'unregister_post_type', Email_Log::POST_TYPE );
 		}
 
 		if ( function_exists( 'unregister_post_status' ) ) {
 			foreach ( array( Email_Log::STATUS_SENT, Email_Log::STATUS_FAILED, Email_Log::STATUS_SCHEDULED ) as $status ) {
-				unregister_post_status( $status );
+				call_user_func( 'unregister_post_status', $status );
 			}
 		}
 
@@ -287,7 +348,7 @@ class ResetTest extends TestCase {
 					Email_Log::META_REPORT_REFERENCE_DATES,
 				) as $meta_key
 			) {
-				unregister_meta_key( 'post', Email_Log::POST_TYPE, $meta_key );
+				call_user_func( 'unregister_meta_key', 'post', Email_Log::POST_TYPE, $meta_key );
 			}
 		}
 	}

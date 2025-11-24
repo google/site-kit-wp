@@ -267,8 +267,6 @@ class Reset {
 	 * @param string $scope Scope of the deletion ('site' or 'network').
 	 */
 	private function delete_posts( $scope ) {
-		global $wpdb;
-
 		$sites = array();
 		if ( 'network' === $scope ) {
 			$sites = get_sites(
@@ -284,25 +282,37 @@ class Reset {
 		}
 
 		foreach ( $sites as $site_id ) {
-			$prefix         = $wpdb->get_blog_prefix( $site_id );
-			$posts_table    = "{$prefix}posts";
-			$postmeta_table = "{$prefix}postmeta";
+			$switched = false;
 
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->query(
-				$wpdb->prepare(
-					"DELETE FROM {$postmeta_table} WHERE post_id IN ( SELECT ID FROM {$posts_table} WHERE post_type = %s )", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-					Email_Log::POST_TYPE
-				)
-			);
+			if ( get_current_blog_id() !== (int) $site_id ) {
+				// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog
+				switch_to_blog( $site_id );
+				$switched = true;
+			}
 
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->query(
-				$wpdb->prepare(
-					"DELETE FROM {$posts_table} WHERE post_type = %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-					Email_Log::POST_TYPE
-				)
-			);
+			$posts_per_batch = 100;
+			do {
+				// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
+				$post_ids = get_posts(
+					array(
+						'post_type'      => Email_Log::POST_TYPE,
+						'post_status'    => 'any',
+						'fields'         => 'ids',
+						'posts_per_page' => $posts_per_batch,
+						'no_found_rows'  => true,
+						'orderby'        => 'ID',
+						'order'          => 'ASC',
+					)
+				);
+
+				foreach ( $post_ids as $post_id ) {
+					wp_delete_post( $post_id, true );
+				}
+			} while ( ! empty( $post_ids ) );
+
+			if ( $switched ) {
+				restore_current_blog();
+			}
 		}
 	}
 
