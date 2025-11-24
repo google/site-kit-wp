@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Storage\Options;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -35,14 +36,24 @@ class REST_Email_Reporting_Controller {
 	private $settings;
 
 	/**
+	 * Was_Analytics_4_Connected instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Was_Analytics_4_Connected
+	 */
+	private $was_analytics_4_connected;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.162.0
 	 *
 	 * @param Email_Reporting_Settings $settings Email_Reporting_Settings instance.
+	 * @param Options                  $options  Options instance.
 	 */
-	public function __construct( Email_Reporting_Settings $settings ) {
-		$this->settings = $settings;
+	public function __construct( Email_Reporting_Settings $settings, Options $options ) {
+		$this->settings                  = $settings;
+		$this->was_analytics_4_connected = new Was_Analytics_4_Connected( $options );
 	}
 
 	/**
@@ -122,6 +133,18 @@ class REST_Email_Reporting_Controller {
 								),
 							),
 						),
+					),
+				)
+			),
+			new REST_Route(
+				'core/site/data/was-analytics-4-connected',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function () {
+							return new WP_REST_Response( $this->was_analytics_4_connected->get() );
+						},
+						'permission_callback' => $can_access,
 					),
 				)
 			),
