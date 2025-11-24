@@ -252,7 +252,7 @@ describe( 'ModuleSetup', () => {
 					MODULE_SLUG_ANALYTICS_4
 				);
 
-				expect( mockTrackEvent ).toBeUndefined();
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			} );
 		} );
 	} );
