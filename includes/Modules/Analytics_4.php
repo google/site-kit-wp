@@ -1250,10 +1250,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				$account_ticket_request->setRedirectUri( $this->get_provisioning_redirect_uri() );
 				$account_ticket_request->setAccount( $account );
 
-				if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-					$account_ticket_request->setShowProgress( isset( $data['showProgress'] ) ? (bool) $data['showProgress'] : false );
-				}
-
 				return $this->get_service( 'analyticsprovisioning' )
 					->accounts->provisionAccountTicket( $account_ticket_request );
 			case 'POST:create-property':
