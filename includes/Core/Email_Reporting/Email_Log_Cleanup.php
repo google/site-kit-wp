@@ -10,8 +10,6 @@
 
 namespace Google\Site_Kit\Core\Email_Reporting;
 
-use WP_Query;
-
 /**
  * Handles scheduled cleanup for email reporting logs.
  *
@@ -27,6 +25,13 @@ class Email_Log_Cleanup {
 	 * @since n.e.x.t
 	 */
 	private const MAX_LOG_AGE = 6 * MONTH_IN_SECONDS;
+
+	/**
+	 * Number of posts to delete per batch.
+	 *
+	 * @since n.e.x.t
+	 */
+	private const DELETE_CHUNK_SIZE = 30;
 
 	/**
 	 * Settings instance.
@@ -63,48 +68,47 @@ class Email_Log_Cleanup {
 		}
 
 		try {
-			$query = $this->build_cleanup_query();
+			do {
+				// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_posts_get_posts
+				$post_ids = get_posts( $this->build_cleanup_query_args( self::DELETE_CHUNK_SIZE ) );
 
-			if ( empty( $query->posts ) ) {
-				return;
-			}
-
-			foreach ( $query->posts as $post_id ) {
-				wp_delete_post( $post_id, true );
-			}
+				foreach ( $post_ids as $post_id ) {
+					wp_delete_post( $post_id, true );
+				}
+			} while ( ! empty( $post_ids ) );
 		} finally {
 			delete_transient( $lock_handle );
 		}
 	}
 
 	/**
-	 * Builds the cleanup query for expired email logs.
+	 * Builds the cleanup query arguments for expired email logs.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return WP_Query Query instance for expired email log posts.
+	 * @param int $posts_per_page Number of posts to fetch per request.
+	 * @return array Query arguments for expired email log posts.
 	 */
-	private function build_cleanup_query() {
+	private function build_cleanup_query_args( $posts_per_page ) {
 		$cutoff = gmdate( 'Y-m-d', time() - self::MAX_LOG_AGE );
 
-		return new WP_Query(
-			array(
-				'post_type'              => Email_Log::POST_TYPE,
-				'post_status'            => $this->get_valid_statuses(),
-				'fields'                 => 'ids',
-				// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-				'posts_per_page'         => 10000,
-				'no_found_rows'          => true,
-				'cache_results'          => false,
-				'update_post_meta_cache' => false,
-				'update_post_term_cache' => false,
-				'date_query'             => array(
-					array(
-						'before' => $cutoff,
-						'column' => 'post_date_gmt',
-					),
+		return array(
+			'post_type'              => Email_Log::POST_TYPE,
+			'post_status'            => $this->get_valid_statuses(),
+			'fields'                 => 'ids',
+			'posts_per_page'         => $posts_per_page,
+			'orderby'                => 'ID',
+			'order'                  => 'ASC',
+			'no_found_rows'          => true,
+			'cache_results'          => false,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+			'date_query'             => array(
+				array(
+					'before' => $cutoff,
+					'column' => 'post_date_gmt',
 				),
-			)
+			),
 		);
 	}
 
