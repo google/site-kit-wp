@@ -24,6 +24,7 @@ class Email_Reporting_Scheduler {
 	const ACTION_INITIATOR = 'googlesitekit_email_reporting_initiator';
 	const ACTION_WORKER    = 'googlesitekit_email_reporting_worker';
 	const ACTION_FALLBACK  = 'googlesitekit_email_reporting_fallback';
+	const ACTION_MONITOR   = 'googlesitekit_email_reporting_monitor';
 	const ACTION_CLEANUP   = 'googlesitekit_email_reporting_cleanup';
 
 	/**
@@ -133,6 +134,19 @@ class Email_Reporting_Scheduler {
 	}
 
 	/**
+	 * Ensures the monitor event is scheduled daily.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function schedule_monitor() {
+		if ( wp_next_scheduled( self::ACTION_MONITOR ) ) {
+			return;
+		}
+
+		wp_schedule_event( time(), 'daily', self::ACTION_MONITOR );
+	}
+
+	/**
 	 * Ensures a recurring cleanup event exists.
 	 *
 	 * @since n.e.x.t
@@ -151,7 +165,7 @@ class Email_Reporting_Scheduler {
 	 * @since n.e.x.t
 	 */
 	public function unschedule_all() {
-		foreach ( array( self::ACTION_INITIATOR, self::ACTION_WORKER, self::ACTION_FALLBACK, self::ACTION_CLEANUP ) as $hook ) {
+		foreach ( array( self::ACTION_INITIATOR, self::ACTION_WORKER, self::ACTION_FALLBACK, self::ACTION_MONITOR, self::ACTION_CLEANUP ) as $hook ) {
 			wp_unschedule_hook( $hook );
 		}
 	}

@@ -55,6 +55,10 @@ class Email_ReportingTest extends TestCase {
 		}
 
 		$this->assertNotFalse(
+			wp_next_scheduled( Email_Reporting_Scheduler::ACTION_MONITOR ),
+			'Expected monitor event to be scheduled daily.'
+		);
+		$this->assertNotFalse(
 			wp_next_scheduled( Email_Reporting_Scheduler::ACTION_CLEANUP ),
 			'Cleanup event should be scheduled when email reporting is enabled.'
 		);
@@ -75,6 +79,10 @@ class Email_ReportingTest extends TestCase {
 		}
 
 		$this->assertFalse(
+			wp_next_scheduled( Email_Reporting_Scheduler::ACTION_MONITOR ),
+			'Monitor event should be unscheduled when reporting is disabled.'
+		);
+		$this->assertFalse(
 			wp_next_scheduled( Email_Reporting_Scheduler::ACTION_CLEANUP ),
 			'Cleanup should be unscheduled when reporting is disabled.'
 		);
@@ -88,6 +96,7 @@ class Email_ReportingTest extends TestCase {
 		$worker_timestamp = time();
 		wp_schedule_single_event( time() + 50, Email_Reporting_Scheduler::ACTION_WORKER, array( 'batch', User_Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp ) );
 		wp_schedule_single_event( time() + 50, Email_Reporting_Scheduler::ACTION_FALLBACK, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) );
+		wp_schedule_event( time() + 50, 'daily', Email_Reporting_Scheduler::ACTION_MONITOR );
 		wp_schedule_event( time(), 'daily', Email_Reporting_Scheduler::ACTION_CLEANUP );
 
 		$email_reporting = $this->create_email_reporting();
@@ -96,6 +105,7 @@ class Email_ReportingTest extends TestCase {
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Initiator event should be cleared when reporting is disabled.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_WORKER, array( 'batch', User_Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp ) ), 'Worker event should be cleared when reporting is disabled.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_FALLBACK, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Fallback event should be cleared when reporting is disabled.' );
+		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_MONITOR ), 'Monitor event should be cleared when reporting is disabled.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_CLEANUP ), 'Cleanup event should be cleared when reporting is disabled.' );
 	}
 
@@ -104,7 +114,7 @@ class Email_ReportingTest extends TestCase {
 	}
 
 	private function clear_scheduled_events() {
-		foreach ( array( Email_Reporting_Scheduler::ACTION_INITIATOR, Email_Reporting_Scheduler::ACTION_WORKER, Email_Reporting_Scheduler::ACTION_FALLBACK, Email_Reporting_Scheduler::ACTION_CLEANUP ) as $hook ) {
+		foreach ( array( Email_Reporting_Scheduler::ACTION_INITIATOR, Email_Reporting_Scheduler::ACTION_WORKER, Email_Reporting_Scheduler::ACTION_FALLBACK, Email_Reporting_Scheduler::ACTION_MONITOR, Email_Reporting_Scheduler::ACTION_CLEANUP ) as $hook ) {
 			wp_unschedule_hook( $hook );
 		}
 	}

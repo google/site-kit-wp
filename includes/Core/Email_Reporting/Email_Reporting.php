@@ -114,6 +114,14 @@ class Email_Reporting {
 	protected $initiator_task;
 
 	/**
+	 * Monitor task instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Monitor_Task
+	 */
+	protected $monitor_task;
+
+	/**
 	 * Worker task instance.
 	 *
 	 * @since n.e.x.t
@@ -154,6 +162,7 @@ class Email_Reporting {
 		$this->scheduler         = new Email_Reporting_Scheduler( $frequency_planner );
 		$this->initiator_task    = new Initiator_Task( $this->scheduler, $subscribed_users_query );
 		$this->worker_task       = new Worker_Task( $max_execution_limiter, $batch_query, $this->scheduler );
+		$this->monitor_task      = new Monitor_Task( $this->scheduler, $this->settings );
 		$this->email_log_cleanup = new Email_Log_Cleanup( $this->settings );
 	}
 
@@ -171,14 +180,15 @@ class Email_Reporting {
 		$this->email_log->register();
 		$this->scheduler->register();
 
-		add_action( Email_Reporting_Scheduler::ACTION_CLEANUP, array( $this->email_log_cleanup, 'handle_cleanup_action' ) );
-
 		if ( $this->settings->is_email_reporting_enabled() ) {
 			$this->scheduler->schedule_initiator_events();
+			$this->scheduler->schedule_monitor();
 			$this->scheduler->schedule_cleanup();
 
 			add_action( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $this->initiator_task, 'handle_callback_action' ), 10, 1 );
+			add_action( Email_Reporting_Scheduler::ACTION_MONITOR, array( $this->monitor_task, 'handle_monitor_action' ) );
 			add_action( Email_Reporting_Scheduler::ACTION_WORKER, array( $this->worker_task, 'handle_callback_action' ), 10, 3 );
+			add_action( Email_Reporting_Scheduler::ACTION_CLEANUP, array( $this->email_log_cleanup, 'handle_cleanup_action' ) );
 
 		} else {
 			$this->scheduler->unschedule_all();
@@ -191,6 +201,7 @@ class Email_Reporting {
 
 				if ( $is_enabled && ! $was_enabled ) {
 					$this->scheduler->schedule_initiator_events();
+					$this->scheduler->schedule_monitor();
 					$this->scheduler->schedule_cleanup();
 					return;
 				}

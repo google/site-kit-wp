@@ -132,6 +132,24 @@ class Email_Reporting_SchedulerTest extends TestCase {
 		$this->assertSame( $first, $second, 'Scheduling the same fallback twice should reuse the original timestamp for frequency "' . $frequency . '".' );
 	}
 
+	public function test_schedule_monitor_registers_daily_event_once() {
+		$before = time();
+
+		$this->scheduler->schedule_monitor();
+		$event = wp_get_scheduled_event( Email_Reporting_Scheduler::ACTION_MONITOR );
+
+		$this->assertNotFalse( $event, 'Monitor event should be created on first call.' );
+		$this->assertSame( 'daily', $event->schedule, 'Monitor event should recur daily.' );
+		$this->assertGreaterThanOrEqual( $before, $event->timestamp, 'Monitor event should run no earlier than the scheduling time.' );
+
+		$this->scheduler->schedule_monitor();
+		$this->assertSame(
+			$event->timestamp,
+			wp_next_scheduled( Email_Reporting_Scheduler::ACTION_MONITOR ),
+			'Monitor scheduling should be idempotent.'
+		);
+	}
+
 	public function test_schedule_cleanup_schedules_monthly_event() {
 		$before = time();
 		$this->scheduler->register();
@@ -156,6 +174,7 @@ class Email_Reporting_SchedulerTest extends TestCase {
 
 		$this->scheduler->schedule_worker( 'batch', Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp );
 		$this->scheduler->schedule_fallback( Email_Reporting_Settings::FREQUENCY_WEEKLY, $fallback_timestamp );
+		$this->scheduler->schedule_monitor();
 
 		$this->scheduler->unschedule_all();
 
@@ -166,7 +185,7 @@ class Email_Reporting_SchedulerTest extends TestCase {
 	}
 
 	private function clear_scheduled_events() {
-		foreach ( array( Email_Reporting_Scheduler::ACTION_INITIATOR, Email_Reporting_Scheduler::ACTION_WORKER, Email_Reporting_Scheduler::ACTION_FALLBACK, Email_Reporting_Scheduler::ACTION_CLEANUP ) as $hook ) {
+		foreach ( array( Email_Reporting_Scheduler::ACTION_INITIATOR, Email_Reporting_Scheduler::ACTION_WORKER, Email_Reporting_Scheduler::ACTION_FALLBACK, Email_Reporting_Scheduler::ACTION_MONITOR, Email_Reporting_Scheduler::ACTION_CLEANUP ) as $hook ) {
 			wp_unschedule_hook( $hook );
 		}
 	}

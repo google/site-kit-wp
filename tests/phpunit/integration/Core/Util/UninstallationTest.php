@@ -49,6 +49,7 @@ class UninstallationTest extends TestCase {
 		$this->assertContains( Email_Reporting_Scheduler::ACTION_INITIATOR, Uninstallation::SCHEDULED_EVENTS, 'Initiator hook should be cleared on uninstall/reset/deactivation.' );
 		$this->assertContains( Email_Reporting_Scheduler::ACTION_WORKER, Uninstallation::SCHEDULED_EVENTS, 'Worker hook should be cleared on uninstall/reset/deactivation.' );
 		$this->assertContains( Email_Reporting_Scheduler::ACTION_FALLBACK, Uninstallation::SCHEDULED_EVENTS, 'Fallback hook should be cleared on uninstall/reset/deactivation.' );
+		$this->assertContains( Email_Reporting_Scheduler::ACTION_MONITOR, Uninstallation::SCHEDULED_EVENTS, 'Monitor hook should be cleared on uninstall/reset/deactivation.' );
 		$this->assertContains( Email_Reporting_Scheduler::ACTION_CLEANUP, Uninstallation::SCHEDULED_EVENTS, 'Cleanup hook should be cleared on uninstall/reset/deactivation.' );
 	}
 
