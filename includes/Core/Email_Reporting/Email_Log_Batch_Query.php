@@ -78,7 +78,8 @@ class Email_Log_Batch_Query {
 					Email_Log::STATUS_SENT,
 					Email_Log::STATUS_FAILED,
 				),
-				'posts_per_page'         => -1,
+				// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				'posts_per_page'         => 10000,
 				'fields'                 => 'ids',
 				'no_found_rows'          => true,
 				'update_post_meta_cache' => false,
