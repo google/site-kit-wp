@@ -273,5 +273,74 @@ describe( 'core/site Email Reporting', () => {
 				).toBe( false );
 			} );
 		} );
+
+		describe( 'getWasAnalytics4Connected', () => {
+			it( 'uses a resolver to make a network request', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/was-analytics-4-connected/,
+					{
+						body: true,
+						status: 200,
+					}
+				);
+
+				const initialValue = registry
+					.select( CORE_SITE )
+					.getWasAnalytics4Connected();
+
+				expect( initialValue ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getWasAnalytics4Connected();
+
+				const value = registry
+					.select( CORE_SITE )
+					.getWasAnalytics4Connected();
+
+				expect( value ).toBe( true );
+
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/core\/site\/data\/was-analytics-4-connected/
+				);
+			} );
+
+			it( 'returns undefined if the request fails', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/was-analytics-4-connected/,
+					{
+						body: { error: 'something went wrong' },
+						status: 500,
+					}
+				);
+
+				const initialValue = registry
+					.select( CORE_SITE )
+					.getWasAnalytics4Connected();
+
+				expect( initialValue ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getWasAnalytics4Connected();
+
+				const value = registry
+					.select( CORE_SITE )
+					.getWasAnalytics4Connected();
+
+				// Verify the value is still undefined after the selector is resolved.
+				expect( value ).toBeUndefined();
+
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/core\/site\/data\/was-analytics-4-connected/
+				);
+
+				expect( console ).toHaveErrored();
+			} );
+		} );
 	} );
 } );
