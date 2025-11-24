@@ -47,12 +47,14 @@ import Header from '@/js/components/Header';
 import ModuleSetupFooter from './ModuleSetupFooter';
 import ExitSetup from '@/js/components/setup/ExitSetup';
 import ProgressIndicator from '@/js/components/ProgressIndicator';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function ModuleSetup( { moduleSlug } ) {
+	const viewContext = useViewContext();
+
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const [ showProgress ] = useQueryArg( 'showProgress' );
-
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
@@ -133,7 +135,16 @@ export default function ModuleSetup( { moduleSlug } ) {
 					) : null
 				}
 			>
-				{ isInitialSetupFlow ? <ExitSetup /> : <HelpMenu /> }
+				{ isInitialSetupFlow ? (
+					<ExitSetup
+						gaTrackingEventArgs={ {
+							category: `${ viewContext }_setup`,
+							label: moduleSlug,
+						} }
+					/>
+				) : (
+					<HelpMenu />
+				) }
 			</Header>
 			<div className="googlesitekit-setup">
 				<Grid>

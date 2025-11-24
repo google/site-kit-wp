@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../tests/js/test-utils';
+import { act, fireEvent, render } from '../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
@@ -36,6 +36,10 @@ import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import * as tracking from '@/js/util/tracking';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'ModuleSetup', () => {
 	mockLocation();
@@ -50,6 +54,10 @@ describe( 'ModuleSetup', () => {
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		provideModuleRegistrations( registry );
+	} );
+
+	afterEach( () => {
+		jest.resetAllMocks();
 	} );
 
 	describe( 'Analytics 4', () => {
@@ -140,8 +148,8 @@ describe( 'ModuleSetup', () => {
 				await waitForRegistry();
 			} );
 
-			it( 'should display an exit button', () => {
-				expect( getByText( 'Exit setup' ) ).toBeInTheDocument();
+			it( 'should match the snapshot', () => {
+				expect( container ).toMatchSnapshot();
 			} );
 
 			it( 'should display the progress indicator', () => {
@@ -172,8 +180,27 @@ describe( 'ModuleSetup', () => {
 				).not.toBeInTheDocument();
 			} );
 
-			it( 'should match the snapshot', () => {
-				expect( container ).toMatchSnapshot();
+			it( 'should display an exit button', () => {
+				expect( getByText( 'Exit setup' ) ).toBeInTheDocument();
+			} );
+
+			it( 'should track an event when the user clicks the exit button', async () => {
+				// Clear the mock, as there is a tracked event on mount.
+				mockTrackEvent.mockClear();
+
+				await act( () => {
+					fireEvent.click( getByText( 'Exit setup' ) );
+
+					return Promise.resolve();
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MODULE_SETUP }_setup`,
+					'setup_flow_v3_exit_setup',
+					MODULE_SLUG_ANALYTICS_4
+				);
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			} );
 		} );
 

@@ -187,7 +187,6 @@ SelectionPanelFooter.propTypes = {
 	selectedItemSlugs: PropTypes.array,
 	saveSettings: PropTypes.func,
 	saveError: PropTypes.object,
-	itemLimitError: PropTypes.string,
 	minSelectedItemCount: PropTypes.number,
 	maxSelectedItemCount: PropTypes.number,
 	isBusy: PropTypes.bool,

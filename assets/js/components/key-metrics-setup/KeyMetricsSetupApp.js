@@ -68,6 +68,7 @@ import { trackEvent } from '@/js/util';
 
 export default function KeyMetricsSetupApp() {
 	const viewContext = useViewContext();
+
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
@@ -208,7 +209,14 @@ export default function KeyMetricsSetupApp() {
 	return (
 		<Fragment>
 			<Header subHeader={ subHeader }>
-				{ isInitialSetupFlow && <ExitSetup /> }
+				{ isInitialSetupFlow && (
+					<ExitSetup
+						gaTrackingEventArgs={ {
+							category: `${ viewContext }_setup`,
+							label: 'key-metrics',
+						} }
+					/>
+				) }
 			</Header>
 			<div className="googlesitekit-key-metrics-setup">
 				<div className="googlesitekit-module-page">

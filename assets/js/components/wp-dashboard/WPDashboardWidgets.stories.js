@@ -116,9 +116,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 	},
 };
 
-ReadyWithActivateAnalyticsCTA.scenario = {
-	// delay: 6000, // This extra delay is required to fix unstable VRTs. TODO: remove if not required.
-};
+ReadyWithActivateAnalyticsCTA.scenario = {};
 
 export const ReadyWithCompleteAnalyticsActivationCTA = Template.bind( {} );
 ReadyWithCompleteAnalyticsActivationCTA.storyName =

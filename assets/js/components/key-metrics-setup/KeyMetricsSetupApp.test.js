@@ -104,6 +104,10 @@ describe( 'KeyMetricsSetupApp', () => {
 		mockTrackEvent.mockClear();
 	} );
 
+	afterEach( () => {
+		jest.resetAllMocks();
+	} );
+
 	it( 'should render correctly', async () => {
 		const { container, getByText, getByRole, waitForRegistry } = render(
 			<KeyMetricsSetupApp />,
@@ -525,5 +529,24 @@ describe( 'KeyMetricsSetupApp', () => {
 			1,
 			syncCustomDimensionsEndpoint
 		);
+	} );
+
+	it( 'should track an event when the user clicks the "Exit setup" button', async () => {
+		const { getByRole, waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+			features: [ 'setupFlowRefresh' ],
+		} );
+
+		await waitForRegistry();
+
+		fireEvent.click( getByRole( 'button', { name: 'Exit setup' } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_KEY_METRICS_SETUP }_setup`,
+			'setup_flow_v3_exit_setup',
+			'key-metrics'
+		);
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 	} );
 } );

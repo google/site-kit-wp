@@ -143,7 +143,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
                 for="googlesitekit_analytics_account_create_dataStream"
                 style=""
               >
-                Web Data Stream
+                Web data stream
               </label>
             </div>
             <div
