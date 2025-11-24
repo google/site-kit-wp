@@ -38,8 +38,8 @@ export const EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE_DISMISSED_ITEM =
 	'email-reporting-analytics-disconnected-notice';
 
 export default function AnalyticsDisconnectedNotice() {
-	const isSubscribed = useSelect( ( select ) =>
-		select( CORE_USER ).isEmailReportingSubscribed()
+	const isEmailReportingEnabled = useSelect( ( select ) =>
+		select( CORE_USER ).isEmailReportingEnabled()
 	);
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
@@ -69,7 +69,7 @@ export default function AnalyticsDisconnectedNotice() {
 	}, [ dismissItem ] );
 
 	if (
-		! isSubscribed ||
+		! isEmailReportingEnabled ||
 		isDismissed !== false ||
 		isAnalyticsConnected ||
 		! wasAnalyticsConnected
