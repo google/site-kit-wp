@@ -29,13 +29,6 @@ class Email_Log_Cleanup {
 	private const MAX_LOG_AGE = 6 * MONTH_IN_SECONDS;
 
 	/**
-	 * Number of posts to delete per batch.
-	 *
-	 * @since n.e.x.t
-	 */
-	private const DELETE_CHUNK_SIZE = 30;
-
-	/**
 	 * Settings instance.
 	 *
 	 * @since n.e.x.t
@@ -76,10 +69,8 @@ class Email_Log_Cleanup {
 				return;
 			}
 
-			foreach ( array_chunk( $query->posts, self::DELETE_CHUNK_SIZE ) as $post_chunk ) {
-				foreach ( $post_chunk as $post_id ) {
-					wp_delete_post( $post_id, true );
-				}
+			foreach ( $query->posts as $post_id ) {
+				wp_delete_post( $post_id, true );
 			}
 		} finally {
 			delete_transient( $lock_handle );
@@ -101,7 +92,8 @@ class Email_Log_Cleanup {
 				'post_type'              => Email_Log::POST_TYPE,
 				'post_status'            => $this->get_valid_statuses(),
 				'fields'                 => 'ids',
-				'posts_per_page'         => -1,
+				// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				'posts_per_page'         => 10000,
 				'no_found_rows'          => true,
 				'cache_results'          => false,
 				'update_post_meta_cache' => false,
