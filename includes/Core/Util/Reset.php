@@ -296,7 +296,11 @@ class Reset {
 				$post_ids = get_posts(
 					array(
 						'post_type'      => Email_Log::POST_TYPE,
-						'post_status'    => 'any',
+						'post_status'    => array(
+							Email_Log::STATUS_SENT,
+							Email_Log::STATUS_FAILED,
+							Email_Log::STATUS_SCHEDULED,
+						),
 						'fields'         => 'ids',
 						'posts_per_page' => $posts_per_batch,
 						'no_found_rows'  => true,
