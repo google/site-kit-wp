@@ -325,7 +325,7 @@ describe( 'AccountCreate', () => {
 				cleanup();
 			} );
 
-			it( 'should track create account event during initial setup flow', async () => {
+			it( 'should track the `setup_flow_v3_create_analytics_account` event when creating an account during the initial setup flow', async () => {
 				global.location.href =
 					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true';
 
@@ -349,15 +349,10 @@ describe( 'AccountCreate', () => {
 					'setup_flow_v3_create_analytics_account'
 				);
 
-				const genericCreateAccountCall = mockTrackEvent.mock.calls.find(
-					( call ) =>
-						call[ 0 ]?.endsWith( '_analytics' ) &&
-						call[ 1 ] === 'create_account'
-				);
-				expect( genericCreateAccountCall ).toBeUndefined();
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			} );
 
-			it( 'should track generic create account event during non-initial setup flow', async () => {
+			it( 'should track the `create_account` event when creating an account after the initial setup', async () => {
 				global.location.href =
 					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true';
 				( { getByRole, waitForRegistry, rerender } = render(
@@ -374,20 +369,12 @@ describe( 'AccountCreate', () => {
 
 				await waitForRegistry();
 
-				const genericCreateAccountCall = mockTrackEvent.mock.calls.find(
-					( call ) =>
-						call[ 0 ]?.endsWith( '_analytics' ) &&
-						call[ 1 ] === 'create_account' &&
-						call[ 2 ] === 'proxy'
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MODULE_SETUP }_analytics`,
+					'create_account',
+					'proxy'
 				);
-				expect( genericCreateAccountCall ).toBeDefined();
-
-				const initialSetupCall = mockTrackEvent.mock.calls.find(
-					( call ) =>
-						call[ 0 ] === `${ VIEW_CONTEXT_MODULE_SETUP }_setup` &&
-						call[ 1 ] === 'setup_flow_v3_create_analytics_account'
-				);
-				expect( initialSetupCall ).toBeUndefined();
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			} );
 		} );
 	} );

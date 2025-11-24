@@ -186,13 +186,8 @@ describe( 'ModuleSetup', () => {
 					`${ VIEW_CONTEXT_MODULE_SETUP }_setup`,
 					'setup_flow_v3_view_analytics_step'
 				);
-				const genericViewCall = mockTrackEvent.mock.calls.find(
-					( call ) =>
-						call[ 0 ] === 'moduleSetup' &&
-						call[ 1 ] === 'view_module_setup' &&
-						call[ 2 ] === MODULE_SLUG_ANALYTICS_4
-				);
-				expect( genericViewCall ).toBeUndefined();
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			} );
 		} );
 
@@ -256,12 +251,8 @@ describe( 'ModuleSetup', () => {
 					'view_module_setup',
 					MODULE_SLUG_ANALYTICS_4
 				);
-				const initialAnalyticsCall = mockTrackEvent.mock.calls.find(
-					( call ) =>
-						call[ 0 ] === `${ VIEW_CONTEXT_MODULE_SETUP }_setup` &&
-						call[ 1 ] === 'setup_flow_v3_view_analytics_step'
-				);
-				expect( initialAnalyticsCall ).toBeUndefined();
+
+				expect( mockTrackEvent ).toBeUndefined();
 			} );
 		} );
 	} );

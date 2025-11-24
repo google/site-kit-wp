@@ -194,13 +194,18 @@ export default function AccountCreate( { className } ) {
 
 		setValues( FORM_ACCOUNT_CREATE, { autoSubmit: false } );
 
-		const createAccountEventArgs = isInitialSetupFlow
-			? [
-					`${ viewContext }_setup`,
-					'setup_flow_v3_create_analytics_account',
-			  ]
-			: [ `${ viewContext }_analytics`, 'create_account', 'proxy' ];
-		await trackEvent( ...createAccountEventArgs );
+		if ( isInitialSetupFlow ) {
+			await trackEvent(
+				`${ viewContext }_setup`,
+				'setup_flow_v3_create_analytics_account'
+			);
+		} else {
+			await trackEvent(
+				`${ viewContext }_analytics`,
+				'create_account',
+				'proxy'
+			);
+		}
 
 		const { error } = await createAccount( {
 			showProgress: showProgress === 'true',

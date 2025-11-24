@@ -78,13 +78,18 @@ export default function ModuleSetup( { moduleSlug } ) {
 		async ( redirectURL ) => {
 			await deleteItem( 'module_setup' );
 
-			const completionEventArgs = isInitialSetupFlow
-				? [
-						`${ viewContext }_setup`,
-						'setup_flow_v3_complete_analytics_step',
-				  ]
-				: [ 'moduleSetup', 'complete_module_setup', moduleSlug ];
-			await trackEvent( ...completionEventArgs );
+			if ( isInitialSetupFlow ) {
+				await trackEvent(
+					`${ viewContext }_setup`,
+					'setup_flow_v3_complete_analytics_step'
+				);
+			} else {
+				await trackEvent(
+					'moduleSetup',
+					'complete_module_setup',
+					moduleSlug
+				);
+			}
 
 			if ( redirectURL ) {
 				navigateTo( redirectURL );
