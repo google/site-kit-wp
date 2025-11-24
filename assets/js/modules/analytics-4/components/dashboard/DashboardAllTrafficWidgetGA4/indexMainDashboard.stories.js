@@ -173,7 +173,7 @@ MainDashboardLoaded.args = {
 };
 MainDashboardLoaded.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
-	delay: 200,
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
 };
 
 export const MainDashboardLoading = Template.bind( {} );
@@ -235,7 +235,7 @@ MainDashboardDataUnavailable.args = {
 };
 MainDashboardDataUnavailable.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
-	delay: 200,
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
 };
 
 export const MainDashboardZeroData = Template.bind( {} );
@@ -279,7 +279,7 @@ MainDashboardZeroData.args = {
 };
 MainDashboardZeroData.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
-	delay: 200,
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
 };
 
 export const MainDashboardError = Template.bind( {} );
@@ -326,7 +326,7 @@ MainDashboardOneRowOfData.args = {
 };
 MainDashboardOneRowOfData.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
-	delay: 200,
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
 };
 
 export const NoDataInComparisonDateRange = Template.bind( {} );
@@ -342,7 +342,7 @@ NoDataInComparisonDateRange.args = {
 };
 NoDataInComparisonDateRange.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
-	delay: 200,
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
 };
 
 export default {

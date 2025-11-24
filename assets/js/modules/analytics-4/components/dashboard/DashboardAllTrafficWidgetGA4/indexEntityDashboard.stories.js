@@ -49,7 +49,12 @@ const widgetComponentProps = getWidgetComponentProps(
 );
 
 function Template() {
-	return <DashboardAllTrafficWidgetGA4 { ...widgetComponentProps } />;
+	// Min height added to fix rare VRT instability where the mobile VRT for Zero Data was not capturing the full height.
+	return (
+		<div style={ { minHeight: '980px' } }>
+			<DashboardAllTrafficWidgetGA4 { ...widgetComponentProps } />
+		</div>
+	);
 }
 
 const baseAllTrafficOptions = {
@@ -167,7 +172,7 @@ EntityDashboardLoaded.args = {
 };
 EntityDashboardLoaded.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
-	delay: 200,
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
 };
 
 export const EntityDashboardLoading = Template.bind( {} );
@@ -225,7 +230,7 @@ EntityDashboardDataUnavailable.args = {
 };
 EntityDashboardDataUnavailable.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
-	delay: 200,
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
 };
 
 export const EntityDashboardZeroData = Template.bind( {} );
@@ -269,7 +274,7 @@ EntityDashboardZeroData.args = {
 };
 EntityDashboardZeroData.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
-	delay: 200,
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
 };
 
 export const EntityDashboardError = Template.bind( {} );
@@ -316,7 +321,7 @@ EntityDashboardOneRowOfData.args = {
 };
 EntityDashboardOneRowOfData.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
-	delay: 200,
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
 };
 
 export const NoDataInComparisonDateRange = Template.bind( {} );
@@ -332,7 +337,7 @@ NoDataInComparisonDateRange.args = {
 };
 NoDataInComparisonDateRange.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
-	delay: 200,
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
 };
 
 export default {
