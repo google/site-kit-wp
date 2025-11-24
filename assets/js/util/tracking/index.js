@@ -22,6 +22,9 @@
  * Internal dependencies
  */
 import createTracking from './createTracking';
+import getGlobal from '@/js/util/get-global';
+
+const globalObject = getGlobal();
 
 const {
 	activeModules = [],
@@ -32,9 +35,9 @@ const {
 	userIDHash,
 	isAuthenticated,
 	userRoles,
-} = global._googlesitekitTrackingData || {};
+} = globalObject._googlesitekitTrackingData || {};
 
-const { GOOGLESITEKIT_VERSION: pluginVersion } = global;
+const pluginVersion = globalObject.GOOGLESITEKIT_VERSION;
 
 const initialConfig = {
 	activeModules,

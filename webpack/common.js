@@ -44,6 +44,8 @@ exports.projectPath = projectPath;
 exports.resolve = {
 	alias: {
 		'@': path.resolve( rootDir, 'assets' ),
+		react: path.resolve( rootDir, 'node_modules/react' ),
+		'react-dom': path.resolve( rootDir, 'node_modules/react-dom' ),
 		'@wordpress/api-fetch__non-shim': require.resolve(
 			'@wordpress/api-fetch'
 		),

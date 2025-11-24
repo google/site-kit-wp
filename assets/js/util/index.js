@@ -33,6 +33,7 @@ export * from './i18n';
 export * from './markdown';
 export * from './convert-time';
 export * from './dates';
+export { default as getGlobal } from './get-global';
 export * from './chart';
 export * from './urls';
 export * from './is-valid-numeric-id';
