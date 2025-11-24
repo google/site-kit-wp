@@ -42,6 +42,7 @@ import Typography from '@/js/components/Typography';
 import EmailReportingCardNotice, {
 	EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM,
 } from '@/js/components/email-reporting/EmailReportingCardNotice';
+import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/AnalyticsDisconnectedNotice';
 
 export default function SettingsEmailReporting( { loading = false } ) {
 	const isEnabled = useSelect( ( select ) =>
@@ -145,6 +146,7 @@ export default function SettingsEmailReporting( { loading = false } ) {
 						</Cell>
 					</Row>
 				) }
+			<AnalyticsDisconnectedNotice />
 		</Fragment>
 	);
 }
