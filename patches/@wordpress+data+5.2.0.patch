@@ -1,0 +1,120 @@
+diff --git a/node_modules/@wordpress/data/build-module/components/use-select/index.js b/node_modules/@wordpress/data/build-module/components/use-select/index.js
+index 04481fc..31788e9 100644
+--- a/node_modules/@wordpress/data/build-module/components/use-select/index.js
++++ b/node_modules/@wordpress/data/build-module/components/use-select/index.js
+@@ -111,8 +111,7 @@ export default function useSelect(_mapSelect, deps) {
+   const isMountedAndNotUnsubscribing = useRef(); // Keep track of the stores being selected in the mapSelect function,
+   // and only subscribe to those stores later.
+ 
+-  const listeningStores = useRef([]);
+-  const trapSelect = useCallback(callback => registry.__experimentalMarkListeningStores(callback, listeningStores), [registry]); // Generate a "flag" for used in the effect dependency array.
++  // Generate a "flag" for used in the effect dependency array.
+   // It's different than just using `mapSelect` since deps could be undefined,
+   // in that case, we would still want to memoize it.
+ 
+@@ -122,7 +121,7 @@ export default function useSelect(_mapSelect, deps) {
+   if (!isWithoutMapping) {
+     try {
+       if (latestMapSelect.current !== mapSelect || latestMapOutputError.current) {
+-        mapOutput = trapSelect(() => mapSelect(registry.select, registry));
++        mapOutput = mapSelect(registry.select, registry);
+       } else {
+         mapOutput = latestMapOutput.current;
+       }
+@@ -167,7 +166,7 @@ export default function useSelect(_mapSelect, deps) {
+     const onStoreChange = () => {
+       if (isMountedAndNotUnsubscribing.current) {
+         try {
+-          const newMapOutput = trapSelect(() => latestMapSelect.current(registry.select, registry));
++          const newMapOutput = latestMapSelect.current(registry.select, registry);
+ 
+           if (isShallowEqual(latestMapOutput.current, newMapOutput)) {
+             return;
+@@ -190,22 +189,20 @@ export default function useSelect(_mapSelect, deps) {
+       onStoreChange();
+     }
+ 
+-    const onChange = () => {
++    const unsubscribe = registry.subscribe(() => {
+       if (latestIsAsync.current) {
+         renderQueue.add(queueContext, onStoreChange);
+       } else {
+         onStoreChange();
+       }
+-    };
+-
+-    const unsubscribers = listeningStores.current.map(storeName => registry.__experimentalSubscribeStore(storeName, onChange));
++    });
+     return () => {
+       isMountedAndNotUnsubscribing.current = false; // The return value of the subscribe function could be undefined if the store is a custom generic store.
+ 
+-      unsubscribers.forEach(unsubscribe => unsubscribe === null || unsubscribe === void 0 ? void 0 : unsubscribe());
++      unsubscribe();
+       renderQueue.flush(queueContext);
+     };
+-  }, [registry, trapSelect, depsChangedFlag, isWithoutMapping]);
++  }, [registry, depsChangedFlag, isWithoutMapping]);
+   return isWithoutMapping ? registry.select(_mapSelect) : mapOutput;
+ }
+ //# sourceMappingURL=index.js.map
+\ No newline at end of file
+diff --git a/node_modules/@wordpress/data/build/components/use-select/index.js b/node_modules/@wordpress/data/build/components/use-select/index.js
+index e6ddb7d..3a3cbda 100644
+--- a/node_modules/@wordpress/data/build/components/use-select/index.js
++++ b/node_modules/@wordpress/data/build/components/use-select/index.js
+@@ -127,8 +127,7 @@ function useSelect(_mapSelect, deps) {
+   const isMountedAndNotUnsubscribing = (0, _element.useRef)(); // Keep track of the stores being selected in the mapSelect function,
+   // and only subscribe to those stores later.
+ 
+-  const listeningStores = (0, _element.useRef)([]);
+-  const trapSelect = (0, _element.useCallback)(callback => registry.__experimentalMarkListeningStores(callback, listeningStores), [registry]); // Generate a "flag" for used in the effect dependency array.
++  // Generate a "flag" for used in the effect dependency array.
+   // It's different than just using `mapSelect` since deps could be undefined,
+   // in that case, we would still want to memoize it.
+ 
+@@ -138,7 +137,7 @@ function useSelect(_mapSelect, deps) {
+   if (!isWithoutMapping) {
+     try {
+       if (latestMapSelect.current !== mapSelect || latestMapOutputError.current) {
+-        mapOutput = trapSelect(() => mapSelect(registry.select, registry));
++        mapOutput = mapSelect(registry.select, registry);
+       } else {
+         mapOutput = latestMapOutput.current;
+       }
+@@ -183,7 +182,7 @@ function useSelect(_mapSelect, deps) {
+     const onStoreChange = () => {
+       if (isMountedAndNotUnsubscribing.current) {
+         try {
+-          const newMapOutput = trapSelect(() => latestMapSelect.current(registry.select, registry));
++          const newMapOutput = latestMapSelect.current(registry.select, registry);
+ 
+           if ((0, _isShallowEqual.default)(latestMapOutput.current, newMapOutput)) {
+             return;
+@@ -206,22 +205,20 @@ function useSelect(_mapSelect, deps) {
+       onStoreChange();
+     }
+ 
+-    const onChange = () => {
++    const unsubscribe = registry.subscribe(() => {
+       if (latestIsAsync.current) {
+         renderQueue.add(queueContext, onStoreChange);
+       } else {
+         onStoreChange();
+       }
+-    };
+-
+-    const unsubscribers = listeningStores.current.map(storeName => registry.__experimentalSubscribeStore(storeName, onChange));
++    });
+     return () => {
+       isMountedAndNotUnsubscribing.current = false; // The return value of the subscribe function could be undefined if the store is a custom generic store.
+ 
+-      unsubscribers.forEach(unsubscribe => unsubscribe === null || unsubscribe === void 0 ? void 0 : unsubscribe());
++      unsubscribe();
+       renderQueue.flush(queueContext);
+     };
+-  }, [registry, trapSelect, depsChangedFlag, isWithoutMapping]);
++  }, [registry, depsChangedFlag, isWithoutMapping]);
+   return isWithoutMapping ? registry.select(_mapSelect) : mapOutput;
+ }
+ //# sourceMappingURL=index.js.map
+\ No newline at end of file
