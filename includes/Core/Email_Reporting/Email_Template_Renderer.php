@@ -18,6 +18,25 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 class Email_Template_Renderer {
 
 	/**
+	 * The sections map instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Sections_Map
+	 */
+	protected $sections_map;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Sections_Map $sections_map The sections map instance.
+	 */
+	public function __construct( Sections_Map $sections_map ) {
+		$this->sections_map = $sections_map;
+	}
+
+	/**
 	 * Renders the email template with the given data.
 	 *
 	 * @since n.e.x.t
@@ -32,8 +51,7 @@ class Email_Template_Renderer {
 			return '';
 		}
 
-		$sections_map = new Sections_Map( $data );
-		$sections     = $sections_map->get_sections();
+		$sections = $this->sections_map->get_sections();
 
 		foreach ( $sections as &$section ) {
 			if ( empty( $section['section_parts'] ) ) {

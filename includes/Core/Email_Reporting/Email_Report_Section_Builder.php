@@ -191,7 +191,6 @@ class Email_Report_Section_Builder {
 		return array( $labels, $values, $trends );
 	}
 
-
 	/**
 	 * Normalize values using metric formatter and localization.
 	 *
