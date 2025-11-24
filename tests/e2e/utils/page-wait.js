@@ -31,5 +31,5 @@ export function pageWait( delay = E2E_PAGE_WAIT ) {
 		throw new Error( 'pageWait requires a number to be passed.' );
 	}
 
-	return new Promise( ( resolve ) => setTimeout( resolve, delay ) );
+	return page.waitForTimeout( delay );
 }

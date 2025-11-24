@@ -93,7 +93,7 @@ describe( 'Site Kit dashboard post search', () => {
 		expect( isAdminMenuOpen ).toBe( true );
 
 		// Wait for half a second and test again, to ensure the menu is not auto-closed.
-		await new Promise( ( resolve ) => setTimeout( resolve, 500 ) );
+		await page.waitForTimeout( 500 );
 
 		isAdminMenuOpen = await page.evaluate( () => {
 			const element = document.querySelector( '#adminmenu' );
