@@ -10,12 +10,22 @@
 
 namespace Google\Site_Kit\Core\Email_Reporting;
 
+use Google\Site_Kit\Context;
+
 /**
  * Class for mapping email report sections and their layout configuration.
  *
  * @since n.e.x.t
  */
 class Sections_Map {
+
+	/**
+	 * Plugin context.
+	 *
+	 * @since n.e.x.t
+	 * @var Context
+	 */
+	protected $context;
 
 	/**
 	 * Payload data for populating section templates.
@@ -30,9 +40,11 @@ class Sections_Map {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $payload The payload data to be used in sections.
+	 * @param Context $context Plugin context.
+	 * @param array   $payload The payload data to be used in sections.
 	 */
-	public function __construct( array $payload ) {
+	public function __construct( Context $context, array $payload ) {
+		$this->context = $context;
 		$this->payload = $payload;
 	}
 
@@ -50,9 +62,7 @@ class Sections_Map {
 	 */
 	public function get_sections() {
 		return array_merge(
-			$this->get_business_growth_section(),
-			$this->get_audience_engagement_section(),
-			$this->get_traffic_insights_section()
+			$this->get_business_growth_section()
 		);
 	}
 
@@ -66,84 +76,21 @@ class Sections_Map {
 	protected function get_business_growth_section() {
 		return array(
 			'is_my_site_helping_my_business_grow' => array(
-				'title'         => esc_html__( 'Is my site helping my business grow?', 'google-site-kit' ),
-				'icon'          => 'trending-up',
-				'section_parts' => array(
+				'title'            => esc_html__( 'Is my site helping my business grow?', 'google-site-kit' ),
+				'icon'             => 'conversions',
+				'section_template' => 'section-conversions',
+				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
+				'section_parts'    => array(
 					'total_conversion_events' => array(
-						'template' => 'metrics',
-						'data'     => $this->payload['total_conversion_events'] ?? array(),
+						'data' => $this->payload['total_conversion_events'] ?? array(),
 					),
 					'products_added_to_cart'  => array(
-						'template' => 'conversion-metrics',
-						'data'     => $this->payload['products_added_to_cart'] ?? array(),
+						'data'                => $this->payload['products_added_to_cart'] ?? array(),
+						'top_traffic_channel' => $this->payload['products_added_to_cart_top_traffic_channel'] ?? '',
 					),
 					'purchases'               => array(
-						'template' => 'conversion-metrics',
-						'data'     => $this->payload['purchases'] ?? array(),
-					),
-				),
-			),
-		);
-	}
-
-	/**
-	 * Gets the audience engagement section.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return array Section configuration array.
-	 */
-	protected function get_audience_engagement_section() {
-		return array(
-			'how_are_people_engaging_with_my_site' => array(
-				'title'         => esc_html__( 'How are people engaging with my site?', 'google-site-kit' ),
-				'icon'          => 'users',
-				'section_parts' => array(
-					'total_visitors'       => array(
-						'template' => 'metrics',
-						'data'     => $this->payload['total_visitors'] ?? array(),
-					),
-					'returning_visitors'   => array(
-						'template' => 'metrics',
-						'data'     => $this->payload['returning_visitors'] ?? array(),
-					),
-					'engaged_traffic_rate' => array(
-						'template' => 'metrics',
-						'data'     => $this->payload['engaged_traffic_rate'] ?? array(),
-					),
-					'new_visitors_chart'   => array(
-						'template' => 'chart',
-						'data'     => $this->payload['new_visitors_chart'] ?? array(),
-					),
-				),
-			),
-		);
-	}
-
-	/**
-	 * Gets the traffic insights section.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return array Section configuration array.
-	 */
-	protected function get_traffic_insights_section() {
-		return array(
-			'where_is_my_traffic_coming_from' => array(
-				'title'         => esc_html__( 'Where is my traffic coming from?', 'google-site-kit' ),
-				'icon'          => 'globe',
-				'section_parts' => array(
-					'traffic_channels'      => array(
-						'template' => 'table',
-						'data'     => $this->payload['traffic_channels'] ?? array(),
-					),
-					'top_pages'             => array(
-						'template' => 'table',
-						'data'     => $this->payload['top_pages'] ?? array(),
-					),
-					'search_console_clicks' => array(
-						'template' => 'metrics',
-						'data'     => $this->payload['search_console_clicks'] ?? array(),
+						'data'                => $this->payload['purchases'] ?? array(),
+						'top_traffic_channel' => $this->payload['purchases_top_traffic_channel'] ?? '',
 					),
 				),
 			),

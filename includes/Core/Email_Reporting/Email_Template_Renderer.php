@@ -18,6 +18,16 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 class Email_Template_Renderer {
 
 	/**
+	 * CDN base URL for email assets.
+	 *
+	 * TODO: Change to the production URL when the assets are uploaded to production bucket in #11551.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	const EMAIL_ASSETS_BASE_URL = 'https://storage.googleapis.com/pue-email-assets-dev/';
+
+	/**
 	 * The sections map instance.
 	 *
 	 * @since n.e.x.t
@@ -37,12 +47,24 @@ class Email_Template_Renderer {
 	}
 
 	/**
+	 * Gets the full URL for an email asset.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $asset_name The asset filename (e.g., 'icon-conversions.png').
+	 * @return string The full URL to the asset.
+	 */
+	public function get_email_asset_url( $asset_name ) {
+		return self::EMAIL_ASSETS_BASE_URL . ltrim( $asset_name, '/' );
+	}
+
+	/**
 	 * Renders the email template with the given data.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param string $template_name The template name.
-	 * @param array  $data          The data to render.
+	 * @param array  $data          The data to render (metadata like subject, preheader, etc.).
 	 * @return string The rendered HTML.
 	 */
 	public function render( $template_name, array $data ) {
@@ -51,26 +73,24 @@ class Email_Template_Renderer {
 			return '';
 		}
 
+		// TODO: check the data is correctly coming through from the payload data.
+
 		$sections = $this->sections_map->get_sections();
 
-		foreach ( $sections as &$section ) {
-			if ( empty( $section['section_parts'] ) ) {
-				continue;
-			}
+		// Create a callable for templates to use for asset URLs.
+		$get_asset_url = function ( $asset_path ) {
+			return $this->get_email_asset_url( $asset_path );
+		};
 
-			foreach ( $section['section_parts'] as $part_key => $part_config ) {
-				if ( ! isset( $data[ $part_key ] ) ) {
-					continue;
-				}
+		$template_data = array_merge(
+			$data,
+			array(
+				'sections'      => $sections,
+				'get_asset_url' => $get_asset_url,
+			)
+		);
 
-				$template_file = $this->get_template_file( $template_name, $part_config['template'] );
-				if ( $template_file && file_exists( $template_file ) ) {
-					$section['output'] = $this->render_template( $template_file, $section['data'] );
-				}
-			}
-		}
-
-		return $this->render_template( $main_template_file, $sections );
+		return $this->render_template( $main_template_file, $template_data );
 	}
 
 	/**
@@ -79,7 +99,7 @@ class Email_Template_Renderer {
 	 * @since n.e.x.t
 	 *
 	 * @param string $template_file The template file path.
-	 * @param array  $data          The data to render.
+	 * @param array  $data          The data to render (used within the template file).
 	 * @return string The rendered HTML.
 	 */
 	protected function render_template( $template_file, array $data ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
