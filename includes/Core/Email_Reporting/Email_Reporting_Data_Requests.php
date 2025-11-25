@@ -151,8 +151,8 @@ class Email_Reporting_Data_Requests {
 
 		wp_set_current_user( $user_id );
 
-		// Collect payloads while impersonating the target user;
-		// always restore user context even if a module call fails.
+		// Collect payloads while impersonating the target user. Finally executes even
+		// when returning, so we restore user context on both success and unexpected throws.
 		try {
 			return $this->collect_payloads( $available_modules, $date_range );
 		} finally {
