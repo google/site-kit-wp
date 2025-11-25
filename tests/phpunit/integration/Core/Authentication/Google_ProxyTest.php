@@ -431,11 +431,43 @@ class Google_ProxyTest extends TestCase {
 				'connected_modules'      => 'site-verification search-console pagespeed-insights',
 				'php_version'            => phpversion(),
 				'feature_metrics'        => array(),
+				'amp_mode'               => '', // No AMP mode by default.
 			),
 			$this->request_args['body'],
 			'Get features request body should contain site credentials and platform information.'
 		);
 		$this->assertEqualSetsWithIndex( $expected_success_response, $features, 'Get features should return expected feature data.' );
+	}
+
+	/**
+	 * @dataProvider amp_mode_provider
+	 */
+	public function test_get_features_with_amp_mode( $amp_mode, $context_method ) {
+		// Remove the filter being added by Modules::register() or any other class during bootstrap.
+		remove_all_filters( 'googlesitekit_feature_metrics' );
+
+		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
+
+		$context      = call_user_func( array( $this, $context_method ) );
+		$google_proxy = new Google_Proxy( $context );
+
+		$expected_url              = $google_proxy->url( Google_Proxy::FEATURES_URI );
+		$expected_success_response = array(
+			'test.featureName' => array( 'enabled' => true ),
+		);
+
+		$this->mock_http_request( $expected_url, $expected_success_response );
+		$google_proxy->get_features( $credentials, new OAuth_Client( $context, null, null, $credentials, $google_proxy ) );
+
+		// Ensure amp_mode is set to the expected value.
+		$this->assertEquals( $amp_mode, $this->request_args['body']['amp_mode'], "Get features request should include '$amp_mode' amp_mode." );
+	}
+
+	public function amp_mode_provider() {
+		return array(
+			'primary AMP mode'   => array( 'primary', 'get_amp_primary_context' ),
+			'secondary AMP mode' => array( 'secondary', 'get_amp_secondary_context' ),
+		);
 	}
 
 	public function test_count_connected_users() {
