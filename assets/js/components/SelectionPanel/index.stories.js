@@ -105,7 +105,8 @@ function Template( {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
-	delay: 1500,
+	readySelector:
+		'.googlesitekit-selection-panel-item:first-of-type .mdc-checkbox__native-control:focus',
 };
 
 export const WithSavedItems = Template.bind( {} );

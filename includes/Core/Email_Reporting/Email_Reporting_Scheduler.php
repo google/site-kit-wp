@@ -24,6 +24,8 @@ class Email_Reporting_Scheduler {
 	const ACTION_INITIATOR = 'googlesitekit_email_reporting_initiator';
 	const ACTION_WORKER    = 'googlesitekit_email_reporting_worker';
 	const ACTION_FALLBACK  = 'googlesitekit_email_reporting_fallback';
+	const ACTION_MONITOR   = 'googlesitekit_email_reporting_monitor';
+	const ACTION_CLEANUP   = 'googlesitekit_email_reporting_cleanup';
 
 	/**
 	 * Frequency planner instance.
@@ -41,6 +43,15 @@ class Email_Reporting_Scheduler {
 	 */
 	public function __construct( Frequency_Planner $frequency_planner ) {
 		$this->frequency_planner = $frequency_planner;
+	}
+
+	/**
+	 * Registers WordPress hooks.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function register() {
+		add_filter( 'cron_schedules', array( __CLASS__, 'register_monthly_schedule' ) );
 	}
 
 	/**
@@ -123,13 +134,60 @@ class Email_Reporting_Scheduler {
 	}
 
 	/**
+	 * Ensures the monitor event is scheduled daily.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function schedule_monitor() {
+		if ( wp_next_scheduled( self::ACTION_MONITOR ) ) {
+			return;
+		}
+
+		wp_schedule_event( time(), 'daily', self::ACTION_MONITOR );
+	}
+
+	/**
+	 * Ensures a recurring cleanup event exists.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function schedule_cleanup() {
+		if ( wp_next_scheduled( self::ACTION_CLEANUP ) ) {
+			return;
+		}
+
+		wp_schedule_event( time(), 'monthly', self::ACTION_CLEANUP );
+	}
+
+	/**
 	 * Unschedules all email reporting related events.
 	 *
 	 * @since n.e.x.t
 	 */
 	public function unschedule_all() {
-		foreach ( array( self::ACTION_INITIATOR, self::ACTION_WORKER, self::ACTION_FALLBACK ) as $hook ) {
+		foreach ( array( self::ACTION_INITIATOR, self::ACTION_WORKER, self::ACTION_FALLBACK, self::ACTION_MONITOR, self::ACTION_CLEANUP ) as $hook ) {
 			wp_unschedule_hook( $hook );
 		}
+	}
+
+	/**
+	 * Registers a monthly cron schedule if one does not exist.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $schedules Existing schedules.
+	 * @return array Modified schedules including a monthly interval.
+	 */
+	public static function register_monthly_schedule( $schedules ) {
+		if ( isset( $schedules['monthly'] ) ) {
+			return $schedules;
+		}
+
+		$schedules['monthly'] = array(
+			'interval' => MONTH_IN_SECONDS,
+			'display'  => __( 'Once Monthly', 'google-site-kit' ),
+		);
+
+		return $schedules;
 	}
 }
