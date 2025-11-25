@@ -178,7 +178,8 @@ class Email_Reporting_Site_Health {
 			array(
 				'post_type'      => Email_Log::POST_TYPE,
 				'post_status'    => $this->get_relevant_log_statuses(),
-				'posts_per_page' => -1,
+				// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				'posts_per_page' => 10000,
 				'fields'         => 'ids',
 				'orderby'        => 'date',
 				'order'          => 'DESC',

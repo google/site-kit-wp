@@ -147,7 +147,7 @@ class Create_Account_TicketTest extends TestCase {
 	/**
 	 * @dataProvider data_create_account_ticket_show_progress
 	 */
-	public function test_create_request( $showProgressParams ) {
+	public function test_create_request( $show_progress_params ) {
 		$this->enable_feature( 'setupFlowRefresh' );
 
 		$this->provision_account_ticket_request = null;
@@ -160,8 +160,8 @@ class Create_Account_TicketTest extends TestCase {
 			'timezone'       => 'UTC',
 		);
 
-		if ( isset( $showProgressParams['provided'] ) ) {
-			$data['showProgress'] = $showProgressParams['provided'];
+		if ( isset( $show_progress_params['provided'] ) ) {
+			$data['showProgress'] = $show_progress_params['provided'];
 		}
 
 		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'create-account-ticket', $data );
@@ -175,8 +175,12 @@ class Create_Account_TicketTest extends TestCase {
 		$this->assertEquals( 'test account name', $account_ticket_request->getAccount()->getDisplayName(), 'Account display name should match the provided value.' );
 		$this->assertEquals( 'US', $account_ticket_request->getAccount()->getRegionCode(), 'Account region code should match the provided value.' );
 		$redirect_uri = $this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri'];
+
+		if ( $show_progress_params['expected'] ) {
+			$redirect_uri = add_query_arg( 'show_progress', 1, $redirect_uri );
+		}
+
 		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri(), 'Redirect URI should match the analytics redirect URI from site fields.' );
-		$this->assertEquals( $showProgressParams['expected'], $account_ticket_request->getShowProgress(), 'The `showProgress` field should match the expected value' );
 	}
 
 	public function test_parse_response() {

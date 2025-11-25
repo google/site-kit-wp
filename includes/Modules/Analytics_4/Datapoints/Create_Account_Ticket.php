@@ -87,15 +87,22 @@ class Create_Account_Ticket extends Datapoint implements Executable_Datapoint {
 		$account->setDisplayName( $data_request->data['displayName'] );
 		$account->setRegionCode( $data_request->data['regionCode'] );
 
+		$redirect_uri = $this->provisioning_redirect_uri;
+
+		// Add `show_progress` query parameter if the feature flag is enabled
+		// and `showProgress` is set and truthy.
+		if (
+			Feature_Flags::enabled( 'setupFlowRefresh' ) &&
+			! empty( $data_request->data['showProgress'] )
+		) {
+			$redirect_uri = add_query_arg( 'show_progress', 1, $redirect_uri );
+		}
+
 		$account_ticket_request = new Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest();
 		$account_ticket_request->setSiteId( $this->credentials['oauth2_client_id'] );
 		$account_ticket_request->setSiteSecret( $this->credentials['oauth2_client_secret'] );
-		$account_ticket_request->setRedirectUri( $this->provisioning_redirect_uri );
+		$account_ticket_request->setRedirectUri( $redirect_uri );
 		$account_ticket_request->setAccount( $account );
-
-		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-			$account_ticket_request->setShowProgress( isset( $data_request->data['showProgress'] ) ? (bool) $data_request->data['showProgress'] : false );
-		}
 
 		return $this->get_service()->accounts
 			->provisionAccountTicket( $account_ticket_request );
