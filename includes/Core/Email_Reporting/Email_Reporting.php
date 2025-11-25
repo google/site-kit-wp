@@ -142,11 +142,11 @@ class Email_Reporting {
 	 *
 	 * @since 1.162.0
 	 *
-	 * @param Context                       $context      Plugin context.
-	 * @param Modules                       $modules      Modules instance.
+	 * @param Context                       $context       Plugin context.
+	 * @param Modules                       $modules       Modules instance.
 	 * @param Email_Reporting_Data_Requests $data_requests Email reporting data requests.
-	 * @param Options|null                  $options      Optional. Options instance. Default is a new instance.
-	 * @param User_Options|null             $user_options Optional. User options instance. Default is a new instance.
+	 * @param Options|null                  $options       Optional. Options instance. Default is a new instance.
+	 * @param User_Options|null             $user_options  Optional. User options instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,

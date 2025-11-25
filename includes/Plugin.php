@@ -233,8 +233,8 @@ final class Plugin {
 
 				if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) ) {
 					$data_requests = new Core\Email_Reporting\Email_Reporting_Data_Requests(
+						$this->context,
 						$modules,
-						$authentication,
 						$conversion_tracking,
 						$transients,
 						$user_options,

@@ -17,7 +17,6 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
-use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Search_Console;
@@ -87,39 +86,30 @@ class Email_Reporting_Data_Requests {
 	private $custom_dimensions_data_available;
 
 	/**
-	 * Authentication instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Authentication
-	 */
-	private $authentication;
-
-	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Modules             $modules        Modules instance.
-	 * @param Authentication      $authentication Optional. Authentication instance. Default new instance.
-	 * @param Conversion_Tracking $conversion_tracking Optional. Conversion tracking instance. Default new instance.
-	 * @param Transients          $transients     Optional. Transients instance. Default new instance.
-	 * @param User_Options        $user_options   Optional. User options instance. Default new instance.
+	 * @param Context             $context             Plugin context.
+	 * @param Modules             $modules             Modules instance.
+	 * @param Conversion_Tracking $conversion_tracking Conversion tracking instance.
+	 * @param Transients          $transients          Transients instance.
+	 * @param User_Options|null   $user_options        Optional. User options instance. Default new instance.
 	 */
 	public function __construct(
+		Context $context,
 		Modules $modules,
-		Authentication $authentication,
 		Conversion_Tracking $conversion_tracking,
 		Transients $transients,
 		?User_Options $user_options = null
 	) {
-		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->context      = $context;
 		$this->modules      = $modules;
 		$this->user_options = $user_options ?: new User_Options( $this->context );
 
 		$this->conversion_tracking              = $conversion_tracking;
 		$this->audience_settings                = new Module_Audience_Settings( new Options( $this->context ) );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $transients );
-		$this->authentication                   = $authentication;
 	}
 
 	/**
@@ -161,6 +151,8 @@ class Email_Reporting_Data_Requests {
 
 		wp_set_current_user( $user_id );
 
+		// Collect payloads while impersonating the target user;
+		// always restore user context even if a module call fails.
 		try {
 			return $this->collect_payloads( $available_modules, $date_range );
 		} finally {

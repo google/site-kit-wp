@@ -118,8 +118,8 @@ class Email_ReportingTest extends TestCase {
 	private function create_email_reporting() {
 		$conversion_tracking = new Conversion_Tracking( $this->context, $this->options );
 		$data_requests       = new Email_Reporting_Data_Requests(
+			$this->context,
 			$this->modules,
-			$this->authentication,
 			$conversion_tracking,
 			new Transients( $this->context ),
 			$this->user_options

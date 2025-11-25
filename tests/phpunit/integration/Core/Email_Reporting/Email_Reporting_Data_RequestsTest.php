@@ -289,8 +289,8 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		}
 
 		return new Email_Reporting_Data_Requests(
+			$this->context,
 			$this->modules,
-			$this->authentication,
 			$conversion_tracking,
 			$this->transients,
 			$this->user_options
