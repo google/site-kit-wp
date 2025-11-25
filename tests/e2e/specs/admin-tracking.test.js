@@ -364,6 +364,11 @@ describe( 'admin tracking', () => {
 			await setupSiteKit();
 			await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
+			// Wait for the gtag script to be loaded.
+			await page.waitForSelector(
+				'script[src^="https://www.googletagmanager.com/gtag/js?id=G-EQDN3BWDSD"]'
+			);
+
 			await expect( page ).toHaveTracking();
 
 			// Extract the plugin_version from the dataLayer.
