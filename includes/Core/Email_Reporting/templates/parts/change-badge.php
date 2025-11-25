@@ -22,6 +22,17 @@ if ( $change_value < 0 ) {
 $prefix        = $change_value > 0 ? '+' : '';
 $display_value = $prefix . round( $change_value, 1 ) . '%';
 ?>
-<span style="display:inline-block; padding:4px 8px; border-radius:12px; font-size:12px; font-weight:500; background:<?php echo esc_attr( $background ); ?>; color:<?php echo esc_attr( $color ); ?>;">
+<?php /* Outlook requires custom VML for rounded corners. */ ?>
+<!--[if mso]>
+<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"style="mso-wrap-style:none; mso-fit-shape-to-text: true; height:28;" arcsize="50%" strokecolor="<?php echo esc_attr( $background ); ?>" fillcolor="<?php echo esc_attr( $background ); ?>">
+<w:anchorlock/>
+<center style="font-family:Arial,sans-serif; font-size:12px; font-weight:500; color:<?php echo esc_attr( $color ); ?>;">
+<?php echo esc_html( $display_value ); ?>
+</center>
+</v:roundrect>
+<![endif]-->
+<!--[if !mso]><!-->
+<span style="display:inline-block; padding:4px 8px; border-radius:12px; font-size:12px; font-weight:500; background:<?php echo esc_attr( $background ); ?>; color:<?php echo esc_attr( $color ); ?>; mso-hide:all;">
 	<?php echo esc_html( $display_value ); ?>
 </span>
+<!--<![endif]-->

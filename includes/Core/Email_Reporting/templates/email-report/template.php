@@ -38,10 +38,18 @@ $shared_parts_dir   = $plugin_dir . '/Email_Reporting/templates/parts';
 $template_parts_dir = __DIR__ . '/parts';
 ?>
 <!doctype html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
 	<meta name="viewport" content="width=device-width" />
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<!--[if gte mso 9]>
+	<xml>
+		<o:OfficeDocumentSettings>
+			<o:AllowPNG/>
+			<o:PixelsPerInch>96</o:PixelsPerInch>
+		</o:OfficeDocumentSettings>
+	</xml>
+	<![endif]-->
 	<title><?php echo esc_html( $subject ); ?></title>
 	<style>
 		:root {
@@ -73,6 +81,8 @@ $template_parts_dir = __DIR__ . '/parts';
 
 		.body {
 			width: 100%;
+			<?php /* Outlook only allows max-width when set on table elements. */ ?>
+			max-width: 520px;
 			background-color: #F3F5F7;
 		}
 
@@ -111,11 +121,17 @@ $template_parts_dir = __DIR__ . '/parts';
 </head>
 <body>
 	<span class="preheader"><?php echo esc_html( $preheader ); ?></span>
-	<table role="presentation" class="body">
+	<?php /* Outlook centering: use fixed-width table wrapper. */ ?>
+	<!--[if mso]>
+	<table role="presentation" align="center" width="520" cellpadding="0" cellspacing="0" border="0" style="width:520px;">
+	<tr>
+	<td align="center">
+	<![endif]-->
+	<table role="presentation" class="body" align="center" width="100%" style="max-width: 520px; margin: 0 auto;">
 		<tr>
 			<td>&nbsp;</td>
-			<td class="container">
-				<table role="presentation" class="main">
+			<td class="container" align="center">
+				<table role="presentation" class="main" align="center">
 					<tr>
 						<td class="wrapper">
 							<?php
@@ -202,5 +218,10 @@ $template_parts_dir = __DIR__ . '/parts';
 			<td>&nbsp;</td>
 		</tr>
 	</table>
+	<!--[if mso]>
+	</td>
+	</tr>
+	</table>
+	<![endif]-->
 </body>
 </html>
