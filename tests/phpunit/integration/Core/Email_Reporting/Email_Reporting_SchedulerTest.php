@@ -34,6 +34,7 @@ class Email_Reporting_SchedulerTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
+		$this->remove_monthly_schedule_filter();
 		$this->frequency_planner = new class( $this->offsets ) extends Frequency_Planner {
 
 			private $offsets;
@@ -53,7 +54,16 @@ class Email_Reporting_SchedulerTest extends TestCase {
 
 	public function tear_down() {
 		$this->clear_scheduled_events();
+		$this->remove_monthly_schedule_filter();
 		parent::tear_down();
+	}
+
+	public function test_register_adds_monthly_schedule_filter() {
+		$this->assertFalse( has_filter( 'cron_schedules', array( Email_Reporting_Scheduler::class, 'register_monthly_schedule' ) ), 'Monthly schedule filter should not be added.' );
+
+		$this->scheduler->register();
+
+		$this->assertNotFalse( has_filter( 'cron_schedules', array( Email_Reporting_Scheduler::class, 'register_monthly_schedule' ) ), 'Monthly schedule filter should be added.' );
 	}
 
 	public function test_schedule_initiator_events_schedules_each_frequency_once() {
@@ -140,6 +150,23 @@ class Email_Reporting_SchedulerTest extends TestCase {
 		);
 	}
 
+	public function test_schedule_cleanup_schedules_monthly_event() {
+		$before = time();
+		$this->scheduler->register();
+
+		$this->scheduler->schedule_cleanup();
+
+		$scheduled = wp_next_scheduled( Email_Reporting_Scheduler::ACTION_CLEANUP );
+
+		$this->assertNotFalse( $scheduled, 'Cleanup event should be scheduled.' );
+		$this->assertGreaterThanOrEqual( $before, $scheduled, 'Cleanup event should not be scheduled in the past.' );
+		$this->assertLessThanOrEqual( $before + 2, $scheduled, 'Cleanup event should run immediately on first schedule.' );
+
+		$this->scheduler->schedule_cleanup();
+
+		$this->assertSame( $scheduled, wp_next_scheduled( Email_Reporting_Scheduler::ACTION_CLEANUP ), 'Cleanup scheduling should be idempotent.' );
+	}
+
 	public function test_unschedule_all_clears_events() {
 		$this->scheduler->schedule_initiator_once( Email_Reporting_Settings::FREQUENCY_WEEKLY );
 		$worker_timestamp   = time();
@@ -154,12 +181,16 @@ class Email_Reporting_SchedulerTest extends TestCase {
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Initiator hook should be unscheduled for weekly frequency.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_WORKER, array( 'batch', Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp ) ), 'Worker hook should be unscheduled for batch "batch".' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_FALLBACK, array( Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Fallback hook should be unscheduled for weekly frequency.' );
-		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_MONITOR ), 'Monitor hook should be unscheduled when clearing all events.' );
+		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_CLEANUP ), 'Cleanup hook should be unscheduled.' );
 	}
 
 	private function clear_scheduled_events() {
-		foreach ( array( Email_Reporting_Scheduler::ACTION_INITIATOR, Email_Reporting_Scheduler::ACTION_WORKER, Email_Reporting_Scheduler::ACTION_FALLBACK, Email_Reporting_Scheduler::ACTION_MONITOR ) as $hook ) {
+		foreach ( array( Email_Reporting_Scheduler::ACTION_INITIATOR, Email_Reporting_Scheduler::ACTION_WORKER, Email_Reporting_Scheduler::ACTION_FALLBACK, Email_Reporting_Scheduler::ACTION_MONITOR, Email_Reporting_Scheduler::ACTION_CLEANUP ) as $hook ) {
 			wp_unschedule_hook( $hook );
 		}
+	}
+
+	private function remove_monthly_schedule_filter() {
+		remove_filter( 'cron_schedules', array( Email_Reporting_Scheduler::class, 'register_monthly_schedule' ) );
 	}
 }

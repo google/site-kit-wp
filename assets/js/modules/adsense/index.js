@@ -54,13 +54,30 @@ import {
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	DATE_RANGE_OFFSET,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
 import AdBlockingRecoverySetupSuccessNotification from './components/dashboard/AdBlockingRecoverySetupSuccessNotification';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
+import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
+	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
+} from '@/js/components/OverlayNotification/AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
+import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
+	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
+} from '@/js/components/OverlayNotification/LinkAnalyticsAndAdSenseAccountsOverlayNotification';
+import { isZeroReport } from '@/js/modules/analytics-4/utils';
 export { registerStore } from './datastore';
 
 export function registerModule( modules ) {
@@ -236,6 +253,132 @@ export const ADSENSE_NOTIFICATIONS = {
 			}
 
 			return false;
+		},
+	},
+	[ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ]: {
+		Component:
+			AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The hasAccessToShareableModule() selector relies on
+				// the resolution of getAuthentication().
+				resolveSelect( CORE_USER ).getAuthentication(),
+				// The isModuleConnected() and hasAccessToShareableModule() selectors
+				// rely on the resolution of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
+
+			const adSenseModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
+
+			const analyticsModuleConnected = select(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+
+			const canViewSharedAdsense =
+				select( CORE_USER ).hasAccessToShareableModule(
+					MODULE_SLUG_ADSENSE
+				);
+
+			const canViewSharedAnalytics = select(
+				CORE_USER
+			).hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
+
+			if (
+				! (
+					adSenseModuleConnected &&
+					analyticsModuleConnected &&
+					canViewSharedAdsense &&
+					canViewSharedAnalytics
+				)
+			) {
+				return false;
+			}
+
+			// The getAdSenseLinked() selector relies on the resolution
+			// of the getSettings() resolver.
+			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+			const isAdSenseLinked =
+				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+
+			if ( ! isAdSenseLinked ) {
+				return false;
+			}
+
+			// The getAccountID() selector relies on the resolution
+			// of the getSettings() resolver.
+			await resolveSelect( MODULES_ADSENSE ).getSettings();
+			const adSenseAccountID = select( MODULES_ADSENSE ).getAccountID();
+
+			const { startDate, endDate } = select(
+				CORE_USER
+			).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} );
+
+			const reportArgs = {
+				startDate,
+				endDate,
+				dimensions: [ 'pagePath', 'adSourceName' ],
+				metrics: [ { name: 'totalAdRevenue' } ],
+				dimensionFilters: {
+					adSourceName: `Google AdSense account (${ adSenseAccountID })`,
+				},
+				orderby: [
+					{ metric: { metricName: 'totalAdRevenue' }, desc: true },
+				],
+				limit: 1,
+				reportID:
+					'notifications_analytics-adsense-linked-overlay_reportArgs',
+			};
+
+			const reportData = await resolveSelect(
+				MODULES_ANALYTICS_4
+			).getReport( reportArgs );
+
+			return isZeroReport( reportData ) === false;
+		},
+	},
+	[ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ]: {
+		Component: LinkAnalyticsAndAdSenseAccountsOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
+
+			const adSenseModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
+
+			const analyticsModuleConnected = select(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+
+			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
+				return false;
+			}
+
+			// The getAdSenseLinked() selector relies on the resolution
+			// of the getSettings() resolver.
+			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+			const isAdSenseLinked =
+				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+
+			return isAdSenseLinked === false;
 		},
 	},
 };

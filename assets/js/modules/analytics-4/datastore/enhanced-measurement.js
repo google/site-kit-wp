@@ -384,6 +384,17 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 	}
 } );
 
+function* waitForEnhancedMeasurementSettings( propertyID, webDataStreamID ) {
+	const { resolveSelect } = yield commonActions.getRegistry();
+
+	yield commonActions.await(
+		resolveSelect( MODULES_ANALYTICS_4 ).getEnhancedMeasurementSettings(
+			propertyID,
+			webDataStreamID
+		)
+	);
+}
+
 const baseResolvers = {
 	*getEnhancedMeasurementSettings( propertyID, webDataStreamID ) {
 		const registry = yield commonActions.getRegistry();
@@ -400,26 +411,11 @@ const baseResolvers = {
 		}
 	},
 
-	*isEnhancedMeasurementStreamAlreadyEnabled( propertyID, webDataStreamID ) {
-		const registry = yield commonActions.getRegistry();
-		// Only fetch enhanced measurement settings if the `streamEnabled` setting is not already in the store.
-		const isEnhancedMeasurementStreamEnabled = registry
-			.select( MODULES_ANALYTICS_4 )
-			.isEnhancedMeasurementStreamAlreadyEnabled(
-				propertyID,
-				webDataStreamID
-			);
+	isEnhancedMeasurementStreamEnabled: waitForEnhancedMeasurementSettings,
 
-		if ( isEnhancedMeasurementStreamEnabled === undefined ) {
-			yield fetchGetEnhancedMeasurementSettingsStore.actions.fetchGetEnhancedMeasurementSettings(
-				propertyID,
-				webDataStreamID
-			);
-		}
-	},
+	isEnhancedMeasurementStreamAlreadyEnabled:
+		waitForEnhancedMeasurementSettings,
 };
-baseResolvers.isEnhancedMeasurementStreamEnabled =
-	baseResolvers.getEnhancedMeasurementSettings;
 
 const baseSelectors = {
 	/**
