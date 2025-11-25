@@ -151,7 +151,16 @@ export default function ModuleSetup( { moduleSlug } ) {
 					) : null
 				}
 			>
-				{ isInitialSetupFlow ? <ExitSetup /> : <HelpMenu /> }
+				{ isInitialSetupFlow ? (
+					<ExitSetup
+						gaTrackingEventArgs={ {
+							category: `${ viewContext }_setup`,
+							label: moduleSlug,
+						} }
+					/>
+				) : (
+					<HelpMenu />
+				) }
 			</Header>
 			<div className="googlesitekit-setup">
 				<Grid>

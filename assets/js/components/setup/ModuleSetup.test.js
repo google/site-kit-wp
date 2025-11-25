@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../tests/js/test-utils';
+import { act, fireEvent, render } from '../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
@@ -58,6 +58,7 @@ describe( 'ModuleSetup', () => {
 
 	afterEach( () => {
 		mockTrackEvent.mockClear();
+		jest.resetAllMocks();
 	} );
 
 	describe( 'Analytics 4', () => {
@@ -148,8 +149,8 @@ describe( 'ModuleSetup', () => {
 				await waitForRegistry();
 			} );
 
-			it( 'should display an exit button', () => {
-				expect( getByText( 'Exit setup' ) ).toBeInTheDocument();
+			it( 'should match the snapshot', () => {
+				expect( container ).toMatchSnapshot();
 			} );
 
 			it( 'should display the progress indicator', () => {
@@ -180,8 +181,27 @@ describe( 'ModuleSetup', () => {
 				).not.toBeInTheDocument();
 			} );
 
-			it( 'should match the snapshot', () => {
-				expect( container ).toMatchSnapshot();
+			it( 'should display an exit button', () => {
+				expect( getByText( 'Exit setup' ) ).toBeInTheDocument();
+			} );
+
+			it( 'should track an event when the user clicks the exit button', async () => {
+				// Clear the mock, as there is a tracked event on mount.
+				mockTrackEvent.mockClear();
+
+				await act( () => {
+					fireEvent.click( getByText( 'Exit setup' ) );
+
+					return Promise.resolve();
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MODULE_SETUP }_setup`,
+					'setup_flow_v3_exit_setup',
+					MODULE_SLUG_ANALYTICS_4
+				);
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			} );
 
 			it( 'tracks only the initial setup analytics view event', () => {
