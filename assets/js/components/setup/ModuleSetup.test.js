@@ -47,7 +47,6 @@ describe( 'ModuleSetup', () => {
 	let registry;
 
 	beforeEach( () => {
-		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
@@ -55,6 +54,10 @@ describe( 'ModuleSetup', () => {
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		provideModuleRegistrations( registry );
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
 	} );
 
 	describe( 'Analytics 4', () => {
