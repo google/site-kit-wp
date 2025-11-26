@@ -78,18 +78,7 @@ class Email {
 		// Reset last error.
 		$this->last_error = null;
 
-		// Define a closure to capture wp_mail_failed errors.
-		$listener = function ( WP_Error $error ) {
-			$this->last_error = $error;
-		};
-
-		// Add the listener before sending, attempt to send the email and remove
-		// the listener immediately after wp_mail returns.
-		add_action( 'wp_mail_failed', $listener );
-		
-		$result = wp_mail( $to, $subject, $content, $headers ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail
-		
-		remove_action( 'wp_mail_failed', $listener );
+		$result = $this->send_email_and_catch_errors( $to, $subject, $content, $headers );
 
 		// If wp_mail returned false or we captured an error, return the error.
 		if ( false === $result || $this->last_error instanceof WP_Error ) {
@@ -104,6 +93,35 @@ class Email {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Sends an email via wp_mail while capturing any errors.
+	 *
+	 * Attaches a temporary listener to the wp_mail_failed hook to capture
+	 * any errors that occur during sending.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string|array $to      Array or comma-separated list of email addresses to send message.
+	 * @param string       $subject Email subject.
+	 * @param string       $content Message contents.
+	 * @param array        $headers Additional headers.
+	 * @return bool Whether the email was sent successfully.
+	 */
+	protected function send_email_and_catch_errors( $to, $subject, $content, $headers ) {
+		// Define a closure to capture wp_mail_failed errors.
+		$listener = function ( WP_Error $error ) {
+			$this->last_error = $error;
+		};
+
+		add_action( 'wp_mail_failed', $listener );
+
+		$result = wp_mail( $to, $subject, $content, $headers ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail
+
+		remove_action( 'wp_mail_failed', $listener );
+
+		return $result;
 	}
 
 	/**

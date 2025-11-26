@@ -63,6 +63,7 @@ class Sections_Map {
 	public function get_sections() {
 		return array_merge(
 			$this->get_business_growth_section()
+			// TODO: Add each new section here in follow up issues which implement additional sections.
 		);
 	}
 
