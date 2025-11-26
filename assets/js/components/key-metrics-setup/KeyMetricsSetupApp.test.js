@@ -533,16 +533,13 @@ describe( 'KeyMetricsSetupApp', () => {
 
 			fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
 
-			// Expect one of the calls to be the specific selection tracking event (additional events may fire).
-			expect( mockTrackEvent.mock.calls ).toEqual(
-				expect.arrayContaining( [
-					[
-						VIEW_CONTEXT_KEY_METRICS_SETUP,
-						'select_key_metrics_answer',
-						'publish_blog',
-					],
-				] )
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				VIEW_CONTEXT_KEY_METRICS_SETUP,
+				'select_key_metrics_answer',
+				'publish_blog'
 			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		} );
 
 		it( 'should track `complete_key_metrics_step` event when completing key metrics step by clicking `Complete setup` CTA', async () => {

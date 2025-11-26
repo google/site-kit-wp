@@ -181,20 +181,19 @@ export default function KeyMetricsSetupApp() {
 		submitChanges();
 	}, [ isBusy, isInitialSetupFlow, isSyncing, submitChanges, viewContext ] );
 
-	const onSelect = useCallback(
-		( checkedValues ) => {
-			const gaEventName = isInitialSetupFlow
-				? 'setup_flow_v3_select_key_metrics_answer'
-				: 'select_key_metrics_answer';
+	let gaTrackingEventArgs;
 
-			trackEvent(
-				isInitialSetupFlow ? `${ viewContext }_setup` : viewContext,
-				gaEventName,
-				checkedValues[ 0 ]
-			);
-		},
-		[ isInitialSetupFlow, viewContext ]
-	);
+	if ( isInitialSetupFlow ) {
+		gaTrackingEventArgs = {
+			category: `${ viewContext }_setup`,
+			action: 'setup_flow_v3_select_key_metrics_answer',
+		};
+	} else {
+		gaTrackingEventArgs = {
+			category: viewContext,
+			action: 'select_key_metrics_answer',
+		};
+	}
 
 	const { USER_INPUT_ANSWERS_PURPOSE } = getUserInputAnswers();
 
@@ -281,7 +280,9 @@ export default function KeyMetricsSetupApp() {
 											descriptions={
 												USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS
 											}
-											onSelect={ onSelect }
+											gaTrackingEventArgs={
+												gaTrackingEventArgs
+											}
 										/>
 
 										{ error && (
