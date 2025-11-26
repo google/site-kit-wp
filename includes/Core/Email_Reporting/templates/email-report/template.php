@@ -22,15 +22,7 @@ $primary_cta    = $data['primary_call_to_action'];
 $footer_content = $data['footer'];
 $sections       = $data['sections'];
 $get_asset_url  = $data['get_asset_url'];
-
-// Helper function to render a part with variables.
-$render_part = static function ( $file, array $vars = array() ) {
-	if ( ! file_exists( $file ) ) {
-		return;
-	}
-	extract( $vars, EXTR_SKIP ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
-	include $file;
-};
+$render_part    = $data['render_part'];
 
 // Asset paths.
 $plugin_dir         = dirname( dirname( dirname( __DIR__ ) ) );

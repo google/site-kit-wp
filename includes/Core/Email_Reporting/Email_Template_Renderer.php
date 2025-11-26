@@ -75,16 +75,12 @@ class Email_Template_Renderer {
 
 		$sections = $this->sections_map->get_sections();
 
-		// Create a callable for templates to use for asset URLs.
-		$get_asset_url = function ( $asset_path ) {
-			return $this->get_email_asset_url( $asset_path );
-		};
-
 		$template_data = array_merge(
 			$data,
 			array(
 				'sections'      => $sections,
 				'get_asset_url' => fn( $asset_path ) => $this->get_email_asset_url( $asset_path ),
+				'render_part'   => fn( $file, $vars = array() ) => $this->render_part_file( $file, $vars ),
 			)
 		);
 
@@ -104,6 +100,25 @@ class Email_Template_Renderer {
 		ob_start();
 		include $template_file;
 		return ob_get_clean();
+	}
+
+	/**
+	 * Renders a template part file with the given variables.
+	 *
+	 * Unlike render_template(), this method extracts variables into the
+	 * template scope for more convenient access within partial templates.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $file The template part file path.
+	 * @param array  $vars The variables to extract into the template scope.
+	 */
+	protected function render_part_file( $file, $vars = array() ) {
+		if ( ! file_exists( $file ) ) {
+			return;
+		}
+		extract( $vars, EXTR_SKIP ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
+		include $file;
 	}
 
 	/**
