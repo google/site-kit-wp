@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Email_Reporting\Report_Options\Report_Options as Base_R
 /**
  * Builds Search Console report option payloads for email reporting.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  *
  * @access private
  * @ignore
@@ -25,7 +25,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for total impressions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Report request options array for impressions.
 	 */
@@ -36,7 +36,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for total clicks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Report request options array for clicks.
 	 */
@@ -47,7 +47,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for keywords with highest CTR.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Report request options array for CTR keywords.
 	 */
@@ -65,7 +65,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for the pages with most clicks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Report request options array for top pages.
 	 */
@@ -83,7 +83,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Shared Search Console report options used for total clicks/impressions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Report request options array spanning both periods.
 	 */

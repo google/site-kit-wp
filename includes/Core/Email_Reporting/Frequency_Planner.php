@@ -19,7 +19,7 @@ use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 /**
  * Calculates the next occurrence for email reporting schedules.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class Frequency_Planner {
 	/**
 	 * Calculates the next run timestamp for a given frequency.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string       $frequency Frequency to calculate for.
 	 * @param int          $timestamp Base UNIX timestamp.

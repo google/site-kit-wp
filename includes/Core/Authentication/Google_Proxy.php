@@ -524,7 +524,7 @@ class Google_Proxy {
 	 *
 	 * @since 1.27.0
 	 * @since 1.104.0 Added `php_version` to request.
-	 * @since n.e.x.t Added `amp_mode` to request.
+	 * @since 1.167.0 Added `amp_mode` to request.
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @return array|WP_Error Response of the wp_remote_post request.
