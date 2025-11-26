@@ -86,7 +86,9 @@ class Email {
 		// Add the listener before sending, attempt to send the email and remove
 		// the listener immediately after wp_mail returns.
 		add_action( 'wp_mail_failed', $listener );
+		
 		$result = wp_mail( $to, $subject, $content, $headers ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail
+		
 		remove_action( 'wp_mail_failed', $listener );
 
 		// If wp_mail returned false or we captured an error, return the error.
