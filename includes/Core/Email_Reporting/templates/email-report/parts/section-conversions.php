@@ -2,8 +2,7 @@
 /**
  * Conversions section template.
  *
- * This is a section container template that renders the section header
- * and all section parts within it.
+ * This template renders the conversions metrics section with its header and parts.
  *
  * @package   Google\Site_Kit\Core\Email_Reporting
  * @copyright 2025 Google LLC

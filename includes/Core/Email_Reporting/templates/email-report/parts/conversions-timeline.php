@@ -2,7 +2,7 @@
 /**
  * Conversions timeline image part.
  *
- * Renders a timeline chart image based on whether the change is positive or negative.
+ * Renders a timeline image based on whether the change is positive or negative.
  *
  * @package   Google\Site_Kit\Core\Email_Reporting
  * @copyright 2025 Google LLC

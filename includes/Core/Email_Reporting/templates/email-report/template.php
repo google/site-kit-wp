@@ -42,6 +42,7 @@ $template_parts_dir = __DIR__ . '/parts';
 <head>
 	<meta name="viewport" content="width=device-width" />
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<?php /* Outlook requires this VML to prevent visual bugs when DPI is scaled on Windows. */ ?>
 	<!--[if gte mso 9]>
 	<xml>
 		<o:OfficeDocumentSettings>
@@ -168,35 +169,6 @@ $template_parts_dir = __DIR__ . '/parts';
 										);
 									}
 									continue;
-								}
-
-								// Fallback: render section header and parts individually.
-								if ( ! empty( $section['title'] ) ) {
-									$icon_url = $get_asset_url( 'icon-' . $section['icon'] . '.png' );
-									$render_part(
-										$template_parts_dir . '/section-header.php',
-										array(
-											'icon'     => $icon_url,
-											'title'    => $section['title'],
-											'subtitle' => '',
-										)
-									);
-
-									foreach ( $section['section_parts'] as $part_key => $part_config ) {
-										// Skip if no data or template for this part.
-										if ( empty( $part_config['data'] ) || empty( $part_config['template'] ) ) {
-											continue;
-										}
-
-										// Render the part template with its data.
-										$part_template_file = $template_parts_dir . '/' . $part_config['template'] . '.php';
-										if ( file_exists( $part_template_file ) ) {
-											$render_part(
-												$part_template_file,
-												array( 'data' => $part_config['data'] )
-											);
-										}
-									}
 								}
 							}
 
