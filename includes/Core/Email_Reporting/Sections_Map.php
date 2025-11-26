@@ -43,7 +43,7 @@ class Sections_Map {
 	 * @param Context $context Plugin context.
 	 * @param array   $payload The payload data to be used in sections.
 	 */
-	public function __construct( Context $context, array $payload ) {
+	public function __construct( Context $context, $payload ) {
 		$this->context = $context;
 		$this->payload = $payload;
 	}

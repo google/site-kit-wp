@@ -67,7 +67,7 @@ class Email_Template_Renderer {
 	 * @param array  $data          The data to render (metadata like subject, preheader, etc.).
 	 * @return string The rendered HTML.
 	 */
-	public function render( $template_name, array $data ) {
+	public function render( $template_name, $data ) {
 		$main_template_file = $this->get_template_file( $template_name );
 		if ( ! $main_template_file || ! file_exists( $main_template_file ) ) {
 			return '';
@@ -86,7 +86,7 @@ class Email_Template_Renderer {
 			$data,
 			array(
 				'sections'      => $sections,
-				'get_asset_url' => $get_asset_url,
+				'get_asset_url' => fn( $asset_path ) => $this->get_email_asset_url( $asset_path ),
 			)
 		);
 
@@ -102,7 +102,7 @@ class Email_Template_Renderer {
 	 * @param array  $data          The data to render (used within the template file).
 	 * @return string The rendered HTML.
 	 */
-	protected function render_template( $template_file, array $data ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+	protected function render_template( $template_file, $data ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		ob_start();
 		include $template_file;
 		return ob_get_clean();
