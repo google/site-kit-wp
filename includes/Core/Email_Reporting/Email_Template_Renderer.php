@@ -67,7 +67,7 @@ class Email_Template_Renderer {
 	 * @param array  $data          The data to render (metadata like subject, preheader, etc.).
 	 * @return string The rendered HTML.
 	 */
-	public function render( $template_name, array $data ) {
+	public function render( $template_name, $data ) {
 		$main_template_file = $this->get_template_file( $template_name );
 		if ( ! $main_template_file || ! file_exists( $main_template_file ) ) {
 			return '';
