@@ -102,7 +102,7 @@ class Email_Template_Renderer {
 	 * @param array  $data          The data to render (used within the template file).
 	 * @return string The rendered HTML.
 	 */
-	protected function render_template( $template_file, array $data ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+	protected function render_template( $template_file, $data ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		ob_start();
 		include $template_file;
 		return ob_get_clean();
