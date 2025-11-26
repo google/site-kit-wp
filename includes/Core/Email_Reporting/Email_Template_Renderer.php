@@ -73,8 +73,6 @@ class Email_Template_Renderer {
 			return '';
 		}
 
-		// TODO: check the data is correctly coming through from the payload data.
-
 		$sections = $this->sections_map->get_sections();
 
 		// Create a callable for templates to use for asset URLs.
@@ -102,7 +100,7 @@ class Email_Template_Renderer {
 	 * @param array  $data          The data to render (used within the template file).
 	 * @return string The rendered HTML.
 	 */
-	protected function render_template( $template_file, $data ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+	protected function render_template( $template_file, $data ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Data is used within the template parts so is no strictly unused.
 		ob_start();
 		include $template_file;
 		return ob_get_clean();

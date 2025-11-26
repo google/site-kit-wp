@@ -42,13 +42,10 @@ class Email {
 	 * @return array Final header array with Site Kit branding.
 	 */
 	public function build_headers( $headers = array() ) {
-		// Get the filtered From email address.
 		$from_email = apply_filters( 'wp_mail_from', '' );
 
-		// Build the From header with Site Kit name.
 		$from_header = sprintf( 'From: Site Kit <%s>', $from_email );
 
-		// Ensure headers is an array.
 		if ( ! is_array( $headers ) ) {
 			$headers = array();
 		}
@@ -75,20 +72,16 @@ class Email {
 	 * @return bool|WP_Error True if the email was sent successfully, WP_Error on failure.
 	 */
 	public function send( $to, $subject, $content, $headers = array() ) {
-		// Reset last error.
 		$this->last_error = null;
 
 		$result = $this->send_email_and_catch_errors( $to, $subject, $content, $headers );
 
-		// If wp_mail returned false or we captured an error, return the error.
 		if ( false === $result || $this->last_error instanceof WP_Error ) {
-			// If we have a captured error, return it.
 			if ( $this->last_error instanceof WP_Error ) {
 				return $this->last_error;
 			}
 
-			// Otherwise, create a generic error.
-			$this->last_error = new WP_Error( 'wp_mail_failed', __( 'Failed to send email.', 'google-site-kit' ) );
+			$this->set_last_error( new WP_Error( 'wp_mail_failed', __( 'Failed to send email.', 'google-site-kit' ) ) );
 			return $this->last_error;
 		}
 
@@ -110,18 +103,27 @@ class Email {
 	 * @return bool Whether the email was sent successfully.
 	 */
 	protected function send_email_and_catch_errors( $to, $subject, $content, $headers ) {
-		// Define a closure to capture wp_mail_failed errors.
-		$listener = function ( WP_Error $error ) {
-			$this->last_error = $error;
-		};
-
-		add_action( 'wp_mail_failed', $listener );
+		add_action( 'wp_mail_failed', array( $this, 'set_last_error' ) );
 
 		$result = wp_mail( $to, $subject, $content, $headers ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail
 
-		remove_action( 'wp_mail_failed', $listener );
+		remove_action( 'wp_mail_failed', array( $this, 'set_last_error' ) );
 
 		return $result;
+	}
+
+	/**
+	 * Sets the last error from a failed email attempt.
+	 *
+	 * This method is public because it is used as a callback for the
+	 * wp_mail_failed hook which requires public accessibility.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Error $error The error from wp_mail_failed hook.
+	 */
+	public function set_last_error( WP_Error $error ) {
+		$this->last_error = $error;
 	}
 
 	/**
