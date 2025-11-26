@@ -124,12 +124,14 @@ export default function KeyMetricsSetupApp() {
 	const isInitialSetupFlow = !! showProgress;
 
 	useMount( () => {
-		trackEvent(
-			isInitialSetupFlow ? `${ viewContext }_setup` : viewContext,
-			isInitialSetupFlow
-				? 'setup_flow_v3_view_key_metrics_step'
-				: 'view_key_metrics_step'
-		);
+		if ( isInitialSetupFlow ) {
+			trackEvent(
+				`${ viewContext }_setup`,
+				'setup_flow_v3_view_key_metrics_step'
+			);
+		} else {
+			trackEvent( viewContext, 'view_key_metrics_step' );
+		}
 	} );
 
 	const submitChanges = useCallback( async () => {
@@ -171,12 +173,14 @@ export default function KeyMetricsSetupApp() {
 			return;
 		}
 
-		trackEvent(
-			isInitialSetupFlow ? `${ viewContext }_setup` : viewContext,
-			isInitialSetupFlow
-				? 'setup_flow_v3_complete_key_metrics_step'
-				: 'complete_key_metrics_step'
-		);
+		if ( isInitialSetupFlow ) {
+			trackEvent(
+				`${ viewContext }_setup`,
+				'setup_flow_v3_complete_key_metrics_step'
+			);
+		} else {
+			trackEvent( viewContext, 'complete_key_metrics_step' );
+		}
 
 		submitChanges();
 	}, [ isBusy, isInitialSetupFlow, isSyncing, submitChanges, viewContext ] );

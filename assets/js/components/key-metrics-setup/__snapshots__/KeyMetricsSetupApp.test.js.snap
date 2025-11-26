@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`KeyMetricsSetupApp Initial Setup Flow should display the progress indicator when the showProgress query arg is present 1`] = `
+exports[`KeyMetricsSetupApp initial setup flow should display the progress indicator when the showProgress query arg is present 1`] = `
 <div>
   <header
     class="googlesitekit-header"

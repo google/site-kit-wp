@@ -67,10 +67,6 @@ describe( 'KeyMetricsSetupApp', () => {
 	}
 
 	beforeEach( () => {
-		// Reset location to ensure tests that rely on query args start clean (non-initial setup by default).
-		global.location.href =
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup';
-
 		registry = createTestRegistry();
 
 		provideUserAuthentication( registry );
@@ -99,9 +95,6 @@ describe( 'KeyMetricsSetupApp', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveGetModules( withConnected( MODULE_SLUG_ANALYTICS_4 ) );
-
-		// Reset track event calls before each test.
-		mockTrackEvent.mockClear();
 	} );
 
 	afterEach( () => {
@@ -354,7 +347,7 @@ describe( 'KeyMetricsSetupApp', () => {
 		);
 	} );
 
-	describe( 'Initial Setup Flow', () => {
+	describe( 'initial setup flow', () => {
 		beforeEach( () => {
 			global.location.href =
 				'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup&showProgress=true';
@@ -382,34 +375,6 @@ describe( 'KeyMetricsSetupApp', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should track `setup_flow_v3_exit_setup` event when the user clicks the "Exit setup" button', async () => {
-			const { getByRole, waitForRegistry } = render(
-				<KeyMetricsSetupApp />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
-					features: [ 'setupFlowRefresh' ],
-				}
-			);
-
-			await waitForRegistry();
-
-			fireEvent.click( getByRole( 'button', { name: 'Exit setup' } ) );
-
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				`${ VIEW_CONTEXT_KEY_METRICS_SETUP }_setup`,
-				'setup_flow_v3_view_key_metrics_step'
-			);
-
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				`${ VIEW_CONTEXT_KEY_METRICS_SETUP }_setup`,
-				'setup_flow_v3_exit_setup',
-				'key-metrics'
-			);
-
-			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
-		} );
-
 		it( 'should track `setup_flow_v3_view_key_metrics_step` event when key metric setup screen is mounted', async () => {
 			const { waitForRegistry } = render( <KeyMetricsSetupApp />, {
 				registry,
@@ -422,6 +387,57 @@ describe( 'KeyMetricsSetupApp', () => {
 				`${ VIEW_CONTEXT_KEY_METRICS_SETUP }_setup`,
 				'setup_flow_v3_view_key_metrics_step'
 			);
+		} );
+
+		it( 'should track `setup_flow_v3_select_key_metrics_answer` event when an answer is selected', async () => {
+			const { getByRole, waitForRegistry } = render(
+				<KeyMetricsSetupApp />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+				}
+			);
+
+			await waitForRegistry();
+
+			// Clear the event tracked on mount.
+			mockTrackEvent.mockClear();
+
+			fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_KEY_METRICS_SETUP }_setup`,
+				'setup_flow_v3_select_key_metrics_answer',
+				'publish_blog'
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		} );
+
+		it( 'should track `setup_flow_v3_exit_setup` event when the user clicks the "Exit setup" button', async () => {
+			const { getByRole, waitForRegistry } = render(
+				<KeyMetricsSetupApp />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			// Clear the event tracked on mount.
+			mockTrackEvent.mockClear();
+
+			fireEvent.click( getByRole( 'button', { name: 'Exit setup' } ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_KEY_METRICS_SETUP }_setup`,
+				'setup_flow_v3_exit_setup',
+				'key-metrics'
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		} );
 
 		it( 'should navigate to the dashboard without notification and slug params when saving is successful', async () => {
@@ -463,10 +479,12 @@ describe( 'KeyMetricsSetupApp', () => {
 	} );
 
 	describe( 'non-initial setup flow', () => {
-		it( 'should navigate to the dashboard with notification and slug params when saving is successful', async () => {
+		beforeEach( () => {
 			global.location.href =
 				'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup';
+		} );
 
+		it( 'should navigate to the dashboard with notification and slug params when saving is successful', async () => {
 			fetchMock.postOnce( initialSetupSettingsEndpoint, {
 				body: { settings: { isAnalyticsSetupComplete: true } },
 			} );
@@ -528,7 +546,7 @@ describe( 'KeyMetricsSetupApp', () => {
 
 			await waitForRegistry();
 
-			// Clear initial mount tracking event.
+			// Clear the event tracked on mount.
 			mockTrackEvent.mockClear();
 
 			fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
@@ -555,27 +573,21 @@ describe( 'KeyMetricsSetupApp', () => {
 
 			await waitForRegistry();
 
-			// Clear mount event.
+			fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
+
+			// Clear the events tracked so far.
 			mockTrackEvent.mockClear();
 
-			fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
 			fireEvent.click(
 				getByRole( 'button', { name: 'Complete setup' } )
 			);
 
-			expect( mockTrackEvent.mock.calls ).toEqual(
-				expect.arrayContaining( [
-					[
-						VIEW_CONTEXT_KEY_METRICS_SETUP,
-						'select_key_metrics_answer',
-						'publish_blog',
-					],
-					[
-						VIEW_CONTEXT_KEY_METRICS_SETUP,
-						'complete_key_metrics_step',
-					],
-				] )
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				VIEW_CONTEXT_KEY_METRICS_SETUP,
+				'complete_key_metrics_step'
 			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		} );
 	} );
 } );
