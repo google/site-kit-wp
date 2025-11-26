@@ -86,7 +86,7 @@ class Email_Template_Renderer {
 			$data,
 			array(
 				'sections'      => $sections,
-				'get_asset_url' => $get_asset_url,
+				'get_asset_url' => fn( $asset_path ) => $this->get_email_asset_url( $asset_path ),
 			)
 		);
 
