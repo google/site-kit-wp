@@ -24,15 +24,26 @@ import HelpMenu from '@/js/components/help/HelpMenu';
 import ProgressIndicator from '@/js/components/ProgressIndicator';
 import ExitSetup from '@/js/components/setup/ExitSetup';
 import { useFeature } from '@/js/hooks/useFeature';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function Header() {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const viewContext = useViewContext();
 
 	return (
 		<MainHeader
 			subHeader={ setupFlowRefreshEnabled ? <ProgressIndicator /> : null }
 		>
-			{ setupFlowRefreshEnabled ? <ExitSetup /> : <HelpMenu /> }
+			{ setupFlowRefreshEnabled ? (
+				<ExitSetup
+					gaTrackingEventArgs={ {
+						category: viewContext,
+						label: 'splash',
+					} }
+				/>
+			) : (
+				<HelpMenu />
+			) }
 		</MainHeader>
 	);
 }
