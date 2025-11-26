@@ -262,7 +262,7 @@ class Reset {
 	/**
 	 * Deletes all Site Kit custom post type posts.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $scope Scope of the deletion ('site' or 'network').
 	 */

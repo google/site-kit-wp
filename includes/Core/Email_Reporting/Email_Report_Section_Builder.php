@@ -15,7 +15,7 @@ use Google\Site_Kit\Context;
 /**
  * Builder and helpers to construct Email_Report_Data_Section_Part instances for a single report section.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Plugin context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Context
 	 */
 	protected $context;
@@ -32,7 +32,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Label translations indexed by label key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var array
 	 */
 	protected $label_translations;
@@ -40,7 +40,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Report processor instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Email_Report_Payload_Processor
 	 */
 	protected $report_processor;
@@ -48,7 +48,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param Context                             $context          Plugin context.
 	 * @param Email_Report_Payload_Processor|null $report_processor Optional. Report processor instance.
@@ -69,7 +69,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Build one or more section parts from raw payloads for a module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string   $module_slug Module slug (e.g. analytics-4) for the dashboard link only.
 	 * @param array    $raw_payloads Raw reports payloads.
@@ -122,7 +122,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Normalize labels with translations.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $labels Labels.
 	 * @return array Normalized labels.
@@ -137,7 +137,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Normalize trend values to localized percentage strings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $trends Trend values.
 	 * @return array|null Normalized trend values.
@@ -176,7 +176,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Normalize a section payload into discrete components.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $section_payload Section payload data.
 	 * @return array Normalized section payload components.
@@ -195,7 +195,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Normalize values using metric formatter and localization.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $values      Values.
 	 * @param array $value_types Optional. Metric types corresponding to each value.
@@ -218,7 +218,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Formats a metric value according to type heuristics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param mixed  $value Raw value.
 	 * @param string $type  Metric type identifier.
@@ -250,7 +250,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Formats a duration in seconds to HH:MM:SS string.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param int|float $seconds Duration in seconds.
 	 * @return string Formatted duration.
@@ -267,7 +267,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Creates dashboard link for a module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $module_slug Module slug.
 	 * @return string Dashboard link.
@@ -282,7 +282,7 @@ class Email_Report_Section_Builder {
 	 *
 	 * Receiving raw report response array, return an array of structured section payloads.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $raw_payloads Raw payloads.
 	 * @return array[] Structured section payloads.
@@ -324,7 +324,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Builds section payloads for a specific module payload.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $module_key     Module identifier.
 	 * @param array  $module_payload Module payload.
@@ -345,7 +345,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Builds section payloads from Analytics module data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $module_payload Module payload keyed by section slug.
 	 * @return array Section payloads.
@@ -386,7 +386,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Builds section payloads from Search Console module data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $module_payload Module payload keyed by section slug.
 	 * @return array Section payloads.
@@ -412,7 +412,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Normalizes analytics section input into reports and report configs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param mixed $section_data Section payload.
 	 * @return array Normalized analytics section input.
@@ -450,7 +450,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Normalizes Search Console rows to an indexed array of row arrays.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param mixed $section_data Section payload.
 	 * @return array Normalized Search Console rows.
@@ -476,7 +476,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Determines whether an array uses sequential integer keys starting at zero.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $data Array to test.
 	 * @return bool Whether the array uses sequential integer keys starting at zero.
@@ -492,7 +492,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Builds section payloads from processed GA4 reports.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $processed_reports Processed report data keyed by ID.
 	 * @return array Section payloads.
@@ -537,7 +537,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Builds a section payload from Search Console report data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array  $search_console_data Search Console report rows.
 	 * @param string $section_key         Section key identifier.

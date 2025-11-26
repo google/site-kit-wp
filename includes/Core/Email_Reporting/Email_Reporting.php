@@ -36,7 +36,7 @@ class Email_Reporting {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Options
 	 */
 	protected $options;
@@ -44,7 +44,7 @@ class Email_Reporting {
 	/**
 	 * Modules instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Modules
 	 */
 	protected $modules;
@@ -92,7 +92,7 @@ class Email_Reporting {
 	/**
 	 * Email_Log_Cleanup instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Email_Log_Cleanup
 	 */
 	protected $email_log_cleanup;
@@ -100,7 +100,7 @@ class Email_Reporting {
 	/**
 	 * Scheduler instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Email_Reporting_Scheduler
 	 */
 	protected $scheduler;
@@ -108,7 +108,7 @@ class Email_Reporting {
 	/**
 	 * Initiator task instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Initiator_Task
 	 */
 	protected $initiator_task;
@@ -116,7 +116,7 @@ class Email_Reporting {
 	/**
 	 * Monitor task instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Monitor_Task
 	 */
 	protected $monitor_task;
@@ -124,7 +124,7 @@ class Email_Reporting {
 	/**
 	 * Worker task instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Worker_Task
 	 */
 	protected $worker_task;
