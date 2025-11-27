@@ -87,7 +87,7 @@ final class Email_Log {
 	/**
 	 * Extracts a normalized date range array from an email log post.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param mixed $email_log Potential email log post.
 	 * @return array|null
@@ -127,7 +127,7 @@ final class Email_Log {
 	/**
 	 * Validates an email log and returns decoded reference date metadata.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param mixed $email_log Potential email log post.
 	 * @return array|null Decoded reference date metadata, or null on failure.
@@ -163,7 +163,7 @@ final class Email_Log {
 	/**
 	 * Validates and normalizes a reference date value into a UNIX timestamp.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param mixed $value Date value.
 	 * @return int|null UNIX timestamp or null on failure.
@@ -184,7 +184,7 @@ final class Email_Log {
 	/**
 	 * Formats a timestamp or date string stored in reference date meta.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param mixed $value Date value.
 	 * @return string|null

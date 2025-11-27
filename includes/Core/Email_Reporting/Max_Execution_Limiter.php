@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 /**
  * Guards long-running email reporting tasks against timeouts.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Max_Execution_Limiter {
 	/**
 	 * Maximum execution time budget in seconds.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @var int
 	 */
@@ -33,7 +33,7 @@ class Max_Execution_Limiter {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param int $max_execution_time PHP max_execution_time value.
 	 */
@@ -46,7 +46,7 @@ class Max_Execution_Limiter {
 	/**
 	 * Determines whether the worker should abort execution.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param int $initiator_timestamp Initial batch timestamp.
 	 * @return bool True when either the runtime or 24h limit has been reached.
@@ -63,7 +63,7 @@ class Max_Execution_Limiter {
 	/**
 	 * Resolves the maximum execution budget in seconds.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return int Number of seconds allotted for execution.
 	 */
@@ -74,7 +74,7 @@ class Max_Execution_Limiter {
 	/**
 	 * Calculates the execution deadline timestamp.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return float Execution cutoff timestamp.
 	 */

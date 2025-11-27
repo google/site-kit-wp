@@ -75,11 +75,22 @@ export default function Actions( {
 	const goToSharedDashboard = useCallback( () => {
 		Promise.all( [
 			dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY ),
-			trackEvent( viewContext, 'skip_setup_to_viewonly' ),
+			trackEvent(
+				viewContext,
+				setupFlowRefreshEnabled
+					? 'setup_flow_v3_skip_to_viewonly'
+					: 'skip_setup_to_viewonly'
+			),
 		] ).finally( () => {
 			navigateTo( dashboardURL );
 		} );
-	}, [ dashboardURL, dismissItem, navigateTo, viewContext ] );
+	}, [
+		dashboardURL,
+		dismissItem,
+		navigateTo,
+		setupFlowRefreshEnabled,
+		viewContext,
+	] );
 
 	const learnMoreLink = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
@@ -87,11 +98,15 @@ export default function Actions( {
 		);
 	} );
 
+	const optInProps = setupFlowRefreshEnabled
+		? { trackEventAction: 'setup_flow_v3_tracking_optin' }
+		: {};
+
 	return (
 		<Fragment>
 			{ ctaFeedback }
 
-			<OptIn />
+			<OptIn { ...optInProps } />
 
 			<div className="googlesitekit-start-setup-wrap">
 				<Button

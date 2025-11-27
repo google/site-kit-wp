@@ -39,7 +39,7 @@ const FALLBACK_COLOR = '#ccc';
  * This hook caches the colors for the dimension values and returns them when the
  * same dimension values are passed in again.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  *
  * @return {Function} A function that returns the pie chart slices for the given dimension values.
  */
