@@ -101,7 +101,6 @@ export default function AudienceTilePagesMetric( {
 
 	const shouldShowErrorModal =
 		( customDimensionError && ! isSaving ) ||
-		// I've deliberately removed the check for `! isAutoCreatingCustomDimensionsForAudience` to fix a bug where the error modal would disappear while retrying.
 		isRetryingCustomDimensionCreate ||
 		hasOAuthError;
 
