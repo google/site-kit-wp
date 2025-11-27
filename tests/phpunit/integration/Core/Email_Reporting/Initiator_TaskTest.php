@@ -72,6 +72,7 @@ class Initiator_TaskTest extends TestCase {
 		$captured_batch_id           = null;
 		$captured_worker_timestamp   = null;
 		$captured_fallback_timestamp = null;
+		$captured_fallback_batch_id  = null;
 
 		$this->scheduler->expects( $this->once() )
 			->method( 'schedule_next_initiator' )
@@ -98,6 +99,12 @@ class Initiator_TaskTest extends TestCase {
 		$this->scheduler->expects( $this->once() )
 			->method( 'schedule_fallback' )
 			->with(
+				$this->callback(
+					function ( $batch_id ) use ( &$captured_fallback_batch_id ) {
+						$captured_fallback_batch_id = $batch_id;
+						return is_string( $batch_id ) && '' !== $batch_id;
+					}
+				),
 				$this->equalTo( Email_Reporting_Settings::FREQUENCY_WEEKLY ),
 				$this->callback(
 					function ( $timestamp ) use ( &$captured_fallback_timestamp ) {
@@ -110,6 +117,7 @@ class Initiator_TaskTest extends TestCase {
 		$this->task->handle_callback_action( Email_Reporting_Settings::FREQUENCY_WEEKLY );
 
 		$this->assertNotNull( $captured_batch_id, 'Batch ID should be generated during callback handling.' );
+		$this->assertSame( $captured_batch_id, $captured_fallback_batch_id, 'Fallback should be scheduled with the same batch ID.' );
 		$this->assertNotNull( $captured_worker_timestamp, 'Worker timestamp should be captured when scheduling worker.' );
 		$this->assertNotNull( $captured_fallback_timestamp, 'Fallback timestamp should be captured when scheduling fallback.' );
 
@@ -165,7 +173,11 @@ class Initiator_TaskTest extends TestCase {
 
 		$this->scheduler->expects( $this->once() )
 			->method( 'schedule_fallback' )
-			->with( $this->equalTo( Email_Reporting_Settings::FREQUENCY_MONTHLY ), $this->isType( 'int' ) );
+			->with(
+				$this->isType( 'string' ),
+				$this->equalTo( Email_Reporting_Settings::FREQUENCY_MONTHLY ),
+				$this->isType( 'int' )
+			);
 
 		$this->task->handle_callback_action( Email_Reporting_Settings::FREQUENCY_MONTHLY );
 
