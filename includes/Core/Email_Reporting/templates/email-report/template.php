@@ -14,20 +14,18 @@
  */
 
 // Extract metadata from data.
-$subject        = $data['subject'];
-$preheader      = $data['preheader'];
-$site_domain    = $data['site']['domain'];
-$date_label     = $data['date_range']['label'];
-$primary_cta    = $data['primary_call_to_action'];
-$footer_content = $data['footer'];
-$sections       = $data['sections'];
-$get_asset_url  = $data['get_asset_url'];
-$render_part    = $data['render_part'];
-
-// Asset paths.
-$plugin_dir         = dirname( dirname( dirname( __DIR__ ) ) );
-$shared_parts_dir   = $plugin_dir . '/Email_Reporting/templates/parts';
-$template_parts_dir = __DIR__ . '/parts';
+// These keys are always present as they are mapped in Email_Template_Data,
+// so we access them directly without checking for existence.
+$subject            = $data['subject'];
+$preheader          = $data['preheader'];
+$site_domain        = $data['site']['domain'];
+$date_label         = $data['date_range']['label'];
+$primary_cta        = $data['primary_call_to_action'];
+$footer_content     = $data['footer'];
+$sections           = $data['sections'];
+$get_asset_url      = $data['get_asset_url'];
+$render_part        = $data['render_part'];
+$render_shared_part = $data['render_shared_part'];
 ?>
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -130,7 +128,7 @@ $template_parts_dir = __DIR__ . '/parts';
 							<?php
 							// Render header.
 							$render_part(
-								$template_parts_dir . '/header.php',
+								'header',
 								array(
 									'site_domain'   => $site_domain,
 									'date_label'    => $date_label,
@@ -147,31 +145,26 @@ $template_parts_dir = __DIR__ . '/parts';
 
 								// If a section_template is specified, use it to render the entire section.
 								if ( ! empty( $section['section_template'] ) ) {
-									$section_template_file = $template_parts_dir . '/' . $section['section_template'] . '.php';
-									if ( file_exists( $section_template_file ) ) {
-										$render_part(
-											$section_template_file,
-											array(
-												'section'            => $section,
-												'render_part'        => $render_part,
-												'get_asset_url'      => $get_asset_url,
-												'template_parts_dir' => $template_parts_dir,
-												'shared_parts_dir'   => $shared_parts_dir,
-											)
-										);
-									}
+									$render_part(
+										$section['section_template'],
+										array(
+											'section'     => $section,
+											'render_part' => $render_part,
+											'render_shared_part' => $render_shared_part,
+											'get_asset_url' => $get_asset_url,
+										)
+									);
 									continue;
 								}
 							}
 
 							// Render footer.
-							$render_part(
-								$shared_parts_dir . '/footer.php',
+							$render_shared_part(
+								'footer',
 								array(
-									'cta'              => $primary_cta,
-									'footer'           => $footer_content,
-									'shared_parts_dir' => $shared_parts_dir,
-									'render_part'      => $render_part,
+									'cta'                => $primary_cta,
+									'footer'             => $footer_content,
+									'render_shared_part' => $render_shared_part,
 								)
 							);
 							?>

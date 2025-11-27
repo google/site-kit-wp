@@ -44,6 +44,10 @@ class Email {
 	public function build_headers( $headers = array() ) {
 		$from_email = apply_filters( 'wp_mail_from', '' );
 
+		if ( empty( $from_email ) || ! is_email( $from_email ) ) {
+			$from_email = get_option( 'admin_email' );
+		}
+
 		$from_header = sprintf( 'From: Site Kit <%s>', $from_email );
 
 		if ( ! is_array( $headers ) ) {

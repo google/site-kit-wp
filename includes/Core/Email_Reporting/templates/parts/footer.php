@@ -7,10 +7,9 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  *
- * @var array    $cta              Primary CTA configuration with 'url' and 'label'.
- * @var array    $footer           Footer configuration with 'copy', 'unsubscribe_url', and 'links'.
- * @var callable $render_part      Function to render a template part.
- * @var string   $shared_parts_dir Path to shared parts directory.
+ * @var array    $cta               Primary CTA configuration with 'url' and 'label'.
+ * @var array    $footer            Footer configuration with 'copy', 'unsubscribe_url', and 'links'.
+ * @var callable $render_shared_part Function to render a shared part by name.
  */
 
 ?>
@@ -20,8 +19,8 @@
 			<?php if ( ! empty( $cta['url'] ) ) : ?>
 				<div style="margin-bottom:60px;">
 					<?php
-					$render_part(
-						$shared_parts_dir . '/dashboard-link.php',
+					$render_shared_part(
+						'dashboard-link',
 						array(
 							'url'   => $cta['url'],
 							'label' => isset( $cta['label'] ) ? $cta['label'] : __( 'View dashboard', 'google-site-kit' ),
@@ -42,7 +41,7 @@
 						);
 					}
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Link is escaped above.
-					printf( '%s %s', esc_html( $footer['copy'] ), $unsubscribe_link );
+					printf( '%s %s.', esc_html( $footer['copy'] ), $unsubscribe_link );
 					?>
 				</p>
 			<?php endif; ?>

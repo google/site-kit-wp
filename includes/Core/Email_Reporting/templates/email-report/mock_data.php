@@ -26,7 +26,7 @@ return array(
 		'url'   => 'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard',
 	),
 	'footer'                                     => array(
-		'copy'            => 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe %s.',
+		'copy'            => 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', // "here." link is added within the footer template currently.
 		'unsubscribe_url' => 'https://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings',
 		'links'           => array(
 			array(

@@ -10,10 +10,9 @@
  * @link      https://sitekit.withgoogle.com
  *
  * @var array    $section            Section configuration including title, icon, section_parts.
- * @var callable $render_part        Function to render a template part.
+ * @var callable $render_part        Function to render a template part by name.
+ * @var callable $render_shared_part Function to render a shared part by name.
  * @var callable $get_asset_url      Function to get asset URLs.
- * @var string   $template_parts_dir Path to template parts directory.
- * @var string   $shared_parts_dir   Path to shared parts directory.
  */
 
 $section_title = $section['title'];
@@ -28,7 +27,7 @@ $section_parts = $section['section_parts'];
 			// Render section header.
 			$icon_url = $get_asset_url( 'icon-' . esc_html( $section_icon ) . '.png' );
 			$render_part(
-				$template_parts_dir . '/section-header.php',
+				'section-header',
 				array(
 					'icon'     => $icon_url,
 					'title'    => $section_title,
@@ -53,8 +52,8 @@ $section_parts = $section['section_parts'];
 					</td>
 					<td style="text-align: right; padding: 6px 0;">
 						<?php
-						$render_part(
-							$shared_parts_dir . '/change-badge.php',
+						$render_shared_part(
+							'change-badge',
 							array(
 								'value' => $section_parts['total_conversion_events']['data']['change'],
 							)
@@ -73,21 +72,20 @@ $section_parts = $section['section_parts'];
 				}
 
 				$render_part(
-					$template_parts_dir . '/section-conversions-metric-part.php',
+					'section-conversions-metric-part',
 					array(
 						'data'                => $part_config['data'],
 						'top_traffic_channel' => $part_config['top_traffic_channel'],
 						'render_part'         => $render_part,
+						'render_shared_part'  => $render_shared_part,
 						'get_asset_url'       => $get_asset_url,
-						'template_parts_dir'  => $template_parts_dir,
-						'shared_parts_dir'    => $shared_parts_dir,
 					)
 				);
 			}
 
 			// Render view more in dashboard link.
 			$render_part(
-				$template_parts_dir . '/view-more-in-dashboard.php',
+				'view-more-in-dashboard',
 				array(
 					'url'           => $dashboard_url,
 					'get_asset_url' => $get_asset_url,

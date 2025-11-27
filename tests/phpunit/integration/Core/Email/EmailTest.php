@@ -56,6 +56,11 @@ class EmailTest extends TestCase {
 	}
 
 	public function test_send() {
+		// The pre_wp_mail filter was introduced in WordPress 5.7.
+		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
+			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
+		}
+
 		// Use pre_wp_mail to simulate successful email sending and capture attributes.
 		$captured_atts = null;
 		add_filter(
@@ -83,6 +88,11 @@ class EmailTest extends TestCase {
 	}
 
 	public function test_send_failure() {
+		// The pre_wp_mail filter was introduced in WordPress 5.7.
+		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
+			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
+		}
+
 		// Force wp_mail failure using pre_wp_mail filter.
 		$captured_atts = null;
 		add_filter(

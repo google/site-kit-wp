@@ -36,6 +36,24 @@ class Email_Template_Renderer {
 	protected $sections_map;
 
 	/**
+	 * The base templates directory path.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	protected $templates_dir;
+
+	/**
+	 * Cache of verified template file paths.
+	 *
+	 * Used to avoid repeated file_exists() calls for the same files.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	protected $cached_files = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -43,7 +61,8 @@ class Email_Template_Renderer {
 	 * @param Sections_Map $sections_map The sections map instance.
 	 */
 	public function __construct( Sections_Map $sections_map ) {
-		$this->sections_map = $sections_map;
+		$this->sections_map  = $sections_map;
+		$this->templates_dir = realpath( __DIR__ . '/templates' );
 	}
 
 	/**
@@ -75,12 +94,16 @@ class Email_Template_Renderer {
 
 		$sections = $this->sections_map->get_sections();
 
+		$shared_parts_dir   = $this->templates_dir . '/parts';
+		$template_parts_dir = $this->templates_dir . '/' . $template_name . '/parts';
+
 		$template_data = array_merge(
 			$data,
 			array(
-				'sections'      => $sections,
-				'get_asset_url' => fn( $asset_path ) => $this->get_email_asset_url( $asset_path ),
-				'render_part'   => fn( $file, $vars = array() ) => $this->render_part_file( $file, $vars ),
+				'sections'           => $sections,
+				'get_asset_url'      => fn( $asset_path ) => $this->get_email_asset_url( $asset_path ),
+				'render_part'        => fn( $part_name, $vars = array() ) => $this->render_part_file( $template_parts_dir . '/' . $part_name . '.php', $vars ),
+				'render_shared_part' => fn( $part_name, $vars = array() ) => $this->render_part_file( $shared_parts_dir . '/' . $part_name . '.php', $vars ),
 			)
 		);
 
@@ -108,17 +131,36 @@ class Email_Template_Renderer {
 	 * Unlike render_template(), this method extracts variables into the
 	 * template scope for more convenient access within partial templates.
 	 *
+	 * File paths are validated to ensure they are within the plugin's
+	 * templates directory for security. Verified files are cached to
+	 * avoid repeated file_exists() calls.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @param string $file The template part file path.
 	 * @param array  $vars The variables to extract into the template scope.
 	 */
 	protected function render_part_file( $file, $vars = array() ) {
-		if ( ! file_exists( $file ) ) {
+		if ( isset( $this->cached_files[ $file ] ) ) {
+			extract( $vars, EXTR_SKIP ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
+			include $this->cached_files[ $file ];
 			return;
 		}
+
+		$real_path = realpath( $file );
+		if ( false === $real_path ) {
+			return;
+		}
+
+		// Ensure the file is within the templates directory for security.
+		if ( 0 !== strpos( $real_path, $this->templates_dir . DIRECTORY_SEPARATOR ) ) {
+			return;
+		}
+
+		$this->cached_files[ $file ] = $real_path;
+
 		extract( $vars, EXTR_SKIP ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
-		include $file;
+		include $real_path;
 	}
 
 	/**

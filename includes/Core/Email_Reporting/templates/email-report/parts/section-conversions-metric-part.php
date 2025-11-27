@@ -7,12 +7,11 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  *
- * @var array    $data                Conversion metric data.
+ * @var array    $data               Conversion metric data.
  * @var string   $top_traffic_channel Top traffic channel driving conversions.
- * @var callable $render_part         Function to render a template part.
- * @var callable $get_asset_url       Function to get asset URLs.
- * @var string   $template_parts_dir  Path to template parts directory.
- * @var string   $shared_parts_dir    Path to shared parts directory.
+ * @var callable $render_part        Function to render a template part by name.
+ * @var callable $render_shared_part Function to render a shared part by name.
+ * @var callable $get_asset_url      Function to get asset URLs.
  */
 
 $value          = $data['value'];
@@ -26,7 +25,7 @@ $change_context = $data['change_context'];
 		<td>
 			<?php
 			$render_part(
-				$template_parts_dir . '/conversions-timeline.php',
+				'conversions-timeline',
 				array(
 					'change'        => $change,
 					'get_asset_url' => $get_asset_url,
@@ -50,8 +49,9 @@ $change_context = $data['change_context'];
 							<?php
 							printf(
 								/* translators: %s: Event name (e.g., "Purchase") */
-								__( '"%s" events', 'google-site-kit' ),
-								esc_html( ucfirst( $event_name ) )
+								esc_html__( '"%s" events', 'google-site-kit' ),
+								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Event name is already escaped above.
+								ucfirst( $event_name )
 							);
 							?>
 						</div>
@@ -70,8 +70,8 @@ $change_context = $data['change_context'];
 					</td>
 					<td style="text-align: right;">
 						<?php
-						$render_part(
-							$shared_parts_dir . '/change-badge.php',
+						$render_shared_part(
+							'change-badge',
 							array(
 								'value' => $change,
 							)
