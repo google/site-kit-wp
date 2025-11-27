@@ -24,42 +24,32 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
-import { addQueryArgs } from '@wordpress/url';
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 	CUSTOM_DIMENSION_DEFINITIONS,
-	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 import BadgeWithTooltip from '@/js/components/BadgeWithTooltip';
 import AudienceTilePagesMetricContent from './AudienceTilePagesMetricContent';
-import AudienceErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceErrorModal';
-import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '@/js/googlesitekit/widgets/default-areas';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 import useFormValue from '@/js/hooks/useFormValue';
+import useCreateCustomDimension from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/hooks/useCreateCustomDimension';
 
 export default function AudienceTilePagesMetric( {
-	// TODO: The prop `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
-	// within `AudienceTilesWidget`. This should be removed once the `AudienceErrorModal` render is extracted
-	// from `AudienceTilePagesMetric` and it's rendered once at a higher level instead. See https://github.com/google/site-kit-wp/issues/9543.
-	audienceTileNumber,
 	audienceSlug,
 	TileIcon,
 	title,
@@ -80,47 +70,11 @@ export default function AudienceTilePagesMetric( {
 			)
 	);
 
-	const hasAnalyticsEditScope = useSelect( ( select ) =>
-		select( CORE_USER ).hasScope( EDIT_SCOPE )
-	);
-
-	const redirectURL = addQueryArgs( global.location.href, {
-		notification: 'audience_segmentation',
-		widgetArea: AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
-	} );
-	const errorRedirectURL = addQueryArgs( global.location.href, {
-		widgetArea: AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
-	} );
-
-	const isAutoCreatingCustomDimensionsForAudience = useFormValue(
-		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
-		'isAutoCreatingCustomDimensionsForAudience'
-	);
-
-	const isCreatingCustomDimension = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isCreatingCustomDimension(
-			postTypeDimension
-		)
-	);
-
-	const isSyncingAvailableCustomDimensions = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isFetchingSyncAvailableCustomDimensions()
-	);
-
 	const customDimensionError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getCreateCustomDimensionError(
 			postTypeDimension
 		)
 	);
-
-	const propertyID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getPropertyID()
-	);
-
-	const { clearError } = useDispatch( MODULES_ANALYTICS_4 );
-	const { setValues } = useDispatch( CORE_FORMS );
-	const { setPermissionScopeError, clearPermissionScopeError } =
-		useDispatch( CORE_USER );
 
 	const isRetryingCustomDimensionCreate = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
@@ -135,71 +89,25 @@ export default function AudienceTilePagesMetric( {
 	const setupErrorCode = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorCode()
 	);
-	const { setSetupErrorCode } = useDispatch( CORE_SITE );
 
 	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
-
-	const onCreateCustomDimension = useCallback(
-		( { isRetrying } = {} ) => {
-			setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
-				autoSubmit: true,
-				isRetrying,
-			} );
-
-			if ( ! hasAnalyticsEditScope ) {
-				setPermissionScopeError( {
-					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-					message: __(
-						'Additional permissions are required to create new audiences in Analytics.',
-						'google-site-kit'
-					),
-					data: {
-						status: 403,
-						scopes: [ EDIT_SCOPE ],
-						skipModal: true,
-						skipDefaultErrorNotifications: true,
-						redirectURL,
-						errorRedirectURL,
-					},
-				} );
-			}
-		},
-		[
-			hasAnalyticsEditScope,
-			redirectURL,
-			errorRedirectURL,
-			setPermissionScopeError,
-			setValues,
-		]
-	);
-
-	const onCancel = useCallback( () => {
-		setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
-			autoSubmit: false,
-			isRetrying: false,
-		} );
-		setSetupErrorCode( null );
-		clearPermissionScopeError();
-		clearError( 'createCustomDimension', [
-			propertyID,
-			CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
-		] );
-	}, [
-		clearError,
-		clearPermissionScopeError,
-		propertyID,
-		setSetupErrorCode,
-		setValues,
-	] );
 
 	const isMobileBreakpoint = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
 		breakpoint
 	);
 
-	const isSaving =
-		isAutoCreatingCustomDimensionsForAudience ||
-		isCreatingCustomDimension ||
-		isSyncingAvailableCustomDimensions;
+	const { onCreateCustomDimension, isSaving, setShowErrorModal } =
+		useCreateCustomDimension();
+
+	const shouldShowErrorModal =
+		( customDimensionError && ! isSaving ) ||
+		// I've deliberately removed the check for `! isAutoCreatingCustomDimensionsForAudience` to fix a bug where the error modal would disappear while retrying.
+		isRetryingCustomDimensionCreate ||
+		hasOAuthError;
+
+	useEffect( () => {
+		setShowErrorModal( shouldShowErrorModal );
+	}, [ shouldShowErrorModal, setShowErrorModal ] );
 
 	return (
 		<div className="googlesitekit-audience-segmentation-tile-metric googlesitekit-audience-segmentation-tile-metric--top-content">
@@ -235,42 +143,12 @@ export default function AudienceTilePagesMetric( {
 					onCreateCustomDimension={ onCreateCustomDimension }
 					isSaving={ isSaving }
 				/>
-				{ /*
-						TODO: The `audienceTileNumber` check is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
-						within `AudienceTilesWidget`. This should be removed, and the `AudienceErrorModal` render extracted
-						from here to be rendered once at a higher level instead. See https://github.com/google/site-kit-wp/issues/9543.
-					*/ }
-				{ audienceTileNumber === 0 &&
-					( ( customDimensionError && ! isSaving ) ||
-						( isRetryingCustomDimensionCreate &&
-							! isAutoCreatingCustomDimensionsForAudience ) ||
-						hasOAuthError ) && (
-						<AudienceErrorModal
-							apiErrors={ [ customDimensionError ] }
-							title={ __(
-								'Failed to enable metric',
-								'google-site-kit'
-							) }
-							description={ __(
-								'Oops! Something went wrong. Retry enabling the metric.',
-								'google-site-kit'
-							) }
-							onRetry={ () =>
-								onCreateCustomDimension( { isRetrying: true } )
-							}
-							onCancel={ onCancel }
-							inProgress={ isSaving }
-							hasOAuthError={ hasOAuthError }
-							trackEventCategory={ `${ viewContext }_audiences-top-content-cta` }
-						/>
-					) }
 			</div>
 		</div>
 	);
 }
 
 AudienceTilePagesMetric.propTypes = {
-	audienceTileNumber: PropTypes.number,
 	audienceSlug: PropTypes.string.isRequired,
 	TileIcon: PropTypes.elementType.isRequired,
 	title: PropTypes.string.isRequired,
