@@ -19,13 +19,17 @@
 /**
  * Escapes URI components in a template string as a tag function.
  *
+ * @example
  * ```
  * // Escape a redirect url:
  * const redirectTo = 'http://localhost/admin/';
  * const loginUrl = escapeURI`http://localhost/login?redirect=${ redirectTo }`;
  * ```
- *
  * @since 1.11.0
+ *
+ * @param strings The array of static strings in the template.
+ * @param values  The array of expressions used in the template.
+ * @return The escaped URI.
  */
 export function escapeURI(
 	/**
