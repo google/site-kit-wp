@@ -119,14 +119,15 @@ class Email_Reporting_SchedulerTest extends TestCase {
 	}
 
 	public function test_schedule_fallback_prevents_duplicates() {
+		$batch_id  = 'batch-fallback';
 		$frequency = Email_Reporting_Settings::FREQUENCY_QUARTERLY;
 		$timestamp = 1_700_001_000;
 
-		$this->scheduler->schedule_fallback( $frequency, $timestamp );
-		$first = wp_next_scheduled( Email_Reporting_Scheduler::ACTION_FALLBACK, array( $frequency ) );
+		$this->scheduler->schedule_fallback( $batch_id, $frequency, $timestamp );
+		$first = wp_next_scheduled( Email_Reporting_Scheduler::ACTION_FALLBACK, array( $batch_id, $frequency, $timestamp ) );
 
-		$this->scheduler->schedule_fallback( $frequency, $timestamp );
-		$second = wp_next_scheduled( Email_Reporting_Scheduler::ACTION_FALLBACK, array( $frequency ) );
+		$this->scheduler->schedule_fallback( $batch_id, $frequency, $timestamp );
+		$second = wp_next_scheduled( Email_Reporting_Scheduler::ACTION_FALLBACK, array( $batch_id, $frequency, $timestamp ) );
 
 		$this->assertSame( $timestamp + HOUR_IN_SECONDS, $first, 'Fallback should schedule exactly one hour after timestamp for frequency "' . $frequency . '".' );
 		$this->assertSame( $first, $second, 'Scheduling the same fallback twice should reuse the original timestamp for frequency "' . $frequency . '".' );
@@ -173,14 +174,14 @@ class Email_Reporting_SchedulerTest extends TestCase {
 		$fallback_timestamp = time();
 
 		$this->scheduler->schedule_worker( 'batch', Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp );
-		$this->scheduler->schedule_fallback( Email_Reporting_Settings::FREQUENCY_WEEKLY, $fallback_timestamp );
+		$this->scheduler->schedule_fallback( 'batch', Email_Reporting_Settings::FREQUENCY_WEEKLY, $fallback_timestamp );
 		$this->scheduler->schedule_monitor();
 
 		$this->scheduler->unschedule_all();
 
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Initiator hook should be unscheduled for weekly frequency.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_WORKER, array( 'batch', Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp ) ), 'Worker hook should be unscheduled for batch "batch".' );
-		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_FALLBACK, array( Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Fallback hook should be unscheduled for weekly frequency.' );
+		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_FALLBACK, array( 'batch', Email_Reporting_Settings::FREQUENCY_WEEKLY, $fallback_timestamp ) ), 'Fallback hook should be unscheduled for weekly frequency.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_CLEANUP ), 'Cleanup hook should be unscheduled.' );
 	}
 
