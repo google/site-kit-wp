@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 /**
  * Helper class to normalize and process report payloads for email sections.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Email_Report_Payload_Processor {
 	/**
 	 * Processes batch reports into a normalized structure.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $batch_results  Raw batch report results.
 	 * @param array $report_configs Optional. Additional report config metadata keyed by index.
@@ -70,7 +70,7 @@ class Email_Report_Payload_Processor {
 	/**
 	 * Compute date range array from meta.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array|null $date_range Date meta, must contain startDate/endDate if provided.
 	 * @return array|null Date range array.
@@ -127,7 +127,7 @@ class Email_Report_Payload_Processor {
 	/**
 	 * Processes a single report into a normalized structure.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $report Single report data.
 	 * @return array Normalized report data.
@@ -147,7 +147,7 @@ class Email_Report_Payload_Processor {
 	/**
 	 * Extracts report metadata (dimensions, metrics, row count).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $report Report payload.
 	 * @return array Report metadata.
@@ -190,7 +190,7 @@ class Email_Report_Payload_Processor {
 	/**
 	 * Extracts totals from the report payload.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $report Report payload.
 	 * @return array Array of totals keyed by metric name.
@@ -226,7 +226,7 @@ class Email_Report_Payload_Processor {
 	/**
 	 * Extracts rows from the report payload into a normalized structure.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $report Report payload.
 	 * @return array Processed rows including dimensions and metrics.
@@ -272,7 +272,7 @@ class Email_Report_Payload_Processor {
 	/**
 	 * Extracts metric values for a specific dimension value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array  $rows             Processed rows.
 	 * @param string $dimension_name   Dimension name to match.
@@ -306,7 +306,7 @@ class Email_Report_Payload_Processor {
 	/**
 	 * Computes metric values and trends for a report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $report       Processed report data.
 	 * @param array $metric_names Ordered list of metric names.
@@ -364,7 +364,7 @@ class Email_Report_Payload_Processor {
 	/**
 	 * Computes the trend percentage between two numeric values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param mixed $current    Current value.
 	 * @param mixed $comparison Comparison value.

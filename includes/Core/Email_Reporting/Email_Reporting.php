@@ -36,7 +36,7 @@ class Email_Reporting {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Options
 	 */
 	protected $options;
@@ -44,7 +44,7 @@ class Email_Reporting {
 	/**
 	 * Modules instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Modules
 	 */
 	protected $modules;
@@ -92,7 +92,7 @@ class Email_Reporting {
 	/**
 	 * Email_Log_Cleanup instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Email_Log_Cleanup
 	 */
 	protected $email_log_cleanup;
@@ -100,7 +100,7 @@ class Email_Reporting {
 	/**
 	 * Scheduler instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Email_Reporting_Scheduler
 	 */
 	protected $scheduler;
@@ -108,7 +108,7 @@ class Email_Reporting {
 	/**
 	 * Initiator task instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Initiator_Task
 	 */
 	protected $initiator_task;
@@ -116,7 +116,7 @@ class Email_Reporting {
 	/**
 	 * Monitor task instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Monitor_Task
 	 */
 	protected $monitor_task;
@@ -124,7 +124,7 @@ class Email_Reporting {
 	/**
 	 * Worker task instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Worker_Task
 	 */
 	protected $worker_task;
@@ -138,23 +138,34 @@ class Email_Reporting {
 	protected $fallback_task;
 
 	/**
+	 * Email reporting data requests instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Email_Reporting_Data_Requests
+	 */
+	protected $data_requests;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.162.0
 	 *
-	 * @param Context           $context      Plugin context.
-	 * @param Modules           $modules      Modules instance.
-	 * @param Options|null      $options      Optional. Options instance. Default is a new instance.
-	 * @param User_Options|null $user_options Optional. User options instance. Default is a new instance.
+	 * @param Context                       $context       Plugin context.
+	 * @param Modules                       $modules       Modules instance.
+	 * @param Email_Reporting_Data_Requests $data_requests Email reporting data requests.
+	 * @param Options|null                  $options       Optional. Options instance. Default is a new instance.
+	 * @param User_Options|null             $user_options  Optional. User options instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Modules $modules,
+		Email_Reporting_Data_Requests $data_requests,
 		?Options $options = null,
 		?User_Options $user_options = null
 	) {
 		$this->context       = $context;
 		$this->modules       = $modules;
+		$this->data_requests = $data_requests;
 		$this->options       = $options ?: new Options( $this->context );
 		$this->user_options  = $user_options ?: new User_Options( $this->context );
 		$this->settings      = new Email_Reporting_Settings( $this->options );

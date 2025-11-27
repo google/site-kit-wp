@@ -17,7 +17,7 @@ use WP_User_Query;
 /**
  * Retrieves users subscribed to email reports for a given frequency.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -40,7 +40,7 @@ class Subscribed_Users_Query {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param User_Email_Reporting_Settings $email_reporting_settings User settings instance.
 	 * @param Modules                       $modules Modules instance.
@@ -53,7 +53,7 @@ class Subscribed_Users_Query {
 	/**
 	 * Retrieves user IDs subscribed for a given frequency.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @return int[] List of user IDs.
@@ -74,7 +74,7 @@ class Subscribed_Users_Query {
 	/**
 	 * Queries administrators with the email reporting meta set.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $meta_key User meta key.
 	 * @return int[] User IDs.
@@ -94,7 +94,7 @@ class Subscribed_Users_Query {
 	/**
 	 * Queries shared role users with the email reporting meta set.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $meta_key User meta key.
 	 * @return int[] User IDs.
@@ -120,7 +120,7 @@ class Subscribed_Users_Query {
 	/**
 	 * Filters user IDs by subscription meta values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param int[]  $user_ids  Candidate user IDs.
 	 * @param string $frequency Target frequency.
@@ -152,7 +152,7 @@ class Subscribed_Users_Query {
 	/**
 	 * Builds the meta query clause to ensure the subscription meta exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $meta_key Meta key.
 	 * @return array Meta query clause.

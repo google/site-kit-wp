@@ -12,8 +12,12 @@ use Google\Site_Kit\Core\Email_Reporting\Email_Reporting;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Scheduler;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Settings;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_Settings;
+use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Data_Requests;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -22,15 +26,17 @@ class Email_ReportingTest extends TestCase {
 	private $context;
 	private $options;
 	private $user_options;
+	private $authentication;
 	private $modules;
 
 	public function set_up() {
 		parent::set_up();
 
-		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options      = new Options( $this->context );
-		$this->user_options = new User_Options( $this->context );
-		$this->modules      = new Modules( $this->context, $this->options, $this->user_options );
+		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->options        = new Options( $this->context );
+		$this->user_options   = new User_Options( $this->context );
+		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );
+		$this->modules        = new Modules( $this->context, $this->options, $this->user_options, $this->authentication );
 
 		$this->clear_scheduled_events();
 		delete_option( Email_Reporting_Settings::OPTION );
@@ -111,7 +117,22 @@ class Email_ReportingTest extends TestCase {
 	}
 
 	private function create_email_reporting() {
-		return new Email_Reporting( $this->context, $this->modules, $this->options, $this->user_options );
+		$conversion_tracking = new Conversion_Tracking( $this->context, $this->options );
+		$data_requests       = new Email_Reporting_Data_Requests(
+			$this->context,
+			$this->modules,
+			$conversion_tracking,
+			new Transients( $this->context ),
+			$this->user_options
+		);
+
+		return new Email_Reporting(
+			$this->context,
+			$this->modules,
+			$data_requests,
+			$this->options,
+			$this->user_options
+		);
 	}
 
 	private function clear_scheduled_events() {

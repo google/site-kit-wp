@@ -16,14 +16,14 @@ use Google\Site_Kit\Modules\Analytics_4\Audience_Settings as Module_Audience_Set
 /**
  * Helper that provides configured audience metadata/maps.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  */
 final class Audience_Config {
 
 	/**
 	 * User audience settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @var User_Audience_Settings
 	 */
@@ -32,7 +32,7 @@ final class Audience_Config {
 	/**
 	 * Module audience settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @var Module_Audience_Settings
 	 */
@@ -41,7 +41,7 @@ final class Audience_Config {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param User_Audience_Settings   $user_settings   User audience settings instance.
 	 * @param Module_Audience_Settings $module_settings Module audience settings instance.
@@ -54,7 +54,7 @@ final class Audience_Config {
 	/**
 	 * Gets configured custom audiences and metadata.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Configured audience payload with sanitized resource names and audience metadata list.
 	 */
@@ -102,7 +102,7 @@ final class Audience_Config {
 	/**
 	 * Builds a map of Site Kit audience slugs to resource names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Associative map of Site Kit audience slugs to resource names.
 	 */
@@ -125,7 +125,7 @@ final class Audience_Config {
 	/**
 	 * Sanitizes a list of audience resource names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $audience_resource_names Audience resource names.
 	 * @return array Sanitized list.
