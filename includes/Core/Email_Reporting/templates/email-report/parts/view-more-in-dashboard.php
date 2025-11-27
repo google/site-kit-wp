@@ -12,7 +12,7 @@
  * @var callable $get_asset_url Function to get asset URLs.
  */
 
-$label     = isset( $label ) ? $label : __( 'View more in dashboard', 'google-site-kit' );
+$label     = $label ?? __( 'View more in dashboard', 'google-site-kit' );
 $arrow_url = $get_asset_url( 'icon-link-arrow.png' );
 ?>
 <table role="presentation" width="100%">

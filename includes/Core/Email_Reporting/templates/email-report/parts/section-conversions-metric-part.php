@@ -50,7 +50,7 @@ $change_context = $data['change_context'];
 							<?php
 							printf(
 								/* translators: %s: Event name (e.g., "Purchase") */
-								esc_html__( '"%s" events', 'google-site-kit' ),
+								__( '"%s" events', 'google-site-kit' ),
 								esc_html( ucfirst( $event_name ) )
 							);
 							?>

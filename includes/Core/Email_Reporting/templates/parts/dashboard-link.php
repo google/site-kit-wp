@@ -11,7 +11,7 @@
  * @var string $label The link label.
  */
 
-$label = isset( $label ) ? $label : __( 'Open dashboard', 'google-site-kit' );
+$label = $label ?? __( 'Open dashboard', 'google-site-kit' );
 ?>
 <?php /* Outlook requires custom VML for rounded corners. */ ?>
 <!--[if mso]>

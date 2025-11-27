@@ -152,11 +152,11 @@ $template_parts_dir = __DIR__ . '/parts';
 										$render_part(
 											$section_template_file,
 											array(
-												'section' => $section,
-												'render_part' => $render_part,
-												'get_asset_url' => $get_asset_url,
+												'section'            => $section,
+												'render_part'        => $render_part,
+												'get_asset_url'      => $get_asset_url,
 												'template_parts_dir' => $template_parts_dir,
-												'shared_parts_dir' => $shared_parts_dir,
+												'shared_parts_dir'   => $shared_parts_dir,
 											)
 										);
 									}

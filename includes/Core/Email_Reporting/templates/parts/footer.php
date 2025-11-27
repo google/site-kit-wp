@@ -42,7 +42,7 @@
 						);
 					}
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Link is escaped above.
-					printf( esc_html( $footer['copy'] ), $unsubscribe_link );
+					printf( '%s %s', esc_html( $footer['copy'] ), $unsubscribe_link );
 					?>
 				</p>
 			<?php endif; ?>
