@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 /**
  * Handles scheduled cleanup for email reporting logs.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -22,21 +22,21 @@ class Email_Log_Cleanup {
 	/**
 	 * Maximum age for email logs before deletion (in seconds).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 */
 	private const MAX_LOG_AGE = 6 * MONTH_IN_SECONDS;
 
 	/**
 	 * Number of posts to delete per batch.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 */
 	private const DELETE_CHUNK_SIZE = 30;
 
 	/**
 	 * Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @var Email_Reporting_Settings
 	 */
@@ -45,7 +45,7 @@ class Email_Log_Cleanup {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param Email_Reporting_Settings $settings Settings instance.
 	 */
@@ -58,7 +58,7 @@ class Email_Log_Cleanup {
 	 *
 	 * Deletes email log posts older than six months when the feature is enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 */
 	public function handle_cleanup_action() {
 		$lock_handle = $this->acquire_lock();
@@ -84,7 +84,7 @@ class Email_Log_Cleanup {
 	/**
 	 * Builds the cleanup query arguments for expired email logs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param int $posts_per_page Number of posts to fetch per request.
 	 * @return array Query arguments for expired email log posts.
@@ -115,7 +115,7 @@ class Email_Log_Cleanup {
 	/**
 	 * Gets the list of valid email log post statuses.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return string[] Valid post statuses.
 	 */
@@ -130,7 +130,7 @@ class Email_Log_Cleanup {
 	/**
 	 * Attempts to acquire the cleanup lock.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return string|false Transient name on success, false if lock already held.
 	 */

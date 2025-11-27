@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_S
 /**
  * Restores missing initiator schedules for email reporting.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Monitor_Task {
 	/**
 	 * Scheduler instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @var Email_Reporting_Scheduler
 	 */
@@ -33,7 +33,7 @@ class Monitor_Task {
 	/**
 	 * Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @var Email_Reporting_Settings
 	 */
@@ -42,7 +42,7 @@ class Monitor_Task {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param Email_Reporting_Scheduler $scheduler Scheduler instance.
 	 * @param Email_Reporting_Settings  $settings  Email reporting settings.
@@ -58,7 +58,7 @@ class Monitor_Task {
 	 * The monitor ensures each initiator schedule exists and recreates any
 	 * missing ones without disturbing existing events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 */
 	public function handle_monitor_action() {
 		if ( ! $this->settings->is_email_reporting_enabled() ) {

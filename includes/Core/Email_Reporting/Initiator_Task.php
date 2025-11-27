@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 /**
  * Handles initiator cron callbacks for email reporting.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -40,7 +40,7 @@ class Initiator_Task {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param Email_Reporting_Scheduler $scheduler              Scheduler instance.
 	 * @param Subscribed_Users_Query    $subscribed_users_query Subscribed users query helper.
@@ -53,7 +53,7 @@ class Initiator_Task {
 	/**
 	 * Handles the initiator cron callback.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $frequency Frequency slug.
 	 */
@@ -85,7 +85,7 @@ class Initiator_Task {
 		}
 
 		$this->scheduler->schedule_worker( $batch_id, $frequency, $timestamp );
-		$this->scheduler->schedule_fallback( $frequency, $timestamp );
+		$this->scheduler->schedule_fallback( $batch_id, $frequency, $timestamp );
 	}
 
 	/**

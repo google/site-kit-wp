@@ -36,7 +36,7 @@ class Email_Reporting {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Options
 	 */
 	protected $options;
@@ -44,7 +44,7 @@ class Email_Reporting {
 	/**
 	 * Modules instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Modules
 	 */
 	protected $modules;
@@ -92,7 +92,7 @@ class Email_Reporting {
 	/**
 	 * Email_Log_Cleanup instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Email_Log_Cleanup
 	 */
 	protected $email_log_cleanup;
@@ -100,7 +100,7 @@ class Email_Reporting {
 	/**
 	 * Scheduler instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Email_Reporting_Scheduler
 	 */
 	protected $scheduler;
@@ -108,7 +108,7 @@ class Email_Reporting {
 	/**
 	 * Initiator task instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Initiator_Task
 	 */
 	protected $initiator_task;
@@ -116,7 +116,7 @@ class Email_Reporting {
 	/**
 	 * Monitor task instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Monitor_Task
 	 */
 	protected $monitor_task;
@@ -124,10 +124,18 @@ class Email_Reporting {
 	/**
 	 * Worker task instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var Worker_Task
 	 */
 	protected $worker_task;
+
+	/**
+	 * Fallback task instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Fallback_Task
+	 */
+	protected $fallback_task;
 
 	/**
 	 * Email reporting data requests instance.
@@ -173,6 +181,7 @@ class Email_Reporting {
 		$this->scheduler         = new Email_Reporting_Scheduler( $frequency_planner );
 		$this->initiator_task    = new Initiator_Task( $this->scheduler, $subscribed_users_query );
 		$this->worker_task       = new Worker_Task( $max_execution_limiter, $batch_query, $this->scheduler );
+		$this->fallback_task     = new Fallback_Task( $batch_query, $this->scheduler, $this->worker_task );
 		$this->monitor_task      = new Monitor_Task( $this->scheduler, $this->settings );
 		$this->email_log_cleanup = new Email_Log_Cleanup( $this->settings );
 	}
@@ -199,6 +208,7 @@ class Email_Reporting {
 			add_action( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $this->initiator_task, 'handle_callback_action' ), 10, 1 );
 			add_action( Email_Reporting_Scheduler::ACTION_MONITOR, array( $this->monitor_task, 'handle_monitor_action' ) );
 			add_action( Email_Reporting_Scheduler::ACTION_WORKER, array( $this->worker_task, 'handle_callback_action' ), 10, 3 );
+			add_action( Email_Reporting_Scheduler::ACTION_FALLBACK, array( $this->fallback_task, 'handle_fallback_action' ), 10, 3 );
 			add_action( Email_Reporting_Scheduler::ACTION_CLEANUP, array( $this->email_log_cleanup, 'handle_cleanup_action' ) );
 
 		} else {

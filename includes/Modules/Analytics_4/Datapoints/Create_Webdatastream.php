@@ -23,7 +23,7 @@ use stdClass;
 /**
  * Class for the web data stream creation datapoint.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ class Create_Webdatastream extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Reference site URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var string
 	 */
 	private $reference_site_url;
@@ -40,7 +40,7 @@ class Create_Webdatastream extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -52,7 +52,7 @@ class Create_Webdatastream extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
@@ -89,7 +89,7 @@ class Create_Webdatastream extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data Data request object.

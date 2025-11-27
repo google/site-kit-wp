@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 /**
  * Schedules cron events related to email reporting.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -37,7 +37,7 @@ class Email_Reporting_Scheduler {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param Frequency_Planner $frequency_planner Frequency planner instance.
 	 */
@@ -48,7 +48,7 @@ class Email_Reporting_Scheduler {
 	/**
 	 * Registers WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 */
 	public function register() {
 		add_filter( 'cron_schedules', array( __CLASS__, 'register_monthly_schedule' ) );
@@ -57,7 +57,7 @@ class Email_Reporting_Scheduler {
 	/**
 	 * Ensures an initiator event exists for each frequency.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 */
 	public function schedule_initiator_events() {
 		foreach ( array( Email_Reporting_Settings::FREQUENCY_WEEKLY, Email_Reporting_Settings::FREQUENCY_MONTHLY, Email_Reporting_Settings::FREQUENCY_QUARTERLY ) as $frequency ) {
@@ -68,7 +68,7 @@ class Email_Reporting_Scheduler {
 	/**
 	 * Schedules the next initiator for a frequency if none exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $frequency Frequency slug.
 	 */
@@ -85,7 +85,7 @@ class Email_Reporting_Scheduler {
 	/**
 	 * Explicitly schedules the next initiator event for a frequency.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @param int    $timestamp Base timestamp used to calculate the next run.
@@ -99,7 +99,7 @@ class Email_Reporting_Scheduler {
 	/**
 	 * Schedules a worker event if one with the same arguments is not already queued.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $batch_id  Batch identifier.
 	 * @param string $frequency Frequency slug.
@@ -117,26 +117,29 @@ class Email_Reporting_Scheduler {
 	}
 
 	/**
-	 * Schedules a fallback event for the given frequency if one is not already queued.
+	 * Schedules a fallback event for the given batch if one is not already queued.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
+	 * @param string $batch_id  Batch identifier.
 	 * @param string $frequency Frequency slug.
 	 * @param int    $timestamp Base timestamp for the batch.
 	 * @param int    $delay     Delay in seconds before fallback runs.
 	 */
-	public function schedule_fallback( $frequency, $timestamp, $delay = HOUR_IN_SECONDS ) {
-		if ( wp_next_scheduled( self::ACTION_FALLBACK, array( $frequency ) ) ) {
+	public function schedule_fallback( $batch_id, $frequency, $timestamp, $delay = HOUR_IN_SECONDS ) {
+		$args = array( $batch_id, $frequency, $timestamp );
+
+		if ( wp_next_scheduled( self::ACTION_FALLBACK, $args ) ) {
 			return;
 		}
 
-		wp_schedule_single_event( $timestamp + $delay, self::ACTION_FALLBACK, array( $frequency ) );
+		wp_schedule_single_event( $timestamp + $delay, self::ACTION_FALLBACK, $args );
 	}
 
 	/**
 	 * Ensures the monitor event is scheduled daily.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 */
 	public function schedule_monitor() {
 		if ( wp_next_scheduled( self::ACTION_MONITOR ) ) {
@@ -149,7 +152,7 @@ class Email_Reporting_Scheduler {
 	/**
 	 * Ensures a recurring cleanup event exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 */
 	public function schedule_cleanup() {
 		if ( wp_next_scheduled( self::ACTION_CLEANUP ) ) {
@@ -162,7 +165,7 @@ class Email_Reporting_Scheduler {
 	/**
 	 * Unschedules all email reporting related events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 */
 	public function unschedule_all() {
 		foreach ( array( self::ACTION_INITIATOR, self::ACTION_WORKER, self::ACTION_FALLBACK, self::ACTION_MONITOR, self::ACTION_CLEANUP ) as $hook ) {
@@ -173,7 +176,7 @@ class Email_Reporting_Scheduler {
 	/**
 	 * Registers a monthly cron schedule if one does not exist.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $schedules Existing schedules.
 	 * @return array Modified schedules including a monthly interval.

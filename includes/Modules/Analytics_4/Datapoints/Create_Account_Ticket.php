@@ -23,7 +23,7 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 /**
  * Class for the account ticket creation datapoint.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ class Create_Account_Ticket extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Credentials array.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var array
 	 */
 	private $credentials;
@@ -40,7 +40,7 @@ class Create_Account_Ticket extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Provisioning redirect URI.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var string
 	 */
 	private $provisioning_redirect_uri;
@@ -48,7 +48,7 @@ class Create_Account_Ticket extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -61,7 +61,7 @@ class Create_Account_Ticket extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
@@ -111,7 +111,7 @@ class Create_Account_Ticket extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data Data request object.
