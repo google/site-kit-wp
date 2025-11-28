@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -48,6 +49,14 @@ class Email_Reporting {
 	 * @var Modules
 	 */
 	protected $modules;
+
+	/**
+	 * Authentication instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Authentication
+	 */
+	protected $authentication;
 
 	/**
 	 * Email_Reporting_Settings instance.
@@ -141,10 +150,12 @@ class Email_Reporting {
 	 * Constructor.
 	 *
 	 * @since 1.162.0
+	 * @since n.e.x.t Added authentication dependency.
 	 *
 	 * @param Context                       $context       Plugin context.
 	 * @param Modules                       $modules       Modules instance.
 	 * @param Email_Reporting_Data_Requests $data_requests Email reporting data requests.
+	 * @param Authentication                $authentication Authentication instance.
 	 * @param Options|null                  $options       Optional. Options instance. Default is a new instance.
 	 * @param User_Options|null             $user_options  Optional. User options instance. Default is a new instance.
 	 */
@@ -152,16 +163,18 @@ class Email_Reporting {
 		Context $context,
 		Modules $modules,
 		Email_Reporting_Data_Requests $data_requests,
+		Authentication $authentication,
 		?Options $options = null,
 		?User_Options $user_options = null
 	) {
-		$this->context       = $context;
-		$this->modules       = $modules;
-		$this->data_requests = $data_requests;
-		$this->options       = $options ?: new Options( $this->context );
-		$this->user_options  = $user_options ?: new User_Options( $this->context );
-		$this->settings      = new Email_Reporting_Settings( $this->options );
-		$this->user_settings = new User_Email_Reporting_Settings( $this->user_options );
+		$this->context        = $context;
+		$this->modules        = $modules;
+		$this->data_requests  = $data_requests;
+		$this->authentication = $authentication;
+		$this->options        = $options ?: new Options( $this->context );
+		$this->user_options   = $user_options ?: new User_Options( $this->context );
+		$this->settings       = new Email_Reporting_Settings( $this->options );
+		$this->user_settings  = new User_Email_Reporting_Settings( $this->user_options );
 
 		$frequency_planner      = new Frequency_Planner();
 		$subscribed_users_query = new Subscribed_Users_Query( $this->user_settings, $this->modules );
@@ -191,7 +204,7 @@ class Email_Reporting {
 		$this->email_log->register();
 		$this->scheduler->register();
 
-		if ( $this->settings->is_email_reporting_enabled() ) {
+		if ( $this->authentication->is_setup_completed() && $this->settings->is_email_reporting_enabled() ) {
 			$this->scheduler->schedule_initiator_events();
 			$this->scheduler->schedule_monitor();
 			$this->scheduler->schedule_cleanup();
