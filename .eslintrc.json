@@ -40,6 +40,7 @@
 		"jsdoc/require-returns-type": "error",
 		"jsdoc/require-returns": "error",
 		"jsdoc/no-undefined-types": "error",
+		"jsdoc/tag-lines": "off",
 		"jsdoc/valid-types": "error",
 		"lodash/import-scope": [
 			"error",
