@@ -26,7 +26,8 @@
 		"jsdoc/check-types": "error",
 		"jsdoc/check-line-alignment": [
 			"error",
-			"always"
+			"always",
+      { "preserveMainDescriptionPostDelimiter": true }
 		],
 		"jsdoc/require-description": "error",
 		"jsdoc/require-description-complete-sentence": "off",
