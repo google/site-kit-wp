@@ -45,7 +45,9 @@ module.exports = iterateJsdoc(
 				return expectedTagOrder.includes( tag );
 			} )
 			.sort( ( tagA, tagB ) => {
-				return tagA.line > tagB.line ? 1 : -1;
+				return tagA.source[ 0 ].number > tagB.source[ 0 ].number
+					? 1
+					: -1;
 			} )
 			.map( ( tag ) => {
 				return tag.tag;
