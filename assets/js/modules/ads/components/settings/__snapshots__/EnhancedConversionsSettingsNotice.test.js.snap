@@ -21,7 +21,7 @@ exports[`Ads EnhancedConversionsNotification should render the notice 1`] = `
       <p
         class="googlesitekit-notice__description"
       >
-        Site Kit now supports enhanced conversions. This feature helps your ads count sales and leads more accurately, even across different devices, so your budget is spent smarter. To turn this on, simply agree to the terms of service in your Ads account. 
+        Site Kit now supports enhanced conversions. This feature helps your ads count sales and leads more accurately, even across different devices, so your budget is spent smarter. To turn this on, simply agree to the terms of service in your Ads account and enable enhanced conversions. 
         <a
           aria-label="Learn more (opens in a new tab)"
           class="googlesitekit-cta-link"
