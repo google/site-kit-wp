@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Uninstallation;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_Settings;
 use WP_Error;
 
 /**
@@ -95,6 +96,22 @@ class UninstallationTest extends TestCase {
 		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
 			$this->assertEmpty( wp_next_scheduled( $event ), 'Scheduled event should be cleared after uninstallation.' );
 		}
+	}
+
+	public function test_clear_scheduled_events__email_reporting_events_with_args() {
+		$worker_timestamp = time();
+
+		wp_schedule_single_event( time() + 50, Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) );
+		wp_schedule_single_event( time() + 50, Email_Reporting_Scheduler::ACTION_WORKER, array( 'batch', User_Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp ) );
+		wp_schedule_single_event( time() + 50, Email_Reporting_Scheduler::ACTION_FALLBACK, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) );
+
+		remove_all_actions( 'googlesitekit_uninstallation' );
+		$this->uninstallation->register();
+		do_action( 'googlesitekit_uninstallation' );
+
+		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Initiator event with args should be cleared.' );
+		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_WORKER, array( 'batch', User_Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp ) ), 'Worker event with args should be cleared.' );
+		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_FALLBACK, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Fallback event with args should be cleared.' );
 	}
 
 	public function test_clear_scheduled_events__reset() {
