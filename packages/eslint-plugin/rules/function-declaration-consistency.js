@@ -162,6 +162,25 @@ module.exports = {
 			);
 		}
 
+		// Helper: checks if the node has an FC or React.FC type annotation.
+		function isReactFunctionalComponent( node ) {
+			const typeAnnotation = node.id.typeAnnotation?.typeAnnotation;
+			if ( ! typeAnnotation ) {
+				return false;
+			}
+
+			// Check for: const Name: FC = ...
+			if (
+				typeAnnotation.type === 'TSTypeReference' &&
+				typeAnnotation.typeName.type === 'Identifier' &&
+				typeAnnotation.typeName.name === 'FC'
+			) {
+				return true;
+			}
+
+			return false;
+		}
+
 		// Helper: get ExportNamedDeclaration node if present for variable declaration.
 		function getExportNode( varDecl ) {
 			const p = varDecl?.parent;
@@ -193,6 +212,11 @@ module.exports = {
 			// Convert named arrows and named function-expressions to function declarations.
 			VariableDeclarator( node ) {
 				if ( ! isNamedFnDeclarator( node ) ) {
+					return;
+				}
+
+				// Exception: Allow React functional components typed as `FC`.
+				if ( isReactFunctionalComponent( node ) ) {
 					return;
 				}
 
