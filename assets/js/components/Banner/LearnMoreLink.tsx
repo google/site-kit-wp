@@ -46,10 +46,18 @@ export interface LearnMoreLinkProps {
 }
 
 /**
- * A "Learn More" link component, usually used to append "Learn more" with a
+ * Renders a "Learn More" link component, usually used to append "Learn more" with a
  * specified URL to content like a paragraph.
  *
  * @since 1.153.0
+ *
+ * @param props            The props for the component.
+ * @param props.className  The class name for the link.
+ * @param [props.external] Whether the link is external. Optional, defaults to true.
+ * @param props.href       The URL for the link.
+ * @param props.label      The label for the link.
+ * @param [props.onClick]  The function to call when the link is clicked. Optional, defaults to an empty function.
+ * @return The rendered component.
  */
 const LearnMoreLink: FC< LearnMoreLinkProps > = ( {
 	className,
