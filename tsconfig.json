@@ -3,6 +3,7 @@
     "allowJs": true,
     "baseUrl": ".",
     "checkJs": false,
+    "esModuleInterop": true,
     "jsx": "preserve",
     "noImplicitAny": true,
     "noEmit": true,

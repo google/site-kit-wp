@@ -17,6 +17,7 @@
 /**
  * External dependencies
  */
+import PropTypes from 'prop-types';
 import { FC } from 'react';
 
 /**
@@ -77,6 +78,14 @@ const LearnMoreLink: FC< LearnMoreLinkProps > = ( {
 			{ label }
 		</Link>
 	);
+};
+
+LearnMoreLink.propTypes = {
+	href: PropTypes.string.isRequired,
+	className: PropTypes.string,
+	label: PropTypes.string,
+	external: PropTypes.bool,
+	onClick: PropTypes.func,
 };
 
 export default LearnMoreLink;
