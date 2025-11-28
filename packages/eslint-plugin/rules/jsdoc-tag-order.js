@@ -23,8 +23,13 @@ const {
 	default: iterateJsdoc,
 } = require( 'eslint-plugin-jsdoc/dist/iterateJsdoc' );
 
+/**
+ * Internal dependencies
+ */
+const { getJsdocContent } = require( '../utils' );
+
 module.exports = iterateJsdoc(
-	( { context, jsdoc, jsdocNode, utils } ) => {
+	( { context, jsdocNode, utils } ) => {
 		const expectedTagOrder = [
 			'since',
 			'see',
@@ -55,9 +60,11 @@ module.exports = iterateJsdoc(
 				return;
 			}
 
+			const source = getJsdocContent( context, jsdocNode );
+
 			if (
 				previousTag &&
-				jsdoc.source.match(
+				source.match(
 					new RegExp( `@${ previousTag }.*\\n\\n@${ tag }`, 'gm' )
 				)
 			) {

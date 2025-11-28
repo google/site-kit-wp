@@ -26,7 +26,11 @@ const {
 /**
  * Internal dependencies
  */
-const { checkForEmptyLinesInGroup, findTagInGroup } = require( '../utils' );
+const {
+	checkForEmptyLinesInGroup,
+	findTagInGroup,
+	getJsdocContent,
+} = require( '../utils' );
 
 module.exports = iterateJsdoc(
 	( { context, jsdoc, jsdocNode, utils } ) => {
@@ -56,7 +60,9 @@ module.exports = iterateJsdoc(
 		checkForEmptyLinesInGroup( firstGroup, { context, jsdoc, jsdocNode } );
 		checkForEmptyLinesInGroup( secondGroup, { context, jsdoc, jsdocNode } );
 
-		if ( jsdoc.source.match( '\n\n\n', 'gm' ) ) {
+		const source = getJsdocContent( context, jsdocNode );
+
+		if ( source.match( '\n\n\n', 'gm' ) ) {
 			context.report( {
 				data: { name: jsdocNode.name },
 				message:

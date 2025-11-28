@@ -22,10 +22,7 @@ const FUNCTION_TYPES = [
 	'FunctionExpression',
 ];
 
-function checkForEmptyLinesInGroup(
-	groupOfTags,
-	{ context, jsdoc, jsdocNode } = {}
-) {
+function checkForEmptyLinesInGroup( groupOfTags, { context, jsdocNode } = {} ) {
 	groupOfTags.forEach( ( tag, index ) => {
 		if ( index === 0 ) {
 			return;
@@ -33,8 +30,10 @@ function checkForEmptyLinesInGroup(
 
 		const previousTag = groupOfTags[ index - 1 ];
 
+		const source = context.getSourceCode().getText( jsdocNode );
+
 		if (
-			jsdoc.source.match(
+			source.match(
 				new RegExp( `@${ previousTag.tag }.*\\n\\n@${ tag.tag }`, 'gm' )
 			)
 		) {
@@ -61,6 +60,16 @@ function findTagInGroup( tagsInGroup, utils, index = 0 ) {
 	}
 
 	return findTagInGroup( tagsInGroup, utils, index + 1 );
+}
+
+function getJsdocContent( context, jsdocNode ) {
+	const sourceCode = context.getSourceCode();
+
+	return sourceCode
+		.getText( jsdocNode )
+		.replace( /^\s*\/\*\*+/, '' ) // Remove opening `/**`.
+		.replace( /\s*\*\/\s*$/, '' ) // Remove closing `*/`.
+		.replace( /^\s*\* ?/gm, '' ); // Remove leading `*` and optional space.
 }
 
 function isDependencyBlock( jsdoc ) {
@@ -190,6 +199,7 @@ function isFunction( node ) {
 module.exports = {
 	checkForEmptyLinesInGroup,
 	findTagInGroup,
+	getJsdocContent,
 	isDependencyBlock,
 	isFunction,
 	isImported,
