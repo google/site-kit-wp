@@ -142,10 +142,17 @@ function isFunctionIdentifier( node ) {
 		return false;
 	}
 
-	return (
-		isTypeFunction( node?.parent?.type ) ||
-		isTypeFunction( node?.parent?.init?.type )
-	);
+	const parent = node?.parent;
+
+	if (
+		isTypeFunction( parent?.type ) ||
+		isTypeFunction( parent?.init?.type )
+	) {
+		// The identifier is the function name if it's the `id` property, as opposed to being in `params`.
+		return parent?.id === node;
+	}
+
+	return false;
 }
 
 function isFunctionExportOrVariable( node ) {
