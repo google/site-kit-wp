@@ -30,7 +30,7 @@ function checkForEmptyLinesInGroup( groupOfTags, { context, jsdocNode } = {} ) {
 
 		const previousTag = groupOfTags[ index - 1 ];
 
-		const source = context.getSourceCode().getText( jsdocNode );
+		const source = getJsdocContent( context, jsdocNode );
 
 		if (
 			source.match(
