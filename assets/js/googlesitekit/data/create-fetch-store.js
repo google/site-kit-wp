@@ -53,16 +53,16 @@ const { clearError, receiveError } = errorStoreActions;
  * single fetch action.
  *
  * This function returns a partial store object with the following:
- * * action creators to fetch and to receive the data
- * * control to issue the API request
- * * reducer to set API request flag and receive the response
- * * selector to check whether the API request is in progress via a flag
+ * - action creators to fetch and to receive the data
+ * - control to issue the API request
+ * - reducer to set API request flag and receive the response
+ * - selector to check whether the API request is in progress via a flag
  *
  * The names of the pieces are based on the baseName provided.
  * For example, if baseName is 'saveSettings':
- * * The fetch action creator is called 'fetchSaveSettings'.
- * * The receive action creator is called 'receiveSaveSettings'.
- * * The fetching selector is called 'isFetchingSaveSettings'.
+ * - The fetch action creator is called 'fetchSaveSettings'.
+ * - The receive action creator is called 'receiveSaveSettings'.
+ * - The fetching selector is called 'isFetchingSaveSettings'.
  *
  * All parts of the returned store objects should be considered internal. A
  * public action or selector should be implemented to actually call the
@@ -70,13 +70,13 @@ const { clearError, receiveError } = errorStoreActions;
  *
  * For example, if the fetch store is intended for an API-based
  * action 'storeMySetting':
- * * The basename passed should be 'storeMySetting'.
- * * The action 'storeMySetting' should call 'fetchStoreMySetting'.
+ * - The basename passed should be 'storeMySetting'.
+ * - The action 'storeMySetting' should call 'fetchStoreMySetting'.
  *
  * Or, if the fetch store is intended for an API-based selector
  * 'getSomeData':
- * * The baseName passed should be 'getSomeData'.
- * * The resolver for 'getSomeData' should call 'fetchGetSomeData'.
+ * - The baseName passed should be 'getSomeData'.
+ * - The resolver for 'getSomeData' should call 'fetchGetSomeData'.
  *
  * @since 1.10.0
  * @private

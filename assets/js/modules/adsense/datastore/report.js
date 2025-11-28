@@ -118,9 +118,9 @@ const baseSelectors = {
 	 *
 	 * The report generated will include the following metrics:
 	 *
-	 * * 'ESTIMATED_EARNINGS'
-	 * * 'PAGE_VIEWS_RPM'
-	 * * 'IMPRESSIONS'
+	 * - 'ESTIMATED_EARNINGS'
+	 * - 'PAGE_VIEWS_RPM'
+	 * - 'IMPRESSIONS'
 	 *
 	 * An AdSense report will be returned; `undefined` if the report is not yet loaded.
 	 *
