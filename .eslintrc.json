@@ -49,6 +49,7 @@
 		"jsdoc/require-returns-description": "error",
 		"jsdoc/require-returns-type": "error",
 		"jsdoc/require-returns": "error",
+		"jsdoc/require-yields": "off",
 		"jsdoc/no-undefined-types": "error",
 		"jsdoc/tag-lines": "off",
 		"jsdoc/valid-types": "error",
