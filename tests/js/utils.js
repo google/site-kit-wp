@@ -542,7 +542,7 @@ export function provideWidgetRegistrations(
  * @private
  *
  * @param {(string|RegExp|Function|URL|Object)} matcher    Criteria for deciding which requests to mock.
- *                                                        (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
+ *                                                         (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
  * @param {*}                                   [response] Optional. Response to return.
  */
 export function muteFetch( matcher, response = {} ) {
