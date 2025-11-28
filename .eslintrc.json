@@ -27,7 +27,17 @@
 		"jsdoc/check-line-alignment": [
 			"error",
 			"always",
-      { "preserveMainDescriptionPostDelimiter": true }
+			{
+				"preserveMainDescriptionPostDelimiter": true,
+				"tags": [
+					"param",
+					"arg",
+					"argument",
+					"property",
+					"prop",
+					"returns"
+				]
+			}
 		],
 		"jsdoc/require-description": "error",
 		"jsdoc/require-description-complete-sentence": "off",
