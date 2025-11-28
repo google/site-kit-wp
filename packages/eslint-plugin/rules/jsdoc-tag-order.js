@@ -28,6 +28,19 @@ const {
  */
 const { getJsdocContent } = require( '../utils' );
 
+/**
+ * Compares tags by line number.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} tagA The first tag to compare.
+ * @param {Object} tagB The second tag to compare.
+ * @return {number} The result of the comparison.
+ */
+function compareTagsByLineNumber( tagA, tagB ) {
+	return tagA.source[ 0 ].number > tagB.source[ 0 ].number ? 1 : -1;
+}
+
 module.exports = iterateJsdoc(
 	( { context, jsdocNode, utils } ) => {
 		const expectedTagOrder = [
@@ -44,11 +57,7 @@ module.exports = iterateJsdoc(
 			.filterTags( ( { tag } ) => {
 				return expectedTagOrder.includes( tag );
 			} )
-			.sort( ( tagA, tagB ) => {
-				return tagA.source[ 0 ].number > tagB.source[ 0 ].number
-					? 1
-					: -1;
-			} )
+			.sort( compareTagsByLineNumber )
 			.map( ( tag ) => {
 				return tag.tag;
 			} );
@@ -97,9 +106,7 @@ module.exports = iterateJsdoc(
 					tag
 				);
 			} )
-			.sort( ( tagA, tagB ) => {
-				return tagA.line > tagB.line ? 1 : -1;
-			} )
+			.sort( compareTagsByLineNumber )
 			.map( ( tag ) => {
 				return tag.tag;
 			} )
@@ -115,9 +122,7 @@ module.exports = iterateJsdoc(
 			.filterTags( ( { tag } ) => {
 				return [ 'param', 'type', 'return' ].includes( tag );
 			} )
-			.sort( ( tagA, tagB ) => {
-				return tagA.line > tagB.line ? 1 : -1;
-			} )
+			.sort( compareTagsByLineNumber )
 			.map( ( tag ) => {
 				return tag.tag;
 			} )

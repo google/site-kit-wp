@@ -76,6 +76,18 @@ const SINCE_VALIDATION_RULES = [
 	},
 ];
 
+/**
+ * Trims a trailing newline from a string.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} value The string to trim.
+ * @return {string} The trimmed string.
+ */
+function trimTrailingNewline( value ) {
+	return value.replace( /\n$/, '' );
+}
+
 module.exports = iterateJsdoc(
 	( { context, jsdoc, jsdocNode, utils } ) => {
 		// If the `@ignore` tag is in this JSDoc block, ignore it and don't require a `@since` tag.
@@ -96,11 +108,18 @@ module.exports = iterateJsdoc(
 		}
 
 		sinceTags.forEach( ( tag, index ) => {
-			const [ versionString ] = tag.description.split( ' ', 1 );
-			const description = tag.description.slice( versionString.length );
+			const versionString = trimTrailingNewline(
+				tag.description.split( ' ', 1 )[ 0 ]
+			);
+			const description = trimTrailingNewline(
+				tag.description.slice( versionString.length )
+			);
 			const previousTag = sinceTags[ index - 1 ];
-			const previousVersionString =
-				previousTag?.description.split( ' ', 1 )[ 0 ] || null;
+			const previousVersionString = previousTag
+				? trimTrailingNewline(
+						previousTag.description.split( ' ', 1 )[ 0 ]
+				  )
+				: null;
 
 			for ( const rule of SINCE_VALIDATION_RULES ) {
 				const error = rule( {
