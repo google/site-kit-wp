@@ -143,9 +143,33 @@ class Uninstallation {
 		foreach ( self::SCHEDULED_EVENTS as $event ) {
 			// Only clear scheduled events that are set, important in E2E
 			// testing.
-			if ( (bool) wp_next_scheduled( $event ) ) {
+			if ( $this->is_event_scheduled( $event ) ) {
 				wp_unschedule_hook( $event );
 			}
 		}
+	}
+
+	/**
+	 * Determines if an event is scheduled for the given hook, regardless of arguments.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $hook The hook name.
+	 * @return bool True if an event is scheduled for the hook, false otherwise.
+	 */
+	private function is_event_scheduled( $hook ) {
+		$crons = _get_cron_array();
+
+		if ( ! is_array( $crons ) || empty( $crons ) ) {
+			return false;
+		}
+
+		foreach ( $crons as $events ) {
+			if ( isset( $events[ $hook ] ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
