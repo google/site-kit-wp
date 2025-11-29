@@ -77,15 +77,15 @@ const SINCE_VALIDATION_RULES = [
 ];
 
 /**
- * Trims a trailing newline from a string.
+ * Gets the description from a tag's source string.
  *
  * @since n.e.x.t
  *
- * @param {string} value The string to trim.
- * @return {string} The trimmed string.
+ * @param {Object} tag The tag object.
+ * @return {string} The tag description.
  */
-function trimTrailingNewline( value ) {
-	return value.replace( /\n$/, '' );
+function getTagDescription( tag ) {
+	return tag.source[ 0 ].source.replace( /^\s*\*\s*@since /, '' );
 }
 
 module.exports = iterateJsdoc(
@@ -108,17 +108,12 @@ module.exports = iterateJsdoc(
 		}
 
 		sinceTags.forEach( ( tag, index ) => {
-			const versionString = trimTrailingNewline(
-				tag.description.split( ' ', 1 )[ 0 ]
-			);
-			const description = trimTrailingNewline(
-				tag.description.slice( versionString.length )
-			);
+			const tagDescription = getTagDescription( tag );
+			const versionString = tagDescription.split( ' ', 1 )[ 0 ];
+			const description = tagDescription.slice( versionString.length );
 			const previousTag = sinceTags[ index - 1 ];
 			const previousVersionString = previousTag
-				? trimTrailingNewline(
-						previousTag.description.split( ' ', 1 )[ 0 ]
-				  )
+				? getTagDescription( previousTag ).split( ' ', 1 )[ 0 ]
 				: null;
 
 			for ( const rule of SINCE_VALIDATION_RULES ) {
