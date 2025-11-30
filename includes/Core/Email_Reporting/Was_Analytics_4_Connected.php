@@ -38,4 +38,15 @@ class Was_Analytics_4_Connected extends Setting {
 	protected function get_type() {
 		return 'boolean';
 	}
+
+	/**
+	 * Gets the callback for sanitizing the setting's value before saving.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return callable The sanitizing function.
+	 */
+	protected function get_sanitize_callback() {
+		return 'boolval';
+	}
 }
