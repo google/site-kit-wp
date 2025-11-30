@@ -15,7 +15,7 @@ use WP_Query;
 /**
  * Helper for querying and updating email log batches.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Email_Log_Batch_Query {
 	/**
 	 * Retrieves IDs for pending logs within a batch.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $batch_id     Batch identifier.
 	 * @param int    $max_attempts Maximum delivery attempts allowed.
@@ -64,7 +64,7 @@ class Email_Log_Batch_Query {
 	/**
 	 * Builds a batch query object limited to a specific batch ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $batch_id Batch identifier.
 	 * @return WP_Query Query returning IDs only.
@@ -78,7 +78,8 @@ class Email_Log_Batch_Query {
 					Email_Log::STATUS_SENT,
 					Email_Log::STATUS_FAILED,
 				),
-				'posts_per_page'         => -1,
+				// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				'posts_per_page'         => 10000,
 				'fields'                 => 'ids',
 				'no_found_rows'          => true,
 				'update_post_meta_cache' => false,
@@ -97,7 +98,7 @@ class Email_Log_Batch_Query {
 	/**
 	 * Determines whether all posts in the batch completed delivery.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $batch_id     Batch identifier.
 	 * @param int    $max_attempts Maximum delivery attempts allowed.
@@ -110,7 +111,7 @@ class Email_Log_Batch_Query {
 	/**
 	 * Increments the send attempt counter for a log post.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param int $post_id Log post ID.
 	 * @return void Nothing returned.
@@ -130,7 +131,7 @@ class Email_Log_Batch_Query {
 	/**
 	 * Updates the post status for a log post.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param int    $post_id Log post ID.
 	 * @param string $status  New status slug.

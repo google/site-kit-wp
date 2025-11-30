@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Search_Console\Email_Reporting;
 /**
  * Processes Search Console data for email reporting (sorting, partitioning, summarizing).
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Report_Data_Processor {
 	/**
 	 * Sorts Search Console rows by a given field.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array  $rows  Search Console rows (arrays or objects).
 	 * @param string $field Field name such as 'ctr', 'clicks', etc.
@@ -56,7 +56,7 @@ class Report_Data_Processor {
 	/**
 	 * Partitions rows into compare and current periods.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $rows          Combined-period rows returned from the API.
 	 * @param int   $period_length Number of days within a period.
@@ -85,7 +85,7 @@ class Report_Data_Processor {
 	/**
 	 * Calculates field totals for compare/current periods.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array  $rows          Combined-period rows returned from the API.
 	 * @param string $field         Field name to sum (e.g. impressions, clicks, ctr).
@@ -104,7 +104,7 @@ class Report_Data_Processor {
 	/**
 	 * Sums a numeric field across the provided rows.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array  $rows  Row list.
 	 * @param string $field Field name.
@@ -123,7 +123,7 @@ class Report_Data_Processor {
 	/**
 	 * Safely extracts a scalar value from a Search Console row.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array|object $row   Row data.
 	 * @param string       $field Field to extract.

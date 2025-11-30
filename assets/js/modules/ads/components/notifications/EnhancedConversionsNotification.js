@@ -59,7 +59,7 @@ export default function EnhancedConversionsNotification( {
 				) }
 				description={ createInterpolateElement(
 					__(
-						'Site Kit now supports enhanced conversions. This feature helps your ads count sales and leads more accurately, even across different devices, so your budget is spent smarter. To turn this on, simply agree to the terms of service in your Ads account. <a />',
+						'Site Kit now supports enhanced conversions. This feature helps your ads count sales and leads more accurately, even across different devices, so your budget is spent smarter. To turn this on, simply agree to the terms of service in your Ads account and enable enhanced conversions. <a />',
 						'google-site-kit'
 					),
 					{

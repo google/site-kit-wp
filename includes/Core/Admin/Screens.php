@@ -69,7 +69,7 @@ final class Screens {
 	/**
 	 * User_Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var User_Options
 	 */
 	private $user_options;

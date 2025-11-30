@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Email_Reporting\Report_Options\Report_Options as Base_R
  *
  * This leverages Analytics 4 linked AdSense data (totalAdRevenue/adSourceName).
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Linked AdSense account ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @var string
 	 */
@@ -35,7 +35,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array|null $date_range    Current period range array.
 	 * @param array      $compare_range Optional. Compare period range array.
@@ -49,7 +49,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for total AdSense earnings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -73,7 +73,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Builds the AdSense ad source filter value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return string Human-readable filter label referencing the linked AdSense account.
 	 */

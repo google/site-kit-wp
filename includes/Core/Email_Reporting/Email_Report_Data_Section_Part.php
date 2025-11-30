@@ -15,7 +15,7 @@ use InvalidArgumentException;
 /**
  * Single email report section part.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Unique section key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var string
 	 */
 	private $section_key;
@@ -32,7 +32,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Section title.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var string
 	 */
 	private $title;
@@ -40,7 +40,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Labels for the section rows/series.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var array
 	 */
 	private $labels;
@@ -48,7 +48,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Values formatted as strings for output.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var array
 	 */
 	private $values;
@@ -56,7 +56,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Optional trends matching values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var array|null
 	 */
 	private $trends;
@@ -64,7 +64,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Optional date range data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var array|null
 	 */
 	private $date_range;
@@ -72,7 +72,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Optional dashboard deeplink URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 * @var string|null
 	 */
 	private $dashboard_link;
@@ -80,7 +80,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $section_key  Unique section key.
 	 * @param array  $section_data Section data (title, labels, values, optional trends, date_range, dashboard_link).
@@ -109,7 +109,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Gets the section key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return string Section key.
 	 */
@@ -120,7 +120,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Gets the title.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return string Title.
 	 */
@@ -131,7 +131,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Gets labels.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Labels list.
 	 */
@@ -142,7 +142,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Gets values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Values list.
 	 */
@@ -153,7 +153,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Gets trends.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array|null Trends list or null.
 	 */
@@ -164,7 +164,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Gets date range.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array|null Date range data or null.
 	 */
@@ -175,7 +175,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Gets dashboard link.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return string|null Dashboard link or null.
 	 */
@@ -186,7 +186,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Validates and assigns title.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $title Title.
 	 *
@@ -203,7 +203,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Validates and assigns labels.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $labels Labels.
 	 *
@@ -220,7 +220,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Validates and assigns values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $values Values.
 	 *
@@ -237,7 +237,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Validates and assigns trends.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array|null $trends Trends data.
 	 *
@@ -259,7 +259,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Validates and assigns date range.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array|null $date_range Date range data.
 	 *
@@ -302,7 +302,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Validates and assigns dashboard link.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string|null $dashboard_link Dashboard link.
 	 *
@@ -324,7 +324,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Whether the section is empty (no values or all empty strings).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return bool Whether the section is empty.
 	 */

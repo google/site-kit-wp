@@ -85,7 +85,7 @@ class Email_Reporting_Settings extends User_Setting {
 	/**
 	 * Gets the meta key used to store the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return string Meta key for the user option.
 	 */

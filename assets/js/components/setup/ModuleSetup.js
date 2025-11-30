@@ -41,6 +41,7 @@ import { deleteItem } from '@/js/googlesitekit/api/cache';
 import { trackEvent } from '@/js/util';
 import { useFeature } from '@/js/hooks/useFeature';
 import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import { Cell, Grid, Row } from '@/js/material-components';
 import Header from '@/js/components/Header';
@@ -49,9 +50,15 @@ import ExitSetup from '@/js/components/setup/ExitSetup';
 import ProgressIndicator from '@/js/components/ProgressIndicator';
 
 export default function ModuleSetup( { moduleSlug } ) {
+	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const [ showProgress ] = useQueryArg( 'showProgress' );
+
+	const isInitialSetupFlow =
+		setupFlowRefreshEnabled &&
+		moduleSlug === MODULE_SLUG_ANALYTICS_4 &&
+		showProgress === 'true';
 
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
@@ -71,11 +78,18 @@ export default function ModuleSetup( { moduleSlug } ) {
 		async ( redirectURL ) => {
 			await deleteItem( 'module_setup' );
 
-			await trackEvent(
-				'moduleSetup',
-				'complete_module_setup',
-				moduleSlug
-			);
+			if ( isInitialSetupFlow ) {
+				await trackEvent(
+					`${ viewContext }_setup`,
+					'setup_flow_v3_complete_analytics_step'
+				);
+			} else {
+				await trackEvent(
+					'moduleSetup',
+					'complete_module_setup',
+					moduleSlug
+				);
+			}
 
 			if ( redirectURL ) {
 				navigateTo( redirectURL );
@@ -93,7 +107,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 			);
 			navigateTo( adminURL );
 		},
-		[ registry, navigateTo, moduleSlug ]
+		[ registry, navigateTo, moduleSlug, viewContext, isInitialSetupFlow ]
 	);
 
 	const onCompleteSetup = module?.onCompleteSetup;
@@ -107,6 +121,15 @@ export default function ModuleSetup( { moduleSlug } ) {
 	}, [ moduleSlug ] );
 
 	useMount( () => {
+		if ( isInitialSetupFlow ) {
+			trackEvent(
+				`${ viewContext }_setup`,
+				'setup_flow_v3_view_analytics_step'
+			);
+
+			return;
+		}
+
 		trackEvent( 'moduleSetup', 'view_module_setup', moduleSlug );
 	} );
 
@@ -115,11 +138,6 @@ export default function ModuleSetup( { moduleSlug } ) {
 	}
 
 	const { SetupComponent } = module;
-
-	const isInitialSetupFlow =
-		setupFlowRefreshEnabled &&
-		moduleSlug === MODULE_SLUG_ANALYTICS_4 &&
-		showProgress === 'true';
 
 	return (
 		<Fragment>
@@ -133,7 +151,16 @@ export default function ModuleSetup( { moduleSlug } ) {
 					) : null
 				}
 			>
-				{ isInitialSetupFlow ? <ExitSetup /> : <HelpMenu /> }
+				{ isInitialSetupFlow ? (
+					<ExitSetup
+						gaTrackingEventArgs={ {
+							category: `${ viewContext }_setup`,
+							label: moduleSlug,
+						} }
+					/>
+				) : (
+					<HelpMenu />
+				) }
 			</Header>
 			<div className="googlesitekit-setup">
 				<Grid>

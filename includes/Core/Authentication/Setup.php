@@ -118,7 +118,7 @@ class Setup {
 	 * Composes the oAuth proxy get help link.
 	 *
 	 * @since 1.81.0
-	 * @since n.e.x.t Added support for custom error codes.
+	 * @since 1.167.0 Added support for custom error codes.
 	 *
 	 * @param string|null $error_code The error code. Optional. Defaults to null.
 	 * @return string The get help link.

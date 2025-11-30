@@ -1226,8 +1226,12 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( $account_display_name, $account_ticket_request->getAccount()->getDisplayName(), 'Account display name should match the provided value.' );
 		$this->assertEquals( $region_code, $account_ticket_request->getAccount()->getRegionCode(), 'Account region code should match the provided value.' );
 		$redirect_uri = $this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri'];
+
+		if ( $params['showProgressExpectedValue'] ) {
+			$redirect_uri = add_query_arg( 'show_progress', 1, $redirect_uri );
+		}
+
 		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri(), 'Redirect URI should match the analytics redirect URI from site fields.' );
-		$this->assertEquals( $params['showProgressExpectedValue'], $account_ticket_request->getShowProgress(), 'The `showProgress` field should match the expected value' );
 
 		// Assert transient is set with params.
 		$account_ticket_params = get_transient( Analytics_4::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );

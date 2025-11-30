@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Email_Reporting\Report_Options;
 /**
  * Base helper for building email reporting report options.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ abstract class Report_Options {
 	/**
 	 * Current period date range.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @var array
 	 */
@@ -31,7 +31,7 @@ abstract class Report_Options {
 	/**
 	 * Compare period date range.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @var array
 	 */
@@ -40,7 +40,7 @@ abstract class Report_Options {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $date_range    Current period range array containing `startDate` and `endDate`.
 	 * @param array $compare_range Optional. Compare period range array containing `startDate` and `endDate`.
@@ -61,7 +61,7 @@ abstract class Report_Options {
 	/**
 	 * Applies the current (and optional compare) date range to the report options.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $options         Base report options.
 	 * @param bool  $include_compare Optional. Whether to include compare dates. Default false.
@@ -82,7 +82,7 @@ abstract class Report_Options {
 	/**
 	 * Gets a combined range spanning compare start to current end.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Combined date range spanning compare start to current end.
 	 */
@@ -96,7 +96,7 @@ abstract class Report_Options {
 	/**
 	 * Gets the current period range values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Current period range array.
 	 */
@@ -107,7 +107,7 @@ abstract class Report_Options {
 	/**
 	 * Gets the compare period range values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Compare period range array.
 	 */
@@ -118,7 +118,7 @@ abstract class Report_Options {
 	/**
 	 * Normalizes and validates the provided range.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array  $range Potential date range.
 	 * @param string $label Human friendly label used in exceptions.
@@ -141,7 +141,7 @@ abstract class Report_Options {
 	/**
 	 * Extracts the compare range array.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array $date_range    Current period range (possibly containing compare keys).
 	 * @param array $compare_range Explicit compare range override.

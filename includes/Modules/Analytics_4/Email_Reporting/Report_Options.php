@@ -21,7 +21,7 @@ use Google\Site_Kit\Modules\Analytics_4\Audience_Settings as Module_Audience_Set
 /**
  * Builds Analytics 4 report option payloads for email reporting.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Ecommerce conversion events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @var string[]
 	 */
@@ -42,7 +42,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Audience configuration helper.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @var Audience_Config
 	 */
@@ -51,7 +51,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param array   $date_range    Current period range array.
 	 * @param array   $compare_range Compare period range array.
@@ -71,7 +71,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for the total conversion events section.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -93,7 +93,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for products added to cart.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -121,7 +121,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for purchases.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -149,7 +149,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for total visitors.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -167,7 +167,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for new visitors.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -178,7 +178,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for returning visitors.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -189,7 +189,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for custom audiences (user configured).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Report payload, holding report options array and audience metadata.
 	 */
@@ -228,7 +228,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for the traffic channels by visitor count section.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -257,7 +257,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for pages with the most pageviews.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -285,7 +285,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for top authors by pageviews.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -318,7 +318,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for top categories by pageviews.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -351,7 +351,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Builds report options for Site Kit-created audiences, with a fallback to the core dimension if unavailable.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $audience_slug    Audience slug (e.g. 'new-visitors').
 	 * @param string $fallback_segment Fallback segment value for newVsReturning.

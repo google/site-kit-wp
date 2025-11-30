@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 /**
  * Handles worker cron callbacks for email reporting.
  *
- * @since n.e.x.t
+ * @since 1.167.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Worker_Task {
 	/**
 	 * Email log batch query helper.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @var Email_Log_Batch_Query
 	 */
@@ -31,7 +31,7 @@ class Worker_Task {
 	/**
 	 * Scheduler instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @var Email_Reporting_Scheduler
 	 */
@@ -40,7 +40,7 @@ class Worker_Task {
 	/**
 	 * Max execution limiter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @var Max_Execution_Limiter
 	 */
@@ -49,7 +49,7 @@ class Worker_Task {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param Max_Execution_Limiter     $max_execution_limiter Execution limiter instance.
 	 * @param Email_Log_Batch_Query     $batch_query           Batch query helper.
@@ -68,7 +68,7 @@ class Worker_Task {
 	/**
 	 * Handles worker cron executions for email reporting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $batch_id            Batch identifier.
 	 * @param string $frequency           Frequency slug.
@@ -120,7 +120,7 @@ class Worker_Task {
 	/**
 	 * Attempts to acquire a frequency-scoped worker lock.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @return string|false Transient name on success, false if lock already held.
@@ -140,7 +140,7 @@ class Worker_Task {
 	/**
 	 * Determines if the current worker run should abort.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param int $initiator_timestamp Initiator timestamp.
 	 * @return bool True if processing should stop immediately.
@@ -152,7 +152,7 @@ class Worker_Task {
 	/**
 	 * Schedules the follow-up worker event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.167.0
 	 *
 	 * @param string $batch_id            Batch identifier.
 	 * @param string $frequency           Frequency slug.

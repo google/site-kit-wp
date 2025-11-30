@@ -34,6 +34,10 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import * as tracking from '@/js/util/tracking';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'KeyMetricsSetupApp', () => {
 	mockLocation();
@@ -91,6 +95,10 @@ describe( 'KeyMetricsSetupApp', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveGetModules( withConnected( MODULE_SLUG_ANALYTICS_4 ) );
+	} );
+
+	afterEach( () => {
+		jest.resetAllMocks();
 	} );
 
 	it( 'should render correctly', async () => {
@@ -429,5 +437,24 @@ describe( 'KeyMetricsSetupApp', () => {
 			1,
 			syncCustomDimensionsEndpoint
 		);
+	} );
+
+	it( 'should track an event when the user clicks the "Exit setup" button', async () => {
+		const { getByRole, waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+			features: [ 'setupFlowRefresh' ],
+		} );
+
+		await waitForRegistry();
+
+		fireEvent.click( getByRole( 'button', { name: 'Exit setup' } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_KEY_METRICS_SETUP }_setup`,
+			'setup_flow_v3_exit_setup',
+			'key-metrics'
+		);
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 	} );
 } );

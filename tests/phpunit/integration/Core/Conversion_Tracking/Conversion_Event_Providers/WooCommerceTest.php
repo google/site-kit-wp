@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\WC_Countries_Fake;
 
 class WooCommerceTest extends TestCase {
 
@@ -254,5 +255,174 @@ class WooCommerceTest extends TestCase {
 				array(),
 			),
 		);
+	}
+
+	/**
+	 * @dataProvider phone_normalization_data_provider
+	 * @runInSeparateProcess
+	 */
+	public function test_get_normalized_phone( $phone, $country, $country_calling_code, $expected ) {
+		// Create a test double for WC_Countries using class_alias.
+		if ( ! class_exists( 'WC_Countries' ) ) {
+			class_alias( 'Google\Site_Kit\Tests\WC_Countries_Fake', 'WC_Countries' );
+		}
+
+		// Set the calling code for this test iteration.
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- Using fake class property.
+		\WC_Countries::$test_calling_code = $country_calling_code;
+
+		$reflection = new \ReflectionClass( $this->woocommerce );
+		$method     = $reflection->getMethod( 'get_normalized_phone' );
+		$method->setAccessible( true );
+
+		$result = $method->invoke( $this->woocommerce, $phone, $country );
+
+		$this->assertEquals( $expected, $result );
+	}
+
+	public function phone_normalization_data_provider() {
+		return array(
+			// Test case 1: Phone number with correct country code prefix is not duplicated.
+			'phone with correct country code - Sri Lanka' => array(
+				'phone'                => '+94771770589',
+				'country'              => 'LK',
+				'country_calling_code' => '+94',
+				'expected'             => '+94771770589',
+			),
+			// Test case 2: Phone number with different country code than billing is respected.
+			'phone with different country code - Mauritius number with UK billing' => array(
+				'phone'                => '+2307800099',
+				'country'              => 'GB',
+				'country_calling_code' => '+44',
+				'expected'             => '+2307800099',
+			),
+			// Test case 3: National number without country code gets it prepended.
+			'national number without country code - Sri Lanka' => array(
+				'phone'                => '771770589',
+				'country'              => 'LK',
+				'country_calling_code' => '+94',
+				'expected'             => '+94771770589',
+			),
+			// Test case 4: National number with leading zero.
+			'national number with leading zero - Sri Lanka' => array(
+				'phone'                => '0771770589',
+				'country'              => 'LK',
+				'country_calling_code' => '+94',
+				'expected'             => '+94771770589',
+			),
+			// Test case 5: Short invalid number fails validation.
+			'short invalid number - UK'                   => array(
+				'phone'                => '7800099',
+				'country'              => 'GB',
+				'country_calling_code' => '+44',
+				'expected'             => '', // Too short after prepending +44.
+			),
+			// Test case 6: Empty/whitespace-only input returns empty string.
+			'empty string'                                => array(
+				'phone'                => '',
+				'country'              => 'US',
+				'country_calling_code' => '+1',
+				'expected'             => '',
+			),
+			'whitespace only'                             => array(
+				'phone'                => '   ',
+				'country'              => 'US',
+				'country_calling_code' => '+1',
+				'expected'             => '',
+			),
+			// Test case 7: Number with only non-digit characters returns empty string.
+			'only special characters'                     => array(
+				'phone'                => '+++---',
+				'country'              => 'US',
+				'country_calling_code' => '+1',
+				'expected'             => '',
+			),
+			// Test case 8: Very long numbers fail validation.
+			'very long number'                            => array(
+				'phone'                => '+1234567890123456', // 17 chars, exceeds 15 max.
+				'country'              => 'US',
+				'country_calling_code' => '+1',
+				'expected'             => '',
+			),
+			// Test case 9: Phone number with formatting characters (spaces, dashes, parentheses).
+			'formatted phone number - US'                 => array(
+				'phone'                => '(555) 123-4567',
+				'country'              => 'US',
+				'country_calling_code' => '+1',
+				'expected'             => '+15551234567',
+			),
+			// Test case 10: Phone number with country code but no plus sign.
+			'country code without plus - Sri Lanka'       => array(
+				'phone'                => '94771770589',
+				'country'              => 'LK',
+				'country_calling_code' => '+94',
+				'expected'             => '+94771770589',
+			),
+			// Test case 11: Phone number with plus and spaces.
+			'phone with plus and spaces - UK'             => array(
+				'phone'                => '+44 20 7946 0958',
+				'country'              => 'GB',
+				'country_calling_code' => '+44',
+				'expected'             => '+442079460958',
+			),
+			// Test case 12: Minimum valid length.
+			'minimum valid length - 11 chars'             => array(
+				'phone'                => '+12345678901', // Exactly 11 chars (including +).
+				'country'              => 'US',
+				'country_calling_code' => '+1',
+				'expected'             => '+12345678901',
+			),
+			// Test case 13: Maximum valid length.
+			'maximum valid length - 15 chars'             => array(
+				'phone'                => '+12345678901234', // Exactly 15 chars (including +).
+				'country'              => 'US',
+				'country_calling_code' => '+1',
+				'expected'             => '+12345678901234',
+			),
+			// Test case 14: National number that becomes too short after removing leading zeros.
+			'all zeros'                                   => array(
+				'phone'                => '0000',
+				'country'              => 'US',
+				'country_calling_code' => '+1',
+				'expected'             => '',
+			),
+			// Test case 15: Phone number with explicit + but matches billing country.
+			'explicit plus matching billing country'      => array(
+				'phone'                => '+44 7700 900077',
+				'country'              => 'GB',
+				'country_calling_code' => '+44',
+				'expected'             => '+447700900077',
+			),
+			// Test case 16: International format with 00 prefix (same country).
+			'international format with 00 prefix - same country' => array(
+				'phone'                => '0094770601017',
+				'country'              => 'LK',
+				'country_calling_code' => '+94',
+				'expected'             => '+94770601017',
+			),
+			// Test case 17: International format with 00 prefix (different country).
+			'international format with 00 prefix - different country' => array(
+				'phone'                => '00919361653826',
+				'country'              => 'LK',
+				'country_calling_code' => '+94',
+				'expected'             => '+919361653826',
+			),
+		);
+	}
+
+	/**
+	 * Test fallback to Enhanced_Conversions normalization when WooCommerce is unavailable.
+	 */
+	public function test_get_normalized_phone_fallback() {
+		$reflection = new \ReflectionClass( $this->woocommerce );
+		$method     = $reflection->getMethod( 'get_normalized_phone' );
+		$method->setAccessible( true );
+
+		// Test with empty country (WooCommerce unavailable scenario).
+		$result = $method->invoke( $this->woocommerce, '+94771770589', '' );
+
+		// Should fallback to Enhanced_Conversions::get_normalized_value().
+		// Enhanced_Conversions normalizes to lowercase and trims, but keeps other chars.
+		$this->assertEquals( '+94771770589', $result );
 	}
 }

@@ -389,6 +389,73 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 		} );
 
 		describe( 'isEnhancedMeasurementStreamEnabled', () => {
+			it( 'should use a resolver to make a network request if data is not present', async () => {
+				fetchMock.get( enhancedMeasurementSettingsEndpoint, {
+					body: enhancedMeasurementSettingsMock,
+					status: 200,
+				} );
+
+				const initialStreamEnabled = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isEnhancedMeasurementStreamEnabled(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( initialStreamEnabled ).toBeUndefined();
+
+				const finalStreamEnabled = await registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.isEnhancedMeasurementStreamEnabled(
+						propertyID,
+						webDataStreamID
+					);
+
+				expect( finalStreamEnabled ).toEqual( true );
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					enhancedMeasurementSettingsEndpoint
+				);
+			} );
+
+			// @todo remove when duplicate requests fail tests automatically.
+			it( 'should make a single network request for enhanced measurement settings', async () => {
+				fetchMock.get(
+					enhancedMeasurementSettingsEndpoint,
+					async () => {
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 10 )
+						);
+						return {
+							body: enhancedMeasurementSettingsMock,
+							status: 200,
+						};
+					}
+				);
+
+				const {
+					getEnhancedMeasurementSettings,
+					isEnhancedMeasurementStreamEnabled,
+				} = registry.resolveSelect( MODULES_ANALYTICS_4 );
+
+				const [ isStreamEnabled ] = await Promise.all( [
+					isEnhancedMeasurementStreamEnabled(
+						propertyID,
+						webDataStreamID
+					),
+					getEnhancedMeasurementSettings(
+						propertyID,
+						webDataStreamID
+					),
+				] );
+
+				expect( isStreamEnabled ).toEqual( true );
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					enhancedMeasurementSettingsEndpoint
+				);
+			} );
+
 			it( 'should return the correct `streamEnabled` state', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -490,6 +557,44 @@ describe( 'modules/analytics-4 enhanced-measurement', () => {
 					);
 
 				expect( finalStreamEnabled ).toEqual( true );
+			} );
+
+			// @todo remove when duplicate requests fail tests automatically.
+			it( 'should make a single network request for enhanced measurement settings', async () => {
+				fetchMock.get(
+					enhancedMeasurementSettingsEndpoint,
+					async () => {
+						await new Promise( ( resolve ) =>
+							setTimeout( resolve, 10 )
+						);
+						return {
+							body: enhancedMeasurementSettingsMock,
+							status: 200,
+						};
+					}
+				);
+
+				const {
+					getEnhancedMeasurementSettings,
+					isEnhancedMeasurementStreamAlreadyEnabled,
+				} = registry.resolveSelect( MODULES_ANALYTICS_4 );
+
+				const [ isStreamEnabled ] = await Promise.all( [
+					isEnhancedMeasurementStreamAlreadyEnabled(
+						propertyID,
+						webDataStreamID
+					),
+					getEnhancedMeasurementSettings(
+						propertyID,
+						webDataStreamID
+					),
+				] );
+
+				expect( isStreamEnabled ).toEqual( true );
+				expect( fetchMock ).toHaveFetchedTimes(
+					1,
+					enhancedMeasurementSettingsEndpoint
+				);
 			} );
 
 			it( 'should not make a network request if the `streamEnabled` state is already present', async () => {
