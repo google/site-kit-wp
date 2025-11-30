@@ -171,12 +171,13 @@ class Email_Reporting {
 		$this->settings      = new Email_Reporting_Settings( $this->options );
 		$this->user_settings = new User_Email_Reporting_Settings( $this->user_options );
 
-		$frequency_planner      = new Frequency_Planner();
-		$subscribed_users_query = new Subscribed_Users_Query( $this->user_settings, $this->modules );
-		$max_execution_limiter  = new Max_Execution_Limiter( (int) ini_get( 'max_execution_time' ) );
-		$batch_query            = new Email_Log_Batch_Query();
+		$frequency_planner         = new Frequency_Planner();
+		$subscribed_users_query    = new Subscribed_Users_Query( $this->user_settings, $this->modules );
+		$max_execution_limiter     = new Max_Execution_Limiter( (int) ini_get( 'max_execution_time' ) );
+		$batch_query               = new Email_Log_Batch_Query();
+		$was_analytics_4_connected = new Was_Analytics_4_Connected( $this->options );
 
-		$this->rest_controller   = new REST_Email_Reporting_Controller( $this->settings, $this->options );
+		$this->rest_controller   = new REST_Email_Reporting_Controller( $this->settings, $was_analytics_4_connected );
 		$this->email_log         = new Email_Log( $this->context );
 		$this->scheduler         = new Email_Reporting_Scheduler( $frequency_planner );
 		$this->initiator_task    = new Initiator_Task( $this->scheduler, $subscribed_users_query );

@@ -48,12 +48,12 @@ class REST_Email_Reporting_Controller {
 	 *
 	 * @since 1.162.0
 	 *
-	 * @param Email_Reporting_Settings $settings Email_Reporting_Settings instance.
-	 * @param Options                  $options  Options instance.
+	 * @param Email_Reporting_Settings  $settings Email_Reporting_Settings instance.
+	 * @param Was_Analytics_4_Connected $was_analytics_4_connected  Was_Analytics_4_Connected instance.
 	 */
-	public function __construct( Email_Reporting_Settings $settings, Options $options ) {
+	public function __construct( Email_Reporting_Settings $settings, Was_Analytics_4_Connected $was_analytics_4_connected ) {
 		$this->settings                  = $settings;
-		$this->was_analytics_4_connected = new Was_Analytics_4_Connected( $options );
+		$this->was_analytics_4_connected = $was_analytics_4_connected;
 	}
 
 	/**
