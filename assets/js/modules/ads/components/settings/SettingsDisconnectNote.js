@@ -29,13 +29,24 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import Link from '@/js/components/Link';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 
 export default function SettingsDisconnectNote() {
 	const detailsLinkURL = useSelect( ( select ) =>
 		select( CORE_MODULES ).getDetailsLinkURL( MODULE_SLUG_ADS )
 	);
 
-	if ( ! detailsLinkURL ) {
+	const paxConversionID = useSelect( ( select ) =>
+		select( MODULES_ADS ).getPaxConversionID()
+	);
+
+	const extCustomerID = useSelect( ( select ) =>
+		select( MODULES_ADS ).getExtCustomerID()
+	);
+
+	const isPaxSetup = paxConversionID || extCustomerID;
+
+	if ( ! detailsLinkURL || ! isPaxSetup ) {
 		return null;
 	}
 
