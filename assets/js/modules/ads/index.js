@@ -55,7 +55,7 @@ import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
 import EnhancedConversionsNotification, {
 	ENHANCED_CONVERSIONS_NOTIFICATION_ADS,
 } from './components/notifications/EnhancedConversionsNotification';
-import SettingsDisconnectNote from '@/js/modules/ads/components/settings/SettingsDisconnectNote';
+import SettingsDisconnectNote from './components/settings/SettingsDisconnectNote';
 
 export { registerStore } from './datastore';
 
