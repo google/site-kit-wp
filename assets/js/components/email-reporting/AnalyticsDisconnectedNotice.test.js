@@ -179,4 +179,16 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
+
+	it( 'does not render when analytics was never connected', () => {
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetWasAnalytics4Connected( false );
+
+		const { container } = render( <AnalyticsDisconnectedNotice />, {
+			registry,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
 } );
