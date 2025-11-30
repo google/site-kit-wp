@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Settings;
 use Google\Site_Kit\Core\Email_Reporting\REST_Email_Reporting_Controller;
+use Google\Site_Kit\Core\Email_Reporting\Was_Analytics_4_Connected;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -30,6 +31,13 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 	private $settings;
 
 	/**
+	 * Was_Analytics_4_Connected instance.
+	 *
+	 * @var Was_Analytics_4_Connected
+	 */
+	private $was_analytics_4_connected;
+
+	/**
 	 * REST_Email_Reporting_Controller instance.
 	 *
 	 * @var REST_Email_Reporting_Controller
@@ -42,10 +50,11 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options          = new Options( $context );
-		$this->settings   = new Email_Reporting_Settings( $options );
-		$this->controller = new REST_Email_Reporting_Controller( $this->settings, $options );
+		$context                         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options                         = new Options( $context );
+		$this->settings                  = new Email_Reporting_Settings( $options );
+		$this->was_analytics_4_connected = new Was_Analytics_4_Connected( $options );
+		$this->controller                = new REST_Email_Reporting_Controller( $this->settings, $this->was_analytics_4_connected );
 	}
 
 	public function tear_down() {
