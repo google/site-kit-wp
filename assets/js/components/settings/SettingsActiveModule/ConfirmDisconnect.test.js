@@ -41,7 +41,7 @@ describe( 'ConfirmDisconnect', () => {
 			.setValue( 'module-ads-dialogActive', true );
 	} );
 
-	it( 'should render the Ads Disconnect ModalDialog with a disconnect note component when it is passed', async () => {
+	it( 'should render the Ads Disconnect ModalDialog with a disconnect note component when it is passed and Ads is setup using the PAX flow', async () => {
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ADS,
@@ -63,7 +63,7 @@ describe( 'ConfirmDisconnect', () => {
 			.receiveUserInfo( { email: 'test@example.com' } );
 
 		await registry.dispatch( MODULES_ADS ).receiveGetSettings( {
-			conversionID: '12345',
+			paxConversionID: '12345',
 			accountOverviewURL: mockAccountOverviewURL,
 		} );
 

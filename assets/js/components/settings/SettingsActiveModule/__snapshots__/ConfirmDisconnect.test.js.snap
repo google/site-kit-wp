@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ConfirmDisconnect should render the Ads Disconnect ModalDialog with a disconnect note component when it is passed 1`] = `
+exports[`ConfirmDisconnect should render the Ads Disconnect ModalDialog with a disconnect note component when it is passed and Ads is setup using the PAX flow 1`] = `
 <div>
   <div
     class="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--ads"
