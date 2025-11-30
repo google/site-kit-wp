@@ -164,4 +164,19 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
+
+	it( 'does not render when analytics is active', () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+		const { container } = render( <AnalyticsDisconnectedNotice />, {
+			registry,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
 } );
