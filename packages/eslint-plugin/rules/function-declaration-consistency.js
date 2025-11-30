@@ -162,7 +162,7 @@ module.exports = {
 			);
 		}
 
-		// Helper: checks if the node has an FC or React.FC type annotation.
+		// Helper: checks if the node has the `FC` type annotation.
 		function isReactFunctionalComponent( node ) {
 			const typeAnnotation = node.id.typeAnnotation?.typeAnnotation;
 			if ( ! typeAnnotation ) {
