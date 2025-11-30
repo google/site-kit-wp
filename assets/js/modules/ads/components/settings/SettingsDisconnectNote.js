@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wordpress/element';
 
 /**
@@ -49,7 +49,7 @@ export default function SettingsDisconnectNote() {
 			br: <br />,
 			DetailsLink: (
 				<Link href={ detailsLinkURL } external hideExternalIndicator>
-					{ __( 'Ads', 'google-site-kit' ) }
+					{ _x( 'Ads', 'Service name', 'google-site-kit' ) }
 				</Link>
 			),
 		}
