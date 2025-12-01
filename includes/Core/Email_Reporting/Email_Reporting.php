@@ -204,6 +204,8 @@ class Email_Reporting {
 		$this->email_log->register();
 		$this->scheduler->register();
 
+		// Schedule events only if authentication is completed and email reporting is enabled.
+		// Otherwise events are being scheduled as soon as the plugin is activated.
 		if ( $this->authentication->is_setup_completed() && $this->settings->is_email_reporting_enabled() ) {
 			$this->scheduler->schedule_initiator_events();
 			$this->scheduler->schedule_monitor();
