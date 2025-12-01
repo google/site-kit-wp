@@ -53,6 +53,7 @@ export default function UserInputSelectOptions( {
 	next,
 	showInstructions,
 	alignLeftOptions,
+	gaTrackingEventArgs,
 } ) {
 	const viewContext = useViewContext();
 	const values = useSelect(
@@ -108,18 +109,26 @@ export default function UserInputSelectOptions( {
 				newValues.delete( value );
 			}
 
-			const gaEventName =
-				slug === USER_INPUT_QUESTION_POST_FREQUENCY
-					? 'content_frequency_question_answer'
-					: `site_${ slug }_question_answer`;
-
 			const checkedValues = Array.from( newValues ).slice( 0, max );
 
-			trackEvent(
-				`${ viewContext }_kmw`,
-				gaEventName,
-				checkedValues.join()
-			);
+			if ( gaTrackingEventArgs ) {
+				trackEvent(
+					gaTrackingEventArgs.category,
+					gaTrackingEventArgs.action,
+					checkedValues.join()
+				);
+			} else {
+				const gaEventName =
+					slug === USER_INPUT_QUESTION_POST_FREQUENCY
+						? 'content_frequency_question_answer'
+						: `site_${ slug }_question_answer`;
+
+				trackEvent(
+					`${ viewContext }_kmw`,
+					gaEventName,
+					checkedValues.join()
+				);
+			}
 
 			if ( slug === USER_INPUT_QUESTIONS_PURPOSE ) {
 				setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
@@ -129,7 +138,15 @@ export default function UserInputSelectOptions( {
 
 			setUserInputSetting( slug, checkedValues );
 		},
-		[ max, setUserInputSetting, slug, values, viewContext, setValues ]
+		[
+			values,
+			max,
+			gaTrackingEventArgs,
+			slug,
+			setUserInputSetting,
+			viewContext,
+			setValues,
+		]
 	);
 
 	const onKeyDown = useCallback(
@@ -235,6 +252,7 @@ UserInputSelectOptions.propTypes = {
 	next: PropTypes.func,
 	showInstructions: PropTypes.bool,
 	alignLeftOptions: PropTypes.bool,
+	gaTrackingEventArgs: PropTypes.object,
 };
 
 UserInputSelectOptions.defaultProps = {
