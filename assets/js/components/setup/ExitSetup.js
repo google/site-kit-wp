@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -28,16 +33,23 @@ import { Button } from '@/js/googlesitekit-components';
 import { useDispatch, useSelect } from '@/js/googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { trackEvent, untrailingslashit } from '@/js/util';
 
-export default function ExitSetup() {
+export default function ExitSetup( { gaTrackingEventArgs } ) {
 	const adminURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getAdminURL();
+		return untrailingslashit( select( CORE_SITE ).getAdminURL() );
 	} );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	function handleClick() {
-		navigateTo( `${ adminURL }plugins.php` );
+	async function handleClick() {
+		await trackEvent(
+			gaTrackingEventArgs.category,
+			'setup_flow_v3_exit_setup',
+			gaTrackingEventArgs.label
+		);
+
+		navigateTo( `${ adminURL }/plugins.php` );
 	}
 
 	return (
@@ -46,3 +58,7 @@ export default function ExitSetup() {
 		</Button>
 	);
 }
+
+ExitSetup.propTypes = {
+	gaTrackingEventArgs: PropTypes.object.isRequired,
+};

@@ -34,7 +34,10 @@ const {
 	userRoles,
 } = global._googlesitekitTrackingData || {};
 
-const { GOOGLESITEKIT_VERSION: pluginVersion } = global;
+// Access the plugin version directly without destructuring as Webpack's DefinePlugin
+// performs text replacement at build time and doesn't support destructuring patterns.
+// See: https://github.com/google/site-kit-wp/issues/11802#issuecomment-3562955579
+const pluginVersion = global.GOOGLESITEKIT_VERSION;
 
 const initialConfig = {
 	activeModules,

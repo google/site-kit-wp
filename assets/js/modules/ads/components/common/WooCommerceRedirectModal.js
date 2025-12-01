@@ -315,7 +315,7 @@ export default function WooCommerceRedirectModal( {
 WooCommerceRedirectModal.propTypes = {
 	dialogActive: PropTypes.bool.isRequired,
 	onDismiss: PropTypes.func,
-	onClose: PropTypes.func.isRequired,
+	onClose: PropTypes.func,
 	onContinue: PropTypes.func,
 	onBeforeSetupCallback: PropTypes.func,
 };

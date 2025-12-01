@@ -277,6 +277,7 @@ final class Authentication implements Provides_Feature_Metrics {
 		$this->verification_file()->register();
 		$this->verification_meta()->register();
 		$this->has_connected_admins->register();
+		$this->has_multiple_admins->register();
 		$this->owner_id->register();
 		$this->connected_proxy_url->register();
 		$this->disconnected_reason->register();
@@ -330,7 +331,6 @@ final class Authentication implements Provides_Feature_Metrics {
 				}
 
 				$user['connectURL']           = esc_url_raw( $this->get_connect_url() );
-				$user['hasMultipleAdmins']    = $this->has_multiple_admins->get();
 				$user['initialVersion']       = $this->initial_version->get();
 				$user['isUserInputCompleted'] = ! $this->user_input->are_settings_empty();
 				$user['verified']             = $this->verification->has();

@@ -52,6 +52,10 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
 import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWithSignIn';
+import * as tracking from '@/js/util/tracking';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 jest.mock(
 	'../CompatibilityChecks',
@@ -82,6 +86,10 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		muteFetch(
 			new RegExp( '^/google-site-kit/v1/core/user/data/tracking' )
 		);
+	} );
+
+	afterEach( () => {
+		jest.resetAllMocks();
 	} );
 
 	it( 'should render the setup page, including the Activate Analytics notice', async () => {
@@ -153,6 +161,38 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		} );
 	} );
 
+	it( 'should track GA events on CTA click', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<SetupUsingProxyWithSignIn />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.click(
+			getByRole( 'button', { name: /sign in with google/i } )
+		);
+
+		await waitFor( () => {
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_SPLASH }_setup`,
+				'start_site_setup',
+				'proxy'
+			);
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_SPLASH }_setup`,
+				'start_user_setup',
+				'proxy'
+			);
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+		} );
+	} );
+
 	it( 'should navigate to the proxy setup URL with Analytics re-auth redirect URL on CTA click if chosen to connect Analytics', async () => {
 		fetchMock.postOnce(
 			new RegExp( '^/google-site-kit/v1/core/modules/data/activation' ),
@@ -216,7 +256,80 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		} );
 	} );
 
+	it( 'should track GA events on CTA click when chosen to connect Analytics', async () => {
+		fetchMock.postOnce(
+			new RegExp( '^/google-site-kit/v1/core/modules/data/activation' ),
+			{ body: { success: true } }
+		);
+
+		fetchMock.getOnce(
+			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			{
+				body: {
+					authenticated: true,
+					requiredScopes: [
+						'https://www.googleapis.com/auth/analytics.readonly',
+					],
+					grantedScopes: [],
+					unsatisfiedScopes: [
+						'https://www.googleapis.com/auth/analytics.readonly',
+					],
+					needsReauthentication: true,
+				},
+			}
+		);
+
+		// Set the Analytics checkbox to true.
+		registry.dispatch( CORE_FORMS ).setValues( ANALYTICS_NOTICE_FORM_NAME, {
+			[ ANALYTICS_NOTICE_CHECKBOX ]: true,
+		} );
+
+		provideModuleRegistrations( registry );
+
+		const { getByRole, waitForRegistry } = render(
+			<SetupUsingProxyWithSignIn />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.click(
+			getByRole( 'button', { name: /sign in with google/i } )
+		);
+
+		await waitFor( () => {
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_SPLASH }_setup`,
+				'start_site_setup',
+				'proxy'
+			);
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_SPLASH }_setup`,
+				'start_user_setup',
+				'proxy'
+			);
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_SPLASH }_setup`,
+				'start_setup_with_analytics'
+			);
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
+		} );
+	} );
+
 	describe( 'with the `setupFlowRefresh` feature flag enabled', () => {
+		const initialSetupSettingsEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/initial-setup-settings'
+		);
+
+		beforeEach( () => {
+			muteFetch( initialSetupSettingsEndpoint );
+		} );
+
 		it( 'should render the setup page correctly', async () => {
 			const { container, waitForRegistry } = render(
 				<SetupUsingProxyWithSignIn />,
@@ -299,6 +412,10 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		} );
 
 		it( 'should navigate to the proxy setup URL with Analytics re-auth redirect URL and `showProgress` query argument on CTA click if chosen to connect Analytics', async () => {
+			fetchMock.postOnce( initialSetupSettingsEndpoint, {
+				body: { settings: { isAnalyticsSetupComplete: false } },
+			} );
+
 			fetchMock.postOnce(
 				new RegExp(
 					'^/google-site-kit/v1/core/modules/data/activation'
@@ -377,6 +494,80 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			} );
 		} );
 
+		it( 'should call saveInitialSetupSettings with isAnalyticsSetupComplete: false when starting setup with Analytics', async () => {
+			fetchMock.postOnce( initialSetupSettingsEndpoint, {
+				body: { settings: { isAnalyticsSetupComplete: false } },
+			} );
+
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/modules/data/activation'
+				),
+				{ body: { success: true } }
+			);
+
+			fetchMock.getOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/user/data/authentication'
+				),
+				{
+					body: {
+						authenticated: true,
+						requiredScopes: [
+							'https://www.googleapis.com/auth/analytics.readonly',
+						],
+						grantedScopes: [],
+						unsatisfiedScopes: [
+							'https://www.googleapis.com/auth/analytics.readonly',
+						],
+						needsReauthentication: true,
+					},
+				}
+			);
+
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( ANALYTICS_NOTICE_FORM_NAME, {
+					[ ANALYTICS_NOTICE_CHECKBOX ]: true,
+				} );
+
+			provideModuleRegistrations( registry );
+
+			const { getByRole, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click(
+				getByRole( 'button', { name: /sign in with google/i } )
+			);
+
+			await act( () =>
+				registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getAdminReauthURL()
+			);
+
+			await waitFor( () => {
+				expect( fetchMock ).toHaveFetched(
+					initialSetupSettingsEndpoint,
+					{
+						body: {
+							data: {
+								settings: { isAnalyticsSetupComplete: false },
+							},
+						},
+					}
+				);
+			} );
+		} );
+
 		it( 'should allow exiting the setup', async () => {
 			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 				adminURL: 'http://example.com/wp-admin/',
@@ -401,14 +592,128 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			);
 		} );
 
-		it( 'should render a "Why is this required?" information tooltip', () => {
-			const { getByText } = render( <SetupUsingProxyWithSignIn />, {
-				registry,
-				viewContext: VIEW_CONTEXT_SPLASH,
-				features: [ 'setupFlowRefresh' ],
-			} );
+		it( 'should render a "Why is this required?" information tooltip', async () => {
+			const { getByText, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
 
 			expect( getByText( /Why is this required?/ ) ).toBeInTheDocument();
+
+			await waitForRegistry();
+		} );
+
+		it( 'should track GA events on CTA click', async () => {
+			const { getByRole, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			fireEvent.click(
+				getByRole( 'button', { name: /sign in with google/i } )
+			);
+
+			await waitFor( () => {
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_SPLASH }_setup`,
+					'setup_flow_v3_start_site_setup',
+					'proxy'
+				);
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_SPLASH }_setup`,
+					'setup_flow_v3_start_user_setup',
+					'proxy'
+				);
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+			} );
+		} );
+
+		it( 'should track GA events on CTA click when chosen to connect Analytics', async () => {
+			fetchMock.postOnce( initialSetupSettingsEndpoint, {
+				body: { settings: { isAnalyticsSetupComplete: false } },
+			} );
+
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/modules/data/activation'
+				),
+				{ body: { success: true } }
+			);
+
+			fetchMock.getOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/user/data/authentication'
+				),
+				{
+					body: {
+						authenticated: true,
+						requiredScopes: [
+							'https://www.googleapis.com/auth/analytics.readonly',
+						],
+						grantedScopes: [],
+						unsatisfiedScopes: [
+							'https://www.googleapis.com/auth/analytics.readonly',
+						],
+						needsReauthentication: true,
+					},
+				}
+			);
+
+			// Set the Analytics checkbox to true.
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( ANALYTICS_NOTICE_FORM_NAME, {
+					[ ANALYTICS_NOTICE_CHECKBOX ]: true,
+				} );
+
+			provideModuleRegistrations( registry );
+
+			const { getByRole, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			fireEvent.click(
+				getByRole( 'button', { name: /sign in with google/i } )
+			);
+
+			await waitFor( () => {
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_SPLASH }_setup`,
+					'setup_flow_v3_start_site_setup',
+					'proxy'
+				);
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_SPLASH }_setup`,
+					'setup_flow_v3_start_user_setup',
+					'proxy'
+				);
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_SPLASH }_setup`,
+					'setup_flow_v3_start_with_analytics'
+				);
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
+			} );
 		} );
 	} );
 } );

@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -98,9 +99,14 @@ export default function SetupMain( { finishSetup } ) {
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
 
-	const isCreateAccount = ACCOUNT_CREATE === accountID;
+	const isCreateAccount =
+		ACCOUNT_CREATE === accountID ||
+		( Array.isArray( accounts ) && ! accounts.length );
 
+	const [ showProgress ] = useQueryArg( 'showProgress' );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
+	const isInitialSetupFlow = !! showProgress && setupFlowRefreshEnabled;
 
 	const [ searchConsoleSetupSuccess, setSearchConsoleSetupSuccess ] =
 		useQueryArg( 'searchConsoleSetupSuccess' );
@@ -113,12 +119,9 @@ export default function SetupMain( { finishSetup } ) {
 	// when the component initially loads and has yet to start fetching accounts.
 	if ( ! hasResolvedAccounts || isMatchedAccount ) {
 		viewComponent = <ProgressBar />;
-	} else if (
-		isCreateAccount ||
-		( Array.isArray( accounts ) && ! accounts.length )
-	) {
+	} else if ( isCreateAccount ) {
 		viewComponent = usingProxy ? (
-			<AccountCreate />
+			<AccountCreate className="googlesitekit-analytics-setup__form" />
 		) : (
 			<AccountCreateLegacy />
 		);
@@ -128,20 +131,50 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<Fragment>
-			<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
+			<div
+				className={ classnames(
+					'googlesitekit-setup-module googlesitekit-setup-module--analytics',
+					{
+						'googlesitekit-feature--setupFlowRefresh':
+							setupFlowRefreshEnabled,
+					}
+				) }
+			>
 				<div className="googlesitekit-setup-module__step">
-					<div className="googlesitekit-setup-module__logo">
-						<AnalyticsIcon width="40" height="40" />
-					</div>
+					{ isInitialSetupFlow ? (
+						<Typography
+							as="h1"
+							className="googlesitekit-setup__title"
+							size="medium"
+							type="headline"
+						>
+							{ isCreateAccount
+								? __(
+										'Create your Analytics account',
+										'google-site-kit'
+								  )
+								: __( 'Set up Analytics', 'google-site-kit' ) }
+						</Typography>
+					) : (
+						<Fragment>
+							<div className="googlesitekit-setup-module__logo">
+								<AnalyticsIcon width="40" height="40" />
+							</div>
 
-					<Typography
-						as="h3"
-						className="googlesitekit-setup-module__title"
-						size="small"
-						type="headline"
-					>
-						{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					</Typography>
+							<Typography
+								as="h3"
+								className="googlesitekit-setup-module__title"
+								size="small"
+								type="headline"
+							>
+								{ _x(
+									'Analytics',
+									'Service name',
+									'google-site-kit'
+								) }
+							</Typography>
+						</Fragment>
+					) }
 				</div>
 				<div className="googlesitekit-setup-module__step">
 					{ viewComponent }

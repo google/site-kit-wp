@@ -132,7 +132,7 @@ export default function WebDataStreamSelect( props ) {
 					'googlesitekit-analytics-4__select-webdatastream',
 					className
 				) }
-				label={ __( 'Web Data Stream', 'google-site-kit' ) }
+				label={ __( 'Web data stream', 'google-site-kit' ) }
 				value={ measurementID }
 				enhanced
 				outlined
@@ -152,7 +152,7 @@ export default function WebDataStreamSelect( props ) {
 					'mdc-select--invalid': ! isValidSelection,
 				}
 			) }
-			label={ __( 'Web Data Stream', 'google-site-kit' ) }
+			label={ __( 'Web data stream', 'google-site-kit' ) }
 			value={ webDataStreamID }
 			onEnhancedChange={ onWebDataStreamChange }
 			disabled={ isDisabled || ! isValidPropertySelection( propertyID ) }

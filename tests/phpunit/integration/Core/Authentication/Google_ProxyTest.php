@@ -14,8 +14,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Tests\MethodSpy;
-use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use WP_Error;
@@ -433,11 +431,43 @@ class Google_ProxyTest extends TestCase {
 				'connected_modules'      => 'site-verification search-console pagespeed-insights',
 				'php_version'            => phpversion(),
 				'feature_metrics'        => array(),
+				'amp_mode'               => '', // No AMP mode by default.
 			),
 			$this->request_args['body'],
 			'Get features request body should contain site credentials and platform information.'
 		);
 		$this->assertEqualSetsWithIndex( $expected_success_response, $features, 'Get features should return expected feature data.' );
+	}
+
+	/**
+	 * @dataProvider amp_mode_provider
+	 */
+	public function test_get_features_with_amp_mode( $amp_mode, $context_method ) {
+		// Remove the filter being added by Modules::register() or any other class during bootstrap.
+		remove_all_filters( 'googlesitekit_feature_metrics' );
+
+		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
+
+		$context      = call_user_func( array( $this, $context_method ) );
+		$google_proxy = new Google_Proxy( $context );
+
+		$expected_url              = $google_proxy->url( Google_Proxy::FEATURES_URI );
+		$expected_success_response = array(
+			'test.featureName' => array( 'enabled' => true ),
+		);
+
+		$this->mock_http_request( $expected_url, $expected_success_response );
+		$google_proxy->get_features( $credentials, new OAuth_Client( $context, null, null, $credentials, $google_proxy ) );
+
+		// Ensure amp_mode is set to the expected value.
+		$this->assertEquals( $amp_mode, $this->request_args['body']['amp_mode'], "Get features request should include '$amp_mode' amp_mode." );
+	}
+
+	public function amp_mode_provider() {
+		return array(
+			'primary AMP mode'   => array( 'primary', 'get_amp_primary_context' ),
+			'secondary AMP mode' => array( 'secondary', 'get_amp_secondary_context' ),
+		);
 	}
 
 	public function test_count_connected_users() {
@@ -562,6 +592,68 @@ class Google_ProxyTest extends TestCase {
 		);
 
 		$this->assertEqualSetsWithIndex( $expected_success_response, $response, 'Survey event should return expected response data.' );
+	}
+
+	/**
+	 * @dataProvider data_errors
+	 */
+	public function test_request_returns_error_for_invalid_response( $params ) {
+		$error_code             = $params['error_code'];
+		$error_message          = $params['error_message'];
+		$expected_error_code    = $params['expected_error_code'];
+		$expected_error_message = $params['expected_error_message'];
+
+		$this->mock_http_request(
+			$this->google_proxy->url( Google_Proxy::OAUTH2_SITE_URI ),
+			array(
+				'error_code' => $error_code,
+				'error'      => $error_message,
+			),
+			404,
+		);
+
+		$response = $this->google_proxy->register_site();
+
+		$this->assertWPError( $response );
+		$this->assertEquals( $expected_error_code, $response->get_error_code(), 'Error response should contain error code.' );
+		$this->assertEquals( $expected_error_message, $response->get_error_message(), 'Error response should contain error message.' );
+	}
+
+	public function data_errors() {
+		return array(
+			'no error code or message' => array(
+				array(
+					'error_code'             => null,
+					'error_message'          => null,
+					'expected_error_code'    => 'request_failed',
+					'expected_error_message' => '',
+				),
+			),
+			'error code only'          => array(
+				array(
+					'error_code'             => 'test_error_code',
+					'error_message'          => null,
+					'expected_error_code'    => 'test_error_code',
+					'expected_error_message' => '',
+				),
+			),
+			'error message only'       => array(
+				array(
+					'error_code'             => null,
+					'error_message'          => 'test_error_message',
+					'expected_error_code'    => 'request_failed',
+					'expected_error_message' => 'test_error_message',
+				),
+			),
+			'error code and message'   => array(
+				array(
+					'error_code'             => 'test_error_code',
+					'error_message'          => 'test_error_message',
+					'expected_error_code'    => 'test_error_code',
+					'expected_error_message' => 'test_error_message',
+				),
+			),
+		);
 	}
 
 	/**

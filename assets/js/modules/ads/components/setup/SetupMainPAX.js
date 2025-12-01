@@ -196,6 +196,19 @@ export default function SetupMainPAX( { finishSetup } ) {
 		select( MODULES_ADS ).isWooCommerceActivated()
 	);
 
+	const isGoogleForWooCommerceAdsConnected = useSelect( ( select ) => {
+		const hasGoogleForWooCommerceAdsAccount =
+			select( MODULES_ADS ).hasGoogleForWooCommerceAdsAccount();
+		const isGoogleForWooCommerceActive =
+			select( MODULES_ADS ).isGoogleForWooCommerceActivated();
+
+		return (
+			isWooCommerceActivated &&
+			isGoogleForWooCommerceActive &&
+			hasGoogleForWooCommerceAdsAccount
+		);
+	} );
+
 	const createAccount = useCallback( () => {
 		if ( ! hasAdwordsScope ) {
 			navigateTo( oAuthURL );
@@ -392,7 +405,11 @@ export default function SetupMainPAX( { finishSetup } ) {
 			</div>
 			{ openDialog && (
 				<WooCommerceRedirectModal
-					onClose={ () => setOpenDialog( false ) }
+					onClose={
+						isGoogleForWooCommerceAdsConnected
+							? null
+							: () => setOpenDialog( false )
+					}
 					onContinue={ createAccount }
 					dialogActive
 				/>

@@ -24,7 +24,11 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useEffect,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs, getQueryArg } from '@wordpress/url';
 
@@ -50,9 +54,11 @@ import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import SetupEnhancedConversionTrackingNotice from '@/js/components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
+import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
 import useFormValue from '@/js/hooks/useFormValue';
 import { useFeature } from '@/js/hooks/useFeature';
+import Link from '@/js/components/Link';
+import Null from '@/js/components/Null';
 
 export default function SetupForm( { finishSetup } ) {
 	const hasEditScope = useSelect( ( select ) =>
@@ -86,6 +92,12 @@ export default function SetupForm( { finishSetup } ) {
 					showProgress: 'true',
 			  } )
 			: url;
+	} );
+
+	const pluginConversionsDocumentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'plugin-conversion-tracking'
+		);
 	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -155,10 +167,24 @@ export default function SetupForm( { finishSetup } ) {
 			/>
 			<SetupFormFields />
 
-			<SetupEnhancedConversionTrackingNotice
-				message={ __(
-					'To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings.',
-					'google-site-kit'
+			<SetupPluginConversionTrackingNotice
+				message={ createInterpolateElement(
+					__(
+						'To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings. <LearnMoreLink />',
+						'google-site-kit'
+					),
+					{
+						LearnMoreLink: setupFlowRefreshEnabled ? (
+							<Link
+								href={ pluginConversionsDocumentationURL }
+								external
+							>
+								{ __( 'Learn more', 'google-site-kit' ) }
+							</Link>
+						) : (
+							<Null />
+						),
+					}
 				) }
 			/>
 
@@ -167,7 +193,9 @@ export default function SetupForm( { finishSetup } ) {
 					disabled={ ! canSubmitChanges || isSaving }
 					isSaving={ isSaving }
 				>
-					{ __( 'Complete setup', 'google-site-kit' ) }
+					{ setupFlowRefreshEnabled
+						? __( 'Set up', 'google-site-kit' )
+						: __( 'Complete setup', 'google-site-kit' ) }
 				</SpinnerButton>
 			</div>
 		</form>

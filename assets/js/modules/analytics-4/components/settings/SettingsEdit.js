@@ -17,9 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import { useFeature } from '@/js/hooks/useFeature';
 import { ProgressBar } from 'googlesitekit-components';
 import {
 	ACCOUNT_CREATE,
@@ -36,6 +42,8 @@ import {
 } from '@/js/modules/analytics-4/components/common';
 
 export default function SettingsEdit() {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	const accounts =
 		useSelect( ( select ) =>
 			select( MODULES_ANALYTICS_4 ).getAccountSummaries()
@@ -111,7 +119,15 @@ export default function SettingsEdit() {
 	}
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
+		<div
+			className={ classnames(
+				'googlesitekit-setup-module googlesitekit-setup-module--analytics',
+				{
+					'googlesitekit-feature--setupFlowRefresh':
+						setupFlowRefreshEnabled,
+				}
+			) }
+		>
 			{ viewComponent }
 		</div>
 	);

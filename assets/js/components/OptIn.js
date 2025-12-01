@@ -49,6 +49,7 @@ export default function OptIn( {
 	name = 'optIn',
 	className,
 	trackEventCategory,
+	trackEventAction = 'tracking_optin',
 	alignLeftCheckbox = false,
 } ) {
 	const [ checked, setChecked ] = useState();
@@ -76,14 +77,20 @@ export default function OptIn( {
 				if ( response.enabled ) {
 					trackEvent(
 						trackEventCategory || viewContext,
-						'tracking_optin'
+						trackEventAction
 					);
 				}
 			} else {
 				setChecked( enabled );
 			}
 		},
-		[ enabled, setTrackingEnabled, trackEventCategory, viewContext ]
+		[
+			enabled,
+			setTrackingEnabled,
+			trackEventCategory,
+			trackEventAction,
+			viewContext,
+		]
 	);
 
 	useEffect( () => {

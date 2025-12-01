@@ -34,7 +34,7 @@ import { Button } from 'googlesitekit-components';
 import Link from '@/js/components/Link';
 import OptIn from '@/js/components/OptIn';
 import ResetButton from '@/js/components/ResetButton';
-import StepHint from '@/js/components/setup/SetupUsingProxyWithSignIn/StepHint';
+import StepHint from '@/js/components/setup/StepHint';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
@@ -75,17 +75,38 @@ export default function Actions( {
 	const goToSharedDashboard = useCallback( () => {
 		Promise.all( [
 			dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY ),
-			trackEvent( viewContext, 'skip_setup_to_viewonly' ),
+			trackEvent(
+				viewContext,
+				setupFlowRefreshEnabled
+					? 'setup_flow_v3_skip_to_viewonly'
+					: 'skip_setup_to_viewonly'
+			),
 		] ).finally( () => {
 			navigateTo( dashboardURL );
 		} );
-	}, [ dashboardURL, dismissItem, navigateTo, viewContext ] );
+	}, [
+		dashboardURL,
+		dismissItem,
+		navigateTo,
+		setupFlowRefreshEnabled,
+		viewContext,
+	] );
+
+	const learnMoreLink = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'setup-connect-google-account'
+		);
+	} );
+
+	const optInProps = setupFlowRefreshEnabled
+		? { trackEventAction: 'setup_flow_v3_tracking_optin' }
+		: {};
 
 	return (
 		<Fragment>
 			{ ctaFeedback }
 
-			<OptIn />
+			<OptIn { ...optInProps } />
 
 			<div className="googlesitekit-start-setup-wrap">
 				<Button
@@ -128,7 +149,13 @@ export default function Actions( {
 							'google-site-kit'
 						),
 						{
-							a: <Link external hideExternalIndicator />,
+							a: (
+								<Link
+									href={ learnMoreLink }
+									external
+									hideExternalIndicator
+								/>
+							),
 						}
 					) }
 				/>

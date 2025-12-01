@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { omit } from 'lodash';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -62,8 +63,12 @@ import {
 } from '@/js/components/user-input/util/constants';
 import WarningSVG from '@/svg/icons/warning.svg';
 import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 export default function KeyMetricsSetupApp() {
+	const viewContext = useViewContext();
+
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
@@ -96,6 +101,9 @@ export default function KeyMetricsSetupApp() {
 			) || []
 	);
 
+	const { saveUserInputSettings, saveInitialSetupSettings } =
+		useDispatch( CORE_USER );
+
 	const isSyncing = useSelect( ( select ) => {
 		const isFetchingSyncAvailableCustomDimensions =
 			select(
@@ -108,16 +116,49 @@ export default function KeyMetricsSetupApp() {
 		return isFetchingSyncAvailableCustomDimensions || isSyncingAudiences;
 	} );
 
-	const { saveUserInputSettings } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	// Query arg derived state (declared before callbacks that depend on it).
+	const [ showProgress ] = useQueryArg( 'showProgress' );
+
+	const isInitialSetupFlow = !! showProgress;
+
+	useMount( () => {
+		if ( isInitialSetupFlow ) {
+			trackEvent(
+				`${ viewContext }_setup`,
+				'setup_flow_v3_view_key_metrics_step'
+			);
+		} else {
+			trackEvent( viewContext, 'view_key_metrics_step' );
+		}
+	} );
 
 	const submitChanges = useCallback( async () => {
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
 			const url = new URL( dashboardURL );
+			await saveInitialSetupSettings( {
+				isAnalyticsSetupComplete: true,
+			} );
+
+			if ( ! isInitialSetupFlow ) {
+				url.searchParams.set(
+					'notification',
+					'authentication_success'
+				);
+				url.searchParams.set( 'slug', 'analytics-4' );
+			}
+
 			navigateTo( url.toString() );
 		}
-	}, [ saveUserInputSettings, dashboardURL, navigateTo ] );
+	}, [
+		saveUserInputSettings,
+		dashboardURL,
+		saveInitialSetupSettings,
+		navigateTo,
+		isInitialSetupFlow,
+	] );
 
 	const { fetchSyncAvailableCustomDimensions, syncAvailableAudiences } =
 		useDispatch( MODULES_ANALYTICS_4 );
@@ -132,18 +173,37 @@ export default function KeyMetricsSetupApp() {
 			return;
 		}
 
+		if ( isInitialSetupFlow ) {
+			trackEvent(
+				`${ viewContext }_setup`,
+				'setup_flow_v3_complete_key_metrics_step'
+			);
+		} else {
+			trackEvent( viewContext, 'complete_key_metrics_step' );
+		}
+
 		submitChanges();
-	}, [ isBusy, isSyncing, submitChanges ] );
+	}, [ isBusy, isInitialSetupFlow, isSyncing, submitChanges, viewContext ] );
+
+	let gaTrackingEventArgs;
+
+	if ( isInitialSetupFlow ) {
+		gaTrackingEventArgs = {
+			category: `${ viewContext }_setup`,
+			action: 'setup_flow_v3_select_key_metrics_answer',
+		};
+	} else {
+		gaTrackingEventArgs = {
+			category: viewContext,
+			action: 'select_key_metrics_answer',
+		};
+	}
 
 	const { USER_INPUT_ANSWERS_PURPOSE } = getUserInputAnswers();
 
 	const {
 		USER_INPUT_ANSWERS_PURPOSE: USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS,
 	} = getUserInputAnswersDescription();
-
-	const [ showProgress ] = useQueryArg( 'showProgress' );
-
-	const isInitialSetupFlow = !! showProgress;
 
 	const subHeader = isInitialSetupFlow ? (
 		<ProgressIndicator totalSegments={ 6 } currentSegment={ 4 } />
@@ -152,7 +212,14 @@ export default function KeyMetricsSetupApp() {
 	return (
 		<Fragment>
 			<Header subHeader={ subHeader }>
-				{ isInitialSetupFlow && <ExitSetup /> }
+				{ isInitialSetupFlow && (
+					<ExitSetup
+						gaTrackingEventArgs={ {
+							category: `${ viewContext }_setup`,
+							label: 'key-metrics',
+						} }
+					/>
+				) }
 			</Header>
 			<div className="googlesitekit-key-metrics-setup">
 				<div className="googlesitekit-module-page">
@@ -216,6 +283,9 @@ export default function KeyMetricsSetupApp() {
 											) }
 											descriptions={
 												USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS
+											}
+											gaTrackingEventArgs={
+												gaTrackingEventArgs
 											}
 										/>
 

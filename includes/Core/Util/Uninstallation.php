@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Scheduler;
 use Google\Site_Kit\Core\Remote_Features\Remote_Features_Cron;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
@@ -56,6 +57,11 @@ class Uninstallation {
 	 */
 	const SCHEDULED_EVENTS = array(
 		Conversion_Reporting_Cron::CRON_ACTION,
+		Email_Reporting_Scheduler::ACTION_INITIATOR,
+		Email_Reporting_Scheduler::ACTION_WORKER,
+		Email_Reporting_Scheduler::ACTION_FALLBACK,
+		Email_Reporting_Scheduler::ACTION_MONITOR,
+		Email_Reporting_Scheduler::ACTION_CLEANUP,
 		OAuth_Client::CRON_REFRESH_PROFILE_DATA,
 		Remote_Features_Cron::CRON_ACTION,
 		Synchronize_AdSenseLinked::CRON_SYNCHRONIZE_ADSENSE_LINKED,

@@ -17,7 +17,7 @@ exports[`Header should have only the initial stub segment when setupFlowRefresh 
           <a
             aria-label="Go to dashboard"
             class="googlesitekit-cta-link googlesitekit-header__logo-link"
-            href=""
+            href="http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard"
           >
             <span
               class="googlesitekit-cta-link__contents"
@@ -112,6 +112,27 @@ exports[`Header should have only the initial stub segment when setupFlowRefresh 
                 </li>
                 <li
                   class="mdc-list-item"
+                  id="manage-sites"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage Sites
+                    </span>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
                   id="disconnect"
                   role="menuitem"
                   tabindex="-1"
@@ -170,7 +191,7 @@ exports[`Header should not render the progress indicator in the header when setu
           <a
             aria-label="Go to dashboard"
             class="googlesitekit-cta-link googlesitekit-header__logo-link"
-            href=""
+            href="http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard"
           >
             <span
               class="googlesitekit-cta-link__contents"
@@ -226,7 +247,7 @@ exports[`Header should not render the progress indicator in the header when setu
                   <a
                     aria-label="Fix common issues (opens in a new tab)"
                     class="googlesitekit-cta-link mdc-list-item__text"
-                    href="undefined?doc=fix-common-issues"
+                    href="https://sitekit.withgoogle.com/support/?doc=fix-common-issues"
                     rel="noopener noreferrer"
                     role="menuitem"
                     tabindex="-1"
@@ -346,6 +367,27 @@ exports[`Header should not render the progress indicator in the header when setu
                 </li>
                 <li
                   class="mdc-list-item"
+                  id="manage-sites"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage Sites
+                    </span>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
                   id="disconnect"
                   role="menuitem"
                   tabindex="-1"
@@ -395,7 +437,7 @@ exports[`Header should render the progress indicator in the header when setupFlo
           <a
             aria-label="Go to dashboard"
             class="googlesitekit-cta-link googlesitekit-header__logo-link"
-            href=""
+            href="http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard"
           >
             <span
               class="googlesitekit-cta-link__contents"
@@ -486,6 +528,27 @@ exports[`Header should render the progress indicator in the header when setupFlo
                         wapuu.wordpress@gmail.com
                       </p>
                     </div>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
+                  id="manage-sites"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage Sites
+                    </span>
                   </div>
                 </li>
                 <li

@@ -24,7 +24,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 /**
  * Returns a function that checks if data is available on load.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @return {function(WPDataRegistry): boolean} Whether data is available on load or not.
  */
@@ -36,7 +36,7 @@ export function requireDataIsAvailableOnLoad() {
 /**
  * Returns a function that checks if audience segmentation setup is completed.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether setup is completed or not.
  */
@@ -53,7 +53,7 @@ export function requireAudienceSegmentationSetupCompleted() {
 /**
  * Returns a function that checks if audience segmentation setup was completed by the current user.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether setup was completed by the current user or not.
  */
@@ -81,7 +81,7 @@ export function requireAudienceSegmentationSetupCompletedByUser() {
 /**
  * Returns a function that checks if the connected web datastream is not available.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} `true` if the connected web datastream is not available, otherwise `false`.
  */
@@ -98,7 +98,7 @@ export function requireWebDataStreamUnavailable() {
 /**
  * Returns a function that checks if the connected Google tag ID is mismatched.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the connected Google tag is mismatched or not.
  */
@@ -115,7 +115,7 @@ export function requireMismatchedGoogleTag() {
 /**
  * Returns a function that checks if enhanced measurement is enabled for the connected web datastream.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether enhanced measurement is enabled or not.
  */
