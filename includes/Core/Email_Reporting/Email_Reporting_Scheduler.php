@@ -117,20 +117,23 @@ class Email_Reporting_Scheduler {
 	}
 
 	/**
-	 * Schedules a fallback event for the given frequency if one is not already queued.
+	 * Schedules a fallback event for the given batch if one is not already queued.
 	 *
 	 * @since 1.167.0
 	 *
+	 * @param string $batch_id  Batch identifier.
 	 * @param string $frequency Frequency slug.
 	 * @param int    $timestamp Base timestamp for the batch.
 	 * @param int    $delay     Delay in seconds before fallback runs.
 	 */
-	public function schedule_fallback( $frequency, $timestamp, $delay = HOUR_IN_SECONDS ) {
-		if ( wp_next_scheduled( self::ACTION_FALLBACK, array( $frequency ) ) ) {
+	public function schedule_fallback( $batch_id, $frequency, $timestamp, $delay = HOUR_IN_SECONDS ) {
+		$args = array( $batch_id, $frequency, $timestamp );
+
+		if ( wp_next_scheduled( self::ACTION_FALLBACK, $args ) ) {
 			return;
 		}
 
-		wp_schedule_single_event( $timestamp + $delay, self::ACTION_FALLBACK, array( $frequency ) );
+		wp_schedule_single_event( $timestamp + $delay, self::ACTION_FALLBACK, $args );
 	}
 
 	/**

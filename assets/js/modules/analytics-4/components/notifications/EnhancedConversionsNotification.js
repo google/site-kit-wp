@@ -68,12 +68,12 @@ export default function EnhancedConversionsNotification( {
 				notificationID={ id }
 				type={ TYPES.INFO_ALT }
 				title={ __(
-					'Boost your Analytics data with enhanced conversions',
+					'Boost your Analytics data with more metrics about your visitors',
 					'google-site-kit'
 				) }
 				description={ createInterpolateElement(
 					__(
-						'Site Kit now supports enhanced conversions. This free feature helps you get a more complete and reliable count of your sales and leads from your website, even when people switch devices. To activate, turn on the setting for collecting user data in your Analytics account. <a />',
+						'Site Kit now supports user-provided data collection, a free feature which helps you get a more complete and reliable count of your sales and leads from your website, even when people switch devices. To activate, turn on the setting for collecting user data in your Analytics account. <a />',
 						'google-site-kit'
 					),
 					{
