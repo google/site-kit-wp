@@ -90,9 +90,18 @@ function createSeoMcpServer() {
 				args,
 			} );
 
-			const response = await await Data.resolveSelect(
-				MODULES_ANALYTICS_4
-			).getReport( args );
+			let response;
+			try {
+				response = await Data.resolveSelect(
+					MODULES_ANALYTICS_4
+				).getReport( args );
+			} catch ( error ) {
+				global.console.error(
+					'googlesitekit-angie:get-analytics-report',
+					error
+				);
+				response = { error: error.message };
+			}
 
 			global.console.log( 'googlesitekit-angie:get-analytics-report', {
 				args,

@@ -367,6 +367,10 @@ final class Screens {
 						} else {
 							$assets->enqueue_asset( 'googlesitekit-main-dashboard' );
 						}
+						if ( defined( 'ANGIE_VERSION' ) ) {
+							// Module JS not loading on other screens, so only register the MCP on dash for now.
+							$assets->enqueue_asset( 'googlesitekit-angie-mcp' );
+						}
 					},
 					'render_callback'  => function ( Context $context ) {
 						$is_view_only = ! $this->authentication->is_authenticated();
