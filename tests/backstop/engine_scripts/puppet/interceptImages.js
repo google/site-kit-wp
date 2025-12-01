@@ -28,14 +28,17 @@ const HEADERS_STUB = {};
  * Listen to all requests. If a request matches IMAGE_URL_RE
  * then stub the image with data from IMAGE_STUB_URL
  *
- * Use this in an onBefore script E.G.
+ * Use this in an onBefore script eg.:
  * ```
  * module.exports = async function(page, scenario) {
  *   require('./interceptImages')(page, scenario);
  * }
  * ```
+ *
+ * @since 1.0.0
+ *
+ * @param {Object} page Puppeteer page object.
  */
-
 module.exports = async function ( page ) {
 	async function intercept( request ) {
 		if ( IMAGE_URL_RE.test( request.url() ) ) {
