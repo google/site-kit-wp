@@ -17,8 +17,9 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import API from '@/js/googlesitekit-api';
+import { normalizeReportOptions } from '@/js/modules/analytics-4/utils';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 /**
  * External dependencies
@@ -92,9 +93,13 @@ function createSeoMcpServer() {
 
 			let response;
 			try {
-				response = await Data.resolveSelect(
-					MODULES_ANALYTICS_4
-				).getReport( args );
+				// Use API.get instead of selector to pass along error to response.
+				response = await API.get(
+					'modules',
+					MODULE_SLUG_ANALYTICS_4,
+					'report',
+					normalizeReportOptions( args )
+				);
 			} catch ( error ) {
 				global.console.error(
 					'googlesitekit-angie:get-analytics-report',
