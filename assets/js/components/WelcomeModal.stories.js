@@ -20,14 +20,38 @@
  * Internal dependencies
  */
 import WelcomeModal from './WelcomeModal';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 
-function Template() {
-	return <WelcomeModal />;
+function Template( { setupRegistry } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<WelcomeModal />
+		</WithRegistrySetup>
+	);
 }
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsGatheringData( false );
+	},
+};
 Default.scenario = {};
+
+export const GatheringData = Template.bind( {} );
+GatheringData.storyName = 'Gathering Data';
+GatheringData.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsGatheringData( true );
+	},
+};
+GatheringData.scenario = {};
 
 export default {
 	title: 'Components/WelcomeModal',
