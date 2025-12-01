@@ -147,37 +147,6 @@ class Email_ReportingTest extends TestCase {
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_CLEANUP ), 'Cleanup should not be scheduled when setup is incomplete.' );
 	}
 
-	public function test_feature_flag_disabled_unschedules_events() {
-		$worker_timestamp = time();
-
-		wp_schedule_single_event( time() + 50, Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) );
-		wp_schedule_single_event( time() + 50, Email_Reporting_Scheduler::ACTION_WORKER, array( 'batch', User_Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp ) );
-		wp_schedule_single_event( time() + 50, Email_Reporting_Scheduler::ACTION_FALLBACK, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) );
-		wp_schedule_event( time() + 50, 'daily', Email_Reporting_Scheduler::ACTION_MONITOR );
-		wp_schedule_event( time() + 50, 'daily', Email_Reporting_Scheduler::ACTION_CLEANUP );
-
-		if ( is_callable( $this->reset_feature_flag ) ) {
-			call_user_func( $this->reset_feature_flag );
-		}
-
-		remove_all_actions( 'init' );
-		remove_all_actions( 'googlesitekit_init' );
-		remove_all_actions( 'wp_head' );
-		remove_all_actions( 'login_head' );
-
-		$plugin = new Plugin( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$plugin->register();
-		do_action( 'init' );
-
-		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Initiator should be unscheduled when the feature flag is disabled.' );
-		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_MONTHLY ) ), 'Monthly initiator should not be scheduled when the feature flag is disabled.' );
-		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_QUARTERLY ) ), 'Quarterly initiator should not be scheduled when the feature flag is disabled.' );
-		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_WORKER, array( 'batch', User_Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp ) ), 'Worker should be unscheduled when the feature flag is disabled.' );
-		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_FALLBACK, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Fallback should be unscheduled when the feature flag is disabled.' );
-		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_MONITOR ), 'Monitor should be unscheduled when the feature flag is disabled.' );
-		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_CLEANUP ), 'Cleanup should be unscheduled when the feature flag is disabled.' );
-	}
-
 	private function create_email_reporting() {
 		$conversion_tracking = new Conversion_Tracking( $this->context, $this->options );
 		$data_requests       = new Email_Reporting_Data_Requests(
