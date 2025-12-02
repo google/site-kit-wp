@@ -32,7 +32,7 @@ import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/co
 import WelcomeModal from './WelcomeModal';
 
 describe( 'WelcomeModal', () => {
-	let registry;
+	let registry: ReturnType< typeof createTestRegistry >;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -69,7 +69,8 @@ describe( 'WelcomeModal', () => {
 			{
 				registry,
 			}
-		);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
+		) as any;
 
 		await waitForRegistry();
 
@@ -116,7 +117,8 @@ describe( 'WelcomeModal', () => {
 			{
 				registry,
 			}
-		);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
+		) as any;
 
 		await waitForRegistry();
 
@@ -178,7 +180,8 @@ describe( 'WelcomeModal', () => {
 			{
 				registry,
 			}
-		);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
+		) as any;
 
 		await waitForRegistry();
 
@@ -218,7 +221,8 @@ describe( 'WelcomeModal', () => {
 			{
 				registry,
 			}
-		);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
+		) as any;
 
 		await waitForRegistry();
 
