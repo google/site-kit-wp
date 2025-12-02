@@ -21,7 +21,6 @@
  */
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { cloneDeep } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -312,7 +311,7 @@ export default function UserDimensionsPieChart( props ) {
 
 	const getPieChartSlices = usePieChartSlices();
 
-	const options = cloneDeep( UserDimensionsPieChart.chartOptions );
+	const options = structuredClone( UserDimensionsPieChart.chartOptions );
 
 	const slices = getPieChartSlices(
 		dataMap.slice( 1 ).map( ( [ rowDimensionValue ] ) => rowDimensionValue )

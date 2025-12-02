@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { cloneDeep } from 'lodash';
 import PropTypes from 'prop-types';
 
 /**
@@ -117,7 +116,7 @@ export default function UserCountGraph( props ) {
 
 	const [ , ...ticks ] = chartData.slice( 1 ).map( ( [ date ] ) => date );
 
-	const chartOptions = cloneDeep( UserCountGraph.chartOptions );
+	const chartOptions = structuredClone( UserCountGraph.chartOptions );
 
 	chartOptions.series[ 0 ].color = graphLineColor;
 	chartOptions.hAxis.ticks = ticks;
