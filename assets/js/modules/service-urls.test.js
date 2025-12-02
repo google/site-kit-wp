@@ -69,7 +69,7 @@ it( 'ensures all serviceURLs are properly constructed', () => {
 		'modules/analytics-4': [
 			'https://analytics.google.com/analytics/web/?utm_source=sitekit',
 			'https://analytics.google.com/analytics/web/#/foo-path?utm_source=sitekit',
-			'https://analytics.google.com/analytics/web/?bar=baz&utm_source=sitekit',
+			'https://analytics.google.com/analytics/web/?bar=baz&utm_source=sitekit#/foo-path',
 		],
 		'modules/pagespeed-insights': [
 			'https://pagespeed.web.dev/?utm_source=sitekit',
@@ -89,12 +89,12 @@ it( 'ensures all serviceURLs are properly constructed', () => {
 		'modules/sign-in-with-google': [
 			'https://developers.google.com/identity/site-kit?utm_source=sitekit',
 			'https://developers.google.com/identity/site-kit#/foo-path?utm_source=sitekit',
-			'https://developers.google.com/identity/site-kit?bar=baz&utm_source=sitekit',
+			'https://developers.google.com/identity/site-kit?bar=baz&utm_source=sitekit#/foo-path',
 		],
 		'modules/tagmanager': [
 			'https://tagmanager.google.com/?utm_source=sitekit',
 			'https://tagmanager.google.com/#/foo-path?utm_source=sitekit',
-			'https://tagmanager.google.com/?bar=baz&utm_source=sitekit',
+			'https://tagmanager.google.com/?bar=baz&utm_source=sitekit#/foo-path',
 		],
 	} );
 } );

@@ -307,7 +307,7 @@ describe( 'module/analytics-4 service store', () => {
 
 				expect( decodedServiceURL.startsWith( baseURI ) ).toBe( true );
 				expect( url.hash ).toBe(
-					`#/a${ accountID }p${ propertyID }/admin/streams/table/${ webDataStreamID }`
+					`#/a${ accountID }p${ propertyID }/admin/streams/table/${ webDataStreamID }?utm_source=sitekit`
 				);
 			} );
 		} );
