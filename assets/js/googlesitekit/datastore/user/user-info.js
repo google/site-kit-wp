@@ -422,6 +422,7 @@ export const selectors = {
 	 * Gets an account chooser url with the current user's email.
 	 *
 	 * @since 1.80.0
+	 * @since n.e.x.t Adds `utm_source` to wrapper and wrapped URL.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The concatenated url if an email is present; otherwise undefined.
@@ -435,9 +436,14 @@ export const selectors = {
 				return undefined;
 			}
 
+			// Add `utm_source` to the `destinationURL`.
+			destinationURL = addQueryArgs( destinationURL, {
+				utm_source: 'sitekit',
+			} );
+
 			// The `Email` parameter is case sensitive;
 			// the capital E is required for the account chooser URL.
-			return escapeURI`https://accounts.google.com/accountchooser?continue=${ destinationURL }&Email=${ userEmail }`;
+			return escapeURI`https://accounts.google.com/accountchooser?continue=${ destinationURL }&Email=${ userEmail }&utm_source=sitekit`;
 		}
 	),
 
