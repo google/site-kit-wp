@@ -35,7 +35,6 @@ const selectors = {
 	 *
 	 * @since 1.132.0
 	 * @since 1.136.0 Removed `publicationID` arg.
-	 * @since n.e.x.t Removes `utm_source` addition as it is now handled in the `getAccountChooserURL` selector.
 	 *
 	 * @param {Object} state                Data store's state.
 	 * @param {Object} [args]               Object containing optional publication ID, path and query args.
@@ -54,7 +53,10 @@ const selectors = {
 					serviceURL = `${ serviceURL }${ sanitizedPath }`;
 				}
 
-				serviceURL = addQueryArgs( serviceURL, query );
+				serviceURL = addQueryArgs( serviceURL, {
+					...query,
+					utm_source: 'sitekit', // Always add the utm_source.
+				} );
 
 				const accountChooserBaseURI =
 					select( CORE_USER ).getAccountChooserURL( serviceURL );

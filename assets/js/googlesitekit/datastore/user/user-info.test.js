@@ -476,6 +476,40 @@ describe( 'core/user userInfo', () => {
 				);
 			} );
 
+			it( 'does not add utm_source if it already exists in destinationURL', async () => {
+				global[ userDataGlobal ] = userData;
+
+				const testURL =
+					'https://analytics.google.com/dashboard/?utm_source=existing';
+
+				registry.select( CORE_USER ).getAccountChooserURL( testURL );
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( CORE_USER )
+						.hasFinishedResolution( 'getUser' )
+				);
+
+				const accountChooserURL = registry
+					.select( CORE_USER )
+					.getAccountChooserURL( testURL );
+
+				// Verify `utm_source` exists in the final wrapper URL.
+				expect( accountChooserURL ).toMatchQueryParameters( {
+					utm_source: 'sitekit',
+				} );
+
+				// Verify the wrapped `destinationURL` preserves the existing `utm_source` value.
+				const url = new URL( accountChooserURL );
+				const continueParam = url.searchParams.get( 'continue' );
+				expect( continueParam ).toBeTruthy();
+
+				const continueURL = new URL( continueParam );
+				expect( continueURL.searchParams.get( 'utm_source' ) ).toBe(
+					'existing'
+				);
+			} );
+
 			it( 'should return undefined when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toEqual( undefined );
 

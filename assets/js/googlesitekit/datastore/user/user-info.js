@@ -26,7 +26,7 @@ import invariant from 'invariant';
 /**
  * WordPress dependencies
  */
-import { addQueryArgs } from '@wordpress/url';
+import { addQueryArgs, hasQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -436,10 +436,12 @@ export const selectors = {
 				return undefined;
 			}
 
-			// Add `utm_source` to the `destinationURL`.
-			destinationURL = addQueryArgs( destinationURL, {
-				utm_source: 'sitekit',
-			} );
+			// Add `utm_source` to the `destinationURL` if it doesn't already exist.
+			if ( ! hasQueryArg( destinationURL, 'utm_source' ) ) {
+				destinationURL = addQueryArgs( destinationURL, {
+					utm_source: 'sitekit',
+				} );
+			}
 
 			// The `Email` parameter is case sensitive;
 			// the capital E is required for the account chooser URL.
