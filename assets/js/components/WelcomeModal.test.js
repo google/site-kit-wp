@@ -73,7 +73,7 @@ describe( 'WelcomeModal', () => {
 
 		await waitForRegistry();
 
-		// expect( container ).toMatchSnapshot();
+		expect( container ).toMatchSnapshot();
 
 		expect(
 			getByText(
@@ -120,7 +120,7 @@ describe( 'WelcomeModal', () => {
 
 		await waitForRegistry();
 
-		// expect( container ).toMatchSnapshot();
+		expect( container ).toMatchSnapshot();
 
 		expect(
 			getByText(
@@ -182,7 +182,7 @@ describe( 'WelcomeModal', () => {
 
 		await waitForRegistry();
 
-		// expect( container ).toMatchSnapshot();
+		expect( container ).toMatchSnapshot();
 
 		expect(
 			getByText(
@@ -222,7 +222,7 @@ describe( 'WelcomeModal', () => {
 
 		await waitForRegistry();
 
-		// expect( container ).toMatchSnapshot();
+		expect( container ).toMatchSnapshot();
 
 		expect(
 			getByText(

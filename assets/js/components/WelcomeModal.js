@@ -17,30 +17,121 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * WordPress dependencies
  */
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
-import { Dialog, DialogContent } from '@/js/material-components';
+/**
+ * Internal dependencies
+ */
+import { useSelect } from 'googlesitekit-data';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { Button } from 'googlesitekit-components';
+import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
+import P from '@/js/components/Typography/P';
+import Typography from '@/js/components/Typography';
+import CloseIcon from '@/svg/icons/close.svg';
+import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
 
 export default function WelcomeModal() {
+	const analyticsConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
+	);
+
+	const analyticsGatheringData = useSelect( ( select ) => {
+		if ( ! analyticsConnected ) {
+			return false;
+		}
+		return select( MODULES_ANALYTICS_4 ).isGatheringData();
+	} );
+
+	const searchConsoleGatheringData = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+
+	const showGatheringDataModal = analyticsConnected
+		? analyticsGatheringData
+		: searchConsoleGatheringData;
+
+	if ( showGatheringDataModal === undefined ) {
+		// TODO: Implement a loading state when we have a design for it in phase 3 of the Setup Flow Refresh epic.
+		return null;
+	}
+
+	const description = showGatheringDataModal
+		? createInterpolateElement(
+				__(
+					'Initial setup complete!<br />Site Kit is gathering data and soon metrics for your site will show on your dashboard',
+					'google-site-kit'
+				),
+				{
+					br: <br />,
+				}
+		  )
+		: __(
+				'Initial setup complete! Take a look at the special features Site Kit added to your dashboard based on your site goals',
+				'google-site-kit'
+		  );
+
 	return (
 		<Dialog
 			onClose={ () => {} }
 			className="googlesitekit-dialog googlesitekit-welcome-modal"
 			open
 		>
-			<DialogContent className="googlesitekit-dialog__content">
-				<div className="googlesitekit-welcome-modal__content">
-					<h1 className="googlesitekit-welcome-modal__title">
+			<DialogContent className="googlesitekit-welcome-modal__content">
+				<div className="googlesitekit-welcome-modal__graphic">
+					<WelcomeModalGraphic />
+
+					<Button
+						className="googlesitekit-welcome-modal__close-button"
+						icon={ <CloseIcon width={ 10 } height={ 10 } /> }
+						onClick={ () => {} }
+						aria-label={ __( 'Close', 'google-site-kit' ) }
+						hideTooltipTitle
+					/>
+				</div>
+
+				<div className="googlesitekit-welcome-modal__text">
+					<Typography
+						as="h1"
+						className="googlesitekit-welcome-modal__title"
+						size="large"
+						type="headline"
+					>
 						{ __( 'Welcome to Site Kit', 'google-site-kit' ) }
-					</h1>
+					</Typography>
+
+					<P
+						type="body"
+						size="medium"
+						className="googlesitekit-welcome-modal__description"
+					>
+						{ description }
+					</P>
 				</div>
 			</DialogContent>
+
+			<DialogFooter className="googlesitekit-welcome-modal__footer">
+				{ showGatheringDataModal ? (
+					<Button onClick={ () => {} }>
+						{ __( 'Get started', 'google-site-kit' ) }
+					</Button>
+				) : (
+					<Fragment>
+						<Button onClick={ () => {} } tertiary>
+							{ __( 'Maybe later', 'google-site-kit' ) }
+						</Button>
+						<Button onClick={ () => {} }>
+							{ __( 'Take a tour', 'google-site-kit' ) }
+						</Button>
+					</Fragment>
+				) }
+			</DialogFooter>
 		</Dialog>
 	);
 }

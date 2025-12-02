@@ -1,0 +1,301 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WelcomeModal should show the dashboard tour variant when Analytics is connected and not gathering data 1`] = `
+<div>
+  <div
+    aria-describedby="mdc-dialog-content"
+    aria-modal="true"
+    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-welcome-modal"
+    id="mdc-dialog"
+    role="alertdialog"
+  >
+    <div
+      class="mdc-dialog__container"
+    >
+      <div
+        class="mdc-dialog__surface"
+      >
+        <div
+          class="googlesitekit-welcome-modal__content mdc-dialog__content"
+          id="mdc-dialog-content"
+        >
+          <div
+            class="googlesitekit-welcome-modal__graphic"
+          >
+            <svg />
+            <button
+              aria-label="Close"
+              class="mdc-button googlesitekit-welcome-modal__close-button mdc-button--raised"
+              target="_self"
+            >
+              <svg />
+            </button>
+          </div>
+          <div
+            class="googlesitekit-welcome-modal__text"
+          >
+            <h1
+              class="googlesitekit-typography googlesitekit-welcome-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
+            >
+              Welcome to Site Kit
+            </h1>
+            <p
+              class="googlesitekit-typography googlesitekit-welcome-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
+            >
+              Initial setup complete! Take a look at the special features Site Kit added to your dashboard based on your site goals
+            </p>
+          </div>
+        </div>
+        <footer
+          class="googlesitekit-welcome-modal__footer mdc-dialog__actions"
+        >
+          <button
+            class="mdc-button mdc-button--tertiary"
+            target="_self"
+          >
+            <span
+              class="mdc-button__label"
+            >
+              Maybe later
+            </span>
+          </button>
+          <button
+            class="mdc-button mdc-button--raised"
+            target="_self"
+          >
+            <span
+              class="mdc-button__label"
+            >
+              Take a tour
+            </span>
+          </button>
+        </footer>
+      </div>
+    </div>
+    <div
+      class="mdc-dialog__scrim"
+    />
+  </div>
+</div>
+`;
+
+exports[`WelcomeModal should show the dashboard tour variant when Analytics is not connected and Search Console is not gathering data 1`] = `
+<div>
+  <div
+    aria-describedby="mdc-dialog-content"
+    aria-modal="true"
+    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-welcome-modal"
+    id="mdc-dialog"
+    role="alertdialog"
+  >
+    <div
+      class="mdc-dialog__container"
+    >
+      <div
+        class="mdc-dialog__surface"
+      >
+        <div
+          class="googlesitekit-welcome-modal__content mdc-dialog__content"
+          id="mdc-dialog-content"
+        >
+          <div
+            class="googlesitekit-welcome-modal__graphic"
+          >
+            <svg />
+            <button
+              aria-label="Close"
+              class="mdc-button googlesitekit-welcome-modal__close-button mdc-button--raised"
+              target="_self"
+            >
+              <svg />
+            </button>
+          </div>
+          <div
+            class="googlesitekit-welcome-modal__text"
+          >
+            <h1
+              class="googlesitekit-typography googlesitekit-welcome-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
+            >
+              Welcome to Site Kit
+            </h1>
+            <p
+              class="googlesitekit-typography googlesitekit-welcome-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
+            >
+              Initial setup complete! Take a look at the special features Site Kit added to your dashboard based on your site goals
+            </p>
+          </div>
+        </div>
+        <footer
+          class="googlesitekit-welcome-modal__footer mdc-dialog__actions"
+        >
+          <button
+            class="mdc-button mdc-button--tertiary"
+            target="_self"
+          >
+            <span
+              class="mdc-button__label"
+            >
+              Maybe later
+            </span>
+          </button>
+          <button
+            class="mdc-button mdc-button--raised"
+            target="_self"
+          >
+            <span
+              class="mdc-button__label"
+            >
+              Take a tour
+            </span>
+          </button>
+        </footer>
+      </div>
+    </div>
+    <div
+      class="mdc-dialog__scrim"
+    />
+  </div>
+</div>
+`;
+
+exports[`WelcomeModal should show the gathering data variant when Analytics is connected and gathering data 1`] = `
+<div>
+  <div
+    aria-describedby="mdc-dialog-content"
+    aria-modal="true"
+    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-welcome-modal"
+    id="mdc-dialog"
+    role="alertdialog"
+  >
+    <div
+      class="mdc-dialog__container"
+    >
+      <div
+        class="mdc-dialog__surface"
+      >
+        <div
+          class="googlesitekit-welcome-modal__content mdc-dialog__content"
+          id="mdc-dialog-content"
+        >
+          <div
+            class="googlesitekit-welcome-modal__graphic"
+          >
+            <svg />
+            <button
+              aria-label="Close"
+              class="mdc-button googlesitekit-welcome-modal__close-button mdc-button--raised"
+              target="_self"
+            >
+              <svg />
+            </button>
+          </div>
+          <div
+            class="googlesitekit-welcome-modal__text"
+          >
+            <h1
+              class="googlesitekit-typography googlesitekit-welcome-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
+            >
+              Welcome to Site Kit
+            </h1>
+            <p
+              class="googlesitekit-typography googlesitekit-welcome-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
+            >
+              Initial setup complete!
+              <br />
+              Site Kit is gathering data and soon metrics for your site will show on your dashboard
+            </p>
+          </div>
+        </div>
+        <footer
+          class="googlesitekit-welcome-modal__footer mdc-dialog__actions"
+        >
+          <button
+            class="mdc-button mdc-button--raised"
+            target="_self"
+          >
+            <span
+              class="mdc-button__label"
+            >
+              Get started
+            </span>
+          </button>
+        </footer>
+      </div>
+    </div>
+    <div
+      class="mdc-dialog__scrim"
+    />
+  </div>
+</div>
+`;
+
+exports[`WelcomeModal should show the gathering data variant when Analytics is not connected and Search Console is gathering data 1`] = `
+<div>
+  <div
+    aria-describedby="mdc-dialog-content"
+    aria-modal="true"
+    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-welcome-modal"
+    id="mdc-dialog"
+    role="alertdialog"
+  >
+    <div
+      class="mdc-dialog__container"
+    >
+      <div
+        class="mdc-dialog__surface"
+      >
+        <div
+          class="googlesitekit-welcome-modal__content mdc-dialog__content"
+          id="mdc-dialog-content"
+        >
+          <div
+            class="googlesitekit-welcome-modal__graphic"
+          >
+            <svg />
+            <button
+              aria-label="Close"
+              class="mdc-button googlesitekit-welcome-modal__close-button mdc-button--raised"
+              target="_self"
+            >
+              <svg />
+            </button>
+          </div>
+          <div
+            class="googlesitekit-welcome-modal__text"
+          >
+            <h1
+              class="googlesitekit-typography googlesitekit-welcome-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
+            >
+              Welcome to Site Kit
+            </h1>
+            <p
+              class="googlesitekit-typography googlesitekit-welcome-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
+            >
+              Initial setup complete!
+              <br />
+              Site Kit is gathering data and soon metrics for your site will show on your dashboard
+            </p>
+          </div>
+        </div>
+        <footer
+          class="googlesitekit-welcome-modal__footer mdc-dialog__actions"
+        >
+          <button
+            class="mdc-button mdc-button--raised"
+            target="_self"
+          >
+            <span
+              class="mdc-button__label"
+            >
+              Get started
+            </span>
+          </button>
+        </footer>
+      </div>
+    </div>
+    <div
+      class="mdc-dialog__scrim"
+    />
+  </div>
+</div>
+`;

@@ -1,0 +1,90 @@
+/**
+ * Welcome modal styles.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-welcome-modal {
+		.mdc-dialog__surface {
+			overflow: hidden;
+		}
+
+		.mdc-dialog__container {
+			max-width: 491px;
+		}
+	}
+
+	.googlesitekit-welcome-modal__graphic {
+		background-image: linear-gradient(to bottom, $c-site-kit-sk-50, $c-white);
+		max-height: 200px;
+
+		svg {
+			max-width: 491px;
+		}
+	}
+
+	.googlesitekit-welcome-modal__close-button {
+		position: absolute;
+		right: 12px;
+		top: 12px;
+
+		&.mdc-button {
+			height: 36px;
+			min-height: 36px;
+			min-width: 36px;
+			width: 36px;
+
+			@include mdc-button-filled-accessible( $c-site-kit-sk-200 );
+			@include mdc-button-ink-color( $c-surfaces-surface );
+
+			&:hover,
+			&:active,
+			&:focus {
+				@include mdc-button-filled-accessible( $c-site-kit-sk-100 );
+				@include mdc-button-ink-color( $c-surfaces-surface );
+			}
+		}
+
+		svg {
+			position: absolute;
+		}
+	}
+
+	.googlesitekit-welcome-modal__text {
+		padding: 0 $grid-gap-phone;
+
+		@media (min-width: $bp-tablet) {
+			padding: 0 $grid-gap-desktop;
+		}
+	}
+
+	.googlesitekit-welcome-modal__title {
+		margin: 25px 0 0;
+	}
+
+	.googlesitekit-welcome-modal__description {
+		margin: 8px 0 0;
+	}
+
+	.googlesitekit-welcome-modal__footer.mdc-dialog__actions {
+		padding: 0 $grid-gap-phone $grid-gap-phone $grid-gap-phone;
+
+		@media (min-width: $bp-tablet) {
+			padding: 0 $grid-gap-desktop $grid-gap-desktop $grid-gap-desktop;
+		}
+	}
+}
