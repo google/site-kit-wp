@@ -101,6 +101,8 @@ module.exports = function ( mode, rules ) {
 				'./js/googlesitekit-entity-dashboard.js',
 			'googlesitekit-splash': './js/googlesitekit-splash.js',
 			'googlesitekit-wp-dashboard': './js/googlesitekit-wp-dashboard.js',
+
+			'googlesitekit-angie-mcp': './js/googlesitekit-angie-mcp.js',
 		},
 		externals,
 		output: {
