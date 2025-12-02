@@ -34,22 +34,27 @@ import { Button } from 'googlesitekit-components';
 import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
 import P from '@/js/components/Typography/P';
 import Typography from '@/js/components/Typography';
+// @ts-expect-error We need to add types for imported SVGs.
 import CloseIcon from '@/svg/icons/close.svg';
+// @ts-expect-error We need to add types for imported SVGs.
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
 
 export default function WelcomeModal() {
-	const analyticsConnected = useSelect( ( select ) =>
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `select` is not typed yet.
+	const analyticsConnected = useSelect( ( select: any ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
-	const analyticsGatheringData = useSelect( ( select ) => {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `select` is not typed yet.
+	const analyticsGatheringData = useSelect( ( select: any ) => {
 		if ( ! analyticsConnected ) {
 			return false;
 		}
 		return select( MODULES_ANALYTICS_4 ).isGatheringData();
 	} );
 
-	const searchConsoleGatheringData = useSelect( ( select ) =>
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `select` is not typed yet.
+	const searchConsoleGatheringData = useSelect( ( select: any ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 
@@ -88,6 +93,7 @@ export default function WelcomeModal() {
 					<WelcomeModalGraphic />
 
 					<Button
+						// @ts-expect-error `Button` component is not currently typed.
 						className="googlesitekit-welcome-modal__close-button"
 						icon={ <CloseIcon width={ 10 } height={ 10 } /> }
 						onClick={ () => {} }
@@ -118,17 +124,24 @@ export default function WelcomeModal() {
 
 			<DialogFooter className="googlesitekit-welcome-modal__footer">
 				{ showGatheringDataModal ? (
-					<Button onClick={ () => {} }>
-						{ __( 'Get started', 'google-site-kit' ) }
-					</Button>
+					<Button // @ts-expect-error `Button` component is not fully typed.
+						onClick={ () => {} }
+						// TODO: Render as a child rather than a prop when `Button` is properly typed.
+						children={ __( 'Get started', 'google-site-kit' ) }
+					/>
 				) : (
 					<Fragment>
-						<Button onClick={ () => {} } tertiary>
-							{ __( 'Maybe later', 'google-site-kit' ) }
-						</Button>
-						<Button onClick={ () => {} }>
-							{ __( 'Take a tour', 'google-site-kit' ) }
-						</Button>
+						<Button // @ts-expect-error `Button` component is not fully typed.
+							onClick={ () => {} }
+							// TODO: Render as a child rather than a prop when `Button` is properly typed.
+							children={ __( 'Maybe later', 'google-site-kit' ) }
+							tertiary
+						/>
+						<Button // @ts-expect-error `Button` component is not fully typed.
+							onClick={ () => {} }
+							// TODO: Render as a child rather than a prop when `Button` is properly typed.
+							children={ __( 'Take a tour', 'google-site-kit' ) }
+						/>
 					</Fragment>
 				) }
 			</DialogFooter>
