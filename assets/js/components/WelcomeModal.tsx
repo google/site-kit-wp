@@ -124,24 +124,20 @@ export default function WelcomeModal() {
 
 			<DialogFooter className="googlesitekit-welcome-modal__footer">
 				{ showGatheringDataModal ? (
-					<Button // @ts-expect-error - The `Button` component is not typed yet.
-						onClick={ () => {} }
-						// TODO: Render as a child rather than a prop when `Button` is typed.
-						children={ __( 'Get started', 'google-site-kit' ) }
-					/>
+					// @ts-expect-error - The `Button` component is not typed yet.
+					<Button onClick={ () => {} }>
+						{ __( 'Get started', 'google-site-kit' ) }
+					</Button>
 				) : (
 					<Fragment>
-						<Button // @ts-expect-error - The `Button` component is not typed yet.
-							onClick={ () => {} }
-							// TODO: Render as a child rather than a prop when `Button` is typed.
-							children={ __( 'Maybe later', 'google-site-kit' ) }
-							tertiary
-						/>
-						<Button // @ts-expect-error - The `Button` component is not typed yet.
-							onClick={ () => {} }
-							// TODO: Render as a child rather than a prop when `Button` is typed.
-							children={ __( 'Take a tour', 'google-site-kit' ) }
-						/>
+						{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
+						<Button onClick={ () => {} } tertiary>
+							{ __( 'Maybe later', 'google-site-kit' ) }
+						</Button>
+						{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
+						<Button onClick={ () => {} }>
+							{ __( 'Take a tour', 'google-site-kit' ) }
+						</Button>
 					</Fragment>
 				) }
 			</DialogFooter>
