@@ -17,19 +17,14 @@
  */
 
 /**
- * WordPress dependencies
- */
-// @ts-expect-error `@wordpress/data` is not typed yet.
-import { createRegistry } from '@wordpress/data';
-
-/**
  * Internal dependencies
  */
 import WelcomeModal from './WelcomeModal';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 
-type Registry = ReturnType< typeof createRegistry >;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
+type Registry = any;
 
 function Template( {
 	setupRegistry,

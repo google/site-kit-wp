@@ -39,22 +39,22 @@ import CloseIcon from '@/svg/icons/close.svg';
 // @ts-expect-error We need to add types for imported SVGs.
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
+type SelectFunction = ( select: any ) => any;
+
 export default function WelcomeModal() {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `select` is not typed yet.
-	const analyticsConnected = useSelect( ( select: any ) =>
+	const analyticsConnected = useSelect( ( select: SelectFunction ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `select` is not typed yet.
-	const analyticsGatheringData = useSelect( ( select: any ) => {
+	const analyticsGatheringData = useSelect( ( select: SelectFunction ) => {
 		if ( ! analyticsConnected ) {
 			return false;
 		}
 		return select( MODULES_ANALYTICS_4 ).isGatheringData();
 	} );
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `select` is not typed yet.
-	const searchConsoleGatheringData = useSelect( ( select: any ) =>
+	const searchConsoleGatheringData = useSelect( ( select: SelectFunction ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 
