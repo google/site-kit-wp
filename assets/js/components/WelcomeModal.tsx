@@ -93,7 +93,7 @@ export default function WelcomeModal() {
 					<WelcomeModalGraphic />
 
 					<Button
-						// @ts-expect-error `Button` component is not currently typed.
+						// @ts-expect-error `Button` component is not fully typed.
 						className="googlesitekit-welcome-modal__close-button"
 						icon={ <CloseIcon width={ 10 } height={ 10 } /> }
 						onClick={ () => {} }
