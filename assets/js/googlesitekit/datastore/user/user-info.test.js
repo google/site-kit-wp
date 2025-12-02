@@ -439,7 +439,40 @@ describe( 'core/user userInfo', () => {
 					.getAccountChooserURL( testURL );
 
 				expect( accountChooserURL ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fdashboard%2F&Email=admin%40example.com"'
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fdashboard%2F%3Futm_source%3Dsitekit&Email=admin%40example.com&utm_source=sitekit"'
+				);
+			} );
+
+			it( 'includes utm_source parameter in both wrapped and wrapper URLs', async () => {
+				global[ userDataGlobal ] = userData;
+
+				const testURL = 'https://analytics.google.com/dashboard/';
+
+				registry.select( CORE_USER ).getAccountChooserURL( testURL );
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( CORE_USER )
+						.hasFinishedResolution( 'getUser' )
+				);
+
+				const accountChooserURL = registry
+					.select( CORE_USER )
+					.getAccountChooserURL( testURL );
+
+				// Verify `utm_source` exists in the final wrapper URL.
+				expect( accountChooserURL ).toMatchQueryParameters( {
+					utm_source: 'sitekit',
+				} );
+
+				// Verify `utm_source` exists in the wrapped `destinationURL` (in the `continue` parameter).
+				const url = new URL( accountChooserURL );
+				const continueParam = url.searchParams.get( 'continue' );
+				expect( continueParam ).toBeTruthy();
+
+				const continueURL = new URL( continueParam );
+				expect( continueURL.searchParams.get( 'utm_source' ) ).toBe(
+					'sitekit'
 				);
 			} );
 
