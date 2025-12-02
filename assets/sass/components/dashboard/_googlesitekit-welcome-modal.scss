@@ -81,6 +81,8 @@
 	}
 
 	.googlesitekit-welcome-modal__footer.mdc-dialog__actions {
+		border-top: none;
+		margin-top: 23px;
 		padding: 0 $grid-gap-phone $grid-gap-phone $grid-gap-phone;
 
 		@media (min-width: $bp-tablet) {
