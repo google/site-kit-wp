@@ -34,9 +34,9 @@ import { Button } from 'googlesitekit-components';
 import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
 import P from '@/js/components/Typography/P';
 import Typography from '@/js/components/Typography';
-// @ts-expect-error We need to add types for imported SVGs.
+// @ts-expect-error - We need to add types for imported SVGs.
 import CloseIcon from '@/svg/icons/close.svg';
-// @ts-expect-error We need to add types for imported SVGs.
+// @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
@@ -93,7 +93,7 @@ export default function WelcomeModal() {
 					<WelcomeModalGraphic />
 
 					<Button
-						// @ts-expect-error `Button` component is not fully typed.
+						// @ts-expect-error - The `Button` component is not typed yet.
 						className="googlesitekit-welcome-modal__close-button"
 						icon={ <CloseIcon width={ 10 } height={ 10 } /> }
 						onClick={ () => {} }
@@ -124,22 +124,22 @@ export default function WelcomeModal() {
 
 			<DialogFooter className="googlesitekit-welcome-modal__footer">
 				{ showGatheringDataModal ? (
-					<Button // @ts-expect-error `Button` component is not fully typed.
+					<Button // @ts-expect-error - The `Button` component is not typed yet.
 						onClick={ () => {} }
-						// TODO: Render as a child rather than a prop when `Button` is properly typed.
+						// TODO: Render as a child rather than a prop when `Button` is typed.
 						children={ __( 'Get started', 'google-site-kit' ) }
 					/>
 				) : (
 					<Fragment>
-						<Button // @ts-expect-error `Button` component is not fully typed.
+						<Button // @ts-expect-error - The `Button` component is not typed yet.
 							onClick={ () => {} }
-							// TODO: Render as a child rather than a prop when `Button` is properly typed.
+							// TODO: Render as a child rather than a prop when `Button` is typed.
 							children={ __( 'Maybe later', 'google-site-kit' ) }
 							tertiary
 						/>
-						<Button // @ts-expect-error `Button` component is not fully typed.
+						<Button // @ts-expect-error - The `Button` component is not typed yet.
 							onClick={ () => {} }
-							// TODO: Render as a child rather than a prop when `Button` is properly typed.
+							// TODO: Render as a child rather than a prop when `Button` is typed.
 							children={ __( 'Take a tour', 'google-site-kit' ) }
 						/>
 					</Fragment>
