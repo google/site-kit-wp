@@ -58,11 +58,14 @@ class Email_Report_Section_Builder {
 		$this->report_processor   = $report_processor ?? new Email_Report_Payload_Processor();
 		$this->label_translations = array(
 			// Analytics 4.
-			'totalUsers'  => __( 'Total Visitors', 'google-site-kit' ),
-			'newUsers'    => __( 'New Visitors', 'google-site-kit' ),
+			'totalUsers'         => __( 'Total Visitors', 'google-site-kit' ),
+			'newUsers'           => __( 'New Visitors', 'google-site-kit' ),
+			'eventCount'         => __( 'Total conversion events', 'google-site-kit' ),
+			'addToCarts'         => __( 'Products added to cart', 'google-site-kit' ),
+			'ecommercePurchases' => __( 'Purchases', 'google-site-kit' ),
 			// Search Console.
-			'impressions' => __( 'Total impressions in Search', 'google-site-kit' ),
-			'clicks'      => __( 'Total clicks from Search', 'google-site-kit' ),
+			'impressions'        => __( 'Total impressions in Search', 'google-site-kit' ),
+			'clicks'             => __( 'Total clicks from Search', 'google-site-kit' ),
 		);
 	}
 
@@ -71,33 +74,40 @@ class Email_Report_Section_Builder {
 	 *
 	 * @since 1.167.0
 	 *
-	 * @param string   $module_slug Module slug (e.g. analytics-4) for the dashboard link only.
-	 * @param array    $raw_payloads Raw reports payloads.
+	 * @param string   $module_slug Module slug (e.g. analytics-4).
+	 * @param array    $raw_sections_payloads Raw reports payloads.
 	 * @param string   $user_locale  User locale (e.g. en_US).
 	 * @param \WP_Post $email_log   Optional. Email log post instance containing date metadata.
 	 * @return Email_Report_Data_Section_Part[] Section parts for the provided module.
 	 * @throws \Exception If an error occurs while building sections.
 	 */
-	public function build_sections( $module_slug, $raw_payloads, $user_locale, $email_log = null ) {
+	public function build_sections( $module_slug, $raw_sections_payloads, $user_locale, $email_log = null ) {
+		if ( is_object( $raw_sections_payloads ) ) {
+			$raw_sections_payloads = (array) $raw_sections_payloads;
+		}
+
 		$sections        = array();
 		$switched_locale = switch_to_locale( $user_locale );
 		$log_date_range  = Email_Log::get_date_range_from_log( $email_log );
 
 		try {
-			foreach ( $this->extract_sections_from_payloads( $raw_payloads ) as $section_payload ) {
-				list( $labels, $values, $trends ) = $this->normalize_section_payload_components( $section_payload );
+			foreach ( $this->extract_sections_from_payloads( $module_slug, $raw_sections_payloads ) as $section_payload ) {
+				list( $labels, $values, $trends, $event_names ) = $this->normalize_section_payload_components( $section_payload );
 
 				$date_range = $log_date_range ? $log_date_range : $this->report_processor->compute_date_range( $section_payload['date_range'] ?? null );
 
 				$section = new Email_Report_Data_Section_Part(
 					$section_payload['section_key'] ?? 'section',
 					array(
-						'title'          => $section_payload['title'] ?? '',
-						'labels'         => $labels,
-						'values'         => $values,
-						'trends'         => $trends,
-						'date_range'     => $date_range,
-						'dashboard_link' => $this->format_dashboard_link( $module_slug ),
+						'title'            => $section_payload['title'] ?? '',
+						'labels'           => $labels,
+						'event_names'      => $event_names,
+						'values'           => $values,
+						'trends'           => $trends,
+						'dimensions'       => $section_payload['dimensions'] ?? array(),
+						'dimension_values' => $section_payload['dimension_values'] ?? array(),
+						'date_range'       => $date_range,
+						'dashboard_link'   => $this->format_dashboard_link( $module_slug ),
 					)
 				);
 
@@ -187,8 +197,9 @@ class Email_Report_Section_Builder {
 		$values      = $this->normalize_values( $section_payload['values'] ?? array(), $value_types );
 		$trends_data = $section_payload['trends'] ?? null;
 		$trends      = null !== $trends_data ? $this->normalize_trends( $trends_data ) : null;
+		$event_names = $section_payload['event_names'] ?? array();
 
-		return array( $labels, $values, $trends );
+		return array( $labels, $values, $trends, $event_names );
 	}
 
 	/**
@@ -283,13 +294,18 @@ class Email_Report_Section_Builder {
 	 *
 	 * @since 1.167.0
 	 *
-	 * @param array $raw_payloads Raw payloads.
+	 * @param string $module_slug Module slug.
+	 * @param array  $raw_sections_payloads Raw section payloads.
 	 * @return array[] Structured section payloads.
 	 */
-	protected function extract_sections_from_payloads( $raw_payloads ) {
+	protected function extract_sections_from_payloads( $module_slug, $raw_sections_payloads ) {
 		$sections = array();
 
-		foreach ( $raw_payloads as $payload_group ) {
+		foreach ( $raw_sections_payloads as $payload_group ) {
+			if ( is_object( $payload_group ) ) {
+				$payload_group = (array) $payload_group;
+			}
+
 			if ( ! is_array( $payload_group ) ) {
 				continue;
 			}
@@ -297,23 +313,19 @@ class Email_Report_Section_Builder {
 			$group_title_value = $payload_group['title'] ?? null;
 			$group_title       = null !== $group_title_value ? $group_title_value : null;
 
-			foreach ( $payload_group as $module_key => $module_payload ) {
-				if ( 'title' === $module_key ) {
-					continue;
-				}
+			if ( isset( $payload_group['title'] ) ) {
+				unset( $payload_group['title'] );
+			}
 
-				if ( ! is_array( $module_payload ) ) {
-					continue;
-				}
+			$module_sections = $this->build_module_section_payloads( $module_slug, $payload_group );
 
-				foreach ( $this->build_module_section_payloads( $module_key, $module_payload ) as $section ) {
-					if ( $group_title ) {
-						$section['title'] = $group_title;
-					} elseif ( empty( $section['title'] ) && isset( $section['section_key'] ) ) {
-						$section['title'] = $section['section_key'];
-					}
-					$sections[] = $section;
+			foreach ( $module_sections as $section ) {
+				if ( $group_title ) {
+					$section['title'] = $group_title;
+				} elseif ( empty( $section['title'] ) && isset( $section['section_key'] ) ) {
+					$section['title'] = $section['section_key'];
 				}
+				$sections[] = $section;
 			}
 		}
 
@@ -350,33 +362,37 @@ class Email_Report_Section_Builder {
 	 * @return array Section payloads.
 	 */
 	protected function build_sections_from_analytics_module( $module_payload ) {
-		$sections                = array();
-		$module_report_configs   = isset( $module_payload['report_configs'] ) && is_array( $module_payload['report_configs'] ) ? $module_payload['report_configs'] : array();
-		$module_payload_filtered = $module_payload;
+		$sections = array();
 
-		unset( $module_payload_filtered['report_configs'] );
+		foreach ( $module_payload as $section_key => $section_data ) {
+			if ( is_object( $section_data ) ) {
+				$section_data = (array) $section_data;
+			}
 
-		foreach ( $module_payload_filtered as $section_key => $section_data ) {
-			list( $reports, $section_report_configs ) = $this->normalize_analytics_section_input( $section_data );
-			if ( empty( $reports ) ) {
+			if ( ! is_array( $section_data ) ) {
 				continue;
 			}
 
-			$report_configs = ! empty( $section_report_configs ) ? $section_report_configs : $module_report_configs;
-			$processed      = $this->build_section_payloads_from_processed_reports(
-				$this->report_processor->process_batch_reports( $reports, $report_configs )
-			);
+			$processed_report = $this->report_processor->process_single_report( $section_data );
 
-			foreach ( $processed as $payload ) {
-				$payload_section_key = $payload['section_key'] ?? '';
-				if ( '' === $payload_section_key || 0 === strpos( $payload_section_key, 'report_' ) ) {
-					$payload['section_key'] = $section_key;
-				}
-				if ( empty( $payload['title'] ) ) {
-					$payload['title'] = '';
-				}
-				$sections[] = $payload;
+			if ( empty( $processed_report ) ) {
+				continue;
 			}
+
+			$payload = $this->build_section_payload_from_processed_report( $processed_report, $section_key );
+
+			if ( empty( $payload ) ) {
+				continue;
+			}
+
+			if ( empty( $payload['section_key'] ) || 0 === strpos( $payload['section_key'], 'report_' ) ) {
+				$payload['section_key'] = $section_key;
+			}
+			if ( empty( $payload['title'] ) ) {
+				$payload['title'] = '';
+			}
+
+			$sections[] = $payload;
 		}
 
 		return $sections;
@@ -420,13 +436,12 @@ class Email_Report_Section_Builder {
 		$reports        = array();
 		$report_configs = array();
 
-		if ( ! is_array( $section_data ) ) {
-			return array( $reports, $report_configs );
+		if ( is_object( $section_data ) ) {
+			$section_data = (array) $section_data;
 		}
 
-		if ( isset( $section_data['report_configs'] ) ) {
-			$report_configs = is_array( $section_data['report_configs'] ) ? $section_data['report_configs'] : array();
-			unset( $section_data['report_configs'] );
+		if ( ! is_array( $section_data ) ) {
+			return array( $reports, $report_configs );
 		}
 
 		if ( $this->is_sequential_array( $section_data ) ) {
@@ -436,11 +451,7 @@ class Email_Report_Section_Builder {
 				}
 			}
 		} else {
-			foreach ( $section_data as $value ) {
-				if ( is_array( $value ) ) {
-					$reports[] = $value;
-				}
-			}
+			$reports[] = $section_data;
 		}
 
 		return array( $reports, $report_configs );
@@ -455,6 +466,10 @@ class Email_Report_Section_Builder {
 	 * @return array Normalized Search Console rows.
 	 */
 	protected function normalize_search_console_rows( $section_data ) {
+		if ( is_object( $section_data ) ) {
+			$section_data = (array) $section_data;
+		}
+
 		if ( ! is_array( $section_data ) ) {
 			return array();
 		}
@@ -489,48 +504,65 @@ class Email_Report_Section_Builder {
 	}
 
 	/**
-	 * Builds section payloads from processed GA4 reports.
+	 * Builds a section payload from a processed GA4 report.
 	 *
 	 * @since 1.167.0
 	 *
-	 * @param array $processed_reports Processed report data keyed by ID.
-	 * @return array Section payloads.
+	 * @param array  $processed_report Processed report data.
+	 * @param string $section_key      Section key.
+	 * @return array Section payload.
 	 */
-	protected function build_section_payloads_from_processed_reports( $processed_reports ) {
-		$sections = array();
-
-		foreach ( $processed_reports as $report_id => $report ) {
-			if ( empty( $report ) || empty( $report['metadata']['metrics'] ) ) {
-				continue;
-			}
-
-			$metrics      = $report['metadata']['metrics'];
-			$labels       = array();
-			$value_types  = array();
-			$metric_names = array();
-
-			foreach ( $metrics as $metric_meta ) {
-				$metric_name    = $metric_meta['name'];
-				$metric_names[] = $metric_name;
-				$labels[]       = $metric_meta['name'];
-				$value_types[]  = $metric_meta['type'] ?? 'TYPE_STANDARD';
-			}
-
-			list( $values, $trends ) = $this->report_processor->compute_metric_values_and_trends( $report, $metric_names );
-
-			$sections[] = array(
-				'section_key' => $report_id,
-				'title'       => $report['metadata']['title'] ?? '',
-				'labels'      => $labels,
-				'values'      => $values,
-				'value_types' => $value_types,
-				'trends'      => $trends,
-				'trend_types' => $value_types,
-				'date_range'  => null,
-			);
+	protected function build_section_payload_from_processed_report( $processed_report, $section_key ) {
+		if ( empty( $processed_report ) || empty( $processed_report['metadata']['metrics'] ) ) {
+			return array();
 		}
 
-		return $sections;
+		$metrics          = $processed_report['metadata']['metrics'];
+		$dimensions       = isset( $processed_report['metadata']['dimensions'] ) && is_array( $processed_report['metadata']['dimensions'] ) ? $processed_report['metadata']['dimensions'] : array();
+		$labels           = array();
+		$value_types      = array();
+		$metric_names     = array();
+		$dimension_values = array();
+
+		if ( ! empty( $dimensions ) && ! empty( $processed_report['rows'] ) && is_array( $processed_report['rows'] ) ) {
+			foreach ( $dimensions as $dimension_key ) {
+				$found_value = '';
+
+				foreach ( $processed_report['rows'] as $row ) {
+					if ( isset( $row['dimensions'][ $dimension_key ] ) && '' !== $row['dimensions'][ $dimension_key ] ) {
+						$found_value = $row['dimensions'][ $dimension_key ];
+						break;
+					}
+				}
+
+				if ( '' !== $found_value ) {
+					$dimension_values[] = $found_value;
+				}
+			}
+		}
+
+		foreach ( $metrics as $metric_meta ) {
+			$metric_name    = $metric_meta['name'];
+			$metric_names[] = $metric_name;
+			$labels[]       = $metric_meta['name'];
+			$value_types[]  = $metric_meta['type'] ?? 'TYPE_STANDARD';
+		}
+
+		list( $values, $trends ) = $this->report_processor->compute_metric_values_and_trends( $processed_report, $metric_names );
+
+		return array(
+			'section_key'      => $section_key,
+			'title'            => $processed_report['metadata']['title'] ?? '',
+			'labels'           => $labels,
+			'event_names'      => $metric_names,
+			'values'           => $values,
+			'value_types'      => $value_types,
+			'trends'           => $trends,
+			'trend_types'      => $value_types,
+			'dimensions'       => $dimensions,
+			'dimension_values' => $dimension_values,
+			'date_range'       => null,
+		);
 	}
 
 	/**
