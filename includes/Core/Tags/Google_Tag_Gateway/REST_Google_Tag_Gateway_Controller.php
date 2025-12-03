@@ -178,30 +178,6 @@ class REST_Google_Tag_Gateway_Controller {
 					),
 				)
 			),
-
-			// Deprecated endpoint - kept for backward compatibility.
-			new REST_Route(
-				'core/site/data/gtg-server-requirement-status',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function () {
-							$this->google_tag_gateway->healthcheck();
-							// Return combined data for backward compatibility.
-							return new WP_REST_Response(
-								array_merge(
-									$this->google_tag_gateway_settings->get(),
-									array(
-										'isGTGHealthy' => $this->health_state->get()['isUpstreamHealthy'],
-										'isScriptAccessEnabled' => $this->health_state->get()['isMpathHealthy'],
-									)
-								)
-							);
-						},
-						'permission_callback' => $can_manage_options,
-					),
-				)
-			),
 		);
 	}
 }
