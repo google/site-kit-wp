@@ -9,6 +9,8 @@ on:
     paths:
       - '.github/workflows/js-css-lint-test.yml'
       - '**.js'
+      - '**.ts'
+      - '**.tsx'
       - '**.json'
       - '**.scss'
       - '.eslint*'
@@ -27,6 +29,8 @@ on:
     paths:
       - '.github/workflows/js-css-lint-test.yml'
       - '**.js'
+      - '**.ts'
+      - '**.tsx'
       - '**.json'
       - '**.scss'
       - '.eslint*'
@@ -57,7 +61,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - name: npm install
-        run: npm i -w assets --include-workspace-root
+        run: npm ci -w assets --include-workspace-root
       - name: CSS Lint
         run: npm run lint:css
   js-lint:
@@ -71,9 +75,23 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - name: npm install
-        run: npm i -w assets -w storybook -w tests/js -w tests/e2e --include-workspace-root
+        run: npm ci -w assets -w storybook -w tests/js -w tests/e2e --include-workspace-root
       - name: JS Lint
         run: npm run lint:js
+  typecheck:
+    name: Type check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: npm install
+        run: npm ci -w assets -w storybook -w tests/js -w tests/e2e --include-workspace-root
+      - name: Type check
+        run: npm run typecheck
   js-test:
     name: JS Tests
     runs-on: ubuntu-latest
@@ -87,7 +105,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - name: npm install
-        run: npm i -w assets -w storybook -w tests/js --include-workspace-root
+        run: npm ci -w assets -w storybook -w tests/js --include-workspace-root
       - name: Jest Tests
         id: test-js
         run: npm run test:js -- -- --json --outputFile=../../${{ env.JEST_RESULTS_FILE }}
