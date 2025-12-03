@@ -191,7 +191,11 @@ class Email_Reporting_Data_Requests {
 				return $result;
 			}
 
-			$payload = array_merge( $payload, $result );
+			if ( empty( $result ) ) {
+				continue;
+			}
+
+			$payload[ $slug ] = $result;
 		}
 
 		return $payload;
@@ -214,7 +218,7 @@ class Email_Reporting_Data_Requests {
 			'popular_content'  => $report_options->get_popular_content_options(),
 		);
 
-		$conversion_events = $this->conversion_tracking->get_supported_conversion_events();
+		$conversion_events = $module->get_settings()->get()['detectedEvents'];
 		$has_add_to_cart   = in_array( 'add_to_cart', $conversion_events, true );
 		$has_purchase      = in_array( 'purchase', $conversion_events, true );
 
