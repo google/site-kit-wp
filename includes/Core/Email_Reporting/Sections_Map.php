@@ -61,10 +61,15 @@ class Sections_Map {
 	 * @return array Array of sections with their configuration.
 	 */
 	public function get_sections() {
-		return array_merge(
-			$this->get_business_growth_section()
-			// TODO: Add each new section here in follow up issues which implement additional sections.
-		);
+		$sections = array();
+
+		$business_growth = $this->get_business_growth_section();
+		if ( ! empty( $business_growth ) ) {
+			$sections = array_merge( $sections, $business_growth );
+		}
+
+		// TODO: Add each new section here in follow up issues which implement additional sections.
+		return $sections;
 	}
 
 	/**
@@ -75,6 +80,12 @@ class Sections_Map {
 	 * @return array Section configuration array.
 	 */
 	protected function get_business_growth_section() {
+		// If no conversion data is present in payload it means user do not have conversion tracking set up
+		// or no data is received yet and we can skip this section.
+		if ( empty( $this->payload['total_conversion_events'] ) || ! isset( $this->payload['total_conversion_events'] ) ) {
+			return null;
+		}
+
 		return array(
 			'is_my_site_helping_my_business_grow' => array(
 				'title'            => esc_html__( 'Is my site helping my business grow?', 'google-site-kit' ),
@@ -86,12 +97,10 @@ class Sections_Map {
 						'data' => $this->payload['total_conversion_events'] ?? array(),
 					),
 					'products_added_to_cart'  => array(
-						'data'                => $this->payload['products_added_to_cart'] ?? array(),
-						'top_traffic_channel' => $this->payload['products_added_to_cart_top_traffic_channel'] ?? '',
+						'data' => $this->payload['products_added_to_cart'] ?? array(),
 					),
 					'purchases'               => array(
-						'data'                => $this->payload['purchases'] ?? array(),
-						'top_traffic_channel' => $this->payload['purchases_top_traffic_channel'] ?? '',
+						'data' => $this->payload['purchases'] ?? array(),
 					),
 				),
 			),
