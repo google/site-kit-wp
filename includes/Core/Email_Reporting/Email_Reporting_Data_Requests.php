@@ -247,17 +247,7 @@ class Email_Reporting_Data_Requests {
 			$requests['top_categories'] = $report_options->get_top_categories_options();
 		}
 
-		$payload = array();
-
-		foreach ( $requests as $key => $options ) {
-			$response = $module->get_data( 'report', $options );
-
-			if ( is_wp_error( $response ) ) {
-				return $response;
-			}
-
-			$payload[ $key ] = $response;
-		}
+		$payload = $this->collect_batch_reports( $module, $requests );
 
 		return $payload;
 	}
@@ -405,5 +395,99 @@ class Email_Reporting_Data_Requests {
 	private function has_custom_dimension_data( $custom_dimension ) {
 		$availability = $this->custom_dimensions_data_available->get_data_availability();
 		return ! empty( $availability[ $custom_dimension ] );
+	}
+
+	/**
+	 * Collects Analytics reports in batches of up to five requests.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param object $module   Analytics module instance.
+	 * @param array  $requests Report request options keyed by payload key.
+	 * @return array|WP_Error  Payload keyed by request key or WP_Error on failure.
+	 */
+	private function collect_batch_reports( $module, array $requests ) {
+		$payload = array();
+
+		$chunks = array_chunk( $requests, 5, true );
+
+		foreach ( $chunks as $chunk ) {
+			$request_keys      = array_keys( $chunk );
+			$chunk_request_set = array_values( $chunk );
+
+			$response = $module->get_data(
+				'batch-report',
+				array(
+					'requests' => $chunk_request_set,
+				)
+			);
+
+			if ( is_wp_error( $response ) ) {
+				return $response;
+			}
+
+				$reports = $this->normalize_batch_reports( $response );
+
+				// GA4 batch responses can occasionally return fewer reports than requested (e.g. invalid options dropped). Use the first report as a fallback to keep all requested keys populated.
+				$first_report = reset( $reports );
+				$fallback     = false === $first_report ? array() : $first_report;
+
+			foreach ( $request_keys as $index => $key ) {
+				if ( isset( $reports[ $index ] ) ) {
+					$payload[ $key ] = $reports[ $index ];
+					continue;
+				}
+
+				if ( isset( $reports[ $key ] ) ) {
+						$payload[ $key ] = $reports[ $key ];
+						continue;
+				}
+
+				$payload[ $key ] = $fallback;
+			}
+		}
+
+			return $payload;
+	}
+
+	/**
+	 * Normalizes batch report responses to a numeric-indexed array.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $batch_response Batch response from the module.
+	 * @return array Normalized reports array.
+	 */
+	private function normalize_batch_reports( $batch_response ) {
+		if ( is_object( $batch_response ) ) {
+			$decoded = json_decode( wp_json_encode( $batch_response ), true );
+			if ( is_array( $decoded ) ) {
+				$batch_response = $decoded;
+			}
+		}
+
+		if ( isset( $batch_response['reports'] ) && is_array( $batch_response['reports'] ) ) {
+			return $batch_response['reports'];
+		}
+
+		if ( is_array( $batch_response ) && ( isset( $batch_response['dimensionHeaders'] ) || isset( $batch_response['metricHeaders'] ) || isset( $batch_response['rows'] ) ) ) {
+			return array( $batch_response );
+		}
+
+		if ( wp_is_numeric_array( $batch_response ) ) {
+			return $batch_response;
+		}
+
+		$reports = array();
+
+		if ( is_array( $batch_response ) ) {
+			foreach ( $batch_response as $value ) {
+				if ( is_array( $value ) ) {
+					$reports[] = $value;
+				}
+			}
+		}
+
+		return $reports;
 	}
 }
