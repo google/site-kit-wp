@@ -126,23 +126,23 @@ class Sections_Map {
 				'section_template' => 'section-metrics',
 				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
 				'section_parts'    => array(
-					'total_visitors'              => array(
+					'total_visitors'     => array(
 						'data' => $this->payload['total_visitors'] ?? array(),
 					),
-					'new_visitors'                => array(
+					'new_visitors'       => array(
 						'data' => $this->payload['new_visitors'] ?? array(),
 					),
-					'returning_visitors'          => array(
+					'returning_visitors' => array(
 						'data' => $this->payload['returning_visitors'] ?? array(),
 					),
-					'subscribers'                 => array(
+					'subscribers'        => array(
 						'data' => $this->payload['subscribers'] ?? array(),
 					),
-					'total_impressions_on_search' => array(
-						'data' => $this->payload['total_impressions_on_search'] ?? array(),
+					'total_impressions'  => array(
+						'data' => $this->payload['total_impressions'] ?? array(),
 					),
-					'total_clicks_from_search'    => array(
-						'data' => $this->payload['total_clicks_from_search'] ?? array(),
+					'total_clicks'       => array(
+						'data' => $this->payload['total_clicks'] ?? array(),
 					),
 				),
 			),
