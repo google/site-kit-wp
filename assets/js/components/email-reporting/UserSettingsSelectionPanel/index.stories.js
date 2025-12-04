@@ -24,6 +24,8 @@ import {
 	provideUserAuthentication,
 	provideSiteInfo,
 	provideUserInfo,
+	provideModules,
+	provideUserCapabilities,
 } from '../../../../../tests/js/utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -34,6 +36,8 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import UserSettingsSelectionPanel from '.';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 function Template( { viewContext } ) {
 	return (
@@ -62,6 +66,29 @@ Subscribed.args = {
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 			subscribed: true,
 		} );
+	},
+};
+
+export const AnalyticsWasConnected = Template.bind( {} );
+AnalyticsWasConnected.storyName = 'Analytics was connected';
+AnalyticsWasConnected.args = {
+	setupRegistry: ( registry ) => {
+		provideUserCapabilities( registry );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: true,
+		} );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+		registry.dispatch( CORE_SITE ).receiveGetWasAnalytics4Connected( true );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	},
 };
 
