@@ -486,7 +486,7 @@ final class Email_Log {
 	/**
 	 * Normalizes a single reference date value into a timestamp.
 	 *
-	 * @since 1.167.0
+	 * @since n.e.x.t
 	 *
 	 * @param mixed $raw_value Date value.
 	 * @return int|null Normalized timestamp or null when invalid.
