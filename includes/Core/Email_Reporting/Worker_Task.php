@@ -136,6 +136,8 @@ class Worker_Task {
 
 			$this->log_processor->process( $post_id, $frequency );
 		}
+
+		$this->should_abort( $initiator_timestamp );
 	}
 
 	/**
