@@ -328,8 +328,13 @@ class Email_Report_Data_Section_Part {
 	 * @throws InvalidArgumentException When validation fails.
 	 */
 	private function set_event_names( $event_names ) {
+		if ( null === $event_names ) {
+			$this->event_names = null;
+			return;
+		}
+
 		if ( ! is_array( $event_names ) ) {
-			throw new InvalidArgumentException( 'event_names must be an array' );
+			throw new InvalidArgumentException( 'event_names must be an array or null' );
 		}
 
 		$this->event_names = $event_names;
