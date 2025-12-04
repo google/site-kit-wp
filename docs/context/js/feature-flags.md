@@ -10,9 +10,11 @@ Feature flags are defined in `/feature-flags.json` at the project root:
 ```json
 [
   "adsPax",
-  "gtagUserData", 
+  "gtagUserData",
   "googleTagGateway",
-  "privacySandboxModule"
+  "privacySandboxModule",
+  "proactiveUserEngagement",
+  "setupFlowRefresh"
 ]
 ```
 

@@ -265,6 +265,104 @@ interface Module_With_Service_Entity {
 }
 ```
 
+#### Module_With_Inline_Data
+
+Provides inline data to be passed from the server to the client.
+
+**Location**: `includes/Core/Modules/Module_With_Inline_Data.php`
+
+**When to use**: When the module needs to pass server-side data to JavaScript, such as configuration or initial state.
+
+```php
+interface Module_With_Inline_Data {
+    /**
+     * Get inline data for the module.
+     *
+     * @return array Associative array of inline data.
+     */
+    public function get_inline_data();
+}
+```
+
+**Usage**:
+
+```php
+final class Analytics_4 extends Module implements Module_With_Inline_Data {
+    use Module_With_Inline_Data_Trait;
+
+    protected function setup_inline_data() {
+        return array(
+            'propertyID' => $this->get_settings()->get()['propertyID'],
+            'webDataStreamID' => $this->get_settings()->get()['webDataStreamID'],
+            'isGA4Connected' => true,
+        );
+    }
+}
+
+// Data is automatically made available to JavaScript via:
+// googlesitekit.modules['analytics-4'].propertyID
+```
+
+#### Provides_Feature_Metrics
+
+Indicates the module provides feature-level metrics.
+
+**Location**: `includes/Core/Modules/Provides_Feature_Metrics.php`
+
+**When to use**: When the module tracks and provides metrics for specific features (e.g., top cities, top content, user engagement).
+
+```php
+interface Provides_Feature_Metrics {
+    /**
+     * Get the feature metrics instance.
+     *
+     * @return Feature_Metrics
+     */
+    public function get_feature_metrics();
+}
+```
+
+**Usage**:
+
+```php
+final class Analytics_4 extends Module implements Provides_Feature_Metrics {
+    use Feature_Metrics_Trait;
+
+    protected function setup_feature_metrics() {
+        return new Feature_Metrics( $this );
+    }
+}
+```
+
+#### Module_With_Persistent_Registration
+
+Marks modules that need to remain registered even when not connected or active.
+
+**Location**: `includes/Core/Modules/Module_With_Persistent_Registration.php`
+
+**When to use**: When the module needs to register certain functionality (like REST endpoints or hooks) regardless of connection or activation status.
+
+```php
+interface Module_With_Persistent_Registration {
+    /**
+     * Register module functionality that persists.
+     */
+    public function register_persistent();
+}
+```
+
+**Usage**:
+
+```php
+final class Analytics extends Module implements Module_With_Persistent_Registration {
+    public function register_persistent() {
+        // Register migration endpoints that should be available
+        // even when the module is not fully connected
+        $this->get_migration_controller()->register();
+    }
+}
+```
+
 #### Module_With_Activation / Module_With_Deactivation
 
 Hooks for module lifecycle events.

@@ -55,13 +55,15 @@ public function __construct(
     ?Options $options = null,
     ?User_Options $user_options = null,
     ?Authentication $authentication = null,
-    ?Assets $assets = null
+    ?Assets $assets = null,
+    ?Transients $transients = null
 ) {
     $this->context        = $context;
     $this->options        = $options ?: new Options( $this->context );
     $this->user_options   = $user_options ?: new User_Options( $this->context );
     $this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
     $this->assets         = $assets ?: new Assets( $this->context );
+    $this->transients     = $transients ?: new Transients( $this->context );
 }
 ```
 
@@ -147,7 +149,55 @@ final class Authentication {
 }
 ```
 
-### Pattern 3: Service Dependencies
+### Pattern 3: Transients Dependency
+
+Classes that need to cache temporary data depend on `Transients`. This is a standard dependency for all Module classes.
+
+**Location**: `includes/Core/Modules/Module.php`
+
+```php
+abstract class Module {
+    protected $context;
+    protected $options;
+    protected $user_options;
+    protected $transients;
+
+    public function __construct(
+        Context $context,
+        ?Options $options = null,
+        ?User_Options $user_options = null,
+        ?Authentication $authentication = null,
+        ?Assets $assets = null,
+        ?Transients $transients = null
+    ) {
+        $this->context      = $context;
+        $this->options      = $options ?: new Options( $this->context );
+        $this->user_options = $user_options ?: new User_Options( $this->context );
+        $this->transients   = $transients ?: new Transients( $this->context );
+        // ...
+    }
+
+    protected function get_cached_data( $key, $callback ) {
+        // Check cache first
+        $cached = $this->transients->get( $key );
+        if ( false !== $cached ) {
+            return $cached;
+        }
+
+        // Fetch fresh data
+        $data = $callback();
+
+        // Cache for 1 hour
+        $this->transients->set( $key, $data, HOUR_IN_SECONDS );
+
+        return $data;
+    }
+}
+```
+
+**Note**: All Module classes automatically receive Transients as a dependency. This enables modules to cache API responses and temporary data consistently across the plugin.
+
+### Pattern 4: Service Dependencies
 
 Complex services depend on other services to build hierarchies.
 
@@ -193,7 +243,7 @@ final class Modules {
 }
 ```
 
-### Pattern 4: Lazy Initialization
+### Pattern 5: Lazy Initialization
 
 Some dependencies are created lazily when first needed, but still injected through the constructor.
 
@@ -255,7 +305,22 @@ Modules
     │   ├── Options
     │   ├── User_Options
     │   └── Transients
-    └── Assets
+    ├── Assets
+    │   └── Context
+    └── Transients
+        └── Context
+
+Module (base class)
+    ├── Context
+    ├── Options
+    │   └── Context
+    ├── User_Options
+    │   └── Context
+    ├── Authentication
+    │   └── (see above)
+    ├── Assets
+    │   └── Context
+    └── Transients
         └── Context
 ```
 
@@ -274,9 +339,11 @@ class Module_Test extends TestCase {
         $user_options   = $this->createMock( User_Options::class );
         $authentication = $this->createMock( Authentication::class );
         $assets         = $this->createMock( Assets::class );
+        $transients     = $this->createMock( Transients::class );
 
         // Configure mock behavior
         $context->method( 'is_network_mode' )->willReturn( false );
+        $transients->method( 'get' )->willReturn( false ); // No cached data
 
         // Inject mocks into the class under test
         $module = new Analytics_4(
@@ -284,7 +351,8 @@ class Module_Test extends TestCase {
             $options,
             $user_options,
             $authentication,
-            $assets
+            $assets,
+            $transients
         );
 
         // Test module behavior

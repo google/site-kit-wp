@@ -41,6 +41,33 @@ import { sanitizeHTML } from '../util';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 ```
 
+#### Path Aliases
+
+Site Kit uses the `@/js/` path alias for cleaner, more maintainable imports. This alias maps to `assets/js/` directory:
+
+```javascript
+/**
+ * Internal dependencies
+ */
+// Using path alias (preferred)
+import { useSelect } from '@/js/data';
+import DataBlock from '@/js/components/DataBlock';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+
+// Relative paths (avoid when possible)
+import DataBlock from '../../../components/DataBlock';
+```
+
+**Benefits of path aliases:**
+- Imports remain consistent regardless of file location
+- Easier to refactor and move files
+- More readable and maintainable code
+- Avoids complex relative path navigation (`../../../`)
+
+**When to use:**
+- Prefer path aliases for all cross-directory imports within `assets/js/`
+- Use relative paths only for files in the same directory or immediate subdirectories
+
 ## Component Structure
 
 ### Function Declaration
@@ -172,6 +199,119 @@ Badge.propTypes = {
 
 export default Badge;
 ```
+
+## TypeScript Components
+
+Site Kit is progressively migrating to TypeScript. TypeScript components follow similar conventions with type-safe patterns.
+
+### TypeScript Import Structure
+
+TypeScript components use the same import ordering but with additional type imports:
+
+```typescript
+/**
+ * External dependencies
+ */
+import type { FC } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { useSelect } from '@/js/data';
+import type { ComponentProps } from './types';
+```
+
+### Function Component with TypeScript
+
+Use the `FC` (Function Component) type with an interface for props:
+
+```typescript
+interface BadgeProps {
+    label: string;
+    className?: string;
+    hasLeftSpacing?: boolean;
+}
+
+const Badge: FC<BadgeProps> = ( {
+    label,
+    className = '',
+    hasLeftSpacing = false,
+} ) => {
+    return (
+        <span
+            className={ classnames( 'googlesitekit-badge', className, {
+                'googlesitekit-badge--has-left-spacing': hasLeftSpacing,
+            } ) }
+        >
+            { label }
+        </span>
+    );
+};
+
+export default Badge;
+```
+
+### TypeScript Type Patterns
+
+**Interface Definitions:**
+```typescript
+// Props interface
+interface ComponentProps {
+    title: string;
+    isActive?: boolean;
+    onSubmit?: ( data: FormData ) => void;
+}
+
+// Complex type definitions
+interface ReportData {
+    metrics: string[];
+    dimensions: string[];
+    dateRange: {
+        startDate: string;
+        endDate: string;
+    };
+}
+```
+
+**Generic Types:**
+```typescript
+// Component with generic type
+interface SelectProps<T> {
+    options: T[];
+    value: T;
+    onChange: ( value: T ) => void;
+}
+
+const Select = <T extends string | number>( {
+    options,
+    value,
+    onChange,
+}: SelectProps<T> ) => {
+    // implementation
+};
+```
+
+### TypeScript Best Practices
+
+1. **Define interfaces for all props** - Replace PropTypes with TypeScript interfaces
+2. **Use optional properties** with `?` for non-required props
+3. **Import types separately** using `import type` for type-only imports
+4. **Prefer interfaces over types** for object shapes
+5. **Use FC type** for function components: `const Component: FC<Props> = ...`
+6. **Co-locate type definitions** in a `types.ts` file when shared across components
+
+### Migration Notes
+
+When migrating from JavaScript to TypeScript:
+- File extension changes from `.js` to `.tsx` (for JSX) or `.ts`
+- Replace PropTypes with TypeScript interfaces
+- Add return type annotations where helpful
+- Ensure all dependencies have type definitions
 
 ## Key Guidelines
 
