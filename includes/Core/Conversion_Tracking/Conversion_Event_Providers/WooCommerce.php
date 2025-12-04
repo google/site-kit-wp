@@ -193,6 +193,12 @@ class WooCommerce extends Conversion_Events_Provider {
 		add_filter(
 			'woocommerce_loop_add_to_cart_link',
 			function ( $button, $product ) {
+				// If the product is not a valid WC_Product instance, return
+				// early.
+				if ( false === $product instanceof \WC_Product ) {
+					return $button;
+				}
+
 				$this->products[] = $this->get_formatted_product( $product );
 
 				return $button;
@@ -265,7 +271,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 *
 	 * @return array
 	 */
-	public function get_formatted_product( $product, $variation_id = 0, $variation = false, $quantity = false ) {
+	protected function get_formatted_product( WC_Product $product, $variation_id = 0, $variation = false, $quantity = false ) {
 		$product_id = $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id();
 		$price      = $product->get_price();
 
@@ -344,8 +350,16 @@ class WooCommerce extends Conversion_Events_Provider {
 			),
 			'items'       => array_map(
 				function ( $item ) {
+					// If the product is not a valid WC_Product instance, return
+					// early.
+					if ( $item->get_product() instanceof \WC_Product === false ) {
+						return $item;
+					}
+
+					$formatted_product = $this->get_formatted_product( $item->get_product() );
+
 					return array_merge(
-						$this->get_formatted_product( $item->get_product() ),
+						$formatted_product,
 						array(
 							'quantity'                    => $item->get_quantity(),
 							'price_after_coupon_discount' => $this->get_formatted_price( $item->get_total() ),
