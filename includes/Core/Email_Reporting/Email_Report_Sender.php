@@ -102,7 +102,11 @@ class Email_Report_Sender {
 
 		$rendered = $renderer->render( 'email-report', $template_data );
 
-		if ( is_wp_error( $rendered ) || '' === trim( $rendered ) ) {
+		if ( is_wp_error( $rendered ) ) {
+			return $rendered;
+		}
+
+		if ( '' === trim( $rendered ) ) {
 			return new WP_Error( 'email_report_render_failed', __( 'Unable to render email template.', 'google-site-kit' ) );
 		}
 
