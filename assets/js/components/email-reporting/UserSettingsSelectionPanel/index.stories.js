@@ -52,6 +52,11 @@ function Template( { viewContext } ) {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {};
+Default.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {} );
+	},
+};
 
 export const ViewOnly = Template.bind( {} );
 ViewOnly.storyName = 'View-only user';
