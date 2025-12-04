@@ -129,6 +129,15 @@ export default {
 				provideUserInfo( registry, {
 					wpEmail: 'someone@anybusiness.com',
 				} );
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetWasAnalytics4Connected( true );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetEmailReportingSettings( {
+						subscribed: true,
+					} );
 
 				registry
 					.dispatch( CORE_UI )
