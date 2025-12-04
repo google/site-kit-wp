@@ -180,6 +180,8 @@ class Email_Reporting {
 		$section_builder           = new Email_Report_Section_Builder( $this->context );
 		$template_formatter        = new Email_Template_Formatter( $this->context, $section_builder );
 		$template_renderer_factory = new Email_Template_Renderer_Factory( $this->context );
+		$report_sender             = new Email_Report_Sender( $template_renderer_factory, $email_sender );
+		$log_processor             = new Email_Log_Processor( $batch_query, $this->data_requests, $template_formatter, $report_sender );
 
 		$this->rest_controller   = new REST_Email_Reporting_Controller( $this->settings );
 		$this->email_log         = new Email_Log( $this->context );
@@ -189,10 +191,7 @@ class Email_Reporting {
 			$max_execution_limiter,
 			$batch_query,
 			$this->scheduler,
-			$this->data_requests,
-			$template_formatter,
-			$email_sender,
-			$template_renderer_factory
+			$log_processor
 		);
 		$this->fallback_task     = new Fallback_Task( $batch_query, $this->scheduler, $this->worker_task );
 		$this->monitor_task      = new Monitor_Task( $this->scheduler, $this->settings );
