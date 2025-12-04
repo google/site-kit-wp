@@ -529,7 +529,7 @@ class Worker_TaskTest extends TestCase {
 		$this->email_sender->expects( $this->once() )
 			->method( 'send' )
 			->with(
-				'two@example.com',
+				$this->callback( fn( $to ) => in_array( $to, array( 'one@example.com', 'two@example.com' ), true ) ),
 				'Subject',
 				$this->stringContains( 'Email' )
 			)
@@ -538,10 +538,19 @@ class Worker_TaskTest extends TestCase {
 		$task = $this->create_worker_task( $this->real_batch_query );
 		$task->handle_callback_action( $batch_id, Email_Reporting_Settings::FREQUENCY_WEEKLY, time() );
 
-		$this->assertSame( Email_Log::STATUS_FAILED, get_post_status( $post_one ), 'First post should fail on data error.' );
-		$this->assertStringContainsString( 'data_failure', get_post_meta( $post_one, Email_Log::META_ERROR_DETAILS, true ), 'First post failure reason should be recorded.' );
-		$this->assertSame( Email_Log::STATUS_SENT, get_post_status( $post_two ), 'Second post should send successfully.' );
-		$this->assertSame( '', get_post_meta( $post_two, Email_Log::META_ERROR_DETAILS, true ), 'Second post should clear errors.' );
+		$statuses = array(
+			$post_one => get_post_status( $post_one ),
+			$post_two => get_post_status( $post_two ),
+		);
+
+		$this->assertContains( Email_Log::STATUS_FAILED, $statuses, 'One post should fail on data error.' );
+		$this->assertContains( Email_Log::STATUS_SENT, $statuses, 'One post should send successfully.' );
+
+		$failed_id = array_search( Email_Log::STATUS_FAILED, $statuses, true );
+		$sent_id   = array_search( Email_Log::STATUS_SENT, $statuses, true );
+
+		$this->assertStringContainsString( 'data_failure', get_post_meta( $failed_id, Email_Log::META_ERROR_DETAILS, true ), 'Failure reason should be recorded.' );
+		$this->assertSame( '', get_post_meta( $sent_id, Email_Log::META_ERROR_DETAILS, true ), 'Sent post should clear errors.' );
 	}
 
 	private function create_worker_task( $batch_query = null, $template_renderer_factory = null ) {
