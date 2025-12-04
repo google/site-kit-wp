@@ -365,34 +365,31 @@ class Email_Report_Section_Builder {
 		$sections = array();
 
 		foreach ( $module_payload as $section_key => $section_data ) {
-			if ( is_object( $section_data ) ) {
-				$section_data = (array) $section_data;
+			// Allow a section payload to be a single report or an array of reports.
+			list( $reports ) = $this->normalize_analytics_section_input( $section_data );
+
+			foreach ( $reports as $report ) {
+				$processed_report = $this->report_processor->process_single_report( $report );
+
+				if ( empty( $processed_report ) ) {
+					continue;
+				}
+
+				$payload = $this->build_section_payload_from_processed_report( $processed_report, $section_key );
+
+				if ( empty( $payload ) ) {
+					continue;
+				}
+
+				if ( empty( $payload['section_key'] ) || 0 === strpos( $payload['section_key'], 'report_' ) ) {
+					$payload['section_key'] = $section_key;
+				}
+				if ( empty( $payload['title'] ) ) {
+					$payload['title'] = '';
+				}
+
+				$sections[] = $payload;
 			}
-
-			if ( ! is_array( $section_data ) ) {
-				continue;
-			}
-
-			$processed_report = $this->report_processor->process_single_report( $section_data );
-
-			if ( empty( $processed_report ) ) {
-				continue;
-			}
-
-			$payload = $this->build_section_payload_from_processed_report( $processed_report, $section_key );
-
-			if ( empty( $payload ) ) {
-				continue;
-			}
-
-			if ( empty( $payload['section_key'] ) || 0 === strpos( $payload['section_key'], 'report_' ) ) {
-				$payload['section_key'] = $section_key;
-			}
-			if ( empty( $payload['title'] ) ) {
-				$payload['title'] = '';
-			}
-
-			$sections[] = $payload;
 		}
 
 		return $sections;
