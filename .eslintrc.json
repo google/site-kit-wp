@@ -17,12 +17,27 @@
 		"import/no-unresolved": [
 			"error",
 			{
-				"ignore": [ "^@wordpress-core/?.*" ]
+				"ignore": [
+					"^@wordpress-core/?.*"
+				]
 			}
 		],
 		"jsdoc/check-tag-names": "error",
 		"jsdoc/check-types": "error",
-		"jsdoc/check-line-alignment": [ "error", "always" ],
+		"jsdoc/check-line-alignment": [
+			"error",
+			"always",
+			{
+				"preserveMainDescriptionPostDelimiter": true,
+				"tags": [
+					"param",
+					"arg",
+					"argument",
+					"prop",
+					"returns"
+				]
+			}
+		],
 		"jsdoc/require-description": "error",
 		"jsdoc/require-description-complete-sentence": "off",
 		"jsdoc/require-param": "error",
@@ -33,9 +48,14 @@
 		"jsdoc/require-returns-description": "error",
 		"jsdoc/require-returns-type": "error",
 		"jsdoc/require-returns": "error",
+		"jsdoc/require-yields": "off",
 		"jsdoc/no-undefined-types": "error",
+		"jsdoc/tag-lines": "off",
 		"jsdoc/valid-types": "error",
-		"lodash/import-scope": [ "error", "member" ],
+		"lodash/import-scope": [
+			"error",
+			"member"
+		],
 		"require-await": "error",
 		"react/function-component-definition": [
 			"error",
@@ -44,7 +64,10 @@
 				"unnamedComponents": "function-expression"
 			}
 		],
-		"react/jsx-boolean-value": [ "error", "never" ],
+		"react/jsx-boolean-value": [
+			"error",
+			"never"
+		],
 		"react/jsx-curly-brace-presence": "error",
 		"no-invalid-regexp": "error",
 		"no-useless-escape": "error",
@@ -56,13 +79,9 @@
 				"prefix": "@"
 			}
 		],
-		"complexity": [ "error", 15 ],
-		"no-restricted-globals": [
+		"complexity": [
 			"error",
-			{
-				"name": "window",
-				"message": "Use 'global' instead."
-			}
+			15
 		],
 		"no-use-before-define": [
 			"error",
@@ -72,7 +91,10 @@
 				"variables": false
 			}
 		],
-		"react/jsx-fragments": [ "error", "element" ],
+		"react/jsx-fragments": [
+			"error",
+			"element"
+		],
 		"valid-jsdoc": [
 			"error",
 			{
@@ -92,7 +114,10 @@
 				"avoidEscape": true
 			}
 		],
-		"curly": [ "error", "all" ],
+		"curly": [
+			"error",
+			"all"
+		],
 		"prettier/prettier": [
 			"error",
 			{},
@@ -114,19 +139,55 @@
 			"@wordpress/i18n__non-shim",
 			"@wordpress/api-fetch__non-shim"
 		],
+		"import/parsers": {
+			"@typescript-eslint/parser": [
+				".ts",
+				".tsx"
+			]
+		},
 		"import/resolver": {
 			"alias": {
 				"map": [
-					[ "@/(.*\\.svg)\\?url", "assets/" ],
-					[ "@/(.*)", "assets/" ],
-					[ "@wordpress-core", "@wordpress" ]
+					[
+						"@/(.*\\.svg)\\?url",
+						"assets/"
+					],
+					[
+						"@/(.*)",
+						"assets/"
+					],
+					[
+						"@wordpress-core",
+						"@wordpress"
+					]
 				]
+			},
+			"node": {
+				"extensions": [
+					".js",
+					".jsx",
+					".ts",
+					".tsx"
+				]
+			},
+			"typescript": {
+				"alwaysTryTypes": true
 			}
 		}
 	},
 	"overrides": [
 		{
-			"files": [ "tests/e2e/**/*.js" ],
+			"files": [
+				"**/*.ts",
+				"**/*.tsx"
+			],
+			"extends": [
+				"plugin:@typescript-eslint/recommended"
+			],
+			"parser": "@typescript-eslint/parser",
+			"parserOptions": {
+				"ecmaVersion": 2024
+			},
 			"env": {
 				"browser": true
 			},
@@ -135,7 +196,31 @@
 				"page": true
 			},
 			"rules": {
-				"no-restricted-globals": [ "off" ],
+				"@typescript-eslint/ban-ts-comment": "off",
+				"jsdoc/require-param-type": "off",
+				"jsdoc/require-returns-type": "off",
+				"react/function-component-definition": "off",
+				"valid-jsdoc": [
+					"error",
+					{
+						"requireParamType": false,
+						"requireReturnType": false
+					}
+				]
+			}
+		},
+		{
+			"files": [
+				"tests/e2e/**/*.js"
+			],
+			"env": {
+				"browser": true
+			},
+			"globals": {
+				"browser": true,
+				"page": true
+			},
+			"rules": {
 				"react-hooks/rules-of-hooks": "off"
 			}
 		},
@@ -158,7 +243,9 @@
 				"assets/js/components/legacy*/**/*.js"
 			],
 			"rules": {
-				"filenames/match-exported": [ "off" ]
+				"filenames/match-exported": [
+					"off"
+				]
 			}
 		},
 		{

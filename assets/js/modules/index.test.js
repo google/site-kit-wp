@@ -39,7 +39,7 @@ function getComponentNames( componentPath ) {
 		.readdirSync( componentPath )
 		.filter(
 			( name ) =>
-				! /^index|utils|__snapshots__|\.(stories|test)\.js$/.test(
+				! /^index|utils|__snapshots__|\.(stories|test)\.(js|ts|jsx|tsx)$/.test(
 					name
 				)
 		)
