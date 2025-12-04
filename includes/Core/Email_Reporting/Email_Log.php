@@ -468,16 +468,23 @@ final class Email_Log {
 
 		foreach ( $keys as $key ) {
 			if ( ! isset( $raw_dates[ $key ] ) ) {
+				if ( 'compareStartDate' === $key || 'compareEndDate' === $key ) {
+					$normalized[ $key ] = 0;
+				}
 				continue;
 			}
 
 			$timestamp = self::normalize_reference_date_value( $raw_dates[ $key ] );
 
 			if ( null === $timestamp ) {
+				if ( 'compareStartDate' === $key || 'compareEndDate' === $key ) {
+					$normalized[ $key ] = 0;
+				}
 				continue;
 			}
 
-			$normalized[ $key ] = $timestamp;
+			// Store as integer timestamp.
+			$normalized[ $key ] = (int) $timestamp;
 		}
 
 		return $normalized;
