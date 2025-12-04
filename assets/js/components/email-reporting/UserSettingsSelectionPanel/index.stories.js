@@ -75,10 +75,9 @@ Subscribed.args = {
 };
 
 export const AnalyticsWasConnected = Template.bind( {} );
-AnalyticsWasConnected.storyName = 'Analytics was connected';
+AnalyticsWasConnected.storyName = 'Analytics was connected notice';
 AnalyticsWasConnected.args = {
 	setupRegistry: ( registry ) => {
-		provideUserCapabilities( registry );
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
@@ -92,8 +91,29 @@ AnalyticsWasConnected.args = {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: true,
 		} );
-		registry.dispatch( CORE_SITE ).receiveGetWasAnalytics4Connected( true );
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+	},
+};
+
+export const AnalyticsWasNeverConnected = Template.bind( {} );
+AnalyticsWasNeverConnected.storyName = 'Analytics was never connected notice';
+AnalyticsWasNeverConnected.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: true,
+		} );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetWasAnalytics4Connected( false );
 	},
 };
 
@@ -104,6 +124,7 @@ export default {
 		( Story, { args } ) => {
 			function setupRegistry( registry ) {
 				provideUserAuthentication( registry );
+				provideUserCapabilities( registry );
 				provideSiteInfo( registry );
 				provideUserInfo( registry, {
 					wpEmail: 'someone@anybusiness.com',
