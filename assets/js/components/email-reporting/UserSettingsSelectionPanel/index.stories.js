@@ -132,6 +132,21 @@ EmailReportingDisabled.args = {
 	},
 };
 
+export const EmailReportingDisabledViewOnly = Template.bind( {} );
+EmailReportingDisabledViewOnly.storyName =
+	'Email reporting disabled view-only user';
+EmailReportingDisabledViewOnly.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: false,
+		} );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetWasAnalytics4Connected( false );
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+
 export default {
 	title: 'EmailReporting/UserSettingsSelectionPanel',
 	component: UserSettingsSelectionPanel,
