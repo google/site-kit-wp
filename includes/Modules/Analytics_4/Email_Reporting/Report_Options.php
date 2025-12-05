@@ -268,6 +268,7 @@ class Report_Options extends Base_Report_Options {
 					array( 'name' => 'screenPageViews' ),
 				),
 				'dimensions'    => array(
+					array( 'name' => 'pageTitle' ),
 					array( 'name' => 'pagePath' ),
 				),
 				'orderby'       => array(

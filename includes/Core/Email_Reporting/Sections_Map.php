@@ -61,13 +61,19 @@ class Sections_Map {
 	 * @return array Array of sections with their configuration.
 	 */
 	public function get_sections() {
-		return array_merge(
-			$this->get_business_growth_section(),
+		$sections = array_merge(
 			$this->get_visitors_section(),
 			$this->get_traffic_sources_section(),
 			$this->get_attention_section(),
 			$this->get_growth_drivers_section()
 		);
+
+		$business_growth = $this->get_business_growth_section();
+		if ( ! empty( $business_growth ) ) {
+			$sections = array_merge( $business_growth, $sections );
+		}
+
+		return $sections;
 	}
 
 	/**
@@ -78,6 +84,12 @@ class Sections_Map {
 	 * @return array Section configuration array.
 	 */
 	protected function get_business_growth_section() {
+		// If no conversion data is present in payload it means user do not have conversion tracking set up
+		// or no data is received yet and we can skip this section.
+		if ( empty( $this->payload['total_conversion_events'] ) || ! isset( $this->payload['total_conversion_events'] ) ) {
+			return null;
+		}
+
 		return array(
 			'is_my_site_helping_my_business_grow' => array(
 				'title'            => esc_html__( 'Is my site helping my business grow?', 'google-site-kit' ),
@@ -89,12 +101,10 @@ class Sections_Map {
 						'data' => $this->payload['total_conversion_events'] ?? array(),
 					),
 					'products_added_to_cart'  => array(
-						'data'                => $this->payload['products_added_to_cart'] ?? array(),
-						'top_traffic_channel' => $this->payload['products_added_to_cart_top_traffic_channel'] ?? '',
+						'data' => $this->payload['products_added_to_cart'] ?? array(),
 					),
 					'purchases'               => array(
-						'data'                => $this->payload['purchases'] ?? array(),
-						'top_traffic_channel' => $this->payload['purchases_top_traffic_channel'] ?? '',
+						'data' => $this->payload['purchases'] ?? array(),
 					),
 				),
 			),
@@ -116,23 +126,23 @@ class Sections_Map {
 				'section_template' => 'section-metrics',
 				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
 				'section_parts'    => array(
-					'total_visitors'              => array(
+					'total_visitors'     => array(
 						'data' => $this->payload['total_visitors'] ?? array(),
 					),
-					'new_visitors'                => array(
+					'new_visitors'       => array(
 						'data' => $this->payload['new_visitors'] ?? array(),
 					),
-					'returning_visitors'          => array(
+					'returning_visitors' => array(
 						'data' => $this->payload['returning_visitors'] ?? array(),
 					),
-					'subscribers'                 => array(
+					'subscribers'        => array(
 						'data' => $this->payload['subscribers'] ?? array(),
 					),
-					'total_impressions_on_search' => array(
-						'data' => $this->payload['total_impressions_on_search'] ?? array(),
+					'total_impressions'  => array(
+						'data' => $this->payload['total_impressions'] ?? array(),
 					),
-					'total_clicks_from_search'    => array(
-						'data' => $this->payload['total_clicks_from_search'] ?? array(),
+					'total_clicks'       => array(
+						'data' => $this->payload['total_clicks'] ?? array(),
 					),
 				),
 			),
@@ -154,11 +164,11 @@ class Sections_Map {
 				'section_template' => 'section-page-metrics',
 				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
 				'section_parts'    => array(
-					'traffic_channels_by_visitor_count'   => array(
-						'data' => $this->payload['traffic_channels_by_visitor_count'] ?? array(),
+					'traffic_channels' => array(
+						'data' => $this->payload['traffic_channels'] ?? array(),
 					),
-					'keywords_with_highest_ctr_in_search' => array(
-						'data' => $this->payload['keywords_with_highest_ctr_in_search'] ?? array(),
+					'top_ctr_keywords' => array(
+						'data' => $this->payload['top_ctr_keywords'] ?? array(),
 					),
 				),
 			),
@@ -180,16 +190,16 @@ class Sections_Map {
 				'section_template' => 'section-page-metrics',
 				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
 				'section_parts'    => array(
-					'pages_with_the_most_pageviews' => array(
-						'data' => $this->payload['pages_with_the_most_pageviews'] ?? array(),
+					'popular_content'             => array(
+						'data' => $this->payload['popular_content'] ?? array(),
 					),
-					'pages_with_the_most_clicks_from_search' => array(
-						'data' => $this->payload['pages_with_the_most_clicks_from_search'] ?? array(),
+					'top_pages_by_clicks'         => array(
+						'data' => $this->payload['top_pages_by_clicks'] ?? array(),
 					),
-					'top_authors_by_pageviews'      => array(
+					'top_authors_by_pageviews'    => array(
 						'data' => $this->payload['top_authors_by_pageviews'] ?? array(),
 					),
-					'top_categories_by_pageviews'   => array(
+					'top_categories_by_pageviews' => array(
 						'data' => $this->payload['top_categories_by_pageviews'] ?? array(),
 					),
 				),
