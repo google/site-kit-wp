@@ -119,6 +119,19 @@ AnalyticsWasNeverConnected.args = {
 	},
 };
 
+export const EmailReportingDisabled = Template.bind( {} );
+EmailReportingDisabled.storyName = 'Email reporting disabled';
+EmailReportingDisabled.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: false,
+		} );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetWasAnalytics4Connected( false );
+	},
+};
+
 export default {
 	title: 'EmailReporting/UserSettingsSelectionPanel',
 	component: UserSettingsSelectionPanel,
