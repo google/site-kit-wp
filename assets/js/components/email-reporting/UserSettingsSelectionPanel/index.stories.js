@@ -170,7 +170,7 @@ EmailReportingDisabledViewOnly.args = {
 };
 
 export default {
-	title: 'EmailReporting/UserSettingsSelectionPanel',
+	title: 'Components/EmailReporting/UserSettingsSelectionPanel',
 	component: UserSettingsSelectionPanel,
 	decorators: [
 		( Story, { args } ) => {
