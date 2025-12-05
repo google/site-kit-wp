@@ -138,6 +138,13 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			function setupRegistry( registry ) {
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+				] );
 				provideUserAuthentication( registry );
 				provideUserCapabilities( registry );
 				provideSiteInfo( registry );
