@@ -474,11 +474,15 @@ class Email_Report_Section_Builder {
 		if ( $this->is_sequential_array( $section_data ) ) {
 			$rows = array();
 			foreach ( $section_data as $row ) {
+				if ( is_object( $row ) ) {
+					$row = (array) $row;
+				}
+
 				if ( is_array( $row ) ) {
 					$rows[] = $row;
 				}
 			}
-			return $rows;
+			return ! empty( $rows ) ? $rows : $section_data;
 		}
 
 		return array( $section_data );
@@ -514,38 +518,30 @@ class Email_Report_Section_Builder {
 			return array();
 		}
 
-		$metrics          = $processed_report['metadata']['metrics'];
-		$dimensions       = isset( $processed_report['metadata']['dimensions'] ) && is_array( $processed_report['metadata']['dimensions'] ) ? $processed_report['metadata']['dimensions'] : array();
-		$labels           = array();
-		$value_types      = array();
-		$metric_names     = array();
-		$dimension_values = array();
+		return $this->build_analytics_section_payload( $processed_report, $section_key );
+	}
 
-		if ( ! empty( $dimensions ) && ! empty( $processed_report['rows'] ) && is_array( $processed_report['rows'] ) ) {
-			foreach ( $dimensions as $dimension_key ) {
-				$found_value = '';
+	/**
+	 * Builds analytics section payload, extracting dimensions, metrics, and trends.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $processed_report Processed report data.
+	 * @param string $section_key      Section key.
+	 * @return array Section payload.
+	 */
+	protected function build_analytics_section_payload( $processed_report, $section_key ) {
+		$dimensions                                  = $this->get_analytics_dimensions( $processed_report );
+		list( $labels, $value_types, $metric_names ) = $this->get_metric_metadata( $processed_report['metadata']['metrics'] );
 
-				foreach ( $processed_report['rows'] as $row ) {
-					if ( isset( $row['dimensions'][ $dimension_key ] ) && '' !== $row['dimensions'][ $dimension_key ] ) {
-						$found_value = $row['dimensions'][ $dimension_key ];
-						break;
-					}
-				}
-
-				if ( '' !== $found_value ) {
-					$dimension_values[] = $found_value;
-				}
-			}
-		}
-
-		foreach ( $metrics as $metric_meta ) {
-			$metric_name    = $metric_meta['name'];
-			$metric_names[] = $metric_name;
-			$labels[]       = $metric_meta['name'];
-			$value_types[]  = $metric_meta['type'] ?? 'TYPE_STANDARD';
-		}
+		list( $dimension_values, $dimension_metrics ) = $this->aggregate_dimension_metrics(
+			$dimensions,
+			$processed_report['rows'] ?? array(),
+			$metric_names
+		);
 
 		list( $values, $trends ) = $this->report_processor->compute_metric_values_and_trends( $processed_report, $metric_names );
+		list( $values, $trends ) = $this->apply_dimension_aggregates( $values, $trends, $dimension_values, $dimension_metrics, $metric_names );
 
 		return array(
 			'section_key'      => $section_key,
@@ -560,6 +556,148 @@ class Email_Report_Section_Builder {
 			'dimension_values' => $dimension_values,
 			'date_range'       => null,
 		);
+	}
+
+	/**
+	 * Returns analytics dimensions excluding helper values.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $processed_report Processed report data.
+	 * @return array Dimensions.
+	 */
+	protected function get_analytics_dimensions( $processed_report ) {
+		$dimensions = isset( $processed_report['metadata']['dimensions'] ) && is_array( $processed_report['metadata']['dimensions'] ) ? $processed_report['metadata']['dimensions'] : array();
+
+		return array_values(
+			array_filter(
+				$dimensions,
+				static function ( $dimension ) {
+					return 'dateRange' !== $dimension;
+				}
+			)
+		);
+	}
+
+	/**
+	 * Builds metric labels, types, and names from metric metadata.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $metrics Metric metadata.
+	 * @return array Array with labels, value types, and metric names.
+	 */
+	protected function get_metric_metadata( $metrics ) {
+		$labels       = array();
+		$value_types  = array();
+		$metric_names = array();
+
+		foreach ( $metrics as $metric_meta ) {
+			$metric_name    = $metric_meta['name'];
+			$metric_names[] = $metric_name;
+			$labels[]       = $metric_meta['name'];
+			$value_types[]  = $metric_meta['type'] ?? 'TYPE_STANDARD';
+		}
+
+		return array( $labels, $value_types, $metric_names );
+	}
+
+	/**
+	 * Aggregates metric values per primary dimension and date range.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $dimensions      Dimensions list.
+	 * @param array $rows            Report rows.
+	 * @param array $metric_names    Metric names.
+	 * @return array Tuple of dimension values and aggregated metrics.
+	 */
+	protected function aggregate_dimension_metrics( $dimensions, $rows, $metric_names ) {
+		$dimension_values  = array();
+		$dimension_metrics = array();
+
+		if ( empty( $dimensions ) || empty( $rows ) || empty( $metric_names ) || ! is_array( $rows ) ) {
+			return array( $dimension_values, $dimension_metrics );
+		}
+
+		$primary_dimension = $dimensions[0];
+
+		foreach ( $rows as $row ) {
+			if ( ! isset( $row['dimensions'][ $primary_dimension ] ) ) {
+				continue;
+			}
+
+			$dimension_value = $row['dimensions'][ $primary_dimension ];
+			if ( '' === $dimension_value ) {
+				continue;
+			}
+
+			$dimension_values[ $dimension_value ] = isset( $dimensions[1], $row['dimensions'][ $dimensions[1] ] )
+				? array(
+					'label' => $dimension_value,
+					'url'   => $row['dimensions'][ $dimensions[1] ],
+				)
+				: $dimension_value;
+
+			foreach ( $metric_names as $metric_name ) {
+				if ( ! isset( $row['metrics'][ $metric_name ] ) ) {
+					continue;
+				}
+
+				$metric_value = $row['metrics'][ $metric_name ];
+				if ( ! is_numeric( $metric_value ) ) {
+					continue;
+				}
+
+				$date_range_key = $row['dimensions']['dateRange'] ?? 'date_range_0';
+				if ( ! isset( $dimension_metrics[ $dimension_value ][ $metric_name ][ $date_range_key ] ) ) {
+					$dimension_metrics[ $dimension_value ][ $metric_name ][ $date_range_key ] = 0;
+				}
+
+				$dimension_metrics[ $dimension_value ][ $metric_name ][ $date_range_key ] += floatval( $metric_value );
+			}
+		}
+
+		return array( array_values( $dimension_values ), $dimension_metrics );
+	}
+
+	/**
+	 * Applies per-dimension aggregates to values and trends when available.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $values            Base values.
+	 * @param array $trends            Base trends.
+	 * @param array $dimension_values  Dimension values.
+	 * @param array $dimension_metrics Aggregated dimension metrics.
+	 * @param array $metric_names      Metric names.
+	 * @return array Tuple of values and trends.
+	 */
+	protected function apply_dimension_aggregates( $values, $trends, $dimension_values, $dimension_metrics, $metric_names ) {
+		if ( empty( $dimension_metrics ) || empty( $metric_names ) ) {
+			return array( $values, $trends );
+		}
+
+		$values      = array();
+		$trends      = array();
+		$metric_name = $metric_names[0];
+
+		foreach ( $dimension_values as $dimension_value_entry ) {
+			$dimension_value = is_array( $dimension_value_entry ) ? ( $dimension_value_entry['label'] ?? '' ) : $dimension_value_entry;
+
+			$current    = $dimension_metrics[ $dimension_value ][ $metric_name ]['date_range_0'] ?? null;
+			$comparison = $dimension_metrics[ $dimension_value ][ $metric_name ]['date_range_1'] ?? null;
+
+			$values[] = null === $current ? null : $current;
+
+			if ( null === $comparison || 0 === $comparison ) {
+				$trends[] = null;
+			} else {
+				$trends[] = ( (float) $current - (float) $comparison ) / (float) $comparison * 100;
+			}
+		}
+
+		return array( $values, $trends );
 	}
 
 	/**
@@ -590,11 +728,22 @@ class Email_Report_Section_Builder {
 				$title = trim( $row['title'] );
 			}
 
+			$preferred_key = null;
+			if ( 'total_impressions' === $section_key ) {
+				$preferred_key = 'impressions';
+			} elseif ( 'total_clicks' === $section_key ) {
+				$preferred_key = 'clicks';
+			}
+
 			foreach ( $row as $key => $value ) {
 				if ( ! is_string( $key ) || '' === $key ) {
 					continue;
 				}
 				if ( 'title' === $key ) {
+					continue;
+				}
+
+				if ( null !== $preferred_key && $preferred_key !== $key ) {
 					continue;
 				}
 
@@ -610,11 +759,12 @@ class Email_Report_Section_Builder {
 					continue;
 				}
 				if ( array_key_exists( $key, $values_by_key ) ) {
+					$values_by_key[ $key ] += (float) $raw_value;
 					continue;
 				}
 
 				$labels[]              = $key;
-				$values_by_key[ $key ] = $raw_value;
+				$values_by_key[ $key ] = (float) $raw_value;
 				$value_types[]         = 'TYPE_STANDARD';
 			}
 		}
@@ -623,19 +773,18 @@ class Email_Report_Section_Builder {
 			return null;
 		}
 
-		$values = array();
-		foreach ( $labels as $key ) {
-			$values[] = (string) $values_by_key[ $key ];
-		}
-
 		return array(
-			'section_key' => $section_key,
-			'title'       => $title,
-			'labels'      => $labels,
-			'values'      => $values,
-			'value_types' => $value_types,
-			'trends'      => null,
-			'date_range'  => null,
+			'section_key'      => $section_key,
+			'title'            => $title,
+			'labels'           => $labels,
+			'event_names'      => $labels,
+			'values'           => array_values( $values_by_key ),
+			'value_types'      => $value_types,
+			'trends'           => null,
+			'trend_types'      => $value_types,
+			'dimensions'       => array(),
+			'dimension_values' => array(),
+			'date_range'       => null,
 		);
 	}
 }
