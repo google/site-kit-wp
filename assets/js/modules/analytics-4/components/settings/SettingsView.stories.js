@@ -138,9 +138,12 @@ export default {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: args.googleTagGateway || false,
-						isGTGHealthy: args.googleTagGateway || false,
-						isScriptAccessEnabled: args.googleTagGateway || false,
 					} );
+
+				registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+					isUpstreamHealthy: args.googleTagGateway || false,
+					isMpathHealthy: args.googleTagGateway || false,
+				} );
 			}
 
 			return (

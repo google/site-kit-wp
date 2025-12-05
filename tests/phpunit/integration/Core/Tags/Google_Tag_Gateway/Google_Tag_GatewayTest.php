@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Health;
 use Google\Site_Kit\Tests\TestCase;
 
 class Google_Tag_GatewayTest extends TestCase {
@@ -33,6 +34,13 @@ class Google_Tag_GatewayTest extends TestCase {
 	private $settings;
 
 	/**
+	 * Google_Tag_Gateway_Health instance.
+	 *
+	 * @var Google_Tag_Gateway_Health
+	 */
+	private $health;
+
+	/**
 	 * Google_Tag_Gateway instance.
 	 *
 	 * @var Google_Tag_Gateway
@@ -46,6 +54,7 @@ class Google_Tag_GatewayTest extends TestCase {
 		$options                  = new Options( $this->context );
 		$this->google_tag_gateway = new Google_Tag_Gateway( $this->context );
 		$this->settings           = new Google_Tag_Gateway_Settings( $options );
+		$this->health             = new Google_Tag_Gateway_Health( $options );
 	}
 
 	public function test_register__feature_metrics() {
@@ -62,11 +71,13 @@ class Google_Tag_GatewayTest extends TestCase {
 	 * @dataProvider data_feature_metrics_settings
 	 *
 	 * @param array $settings               Settings to set.
+	 * @param array $health                 Health data to set.
 	 * @param array $expected_feature_metrics Expected feature metrics.
 	 * @param string $message                Message for the assertion.
 	 */
-	public function test_get_feature_metrics( $settings, $expected_feature_metrics, $message ) {
+	public function test_get_feature_metrics( $settings, $health, $expected_feature_metrics, $message ) {
 		$this->settings->set( $settings );
+		$this->health->set( $health );
 		$feature_metrics = $this->google_tag_gateway->get_feature_metrics();
 		$this->assertEquals( $expected_feature_metrics, $feature_metrics, $message );
 	}
@@ -74,7 +85,8 @@ class Google_Tag_GatewayTest extends TestCase {
 	public function data_feature_metrics_settings() {
 		return array(
 			'disabled'                                     => array(
-				array(),
+				array(), // settings
+				array(), // health
 				array(
 					'gtg_enabled' => false,
 					'gtg_healthy' => '',
@@ -83,9 +95,11 @@ class Google_Tag_GatewayTest extends TestCase {
 			),
 			'disabled but healthy and accessible'          => array(
 				array(
-					'isEnabled'             => false,
-					'isGTGHealthy'          => true,
-					'isScriptAccessEnabled' => true,
+					'isEnabled' => false,
+				),
+				array(
+					'isUpstreamHealthy' => true,
+					'isMpathHealthy'    => true,
 				),
 				array(
 					'gtg_enabled' => false,
@@ -95,9 +109,11 @@ class Google_Tag_GatewayTest extends TestCase {
 			),
 			'enabled, healthy but not accessible'          => array(
 				array(
-					'isEnabled'             => true,
-					'isGTGHealthy'          => true,
-					'isScriptAccessEnabled' => false,
+					'isEnabled' => true,
+				),
+				array(
+					'isUpstreamHealthy' => true,
+					'isMpathHealthy'    => false,
 				),
 				array(
 					'gtg_enabled' => true,
@@ -107,9 +123,11 @@ class Google_Tag_GatewayTest extends TestCase {
 			),
 			'enabled, not healthy and not accessible'      => array(
 				array(
-					'isEnabled'             => true,
-					'isGTGHealthy'          => false,
-					'isScriptAccessEnabled' => false,
+					'isEnabled' => true,
+				),
+				array(
+					'isUpstreamHealthy' => false,
+					'isMpathHealthy'    => false,
 				),
 				array(
 					'gtg_enabled' => true,
@@ -121,6 +139,7 @@ class Google_Tag_GatewayTest extends TestCase {
 				array(
 					'isEnabled' => true,
 				),
+				array(), // no health data
 				array(
 					'gtg_enabled' => true,
 					'gtg_healthy' => 'no',
@@ -129,9 +148,11 @@ class Google_Tag_GatewayTest extends TestCase {
 			),
 			'enabled, healthy and accessible'              => array(
 				array(
-					'isEnabled'             => true,
-					'isGTGHealthy'          => true,
-					'isScriptAccessEnabled' => true,
+					'isEnabled' => true,
+				),
+				array(
+					'isUpstreamHealthy' => true,
+					'isMpathHealthy'    => true,
 				),
 				array(
 					'gtg_enabled' => true,

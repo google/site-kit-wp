@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Core\Tags;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Health;
 use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -100,6 +101,9 @@ class GTagTest extends TestCase {
 		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
 		$google_tag_gateway_settings->set( $data['settings'] );
 
+		$google_tag_gateway_health = new Google_Tag_Gateway_Health( $this->options );
+		$google_tag_gateway_health->set( $data['health'] );
+
 		do_action( 'wp_enqueue_scripts' );
 		$registered_srcs = wp_list_pluck( wp_scripts()->registered, 'src' );
 
@@ -110,52 +114,62 @@ class GTagTest extends TestCase {
 		$googletagmanager_url = 'https://www.googletagmanager.com/gtag/js?id=' . static::TEST_TAG_ID_1;
 
 		return array(
-			'all settings enabled'        => array(
+			'all settings enabled'    => array(
 				array(
 					'settings'     => array(
-						'isEnabled'             => true,
-						'isGTGHealthy'          => true,
-						'isScriptAccessEnabled' => true,
+						'isEnabled' => true,
+					),
+					'health'       => array(
+						'isUpstreamHealthy' => true,
+						'isMpathHealthy'    => true,
 					),
 					'expected_src' => plugins_url( 'gtg/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?id=' . static::TEST_TAG_ID_1,
 				),
 			),
-			'isEnabled false'             => array(
+			'isEnabled false'         => array(
 				array(
 					'settings'     => array(
-						'isEnabled'             => false,
-						'isGTGHealthy'          => true,
-						'isScriptAccessEnabled' => true,
+						'isEnabled' => false,
+					),
+					'health'       => array(
+						'isUpstreamHealthy' => true,
+						'isMpathHealthy'    => true,
 					),
 					'expected_src' => $googletagmanager_url,
 				),
 			),
-			'isGTGHealthy false'          => array(
+			'isUpstreamHealthy false' => array(
 				array(
 					'settings'     => array(
-						'isEnabled'             => true,
-						'isGTGHealthy'          => false,
-						'isScriptAccessEnabled' => true,
+						'isEnabled' => true,
+					),
+					'health'       => array(
+						'isUpstreamHealthy' => false,
+						'isMpathHealthy'    => true,
 					),
 					'expected_src' => $googletagmanager_url,
 				),
 			),
-			'isScriptAccessEnabled false' => array(
+			'isMpathHealthy false'    => array(
 				array(
 					'settings'     => array(
-						'isEnabled'             => true,
-						'isGTGHealthy'          => true,
-						'isScriptAccessEnabled' => false,
+						'isEnabled' => true,
+					),
+					'health'       => array(
+						'isUpstreamHealthy' => true,
+						'isMpathHealthy'    => false,
 					),
 					'expected_src' => $googletagmanager_url,
 				),
 			),
-			'all settings disabled'       => array(
+			'all settings disabled'   => array(
 				array(
 					'settings'     => array(
-						'isEnabled'             => false,
-						'isGTGHealthy'          => false,
-						'isScriptAccessEnabled' => false,
+						'isEnabled' => false,
+					),
+					'health'       => array(
+						'isUpstreamHealthy' => false,
+						'isMpathHealthy'    => false,
 					),
 					'expected_src' => $googletagmanager_url,
 				),
@@ -215,6 +229,9 @@ class GTagTest extends TestCase {
 		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
 		$google_tag_gateway_settings->set( $data['settings'] );
 
+		$google_tag_gateway_health = new Google_Tag_Gateway_Health( $this->options );
+		$google_tag_gateway_health->set( $data['health'] );
+
 		do_action( 'wp_enqueue_scripts' );
 
 		$scripts = wp_scripts();
@@ -222,7 +239,7 @@ class GTagTest extends TestCase {
 
 		$this->assertEquals( 'gtag("set", "developer_id.dZTNiMT", true);', $script->extra['after'][4], 'Inline script should include developer id always.' );
 
-		if ( $data['settings']['isEnabled'] && $data['settings']['isGTGHealthy'] && $data['settings']['isScriptAccessEnabled'] ) {
+		if ( $data['settings']['isEnabled'] && $data['health']['isUpstreamHealthy'] && $data['health']['isMpathHealthy'] ) {
 			$this->assertEquals( 'gtag("set", "developer_id.dZmZmYj", true);', $script->extra['after'][5], 'Inline script should include GTG developer id when conditions are met.' );
 		} else {
 			$this->assertNotContains( 'gtag("set", "developer_id.dZmZmYj", true);', $script->extra['after'], 'Inline script should not include GTG developer id when conditions are not met.' );
@@ -237,11 +254,17 @@ class GTagTest extends TestCase {
 
 	public function test_hat_script_presence_in_wp_head__with_gtg() {
 		$this->enable_feature( 'googleTagGateway' );
-		( new Google_Tag_Gateway_Settings( $this->options ) )->set(
+		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
+		$google_tag_gateway_settings->set(
 			array(
-				'isEnabled'             => true,
-				'isGTGHealthy'          => true,
-				'isScriptAccessEnabled' => true,
+				'isEnabled' => true,
+			)
+		);
+		$google_tag_gateway_health = new Google_Tag_Gateway_Health( $this->options );
+		$google_tag_gateway_health->set(
+			array(
+				'isUpstreamHealthy' => true,
+				'isMpathHealthy'    => true,
 			)
 		);
 
@@ -252,11 +275,17 @@ class GTagTest extends TestCase {
 
 	public function test_gtg_enqueues_script_per_tag() {
 		$this->enable_feature( 'googleTagGateway' );
-		( new Google_Tag_Gateway_Settings( $this->options ) )->set(
+		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
+		$google_tag_gateway_settings->set(
 			array(
-				'isEnabled'             => true,
-				'isGTGHealthy'          => true,
-				'isScriptAccessEnabled' => true,
+				'isEnabled' => true,
+			)
+		);
+		$google_tag_gateway_health = new Google_Tag_Gateway_Health( $this->options );
+		$google_tag_gateway_health->set(
+			array(
+				'isUpstreamHealthy' => true,
+				'isMpathHealthy'    => true,
 			)
 		);
 		remove_all_filters( 'googlesitekit_setup_gtag' );

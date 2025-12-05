@@ -43,6 +43,10 @@ describe( 'core/site Google tag gateway', () => {
 		'^/google-site-kit/v1/core/site/data/gtg-settings'
 	);
 
+	const googleTagGatewayHealthEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/site/data/gtg-health'
+	);
+
 	beforeAll( () => {
 		setUsingCache( false );
 	} );
@@ -70,8 +74,6 @@ describe( 'core/site Google tag gateway', () => {
 
 				const updatedSettings = {
 					isEnabled: true,
-					isGTGHealthy: false,
-					isScriptAccessEnabled: false,
 				};
 
 				fetchMock.postOnce( googleTagGatewaySettingsEndpointRegExp, {
@@ -83,8 +85,6 @@ describe( 'core/site Google tag gateway', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isGTGHealthy: false,
-						isScriptAccessEnabled: false,
 					} );
 
 				registry
@@ -130,8 +130,6 @@ describe( 'core/site Google tag gateway', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isGTGHealthy: false,
-						isScriptAccessEnabled: false,
 					} );
 
 				registry
@@ -174,8 +172,6 @@ describe( 'core/site Google tag gateway', () => {
 				fetchMock.postOnce( googleTagGatewaySettingsEndpointRegExp, {
 					body: {
 						isEnabled: true,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					},
 					status: 200,
 				} );
@@ -184,8 +180,6 @@ describe( 'core/site Google tag gateway', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					} );
 
 				registry
@@ -210,8 +204,6 @@ describe( 'core/site Google tag gateway', () => {
 				fetchMock.postOnce( googleTagGatewaySettingsEndpointRegExp, {
 					body: {
 						isEnabled: false,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					},
 					status: 200,
 				} );
@@ -220,8 +212,6 @@ describe( 'core/site Google tag gateway', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: true,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					} );
 
 				registry
@@ -247,8 +237,6 @@ describe( 'core/site Google tag gateway', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					} );
 
 				expect(
@@ -279,20 +267,10 @@ describe( 'core/site Google tag gateway', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: true,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					} );
 
 				expect(
 					registry.select( CORE_SITE ).isGoogleTagGatewayEnabled()
-				).toBe( true );
-
-				expect( registry.select( CORE_SITE ).isGTGHealthy() ).toBe(
-					true
-				);
-
-				expect(
-					registry.select( CORE_SITE ).isScriptAccessEnabled()
 				).toBe( true );
 
 				// Change the settings.
@@ -319,8 +297,6 @@ describe( 'core/site Google tag gateway', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const googleTagGatewaySettings = {
 					isEnabled: false,
-					isGTGHealthy: false,
-					isScriptAccessEnabled: false,
 				};
 
 				fetchMock.getOnce( googleTagGatewaySettingsEndpointRegExp, {
@@ -382,6 +358,72 @@ describe( 'core/site Google tag gateway', () => {
 			} );
 		} );
 
+		describe( 'getGoogleTagGatewayHealthStatus', () => {
+			it( 'uses a resolver to make a network request', async () => {
+				const healthStatus = {
+					isUpstreamHealthy: true,
+					isMpathHealthy: false,
+				};
+
+				fetchMock.getOnce( googleTagGatewayHealthEndpointRegExp, {
+					body: healthStatus,
+					status: 200,
+				} );
+
+				const initialHealthStatus = registry
+					.select( CORE_SITE )
+					.getGoogleTagGatewayHealthStatus();
+
+				expect( initialHealthStatus ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getGoogleTagGatewayHealthStatus();
+
+				const resultHealthStatus = registry
+					.select( CORE_SITE )
+					.getGoogleTagGatewayHealthStatus();
+
+				expect( resultHealthStatus ).toEqual( healthStatus );
+
+				expect( fetchMock ).toHaveFetched(
+					googleTagGatewayHealthEndpointRegExp
+				);
+			} );
+
+			it( 'returns undefined if the request fails', async () => {
+				fetchMock.getOnce( googleTagGatewayHealthEndpointRegExp, {
+					body: { error: 'something went wrong' },
+					status: 500,
+				} );
+
+				const initialHealthStatus = registry
+					.select( CORE_SITE )
+					.getGoogleTagGatewayHealthStatus();
+
+				expect( initialHealthStatus ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getGoogleTagGatewayHealthStatus();
+
+				const resultHealthStatus = registry
+					.select( CORE_SITE )
+					.getGoogleTagGatewayHealthStatus();
+
+				// Verify the health status is still undefined after the selector is resolved.
+				expect( resultHealthStatus ).toBeUndefined();
+
+				expect( fetchMock ).toHaveFetched(
+					googleTagGatewayHealthEndpointRegExp
+				);
+
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
 		describe( 'isGoogleTagGatewayEnabled', () => {
 			it( 'returns undefined if the state is not loaded', async () => {
 				muteFetch( googleTagGatewaySettingsEndpointRegExp );
@@ -403,8 +445,6 @@ describe( 'core/site Google tag gateway', () => {
 						.dispatch( CORE_SITE )
 						.receiveGetGoogleTagGatewaySettings( {
 							isEnabled,
-							isGTGHealthy: false,
-							isScriptAccessEnabled: false,
 						} );
 
 					expect(
@@ -414,66 +454,66 @@ describe( 'core/site Google tag gateway', () => {
 			);
 		} );
 
-		describe( 'isGTGHealthy', () => {
+		describe( 'isUpstreamHealthy', () => {
 			it( 'returns undefined if the state is not loaded', async () => {
-				muteFetch( googleTagGatewaySettingsEndpointRegExp );
+				muteFetch( googleTagGatewayHealthEndpointRegExp );
 
 				expect(
-					registry.select( CORE_SITE ).isGTGHealthy()
+					registry.select( CORE_SITE ).isUpstreamHealthy()
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					CORE_SITE
-				).getGoogleTagGatewaySettings();
+				).getGoogleTagGatewayHealthStatus();
 			} );
 
-			it.each( [ true, false ] )(
-				'returns the GTG healthy status: %s',
-				( isGTGHealthy ) => {
-					registry
-						.dispatch( CORE_SITE )
-						.receiveGetGoogleTagGatewaySettings( {
-							isEnabled: false,
-							isGTGHealthy,
-							isScriptAccessEnabled: false,
-						} );
-
-					expect( registry.select( CORE_SITE ).isGTGHealthy() ).toBe(
-						isGTGHealthy
+			it.each( [ true, false, null ] )(
+				'returns the upstream healthy status: %s',
+				( isUpstreamHealthy ) => {
+					registry.dispatch( CORE_SITE ).receiveGetGTGHealth(
+						{
+							isUpstreamHealthy,
+							isMpathHealthy: false,
+						},
+						{}
 					);
+
+					expect(
+						registry.select( CORE_SITE ).isUpstreamHealthy()
+					).toBe( isUpstreamHealthy );
 				}
 			);
 		} );
 
-		describe( 'isScriptAccessEnabled', () => {
+		describe( 'isMpathHealthy', () => {
 			it( 'returns undefined if the state is not loaded', async () => {
-				muteFetch( googleTagGatewaySettingsEndpointRegExp );
+				muteFetch( googleTagGatewayHealthEndpointRegExp );
 
 				expect(
-					registry.select( CORE_SITE ).isScriptAccessEnabled()
+					registry.select( CORE_SITE ).isMpathHealthy()
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					CORE_SITE
-				).getGoogleTagGatewaySettings();
+				).getGoogleTagGatewayHealthStatus();
 			} );
 
-			it.each( [ true, false ] )(
-				'returns the script access status: %s',
-				( isScriptAccessEnabled ) => {
-					registry
-						.dispatch( CORE_SITE )
-						.receiveGetGoogleTagGatewaySettings( {
-							isEnabled: false,
-							isGTGHealthy: false,
-							isScriptAccessEnabled,
-						} );
+			it.each( [ true, false, null ] )(
+				'returns the mpath healthy status: %s',
+				( isMpathHealthy ) => {
+					registry.dispatch( CORE_SITE ).receiveGetGTGHealth(
+						{
+							isUpstreamHealthy: false,
+							isMpathHealthy,
+						},
+						{}
+					);
 
 					expect(
-						registry.select( CORE_SITE ).isScriptAccessEnabled()
-					).toBe( isScriptAccessEnabled );
+						registry.select( CORE_SITE ).isMpathHealthy()
+					).toBe( isMpathHealthy );
 				}
 			);
 		} );

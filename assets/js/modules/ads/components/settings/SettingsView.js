@@ -75,16 +75,13 @@ export default function SettingsView() {
 		if ( ! gtgEnabled ) {
 			return false;
 		}
-		const {
-			isGoogleTagGatewayEnabled,
-			isGTGHealthy,
-			isScriptAccessEnabled,
-		} = select( CORE_SITE );
+		const { isGoogleTagGatewayEnabled, isUpstreamHealthy, isMpathHealthy } =
+			select( CORE_SITE );
 
 		return (
 			isGoogleTagGatewayEnabled() &&
-			isGTGHealthy() &&
-			isScriptAccessEnabled()
+			isUpstreamHealthy() &&
+			isMpathHealthy()
 		);
 	} );
 
