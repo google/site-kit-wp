@@ -38,10 +38,7 @@ import P from '@/js/components/Typography/P';
 import Typography from '@/js/components/Typography';
 import FrequencySelector from '@/js/components/email-reporting/FrequencySelector';
 import SubscribeActions from '@/js/components/email-reporting/UserSettingsSelectionPanel/SubscribeActions';
-import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/AnalyticsDisconnectedNotice';
-import SetupAnalyticsNotice from '@/js/components/email-reporting/SetupAnalyticsNotice';
-import EmailReportingDisabledNotice from '@/js/components/email-reporting/EmailReportingDisabledNotice';
-import EmailReportingDisabledViewOnlyNotice from '@/js/components/email-reporting/EmailReportingDisabledViewOnlyNotice';
+import Notices from './Notices';
 
 export default function PanelContent( {
 	notice,
@@ -61,10 +58,7 @@ export default function PanelContent( {
 			<div className="googlesitekit-user-settings-selection__panel-content">
 				<Header closePanel={ closePanel } />
 
-				<AnalyticsDisconnectedNotice />
-				<SetupAnalyticsNotice />
-				<EmailReportingDisabledNotice />
-				<EmailReportingDisabledViewOnlyNotice />
+				<Notices />
 
 				<div className="googlesitekit-user-settings-selection__panel-description">
 					<P type="body" size="small">
