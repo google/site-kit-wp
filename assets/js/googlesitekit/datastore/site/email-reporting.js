@@ -208,7 +208,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} TRUE if Analytics 4 was connected, FALSE if not, or `undefined` if not loaded yet.
 	 */
 	getWasAnalytics4Connected( state ) {
-		return state.emailReporting?.wasAnalytics4Connected;
+		return state.emailReporting?.wasAnalytics4Connected?.wasConnected;
 	},
 };
 
