@@ -76,6 +76,18 @@ const SINCE_VALIDATION_RULES = [
 	},
 ];
 
+/**
+ * Gets the description from a tag's source string.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} tag The tag object.
+ * @return {string} The tag description.
+ */
+function getTagDescription( tag ) {
+	return tag.source[ 0 ].source.replace( /^\s*\*\s*@since /, '' );
+}
+
 module.exports = iterateJsdoc(
 	( { context, jsdoc, jsdocNode, utils } ) => {
 		// If the `@ignore` tag is in this JSDoc block, ignore it and don't require a `@since` tag.
@@ -96,11 +108,13 @@ module.exports = iterateJsdoc(
 		}
 
 		sinceTags.forEach( ( tag, index ) => {
-			const [ versionString ] = tag.description.split( ' ', 1 );
-			const description = tag.description.slice( versionString.length );
+			const tagDescription = getTagDescription( tag );
+			const versionString = tagDescription.split( ' ', 1 )[ 0 ];
+			const description = tagDescription.slice( versionString.length );
 			const previousTag = sinceTags[ index - 1 ];
-			const previousVersionString =
-				previousTag?.description.split( ' ', 1 )[ 0 ] || null;
+			const previousVersionString = previousTag
+				? getTagDescription( previousTag ).split( ' ', 1 )[ 0 ]
+				: null;
 
 			for ( const rule of SINCE_VALIDATION_RULES ) {
 				const error = rule( {

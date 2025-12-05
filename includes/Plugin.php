@@ -241,8 +241,9 @@ final class Plugin {
 						$user_options,
 					);
 
-					( new Core\Email_Reporting\Email_Reporting( $this->context, $modules, $data_requests, $options, $user_options ) )->register();
+					( new Core\Email_Reporting\Email_Reporting( $this->context, $modules, $data_requests, $authentication, $options, $user_options ) )->register();
 				}
+
 				if ( Feature_Flags::enabled( 'googleTagGateway' ) ) {
 					( new Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway( $this->context, $options ) )->register();
 				}

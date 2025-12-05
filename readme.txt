@@ -2,7 +2,7 @@
 
 Contributors:      google
 Requires at least: 5.2
-Tested up to:      6.8
+Tested up to:      6.9
 Requires PHP:      7.4
 Stable tag:        1.167.0
 License:           Apache License 2.0
