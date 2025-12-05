@@ -279,7 +279,7 @@ describe( 'core/site Email Reporting', () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/was-analytics-4-connected/,
 					{
-						body: true,
+						body: { wasConnected: true },
 						status: 200,
 					}
 				);
