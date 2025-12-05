@@ -143,7 +143,7 @@ class REST_Email_Reporting_Controller {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function () {
-							return new WP_REST_Response( $this->was_analytics_4_connected->get() );
+							return new WP_REST_Response( array( 'wasConnected' => $this->was_analytics_4_connected->get() ) );
 						},
 						'permission_callback' => $can_access,
 					),
