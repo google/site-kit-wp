@@ -76,7 +76,7 @@ Subscribed.args = {
 
 export const AnalyticsWasConnected = Template.bind( {} );
 AnalyticsWasConnected.storyName =
-	'Analytics disconnected but was connected before';
+	'Analytics disconnected, was connected before';
 AnalyticsWasConnected.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
@@ -97,7 +97,7 @@ AnalyticsWasConnected.args = {
 
 export const AnalyticsWasNeverConnected = Template.bind( {} );
 AnalyticsWasNeverConnected.storyName =
-	'Analytics disconnected and was never connected before';
+	'Analytics disconnected, never connected before';
 AnalyticsWasNeverConnected.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
