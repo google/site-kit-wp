@@ -44,7 +44,9 @@ describe( 'SettingsEmailReporting', () => {
 
 		// Prevent network request/resolver from running to avoid console errors.
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-		registry.dispatch( CORE_SITE ).receiveGetWasAnalytics4Connected( true );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetWasAnalytics4Connected( { wasConnected: true } );
 	} );
 
 	it( 'should render the toggle with correct label', () => {
