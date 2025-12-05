@@ -156,6 +156,11 @@ export default {
 					.dispatch( CORE_SITE )
 					.receiveGetWasAnalytics4Connected( true );
 				registry
+					.dispatch( CORE_SITE )
+					.receiveGetEmailReportingSettings( {
+						enabled: true,
+					} );
+				registry
 					.dispatch( CORE_USER )
 					.receiveGetEmailReportingSettings( {
 						subscribed: true,
