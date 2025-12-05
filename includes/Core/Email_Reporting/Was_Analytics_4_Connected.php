@@ -49,4 +49,15 @@ class Was_Analytics_4_Connected extends Setting {
 	protected function get_sanitize_callback() {
 		return 'boolval';
 	}
+
+	/**
+	 * Gets the value of the setting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool Value set for the option, or registered default if not set.
+	 */
+	public function get() {
+		return (bool) parent::get();
+	}
 }
