@@ -151,15 +151,26 @@ class Email_Template_Formatter {
 			$dimensions       = $section->get_dimensions();
 			$dimension_values = $section->get_dimension_values();
 			$change           = isset( $trends[0] ) ? $this->parse_change_value( $trends[0] ) : null;
+			$changes          = is_array( $trends ) ? array_map( array( $this, 'parse_change_value' ), $trends ) : array();
+
+			$first_dimension_value = '';
+			if ( isset( $dimension_values[0] ) ) {
+				$first_dimension_value = is_array( $dimension_values[0] )
+					? ( $dimension_values[0]['label'] ?? '' )
+					: $dimension_values[0];
+			}
 
 			$payload[ $section->get_section_key() ] = array(
-				'value'           => isset( $values[0] ) ? $values[0] : '',
-				'label'           => isset( $labels[0] ) ? $labels[0] : $section->get_title(),
-				'event_name'      => isset( $event_names[0] ) ? $event_names[0] : '',
-				'dimension'       => isset( $dimensions[0] ) ? $dimensions[0] : '',
-				'dimension_value' => isset( $dimension_values[0] ) ? $dimension_values[0] : '',
-				'change'          => $change,
-				'change_context'  => __( 'Compared to previous period', 'google-site-kit' ),
+				'value'            => isset( $values[0] ) ? $values[0] : '',
+				'values'           => $values,
+				'label'            => isset( $labels[0] ) ? $labels[0] : $section->get_title(),
+				'event_name'       => isset( $event_names[0] ) ? $event_names[0] : '',
+				'dimension'        => isset( $dimensions[0] ) ? $dimensions[0] : '',
+				'dimension_value'  => $first_dimension_value,
+				'dimension_values' => $dimension_values ?? array(),
+				'change'           => $change,
+				'changes'          => $changes,
+				'change_context'   => __( 'Compared to previous period', 'google-site-kit' ),
 			);
 		}
 
