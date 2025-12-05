@@ -134,7 +134,7 @@ exports[`ConfirmDisconnect should render the Ads Disconnect ModalDialog with a d
                 <a
                   aria-label="Ads (opens in a new tab)"
                   class="googlesitekit-cta-link"
-                  href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fgoogle.com%2Fads&Email=test%40example.com"
+                  href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fgoogle.com%2Fads%3Futm_source%3Dsitekit&Email=test%40example.com&utm_source=sitekit"
                   rel="noopener noreferrer"
                   target="_blank"
                 >

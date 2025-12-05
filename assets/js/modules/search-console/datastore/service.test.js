@@ -62,8 +62,10 @@ describe( 'module/search-console service store', () => {
 					pathname: '/accountchooser',
 				} );
 				expect( serviceURL ).toMatchQueryParameters( {
-					continue: 'https://search.google.com/search-console',
+					continue:
+						'https://search.google.com/search-console?utm_source=sitekit',
 					Email: 'admin@example.com',
+					utm_source: 'sitekit',
 				} );
 			} );
 

@@ -513,7 +513,7 @@ describe( 'modules/analytics-4 accounts', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getAccountTicketTermsOfServiceURL()
 				).toEqual(
-					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%3FprovisioningSignup%3Dfalse%23%2Ftermsofservice%2Ftest-account-ticket-id&Email=test%40gmail.com'
+					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%3FprovisioningSignup%3Dfalse%26utm_source%3Dsitekit%23%2Ftermsofservice%2Ftest-account-ticket-id&Email=test%40gmail.com&utm_source=sitekit'
 				);
 			} );
 
@@ -545,7 +545,7 @@ describe( 'modules/analytics-4 accounts', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getAccountTicketTermsOfServiceURL()
 				).toEqual(
-					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%3FprovisioningSignup%3Dfalse%23%2Ftermsofservice%2Ftest-account-ticket-id&Email=test%40gmail.com'
+					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%3FprovisioningSignup%3Dfalse%26utm_source%3Dsitekit%23%2Ftermsofservice%2Ftest-account-ticket-id&Email=test%40gmail.com&utm_source=sitekit'
 				);
 			} );
 		} );

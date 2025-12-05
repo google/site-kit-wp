@@ -58,7 +58,10 @@ export const selectors = {
 				let serviceURL = 'https://analytics.google.com/analytics/web/';
 
 				if ( query ) {
-					serviceURL = addQueryArgs( serviceURL, query );
+					serviceURL = addQueryArgs( serviceURL, {
+						...query,
+						utm_source: 'sitekit',
+					} );
 				}
 
 				if ( path ) {

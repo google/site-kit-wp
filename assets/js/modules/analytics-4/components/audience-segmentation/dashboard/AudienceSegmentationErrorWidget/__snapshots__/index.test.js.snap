@@ -84,7 +84,7 @@ exports[`AudienceSegmentationErrorWidget insufficient permissions error state sh
                 <a
                   aria-label="Request access (opens in a new tab)"
                   class="mdc-button mdc-button--raised mdc-button--danger"
-                  href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Fa12345p34567%2Fadmin%2Fstreams%2Ftable%2F78901&Email=wapuu.wordpress%40gmail.com"
+                  href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Fa12345p34567%2Fadmin%2Fstreams%2Ftable%2F78901%3Futm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
                   role="button"
                   target="_blank"
                 >

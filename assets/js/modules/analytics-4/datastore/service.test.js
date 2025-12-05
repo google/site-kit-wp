@@ -61,7 +61,7 @@ describe( 'module/analytics-4 service store', () => {
 					.getServiceURL();
 
 				expect( serviceURL ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F&Email=admin%40example.com"'
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%3Futm_source%3Dsitekit&Email=admin%40example.com&utm_source=sitekit"'
 				);
 			} );
 
@@ -71,7 +71,7 @@ describe( 'module/analytics-4 service store', () => {
 					.getServiceURL( { path: 'test/path/to/deeplink' } );
 
 				expect( serviceURLNoSlashes ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink%3Futm_source%3Dsitekit&Email=admin%40example.com&utm_source=sitekit"'
 				);
 
 				const serviceURLWithLeadingSlash = registry
@@ -79,7 +79,7 @@ describe( 'module/analytics-4 service store', () => {
 					.getServiceURL( { path: '/test/path/to/deeplink' } );
 
 				expect( serviceURLWithLeadingSlash ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink%3Futm_source%3Dsitekit&Email=admin%40example.com&utm_source=sitekit"'
 				);
 			} );
 
@@ -307,7 +307,7 @@ describe( 'module/analytics-4 service store', () => {
 
 				expect( decodedServiceURL.startsWith( baseURI ) ).toBe( true );
 				expect( url.hash ).toBe(
-					`#/a${ accountID }p${ propertyID }/admin/streams/table/${ webDataStreamID }`
+					`#/a${ accountID }p${ propertyID }/admin/streams/table/${ webDataStreamID }?utm_source=sitekit`
 				);
 			} );
 		} );

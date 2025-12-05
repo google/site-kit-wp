@@ -55,7 +55,7 @@ describe( 'module/sign-in-with-google service store', () => {
 					.getServiceURL();
 
 				expect( serviceURL ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fdevelopers.google.com%2Fidentity%2Fsite-kit&Email=admin%40example.com"'
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fdevelopers.google.com%2Fidentity%2Fsite-kit%3Futm_source%3Dsitekit&Email=admin%40example.com&utm_source=sitekit"'
 				);
 			} );
 
@@ -65,7 +65,7 @@ describe( 'module/sign-in-with-google service store', () => {
 					.getServiceURL( { path: 'test/path/to/deeplink' } );
 
 				expect( serviceURLNoSlashes ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fdevelopers.google.com%2Fidentity%2Fsite-kit%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fdevelopers.google.com%2Fidentity%2Fsite-kit%23%2Ftest%2Fpath%2Fto%2Fdeeplink%3Futm_source%3Dsitekit&Email=admin%40example.com&utm_source=sitekit"'
 				);
 
 				const serviceURLWithLeadingSlash = registry
@@ -73,7 +73,7 @@ describe( 'module/sign-in-with-google service store', () => {
 					.getServiceURL( { path: '/test/path/to/deeplink' } );
 
 				expect( serviceURLWithLeadingSlash ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fdevelopers.google.com%2Fidentity%2Fsite-kit%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fdevelopers.google.com%2Fidentity%2Fsite-kit%23%2Ftest%2Fpath%2Fto%2Fdeeplink%3Futm_source%3Dsitekit&Email=admin%40example.com&utm_source=sitekit"'
 				);
 			} );
 
@@ -103,7 +103,7 @@ describe( 'module/sign-in-with-google service store', () => {
 					.getServiceClientIDProvisioningURL();
 
 				expect( clientIDURL ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fdevelopers.google.com%2Fidentity%2Fsite-kit%3Fappname%3DMy%2520Site%2520Name%26sitename%3DMy%2520Site%2520Name%26siteorigin%3Dhttp%253A%252F%252Fexample.com&Email=admin%40example.com"'
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fdevelopers.google.com%2Fidentity%2Fsite-kit%3Fappname%3DMy%2520Site%2520Name%26sitename%3DMy%2520Site%2520Name%26siteorigin%3Dhttp%253A%252F%252Fexample.com%26utm_source%3Dsitekit&Email=admin%40example.com&utm_source=sitekit"'
 				);
 			} );
 
