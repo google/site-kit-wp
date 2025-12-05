@@ -40,6 +40,7 @@ import FrequencySelector from '@/js/components/email-reporting/FrequencySelector
 import SubscribeActions from '@/js/components/email-reporting/UserSettingsSelectionPanel/SubscribeActions';
 import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/AnalyticsDisconnectedNotice';
 import SetupAnalyticsNotice from '@/js/components/email-reporting/SetupAnalyticsNotice';
+import EmailReportingDisabledNotice from '@/js/components/email-reporting/EmailReportingDisabledNotice';
 
 export default function PanelContent( {
 	notice,
@@ -61,6 +62,7 @@ export default function PanelContent( {
 
 				<AnalyticsDisconnectedNotice />
 				<SetupAnalyticsNotice />
+				<EmailReportingDisabledNotice />
 
 				<div className="googlesitekit-user-settings-selection__panel-description">
 					<P type="body" size="small">
