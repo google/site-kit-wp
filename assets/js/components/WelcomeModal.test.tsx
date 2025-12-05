@@ -86,7 +86,7 @@ describe( 'WelcomeModal', () => {
 			getByRole( 'button', { name: 'Maybe later' } )
 		).toBeInTheDocument();
 		expect(
-			getByRole( 'button', { name: 'Take a tour' } )
+			getByRole( 'button', { name: 'Take the tour' } )
 		).toBeInTheDocument();
 	} );
 
@@ -134,7 +134,7 @@ describe( 'WelcomeModal', () => {
 			getByRole( 'button', { name: 'Maybe later' } )
 		).toBeInTheDocument();
 		expect(
-			getByRole( 'button', { name: 'Take a tour' } )
+			getByRole( 'button', { name: 'Take the tour' } )
 		).toBeInTheDocument();
 	} );
 
