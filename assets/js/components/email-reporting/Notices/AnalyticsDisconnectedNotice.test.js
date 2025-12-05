@@ -36,11 +36,11 @@ import {
 	provideUserAuthentication,
 	provideModuleRegistrations,
 	provideSiteInfo,
-} from '../../../../tests/js/test-utils';
+} from '../../../../../tests/js/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
+import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
 
 describe( 'AnalyticsDisconnectedNotice', () => {
 	mockLocation();
