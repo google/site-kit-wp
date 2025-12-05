@@ -83,7 +83,7 @@ module.exports = {
 			rootDir: '../../',
 			testEnvironment: 'node',
 			transform: {
-				'^.+\\.(js,jsx,ts,tsx)$':
+				'^.+\\.(js|jsx|ts|tsx)$':
 					'<rootDir>/tests/js/babel-transform.js',
 			},
 			testMatch: [
