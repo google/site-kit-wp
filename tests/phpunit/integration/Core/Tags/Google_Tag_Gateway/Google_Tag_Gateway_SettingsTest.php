@@ -129,7 +129,7 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 	}
 
 	public function test_is_google_tag_gateway_active() {
-		$this->expectDeprecation();
+		$this->setExpectedDeprecated( Google_Tag_Gateway_Settings::class . '::is_google_tag_gateway_active' );
 
 		// By default, GTG should be inactive.
 		$this->assertFalse( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be inactive by default.' );
