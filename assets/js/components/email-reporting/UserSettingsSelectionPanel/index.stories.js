@@ -95,6 +95,28 @@ AnalyticsWasConnected.args = {
 	},
 };
 
+export const AnalyticsWasConnectedViewOnly = Template.bind( {} );
+AnalyticsWasConnectedViewOnly.storyName =
+	'Analytics disconnected, was connected before, view-only user';
+AnalyticsWasConnectedViewOnly.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: true,
+		} );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+
 export const AnalyticsWasNeverConnected = Template.bind( {} );
 AnalyticsWasNeverConnected.storyName =
 	'Analytics disconnected, never connected before';
