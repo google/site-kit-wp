@@ -18,7 +18,7 @@ return array(
 		'domain' => 'example.com',
 	),
 	'date_range'                                       => array(
-		'label'   => 'Sep 1 – Sep 30, 2025',
+		'label'   => 'Sep 1 - Sep 30',
 		'context' => 'Compared to previous 7 days',
 	),
 	'primary_call_to_action'                           => array(
@@ -30,16 +30,16 @@ return array(
 		'unsubscribe_url' => 'https://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings',
 		'links'           => array(
 			array(
-				'label' => 'Help center',
-				'url'   => 'https://sitekit.withgoogle.com/support/',
+				'label' => 'Manage subscription',
+				'url'   => 'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&email-reporting-panel-opened=1',
 			),
 			array(
 				'label' => 'Privacy Policy',
 				'url'   => 'https://policies.google.com/privacy',
 			),
 			array(
-				'label' => 'Manage subscription',
-				'url'   => 'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&email-reporting-panel-opened=1',
+				'label' => 'Help center',
+				'url'   => 'https://sitekit.withgoogle.com/support/',
 			),
 		),
 	),
@@ -47,7 +47,7 @@ return array(
 	// Is my site helping my business grow?
 	'total_conversion_events'                          => array(
 		'value'           => '847,293',
-		'label'           => 'Total Conversions',
+		'label'           => 'Total conversion events',
 		'change'          => 23.7,
 		'change_context'  => 'Compared to previous 7 days',
 		'comparison_text' => 'Last 30 days vs previous period',

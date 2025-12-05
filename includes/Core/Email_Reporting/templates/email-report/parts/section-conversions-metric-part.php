@@ -44,22 +44,18 @@ $change_context = $data['change_context'];
 
 			<table role="presentation" width="100%" style="padding-bottom: 10px; border-bottom: 1px solid #EBEEF0; margin-bottom: 10px;">
 				<tr>
-					<td>
-						<div style="font-size:12px; font-weight:500; color:#6C726E; line-height:16px; margin-bottom:8px;">
-							<?php
-							printf(
-								/* translators: %s: Event name (e.g., "Purchase") */
-								esc_html__( '"%s" events', 'google-site-kit' ),
-								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Event name is already escaped above.
-								ucfirst( $event_name )
-							);
-							?>
-						</div>
+					<td style="font-size:12px; font-weight:500; color:#6C726E; text-align: left; padding-bottom: 10px;">
+						<?php
+						printf(
+							/* translators: %s: Event name (e.g., "Purchase") */
+							esc_html__( '"%s" events', 'google-site-kit' ),
+							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Event name is already escaped above.
+							ucfirst( $event_name )
+						);
+						?>
 					</td>
-					<td style="text-align: right;">
-						<div style="font-size:12px; color:#6C726E;">
-							<?php echo esc_html( $change_context ); ?>
-						</div>
+					<td width="110" style="font-size:12px; font-weight:500;  color:#6C726E; text-align: right; width: 110px; padding-bottom: 10px;">
+						<?php echo esc_html( $change_context ); ?>
 					</td>
 				</tr>
 				<tr>
