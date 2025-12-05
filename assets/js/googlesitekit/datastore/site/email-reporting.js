@@ -80,7 +80,7 @@ const fetchSaveEmailReportingSettingsStore = createFetchStore( {
 const fetchGetWasAnalytics4Connected = createFetchStore( {
 	baseName: 'getWasAnalytics4Connected',
 	controlCallback: () => {
-		return get( 'core', 'site', 'was-analytics-4-connected', undefined );
+		return get( 'core', 'site', 'was-analytics-4-connected' );
 	},
 	reducerCallback: createReducer( ( state, wasAnalytics4Connected ) => {
 		state.emailReporting.wasAnalytics4Connected = wasAnalytics4Connected;
