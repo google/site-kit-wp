@@ -156,7 +156,7 @@ EmailReportingDisabled.args = {
 
 export const EmailReportingDisabledViewOnly = Template.bind( {} );
 EmailReportingDisabledViewOnly.storyName =
-	'Email reporting disabled view-only user';
+	'Email reporting disabled, view-only user';
 EmailReportingDisabledViewOnly.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
