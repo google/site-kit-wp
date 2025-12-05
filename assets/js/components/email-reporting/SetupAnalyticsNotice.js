@@ -84,7 +84,6 @@ export default function SetupAnalyticsNotice() {
 
 	return (
 		<Notice
-			className="googlesitekit-email-reporting__analytics-disconnected-notice"
 			type={ TYPES.NEW }
 			title={ __(
 				'Understand how visitors interact with your content',
