@@ -722,6 +722,15 @@ final class Modules implements Provides_Feature_Metrics {
 
 		$this->sharing_settings->unset_module( $slug );
 
+		/**
+		 * Fires when a module is deactivated.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param string $slug The slug of the deactivated module.
+		 */
+		do_action( 'googlesitekit_deactivate_module', $slug );
+
 		return true;
 	}
 
