@@ -164,11 +164,11 @@ class Sections_Map {
 				'section_template' => 'section-page-metrics',
 				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
 				'section_parts'    => array(
-					'traffic_channels'                    => array(
+					'traffic_channels' => array(
 						'data' => $this->payload['traffic_channels'] ?? array(),
 					),
-					'keywords_with_highest_ctr_in_search' => array(
-						'data' => $this->payload['keywords_with_highest_ctr_in_search'] ?? array(),
+					'top_ctr_keywords' => array(
+						'data' => $this->payload['top_ctr_keywords'] ?? array(),
 					),
 				),
 			),
@@ -193,8 +193,8 @@ class Sections_Map {
 					'popular_content'             => array(
 						'data' => $this->payload['popular_content'] ?? array(),
 					),
-					'pages_with_the_most_clicks_from_search' => array(
-						'data' => $this->payload['pages_with_the_most_clicks_from_search'] ?? array(),
+					'top_pages_by_clicks'         => array(
+						'data' => $this->payload['top_pages_by_clicks'] ?? array(),
 					),
 					'top_authors_by_pageviews'    => array(
 						'data' => $this->payload['top_authors_by_pageviews'] ?? array(),
