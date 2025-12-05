@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Modules\Search_Console\Email_Reporting\Report_Data_Processor;
 
 /**
  * Builder and helpers to construct Email_Report_Data_Section_Part instances for a single report section.
@@ -44,6 +45,14 @@ class Email_Report_Section_Builder {
 	 * @var Email_Report_Payload_Processor
 	 */
 	protected $report_processor;
+
+	/**
+	 * Current period length in days (for SC trend calculations).
+	 *
+	 * @since n.e.x.t
+	 * @var int|null
+	 */
+	protected $current_period_length = null;
 
 	/**
 	 * Constructor.
@@ -86,9 +95,10 @@ class Email_Report_Section_Builder {
 			$raw_sections_payloads = (array) $raw_sections_payloads;
 		}
 
-		$sections        = array();
-		$switched_locale = switch_to_locale( $user_locale );
-		$log_date_range  = Email_Log::get_date_range_from_log( $email_log );
+		$sections                    = array();
+		$switched_locale             = switch_to_locale( $user_locale );
+		$log_date_range              = Email_Log::get_date_range_from_log( $email_log );
+		$this->current_period_length = $this->calculate_period_length_from_date_range( $log_date_range );
 
 		try {
 			foreach ( $this->extract_sections_from_payloads( $module_slug, $raw_sections_payloads ) as $section_payload ) {
@@ -125,6 +135,8 @@ class Email_Report_Section_Builder {
 			// Re-throw exception to the caller to prevent this email from being sent.
 			throw $exception;
 		}
+
+		$this->current_period_length = null;
 
 		return $sections;
 	}
@@ -714,10 +726,142 @@ class Email_Report_Section_Builder {
 			return null;
 		}
 
-		$labels        = array();
-		$values_by_key = array();
-		$value_types   = array();
-		$title         = '';
+		$preferred_key = $this->get_search_console_preferred_key( $section_key );
+		$row_data      = $this->collect_search_console_row_data( $search_console_data, $preferred_key );
+
+		if ( null !== $preferred_key ) {
+			return $this->build_totals_section_payload( $search_console_data, $section_key, $preferred_key, $row_data['title'] );
+		}
+
+		return $this->build_list_section_payload( $section_key, $row_data );
+	}
+
+	/**
+	 * Calculates current period length in days from a date range array.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array|null $date_range Date range containing startDate and endDate.
+	 * @return int|null Period length in days (inclusive) or null when unavailable.
+	 */
+	protected function calculate_period_length_from_date_range( $date_range ) {
+		if ( empty( $date_range['startDate'] ) || empty( $date_range['endDate'] ) ) {
+			return null;
+		}
+
+		try {
+			$start = new \DateTime( $date_range['startDate'] );
+			$end   = new \DateTime( $date_range['endDate'] );
+		} catch ( \Exception $e ) {
+			return null;
+		}
+
+		$diff = $start->diff( $end );
+		if ( false === $diff ) {
+			return null;
+		}
+
+		return (int) $diff->days + 1;
+	}
+
+	/**
+	 * Calculates current period length from Search Console rows (half of combined range).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $rows Search Console rows.
+	 * @return int|null Period length in days or null on failure.
+	 */
+	protected function calculate_period_length_from_rows( array $rows ) {
+		if ( empty( $rows ) ) {
+			return null;
+		}
+
+		$dates = array();
+		foreach ( $rows as $row ) {
+			if ( ! is_array( $row ) || empty( $row['keys'][0] ) ) {
+				continue;
+			}
+			$dates[] = $row['keys'][0];
+		}
+
+		if ( empty( $dates ) ) {
+			return null;
+		}
+
+		sort( $dates );
+
+		try {
+			$start = new \DateTime( reset( $dates ) );
+			$end   = new \DateTime( end( $dates ) );
+		} catch ( \Exception $e ) {
+			return null;
+		}
+
+		$diff = $start->diff( $end );
+		if ( false === $diff ) {
+			return null;
+		}
+
+		return max( 1, (int) floor( ( $diff->days + 1 ) / 2 ) );
+	}
+
+	/**
+	 * Formats a Search Console dimension value for output.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $value Dimension value.
+	 * @return string|array
+	 */
+	protected function format_search_console_dimension_value( $value ) {
+		if ( filter_var( $value, FILTER_VALIDATE_URL ) ) {
+			return array(
+				'label' => $value,
+				'url'   => $value,
+			);
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Returns the preferred metric key for Search Console sections.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $section_key Section key.
+	 * @return string|null Preferred metric key or null for list sections.
+	 */
+	protected function get_search_console_preferred_key( $section_key ) {
+		if ( 'total_impressions' === $section_key ) {
+			return 'impressions';
+		}
+
+		if ( 'total_clicks' === $section_key ) {
+			return 'clicks';
+		}
+
+		return null;
+	}
+
+	/**
+	 * Collects normalized Search Console row data for a section.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array       $search_console_data Search Console report rows.
+	 * @param string|null $preferred_key       Preferred metric key or null.
+	 * @return array Collected data including title, labels, value types, values, and dimensions.
+	 */
+	protected function collect_search_console_row_data( $search_console_data, $preferred_key ) {
+		$labels            = array();
+		$values_by_key     = array();
+		$value_types       = array();
+		$title             = '';
+		$dimension_values  = array();
+		$row_metric_values = array();
+		$row_metric_field  = 'clicks';
 
 		foreach ( $search_console_data as $row ) {
 			if ( ! is_array( $row ) ) {
@@ -728,11 +872,9 @@ class Email_Report_Section_Builder {
 				$title = trim( $row['title'] );
 			}
 
-			$preferred_key = null;
-			if ( 'total_impressions' === $section_key ) {
-				$preferred_key = 'impressions';
-			} elseif ( 'total_clicks' === $section_key ) {
-				$preferred_key = 'clicks';
+			$primary_key = '';
+			if ( ! empty( $row['keys'][0] ) && is_string( $row['keys'][0] ) ) {
+				$primary_key = $row['keys'][0];
 			}
 
 			foreach ( $row as $key => $value ) {
@@ -758,6 +900,12 @@ class Email_Report_Section_Builder {
 				if ( ! is_numeric( $raw_value ) ) {
 					continue;
 				}
+
+				if ( null === $preferred_key && $primary_key && $row_metric_field === $key ) {
+					$dimension_values[]  = $this->format_search_console_dimension_value( $primary_key );
+					$row_metric_values[] = (float) $raw_value;
+				}
+
 				if ( array_key_exists( $key, $values_by_key ) ) {
 					$values_by_key[ $key ] += (float) $raw_value;
 					continue;
@@ -769,8 +917,92 @@ class Email_Report_Section_Builder {
 			}
 		}
 
-		if ( empty( $labels ) ) {
+		return array(
+			'title'             => $title,
+			'labels'            => $labels,
+			'values_by_key'     => $values_by_key,
+			'value_types'       => $value_types,
+			'dimension_values'  => $dimension_values,
+			'row_metric_values' => $row_metric_values,
+		);
+	}
+
+	/**
+	 * Builds a totals-style section payload (impressions/clicks).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $search_console_data Search Console rows.
+	 * @param string $section_key         Section key.
+	 * @param string $preferred_key       Preferred metric key.
+	 * @param string $title               Section title.
+	 * @return array Section payload.
+	 */
+	protected function build_totals_section_payload( $search_console_data, $section_key, $preferred_key, $title ) {
+		$trends        = null;
+		$period_length = $this->current_period_length ?? $this->calculate_period_length_from_rows( $search_console_data );
+		$period_length = max( 1, $period_length ?? (int) ( count( $search_console_data ) / 2 ) );
+
+		$processor = new Report_Data_Processor();
+		$totals    = $processor->sum_field_by_period( $search_console_data, $preferred_key, $period_length );
+
+		$current_total = $totals['current'];
+		$compare_total = $totals['compare'];
+
+		$values = array( $current_total );
+		if ( 0.0 === $compare_total ) {
+			$trends = array( null );
+		} else {
+			$trends = array( ( $current_total - $compare_total ) / $compare_total * 100 );
+		}
+
+		return array(
+			'section_key'      => $section_key,
+			'title'            => $title,
+			'labels'           => array( $preferred_key ),
+			'event_names'      => array( $preferred_key ),
+			'values'           => $values,
+			'value_types'      => array( 'TYPE_STANDARD' ),
+			'trends'           => $trends,
+			'trend_types'      => array( 'TYPE_STANDARD' ),
+			'dimensions'       => array(),
+			'dimension_values' => array(),
+			'date_range'       => null,
+		);
+	}
+
+	/**
+	 * Builds a list-style section payload (keywords/pages).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $section_key Section key.
+	 * @param array  $row_data    Collected row data.
+	 * @return array|null Section payload or null on empty data.
+	 */
+	protected function build_list_section_payload( $section_key, $row_data ) {
+		$labels            = $row_data['labels'];
+		$value_types       = $row_data['value_types'];
+		$dimension_values  = $row_data['dimension_values'];
+		$row_metric_values = $row_data['row_metric_values'];
+		$values_by_key     = $row_data['values_by_key'];
+		$title             = $row_data['title'];
+		$trends            = null;
+
+		$is_list_section = in_array( $section_key, array( 'top_ctr_keywords', 'top_pages_by_clicks' ), true );
+		if ( $is_list_section && ! empty( $row_metric_values ) && ! empty( $dimension_values ) ) {
+			list( $row_metric_values, $dimension_values ) = $this->limit_list_results( $row_metric_values, $dimension_values, 3 );
+		}
+
+		if ( ! empty( $row_metric_values ) && ! empty( $dimension_values ) ) {
+			$values      = $row_metric_values;
+			$trends      = array_fill( 0, count( $values ), null );
+			$labels      = array( 'clicks' );
+			$value_types = array( 'TYPE_STANDARD' );
+		} elseif ( empty( $labels ) ) {
 			return null;
+		} else {
+			$values = array_values( $values_by_key );
 		}
 
 		return array(
@@ -778,13 +1010,34 @@ class Email_Report_Section_Builder {
 			'title'            => $title,
 			'labels'           => $labels,
 			'event_names'      => $labels,
-			'values'           => array_values( $values_by_key ),
+			'values'           => $values,
 			'value_types'      => $value_types,
-			'trends'           => null,
+			'trends'           => $trends,
 			'trend_types'      => $value_types,
 			'dimensions'       => array(),
-			'dimension_values' => array(),
+			'dimension_values' => $dimension_values,
 			'date_range'       => null,
+		);
+	}
+
+	/**
+	 * Limits list-style results to a specific number of rows.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $values           Metric values.
+	 * @param array $dimension_values Dimension values.
+	 * @param int   $limit            Maximum number of rows.
+	 * @return array Array with limited values and dimension values.
+	 */
+	protected function limit_list_results( array $values, array $dimension_values, $limit ) {
+		if ( $limit <= 0 ) {
+			return array( $values, $dimension_values );
+		}
+
+		return array(
+			array_slice( $values, 0, $limit ),
+			array_slice( $dimension_values, 0, $limit ),
 		);
 	}
 }
