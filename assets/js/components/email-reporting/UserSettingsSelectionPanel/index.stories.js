@@ -137,7 +137,7 @@ AnalyticsWasNeverConnected.args = {
 		} );
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( false );
+			.receiveGetWasAnalytics4Connected( { wasConnected: false } );
 	},
 };
 
@@ -150,7 +150,7 @@ EmailReportingDisabled.args = {
 		} );
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( false );
+			.receiveGetWasAnalytics4Connected( { wasConnected: false } );
 	},
 };
 
@@ -164,7 +164,7 @@ EmailReportingDisabledViewOnly.args = {
 		} );
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( false );
+			.receiveGetWasAnalytics4Connected( { wasConnected: false } );
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
@@ -191,7 +191,7 @@ export default {
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetWasAnalytics4Connected( true );
+					.receiveGetWasAnalytics4Connected( { wasConnected: true } );
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetEmailReportingSettings( {
