@@ -39,6 +39,7 @@ import Typography from '@/js/components/Typography';
 import FrequencySelector from '@/js/components/email-reporting/FrequencySelector';
 import SubscribeActions from '@/js/components/email-reporting/UserSettingsSelectionPanel/SubscribeActions';
 import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/AnalyticsDisconnectedNotice';
+import SetupAnalyticsNotice from '@/js/components/email-reporting/SetupAnalyticsNotice';
 
 export default function PanelContent( {
 	notice,
@@ -59,6 +60,7 @@ export default function PanelContent( {
 				<Header closePanel={ closePanel } />
 
 				<AnalyticsDisconnectedNotice />
+				<SetupAnalyticsNotice />
 
 				<div className="googlesitekit-user-settings-selection__panel-description">
 					<P type="body" size="small">
