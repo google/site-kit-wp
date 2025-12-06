@@ -38,6 +38,7 @@ import P from '@/js/components/Typography/P';
 import Typography from '@/js/components/Typography';
 import FrequencySelector from '@/js/components/email-reporting/FrequencySelector';
 import SubscribeActions from '@/js/components/email-reporting/UserSettingsSelectionPanel/SubscribeActions';
+import Notices from './Notices';
 
 export default function PanelContent( {
 	notice,
@@ -56,6 +57,8 @@ export default function PanelContent( {
 		<Fragment>
 			<div className="googlesitekit-user-settings-selection__panel-content">
 				<Header closePanel={ closePanel } />
+
+				<Notices />
 
 				<div className="googlesitekit-user-settings-selection__panel-description">
 					<P type="body" size="small">
