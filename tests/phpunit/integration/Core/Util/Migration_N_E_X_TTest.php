@@ -90,7 +90,11 @@ class Migration_N_E_X_TTest extends TestCase {
 			'isScriptAccessEnabled' => false,
 		);
 
-		$this->gtg_settings->set( $pre_migration_settings );
+		// Bypass sanitization to allow setting legacy health fields (which are stripped by the current class)
+		// in order to simulate the pre-migration state.
+		remove_all_filters( 'sanitize_option_' . Google_Tag_Gateway_Settings::OPTION );
+		$this->options->set( Google_Tag_Gateway_Settings::OPTION, $pre_migration_settings );
+		$this->gtg_settings->register();
 
 		$migration->migrate();
 
@@ -126,7 +130,11 @@ class Migration_N_E_X_TTest extends TestCase {
 			'isScriptAccessEnabled' => true,
 		);
 
-		$this->gtg_settings->set( $pre_migration_settings );
+		// Bypass sanitization to allow setting legacy health fields (which are stripped by the current class)
+		// in order to simulate the pre-migration state.
+		remove_all_filters( 'sanitize_option_' . Google_Tag_Gateway_Settings::OPTION );
+		$this->options->set( Google_Tag_Gateway_Settings::OPTION, $pre_migration_settings );
+		$this->gtg_settings->register();
 
 		$migration->migrate();
 
@@ -158,7 +166,11 @@ class Migration_N_E_X_TTest extends TestCase {
 			'isScriptAccessEnabled' => null,
 		);
 
-		$this->gtg_settings->set( $pre_migration_settings );
+		// Bypass sanitization to allow setting legacy health fields (which are stripped by the current class)
+		// in order to simulate the pre-migration state.
+		remove_all_filters( 'sanitize_option_' . Google_Tag_Gateway_Settings::OPTION );
+		$this->options->set( Google_Tag_Gateway_Settings::OPTION, $pre_migration_settings );
+		$this->gtg_settings->register();
 
 		$migration->migrate();
 
@@ -194,7 +206,11 @@ class Migration_N_E_X_TTest extends TestCase {
 			'isScriptAccessEnabled' => true,
 		);
 
-		$this->gtg_settings->set( $pre_migration_settings );
+		// Bypass sanitization to allow setting legacy health fields (which are stripped by the current class)
+		// in order to simulate the pre-migration state.
+		remove_all_filters( 'sanitize_option_' . Google_Tag_Gateway_Settings::OPTION );
+		$this->options->set( Google_Tag_Gateway_Settings::OPTION, $pre_migration_settings );
+		$this->gtg_settings->register();
 
 		$migration->migrate();
 
