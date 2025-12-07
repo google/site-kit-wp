@@ -148,12 +148,13 @@ class Migration_N_E_X_T {
 		}
 
 		// Handle isEnabled setting based on its value.
+		// Delete the option first to ensure we remove all deprecated fields.
+		// This avoids issues where sanitization safeguards might preserve old keys during an update.
+		$this->options->delete( Google_Tag_Gateway_Settings::OPTION );
+
 		if ( isset( $gtg_settings['isEnabled'] ) && true === $gtg_settings['isEnabled'] ) {
 			// Keep isEnabled: true as explicit user choice.
 			$this->gtg_settings->set( array( 'isEnabled' => true ) );
-		} else {
-			// Remove the entire GTG settings option (treat as default state).
-			$this->options->delete( Google_Tag_Gateway_Settings::OPTION );
 		}
 	}
 }
