@@ -39,10 +39,6 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Cell, Row } from '@/js/material-components';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
-import EmailReportingCardNotice, {
-	EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM,
-} from '@/js/components/email-reporting/notices/EmailReportingCardNotice';
-import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/notices/AnalyticsDisconnectedNotice';
 
 export default function SettingsEmailReporting( { loading = false } ) {
 	const isEnabled = useSelect( ( select ) =>
@@ -55,12 +51,6 @@ export default function SettingsEmailReporting( { loading = false } ) {
 
 	const isSubscribed = useSelect( ( select ) =>
 		select( CORE_USER ).isEmailReportingSubscribed()
-	);
-
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM
-		)
 	);
 
 	const { setEmailReportingEnabled, saveEmailReportingSettings } =
@@ -80,6 +70,8 @@ export default function SettingsEmailReporting( { loading = false } ) {
 	if ( loading || settings === undefined ) {
 		return null;
 	}
+
+	const isDismissed = true;
 
 	return (
 		<Fragment>
@@ -125,9 +117,7 @@ export default function SettingsEmailReporting( { loading = false } ) {
 				! isSubscribed &&
 				isDismissed === false && (
 					<Row className="googlesitekit-settings-email-reporting__manage">
-						<Cell size={ 12 }>
-							<EmailReportingCardNotice />
-						</Cell>
+						<Cell size={ 12 }></Cell>
 					</Row>
 				) }
 			{ /* Show manage email reports link if notice is dismissed or user is already subscribed */ }
@@ -146,7 +136,6 @@ export default function SettingsEmailReporting( { loading = false } ) {
 						</Cell>
 					</Row>
 				) }
-			<AnalyticsDisconnectedNotice />
 		</Fragment>
 	);
 }
