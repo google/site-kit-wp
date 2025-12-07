@@ -24,10 +24,10 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/Notices/AnalyticsDisconnectedNotice';
-import EmailReportingDisabledNotice from '@/js/components/email-reporting/Notices/EmailReportingDisabledNotice';
-import EmailReportingDisabledViewOnlyNotice from '@/js/components/email-reporting/Notices/EmailReportingDisabledViewOnlyNotice';
-import SetupAnalyticsNotice from '@/js/components/email-reporting/Notices/SetupAnalyticsNotice';
+import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/notices/AnalyticsDisconnectedNotice';
+import EmailReportingDisabledNotice from '@/js/components/email-reporting/notices/EmailReportingDisabledNotice';
+import EmailReportingDisabledViewOnlyNotice from '@/js/components/email-reporting/notices/EmailReportingDisabledViewOnlyNotice';
+import SetupAnalyticsNotice from '@/js/components/email-reporting/notices/SetupAnalyticsNotice';
 
 export default function Notices() {
 	return (
