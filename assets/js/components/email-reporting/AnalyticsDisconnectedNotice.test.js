@@ -71,7 +71,9 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: true,
 		} );
-		registry.dispatch( CORE_SITE ).receiveGetWasAnalytics4Connected( true );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetWasAnalytics4Connected( { wasConnected: true } );
 	} );
 
 	it( 'renders the notice when email reporting is enabled, analytics is disconnected but was once connected and notice is not dismissed', () => {
@@ -183,7 +185,7 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 	it( 'does not render when analytics was never connected', () => {
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( false );
+			.receiveGetWasAnalytics4Connected( { wasConnected: false } );
 
 		const { container } = render( <AnalyticsDisconnectedNotice />, {
 			registry,
