@@ -60,7 +60,9 @@ class Google_Tag_Gateway_Health extends Setting {
 	 */
 	protected function get_sanitize_callback() {
 		return function ( $value ) {
-			$new_value = $this->get();
+			$current = $this->get();
+			// Ensure we have an array to work with (handle case where option doesn't exist yet).
+			$new_value = is_array( $current ) ? $current : $this->get_default();
 
 			if ( isset( $value['isUpstreamHealthy'] ) ) {
 				$new_value['isUpstreamHealthy'] = (bool) $value['isUpstreamHealthy'];
