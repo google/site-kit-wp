@@ -1,37 +1,49 @@
 {
-	"compilerOptions": {
-		"allowJs": true,
-		"baseUrl": ".",
-		"checkJs": false,
-		"esModuleInterop": true,
-		"jsx": "preserve",
-		"noImplicitAny": true,
-		"noEmit": true,
-		"paths": {
-			"@/*": [ "./assets/*" ],
-			"googlesitekit-api": [ "./assets/js/googlesitekit-api" ],
-			"googlesitekit-components": [
-				"./assets/js/googlesitekit-components"
-			],
-			"googlesitekit-data": [ "./assets/js/googlesitekit-data" ],
-			"googlesitekit-modules": [ "./assets/js/googlesitekit-modules" ],
-			"googlesitekit-notifications": [
-				"./assets/js/googlesitekit-notifications"
-			],
-			"googlesitekit-widgets": [ "./assets/js/googlesitekit-widgets" ]
-		},
-		"resolveJsonModule": true,
-		"skipLibCheck": true,
-		"strictNullChecks": true,
-		"target": "es5"
-	},
-	"include": [ "assets/js/types" ],
-	"exclude": [
-		"coverage",
-		"dist",
-		"node_modules",
-		"php-scoper",
-		"third-party",
-		"vendor"
-	]
+  "compilerOptions": {
+    "allowJs": true,
+    "baseUrl": ".",
+    "checkJs": false,
+    "esModuleInterop": true,
+    "jsx": "preserve",
+    "noImplicitAny": true,
+    "noEmit": true,
+    "paths": {
+      "@/*": [
+        "./assets/*"
+      ],
+      "googlesitekit-api": [
+        "./assets/js/googlesitekit-api"
+      ],
+      "googlesitekit-components": [
+        "./assets/js/googlesitekit-components"
+      ],
+      "googlesitekit-data": [
+        "./assets/js/googlesitekit-data"
+      ],
+      "googlesitekit-modules": [
+        "./assets/js/googlesitekit-modules"
+      ],
+      "googlesitekit-notifications": [
+        "./assets/js/googlesitekit-notifications"
+      ],
+      "googlesitekit-widgets": [
+        "./assets/js/googlesitekit-widgets"
+      ],
+    },
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "target": "es5"
+  },
+  "include": [
+    "assets/js/types"
+  ],
+  "exclude": [
+    "coverage",
+    "dist",
+    "node_modules",
+    "php-scoper",
+    "third-party",
+    "vendor"
+  ]
 }
