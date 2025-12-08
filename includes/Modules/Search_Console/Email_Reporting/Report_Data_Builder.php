@@ -86,7 +86,14 @@ class Report_Data_Builder {
 		$search_console_data = $this->processor->sort_rows_by_date( $search_console_data );
 
 		$preferred_key = $this->processor->get_preferred_key( $section_key );
-		$row_data      = $this->processor->collect_row_data( $search_console_data, $preferred_key );
+		$row_metric    = ( 'top_ctr_keywords' === $section_key ) ? 'ctr' : 'clicks';
+
+		if ( null === $preferred_key ) {
+			// Sort list sections by the primary metric before limiting/formatting.
+			$search_console_data = $this->processor->sort_rows_by_field( $search_console_data, $row_metric, 'desc' );
+		}
+
+		$row_data = $this->processor->collect_row_data( $search_console_data, $preferred_key, $row_metric );
 
 		if ( null !== $preferred_key ) {
 			return $this->build_totals_section_payload( $search_console_data, $section_key, $preferred_key, $row_data['title'], $current_period );
@@ -195,8 +202,9 @@ class Report_Data_Builder {
 		}
 
 		if ( ! empty( $row_metric_values ) && ! empty( $dimension_values ) ) {
-			$values      = $row_metric_values;
-			$trends      = array_fill( 0, count( $values ), null );
+			$values = $row_metric_values;
+			// No compare-period data is available for list sections; treat them as new (100% increase).
+			$trends      = array_fill( 0, count( $values ), 100 );
 			$labels      = array( 'clicks' );
 			$value_types = array( 'TYPE_STANDARD' );
 		} elseif ( empty( $labels ) ) {
@@ -205,7 +213,11 @@ class Report_Data_Builder {
 			$values = array_values( $values_by_key );
 		}
 
-		return array(
+		if ( null === $trends && ! empty( $values ) ) {
+			$trends = array_fill( 0, count( $values ), 100 );
+		}
+
+		$payload = array(
 			'section_key'      => $section_key,
 			'title'            => $title,
 			'labels'           => $labels,
@@ -218,5 +230,20 @@ class Report_Data_Builder {
 			'dimension_values' => $dimension_values,
 			'date_range'       => null,
 		);
+
+		if ( 'top_ctr_keywords' === $section_key && ! empty( $payload['values'] ) ) {
+			$payload['values'] = array_map(
+				function ( $value ) {
+					if ( null === $value || '' === $value ) {
+						return $value;
+					}
+
+					return round( (float) $value * 100, 1 ) . '%';
+				},
+				$payload['values']
+			);
+		}
+
+		return $payload;
 	}
 }

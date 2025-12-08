@@ -58,7 +58,7 @@ class Report_Options extends Base_Report_Options {
 			'startDate'  => $current_range['startDate'],
 			'endDate'    => $current_range['endDate'],
 			'dimensions' => 'query',
-			'limit'      => 10,
+			'rowLimit'   => 10,
 		);
 	}
 
@@ -76,7 +76,7 @@ class Report_Options extends Base_Report_Options {
 			'startDate'  => $current_range['startDate'],
 			'endDate'    => $current_range['endDate'],
 			'dimensions' => 'page',
-			'limit'      => 10,
+			'rowLimit'   => 10,
 		);
 	}
 

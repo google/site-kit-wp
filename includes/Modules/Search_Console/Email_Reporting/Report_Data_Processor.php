@@ -315,16 +315,16 @@ class Report_Data_Processor {
 	 *
 	 * @param array       $rows          Normalized Search Console rows.
 	 * @param string|null $preferred_key Preferred metric key or null for list sections.
+	 * @param string|null $row_metric_field Optional. Metric field to collect for row metrics. Default clicks.
 	 * @return array Collected row data.
 	 */
-	public function collect_row_data( array $rows, $preferred_key ) {
+	public function collect_row_data( array $rows, $preferred_key, $row_metric_field = 'clicks' ) {
 		$labels            = array();
 		$values_by_key     = array();
 		$value_types       = array();
 		$title             = '';
 		$dimension_values  = array();
 		$row_metric_values = array();
-		$row_metric_field  = 'clicks';
 
 		foreach ( $rows as $row ) {
 			if ( '' === $title && isset( $row['title'] ) && is_string( $row['title'] ) ) {
