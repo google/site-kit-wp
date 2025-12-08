@@ -124,15 +124,20 @@ class Migration_N_E_X_T {
 			return;
 		}
 
-		// Get the existing GTG settings.
-		$gtg_settings = $this->gtg_settings->get();
+		// Get the existing GTG settings directly from options to preserve old health properties.
+		// Using $this->gtg_settings->get() would apply sanitization and strip out the old properties.
+		$gtg_settings = $this->options->get( Google_Tag_Gateway_Settings::OPTION );
 
 		if ( ! is_array( $gtg_settings ) || empty( $gtg_settings ) ) {
 			return;
 		}
 
 		// Migrate health data to new health option.
-		$health_data = array();
+		// Start with default null values, then override with migrated values if they exist.
+		$health_data = array(
+			'isUpstreamHealthy' => null,
+			'isMpathHealthy'    => null,
+		);
 
 		if ( array_key_exists( 'isGTGHealthy', $gtg_settings ) ) {
 			$health_data['isUpstreamHealthy'] = $gtg_settings['isGTGHealthy'];
@@ -143,9 +148,7 @@ class Migration_N_E_X_T {
 		}
 
 		// Save migrated health data.
-		if ( ! empty( $health_data ) ) {
-			$this->gtg_health->set( array_merge( $this->gtg_health->get(), $health_data ) );
-		}
+		$this->gtg_health->set( $health_data );
 
 		// Handle isEnabled setting based on its value.
 		// Delete the option first to ensure we remove all deprecated fields.
