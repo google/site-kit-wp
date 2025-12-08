@@ -226,6 +226,18 @@ class Report_Options extends Base_Report_Options {
 	}
 
 	/**
+	 * Gets resource names for Site Kit provided audiences (new/returning).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of audience resource names.
+	 */
+	public function get_site_kit_audience_resource_names() {
+		$map = $this->audience_config->get_site_kit_audience_map();
+		return array_values( $map );
+	}
+
+	/**
 	 * Gets report options for the traffic channels by visitor count section.
 	 *
 	 * @since 1.167.0
