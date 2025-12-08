@@ -92,10 +92,13 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 	} );
 
 	it( 'renders the view only description without action buttons when the user is view only', () => {
-		const { getByText } = render( <AnalyticsDisconnectedNotice />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-		} );
+		const { getByText, container } = render(
+			<AnalyticsDisconnectedNotice />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
 
 		// Title and description should be present.
 		expect( getByText( /Analytics is disconnected/i ) ).toBeInTheDocument();
@@ -107,8 +110,8 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 
 		// CTA button should not be present.
 		expect(
-			document.querySelector( '.google-sitekit__cta-button' )
-		).toBeInTheDocument();
+			container.querySelector( '.googlesitekit-notice__cta-button' )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'renders the "Reconnect Analytics" button and activates the module on click', async () => {
