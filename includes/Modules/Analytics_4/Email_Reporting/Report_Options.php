@@ -279,7 +279,8 @@ class Report_Options extends Base_Report_Options {
 				),
 				'limit'         => 3,
 				'keepEmptyRows' => false,
-			)
+			),
+			true
 		);
 	}
 
