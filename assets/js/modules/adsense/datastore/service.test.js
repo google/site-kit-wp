@@ -71,8 +71,10 @@ describe( 'module/adsense service store', () => {
 					pathname: '/accountchooser',
 				} );
 				expect( serviceURL ).toMatchQueryParameters( {
-					continue: 'https://www.google.com/adsense/new/u/0',
+					continue:
+						'https://www.google.com/adsense/new/u/0?utm_source=sitekit',
 					Email: 'admin@example.com',
+					utm_source: 'sitekit',
 				} );
 			} );
 
