@@ -37,13 +37,25 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import useViewContext from '@/js/hooks/useViewContext';
 import useWidget from '@/js/googlesitekit/widgets/hooks/useWidget';
 
-function SourceLink( { name, href, className, external } ) {
+export interface SourceLinkProps {
+	name?: string;
+	href?: string;
+	className?: string;
+	external?: boolean;
+}
+
+function SourceLink( {
+	name = '',
+	href = '',
+	className = '',
+	external = false,
+}: SourceLinkProps ) {
 	const viewContext = useViewContext();
 	const viewOnlyDashboard = useViewOnly();
 	const widget = useWidget();
 
 	const handleClick = useCallback( () => {
-		if ( ! widget.slug ) {
+		if ( ! widget.slug || ! viewContext ) {
 			return;
 		}
 
@@ -70,6 +82,7 @@ function SourceLink( { name, href, className, external } ) {
 					a: (
 						<Link
 							key="link"
+							// @ts-expect-error `Link` component is not currently typed.
 							href={ href }
 							external={ external }
 							onClick={ handleClick }
@@ -86,13 +99,6 @@ SourceLink.propTypes = {
 	href: PropTypes.string,
 	className: PropTypes.string,
 	external: PropTypes.bool,
-};
-
-SourceLink.defaultProps = {
-	name: '',
-	href: '',
-	className: '',
-	external: false,
 };
 
 export default SourceLink;
