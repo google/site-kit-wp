@@ -19,14 +19,23 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../tests/js/test-utils';
+import { render, fireEvent } from '../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import { Provider as WidgetContextProvider } from '@/js/googlesitekit/widgets/components/WidgetContext';
+import * as tracking from '@/js/util/tracking';
 import SourceLink from './SourceLink';
 
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 describe( 'SourceLink', () => {
+	afterEach( () => {
+		mockTrackEvent.mockClear();
+	} );
+
 	it( 'should not render the SourceLink when the view context is "view only"', () => {
 		const { container } = render(
 			<SourceLink
@@ -57,5 +66,56 @@ describe( 'SourceLink', () => {
 
 		expect( container ).toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).not.toBeNull();
+	} );
+
+	it( 'should track event when SourceLink is clicked within a widget', () => {
+		const widgetSlug = 'test-widget-slug';
+		const mockWidget = {
+			slug: widgetSlug,
+		};
+
+		const { container } = render(
+			<WidgetContextProvider value={ mockWidget }>
+				<SourceLink
+					name="Analytics"
+					href="https://analytics.google.com/test"
+					external
+				/>
+			</WidgetContextProvider>,
+			{
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		const link = container.querySelector( 'a' );
+		expect( link ).not.toBeNull();
+
+		fireEvent.click( link );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_widget`,
+			'click_source_link',
+			widgetSlug
+		);
+	} );
+
+	it( 'should not track event when SourceLink is clicked without widget context', () => {
+		const { container } = render(
+			<SourceLink
+				name="Analytics"
+				href="https://analytics.google.com/test"
+				external
+			/>,
+			{
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		const link = container.querySelector( 'a' );
+		expect( link ).not.toBeNull();
+
+		fireEvent.click( link );
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 } );
