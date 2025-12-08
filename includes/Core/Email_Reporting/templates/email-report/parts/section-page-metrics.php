@@ -33,8 +33,8 @@ $part_labels = array(
 	'top_ctr_keywords'                                 => __( 'Keywords with highest CTR in Search', 'google-site-kit' ),
 	'popular_content'                                  => __( 'Pages with the most pageviews', 'google-site-kit' ),
 	'top_pages_by_clicks'                              => __( 'Pages with the most clicks from Search', 'google-site-kit' ),
-	'top_authors_by_pageviews'                         => __( 'Top authors by pageviews', 'google-site-kit' ),
-	'top_categories_by_pageviews'                      => __( 'Top categories by pageviews', 'google-site-kit' ),
+	'top_authors'                                      => __( 'Top authors by pageviews', 'google-site-kit' ),
+	'top_categories'                                   => __( 'Top categories by pageviews', 'google-site-kit' ),
 	'search_keywords_with_the_biggest_increase_in_ctr' => __( 'Search keywords with the biggest increase in CTR', 'google-site-kit' ),
 	'pages_with_the_biggest_increase_in_search_clicks' => __( 'Pages with the biggest increase in Search clicks', 'google-site-kit' ),
 );
