@@ -92,7 +92,7 @@ describe( 'SetupAnalyticsNotice', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'renders the "Conect Analytics" button and activates the module on click', async () => {
+	it( 'renders the "Connect Analytics" button and activates the module on click', async () => {
 		const moduleActivationEndpoint = RegExp(
 			'google-site-kit/v1/core/modules/data/activation'
 		);
