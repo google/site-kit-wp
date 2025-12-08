@@ -33,10 +33,10 @@ import Link from '@/js/components/Link';
 import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
 
-function HelpMenuLink( { children, href, gaEventLabel } ) {
+function HelpMenuLink( { children, href, gaEventLabel, onClick } ) {
 	const viewContext = useViewContext();
 
-	const onClick = useCallback( async () => {
+	const handleClick = useCallback( async () => {
 		if ( gaEventLabel ) {
 			await trackEvent(
 				`${ viewContext }_headerbar_helpmenu`,
@@ -44,7 +44,9 @@ function HelpMenuLink( { children, href, gaEventLabel } ) {
 				gaEventLabel
 			);
 		}
-	}, [ gaEventLabel, viewContext ] );
+
+		onClick?.();
+	}, [ gaEventLabel, viewContext, onClick ] );
 
 	return (
 		<li className="googlesitekit-help-menu-link mdc-list-item" role="none">
@@ -52,7 +54,7 @@ function HelpMenuLink( { children, href, gaEventLabel } ) {
 				className="mdc-list-item__text"
 				href={ href }
 				role="menuitem"
-				onClick={ onClick }
+				onClick={ handleClick }
 				external
 				hideExternalIndicator
 			>
@@ -64,8 +66,9 @@ function HelpMenuLink( { children, href, gaEventLabel } ) {
 
 HelpMenuLink.propTypes = {
 	children: PropTypes.node.isRequired,
-	href: PropTypes.string.isRequired,
+	href: PropTypes.string,
 	gaEventLabel: PropTypes.string,
+	onClick: PropTypes.func,
 };
 
 export default HelpMenuLink;
