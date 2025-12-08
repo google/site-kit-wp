@@ -195,8 +195,7 @@ const baseSelectors = {
 	 * @return {boolean} TRUE if email reporting is enabled, otherwise FALSE.
 	 */
 	isEmailReportingEnabled( state ) {
-		const settings = state.emailReporting?.settings;
-		return !! settings?.enabled;
+		return state.emailReporting?.settings?.enabled;
 	},
 
 	/**
