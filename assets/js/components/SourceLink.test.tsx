@@ -24,7 +24,10 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
-import { Provider as WidgetContextProvider } from '@/js/googlesitekit/widgets/components/WidgetContext';
+import {
+	Provider as WidgetContextProvider,
+	type WidgetContextValue,
+} from '@/js/googlesitekit/widgets/components/WidgetContext';
 import * as tracking from '@/js/util/tracking';
 import SourceLink from './SourceLink';
 
@@ -46,7 +49,9 @@ describe( 'SourceLink', () => {
 			{
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}
-		);
+			// The `render` return type is not yet typed.
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		) as any;
 
 		expect( container ).not.toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).toBeNull();
@@ -62,7 +67,9 @@ describe( 'SourceLink', () => {
 			{
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
-		);
+			// The `render` return type is not yet typed.
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		) as any;
 
 		expect( container ).toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).not.toBeNull();
@@ -70,7 +77,7 @@ describe( 'SourceLink', () => {
 
 	it( 'should track event when SourceLink is clicked within a widget', () => {
 		const widgetSlug = 'test-widget-slug';
-		const mockWidget = {
+		const mockWidget: WidgetContextValue = {
 			slug: widgetSlug,
 		};
 
@@ -85,7 +92,9 @@ describe( 'SourceLink', () => {
 			{
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
-		);
+			// The `render` return type is not yet typed.
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		) as any;
 
 		const link = container.querySelector( 'a' );
 		expect( link ).not.toBeNull();
@@ -109,7 +118,9 @@ describe( 'SourceLink', () => {
 			{
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
-		);
+			// The `render` return type is not yet typed.
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		) as any;
 
 		const link = container.querySelector( 'a' );
 		expect( link ).not.toBeNull();
