@@ -2382,7 +2382,7 @@ describe( 'core/modules modules', () => {
 						.select( CORE_MODULES )
 						.getDetailsLinkURL( MODULE_SLUG_SEARCH_CONSOLE )
 				).toBe(
-					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fexample.com&Email=test%40example.com'
+					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fexample.com%3Futm_source%3Dsitekit&Email=test%40example.com&utm_source=sitekit'
 				);
 			} );
 

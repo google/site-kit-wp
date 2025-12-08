@@ -196,7 +196,7 @@ class Sections_Map {
 	protected function get_attention_section() {
 		return array(
 			'whats_grabbing_their_attention' => array(
-				'title'            => esc_html__( "What's grabbing their attention?", 'google-site-kit' ),
+				'title'            => esc_html__( 'What’s grabbing their attention?', 'google-site-kit' ),
 				'icon'             => 'views',
 				'section_template' => 'section-page-metrics',
 				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),

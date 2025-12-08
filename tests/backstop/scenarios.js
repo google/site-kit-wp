@@ -56,7 +56,7 @@ storyFiles.forEach( ( storyFile ) => {
 
 	const ast = parser.parse( code, {
 		sourceType: 'module',
-		plugins: [ 'jsx' ],
+		plugins: [ 'jsx', 'typescript' ],
 	} );
 
 	const stories = {};

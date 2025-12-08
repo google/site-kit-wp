@@ -96,6 +96,29 @@ class WooCommerceTest extends TestCase {
 		$this->assertEquals( 'purchase', $events[1], 'Expected purchase event, got ' . $events[1] );
 	}
 
+	public function test_error_when_not_woocommerce_product() {
+		$this->woocommerce->register_hooks();
+
+		$product = array();
+
+		$result = apply_filters(
+			'woocommerce_loop_add_to_cart_link',
+			sprintf(
+				'<a href="%s" %s data-quantity="%s" class="%s" %s>%s</a>',
+				esc_url( 'http://test.com' ),
+				'',
+				esc_attr( 1 ),
+				esc_attr( 'button' ),
+				'',
+				esc_html( 'add to cart' )
+			),
+			$product,
+			array()
+		);
+
+		$this->assertEquals( $result, '<a href="http://test.com"  data-quantity="1" class="button" >add to cart</a>', 'Expected a link and not an exception.' );
+	}
+
 	/**
 	 * @dataProvider wgai_active_event_names
 	 */
