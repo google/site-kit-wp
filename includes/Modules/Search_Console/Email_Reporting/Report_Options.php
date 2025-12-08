@@ -45,6 +45,17 @@ class Report_Options extends Base_Report_Options {
 	}
 
 	/**
+	 * Gets compare period range values.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Compare period range array.
+	 */
+	public function get_compare_range() {
+		return $this->get_compare_range_values();
+	}
+
+	/**
 	 * Gets report options for keywords with highest CTR.
 	 *
 	 * @since 1.167.0
