@@ -84,7 +84,7 @@ class Report_Options extends Base_Report_Options {
 				'dimensionFilters' => array(
 					'eventName' => $this->ecommerce_events,
 				),
-				'keepEmptyRows'    => false,
+				'keepEmptyRows'    => true,
 			),
 			true
 		);
@@ -113,7 +113,7 @@ class Report_Options extends Base_Report_Options {
 					),
 				),
 				'limit'         => 5,
-				'keepEmptyRows' => false,
+				'keepEmptyRows' => true,
 			)
 		);
 	}
@@ -141,7 +141,7 @@ class Report_Options extends Base_Report_Options {
 					),
 				),
 				'limit'         => 5,
-				'keepEmptyRows' => false,
+				'keepEmptyRows' => true,
 			)
 		);
 	}
@@ -214,7 +214,7 @@ class Report_Options extends Base_Report_Options {
 				'dimensionFilters' => array(
 					'audienceResourceName' => $audience_data['resource_names'],
 				),
-				'keepEmptyRows'    => false,
+				'keepEmptyRows'    => true,
 			),
 			true
 		);
@@ -260,7 +260,7 @@ class Report_Options extends Base_Report_Options {
 					),
 				),
 				'limit'         => 3,
-				'keepEmptyRows' => false,
+				'keepEmptyRows' => true,
 			),
 			true
 		);
@@ -290,7 +290,7 @@ class Report_Options extends Base_Report_Options {
 					),
 				),
 				'limit'         => 3,
-				'keepEmptyRows' => false,
+				'keepEmptyRows' => true,
 			),
 			true
 		);
@@ -306,10 +306,10 @@ class Report_Options extends Base_Report_Options {
 	public function get_top_authors_options() {
 		return $this->with_current_range(
 			array(
-				'metrics'       => array(
+				'metrics'          => array(
 					array( 'name' => 'screenPageViews' ),
 				),
-				'dimensions'    => array(
+				'dimensions'       => array(
 					array(
 						'name' => sprintf(
 							'customEvent:%s',
@@ -317,15 +317,22 @@ class Report_Options extends Base_Report_Options {
 						),
 					),
 				),
-				'orderby'       => array(
+				'dimensionFilters' => array(
+					sprintf( 'customEvent:%s', Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR ) => array(
+						'filterType'    => 'emptyFilter',
+						'notExpression' => true,
+					),
+				),
+				'orderby'          => array(
 					array(
 						'metric' => array( 'metricName' => 'screenPageViews' ),
 						'desc'   => true,
 					),
 				),
-				'limit'         => 3,
-				'keepEmptyRows' => false,
-			)
+				'limit'            => 3,
+				'keepEmptyRows'    => true,
+			),
+			true
 		);
 	}
 
@@ -339,10 +346,10 @@ class Report_Options extends Base_Report_Options {
 	public function get_top_categories_options() {
 		return $this->with_current_range(
 			array(
-				'metrics'       => array(
+				'metrics'          => array(
 					array( 'name' => 'screenPageViews' ),
 				),
-				'dimensions'    => array(
+				'dimensions'       => array(
 					array(
 						'name' => sprintf(
 							'customEvent:%s',
@@ -350,15 +357,22 @@ class Report_Options extends Base_Report_Options {
 						),
 					),
 				),
-				'orderby'       => array(
+				'dimensionFilters' => array(
+					sprintf( 'customEvent:%s', Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES ) => array(
+						'filterType'    => 'emptyFilter',
+						'notExpression' => true,
+					),
+				),
+				'orderby'          => array(
 					array(
 						'metric' => array( 'metricName' => 'screenPageViews' ),
 						'desc'   => true,
 					),
 				),
-				'limit'         => 3,
-				'keepEmptyRows' => false,
-			)
+				'limit'            => 3,
+				'keepEmptyRows'    => true,
+			),
+			true
 		);
 	}
 
@@ -389,7 +403,7 @@ class Report_Options extends Base_Report_Options {
 							'value' => $resource_name,
 						),
 					),
-					'keepEmptyRows'    => false,
+					'keepEmptyRows'    => true,
 				),
 				true
 			);
@@ -408,7 +422,7 @@ class Report_Options extends Base_Report_Options {
 						'value' => $fallback_segment,
 					),
 				),
-				'keepEmptyRows'    => false,
+				'keepEmptyRows'    => true,
 			),
 			true
 		);
