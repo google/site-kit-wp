@@ -74,6 +74,24 @@ class Report_Options extends Base_Report_Options {
 	}
 
 	/**
+	 * Gets report options for keywords with biggest CTR increase.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Report request options array.
+	 */
+	public function get_keywords_ctr_increase_options() {
+		$current_range = $this->get_current_range_values();
+
+		return array(
+			'startDate'  => $current_range['startDate'],
+			'endDate'    => $current_range['endDate'],
+			'dimensions' => 'query',
+			'rowLimit'   => 50,
+		);
+	}
+
+	/**
 	 * Gets report options for the pages with most clicks.
 	 *
 	 * @since 1.167.0
@@ -88,6 +106,24 @@ class Report_Options extends Base_Report_Options {
 			'endDate'    => $current_range['endDate'],
 			'dimensions' => 'page',
 			'rowLimit'   => 10,
+		);
+	}
+
+	/**
+	 * Gets report options for pages with biggest clicks increase.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Report request options array.
+	 */
+	public function get_pages_clicks_increase_options() {
+		$current_range = $this->get_current_range_values();
+
+		return array(
+			'startDate'  => $current_range['startDate'],
+			'endDate'    => $current_range['endDate'],
+			'dimensions' => 'page',
+			'rowLimit'   => 50,
 		);
 	}
 
