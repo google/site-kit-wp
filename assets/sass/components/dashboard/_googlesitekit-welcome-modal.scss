@@ -31,8 +31,9 @@
 	.googlesitekit-welcome-modal__graphic {
 		background-image: linear-gradient(to bottom, $c-site-kit-sk-50, $c-white);
 		max-height: 200px;
+		position: relative;
 
-		svg {
+		> svg {
 			max-width: 491px;
 		}
 	}
