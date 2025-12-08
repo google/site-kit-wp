@@ -22,7 +22,7 @@ $section_parts = $section['section_parts'];
 
 // Get the first item's change_context for the subtitle.
 $first_part      = reset( $section_parts );
-$first_data_item = ! empty( $first_part['data'] ) ? reset( $first_part['data'] ) : array();
+$first_data_item = ! empty( $first_part['data'] ) ? $first_part['data'] : array();
 $subtitle        = $first_data_item['change_context'] ?? '';
 
 /**
@@ -64,9 +64,7 @@ $part_labels = array(
 					continue;
 				}
 
-				// Get change_context from the first item in the data array.
-				$first_item     = reset( $data );
-				$change_context = $first_item['change_context'] ?? '';
+				$change_context = $data['change_context'] ?? '';
 				?>
 			<table role="presentation" width="100%" style="margin-bottom:16px;">
 				<tr>
