@@ -277,10 +277,12 @@ class Email_Reporting_Data_Requests {
 		$report_options = new Search_Console_Report_Options( $date_range );
 
 		$requests = array(
-			'total_impressions'   => $report_options->get_total_impressions_options(),
-			'total_clicks'        => $report_options->get_total_clicks_options(),
-			'top_ctr_keywords'    => $report_options->get_top_ctr_keywords_options(),
-			'top_pages_by_clicks' => $report_options->get_top_pages_by_clicks_options(),
+			'total_impressions'     => $report_options->get_total_impressions_options(),
+			'total_clicks'          => $report_options->get_total_clicks_options(),
+			'top_ctr_keywords'      => $report_options->get_top_ctr_keywords_options(),
+			'top_pages_by_clicks'   => $report_options->get_top_pages_by_clicks_options(),
+			'keywords_ctr_increase' => $report_options->get_keywords_ctr_increase_options(),
+			'pages_clicks_increase' => $report_options->get_pages_clicks_increase_options(),
 		);
 
 		$payload       = array();
@@ -294,7 +296,7 @@ class Email_Reporting_Data_Requests {
 			}
 
 			// Fetch compare period for list sections to compute trends.
-			if ( in_array( $key, array( 'top_ctr_keywords', 'top_pages_by_clicks' ), true ) && ! empty( $compare_range ) ) {
+			if ( in_array( $key, array( 'top_ctr_keywords', 'top_pages_by_clicks', 'keywords_ctr_increase', 'pages_clicks_increase' ), true ) && ! empty( $compare_range ) ) {
 				$compare_options              = $options;
 				$compare_options['startDate'] = $compare_range['startDate'];
 				$compare_options['endDate']   = $compare_range['endDate'];

@@ -89,6 +89,19 @@ class Report_Data_Builder {
 
 		// When we have compare/current bundled, merge to compute per-key trends.
 		if ( isset( $search_console_data['current'] ) ) {
+			if ( in_array( $section_key, array( 'keywords_ctr_increase', 'pages_clicks_increase' ), true ) ) {
+				$metric_field = 'keywords_ctr_increase' === $section_key ? 'ctr' : 'clicks';
+				$is_ctr       = 'keywords_ctr_increase' === $section_key;
+
+				return $this->build_growth_list_with_compare(
+					$section_key,
+					$search_console_data['current'],
+					$search_console_data['compare'] ?? array(),
+					$metric_field,
+					$is_ctr
+				);
+			}
+
 			return $this->build_list_with_compare(
 				$section_key,
 				$search_console_data['current'],
@@ -315,6 +328,105 @@ class Report_Data_Builder {
 			}
 
 			$dimension_values[] = $this->processor->format_dimension_value( $key );
+		}
+
+		if ( empty( $labels ) ) {
+			return null;
+		}
+
+		return array(
+			'section_key'      => $section_key,
+			'title'            => '',
+			'labels'           => $labels,
+			'event_names'      => $labels,
+			'values'           => $values,
+			'value_types'      => array_fill( 0, count( $values ), 'TYPE_STANDARD' ),
+			'trends'           => $trends,
+			'trend_types'      => array_fill( 0, count( $trends ), 'TYPE_STANDARD' ),
+			'dimensions'       => array(),
+			'dimension_values' => $dimension_values,
+			'date_range'       => null,
+		);
+	}
+
+	/**
+	 * Builds list payload for biggest increases (CTR or clicks) using current/compare rows.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $section_key  Section key.
+	 * @param array  $current_rows Current period rows.
+	 * @param array  $compare_rows Compare period rows.
+	 * @param string $metric_field Metric field name (ctr or clicks).
+	 * @param bool   $is_ctr       Whether the metric is CTR.
+	 * @return array|null Section payload.
+	 */
+	protected function build_growth_list_with_compare( $section_key, $current_rows, $compare_rows, $metric_field, $is_ctr ) {
+		$current_rows = $this->processor->normalize_rows( $current_rows );
+		$compare_rows = $this->processor->normalize_rows( $compare_rows );
+
+		$compare_by_key = array();
+		foreach ( $compare_rows as $row ) {
+			$key = isset( $row['keys'][0] ) ? $row['keys'][0] : '';
+			if ( '' === $key ) {
+				continue;
+			}
+			$compare_by_key[ $key ] = isset( $row[ $metric_field ] ) ? (float) $row[ $metric_field ] : 0.0;
+		}
+
+		$entries = array();
+
+		foreach ( $current_rows as $row ) {
+			$key = isset( $row['keys'][0] ) ? $row['keys'][0] : '';
+			if ( '' === $key ) {
+				continue;
+			}
+
+			$current_value = isset( $row[ $metric_field ] ) ? (float) $row[ $metric_field ] : 0.0;
+			$compare_value = $compare_by_key[ $key ] ?? null;
+			$delta         = ( null === $compare_value ) ? $current_value : $current_value - (float) $compare_value;
+
+			// Only keep increases.
+			if ( $delta <= 0 ) {
+				continue;
+			}
+
+			$entries[] = array(
+				'label'           => $key,
+				'value'           => $current_value,
+				'delta'           => $delta,
+				'dimension_value' => $this->processor->format_dimension_value( $key ),
+			);
+		}
+
+		if ( empty( $entries ) ) {
+			return null;
+		}
+
+		usort(
+			$entries,
+			static function ( $a, $b ) {
+				return $a['delta'] < $b['delta'] ? 1 : -1;
+			}
+		);
+
+		$entries = array_slice( $entries, 0, 3 );
+
+		$labels           = array();
+		$values           = array();
+		$trends           = array();
+		$dimension_values = array();
+
+		foreach ( $entries as $entry ) {
+			$labels[] = $entry['label'];
+			if ( $is_ctr ) {
+				$values[] = round( $entry['value'] * 100, 1 ) . '%';
+				$trends[] = round( $entry['delta'] * 100, 1 );
+			} else {
+				$values[] = $entry['value'];
+				$trends[] = $entry['delta'];
+			}
+			$dimension_values[] = $entry['dimension_value'];
 		}
 
 		if ( empty( $labels ) ) {
