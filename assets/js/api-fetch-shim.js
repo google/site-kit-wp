@@ -25,6 +25,9 @@ import apiFetch from '@wordpress/api-fetch__non-shim';
  * Internal dependencies
  */
 import createPreloadingMiddleware from './googlesitekit/api/middleware/preloading.js';
+import createDedupeMiddleware, {
+	logDuplicate,
+} from '@/js/googlesitekit/api/middleware/deduplication';
 
 const { nonce, nonceEndpoint, preloadedData, rootURL } =
 	global._googlesitekitAPIFetchData || {};
@@ -32,11 +35,15 @@ const { nonce, nonceEndpoint, preloadedData, rootURL } =
 apiFetch.nonceEndpoint = nonceEndpoint;
 apiFetch.nonceMiddleware = apiFetch.createNonceMiddleware( nonce );
 apiFetch.rootURLMiddleware = apiFetch.createRootURLMiddleware( rootURL );
+apiFetch.dedupeMiddleware = createDedupeMiddleware( {
+	onDuplicate: logDuplicate,
+} );
 apiFetch.preloadingMiddleware = createPreloadingMiddleware( preloadedData );
 
 apiFetch.use( apiFetch.nonceMiddleware );
 apiFetch.use( apiFetch.mediaUploadMiddleware );
 apiFetch.use( apiFetch.rootURLMiddleware );
+apiFetch.use( apiFetch.dedupeMiddleware );
 apiFetch.use( apiFetch.preloadingMiddleware );
 
 export * from '@wordpress/api-fetch__non-shim';
