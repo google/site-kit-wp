@@ -217,6 +217,7 @@ class Email_Reporting_Data_Requests {
 			'traffic_channels' => $report_options->get_traffic_channels_options(),
 			'popular_content'  => $report_options->get_popular_content_options(),
 		);
+		$custom_titles  = array();
 
 		$conversion_events = $module->get_settings()->get()['detectedEvents'];
 		$has_add_to_cart   = in_array( 'add_to_cart', $conversion_events, true );
@@ -237,6 +238,9 @@ class Email_Reporting_Data_Requests {
 		if ( $this->is_audience_segmentation_enabled() ) {
 			$requests['new_visitors']       = $report_options->get_new_visitors_options();
 			$requests['returning_visitors'] = $report_options->get_returning_visitors_options();
+
+			list( $custom_requests, $custom_titles ) = $this->build_custom_audience_requests( $report_options );
+			$requests                                = array_merge( $requests, $custom_requests );
 		}
 
 		if ( $this->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR ) ) {
@@ -248,6 +252,14 @@ class Email_Reporting_Data_Requests {
 		}
 
 		$payload = $this->collect_batch_reports( $module, $requests );
+
+		if ( isset( $custom_titles ) && is_array( $payload ) ) {
+			foreach ( $custom_titles as $request_key => $display_name ) {
+				if ( isset( $payload[ $request_key ] ) && is_array( $payload[ $request_key ] ) ) {
+					$payload[ $request_key ]['title'] = $display_name;
+				}
+			}
+		}
 
 		return $payload;
 	}
@@ -398,6 +410,50 @@ class Email_Reporting_Data_Requests {
 	}
 
 	/**
+	 * Builds custom audience Analytics requests and titles.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Analytics_4_Report_Options $report_options Report options instance.
+	 * @return array Tuple of request map and titles map.
+	 */
+	private function build_custom_audience_requests( Analytics_4_Report_Options $report_options ) {
+		$custom_requests = array();
+		$custom_titles   = array();
+
+		$custom_audiences = $report_options->get_custom_audiences_options();
+		if ( empty( $custom_audiences['options'] ) || empty( $custom_audiences['audiences'] ) ) {
+			return array( $custom_requests, $custom_titles );
+		}
+
+		$site_kit_audience_resources = $report_options->get_site_kit_audience_resource_names();
+		$base_options                = $custom_audiences['options'];
+
+		foreach ( $custom_audiences['audiences'] as $index => $audience ) {
+			$resource_name = $audience['resourceName'] ?? '';
+			$display_name  = $audience['displayName'] ?? $resource_name;
+
+			if ( '' === $resource_name ) {
+				continue;
+			}
+
+			// Avoid duplicating Site Kit-provided audiences (new/returning).
+			if ( in_array( $resource_name, $site_kit_audience_resources, true ) ) {
+				continue;
+			}
+
+			$custom_options = $base_options;
+			$custom_options['dimensionFilters']['audienceResourceName'] = array( $resource_name );
+
+			$request_key                     = sprintf( 'custom_audience_%d', $index );
+			$custom_requests[ $request_key ] = $custom_options;
+			$custom_titles[ $request_key ]   = $display_name;
+		}
+
+		return array( $custom_requests, $custom_titles );
+	}
+
+	/**
 	 * Collects Analytics reports in batches of up to five requests.
 	 *
 	 * @since n.e.x.t
@@ -426,11 +482,11 @@ class Email_Reporting_Data_Requests {
 				return $response;
 			}
 
-				$reports = $this->normalize_batch_reports( $response );
+			$reports = $this->normalize_batch_reports( $response );
 
-				// GA4 batch responses can occasionally return fewer reports than requested (e.g. invalid options dropped). Use the first report as a fallback to keep all requested keys populated.
-				$first_report = reset( $reports );
-				$fallback     = false === $first_report ? array() : $first_report;
+			// GA4 batch responses can occasionally return fewer reports than requested (e.g. invalid options dropped). Use the first report as a fallback to keep all requested keys populated.
+			$first_report = reset( $reports );
+			$fallback     = false === $first_report ? array() : $first_report;
 
 			foreach ( $request_keys as $index => $key ) {
 				if ( isset( $reports[ $index ] ) ) {
@@ -439,15 +495,15 @@ class Email_Reporting_Data_Requests {
 				}
 
 				if ( isset( $reports[ $key ] ) ) {
-						$payload[ $key ] = $reports[ $key ];
-						continue;
+					$payload[ $key ] = $reports[ $key ];
+					continue;
 				}
 
 				$payload[ $key ] = $fallback;
 			}
 		}
 
-			return $payload;
+		return $payload;
 	}
 
 	/**
