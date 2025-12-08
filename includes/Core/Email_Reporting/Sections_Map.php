@@ -226,10 +226,6 @@ class Sections_Map {
 	 * @return array Section configuration array.
 	 */
 	protected function get_growth_drivers_section() {
-		return array();
-
-		// @TODO to be enabled once data requests for the new SC metrics are implemented.
-		// phpcs:disable Squiz.PHP.NonExecutableCode.Unreachable
 		return array(
 			'what_is_driving_growth_and_bringing_more_visitors' => array(
 				'title'            => esc_html__( 'What is driving growth and bringing more visitors?', 'google-site-kit' ),
@@ -237,15 +233,14 @@ class Sections_Map {
 				'section_template' => 'section-page-metrics',
 				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
 				'section_parts'    => array(
-					'search_keywords_with_the_biggest_increase_in_ctr' => array(
-						'data' => $this->payload['search_keywords_with_the_biggest_increase_in_ctr'] ?? array(),
+					'keywords_ctr_increase' => array(
+						'data' => $this->payload['keywords_ctr_increase'] ?? array(),
 					),
-					'pages_with_the_biggest_increase_in_search_clicks' => array(
-						'data' => $this->payload['pages_with_the_biggest_increase_in_search_clicks'] ?? array(),
+					'pages_clicks_increase' => array(
+						'data' => $this->payload['pages_clicks_increase'] ?? array(),
 					),
 				),
 			),
 		);
-		// phpcs:enable Squiz.PHP.NonExecutableCode.Unreachable
 	}
 }
