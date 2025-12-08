@@ -11,6 +11,12 @@
 namespace Google\Site_Kit\Modules\Analytics_4\Email_Reporting;
 
 use Google\Site_Kit\Core\Email_Reporting\Email_Report_Payload_Processor;
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\User\Audience_Settings as User_Audience_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Audience_Settings as Module_Audience_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Audience_Config;
 
 /**
  * Builds Analytics 4 email section payloads.
@@ -38,16 +44,35 @@ class Report_Data_Builder {
 	protected $data_processor;
 
 	/**
+	 * Optional map of audience resource name to display name.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	protected $audience_display_map;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Email_Report_Payload_Processor|null $report_processor Optional. Report processor instance.
-	 * @param Report_Data_Processor|null          $data_processor    Optional. Analytics data processor.
+	 * @param Email_Report_Payload_Processor|null $report_processor    Optional. Report processor instance.
+	 * @param Report_Data_Processor|null          $data_processor       Optional. Analytics data processor.
+	 * @param array                               $audience_display_map Optional. Audience resource => display name map.
+	 * @param Context|null                        $context             Optional. Plugin context for audience lookup.
 	 */
-	public function __construct( ?Email_Report_Payload_Processor $report_processor = null, ?Report_Data_Processor $data_processor = null ) {
-		$this->report_processor = $report_processor ?? new Email_Report_Payload_Processor();
-		$this->data_processor   = $data_processor ?? new Report_Data_Processor();
+	public function __construct( ?Email_Report_Payload_Processor $report_processor = null, ?Report_Data_Processor $data_processor = null, array $audience_display_map = array(), ?Context $context = null ) {
+		$this->report_processor     = $report_processor ?? new Email_Report_Payload_Processor();
+		$this->data_processor       = $data_processor ?? new Report_Data_Processor();
+		$this->audience_display_map = $audience_display_map;
+
+		if ( empty( $this->audience_display_map ) && $context instanceof Context ) {
+			$audience_config            = new Audience_Config(
+				new User_Audience_Settings( new User_Options( $context ) ),
+				new Module_Audience_Settings( new Options( $context ) )
+			);
+			$this->audience_display_map = $audience_config->get_available_audience_display_map();
+		}
 	}
 
 	/**
@@ -163,6 +188,8 @@ class Report_Data_Builder {
 		list( $values, $trends ) = $this->report_processor->compute_metric_values_and_trends( $processed_report, $metric_names );
 		list( $values, $trends ) = $this->data_processor->apply_dimension_aggregates( $values, $trends, $dimension_values, $dimension_metrics, $metric_names );
 
+		list( $dimension_values, $labels ) = $this->maybe_format_audience_dimensions( $dimensions, $dimension_values, $labels );
+
 		return array(
 			'section_key'      => $section_key,
 			'title'            => $processed_report['metadata']['title'] ?? '',
@@ -192,5 +219,41 @@ class Report_Data_Builder {
 		}
 
 		return array_keys( $data ) === range( 0, count( $data ) - 1 );
+	}
+
+	/**
+	 * Formats audience dimension values and labels using stored display names.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $dimensions        Report dimensions.
+	 * @param array $dimension_values  Dimension values.
+	 * @param array $labels            Existing metric labels.
+	 * @return array Tuple of formatted dimension values and labels.
+	 */
+	protected function maybe_format_audience_dimensions( $dimensions, $dimension_values, $labels ) {
+		if ( empty( $dimensions ) || 'audienceResourceName' !== $dimensions[0] || empty( $dimension_values ) ) {
+			return array( $dimension_values, $labels );
+		}
+
+		$formatted_values = array_map(
+			function ( $dimension_value ) {
+				if ( is_array( $dimension_value ) ) {
+					return $dimension_value;
+				}
+
+				return $this->audience_display_map[ $dimension_value ] ?? $dimension_value;
+			},
+			$dimension_values
+		);
+
+		$labels = array_map(
+			function ( $dimension_value ) {
+				return is_array( $dimension_value ) ? ( $dimension_value['label'] ?? '' ) : $dimension_value;
+			},
+			$formatted_values
+		);
+
+		return array( $formatted_values, $labels );
 	}
 }

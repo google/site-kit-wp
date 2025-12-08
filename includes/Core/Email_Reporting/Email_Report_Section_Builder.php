@@ -90,9 +90,10 @@ class Email_Report_Section_Builder {
 	 * @param Email_Report_Payload_Processor|null $report_processor Optional. Report processor instance.
 	 */
 	public function __construct( Context $context, ?Email_Report_Payload_Processor $report_processor = null ) {
-		$this->context                  = $context;
-		$this->report_processor         = $report_processor ?? new Email_Report_Payload_Processor();
-		$this->analytics_builder        = new Analytics_Report_Data_Builder( $this->report_processor, new Analytics_Report_Data_Processor() );
+		$this->context          = $context;
+		$this->report_processor = $report_processor ?? new Email_Report_Payload_Processor();
+
+		$this->analytics_builder        = new Analytics_Report_Data_Builder( $this->report_processor, new Analytics_Report_Data_Processor(), array(), $context );
 		$this->search_console_processor = new Report_Data_Processor();
 		$this->search_console_builder   = new Search_Console_Report_Data_Builder( $this->search_console_processor );
 		$this->label_translations       = array(
