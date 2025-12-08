@@ -17,9 +17,7 @@
  */
 
 .googlesitekit-plugin {
-
 	.googlesitekit-help-menu-link {
-
 		padding: 0;
 
 		&:hover {
@@ -39,6 +37,35 @@
 			height: 100%;
 			padding: 0 16px;
 			width: 100%;
+		}
+	}
+
+	.googlesitekit-help-menu {
+		box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15), 0 2px 4px 0 rgba(0, 0, 0, 0.15);
+
+		.mdc-list {
+			padding: 12px 0;
+		}
+
+		.googlesitekit-cta-link svg {
+			fill: none;
+		}
+
+		.googlesitekit-cta-link {
+			letter-spacing: 0.25px;
+			line-height: 20px;
+		}
+
+		.googlesitekit-cta-link .googlesitekit-icon-wrapper {
+			margin-right: 16px !important;
+		}
+
+		.googlesitekit-help-menu-link .googlesitekit-cta-link {
+			padding: 0 24px;
+		}
+
+		.mdc-list-item {
+			height: 44px;
 		}
 	}
 }

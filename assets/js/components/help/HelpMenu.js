@@ -40,13 +40,20 @@ import { trackEvent } from '@/js/util';
 import HelpMenuLink from './HelpMenuLink';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useViewContext from '@/js/hooks/useViewContext';
+import { useFeature } from '@/js/hooks/useFeature';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import FeedbackIcon from '@/svg/icons/feedback.svg';
+import CompassIcon from '@/svg/icons/compass.svg';
+import SupportIcon from '@/svg/icons/support.svg';
+import DocumentationIcon from '@/svg/icons/documentation.svg';
+import classnames from 'classnames';
 
 export default function HelpMenu( { children } ) {
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
 	const viewContext = useViewContext();
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () =>
@@ -75,6 +82,63 @@ export default function HelpMenu( { children } ) {
 		);
 	} );
 
+	const menuItems = [
+		{
+			gaEventLabel: 'fix_common_issues',
+			href: fixCommonIssuesURL,
+			children: __( 'Fix common issues', 'google-site-kit' ),
+		},
+		{
+			gaEventLabel: 'documentation',
+			href: 'https://sitekit.withgoogle.com/documentation/',
+			children: __( 'Read help docs', 'google-site-kit' ),
+		},
+		{
+			gaEventLabel: 'support_forum',
+			href: 'https://wordpress.org/support/plugin/google-site-kit/',
+			children: __( 'Get support', 'google-site-kit' ),
+		},
+		...( adSenseModuleActive
+			? [
+					{
+						gaEventLabel: 'adsense_help',
+						href: 'https://support.google.com/adsense/',
+						children: __(
+							'Get help with AdSense',
+							'google-site-kit'
+						),
+					},
+			  ]
+			: [] ),
+	];
+
+	const setupFlowRefreshMenuItems = [
+		{
+			gaEventLabel: 'browse_documentation',
+			href: 'https://sitekit.withgoogle.com/documentation/',
+			icon: <DocumentationIcon width={ 24 } height={ 24 } />,
+			children: __( 'Browse documentation', 'google-site-kit' ),
+		},
+		{
+			gaEventLabel: 'support_forum',
+			href: 'https://sitekit.withgoogle.com/documentation/',
+			icon: <SupportIcon width={ 24 } height={ 24 } />,
+			children: __( 'Get free support', 'google-site-kit' ),
+		},
+		{
+			gaEventLabel: 'feature_tour',
+			onClick: () => {},
+			icon: <CompassIcon width={ 24 } height={ 24 } />,
+			children: __( 'Start a feature tour', 'google-site-kit' ),
+		},
+		{
+			gaEventLabel: 'feedback',
+			href: 'https://wordpress.org/support/plugin/google-site-kit/reviews/',
+			icon: <FeedbackIcon width={ 24 } height={ 24 } />,
+			children: __( 'Send feedback', 'google-site-kit' ),
+		},
+	];
+
 	return (
 		<div
 			ref={ menuWrapperRef }
@@ -92,38 +156,20 @@ export default function HelpMenu( { children } ) {
 				text
 			/>
 			<Menu
-				className="googlesitekit-width-auto"
+				className={ classnames( 'googlesitekit-width-auto', {
+					'googlesitekit-help-menu': setupFlowRefreshEnabled,
+				} ) }
 				menuOpen={ menuOpen }
 				id="googlesitekit-help-menu"
 				onSelected={ handleMenuSelected }
 			>
 				{ children }
-				<HelpMenuLink
-					gaEventLabel="fix_common_issues"
-					href={ fixCommonIssuesURL }
-				>
-					{ __( 'Fix common issues', 'google-site-kit' ) }
-				</HelpMenuLink>
-				<HelpMenuLink
-					gaEventLabel="documentation"
-					href="https://sitekit.withgoogle.com/documentation/"
-				>
-					{ __( 'Read help docs', 'google-site-kit' ) }
-				</HelpMenuLink>
-				<HelpMenuLink
-					gaEventLabel="support_forum"
-					href="https://wordpress.org/support/plugin/google-site-kit/"
-				>
-					{ __( 'Get support', 'google-site-kit' ) }
-				</HelpMenuLink>
-				{ adSenseModuleActive && (
-					<HelpMenuLink
-						gaEventLabel="adsense_help"
-						href="https://support.google.com/adsense/"
-					>
-						{ __( 'Get help with AdSense', 'google-site-kit' ) }
-					</HelpMenuLink>
-				) }
+				{ ( setupFlowRefreshEnabled
+					? setupFlowRefreshMenuItems
+					: menuItems
+				).map( ( item, index ) => (
+					<HelpMenuLink key={ index } { ...item } />
+				) ) }
 			</Menu>
 		</div>
 	);
