@@ -112,8 +112,8 @@ class Email_Template_Formatter {
 	 * @param array  $date_range Date range.
 	 * @return array|WP_Error Template payload or WP_Error.
 	 */
-	public function build_template_payload( array $sections, $frequency, array $date_range ) {
-		$sections_payload = $this->prepare_sections_payload( $sections );
+	public function build_template_payload( $sections, $frequency, $date_range ) {
+		$sections_payload = $this->prepare_sections_payload( $sections, $date_range );
 
 		if ( empty( $sections_payload ) ) {
 			return new WP_Error(
@@ -133,11 +133,13 @@ class Email_Template_Formatter {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $sections Section instances.
+	 * @param array $sections   Section instances.
+	 * @param array $date_range Date range used for the report.
 	 * @return array Section payload for the template.
 	 */
-	private function prepare_sections_payload( array $sections ) {
-		$payload = array();
+	private function prepare_sections_payload( $sections, $date_range ) {
+		$payload        = array();
+		$change_context = $this->get_change_context_label( $date_range );
 
 		foreach ( $sections as $section ) {
 			if ( ! $section instanceof Email_Report_Data_Section_Part ) {
@@ -170,7 +172,7 @@ class Email_Template_Formatter {
 				'dimension_values' => $dimension_values ?? array(),
 				'change'           => $change,
 				'changes'          => $changes,
-				'change_context'   => __( 'Compared to previous period', 'google-site-kit' ),
+				'change_context'   => $change_context,
 			);
 		}
 
@@ -202,6 +204,66 @@ class Email_Template_Formatter {
 	}
 
 	/**
+	 * Builds a change context label based on the date range.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $date_range Date range.
+	 * @return string Change context label.
+	 */
+	private function get_change_context_label( array $date_range ) {
+		// Prefer the compare period length since the change badge references the previous window.
+		if ( ! empty( $date_range['compareStartDate'] ) && ! empty( $date_range['compareEndDate'] ) ) {
+			$days = $this->calculate_period_length_from_range(
+				array(
+					'startDate' => $date_range['compareStartDate'],
+					'endDate'   => $date_range['compareEndDate'],
+				)
+			);
+		} else {
+			$days = $this->calculate_period_length_from_range( $date_range );
+		}
+
+		if ( null === $days || $days <= 0 ) {
+			return __( 'Compared to previous period', 'google-site-kit' );
+		}
+
+		return sprintf(
+			/* translators: %s: Number of days. */
+			__( 'Compared to previous %s days', 'google-site-kit' ),
+			number_format_i18n( $days )
+		);
+	}
+
+	/**
+	 * Calculates inclusive day length from a date range.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $date_range Date range with startDate/endDate.
+	 * @return int|null Number of days or null on failure.
+	 */
+	private function calculate_period_length_from_range( $date_range ) {
+		if ( empty( $date_range['startDate'] ) || empty( $date_range['endDate'] ) ) {
+			return null;
+		}
+
+		try {
+			$start = new \DateTime( $date_range['startDate'] );
+			$end   = new \DateTime( $date_range['endDate'] );
+		} catch ( \Exception $e ) {
+			return null;
+		}
+
+		$diff = $start->diff( $end );
+		if ( false === $diff ) {
+			return null;
+		}
+
+		return $diff->days + 1;
+	}
+
+	/**
 	 * Builds template data for rendering.
 	 *
 	 * @since n.e.x.t
@@ -210,7 +272,7 @@ class Email_Template_Formatter {
 	 * @param array  $date_range Date range.
 	 * @return array Template data.
 	 */
-	private function prepare_template_data( $frequency, array $date_range ) {
+	private function prepare_template_data( $frequency, $date_range ) {
 		return array(
 			'subject'                => $this->build_subject( $frequency ),
 			'preheader'              => __( 'See the latest highlights from Site Kit.', 'google-site-kit' ),
@@ -219,7 +281,7 @@ class Email_Template_Formatter {
 			),
 			'date_range'             => array(
 				'label'   => $this->build_date_label( $date_range ),
-				'context' => __( 'Compared to previous period', 'google-site-kit' ),
+				'context' => $this->get_change_context_label( $date_range ),
 			),
 			'primary_call_to_action' => array(
 				'label' => __( 'View dashboard', 'google-site-kit' ),
