@@ -66,7 +66,7 @@ exports[`WelcomeModal should show the dashboard tour variant when Analytics is c
             <span
               class="mdc-button__label"
             >
-              Take the tour
+              Start tour
             </span>
           </button>
         </footer>
@@ -145,7 +145,7 @@ exports[`WelcomeModal should show the dashboard tour variant when Analytics is n
             <span
               class="mdc-button__label"
             >
-              Take the tour
+              Start tour
             </span>
           </button>
         </footer>

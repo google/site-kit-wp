@@ -136,7 +136,7 @@ export default function WelcomeModal() {
 						</Button>
 						{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
 						<Button onClick={ () => {} }>
-							{ __( 'Take the tour', 'google-site-kit' ) }
+							{ __( 'Start tour', 'google-site-kit' ) }
 						</Button>
 					</Fragment>
 				) }
