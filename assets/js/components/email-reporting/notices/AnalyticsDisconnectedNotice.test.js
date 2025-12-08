@@ -41,6 +41,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 
 describe( 'AnalyticsDisconnectedNotice', () => {
 	mockLocation();
@@ -88,6 +89,27 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 				/Email reports won’t include Analytics data and metrics/i
 			)
 		).toBeInTheDocument();
+	} );
+
+	it( 'renders the view only description without action buttons when the user is view only', () => {
+		const { getByText, container } = render(
+			<AnalyticsDisconnectedNotice />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		// Title and description should be present.
+		expect( getByText( /Analytics is disconnected/i ) ).toBeInTheDocument();
+		expect(
+			getByText(
+				/Email reports won’t include Analytics data and metrics. To fix the issue contact your administrator./i
+			)
+		).toBeInTheDocument();
+
+		// CTA button should not be present.
+		expect( container ).not.toHaveTextContent( 'Got it' );
 	} );
 
 	it( 'renders the "Reconnect Analytics" button and activates the module on click', async () => {
