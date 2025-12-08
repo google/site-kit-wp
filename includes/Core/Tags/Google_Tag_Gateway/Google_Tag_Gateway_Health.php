@@ -64,11 +64,11 @@ class Google_Tag_Gateway_Health extends Setting {
 			// Ensure we have an array to work with (handle case where option doesn't exist yet).
 			$new_value = is_array( $current ) ? $current : $this->get_default();
 
-			if ( isset( $value['isUpstreamHealthy'] ) ) {
+			if ( array_key_exists( 'isUpstreamHealthy', $value ) && null !== $value['isUpstreamHealthy'] ) {
 				$new_value['isUpstreamHealthy'] = (bool) $value['isUpstreamHealthy'];
 			}
 
-			if ( isset( $value['isMpathHealthy'] ) ) {
+			if ( array_key_exists( 'isMpathHealthy', $value ) && null !== $value['isMpathHealthy'] ) {
 				$new_value['isMpathHealthy'] = (bool) $value['isMpathHealthy'];
 			}
 
