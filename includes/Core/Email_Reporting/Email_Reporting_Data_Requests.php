@@ -283,13 +283,33 @@ class Email_Reporting_Data_Requests {
 			'top_pages_by_clicks' => $report_options->get_top_pages_by_clicks_options(),
 		);
 
-		$payload = array();
+		$payload       = array();
+		$compare_range = $report_options->get_compare_range();
 
 		foreach ( $requests as $key => $options ) {
 			$response = $module->get_data( 'searchanalytics', $options );
 
 			if ( is_wp_error( $response ) ) {
 				return $response;
+			}
+
+			// Fetch compare period for list sections to compute trends.
+			if ( in_array( $key, array( 'top_ctr_keywords', 'top_pages_by_clicks' ), true ) && ! empty( $compare_range ) ) {
+				$compare_options              = $options;
+				$compare_options['startDate'] = $compare_range['startDate'];
+				$compare_options['endDate']   = $compare_range['endDate'];
+
+				$compare_response = $module->get_data( 'searchanalytics', $compare_options );
+				if ( is_wp_error( $compare_response ) ) {
+					return $compare_response;
+				}
+
+				$payload[ $key ] = array(
+					'current' => $response,
+					'compare' => $compare_response,
+				);
+
+				continue;
 			}
 
 			$payload[ $key ] = $response;
