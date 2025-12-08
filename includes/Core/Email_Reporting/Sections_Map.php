@@ -68,9 +68,17 @@ class Sections_Map {
 			$this->get_growth_drivers_section()
 		);
 
+		// Prepend business growth section if available.
 		$business_growth = $this->get_business_growth_section();
 		if ( ! empty( $business_growth ) ) {
 			$sections = array_merge( $business_growth, $sections );
+		}
+
+		// Append growth drivers section if available. This is pure Search Console data,
+		// so if user does not have SC shared with them, this section will be empty.
+		$growth_drivers = $this->get_growth_drivers_section();
+		if ( ! empty( $growth_drivers ) ) {
+			$sections = array_merge( $sections, $growth_drivers );
 		}
 
 		return $sections;
@@ -226,6 +234,10 @@ class Sections_Map {
 	 * @return array Section configuration array.
 	 */
 	protected function get_growth_drivers_section() {
+		if ( empty( $this->payload['keywords_ctr_increase'] ) && empty( $this->payload['pages_clicks_increase'] ) ) {
+			return null;
+		}
+
 		return array(
 			'what_is_driving_growth_and_bringing_more_visitors' => array(
 				'title'            => esc_html__( 'What is driving growth and bringing more visitors?', 'google-site-kit' ),
