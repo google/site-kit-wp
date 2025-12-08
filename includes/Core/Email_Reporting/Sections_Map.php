@@ -226,6 +226,10 @@ class Sections_Map {
 	 * @return array Section configuration array.
 	 */
 	protected function get_growth_drivers_section() {
+		return array();
+
+		// @TODO to be enabled once data requests for the new SC metrics are implemented.
+		// phpcs:disable Squiz.PHP.NonExecutableCode.Unreachable
 		return array(
 			'what_is_driving_growth_and_bringing_more_visitors' => array(
 				'title'            => esc_html__( 'What is driving growth and bringing more visitors?', 'google-site-kit' ),
@@ -242,5 +246,6 @@ class Sections_Map {
 				),
 			),
 		);
+		// phpcs:enable Squiz.PHP.NonExecutableCode.Unreachable
 	}
 }
