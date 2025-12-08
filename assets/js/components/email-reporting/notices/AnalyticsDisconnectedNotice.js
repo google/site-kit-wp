@@ -86,13 +86,10 @@ export default function AnalyticsDisconnectedNotice() {
 	);
 
 	if ( isViewOnly ) {
-		description =
-			description +
-			'. ' +
-			__(
-				'To fix the issue contact your administrator.',
-				'google-site-kit'
-			);
+		description = __(
+			'Email reports won’t include Analytics data and metrics. To fix the issue contact your administrator.',
+			'google-site-kit'
+		);
 	}
 
 	return (
