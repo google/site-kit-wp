@@ -73,9 +73,13 @@ function createDedupeMiddleware(
 
 		// Ensure the request entry is removed once the request
 		// is completed regardless of any error.
-		promise.finally( () => {
-			concurrentRequests.delete( options );
-		} );
+		promise
+			.catch( () => {
+				// avoid an uncaught error here
+			} )
+			.finally( () => {
+				concurrentRequests.delete( options );
+			} );
 
 		return promise;
 	};
