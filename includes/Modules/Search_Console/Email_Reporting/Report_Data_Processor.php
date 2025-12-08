@@ -20,40 +20,6 @@ namespace Google\Site_Kit\Modules\Search_Console\Email_Reporting;
 class Report_Data_Processor {
 
 	/**
-	 * Sorts Search Console rows by date key (ascending).
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $rows Search Console rows (arrays or objects).
-	 * @return array Sorted rows.
-	 */
-	public function sort_rows_by_date( array $rows ) {
-		usort(
-			$rows,
-			static function ( $a, $b ) {
-				$a_key = '';
-				$b_key = '';
-
-				if ( is_array( $a ) && ! empty( $a['keys'][0] ) ) {
-					$a_key = $a['keys'][0];
-				} elseif ( is_object( $a ) && isset( $a->keys[0] ) ) {
-					$a_key = $a->keys[0];
-				}
-
-				if ( is_array( $b ) && ! empty( $b['keys'][0] ) ) {
-					$b_key = $b['keys'][0];
-				} elseif ( is_object( $b ) && isset( $b->keys[0] ) ) {
-					$b_key = $b->keys[0];
-				}
-
-				return strcmp( $a_key, $b_key );
-			}
-		);
-
-		return $rows;
-	}
-
-	/**
 	 * Sorts Search Console rows by a given field.
 	 *
 	 * @since 1.167.0
