@@ -53,8 +53,12 @@ class Report_Data_Builder {
 		$sections = array();
 
 		foreach ( $module_payload as $section_key => $section_data ) {
-			$rows = $this->processor->normalize_rows( $section_data );
-			$rows = $this->processor->sort_rows_by_date( $rows );
+			// If compare/current are provided (for list sections), pass through unchanged.
+			if ( is_array( $section_data ) && isset( $section_data['current'] ) ) {
+				$rows = $section_data;
+			} else {
+				$rows = $this->processor->normalize_rows( $section_data );
+			}
 			if ( empty( $rows ) ) {
 				continue;
 			}
@@ -83,7 +87,14 @@ class Report_Data_Builder {
 			return null;
 		}
 
-		$search_console_data = $this->processor->sort_rows_by_date( $search_console_data );
+		// When we have compare/current bundled, merge to compute per-key trends.
+		if ( isset( $search_console_data['current'] ) ) {
+			return $this->build_list_with_compare(
+				$section_key,
+				$search_console_data['current'],
+				$search_console_data['compare'] ?? array()
+			);
+		}
 
 		$preferred_key = $this->processor->get_preferred_key( $section_key );
 		$row_metric    = ( 'top_ctr_keywords' === $section_key ) ? 'ctr' : 'clicks';
@@ -245,5 +256,83 @@ class Report_Data_Builder {
 		}
 
 		return $payload;
+	}
+
+	/**
+	 * Builds list payload using current/compare Search Console rows.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $section_key   Section key.
+	 * @param array  $current_rows  Current period rows.
+	 * @param array  $compare_rows  Compare period rows.
+	 * @return array|null Section payload.
+	 */
+	protected function build_list_with_compare( $section_key, $current_rows, $compare_rows ) {
+		$current_rows = $this->processor->normalize_rows( $current_rows );
+		$compare_rows = $this->processor->normalize_rows( $compare_rows );
+
+		$metric_field     = ( 'top_ctr_keywords' === $section_key ) ? 'ctr' : 'clicks';
+		$is_ctr_section   = 'top_ctr_keywords' === $section_key;
+		$current_rows     = $this->processor->sort_rows_by_field( $current_rows, $metric_field, 'desc' );
+		$current_rows     = array_slice( $current_rows, 0, 3 );
+		$compare_by_key   = array();
+		$labels           = array();
+		$values           = array();
+		$trends           = array();
+		$dimension_values = array();
+
+		foreach ( $compare_rows as $row ) {
+			$key = isset( $row['keys'][0] ) ? $row['keys'][0] : '';
+			if ( '' === $key ) {
+				continue;
+			}
+			$compare_by_key[ $key ] = $row[ $metric_field ] ?? 0;
+		}
+
+		foreach ( $current_rows as $row ) {
+			$key = isset( $row['keys'][0] ) ? $row['keys'][0] : '';
+			if ( '' === $key ) {
+				continue;
+			}
+
+			$current_value = isset( $row[ $metric_field ] ) ? (float) $row[ $metric_field ] : 0.0;
+			$compare_value = isset( $compare_by_key[ $key ] ) ? (float) $compare_by_key[ $key ] : null;
+
+			$labels[] = $key;
+
+			if ( $is_ctr_section ) {
+				$values[] = round( $current_value * 100, 1 ) . '%';
+			} else {
+				$values[] = $current_value;
+			}
+
+			// If compare value is null or zero, treat as new (100% increase).
+			if ( null === $compare_value || 0.0 === $compare_value ) {
+				$trends[] = 100;
+			} else {
+				$trends[] = ( ( $current_value - $compare_value ) / $compare_value ) * 100;
+			}
+
+			$dimension_values[] = $this->processor->format_dimension_value( $key );
+		}
+
+		if ( empty( $labels ) ) {
+			return null;
+		}
+
+		return array(
+			'section_key'      => $section_key,
+			'title'            => '',
+			'labels'           => $labels,
+			'event_names'      => $labels,
+			'values'           => $values,
+			'value_types'      => array_fill( 0, count( $values ), 'TYPE_STANDARD' ),
+			'trends'           => $trends,
+			'trend_types'      => array_fill( 0, count( $trends ), 'TYPE_STANDARD' ),
+			'dimensions'       => array(),
+			'dimension_values' => $dimension_values,
+			'date_range'       => null,
+		);
 	}
 }
