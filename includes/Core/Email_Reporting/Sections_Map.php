@@ -201,17 +201,17 @@ class Sections_Map {
 				'section_template' => 'section-page-metrics',
 				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
 				'section_parts'    => array(
-					'popular_content'             => array(
+					'popular_content'     => array(
 						'data' => $this->payload['popular_content'] ?? array(),
 					),
-					'top_pages_by_clicks'         => array(
+					'top_pages_by_clicks' => array(
 						'data' => $this->payload['top_pages_by_clicks'] ?? array(),
 					),
-					'top_authors_by_pageviews'    => array(
-						'data' => $this->payload['top_authors_by_pageviews'] ?? array(),
+					'top_authors'         => array(
+						'data' => $this->payload['top_authors'] ?? array(),
 					),
-					'top_categories_by_pageviews' => array(
-						'data' => $this->payload['top_categories_by_pageviews'] ?? array(),
+					'top_categories'      => array(
+						'data' => $this->payload['top_categories'] ?? array(),
 					),
 				),
 			),
