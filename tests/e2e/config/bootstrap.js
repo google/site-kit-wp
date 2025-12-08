@@ -142,7 +142,7 @@ const IGNORE_CONSOLE_MESSAGES = [
 	// test and usually make E2E tests fail erroneously.
 	{
 		matcher: 'includes',
-		pattern: 'You are probably offline.',
+		pattern: 'Could not get a valid response from the server.', // Formerly "You are probably offline."
 	},
 	{
 		matcher: 'includes',
