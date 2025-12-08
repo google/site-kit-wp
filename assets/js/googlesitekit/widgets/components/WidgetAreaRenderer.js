@@ -54,6 +54,7 @@ import {
 	BREAKPOINT_SMALL,
 } from '@/js/hooks/useBreakpoint';
 import InViewProvider from '@/js/components/InViewProvider';
+import { Provider as WidgetContextProvider } from './WidgetContext';
 import WidgetRenderer from './WidgetRenderer';
 import WidgetCellWrapper from './WidgetCellWrapper';
 import WidgetErrorHandler from '@/js/components/WidgetErrorHandler';
@@ -178,20 +179,22 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 			key={ `${ widget.slug }-wrapper` }
 			gridColumnWidth={ gridColumnWidths[ i ] }
 		>
-			<WidgetErrorHandler slug={ widget.slug }>
-				<WidgetRenderer
-					OverrideComponent={
-						overrideComponents[ i ]
-							? () => {
-									const { Component, metadata } =
-										overrideComponents[ i ];
-									return <Component { ...metadata } />;
-							  }
-							: undefined
-					}
-					slug={ widget.slug }
-				/>
-			</WidgetErrorHandler>
+			<WidgetContextProvider value={ widget }>
+				<WidgetErrorHandler slug={ widget.slug }>
+					<WidgetRenderer
+						OverrideComponent={
+							overrideComponents[ i ]
+								? () => {
+										const { Component, metadata } =
+											overrideComponents[ i ];
+										return <Component { ...metadata } />;
+								  }
+								: undefined
+						}
+						slug={ widget.slug }
+					/>
+				</WidgetErrorHandler>
+			</WidgetContextProvider>
 		</WidgetCellWrapper>
 	) );
 
