@@ -42,7 +42,7 @@ $section_parts = $section['section_parts'];
 					<td style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E;">
 						<?php echo esc_html( $section_parts['total_conversion_events']['data']['label'] ); ?>
 					</td>
-					<td style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; text-align: right;">
+					<td width="110" style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; text-align: right; width: 110px;">
 						<?php echo esc_html( $section_parts['total_conversion_events']['data']['change_context'] ); ?>
 					</td>
 				</tr>
