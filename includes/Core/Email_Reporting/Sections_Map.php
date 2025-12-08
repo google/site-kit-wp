@@ -119,7 +119,7 @@ class Sections_Map {
 	 * @return array Section configuration array.
 	 */
 	protected function get_visitors_section() {
-		return array(
+		$sections = array(
 			'how_many_people_are_finding_and_visiting_my_site' => array(
 				'title'            => esc_html__( 'How many people are finding and visiting my site?', 'google-site-kit' ),
 				'icon'             => 'visitors',
@@ -135,9 +135,6 @@ class Sections_Map {
 					'returning_visitors' => array(
 						'data' => $this->payload['returning_visitors'] ?? array(),
 					),
-					'subscribers'        => array(
-						'data' => $this->payload['subscribers'] ?? array(),
-					),
 					'total_impressions'  => array(
 						'data' => $this->payload['total_impressions'] ?? array(),
 					),
@@ -147,6 +144,20 @@ class Sections_Map {
 				),
 			),
 		);
+		// Dynamically append custom audience parts when available.
+		if ( is_array( $this->payload ) ) {
+			foreach ( $this->payload as $key => $data ) {
+				if ( 0 !== strpos( $key, 'custom_audience_' ) ) {
+					continue;
+				}
+
+				$sections['how_many_people_are_finding_and_visiting_my_site']['section_parts'][ $key ] = array(
+					'data' => $data,
+				);
+			}
+		}
+
+		return $sections;
 	}
 
 	/**
