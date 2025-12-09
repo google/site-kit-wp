@@ -35,6 +35,9 @@
     "strictNullChecks": true,
     "target": "es5"
   },
+  "include": [
+    "assets/js/types"
+  ],
   "exclude": [
     "coverage",
     "dist",

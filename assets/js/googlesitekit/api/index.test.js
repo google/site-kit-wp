@@ -941,7 +941,7 @@ describe( 'googlesitekit.api', () => {
 				controller.abort();
 				await promise;
 			} catch ( err ) {
-				expect( err.code ).toBe( 'fetch_error' );
+				expect( err.name ).toBe( 'AbortError' );
 				expect( console ).not.toHaveErrored();
 			}
 		} );
