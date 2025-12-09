@@ -49,7 +49,10 @@ export const selectors = {
 					'https://developers.google.com/identity/site-kit';
 
 				if ( query ) {
-					serviceURL = addQueryArgs( serviceURL, query );
+					serviceURL = addQueryArgs( serviceURL, {
+						...query,
+						utm_source: 'sitekit',
+					} );
 				}
 
 				if ( path ) {

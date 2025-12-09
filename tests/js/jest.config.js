@@ -30,7 +30,8 @@ module.exports = {
 			rootDir: '../../',
 			preset: getModuleAbsolutePath( '@wordpress/jest-preset-default' ),
 			transform: {
-				'^.+\\.[jt]sx?$': '<rootDir>/tests/js/babel-transform.js',
+				'^.+\\.(js|jsx|ts|tsx)$':
+					'<rootDir>/tests/js/babel-transform.js',
 			},
 			setupFiles: [
 				'<rootDir>/tests/js/setup-globals',
@@ -41,13 +42,13 @@ module.exports = {
 				'<rootDir>/tests/js/setup-before-after',
 			],
 			testMatch: [
-				'<rootDir>/assets/**/__tests__/**/*.{js,ts}',
-				'<rootDir>/assets/**/test/*.{js,ts}',
-				'<rootDir>/assets/**/?(*.)test.{js,ts}',
-				'<rootDir>/packages/**/__tests__/**/*.{js,ts}',
-				'<rootDir>/packages/**/test/*.{js,ts}',
-				'<rootDir>/packages/**/?(*.)test.{js,ts}',
-				'<rootDir>/tests/js/**/?(*.)test.{js,ts}',
+				'<rootDir>/assets/**/__tests__/**/*.{js,jsx,ts,tsx}',
+				'<rootDir>/assets/**/test/*.{js,jsx,ts,tsx}',
+				'<rootDir>/assets/**/?(*.)test.{js,jsx,ts,tsx}',
+				'<rootDir>/packages/**/__tests__/**/*.{js,jsx,ts,tsx}',
+				'<rootDir>/packages/**/test/*.{js,jsx,ts,tsx}',
+				'<rootDir>/packages/**/?(*.)test.{js,jsx,ts,tsx}',
+				'<rootDir>/tests/js/**/?(*.)test.{js,jsx,ts,tsx}',
 			],
 			testPathIgnorePatterns: [
 				'<rootDir>/.git',
@@ -82,9 +83,12 @@ module.exports = {
 			rootDir: '../../',
 			testEnvironment: 'node',
 			transform: {
-				'^.+\\.[jt]sx?$': '<rootDir>/tests/js/babel-transform.js',
+				'^.+\\.(js|jsx|ts|tsx)$':
+					'<rootDir>/tests/js/babel-transform.js',
 			},
-			testMatch: [ '<rootDir>/packages/eslint-plugin/**/?(*.)test.js' ],
+			testMatch: [
+				'<rootDir>/packages/eslint-plugin/**/?(*.)test.{js,jsx,ts,tsx}',
+			],
 			testPathIgnorePatterns: [
 				'<rootDir>/.git',
 				'<rootDir>/node_modules',

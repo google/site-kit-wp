@@ -45,7 +45,10 @@ export const selectors = {
 				let serviceURL = 'https://tagmanager.google.com/';
 
 				if ( query ) {
-					serviceURL = addQueryArgs( serviceURL, query );
+					serviceURL = addQueryArgs( serviceURL, {
+						...query,
+						utm_source: 'sitekit',
+					} );
 				}
 
 				if ( path ) {
