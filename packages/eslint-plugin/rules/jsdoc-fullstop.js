@@ -64,9 +64,13 @@ module.exports = iterateJsdoc(
 				tag.description.length &&
 				! tag.description.match( /\.$/gm )
 			) {
+				const tagSource = tag.source[ 0 ].source.replace(
+					/^\s*\*\s*/, // Remove the leading asterisk and whitespace.
+					''
+				);
 				context.report( {
 					data: { name: jsdocNode.name },
-					message: `The description for \`${ tag.source }\` should end with a period/full-stop.`,
+					message: `The description for \`${ tagSource }\` should end with a period/full-stop.`,
 					node: jsdocNode,
 				} );
 			}

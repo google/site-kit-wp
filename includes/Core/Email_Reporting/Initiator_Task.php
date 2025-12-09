@@ -85,7 +85,7 @@ class Initiator_Task {
 		}
 
 		$this->scheduler->schedule_worker( $batch_id, $frequency, $timestamp );
-		$this->scheduler->schedule_fallback( $frequency, $timestamp );
+		$this->scheduler->schedule_fallback( $batch_id, $frequency, $timestamp );
 	}
 
 	/**

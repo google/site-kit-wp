@@ -57,6 +57,7 @@ describe( 'ModuleSetup', () => {
 	} );
 
 	afterEach( () => {
+		mockTrackEvent.mockClear();
 		jest.resetAllMocks();
 	} );
 
@@ -202,6 +203,15 @@ describe( 'ModuleSetup', () => {
 
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			} );
+
+			it( 'tracks only the initial setup analytics view event', () => {
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MODULE_SETUP }_setup`,
+					'setup_flow_v3_view_analytics_step'
+				);
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			} );
 		} );
 
 		describe( 'not initial setup flow', () => {
@@ -256,6 +266,16 @@ describe( 'ModuleSetup', () => {
 
 			it( 'should match the snapshot', () => {
 				expect( container ).toMatchSnapshot();
+			} );
+
+			it( 'tracks only the generic module setup view event', () => {
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					'moduleSetup',
+					'view_module_setup',
+					MODULE_SLUG_ANALYTICS_4
+				);
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			} );
 		} );
 	} );

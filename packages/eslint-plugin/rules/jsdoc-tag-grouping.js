@@ -26,7 +26,7 @@ const {
 /**
  * Internal dependencies
  */
-const { findTagInGroup } = require( '../utils' );
+const { findTagInGroup, getJsdocContent } = require( '../utils' );
 
 module.exports = iterateJsdoc(
 	( { context, jsdoc, jsdocNode, utils } ) => {
@@ -92,8 +92,10 @@ module.exports = iterateJsdoc(
 			return;
 		}
 
+		const source = getJsdocContent( context, jsdocNode );
+
 		if (
-			! jsdoc.source.match(
+			! source.match(
 				new RegExp(
 					`@${ lastTagInFirstGroup }.*\\n\\n@${ firstTagInSecondGroup }`,
 					'gm'

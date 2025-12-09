@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { omit } from 'lodash';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -63,6 +64,7 @@ import {
 import WarningSVG from '@/svg/icons/warning.svg';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 export default function KeyMetricsSetupApp() {
 	const viewContext = useViewContext();
@@ -121,6 +123,17 @@ export default function KeyMetricsSetupApp() {
 
 	const isInitialSetupFlow = !! showProgress;
 
+	useMount( () => {
+		if ( isInitialSetupFlow ) {
+			trackEvent(
+				`${ viewContext }_setup`,
+				'setup_flow_v3_view_key_metrics_step'
+			);
+		} else {
+			trackEvent( viewContext, 'view_key_metrics_step' );
+		}
+	} );
+
 	const submitChanges = useCallback( async () => {
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
@@ -160,8 +173,31 @@ export default function KeyMetricsSetupApp() {
 			return;
 		}
 
+		if ( isInitialSetupFlow ) {
+			trackEvent(
+				`${ viewContext }_setup`,
+				'setup_flow_v3_complete_key_metrics_step'
+			);
+		} else {
+			trackEvent( viewContext, 'complete_key_metrics_step' );
+		}
+
 		submitChanges();
-	}, [ isBusy, isSyncing, submitChanges ] );
+	}, [ isBusy, isInitialSetupFlow, isSyncing, submitChanges, viewContext ] );
+
+	let gaTrackingEventArgs;
+
+	if ( isInitialSetupFlow ) {
+		gaTrackingEventArgs = {
+			category: `${ viewContext }_setup`,
+			action: 'setup_flow_v3_select_key_metrics_answer',
+		};
+	} else {
+		gaTrackingEventArgs = {
+			category: viewContext,
+			action: 'select_key_metrics_answer',
+		};
+	}
 
 	const { USER_INPUT_ANSWERS_PURPOSE } = getUserInputAnswers();
 
@@ -247,6 +283,9 @@ export default function KeyMetricsSetupApp() {
 											) }
 											descriptions={
 												USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS
+											}
+											gaTrackingEventArgs={
+												gaTrackingEventArgs
 											}
 										/>
 

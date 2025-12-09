@@ -50,7 +50,7 @@ import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
 	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
 } from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
+import { ADSENSE_NOTIFICATIONS } from '@/js/modules/adsense';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
@@ -65,7 +65,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		)( AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification );
 
 	const notification =
-		DEFAULT_NOTIFICATIONS[ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ];
+		ADSENSE_NOTIFICATIONS[ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ];
 
 	let registry;
 

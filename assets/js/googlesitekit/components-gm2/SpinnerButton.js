@@ -19,6 +19,7 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { pickBy } from 'lodash';
 
 /**
  * Internal dependencies
@@ -38,6 +39,8 @@ export default function SpinnerButton( props ) {
 		spinnerPosition = SPINNER_POSITION.AFTER,
 		...restProps
 	} = props;
+
+	const definedProps = pickBy( restProps, ( value ) => value !== undefined );
 
 	return (
 		<Button
@@ -63,7 +66,7 @@ export default function SpinnerButton( props ) {
 				) : undefined
 			}
 			onClick={ onClick }
-			{ ...restProps }
+			{ ...definedProps }
 		/>
 	);
 }
