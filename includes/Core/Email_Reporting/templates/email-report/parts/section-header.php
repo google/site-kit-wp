@@ -28,9 +28,9 @@
 				</tr>
 				<tr>
 					<td style="vertical-align:top;">
-						<div style="font-size:24px; line-height:32px; font-weight:500;">
-							<?php echo esc_html( $title ); ?>
-						</div>
+					<div style="font-size:18px; line-height:24px; font-weight:500;">
+						<?php echo esc_html( $title ); ?>
+					</div>
 						<div style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E;">
 							<?php echo esc_html( $subtitle ); ?>
 						</div>
