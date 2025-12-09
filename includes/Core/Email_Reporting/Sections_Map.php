@@ -62,8 +62,11 @@ class Sections_Map {
 	 */
 	public function get_sections() {
 		return array_merge(
-			$this->get_business_growth_section()
-			// TODO: Add each new section here in follow up issues which implement additional sections.
+			$this->get_business_growth_section(),
+			$this->get_visitors_section(),
+			$this->get_traffic_sources_section(),
+			$this->get_attention_section(),
+			$this->get_growth_drivers_section()
 		);
 	}
 
@@ -92,6 +95,128 @@ class Sections_Map {
 					'purchases'               => array(
 						'data'                => $this->payload['purchases'] ?? array(),
 						'top_traffic_channel' => $this->payload['purchases_top_traffic_channel'] ?? '',
+					),
+				),
+			),
+		);
+	}
+
+	/**
+	 * Gets the visitors section.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Section configuration array.
+	 */
+	protected function get_visitors_section() {
+		return array(
+			'how_many_people_are_finding_and_visiting_my_site' => array(
+				'title'            => esc_html__( 'How many people are finding and visiting my site?', 'google-site-kit' ),
+				'icon'             => 'visitors',
+				'section_template' => 'section-metrics',
+				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
+				'section_parts'    => array(
+					'total_visitors'              => array(
+						'data' => $this->payload['total_visitors'] ?? array(),
+					),
+					'new_visitors'                => array(
+						'data' => $this->payload['new_visitors'] ?? array(),
+					),
+					'returning_visitors'          => array(
+						'data' => $this->payload['returning_visitors'] ?? array(),
+					),
+					'subscribers'                 => array(
+						'data' => $this->payload['subscribers'] ?? array(),
+					),
+					'total_impressions_on_search' => array(
+						'data' => $this->payload['total_impressions_on_search'] ?? array(),
+					),
+					'total_clicks_from_search'    => array(
+						'data' => $this->payload['total_clicks_from_search'] ?? array(),
+					),
+				),
+			),
+		);
+	}
+
+	/**
+	 * Gets the traffic sources section.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Section configuration array.
+	 */
+	protected function get_traffic_sources_section() {
+		return array(
+			'how_are_people_finding_me' => array(
+				'title'            => esc_html__( 'How are people finding me?', 'google-site-kit' ),
+				'icon'             => 'search',
+				'section_template' => 'section-page-metrics',
+				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
+				'section_parts'    => array(
+					'traffic_channels_by_visitor_count'   => array(
+						'data' => $this->payload['traffic_channels_by_visitor_count'] ?? array(),
+					),
+					'keywords_with_highest_ctr_in_search' => array(
+						'data' => $this->payload['keywords_with_highest_ctr_in_search'] ?? array(),
+					),
+				),
+			),
+		);
+	}
+
+	/**
+	 * Gets the attention section.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Section configuration array.
+	 */
+	protected function get_attention_section() {
+		return array(
+			'whats_grabbing_their_attention' => array(
+				'title'            => esc_html__( 'What’s grabbing their attention?', 'google-site-kit' ),
+				'icon'             => 'views',
+				'section_template' => 'section-page-metrics',
+				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
+				'section_parts'    => array(
+					'pages_with_the_most_pageviews' => array(
+						'data' => $this->payload['pages_with_the_most_pageviews'] ?? array(),
+					),
+					'pages_with_the_most_clicks_from_search' => array(
+						'data' => $this->payload['pages_with_the_most_clicks_from_search'] ?? array(),
+					),
+					'top_authors_by_pageviews'      => array(
+						'data' => $this->payload['top_authors_by_pageviews'] ?? array(),
+					),
+					'top_categories_by_pageviews'   => array(
+						'data' => $this->payload['top_categories_by_pageviews'] ?? array(),
+					),
+				),
+			),
+		);
+	}
+
+	/**
+	 * Gets the growth drivers section.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Section configuration array.
+	 */
+	protected function get_growth_drivers_section() {
+		return array(
+			'what_is_driving_growth_and_bringing_more_visitors' => array(
+				'title'            => esc_html__( 'What is driving growth and bringing more visitors?', 'google-site-kit' ),
+				'icon'             => 'growth',
+				'section_template' => 'section-page-metrics',
+				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
+				'section_parts'    => array(
+					'search_keywords_with_the_biggest_increase_in_ctr' => array(
+						'data' => $this->payload['search_keywords_with_the_biggest_increase_in_ctr'] ?? array(),
+					),
+					'pages_with_the_biggest_increase_in_search_clicks' => array(
+						'data' => $this->payload['pages_with_the_biggest_increase_in_search_clicks'] ?? array(),
 					),
 				),
 			),
