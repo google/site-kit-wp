@@ -34,6 +34,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import Link from '@/js/components/Link';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 export const EMAIL_REPORTING_SETUP_ANALYTICS_NOTICE_DISMISSED_ITEM =
 	'email-reporting-setup-analytics-notice';
@@ -42,6 +43,8 @@ export default function SetupAnalyticsNotice() {
 	const isEmailReportingEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isEmailReportingEnabled()
 	);
+
+	const isViewOnly = useViewOnly();
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
@@ -75,6 +78,7 @@ export default function SetupAnalyticsNotice() {
 
 	if (
 		! isEmailReportingEnabled ||
+		isViewOnly ||
 		isDismissed !== false ||
 		isAnalyticsConnected ||
 		wasAnalyticsConnected
