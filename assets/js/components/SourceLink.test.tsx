@@ -49,8 +49,7 @@ describe( 'SourceLink', () => {
 			{
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}
-			// The `render` return type is not yet typed.
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
 		) as any;
 
 		expect( container ).not.toHaveTextContent( 'Analytics' );
@@ -67,8 +66,7 @@ describe( 'SourceLink', () => {
 			{
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
-			// The `render` return type is not yet typed.
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
 		) as any;
 
 		expect( container ).toHaveTextContent( 'Analytics' );
@@ -92,8 +90,7 @@ describe( 'SourceLink', () => {
 			{
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
-			// The `render` return type is not yet typed.
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
 		) as any;
 
 		const link = container.querySelector( 'a' );
@@ -118,8 +115,7 @@ describe( 'SourceLink', () => {
 			{
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
-			// The `render` return type is not yet typed.
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
 		) as any;
 
 		const link = container.querySelector( 'a' );
