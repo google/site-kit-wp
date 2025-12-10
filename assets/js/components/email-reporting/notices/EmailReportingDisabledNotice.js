@@ -21,6 +21,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { useDispatch } from '@wordpress/data';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -32,7 +33,6 @@ import { TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
-import { useCallback } from '@wordpress/element';
 
 export default function EmailReportingDisabledNotice() {
 	const isEmailReportingEnabled = useSelect( ( select ) =>
