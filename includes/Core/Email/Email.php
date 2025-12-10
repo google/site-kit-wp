@@ -15,7 +15,7 @@ use WP_Error;
 /**
  * Class for sending emails with Site Kit branding.
  *
- * @since n.e.x.t
+ * @since 1.168.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Email {
 	/**
 	 * Stores the last error from wp_mail.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var WP_Error|null
 	 */
 	protected $last_error = null;
@@ -36,7 +36,7 @@ class Email {
 	 * overrides the From name to "Site Kit", and merges with
 	 * caller-supplied headers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param array $headers Optional. Additional headers to merge. Default empty array.
 	 * @return array Final header array with Site Kit branding.
@@ -67,7 +67,7 @@ class Email {
 	 * Wraps wp_mail with a scoped listener for wp_mail_failed hook
 	 * to capture any errors during sending.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param string|array $to      Array or comma-separated list of email addresses to send message.
 	 * @param string       $subject Email subject.
@@ -98,7 +98,7 @@ class Email {
 	 * Attaches a temporary listener to the wp_mail_failed hook to capture
 	 * any errors that occur during sending.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param string|array $to      Array or comma-separated list of email addresses to send message.
 	 * @param string       $subject Email subject.
@@ -122,7 +122,7 @@ class Email {
 	 * This method is public because it is used as a callback for the
 	 * wp_mail_failed hook which requires public accessibility.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param WP_Error $error The error from wp_mail_failed hook.
 	 */
@@ -133,7 +133,7 @@ class Email {
 	/**
 	 * Gets the last error from the most recent send attempt.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @return WP_Error|null The last error if one occurred, null otherwise.
 	 */

@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 /**
  * Handles fallback cron callbacks for email reporting.
  *
- * @since n.e.x.t
+ * @since 1.168.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Fallback_Task {
 	/**
 	 * Email log batch query helper.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @var Email_Log_Batch_Query
 	 */
@@ -31,7 +31,7 @@ class Fallback_Task {
 	/**
 	 * Scheduler instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @var Email_Reporting_Scheduler
 	 */
@@ -40,7 +40,7 @@ class Fallback_Task {
 	/**
 	 * Worker task instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @var Worker_Task
 	 */
@@ -49,7 +49,7 @@ class Fallback_Task {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param Email_Log_Batch_Query     $batch_query Batch query helper.
 	 * @param Email_Reporting_Scheduler $scheduler   Scheduler instance.
@@ -68,7 +68,7 @@ class Fallback_Task {
 	/**
 	 * Handles the fallback cron callback.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param string $batch_id            Batch identifier.
 	 * @param string $frequency           Frequency slug.
@@ -92,7 +92,7 @@ class Fallback_Task {
 	/**
 	 * Checks if a worker lock exists for the given frequency.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @return bool True if a lock is present.
@@ -106,7 +106,7 @@ class Fallback_Task {
 	/**
 	 * Schedules the next fallback event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param string $batch_id            Batch identifier.
 	 * @param string $frequency           Frequency slug.

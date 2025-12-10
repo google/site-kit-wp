@@ -422,7 +422,7 @@ export const selectors = {
 	 * Gets an account chooser url with the current user's email.
 	 *
 	 * @since 1.80.0
-	 * @since n.e.x.t Adds `utm_source` to wrapper and wrapped URL.
+	 * @since 1.168.0 Adds `utm_source` to wrapper and wrapped URL.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The concatenated url if an email is present; otherwise undefined.

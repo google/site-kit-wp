@@ -38,7 +38,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Was_Analytics_4_Connected instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var Was_Analytics_4_Connected
 	 */
 	private $was_analytics_4_connected;
