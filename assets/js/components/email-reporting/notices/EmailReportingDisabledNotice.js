@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useDispatch } from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -29,17 +30,28 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import Notice from '@/js/components/Notice';
 import { TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import { useCallback } from '@wordpress/element';
 
 export default function EmailReportingDisabledNotice() {
 	const isEmailReportingEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isEmailReportingEnabled()
 	);
 
+	const isViewOnly = useViewOnly();
+
 	const adminSettingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getSiteKitAdminSettingsURL()
 	);
 
-	const isViewOnly = useViewOnly();
+	// If the user is on the Admin Settings page already, then there
+	// will be no navigation when the "Edit settings" CTA is clicked,
+	// keeping the Settings Panel open. So we should close it.
+	const { setValue } = useDispatch( CORE_UI );
+	const onCTAClick = useCallback( () => {
+		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
+	}, [ setValue ] );
 
 	if ( isEmailReportingEnabled || isViewOnly ) {
 		return null;
@@ -56,6 +68,7 @@ export default function EmailReportingDisabledNotice() {
 			ctaButton={ {
 				label: __( 'Edit settings', 'google-site-kit' ),
 				href: adminSettingsURL,
+				onClick: onCTAClick,
 			} }
 		/>
 	);
