@@ -210,8 +210,14 @@ class WooCommerce extends Conversion_Events_Provider {
 		add_action(
 			'woocommerce_add_to_cart',
 			function ( $cart_item_key, $product_id, $quantity, $variation_id, $variation ) {
+				$product = wc_get_product( $product_id );
+
+				if ( false === $product instanceof \WC_Product ) {
+					return;
+				}
+
 				$this->add_to_cart = $this->get_formatted_product(
-					wc_get_product( $product_id ),
+					$product,
 					$variation_id,
 					$variation,
 					$quantity
@@ -271,7 +277,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 *
 	 * @return array
 	 */
-	protected function get_formatted_product( WC_Product $product, $variation_id = 0, $variation = false, $quantity = false ) {
+	protected function get_formatted_product( $product, $variation_id = 0, $variation = false, $quantity = false ) {
 		$product_id = $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id();
 		$price      = $product->get_price();
 
