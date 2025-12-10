@@ -31,7 +31,7 @@ use WP_User;
 /**
  * Handles per-user email reporting data requests.
  *
- * @since n.e.x.t
+ * @since 1.168.0
  * @access private
  * @ignore
  */
@@ -40,7 +40,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Modules instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var Modules
 	 */
 	private $modules;
@@ -48,7 +48,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * User options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var User_Options
 	 */
 	private $user_options;
@@ -56,7 +56,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Plugin context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var Context
 	 */
 	private $context;
@@ -64,7 +64,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Conversion tracking instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var Conversion_Tracking
 	 */
 	private $conversion_tracking;
@@ -72,7 +72,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Module audience settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var Module_Audience_Settings
 	 */
 	private $audience_settings;
@@ -80,7 +80,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Custom dimensions availability helper.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var Custom_Dimensions_Data_Available
 	 */
 	private $custom_dimensions_data_available;
@@ -88,7 +88,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param Context             $context             Plugin context.
 	 * @param Modules             $modules             Modules instance.
@@ -115,7 +115,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Gets the raw payload for a specific user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param int   $user_id    User ID.
 	 * @param array $date_range Date range array.
@@ -167,7 +167,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Collects payloads for the allowed modules.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param array $modules    Allowed modules.
 	 * @param array $date_range Date range payload.
@@ -200,7 +200,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Collects Analytics 4 payloads keyed by section-part identifiers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param object $module     Module instance.
 	 * @param array  $date_range Date range payload.
@@ -261,7 +261,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Collects Search Console payloads keyed by section-part identifiers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param object $module     Module instance.
 	 * @param array  $date_range Date range payload.
@@ -295,7 +295,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Collects AdSense payloads keyed by section-part identifiers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param object $module     Module instance.
 	 * @param array  $date_range Date range payload.
@@ -319,7 +319,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Filters modules to those accessible to the provided user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param array   $modules Active modules.
 	 * @param WP_User $user    Target user.
@@ -358,7 +358,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Gets the connected AdSense account ID if available.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param object $module Module instance.
 	 * @return string Account ID or empty string if unavailable.
@@ -381,7 +381,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Determines whether audience segmentation is enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @return bool True if enabled, false otherwise.
 	 */
@@ -393,7 +393,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Determines whether data is available for a custom dimension.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param string $custom_dimension Custom dimension slug.
 	 * @return bool True if data is available, false otherwise.

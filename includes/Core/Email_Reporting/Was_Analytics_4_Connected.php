@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Storage\Setting;
  *
  * Indicates whether Google Analytics 4 was ever connected to the site.
  *
- * @since n.e.x.t
+ * @since 1.168.0
  * @access private
  * @ignore
  */
@@ -31,7 +31,7 @@ class Was_Analytics_4_Connected extends Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @return string The type name.
 	 */
@@ -42,7 +42,7 @@ class Was_Analytics_4_Connected extends Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @return callable The sanitizing function.
 	 */
@@ -53,7 +53,7 @@ class Was_Analytics_4_Connected extends Setting {
 	/**
 	 * Gets the value of the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @return bool Value set for the option, or registered default if not set.
 	 */
