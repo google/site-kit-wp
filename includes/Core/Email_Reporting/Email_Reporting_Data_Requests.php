@@ -506,10 +506,6 @@ class Email_Reporting_Data_Requests {
 
 			$reports = $this->normalize_batch_reports( $response );
 
-			// GA4 batch responses can occasionally return fewer reports than requested (e.g. invalid options dropped). Use the first report as a fallback to keep all requested keys populated.
-			$first_report = reset( $reports );
-			$fallback     = false === $first_report ? array() : $first_report;
-
 			foreach ( $request_keys as $index => $key ) {
 				if ( isset( $reports[ $index ] ) ) {
 					$payload[ $key ] = $reports[ $index ];
@@ -521,7 +517,14 @@ class Email_Reporting_Data_Requests {
 					continue;
 				}
 
-				$payload[ $key ] = $fallback;
+				return new WP_Error(
+					'email_report_batch_incomplete',
+					sprintf(
+						/* translators: %s: Requested report key. */
+						__( 'Failed to fetch required report: %s.', 'google-site-kit' ),
+						$key
+					)
+				);
 			}
 		}
 
