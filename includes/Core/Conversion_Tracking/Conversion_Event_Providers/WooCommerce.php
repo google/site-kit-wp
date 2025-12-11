@@ -95,8 +95,7 @@ class WooCommerce extends Conversion_Events_Provider {
 			return array();
 		}
 
-		$settings    = get_option( 'woocommerce_google_analytics_settings' );
-		$event_names = array();
+		$settings = get_option( 'woocommerce_google_analytics_settings' );
 
 		// If only product identifier is availabe in the saved settings, it means default options are used.
 		// And by default all events are tracked.
