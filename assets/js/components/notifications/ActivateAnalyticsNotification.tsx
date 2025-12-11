@@ -130,7 +130,7 @@ const ActivateAnalyticsNotification: FC<
 				} }
 				svg={ {
 					desktop: ActivateAnalyticsSVG,
-					verticalPosition: 'center',
+					verticalPosition: 'bottom',
 				} }
 			/>
 		</Notification>
