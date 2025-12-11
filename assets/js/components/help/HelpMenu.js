@@ -114,25 +114,21 @@ export default function HelpMenu( { children } ) {
 
 	const setupFlowRefreshMenuItems = [
 		{
-			gaEventLabel: 'browse_documentation',
 			href: 'https://sitekit.withgoogle.com/documentation/',
 			icon: <DocumentationIcon width={ 24 } height={ 24 } />,
 			children: __( 'Browse documentation', 'google-site-kit' ),
 		},
 		{
-			gaEventLabel: 'support_forum',
-			href: 'https://sitekit.withgoogle.com/documentation/',
+			href: 'https://wordpress.org/support/plugin/google-site-kit/',
 			icon: <SupportIcon width={ 24 } height={ 24 } />,
 			children: __( 'Get free support', 'google-site-kit' ),
 		},
 		{
-			gaEventLabel: 'feature_tour',
 			onClick: () => {},
 			icon: <CompassIcon width={ 24 } height={ 24 } />,
 			children: __( 'Start a feature tour', 'google-site-kit' ),
 		},
 		{
-			gaEventLabel: 'feedback',
 			href: 'https://wordpress.org/support/plugin/google-site-kit/reviews/',
 			icon: <FeedbackIcon width={ 24 } height={ 24 } />,
 			children: __( 'Send feedback', 'google-site-kit' ),

@@ -33,17 +33,11 @@ import Link from '@/js/components/Link';
 import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
 
-function HelpMenuLink( {
-	children,
-	href,
-	gaEventLabel,
-	onClick: onClickCallback,
-	icon,
-} ) {
+function HelpMenuLink( { children, href, gaEventLabel, onClick, icon } ) {
 	const viewContext = useViewContext();
 
-	const onClick = useCallback( async () => {
-		onClickCallback?.();
+	const handleClick = useCallback( async () => {
+		onClick?.();
 		if ( gaEventLabel ) {
 			await trackEvent(
 				`${ viewContext }_headerbar_helpmenu`,
@@ -51,7 +45,7 @@ function HelpMenuLink( {
 				gaEventLabel
 			);
 		}
-	}, [ onClickCallback, gaEventLabel, viewContext ] );
+	}, [ onClick, gaEventLabel, viewContext ] );
 
 	return (
 		<li className="googlesitekit-help-menu-link mdc-list-item" role="none">
@@ -59,7 +53,7 @@ function HelpMenuLink( {
 				className="mdc-list-item__text"
 				href={ href }
 				role="menuitem"
-				onClick={ onClick }
+				onClick={ handleClick }
 				leadingIcon={ icon }
 				external
 				hideExternalIndicator

@@ -41,31 +41,28 @@
 	}
 
 	.googlesitekit-help-menu {
-		box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15), 0 2px 4px 0 rgba(0, 0, 0, 0.15);
 
 		.mdc-list {
 			padding: 12px 0;
 		}
 
-		.googlesitekit-cta-link svg {
-			fill: none;
+		.mdc-list-item {
+			height: 44px;
 		}
 
 		.googlesitekit-cta-link {
 			letter-spacing: 0.25px;
 			line-height: 20px;
-		}
-
-		.googlesitekit-cta-link .googlesitekit-icon-wrapper {
-			margin-right: 16px !important;
-		}
-
-		.googlesitekit-help-menu-link .googlesitekit-cta-link {
 			padding: 0 24px;
-		}
 
-		.mdc-list-item {
-			height: 44px;
+			.googlesitekit-icon-wrapper {
+				// The use of `!important` is necessary to override the inline style in the `IconWrapper` component.
+				margin-right: 16px !important;
+			}
+
+			svg {
+				fill: none;
+			}
 		}
 	}
 }
