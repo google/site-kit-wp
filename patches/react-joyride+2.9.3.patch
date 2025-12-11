@@ -1,0 +1,24 @@
+diff --git a/node_modules/react-joyride/dist/index.mjs b/node_modules/react-joyride/dist/index.mjs
+index b5925d5..ddca519 100644
+--- a/node_modules/react-joyride/dist/index.mjs
++++ b/node_modules/react-joyride/dist/index.mjs
+@@ -1854,8 +1854,9 @@ var JoyrideStep = class extends React8.Component {
+     return hideBeacon(step) || lifecycle === LIFECYCLE.TOOLTIP;
+   }
+   render() {
++    var _a;
+     const { continuous, debug, index, nonce, shouldScroll: shouldScroll2, size, step } = this.props;
+-    const target = getElement(step.target);
++    const target = getElement((_a = step.floaterProps) == null ? void 0 : _a.target) || getElement(step.target);
+     if (!validateStep(step) || !is5.domElement(target)) {
+       return null;
+     }
+@@ -1869,7 +1870,7 @@ var JoyrideStep = class extends React8.Component {
+         id: `react-joyride-step-${index}`,
+         open: this.open,
+         placement: step.placement,
+-        target: step.target
++        target
+       },
+       /* @__PURE__ */ React8.createElement(
+         JoyrideBeacon,

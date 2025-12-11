@@ -1,7 +1,7 @@
 /**
- * HelpMenuLink styles.
+ * Context for widgets.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,25 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+/**
+ * WordPress dependencies
+ */
+import { createContext } from '@wordpress/element';
 
-	.googlesitekit-help-menu-link {
+/**
+ * Internal dependencies
+ */
+import { Widget } from '@/js/googlesitekit/widgets/types';
 
-		padding: 0;
+/**
+ * Widget context value interface.
+ *
+ * @since n.e.x.t
+ */
+export type WidgetContextValue = Partial< Widget >;
 
-		&:hover {
-			background-color: unset;
-			color: rgba($c-black, 0.87);
+const WidgetContext = createContext< WidgetContextValue >( {} );
 
-			&::before {
-				background-color: $c-interactive-tertiary-hover;
-				opacity: 1;
-			}
-		}
+export const { Consumer, Provider } = WidgetContext;
 
-		.googlesitekit-cta-link {
-			align-items: center;
-			color: $c-surfaces-on-surface;
-			display: flex;
-			height: 100%;
-			padding: 0 16px;
-			width: 100%;
-		}
-	}
-}
+export default WidgetContext;

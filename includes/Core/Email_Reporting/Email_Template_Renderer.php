@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 /**
  * Class for rendering email templates.
  *
- * @since n.e.x.t
+ * @since 1.168.0
  */
 class Email_Template_Renderer {
 
@@ -22,7 +22,7 @@ class Email_Template_Renderer {
 	 *
 	 * TODO: Change to the production URL when the assets are uploaded to production bucket in #11551.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var string
 	 */
 	const EMAIL_ASSETS_BASE_URL = 'https://storage.googleapis.com/pue-email-assets-dev/';
@@ -30,7 +30,7 @@ class Email_Template_Renderer {
 	/**
 	 * The sections map instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var Sections_Map
 	 */
 	protected $sections_map;
@@ -38,7 +38,7 @@ class Email_Template_Renderer {
 	/**
 	 * The base templates directory path.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var string
 	 */
 	protected $templates_dir;
@@ -48,7 +48,7 @@ class Email_Template_Renderer {
 	 *
 	 * Used to avoid repeated file_exists() calls for the same files.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var array
 	 */
 	protected $cached_files = array();
@@ -56,7 +56,7 @@ class Email_Template_Renderer {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param Sections_Map $sections_map The sections map instance.
 	 */
@@ -68,7 +68,7 @@ class Email_Template_Renderer {
 	/**
 	 * Gets the full URL for an email asset.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param string $asset_name The asset filename (e.g., 'icon-conversions.png').
 	 * @return string The full URL to the asset.
@@ -80,7 +80,7 @@ class Email_Template_Renderer {
 	/**
 	 * Renders the email template with the given data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param string $template_name The template name.
 	 * @param array  $data          The data to render (metadata like subject, preheader, etc.).
@@ -113,7 +113,7 @@ class Email_Template_Renderer {
 	/**
 	 * Renders a template file with the given data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param string $template_file The template file path.
 	 * @param array  $data          The data to render (used within the template file).
@@ -135,7 +135,7 @@ class Email_Template_Renderer {
 	 * templates directory for security. Verified files are cached to
 	 * avoid repeated file_exists() calls.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param string $file The template part file path.
 	 * @param array  $vars The variables to extract into the template scope.
@@ -166,7 +166,7 @@ class Email_Template_Renderer {
 	/**
 	 * Resolves the template file path.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param string $template_name The template name.
 	 * @param string $part_name     The part name.

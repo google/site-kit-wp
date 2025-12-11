@@ -725,7 +725,7 @@ final class Modules implements Provides_Feature_Metrics {
 		/**
 		 * Fires when a module is deactivated.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.168.0
 		 *
 		 * @param string $slug The slug of the deactivated module.
 		 */

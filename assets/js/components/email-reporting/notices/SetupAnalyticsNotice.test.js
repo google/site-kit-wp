@@ -1,5 +1,5 @@
 /**
- * AnalyticsDisconnectedNotice component tests.
+ * SetupAnalyticsNotice component tests.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -24,9 +24,6 @@ import { waitFor } from '@testing-library/react';
 /**
  * Internal dependencies
  */
-import AnalyticsDisconnectedNotice, {
-	EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE_DISMISSED_ITEM,
-} from './AnalyticsDisconnectedNotice';
 import {
 	createTestRegistry,
 	render,
@@ -36,13 +33,16 @@ import {
 	provideUserAuthentication,
 	provideModuleRegistrations,
 	provideSiteInfo,
-} from '../../../../tests/js/test-utils';
+} from '../../../../../tests/js/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
+import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
+import SetupAnalyticsNotice, {
+	EMAIL_REPORTING_SETUP_ANALYTICS_NOTICE_DISMISSED_ITEM,
+} from './SetupAnalyticsNotice';
 
-describe( 'AnalyticsDisconnectedNotice', () => {
+describe( 'SetupAnalyticsNotice', () => {
 	mockLocation();
 	let registry;
 
@@ -73,24 +73,26 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 		} );
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( { wasConnected: true } );
+			.receiveGetWasAnalytics4Connected( { wasConnected: false } );
 	} );
 
-	it( 'renders the notice when email reporting is enabled, analytics is disconnected but was once connected and notice is not dismissed', () => {
-		const { getByText } = render( <AnalyticsDisconnectedNotice />, {
+	it( 'renders the notice when email reporting is enabled, analytics is disconnected and was never connected before and notice is not dismissed', () => {
+		const { getByText } = render( <SetupAnalyticsNotice />, {
 			registry,
 		} );
 
 		// Title and description should be present.
-		expect( getByText( /Analytics is disconnected/i ) ).toBeInTheDocument();
+		expect(
+			getByText( /Understand how visitors interact with your content/i )
+		).toBeInTheDocument();
 		expect(
 			getByText(
-				/Email reports won’t include Analytics data and metrics/i
+				/Get visitor insights in your email report by connecting Analytics./i
 			)
 		).toBeInTheDocument();
 	} );
 
-	it( 'renders the "Reconnect Analytics" button and activates the module on click', async () => {
+	it( 'renders the "Connect Analytics" button and activates the module on click', async () => {
 		const moduleActivationEndpoint = RegExp(
 			'google-site-kit/v1/core/modules/data/activation'
 		);
@@ -107,7 +109,7 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 			body: { success: true },
 		} );
 
-		const { getByRole } = render( <AnalyticsDisconnectedNotice />, {
+		const { getByRole } = render( <SetupAnalyticsNotice />, {
 			registry,
 		} );
 
@@ -125,46 +127,18 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 	it( 'dismisses the notice when "Got it" is clicked', async () => {
 		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 		fetchMock.postOnce( fetchDismissItem, {
-			body: [
-				EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE_DISMISSED_ITEM,
-			],
+			body: [ EMAIL_REPORTING_SETUP_ANALYTICS_NOTICE_DISMISSED_ITEM ],
 		} );
 
-		const { getByRole } = render( <AnalyticsDisconnectedNotice />, {
+		const { getByRole } = render( <SetupAnalyticsNotice />, {
 			registry,
 		} );
 
-		fireEvent.click( getByRole( 'button', { name: /got it/i } ) );
+		fireEvent.click( getByRole( 'button', { name: /maybe later/i } ) );
 
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched( fetchDismissItem )
 		);
-	} );
-
-	it( 'does not render when email reporting is disabled', () => {
-		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
-			enabled: false,
-		} );
-
-		const { container } = render( <AnalyticsDisconnectedNotice />, {
-			registry,
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'does not render when notice is dismissed', () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE_DISMISSED_ITEM,
-			] );
-
-		const { container } = render( <AnalyticsDisconnectedNotice />, {
-			registry,
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( 'does not render when analytics is active', () => {
@@ -175,19 +149,19 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 				connected: true,
 			},
 		] );
-		const { container } = render( <AnalyticsDisconnectedNotice />, {
+		const { container } = render( <SetupAnalyticsNotice />, {
 			registry,
 		} );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'does not render when analytics was never connected', () => {
+	it( 'does not render when analytics is disconnect but was connected before', () => {
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( { wasConnected: false } );
+			.receiveGetWasAnalytics4Connected( { wasConnected: true } );
 
-		const { container } = render( <AnalyticsDisconnectedNotice />, {
+		const { container } = render( <SetupAnalyticsNotice />, {
 			registry,
 		} );
 

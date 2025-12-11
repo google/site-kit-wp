@@ -15,14 +15,14 @@ use Google\Site_Kit\Context;
 /**
  * Class for mapping email report sections and their layout configuration.
  *
- * @since n.e.x.t
+ * @since 1.168.0
  */
 class Sections_Map {
 
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var Context
 	 */
 	protected $context;
@@ -30,7 +30,7 @@ class Sections_Map {
 	/**
 	 * Payload data for populating section templates.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var array
 	 */
 	protected $payload;
@@ -38,7 +38,7 @@ class Sections_Map {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @param array   $payload The payload data to be used in sections.
@@ -56,7 +56,7 @@ class Sections_Map {
 	 * - icon: Icon identifier for the section
 	 * - section_parts: Array of template parts with their data
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @return array Array of sections with their configuration.
 	 */
@@ -87,7 +87,7 @@ class Sections_Map {
 	/**
 	 * Gets the business growth section.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @return array Section configuration array.
 	 */
@@ -122,7 +122,7 @@ class Sections_Map {
 	/**
 	 * Gets the visitors section.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @return array Section configuration array.
 	 */
@@ -171,7 +171,7 @@ class Sections_Map {
 	/**
 	 * Gets the traffic sources section.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @return array Section configuration array.
 	 */
@@ -197,7 +197,7 @@ class Sections_Map {
 	/**
 	 * Gets the attention section.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @return array Section configuration array.
 	 */
@@ -229,7 +229,7 @@ class Sections_Map {
 	/**
 	 * Gets the growth drivers section.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @return array Section configuration array.
 	 */

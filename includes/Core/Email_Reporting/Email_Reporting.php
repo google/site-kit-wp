@@ -55,7 +55,7 @@ class Email_Reporting {
 	/**
 	 * Authentication instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var Authentication
 	 */
 	protected $authentication;
@@ -87,7 +87,7 @@ class Email_Reporting {
 	/**
 	 * Was_Analytics_4_Connected instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var Was_Analytics_4_Connected
 	 */
 	protected $was_analytics_4_connected;
@@ -151,7 +151,7 @@ class Email_Reporting {
 	/**
 	 * Fallback task instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var Fallback_Task
 	 */
 	protected $fallback_task;
@@ -159,7 +159,7 @@ class Email_Reporting {
 	/**
 	 * Email reporting data requests instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 * @var Email_Reporting_Data_Requests
 	 */
 	protected $data_requests;
@@ -168,7 +168,7 @@ class Email_Reporting {
 	 * Constructor.
 	 *
 	 * @since 1.162.0
-	 * @since n.e.x.t Added authentication dependency.
+	 * @since 1.168.0 Added authentication dependency.
 	 *
 	 * @param Context                       $context       Plugin context.
 	 * @param Modules                       $modules       Modules instance.

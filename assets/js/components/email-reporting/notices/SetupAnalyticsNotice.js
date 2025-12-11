@@ -1,5 +1,5 @@
 /**
- * AnalyticsDisconnectedNotice component.
+ * SetupAnalyticsNotice component.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,14 +33,18 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import Link from '@/js/components/Link';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
-export const EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE_DISMISSED_ITEM =
-	'email-reporting-analytics-disconnected-notice';
+export const EMAIL_REPORTING_SETUP_ANALYTICS_NOTICE_DISMISSED_ITEM =
+	'email-reporting-setup-analytics-notice';
 
-export default function AnalyticsDisconnectedNotice() {
+export default function SetupAnalyticsNotice() {
 	const isEmailReportingEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isEmailReportingEnabled()
 	);
+
+	const isViewOnly = useViewOnly();
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
@@ -52,7 +56,7 @@ export default function AnalyticsDisconnectedNotice() {
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
-			EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE_DISMISSED_ITEM
+			EMAIL_REPORTING_SETUP_ANALYTICS_NOTICE_DISMISSED_ITEM
 		)
 	);
 
@@ -64,34 +68,52 @@ export default function AnalyticsDisconnectedNotice() {
 
 	const handleDismiss = useCallback( async () => {
 		await dismissItem(
-			EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE_DISMISSED_ITEM
+			EMAIL_REPORTING_SETUP_ANALYTICS_NOTICE_DISMISSED_ITEM
 		);
 	}, [ dismissItem ] );
 
+	const learnMoreLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'ga4' )
+	);
+
 	if (
 		! isEmailReportingEnabled ||
+		isViewOnly ||
 		isDismissed !== false ||
 		isAnalyticsConnected ||
-		! wasAnalyticsConnected
+		wasAnalyticsConnected
 	) {
 		return null;
 	}
 
 	return (
 		<Notice
-			className="googlesitekit-email-reporting__analytics-disconnected-notice"
-			type={ TYPES.WARNING }
-			title={ __( 'Analytics is disconnected', 'google-site-kit' ) }
-			description={ __(
-				'Email reports won’t include Analytics data and metrics',
+			type={ TYPES.NEW }
+			title={ __(
+				'Understand how visitors interact with your content',
 				'google-site-kit'
+			) }
+			description={ createInterpolateElement(
+				__(
+					'Get visitor insights in your email report by connecting Analytics. <a>Learn more</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<Link
+							href={ learnMoreLink }
+							external
+							hideExternalIndicator
+						/>
+					),
+				}
 			) }
 			ctaButton={ {
 				label: __( 'Connect Analytics', 'google-site-kit' ),
 				onClick: activateAnalytics,
 			} }
 			dismissButton={ {
-				label: __( 'Got it', 'google-site-kit' ),
+				label: __( 'Maybe later', 'google-site-kit' ),
 				onClick: handleDismiss,
 			} }
 		/>
