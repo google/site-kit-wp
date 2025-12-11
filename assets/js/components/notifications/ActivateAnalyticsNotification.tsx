@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 // @ts-expect-error - We need to add types for imported SVGs.
-import ActivateAnalyticsSVG from '@/svg/graphics/activate-analytics.svg?url';
+import ActivateAnalyticsSVG from '@/svg/graphics/activate-analytics-graphic.svg?url';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
@@ -130,7 +130,7 @@ const ActivateAnalyticsNotification: FC<
 				} }
 				svg={ {
 					desktop: ActivateAnalyticsSVG,
-					verticalPosition: 'bottom',
+					verticalPosition: 'center',
 				} }
 			/>
 		</Notification>
