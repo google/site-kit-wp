@@ -17,9 +17,7 @@
  */
 
 .googlesitekit-plugin {
-
 	.googlesitekit-help-menu-link {
-
 		padding: 0;
 
 		&:hover {
@@ -39,6 +37,32 @@
 			height: 100%;
 			padding: 0 16px;
 			width: 100%;
+		}
+	}
+
+	.googlesitekit-help-menu {
+
+		.mdc-list {
+			padding: 12px 0;
+		}
+
+		.mdc-list-item {
+			height: 44px;
+		}
+
+		.googlesitekit-cta-link {
+			letter-spacing: 0.25px;
+			line-height: 20px;
+			padding: 0 24px;
+
+			.googlesitekit-icon-wrapper {
+				// The use of `!important` is necessary to override the inline style in the `IconWrapper` component.
+				margin-right: 16px !important;
+			}
+
+			svg {
+				fill: none;
+			}
 		}
 	}
 }

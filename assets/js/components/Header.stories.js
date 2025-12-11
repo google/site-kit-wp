@@ -101,6 +101,19 @@ HeaderWithHelpMenu.args = {
 	},
 };
 
+export const HeaderWithHelpMenuSFR = Template.bind( {} );
+HeaderWithHelpMenuSFR.storyName =
+	'Plugin Header with Help Menu - Setup Flow Refresh';
+HeaderWithHelpMenuSFR.args = {
+	children: <HelpMenu />,
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
+};
+HeaderWithHelpMenuSFR.parameters = {
+	features: [ 'setupFlowRefresh' ],
+};
+
 export const HeaderWithHelpMenuDateRangeSelector = Template.bind( {} );
 HeaderWithHelpMenuDateRangeSelector.storyName =
 	'Plugin Header with Help Menu and Date Range Selector';
