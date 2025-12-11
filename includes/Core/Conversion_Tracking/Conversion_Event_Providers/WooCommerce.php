@@ -31,9 +31,9 @@ class WooCommerce extends Conversion_Events_Provider {
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'woocommerce';
 
 	/**
-	 * Avaialble products on the page.
+	 * Available products on the page.
 	 *
-	 * @var Array
+	 * @var array
 	 *
 	 * @since 1.153.0
 	 */
@@ -97,7 +97,7 @@ class WooCommerce extends Conversion_Events_Provider {
 
 		$settings = get_option( 'woocommerce_google_analytics_settings' );
 
-		// If only product identifier is availabe in the saved settings, it means default options are used.
+		// If only product identifier is available in the saved settings, it means default options are used.
 		// And by default all events are tracked.
 		if ( isset( $settings['ga_product_identifier'] ) && count( $settings ) === 1 ) {
 			return array(
