@@ -140,7 +140,7 @@ async function assertEmptyDebugLog() {
 	// Wait 1 second for any log data to finish propagating.
 	// Without this, node can disconnect from the log stream
 	// before the entries are recorded and result in a false success.
-	await page.waitForTimeout( 1000 );
+	await new Promise( ( resolve ) => setTimeout( resolve, 1000 ) );
 
 	// Filter out lines that are ignored.
 	const filteredDebugLog = debugLogData.filter( ( line ) => {

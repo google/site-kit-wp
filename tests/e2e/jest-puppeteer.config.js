@@ -26,6 +26,7 @@ module.exports = {
 		args: [
 			// https://peter.sh/experiments/chromium-command-line-switches/
 			'--disable-web-security', // Fixes SSL issues that may happen on when you run e2e localy.
+			'--no-sandbox',
 		],
 	},
 };
