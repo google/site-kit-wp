@@ -124,13 +124,26 @@ export default function TourTooltips( {
 		setValue( runKey, true );
 	}
 
+	const tour = useSelect( ( select ) =>
+		select( CORE_USER ).getCurrentTour()
+	);
+
+	const { receiveCurrentTour } = useDispatch( CORE_USER );
+
 	function endTour() {
 		global.document.body.classList.remove(
 			'googlesitekit-showing-feature-tour',
 			`googlesitekit-showing-feature-tour--${ tourID }`
 		);
-		// Dismiss tour to avoid unwanted repeat viewing.
-		dismissTour( tourID );
+
+		if ( tour.isRepeatable ) {
+			setValue( runKey, false ); // Not strictly necessary to allow the tour to be restarted, but it seems sensible to keep the state aligned to avoid unexpected behavior.
+			setValue( stepKey, null ); // This is needed, otherwise the tour will be considered to be finished when it is restarted.
+			receiveCurrentTour( null );
+		} else {
+			// Dismiss tour to avoid unwanted repeat viewing.
+			dismissTour( tourID );
+		}
 	}
 
 	function trackAllTourEvents( {

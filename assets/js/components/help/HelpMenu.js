@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { Button, Menu } from 'googlesitekit-components';
 import HelpIcon from '@/svg/icons/help.svg';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
@@ -42,6 +42,8 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import dashboardTour from '@/js/feature-tours/dashboard';
 
 export default function HelpMenu( { children } ) {
 	const [ menuOpen, setMenuOpen ] = useState( false );
@@ -75,6 +77,8 @@ export default function HelpMenu( { children } ) {
 		);
 	} );
 
+	const { triggerOnDemandTour } = useDispatch( CORE_USER );
+
 	return (
 		<div
 			ref={ menuWrapperRef }
@@ -98,6 +102,12 @@ export default function HelpMenu( { children } ) {
 				onSelected={ handleMenuSelected }
 			>
 				{ children }
+				<HelpMenuLink
+					onClick={ () => triggerOnDemandTour( dashboardTour ) }
+					gaEventLabel="start_tour"
+				>
+					{ __( 'Start tour', 'google-site-kit' ) }
+				</HelpMenuLink>
 				<HelpMenuLink
 					gaEventLabel="fix_common_issues"
 					href={ fixCommonIssuesURL }
