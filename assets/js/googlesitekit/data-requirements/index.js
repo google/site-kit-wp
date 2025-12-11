@@ -142,3 +142,30 @@ export function requireAudienceSegmentationWidgetHidden() {
 		);
 	};
 }
+
+/**
+ * Returns a function that checks if the given module'sdatastore is gathering data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} datastoreSlug Datastore slug to test.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the given datastore is gathering data or not.
+ */
+export function requireModuleGatheringData( datastoreSlug ) {
+	return async ( { resolveSelect } ) =>
+		true === ( await resolveSelect( datastoreSlug ).isGatheringData() );
+}
+
+/**
+ * Returns a function that checks if the current user can activate the given module.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} slug Module slug to test.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the current user can activate the given module or not.
+ */
+export function requireCanActivateModule( slug ) {
+	return async ( { resolveSelect } ) =>
+		true ===
+		( await resolveSelect( CORE_MODULES ).canActivateModule( slug ) );
+}
