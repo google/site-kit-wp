@@ -1,7 +1,7 @@
 /**
- * Source link styles.
+ * Type definitions for widgets.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,26 @@
  * limitations under the License.
  */
 
-.googlesitekit-source-link {
-	color: $c-surfaces-on-surface-variant;
-	font-size: $fs-body-sm;
-	font-weight: $fw-medium;
-	letter-spacing: $ls-xs;
-	line-height: 1;
+/**
+ * External dependencies
+ */
+import type { ComponentType } from 'react';
 
-	button {
-		color: $c-content-secondary;
-		letter-spacing: inherit;
-		line-height: inherit;
-
-		&:hover {
-			color: $c-content-secondary;
-		}
-	}
+/**
+ * Widget interface.
+ *
+ * Represents a registered widget with its configuration and settings.
+ *
+ * @since n.e.x.t
+ */
+export interface Widget {
+	slug: string;
+	Component: ComponentType;
+	priority: number;
+	width: string | string[];
+	wrapWidget: boolean;
+	modules?: string | string[];
+	isActive?: () => boolean;
+	isPreloaded?: () => boolean;
+	hideOnBreakpoints?: string[];
 }
