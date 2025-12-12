@@ -1,14 +1,30 @@
 /**
  * Consent mode Playwright test.
  *
- * Site Kit by Google.
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
-
-const WP_BASE_URL = process.env.WP_BASE_URL || 'http://localhost:9002';
-const WP_ADMIN_USERNAME = process.env.WP_USERNAME || 'admin';
-const WP_ADMIN_PASSWORD = process.env.WP_PASSWORD || 'password';
+const {
+	ensurePluginActive,
+	setSiteVerification,
+	setSearchConsoleProperty,
+	enableConsentMode,
+	withAdminPage,
+	clearConsentCookies,
+} = require( '../../playwright/utils' );
 
 const euUserConsentPolicyRegions = [
 	'AT',
@@ -44,96 +60,6 @@ const euUserConsentPolicyRegions = [
 	'SI',
 	'SK',
 ];
-
-async function loginAsAdmin( page ) {
-	await page.goto( '/wp-admin/', { waitUntil: 'load' } );
-
-	if ( await page.locator( '#user_login' ).count() ) {
-		await page.fill( '#user_login', WP_ADMIN_USERNAME );
-		await page.fill( '#user_pass', WP_ADMIN_PASSWORD );
-		await Promise.all( [
-			page.waitForNavigation( { waitUntil: 'networkidle' } ),
-			page.click( '#wp-submit' ),
-		] );
-	}
-
-	await expect( page ).toHaveURL( /\/wp-admin\/?/ );
-}
-
-async function ensurePluginActive( page, pluginSlug ) {
-	await page.goto( '/wp-admin/plugins.php', { waitUntil: 'load' } );
-
-	const pluginRow = page.locator( `tr[data-slug="${ pluginSlug }"]` );
-	await expect( pluginRow ).toHaveCount( 1 );
-
-	const activateAction = pluginRow.locator( 'span.activate a' );
-	if ( await activateAction.count() ) {
-		await Promise.all( [
-			page.waitForNavigation( { waitUntil: 'networkidle' } ),
-			activateAction.first().click(),
-		] );
-	}
-}
-
-async function wpApiFetch( page, options ) {
-	await page.waitForFunction( () => window._e2eApiFetch !== undefined, null, {
-		timeout: 5000,
-	} );
-
-	return await page.evaluate(
-		( fetchOptions ) => window._e2eApiFetch( fetchOptions ),
-		options
-	);
-}
-
-async function setSiteVerification( page ) {
-	await wpApiFetch( page, {
-		path: 'google-site-kit/v1/e2e/setup/site-verification',
-		method: 'post',
-		data: { verified: true },
-	} );
-}
-
-async function setSearchConsoleProperty( page ) {
-	await wpApiFetch( page, {
-		path: 'google-site-kit/v1/e2e/setup/search-console-property',
-		method: 'post',
-		data: { property: WP_BASE_URL },
-	} );
-}
-
-async function enableConsentMode( page ) {
-	await wpApiFetch( page, {
-		path: 'google-site-kit/v1/core/site/data/consent-mode',
-		method: 'post',
-		data: { data: { settings: { enabled: true } } },
-	} );
-}
-
-async function withAdminPage( browser, task ) {
-	const context = await browser.newContext( { baseURL: WP_BASE_URL } );
-	try {
-		const adminPage = await context.newPage();
-		await loginAsAdmin( adminPage );
-		await task( adminPage );
-		await adminPage.close();
-	} finally {
-		await context.close();
-	}
-}
-
-async function clearConsentCookies( context ) {
-	const cookies = await context.cookies();
-	if ( ! cookies.length ) {
-		return;
-	}
-	const hasConsentCookie = cookies.some( ( { name } ) =>
-		name.startsWith( 'wp_consent_' )
-	);
-	if ( hasConsentCookie ) {
-		await context.clearCookies();
-	}
-}
 
 test.describe( 'Consent mode snippet', () => {
 	test.beforeAll( async ( { browser } ) => {

@@ -8,14 +8,11 @@
 const { defineConfig } = require( '@playwright/test' );
 
 const baseURL = process.env.WP_BASE_URL || 'http://localhost:9002';
-const workers = process.env.PLAYWRIGHT_WORKERS
-	? Number( process.env.PLAYWRIGHT_WORKERS )
-	: 4;
 
 module.exports = defineConfig( {
 	testDir: './specs',
 	testMatch: [ '**/*.playwright.spec.js' ],
-	workers,
+	workers: 1, // Currently one worker limit is required as all tests share the same test site causing data conflicts.
 	retries: process.env.CI ? 1 : 0,
 	timeout: 60_000,
 	expect: {
@@ -28,18 +25,20 @@ module.exports = defineConfig( {
 		ignoreHTTPSErrors: true,
 		actionTimeout: 15_000,
 		navigationTimeout: 30_000,
+		retries: process.env.CI ? 3 : 2,
+		screenshot: 'only-on-failure',
+		trace: 'on-first-retry',
+		video: 'on-first-retry',
 	},
-	reporter: process.env.CI
-		? [
-				[ 'line' ],
-				[
-					'html',
-					{
-						open: 'never',
-						outputFolder: 'artifacts/playwright-html',
-					},
-				],
-		  ]
-		: 'list',
+	reporter: [
+		[ 'list' ],
+		[
+			'html',
+			{
+				open: 'never',
+				outputFolder: 'artifacts/playwright-html',
+			},
+		],
+	],
 	outputDir: 'artifacts/playwright-output',
 } );
