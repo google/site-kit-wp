@@ -113,7 +113,7 @@ describe( 'Plugin Reset', () => {
 		// Further wait for the dialog to open, to avoid throwing a focus trap error.
 		// This timeout takes its value from `DIALOG_ANIMATION_OPEN_TIME_MS` in `@material/dialog`.
 		// See https://github.com/material-components/material-components-web/blob/3a1767ea4da308dbee272763a377deff39cf0471/packages/mdc-dialog/foundation.ts#L110-L114
-		await page.waitForTimeout( 150 );
+		await new Promise( ( resolve ) => setTimeout( resolve, 150 ) );
 
 		await Promise.all( [
 			page.waitForNavigation(),
