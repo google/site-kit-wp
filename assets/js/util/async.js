@@ -110,7 +110,7 @@ async function isPromiseResolved( promise ) {
  * @since 1.166.0
  *
  * @param {...Function} requirements Async requirement function checks.
- * @return {function(): Promise<boolean>} Function which processes all requirements in sequence.
+ * @return {function(...Promise<boolean>[]): Promise<boolean>} Function which processes all requirements in sequence.
  */
 export function asyncRequireAll( ...requirements ) {
 	return async function ( ...args ) {

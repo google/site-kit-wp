@@ -80,8 +80,35 @@ import ModuleSetupSuccessNotification from '@/js/components/notifications/Module
 import SetUpEmailReportingOverlayNotification, {
 	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
 } from '@/js/components/email-reporting/SetUpEmailReportingOverlayNotification';
+import ActivateAnalyticsNotification from '@/js/components/notifications/ActivateAnalyticsNotification';
+import { asyncRequire, asyncRequireAll } from '@/js/util/async';
+import {
+	requireCanActivateModule,
+	requireModuleActive,
+	requireModuleGatheringData,
+} from '@/js/googlesitekit/data-requirements';
 
 export const DEFAULT_NOTIFICATIONS = {
+	'activate-analytics-cta': {
+		Component: ActivateAnalyticsNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		dismissRetries: 2,
+		checkRequirements: asyncRequireAll(
+			asyncRequire(
+				false,
+				requireModuleActive( MODULE_SLUG_ANALYTICS_4 )
+			),
+			asyncRequire(
+				false,
+				requireModuleGatheringData( MODULES_SEARCH_CONSOLE )
+			),
+			requireCanActivateModule( MODULE_SLUG_ANALYTICS_4 )
+		),
+		featureFlag: 'setupFlowRefresh',
+	},
 	'authentication-error': {
 		Component: UnsatisfiedScopesAlert,
 		priority: PRIORITY.ERROR_HIGH,
