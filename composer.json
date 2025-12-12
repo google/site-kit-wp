@@ -23,6 +23,7 @@
     "ext-openssl": "*",
     "cweagans/composer-patches": "^1.7",
     "google/apiclient": "^2.16",
+    "google/apiclient-services-adsense": "dev-latest",
     "google/apiclient-services-adsenselinks": "^0.1.0",
     "google/apiclient-services-subscribewithgoogle": "^0.1.0",
     "guzzlehttp/guzzle": "^7.9.2",
@@ -54,7 +55,6 @@
   },
   "extra": {
     "google/apiclient-services": [
-      "Adsense",
       "AnalyticsData",
       "GoogleAnalyticsAdmin",
       "PagespeedInsights",
@@ -71,6 +71,13 @@
     }
   },
   "repositories": [
+    {
+      "type": "path",
+      "url": "packages/apiclient-services-adsense",
+      "options": {
+        "symlink": false
+      }
+    },
     {
       "type": "path",
       "url": "packages/apiclient-services-adsenselinks",
