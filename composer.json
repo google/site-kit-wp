@@ -25,6 +25,7 @@
     "google/apiclient": "^2.16",
     "google/apiclient-services-adsenselinks": "^0.1.0",
     "google/apiclient-services-subscribewithgoogle": "^0.1.0",
+    "google/apiclient-services-tagmanager": "dev-latest",
     "guzzlehttp/guzzle": "^7.9.2",
     "symfony/polyfill-intl-idn": "^1.29.0"
   },
@@ -60,8 +61,7 @@
       "PagespeedInsights",
       "PeopleService",
       "SearchConsole",
-      "SiteVerification",
-      "TagManager"
+      "SiteVerification"
     ],
     "wordpress-install-dir": "vendor/roots/wordpress",
     "patches": {
@@ -81,6 +81,13 @@
     {
       "type": "path",
       "url": "packages/apiclient-services-subscribewithgoogle",
+      "options": {
+        "symlink": false
+      }
+    },
+    {
+      "type": "path",
+      "url": "packages/apiclient-services-tagmanager",
       "options": {
         "symlink": false
       }
