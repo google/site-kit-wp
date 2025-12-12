@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c71ae91707a1e63e890687b66846c64c",
+    "content-hash": "caea7129e0117873d137b3c1e661c5eb",
     "packages": [
         {
             "name": "cweagans/composer-patches",
@@ -244,6 +244,20 @@
                     "AdSenseLinks.php"
                 ]
             },
+            "transport-options": {
+                "symlink": false,
+                "relative": true
+            }
+        },
+        {
+            "name": "google/apiclient-services-people",
+            "version": "dev-latest",
+            "dist": {
+                "type": "path",
+                "url": "packages/apiclient-services-people",
+                "reference": "5b42bbaff044ca70074eb3de468e4deeadc9c0e6"
+            },
+            "type": "library",
             "transport-options": {
                 "symlink": false,
                 "relative": true
@@ -5240,6 +5254,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "google/apiclient-services-people": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
