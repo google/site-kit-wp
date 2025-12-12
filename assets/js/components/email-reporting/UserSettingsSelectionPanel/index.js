@@ -62,6 +62,9 @@ export default function UserSettingsSelectionPanel() {
 
 		return select( CORE_USER ).isSavingEmailReportingSettings();
 	} );
+	const frequency = useSelect( ( select ) =>
+		select( CORE_USER ).getEmailReportingFrequency()
+	);
 
 	const [ notice, setNotice ] = useState( null );
 
@@ -110,6 +113,12 @@ export default function UserSettingsSelectionPanel() {
 			subscribed: true,
 		} );
 
+		trackEvent(
+			`${ viewContext }_email_reports_user_settings_panel`,
+			'subscribe',
+			frequency
+		);
+
 		if ( ! error ) {
 			setNotice( {
 				type: 'success',
@@ -126,7 +135,7 @@ export default function UserSettingsSelectionPanel() {
 					__( 'An error occurred.', 'google-site-kit' ),
 			} );
 		}
-	}, [ saveEmailReportingSettings ] );
+	}, [ saveEmailReportingSettings, viewContext, frequency ] );
 
 	const onUnsubscribe = useCallback( async () => {
 		const { error } = await saveEmailReportingSettings( {
