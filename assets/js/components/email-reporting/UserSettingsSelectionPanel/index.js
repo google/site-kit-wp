@@ -142,6 +142,11 @@ export default function UserSettingsSelectionPanel() {
 			subscribed: false,
 		} );
 
+		trackEvent(
+			`${ viewContext }_email_reports_user_settings_panel`,
+			'unsubscribe'
+		);
+
 		if ( ! error ) {
 			setNotice( {
 				type: 'info',
@@ -158,7 +163,7 @@ export default function UserSettingsSelectionPanel() {
 					__( 'An error occurred.', 'google-site-kit' ),
 			} );
 		}
-	}, [ saveEmailReportingSettings ] );
+	}, [ saveEmailReportingSettings, viewContext ] );
 
 	const onNoticeDismiss = useCallback( () => setNotice( null ), [] );
 
