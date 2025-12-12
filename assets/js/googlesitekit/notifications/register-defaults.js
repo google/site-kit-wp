@@ -84,7 +84,7 @@ import ActivateAnalyticsNotification from '@/js/components/notifications/Activat
 import { asyncRequire, asyncRequireAll } from '@/js/util/async';
 import {
 	requireCanActivateModule,
-	requireModuleConnected,
+	requireModuleActive,
 	requireModuleGatheringData,
 } from '@/js/googlesitekit/data-requirements';
 
@@ -99,7 +99,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		checkRequirements: asyncRequireAll(
 			asyncRequire(
 				false,
-				requireModuleConnected( MODULE_SLUG_ANALYTICS_4 )
+				requireModuleActive( MODULE_SLUG_ANALYTICS_4 )
 			),
 			asyncRequire(
 				false,

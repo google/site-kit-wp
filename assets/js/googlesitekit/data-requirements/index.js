@@ -69,6 +69,23 @@ export function requireCanViewSharedModule( slug ) {
 }
 
 /**
+ * Returns a function that checks if the given module is active.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} slug Module slug to test.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the given module is active or not.
+ */
+export function requireModuleActive( slug ) {
+	return async function ( { resolveSelect } ) {
+		return (
+			true ===
+			( await resolveSelect( CORE_MODULES ).isModuleActive( slug ) )
+		);
+	};
+}
+
+/**
  * Returns a function that checks if the given module is connected.
  *
  * @since 1.166.0
