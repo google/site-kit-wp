@@ -1,5 +1,5 @@
 /**
- * Consent mode test.
+ * Consent mode Playwright test.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,19 +16,15 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { activatePlugin, createURL } from '@wordpress/e2e-test-utils';
-
-/**
- * Internal dependencies
- */
-import {
+const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
+const {
+	ensurePluginActive,
 	setSiteVerification,
 	setSearchConsoleProperty,
-	wpApiFetch,
-} from '../../utils';
+	enableConsentMode,
+	withAdminPage,
+	clearConsentCookies,
+} = require( '../../playwright/utils' );
 
 const euUserConsentPolicyRegions = [
 	'AT',
@@ -65,31 +61,26 @@ const euUserConsentPolicyRegions = [
 	'SK',
 ];
 
-describe( 'Consent mode snippet', () => {
-	beforeAll( async () => {
-		await activatePlugin( 'wp-consent-api' );
-		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
-		await setSiteVerification();
-		await setSearchConsoleProperty();
-		await wpApiFetch( {
-			path: 'google-site-kit/v1/core/site/data/consent-mode',
-			method: 'post',
-			data: { data: { settings: { enabled: true } } },
+test.describe( 'Consent mode snippet', () => {
+	test.beforeAll( async ( { browser } ) => {
+		await withAdminPage( browser, async ( page ) => {
+			await ensurePluginActive( page, 'wp-consent-api' );
+			await ensurePluginActive( page, 'e2e-tests-proxy-auth-plugin' );
+			await setSiteVerification( page );
+			await setSearchConsoleProperty( page );
+			await enableConsentMode( page );
 		} );
 	} );
 
-	beforeEach( async () => {
-		await page.goto( createURL( '/hello-world' ), { waitUntil: 'load' } );
+	test.beforeEach( async ( { page } ) => {
+		await page.goto( '/hello-world', { waitUntil: 'load' } );
 	} );
 
-	afterEach( async () => {
-		const cookies = ( await page.cookies() ).filter( ( cookie ) =>
-			cookie.name.startsWith( 'wp_consent_' )
-		);
-		await page.deleteCookie( ...cookies );
+	test.afterEach( async ( { context } ) => {
+		await clearConsentCookies( context );
 	} );
 
-	it( 'configures the consent mode defaults', async () => {
+	test( 'configures the consent mode defaults', async ( { page } ) => {
 		const dataLayer = await page.evaluate( () => window.dataLayer );
 
 		expect( dataLayer ).toEqual( [
@@ -111,7 +102,9 @@ describe( 'Consent mode snippet', () => {
 		] );
 	} );
 
-	it( 'enqueues a consent mode update in response to a `wp_set_consent()` call', async () => {
+	test( 'enqueues a consent mode update in response to a `wp_set_consent()` call', async ( {
+		page,
+	} ) => {
 		await page.evaluate( () => {
 			window.wp_set_consent( 'marketing', 'allow' );
 		} );
@@ -146,7 +139,10 @@ describe( 'Consent mode snippet', () => {
 		] );
 	} );
 
-	it( 'enqueues a consent mode update on page load when a CMP plugin is present', async () => {
+	test( 'enqueues a consent mode update on page load when a CMP plugin is present', async ( {
+		browser,
+		page,
+	} ) => {
 		await page.evaluate( () => {
 			// `wp_set_consent()` will persist the consent choice in a cookie.
 			window.wp_set_consent( 'marketing', 'allow' );
@@ -176,10 +172,14 @@ describe( 'Consent mode snippet', () => {
 		] );
 
 		// Activate the stub CMP plugin.
-		await activatePlugin(
-			'e2e-tests-stub-consent-management-platform-plugin'
-		);
-		await page.goto( createURL( '/hello-world' ), { waitUntil: 'load' } );
+		await withAdminPage( browser, async ( adminPage ) => {
+			await ensurePluginActive(
+				adminPage,
+				'e2e-tests-stub-consent-management-platform-plugin'
+			);
+		} );
+
+		await page.goto( '/hello-world', { waitUntil: 'load' } );
 
 		dataLayer = await page.evaluate( () => window.dataLayer );
 

@@ -106,6 +106,9 @@ jobs:
       - name: npm install
         run: npm i --workspaces --include-workspace-root
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
       - name: Build
         run: npm run build:test
 
@@ -133,7 +136,10 @@ jobs:
       - name: Start environment
         run: npm run env:start
 
-      - name: Run the tests
+      - name: Run Playwright tests
+        run: npm run test:e2e:playwright
+
+      - name: Run Puppeteer tests
         run: npm run test:e2e
 
       - name: Upload artifacts
@@ -144,3 +150,4 @@ jobs:
           path: |
             ~/.npm/_logs/
             tests/e2e/screenshots/
+            tests/e2e/artifacts/
