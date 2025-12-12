@@ -191,15 +191,31 @@ class Report_Data_Builder {
 		$number = (float) $value;
 		$abs    = abs( $number );
 
+		if ( $abs >= 1000000000 ) {
+			return sprintf(
+				'%s%s',
+				number_format_i18n( $number / 1000000000, 1 ),
+				_x( 'B', 'billions abbreviation', 'google-site-kit' )
+			);
+		}
+
 		if ( $abs >= 1000000 ) {
-			return round( $number / 1000000, 1 ) . 'M';
+			return sprintf(
+				'%s%s',
+				number_format_i18n( $number / 1000000, 1 ),
+				_x( 'M', 'millions abbreviation', 'google-site-kit' )
+			);
 		}
 
 		if ( $abs >= 1000 ) {
-			return round( $number / 1000, 1 ) . 'K';
+			return sprintf(
+				'%s%s',
+				number_format_i18n( $number / 1000, 1 ),
+				_x( 'K', 'thousands abbreviation', 'google-site-kit' )
+			);
 		}
 
-		return (string) round( $number );
+		return number_format_i18n( $number );
 	}
 
 	/**
