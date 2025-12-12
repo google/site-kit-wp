@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c71ae91707a1e63e890687b66846c64c",
+    "content-hash": "83363e3d1e34c2c1d52e320821f40db9",
     "packages": [
         {
             "name": "cweagans/composer-patches",
@@ -251,18 +251,13 @@
         },
         {
             "name": "google/apiclient-services-subscribewithgoogle",
-            "version": "v0.1",
+            "version": "dev-latest",
             "dist": {
                 "type": "path",
                 "url": "packages/apiclient-services-subscribewithgoogle",
-                "reference": "8a5c316d95600fea61fed271b64e90b4858f88c4"
+                "reference": "9e46db20b51b51d1644410d075e3a35bdb470c0b"
             },
             "type": "library",
-            "autoload": {
-                "classmap": [
-                    "SubscribewithGoogle.php"
-                ]
-            },
             "transport-options": {
                 "symlink": false,
                 "relative": true
@@ -5240,6 +5235,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "google/apiclient-services-subscribewithgoogle": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
