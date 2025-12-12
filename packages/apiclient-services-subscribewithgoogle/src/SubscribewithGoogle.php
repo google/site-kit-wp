@@ -38,6 +38,9 @@ use Google\Client;
  */
 class SubscribewithGoogle extends \Google\Service
 {
+  /** Private Service: https://www.googleapis.com/auth/subscribewithgoogle.publications.entitlements.manage. */
+  const SUBSCRIBEWITHGOOGLE_PUBLICATIONS_ENTITLEMENTS_MANAGE =
+      "https://www.googleapis.com/auth/subscribewithgoogle.publications.entitlements.manage";
   /** See and review your subscription information. */
   const SUBSCRIBEWITHGOOGLE_PUBLICATIONS_ENTITLEMENTS_READONLY =
       "https://www.googleapis.com/auth/subscribewithgoogle.publications.entitlements.readonly";
@@ -75,7 +78,25 @@ class SubscribewithGoogle extends \Google\Service
         'publications',
         [
           'methods' => [
-            'list' => [
+            'checkFreeAccess' => [
+              'path' => 'v1/{+name}:checkFreeAccess',
+              'httpMethod' => 'GET',
+              'parameters' => [
+                'name' => [
+                  'location' => 'path',
+                  'type' => 'string',
+                  'required' => true,
+                ],
+                'httpReferrer' => [
+                  'location' => 'query',
+                  'type' => 'string',
+                ],
+                'uri' => [
+                  'location' => 'query',
+                  'type' => 'string',
+                ],
+              ],
+            ],'list' => [
               'path' => 'v1/publications',
               'httpMethod' => 'GET',
               'parameters' => [
@@ -150,7 +171,17 @@ class SubscribewithGoogle extends \Google\Service
         'entitlementsplans',
         [
           'methods' => [
-            'get' => [
+            'cancel' => [
+              'path' => 'v1/{+name}:cancel',
+              'httpMethod' => 'POST',
+              'parameters' => [
+                'name' => [
+                  'location' => 'path',
+                  'type' => 'string',
+                  'required' => true,
+                ],
+              ],
+            ],'get' => [
               'path' => 'v1/{+name}',
               'httpMethod' => 'GET',
               'parameters' => [
@@ -191,6 +222,38 @@ class SubscribewithGoogle extends \Google\Service
             'get' => [
               'path' => 'v1/{+name}',
               'httpMethod' => 'GET',
+              'parameters' => [
+                'name' => [
+                  'location' => 'path',
+                  'type' => 'string',
+                  'required' => true,
+                ],
+              ],
+            ],'list' => [
+              'path' => 'v1/{+parent}/orders',
+              'httpMethod' => 'GET',
+              'parameters' => [
+                'parent' => [
+                  'location' => 'path',
+                  'type' => 'string',
+                  'required' => true,
+                ],
+                'filter' => [
+                  'location' => 'query',
+                  'type' => 'string',
+                ],
+                'pageSize' => [
+                  'location' => 'query',
+                  'type' => 'integer',
+                ],
+                'pageToken' => [
+                  'location' => 'query',
+                  'type' => 'string',
+                ],
+              ],
+            ],'refund' => [
+              'path' => 'v1/{+name}:refund',
+              'httpMethod' => 'POST',
               'parameters' => [
                 'name' => [
                   'location' => 'path',

@@ -17,6 +17,7 @@
 
 namespace Google\Service\SubscribewithGoogle\Resource;
 
+use Google\Service\SubscribewithGoogle\CancelUserEntitlementsPlanRequest;
 use Google\Service\SubscribewithGoogle\ListUserEntitlementsPlansResponse;
 use Google\Service\SubscribewithGoogle\UserEntitlementsPlan;
 
@@ -30,6 +31,25 @@ use Google\Service\SubscribewithGoogle\UserEntitlementsPlan;
  */
 class PublicationsReadersEntitlementsplans extends \Google\Service\Resource
 {
+  /**
+   * Cancels the entitlements plan identitfied by plan id for a given user under
+   * the given publication. Returns the entitlements plan, which will not have
+   * finished processing the cancellation and still appear active.
+   * (entitlementsplans.cancel)
+   *
+   * @param string $name Required. The resource name of the UserEntitlementsPlan.
+   * Format: publications/{publication}/readers/{reader}/entitlementsplans/{plan}
+   * @param CancelUserEntitlementsPlanRequest $postBody
+   * @param array $optParams Optional parameters.
+   * @return UserEntitlementsPlan
+   * @throws \Google\Service\Exception
+   */
+  public function cancel($name, CancelUserEntitlementsPlanRequest $postBody, $optParams = [])
+  {
+    $params = ['name' => $name, 'postBody' => $postBody];
+    $params = array_merge($params, $optParams);
+    return $this->call('cancel', [$params], UserEntitlementsPlan::class);
+  }
   /**
    * Gets the entitlements plan identitfied by plan id for a given user under the
    * given publication. (entitlementsplans.get)

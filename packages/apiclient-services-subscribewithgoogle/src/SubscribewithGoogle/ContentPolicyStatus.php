@@ -17,63 +17,46 @@
 
 namespace Google\Service\SubscribewithGoogle;
 
-class Order extends \Google\Collection
+class ContentPolicyStatus extends \Google\Model
 {
-  protected $collection_key = 'stateDetails';
   /**
    * @var string
    */
-  public $name;
+  public $contentPolicyState;
   /**
    * @var string
    */
-  public $orderId;
-  protected $stateDetailsType = StateDetails::class;
-  protected $stateDetailsDataType = 'array';
+  public $policyInfoLink;
 
   /**
    * @param string
    */
-  public function setName($name)
+  public function setContentPolicyState($contentPolicyState)
   {
-    $this->name = $name;
+    $this->contentPolicyState = $contentPolicyState;
   }
   /**
    * @return string
    */
-  public function getName()
+  public function getContentPolicyState()
   {
-    return $this->name;
+    return $this->contentPolicyState;
   }
   /**
    * @param string
    */
-  public function setOrderId($orderId)
+  public function setPolicyInfoLink($policyInfoLink)
   {
-    $this->orderId = $orderId;
+    $this->policyInfoLink = $policyInfoLink;
   }
   /**
    * @return string
    */
-  public function getOrderId()
+  public function getPolicyInfoLink()
   {
-    return $this->orderId;
-  }
-  /**
-   * @param StateDetails[]
-   */
-  public function setStateDetails($stateDetails)
-  {
-    $this->stateDetails = $stateDetails;
-  }
-  /**
-   * @return StateDetails[]
-   */
-  public function getStateDetails()
-  {
-    return $this->stateDetails;
+    return $this->policyInfoLink;
   }
 }
 
 // Adding a class alias for backwards compatibility with the previous class name.
-class_alias(Order::class, 'Google_Service_SubscribewithGoogle_Order');
+class_alias(ContentPolicyStatus::class, 'Google_Service_SubscribewithGoogle_ContentPolicyStatus');
