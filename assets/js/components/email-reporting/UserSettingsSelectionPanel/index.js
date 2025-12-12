@@ -31,11 +31,22 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import SelectionPanel from '@/js/components/SelectionPanel';
 import PanelContent from './PanelContent';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 export default function UserSettingsSelectionPanel() {
+	const viewContext = useViewContext();
+
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
 	);
+
+	const onSideSheetOpen = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_email_reports_user_settings_panel`,
+			'view_panel'
+		);
+	}, [ viewContext ] );
 
 	const settings = useSelect( ( select ) => {
 		if ( ! isOpen ) {
@@ -142,6 +153,7 @@ export default function UserSettingsSelectionPanel() {
 		<SelectionPanel
 			className="googlesitekit-user-settings-selection-panel"
 			isOpen={ !! isOpen }
+			onOpen={ onSideSheetOpen }
 			closePanel={ closePanel }
 		>
 			<PanelContent
