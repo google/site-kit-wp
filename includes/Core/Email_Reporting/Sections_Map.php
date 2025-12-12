@@ -61,27 +61,14 @@ class Sections_Map {
 	 * @return array Array of sections with their configuration.
 	 */
 	public function get_sections() {
-		$sections = array_merge(
+		return array_merge(
+			$this->get_business_growth_section(),
 			$this->get_visitors_section(),
 			$this->get_traffic_sources_section(),
 			$this->get_attention_section(),
+			$this->get_growth_drivers_section(),
 			$this->get_growth_drivers_section()
 		);
-
-		// Prepend business growth section if available.
-		$business_growth = $this->get_business_growth_section();
-		if ( ! empty( $business_growth ) ) {
-			$sections = array_merge( $business_growth, $sections );
-		}
-
-		// Append growth drivers section if available. This is pure Search Console data,
-		// so if user does not have SC shared with them, this section will be empty.
-		$growth_drivers = $this->get_growth_drivers_section();
-		if ( ! empty( $growth_drivers ) ) {
-			$sections = array_merge( $sections, $growth_drivers );
-		}
-
-		return $sections;
 	}
 
 	/**
@@ -95,7 +82,7 @@ class Sections_Map {
 		// If no conversion data is present in payload it means user do not have conversion tracking set up
 		// or no data is received yet and we can skip this section.
 		if ( empty( $this->payload['total_conversion_events'] ) || ! isset( $this->payload['total_conversion_events'] ) ) {
-			return null;
+			return array();
 		}
 
 		return array(
@@ -127,45 +114,50 @@ class Sections_Map {
 	 * @return array Section configuration array.
 	 */
 	protected function get_visitors_section() {
-		$sections = array(
-			'how_many_people_are_finding_and_visiting_my_site' => array(
-				'title'            => esc_html__( 'How many people are finding and visiting my site?', 'google-site-kit' ),
-				'icon'             => 'visitors',
-				'section_template' => 'section-metrics',
-				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
-				'section_parts'    => array(
-					'total_visitors'     => array(
-						'data' => $this->payload['total_visitors'] ?? array(),
-					),
-					'new_visitors'       => array(
-						'data' => $this->payload['new_visitors'] ?? array(),
-					),
-					'returning_visitors' => array(
-						'data' => $this->payload['returning_visitors'] ?? array(),
-					),
-					'total_impressions'  => array(
-						'data' => $this->payload['total_impressions'] ?? array(),
-					),
-					'total_clicks'       => array(
-						'data' => $this->payload['total_clicks'] ?? array(),
-					),
-				),
-			),
+		$section_parts = array();
+
+		$section_parts['total_visitors'] = array(
+			'data' => $this->payload['total_visitors'] ?? array(),
 		);
-		// Dynamically append custom audience parts when available.
+
+		$section_parts['new_visitors'] = array(
+			'data' => $this->payload['new_visitors'] ?? array(),
+		);
+
+		$section_parts['returning_visitors'] = array(
+			'data' => $this->payload['returning_visitors'] ?? array(),
+		);
+
+		// Insert custom audience parts (if available) immediately after returning_visitors.
 		if ( is_array( $this->payload ) ) {
 			foreach ( $this->payload as $key => $data ) {
 				if ( 0 !== strpos( $key, 'custom_audience_' ) ) {
 					continue;
 				}
 
-				$sections['how_many_people_are_finding_and_visiting_my_site']['section_parts'][ $key ] = array(
+				$section_parts[ $key ] = array(
 					'data' => $data,
 				);
 			}
 		}
 
-		return $sections;
+		$section_parts['total_impressions'] = array(
+			'data' => $this->payload['total_impressions'] ?? array(),
+		);
+
+		$section_parts['total_clicks'] = array(
+			'data' => $this->payload['total_clicks'] ?? array(),
+		);
+
+		return array(
+			'how_many_people_are_finding_and_visiting_my_site' => array(
+				'title'            => esc_html__( 'How many people are finding and visiting my site?', 'google-site-kit' ),
+				'icon'             => 'visitors',
+				'section_template' => 'section-metrics',
+				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
+				'section_parts'    => $section_parts,
+			),
+		);
 	}
 
 	/**
@@ -235,7 +227,7 @@ class Sections_Map {
 	 */
 	protected function get_growth_drivers_section() {
 		if ( empty( $this->payload['keywords_ctr_increase'] ) && empty( $this->payload['pages_clicks_increase'] ) ) {
-			return null;
+			return array();
 		}
 
 		return array(
