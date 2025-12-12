@@ -56,10 +56,10 @@ class Report_Data_Builder {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Email_Report_Payload_Processor|null $report_processor    Optional. Report processor instance.
+	 * @param Email_Report_Payload_Processor|null $report_processor     Optional. Report processor instance.
 	 * @param Report_Data_Processor|null          $data_processor       Optional. Analytics data processor.
 	 * @param array                               $audience_display_map Optional. Audience resource => display name map.
-	 * @param Context|null                        $context             Optional. Plugin context for audience lookup.
+	 * @param Context|null                        $context              Optional. Plugin context for audience lookup.
 	 */
 	public function __construct( ?Email_Report_Payload_Processor $report_processor = null, ?Report_Data_Processor $data_processor = null, array $audience_display_map = array(), ?Context $context = null ) {
 		$this->report_processor     = $report_processor ?? new Email_Report_Payload_Processor();
