@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c71ae91707a1e63e890687b66846c64c",
+    "content-hash": "31a964fd29edb1860a0ddaf5a2e52122",
     "packages": [
         {
             "name": "cweagans/composer-patches",
@@ -263,6 +263,20 @@
                     "SubscribewithGoogle.php"
                 ]
             },
+            "transport-options": {
+                "symlink": false,
+                "relative": true
+            }
+        },
+        {
+            "name": "google/apiclient-services-tagmanager",
+            "version": "dev-latest",
+            "dist": {
+                "type": "path",
+                "url": "packages/apiclient-services-tagmanager",
+                "reference": "b90e713276b87c74ecfe9c3bfcfa48f88d1a2597"
+            },
+            "type": "library",
             "transport-options": {
                 "symlink": false,
                 "relative": true
@@ -5240,6 +5254,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "google/apiclient-services-tagmanager": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
