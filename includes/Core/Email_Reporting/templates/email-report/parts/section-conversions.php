@@ -67,18 +67,17 @@ $section_parts = $section['section_parts'];
 			// Render conversion metric parts (excluding total_conversion_events).
 			foreach ( $section_parts as $part_key => $part_config ) {
 				// Skip total_conversion_events as it's rendered separately above.
-				if ( 'total_conversion_events' === $part_key ) {
+				if ( 'total_conversion_events' === $part_key || empty( $part_config['data'] ) ) {
 					continue;
 				}
 
 				$render_part(
 					'section-conversions-metric-part',
 					array(
-						'data'                => $part_config['data'],
-						'top_traffic_channel' => $part_config['top_traffic_channel'],
-						'render_part'         => $render_part,
-						'render_shared_part'  => $render_shared_part,
-						'get_asset_url'       => $get_asset_url,
+						'data'               => $part_config['data'],
+						'render_part'        => $render_part,
+						'render_shared_part' => $render_shared_part,
+						'get_asset_url'      => $get_asset_url,
 					)
 				);
 			}

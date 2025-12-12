@@ -108,7 +108,11 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->set_active_modules(
 			array( Analytics_4::MODULE_SLUG, Search_Console::MODULE_SLUG, AdSense::MODULE_SLUG )
 		);
-		$this->set_analytics_settings_connected();
+		$this->set_analytics_settings_connected(
+			array(
+				'detectedEvents' => array( 'add_to_cart', 'purchase' ),
+			)
+		);
 		$this->set_search_console_settings_connected();
 		$this->set_adsense_settings_connected(
 			array(
@@ -133,18 +137,22 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$data_requests = $this->create_data_requests( $conversion_tracking );
 		$payload       = $data_requests->get_user_payload( $admin_id, $this->date_range );
 
-		$this->assertIsArray( $payload, 'Payload should be a flat array of section data for admin.' );
-		$this->assertArrayHasKey( 'total_conversion_events', $payload, 'Conversion events payload should be included.' );
-		$this->assertArrayHasKey( 'products_added_to_cart', $payload, 'Products added to cart payload should be included.' );
-		$this->assertArrayHasKey( 'purchases', $payload, 'Purchases payload should be included.' );
-		$this->assertArrayHasKey( 'total_visitors', $payload, 'Total visitors payload should be included.' );
-		$this->assertArrayHasKey( 'traffic_channels', $payload, 'Traffic channels payload should be included.' );
-		$this->assertArrayHasKey( 'popular_content', $payload, 'Popular content payload should be included.' );
-		$this->assertArrayHasKey( 'total_impressions', $payload, 'Search Console impressions payload should be included.' );
-		$this->assertArrayHasKey( 'total_clicks', $payload, 'Search Console clicks payload should be included.' );
-		$this->assertArrayHasKey( 'top_ctr_keywords', $payload, 'Search Console top CTR keywords payload should be included.' );
-		$this->assertArrayHasKey( 'top_pages_by_clicks', $payload, 'Search Console top pages payload should be included.' );
-		$this->assertArrayHasKey( 'total_earnings', $payload, 'AdSense earnings payload should be included.' );
+		$this->assertIsArray( $payload, 'Payload should be an array keyed by module slug.' );
+		$this->assertArrayHasKey( Analytics_4::MODULE_SLUG, $payload, 'Conversion data should be under analytics-4 module key.' );
+		$this->assertArrayHasKey( Search_Console::MODULE_SLUG, $payload, 'Search Console data should be under search-console module key.' );
+		$this->assertArrayHasKey( AdSense::MODULE_SLUG, $payload, 'AdSense data should be under adsense module key.' );
+
+		$this->assertArrayHasKey( 'total_conversion_events', $payload[ Analytics_4::MODULE_SLUG ], 'Conversion events payload should be included.' );
+		$this->assertArrayHasKey( 'products_added_to_cart', $payload[ Analytics_4::MODULE_SLUG ], 'Products added to cart payload should be included.' );
+		$this->assertArrayHasKey( 'purchases', $payload[ Analytics_4::MODULE_SLUG ], 'Purchases payload should be included.' );
+		$this->assertArrayHasKey( 'total_visitors', $payload[ Analytics_4::MODULE_SLUG ], 'Total visitors payload should be included.' );
+		$this->assertArrayHasKey( 'traffic_channels', $payload[ Analytics_4::MODULE_SLUG ], 'Traffic channels payload should be included.' );
+		$this->assertArrayHasKey( 'popular_content', $payload[ Analytics_4::MODULE_SLUG ], 'Popular content payload should be included.' );
+		$this->assertArrayHasKey( 'total_impressions', $payload[ Search_Console::MODULE_SLUG ], 'Search Console impressions payload should be included.' );
+		$this->assertArrayHasKey( 'total_clicks', $payload[ Search_Console::MODULE_SLUG ], 'Search Console clicks payload should be included.' );
+		$this->assertArrayHasKey( 'top_ctr_keywords', $payload[ Search_Console::MODULE_SLUG ], 'Search Console top CTR keywords payload should be included.' );
+		$this->assertArrayHasKey( 'top_pages_by_clicks', $payload[ Search_Console::MODULE_SLUG ], 'Search Console top pages payload should be included.' );
+		$this->assertArrayHasKey( 'total_earnings', $payload[ AdSense::MODULE_SLUG ], 'AdSense earnings payload should be included.' );
 	}
 
 	public function test_user_without_shared_roles_gets_empty_payload() {
@@ -185,6 +193,7 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 				'propertyID'      => '987654321',
 				'webDataStreamID' => '1234567890',
 				'measurementID'   => 'A1B2C3D4E5',
+				'detectedEvents'  => array( 'add_to_cart', 'purchase' ),
 			)
 		);
 
@@ -237,16 +246,16 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		remove_filter( 'pre_http_request', $http_filter, 10 );
 
 		$this->assertIsArray( $payload, 'Payload for shared viewer should be an array.' );
-		$this->assertArrayHasKey( 'total_conversion_events', $payload, 'Shared viewer should see conversion events.' );
-		$this->assertArrayHasKey( 'products_added_to_cart', $payload, 'Shared viewer should see products added to cart.' );
-		$this->assertArrayHasKey( 'purchases', $payload, 'Shared viewer should see purchases.' );
-		$this->assertArrayNotHasKey( 'total_impressions', $payload, 'Unshared Search Console data should be absent.' );
-		$this->assertArrayNotHasKey( 'total_clicks', $payload, 'Unshared Search Console clicks should be absent.' );
-		$this->assertArrayNotHasKey( 'total_earnings', $payload, 'Unshared AdSense earnings should be absent.' );
-		$this->assertArrayNotHasKey( 'new_visitors', $payload, 'Audience segmentation data should be absent.' );
-		$this->assertArrayNotHasKey( 'returning_visitors', $payload, 'Audience segmentation data should be absent.' );
-		$this->assertArrayNotHasKey( 'top_authors', $payload, 'Custom dimension authors data should be absent.' );
-		$this->assertArrayNotHasKey( 'top_categories', $payload, 'Custom dimension categories data should be absent.' );
+		$this->assertArrayHasKey( Analytics_4::MODULE_SLUG, $payload, 'Shared viewer should see analytics-4 payload.' );
+		$this->assertArrayNotHasKey( Search_Console::MODULE_SLUG, $payload, 'Unshared Search Console data should be absent.' );
+		$this->assertArrayNotHasKey( AdSense::MODULE_SLUG, $payload, 'Unshared AdSense earnings should be absent.' );
+		$this->assertArrayHasKey( 'total_conversion_events', $payload[ Analytics_4::MODULE_SLUG ], 'Shared viewer should see conversion events.' );
+		$this->assertArrayHasKey( 'products_added_to_cart', $payload[ Analytics_4::MODULE_SLUG ], 'Shared viewer should see products added to cart.' );
+		$this->assertArrayHasKey( 'purchases', $payload[ Analytics_4::MODULE_SLUG ], 'Shared viewer should see purchases.' );
+		$this->assertArrayNotHasKey( 'new_visitors', $payload[ Analytics_4::MODULE_SLUG ], 'Audience segmentation data should be absent.' );
+		$this->assertArrayNotHasKey( 'returning_visitors', $payload[ Analytics_4::MODULE_SLUG ], 'Audience segmentation data should be absent.' );
+		$this->assertArrayNotHasKey( 'top_authors', $payload[ Analytics_4::MODULE_SLUG ], 'Custom dimension authors data should be absent.' );
+		$this->assertArrayNotHasKey( 'top_categories', $payload[ Analytics_4::MODULE_SLUG ], 'Custom dimension categories data should be absent.' );
 	}
 
 	public function test_recoverable_or_not_connected_modules_are_skipped() {
@@ -277,9 +286,10 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 
 		remove_filter( 'googlesitekit_is_module_recoverable', $recoverable_filter, 10 );
 
-		$this->assertArrayNotHasKey( 'total_visitors', $payload, 'Recoverable Analytics should be skipped.' );
-		$this->assertArrayNotHasKey( 'total_impressions', $payload, 'Recoverable Search Console should be skipped.' );
-		$this->assertArrayHasKey( 'total_earnings', $payload, 'Active AdSense should remain in payload.' );
+		$this->assertArrayNotHasKey( Analytics_4::MODULE_SLUG, $payload, 'Recoverable Analytics should be skipped.' );
+		$this->assertArrayNotHasKey( Search_Console::MODULE_SLUG, $payload, 'Recoverable Search Console should be skipped.' );
+		$this->assertArrayHasKey( AdSense::MODULE_SLUG, $payload, 'Active AdSense should remain in payload.' );
+		$this->assertArrayHasKey( 'total_earnings', $payload[ AdSense::MODULE_SLUG ], 'total_earnings should remain in payload.' );
 	}
 
 	private function create_data_requests( Conversion_Tracking $conversion_tracking = null ) {
@@ -297,14 +307,17 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		);
 	}
 
-	private function set_analytics_settings_connected() {
+	private function set_analytics_settings_connected( array $overrides = array() ) {
 		$settings = new Analytics_4_Settings( $this->options );
 		$settings->merge(
-			array(
-				'accountID'       => '12345678',
-				'propertyID'      => '987654321',
-				'webDataStreamID' => '1234567890',
-				'measurementID'   => 'A1B2C3D4E5',
+			wp_parse_args(
+				$overrides,
+				array(
+					'accountID'       => '12345678',
+					'propertyID'      => '987654321',
+					'webDataStreamID' => '1234567890',
+					'measurementID'   => 'A1B2C3D4E5',
+				)
 			)
 		);
 	}

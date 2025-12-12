@@ -448,21 +448,76 @@ final class Email_Log {
 			return '';
 		}
 
-		$keys      = array( 'startDate', 'sendDate', 'compareStartDate', 'compareEndDate' );
-		$raw_dates = (array) $value;
-		// Pre-seed ( 'startDate', 'sendDate', 'compareStartDate', 'compareEndDate' ) keys
-		// so missing timestamps normalize to 0 and consumers always see a full schema.
-		$normalized = array_fill_keys( $keys, 0 );
-
-		foreach ( $keys as $key ) {
-			if ( isset( $raw_dates[ $key ] ) ) {
-				$normalized[ $key ] = absint( $raw_dates[ $key ] );
-			}
-		}
-
-		$encoded = wp_json_encode( $normalized, JSON_UNESCAPED_UNICODE );
+		$normalized = self::normalize_reference_dates( (array) $value );
+		$encoded    = wp_json_encode( $normalized, JSON_UNESCAPED_UNICODE );
 
 		return is_string( $encoded ) ? $encoded : '';
+	}
+
+	/**
+	 * Normalizes reference date values into timestamps for storage.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $raw_dates Raw reference date values keyed by meta field.
+	 * @return array Normalized timestamps keyed by meta field.
+	 */
+	protected static function normalize_reference_dates( array $raw_dates ) {
+		$keys       = array( 'startDate', 'sendDate', 'compareStartDate', 'compareEndDate' );
+		$normalized = array();
+
+		foreach ( $keys as $key ) {
+			if ( ! isset( $raw_dates[ $key ] ) ) {
+				if ( 'compareStartDate' === $key || 'compareEndDate' === $key ) {
+					$normalized[ $key ] = 0;
+				}
+				continue;
+			}
+
+			$timestamp = self::normalize_reference_date_value( $raw_dates[ $key ] );
+
+			if ( null === $timestamp ) {
+				if ( 'compareStartDate' === $key || 'compareEndDate' === $key ) {
+					$normalized[ $key ] = 0;
+				}
+				continue;
+			}
+
+			// Store as integer timestamp.
+			$normalized[ $key ] = (int) $timestamp;
+		}
+
+		return $normalized;
+	}
+
+	/**
+	 * Normalizes a single reference date value into a timestamp.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $raw_value Date value.
+	 * @return int|null Normalized timestamp or null when invalid.
+	 */
+	protected static function normalize_reference_date_value( $raw_value ) {
+		if ( is_string( $raw_value ) ) {
+			$raw_value = trim( $raw_value );
+		}
+
+		if ( '' === $raw_value ) {
+			return null;
+		}
+
+		if ( is_numeric( $raw_value ) ) {
+			$timestamp = $raw_value;
+		} else {
+			$timestamp = strtotime( $raw_value );
+		}
+
+		if ( false === $timestamp || $timestamp <= 0 ) {
+			return null;
+		}
+
+		return $timestamp;
 	}
 
 	/**
