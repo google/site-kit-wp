@@ -112,7 +112,7 @@ export default function UserSettingsSelectionPanel() {
 					__( 'An error occurred.', 'google-site-kit' ),
 			} );
 		}
-	}, [ saveEmailReportingSettings ] );
+	}, [ saveEmailReportingSettings, viewContext, frequency ] );
 
 	const onSubscribe = useCallback( async () => {
 		const { error } = await saveEmailReportingSettings( {
