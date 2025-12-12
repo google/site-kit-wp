@@ -48,8 +48,14 @@ const RESET_GOOGLE_TAG_GATEWAY_SETTINGS = 'RESET_GOOGLE_TAG_GATEWAY_SETTINGS';
 
 const settingsReducerCallback = createReducer(
 	( state, googleTagGatewaySettings ) => {
-		state.googleTagGatewaySettings = googleTagGatewaySettings;
-		state.googleTagGatewaySavedSettings = googleTagGatewaySettings;
+		state.gtgSettings = googleTagGatewaySettings;
+		state.gtgSavedSettings = googleTagGatewaySettings;
+	}
+);
+
+const healthReducerCallback = createReducer(
+	( state, googleTagGatewayHealthStatus ) => {
+		state.gtgHealthStatus = googleTagGatewayHealthStatus;
 	}
 );
 
@@ -90,18 +96,25 @@ const fetchSaveGoogleTagGatewaySettingsStore = createFetchStore( {
 	},
 } );
 
-const fetchGetGTGServerRequirementStatusStore = createFetchStore( {
-	baseName: 'getGTGServerRequirementStatus',
+const fetchGetGTGHealthStore = createFetchStore( {
+	baseName: 'getGTGHealth',
 	controlCallback: () =>
-		get( 'core', 'site', 'gtg-server-requirement-status', undefined, {
+		get( 'core', 'site', 'gtg-health', undefined, {
 			useCache: false,
 		} ),
-	reducerCallback: settingsReducerCallback,
+	reducerCallback: healthReducerCallback,
+} );
+
+const fetchPostGTGHealthChecksStore = createFetchStore( {
+	baseName: 'postGTGHealthChecks',
+	controlCallback: () => set( 'core', 'site', 'gtg-health-checks', {} ),
+	reducerCallback: healthReducerCallback,
 } );
 
 const baseInitialState = {
-	googleTagGatewaySettings: undefined,
-	googleTagGatewaySavedSettings: undefined,
+	gtgSettings: undefined,
+	gtgSavedSettings: undefined,
+	gtgHealthStatus: undefined,
 };
 
 const baseActions = {
@@ -169,15 +182,13 @@ const baseControls = {};
 const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case SET_GOOGLE_TAG_GATEWAY_ENABLED: {
-			state.googleTagGatewaySettings =
-				state.googleTagGatewaySettings || {};
-			state.googleTagGatewaySettings.isEnabled = !! payload.isEnabled;
+			state.gtgSettings = state.gtgSettings || {};
+			state.gtgSettings.isEnabled = !! payload.isEnabled;
 			break;
 		}
 
 		case RESET_GOOGLE_TAG_GATEWAY_SETTINGS: {
-			state.googleTagGatewaySettings =
-				state.googleTagGatewaySavedSettings;
+			state.gtgSettings = state.gtgSavedSettings;
 			break;
 		}
 
@@ -196,6 +207,17 @@ const baseResolvers = {
 			yield fetchGetGoogleTagGatewaySettingsStore.actions.fetchGetGoogleTagGatewaySettings();
 		}
 	},
+
+	*getGoogleTagGatewayHealthStatus() {
+		const { select } = yield commonActions.getRegistry();
+
+		const healthStatus =
+			select( CORE_SITE ).getGoogleTagGatewayHealthStatus();
+
+		if ( healthStatus === undefined ) {
+			yield fetchGetGTGHealthStore.actions.fetchGetGTGHealth();
+		}
+	},
 };
 
 const baseSelectors = {
@@ -204,12 +226,25 @@ const baseSelectors = {
 	 *
 	 * @since 1.141.0
 	 * @since 1.157.0 Renamed from `getFirstPartyModeSettings` to `getGoogleTagGatewaySettings`.
+	 * @since n.e.x.t Updated to use new state structure.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object|undefined} Google tag gateway settings, or undefined if not loaded.
 	 */
 	getGoogleTagGatewaySettings: ( state ) => {
-		return state.googleTagGatewaySettings;
+		return state.gtgSettings;
+	},
+
+	/**
+	 * Gets the Google tag gateway health status.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Object|undefined} Google tag gateway health status, or undefined if not loaded.
+	 */
+	getGoogleTagGatewayHealthStatus: ( state ) => {
+		return state.gtgHealthStatus;
 	},
 
 	/**
@@ -229,34 +264,33 @@ const baseSelectors = {
 	} ),
 
 	/**
-	 * Checks if the GTG service is determined to be healthy.
+	 * Checks if the GTG upstream service is healthy.
 	 *
-	 * @since 1.141.0
-	 * @since 1.157.0 Renamed from `isFPMHealthy` to `isGTGHealthy`.
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|null|undefined} True if the GTG service is healthy, otherwise false. Returns undefined if the state is not loaded.
+	 * @return {boolean|null|undefined} True if the GTG upstream service is healthy, otherwise false. Returns undefined if the state is not loaded.
 	 */
-	isGTGHealthy: createRegistrySelector( ( select ) => () => {
-		const { isGTGHealthy } =
-			select( CORE_SITE ).getGoogleTagGatewaySettings() || {};
+	isUpstreamHealthy: createRegistrySelector( ( select ) => () => {
+		const { isUpstreamHealthy } =
+			select( CORE_SITE ).getGoogleTagGatewayHealthStatus() || {};
 
-		return isGTGHealthy;
+		return isUpstreamHealthy;
 	} ),
 
 	/**
-	 * Checks if the GTag proxy script is accessible.
+	 * Checks if the GTG measurement path is healthy.
 	 *
-	 * @since 1.141.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|null|undefined} True if the `gtg/measurement.php` proxy script is accessible, otherwise false. Returns undefined if the state is not loaded.
 	 */
-	isScriptAccessEnabled: createRegistrySelector( ( select ) => () => {
-		const { isScriptAccessEnabled } =
-			select( CORE_SITE ).getGoogleTagGatewaySettings() || {};
+	isMpathHealthy: createRegistrySelector( ( select ) => () => {
+		const { isMpathHealthy } =
+			select( CORE_SITE ).getGoogleTagGatewayHealthStatus() || {};
 
-		return isScriptAccessEnabled;
+		return isMpathHealthy;
 	} ),
 
 	/**
@@ -264,18 +298,15 @@ const baseSelectors = {
 	 *
 	 * @since 1.142.0
 	 * @since 1.157.0 Renamed from `haveFirstPartyModeSettingsChanged` to `haveGoogleTagGatewaySettingsChanged`.
+	 * @since n.e.x.t Updated to use new state structure.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if the settings have changed, false otherwise.
 	 */
 	haveGoogleTagGatewaySettingsChanged( state ) {
-		const { googleTagGatewaySettings, googleTagGatewaySavedSettings } =
-			state;
+		const { gtgSettings, gtgSavedSettings } = state;
 
-		return ! isEqual(
-			googleTagGatewaySettings,
-			googleTagGatewaySavedSettings
-		);
+		return ! isEqual( gtgSettings, gtgSavedSettings );
 	},
 
 	/**
@@ -306,7 +337,8 @@ const baseSelectors = {
 const store = combineStores(
 	fetchGetGoogleTagGatewaySettingsStore,
 	fetchSaveGoogleTagGatewaySettingsStore,
-	fetchGetGTGServerRequirementStatusStore,
+	fetchGetGTGHealthStore,
+	fetchPostGTGHealthChecksStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

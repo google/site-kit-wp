@@ -106,8 +106,10 @@ describe( 'modules/ads settings', () => {
 
 			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 				isEnabled: false,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
+			} );
+			registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
 			} );
 
 			registry
@@ -133,8 +135,6 @@ describe( 'modules/ads settings', () => {
 				return {
 					body: {
 						isEnabled, // Return the `isEnabled` value passed to the API.
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					},
 					status: 200,
 				};
@@ -155,8 +155,10 @@ describe( 'modules/ads settings', () => {
 		it( 'should handle an error when sending a POST request to the GTG settings endpoint', async () => {
 			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 				isEnabled: false,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
+			} );
+			registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
 			} );
 
 			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
@@ -182,8 +184,10 @@ describe( 'modules/ads settings', () => {
 		it( 'should not send a POST request to the GTG settings endpoint when the toggle state is not changed', async () => {
 			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 				isEnabled: false,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
+			} );
+			registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
 			} );
 
 			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
@@ -210,8 +214,10 @@ describe( 'modules/ads settings', () => {
 
 			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 				isEnabled: false,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
+			} );
+			registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
 			} );
 
 			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -231,8 +237,6 @@ describe( 'modules/ads settings', () => {
 				return {
 					body: {
 						isEnabled, // Return the `isEnabled` value passed to the API.
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					},
 					status: 200,
 				};
@@ -270,8 +274,10 @@ describe( 'modules/ads settings', () => {
 
 			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 				isEnabled: false,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
+			} );
+			registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
 			} );
 
 			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -291,8 +297,6 @@ describe( 'modules/ads settings', () => {
 				return {
 					body: {
 						isEnabled, // Return the `isEnabled` value passed to the API.
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					},
 					status: 200,
 				};
@@ -317,8 +321,10 @@ describe( 'modules/ads settings', () => {
 
 			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 				isEnabled: true,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
+			} );
+			registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
 			} );
 
 			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -338,8 +344,6 @@ describe( 'modules/ads settings', () => {
 				return {
 					body: {
 						isEnabled, // Return the `isEnabled` value passed to the API.
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					},
 					status: 200,
 				};
@@ -402,8 +406,10 @@ describe( 'modules/ads settings', () => {
 
 			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 				isEnabled: false,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
+			} );
+			registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
 			} );
 
 			registry.dispatch( CORE_SITE ).setGoogleTagGatewayEnabled( true );

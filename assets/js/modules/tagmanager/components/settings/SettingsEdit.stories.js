@@ -58,8 +58,8 @@ const defaultSettings = {
 	ownerID: 0,
 };
 
-const gtgServerRequirementsEndpoint = new RegExp(
-	'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
+const healthChecksEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/site/data/gtg-health-checks'
 );
 
 function setupRegistryWithDefaultSettings( registry ) {
@@ -430,23 +430,25 @@ GTGEnabled.decorators = [
 		function setupRegistry( registry ) {
 			setupRegistryWithDefaultSettings( registry );
 
-			const gtgSettings = {
-				isEnabled: true,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
-			};
-
-			fetchMock.getOnce(
-				gtgServerRequirementsEndpoint,
+			fetchMock.postOnce(
+				healthChecksEndpoint,
 				{
-					body: gtgSettings,
+					body: {
+						isUpstreamHealthy: true,
+						isMpathHealthy: true,
+					},
 				},
 				{ overwriteRoutes: true }
 			);
 
-			registry
-				.dispatch( CORE_SITE )
-				.receiveGetGoogleTagGatewaySettings( gtgSettings );
+			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
+				isEnabled: true,
+			} );
+
+			registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
+			} );
 		}
 
 		return (
@@ -468,23 +470,25 @@ GTGDisabledWithWarning.decorators = [
 		function setupRegistry( registry ) {
 			setupRegistryWithDefaultSettings( registry );
 
-			const gtgSettings = {
-				isEnabled: true,
-				isGTGHealthy: false,
-				isScriptAccessEnabled: false,
-			};
-
-			fetchMock.getOnce(
-				gtgServerRequirementsEndpoint,
+			fetchMock.postOnce(
+				healthChecksEndpoint,
 				{
-					body: gtgSettings,
+					body: {
+						isUpstreamHealthy: false,
+						isMpathHealthy: false,
+					},
 				},
 				{ overwriteRoutes: true }
 			);
 
-			registry
-				.dispatch( CORE_SITE )
-				.receiveGetGoogleTagGatewaySettings( gtgSettings );
+			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
+				isEnabled: true,
+			} );
+
+			registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+				isUpstreamHealthy: false,
+				isMpathHealthy: false,
+			} );
 		}
 
 		return (

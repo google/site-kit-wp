@@ -104,23 +104,25 @@ WithGoogleTagGatewayAvailable.parameters = {
 WithGoogleTagGatewayAvailable.decorators = [
 	( Story ) => {
 		function setupRegistry( registry ) {
-			const gtgServerRequirementsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
+			const healthChecksEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/gtg-health-checks'
 			);
 
-			const gtgSettings = {
-				isEnabled: true,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
-			};
-
-			fetchMock.get( gtgServerRequirementsEndpoint, {
-				body: gtgSettings,
+			fetchMock.post( healthChecksEndpoint, {
+				body: {
+					isUpstreamHealthy: true,
+					isMpathHealthy: true,
+				},
 			} );
 
-			registry
-				.dispatch( CORE_SITE )
-				.receiveGetGoogleTagGatewaySettings( gtgSettings );
+			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
+				isEnabled: true,
+			} );
+
+			registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
+			} );
 		}
 
 		return (
@@ -141,23 +143,25 @@ WithGoogleTagGatewayUnavailable.parameters = {
 WithGoogleTagGatewayUnavailable.decorators = [
 	( Story ) => {
 		function setupRegistry( registry ) {
-			const gtgServerRequirementsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
+			const healthChecksEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/gtg-health-checks'
 			);
 
-			const gtgSettings = {
-				isEnabled: true,
-				isGTGHealthy: false,
-				isScriptAccessEnabled: false,
-			};
-
-			fetchMock.get( gtgServerRequirementsEndpoint, {
-				body: gtgSettings,
+			fetchMock.post( healthChecksEndpoint, {
+				body: {
+					isUpstreamHealthy: false,
+					isMpathHealthy: false,
+				},
 			} );
 
-			registry
-				.dispatch( CORE_SITE )
-				.receiveGetGoogleTagGatewaySettings( gtgSettings );
+			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
+				isEnabled: true,
+			} );
+
+			registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+				isUpstreamHealthy: false,
+				isMpathHealthy: false,
+			} );
 		}
 
 		return (

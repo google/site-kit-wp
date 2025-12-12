@@ -294,8 +294,8 @@ class Debug_DataTest extends TestCase {
 		$this->assertListIntersection(
 			array(
 				'google_tag_gateway_is_enabled',
-				'google_tag_gateway_is_gtg_healthy',
-				'google_tag_gateway_is_script_access_enabled',
+				'google_tag_gateway_is_upstream_healthy',
+				'google_tag_gateway_is_mpath_healthy',
 			),
 			array_keys( $info['google-site-kit']['fields'] ),
 			'Failed to assert one or more GTG fields were included in the list of Site Kit fields'

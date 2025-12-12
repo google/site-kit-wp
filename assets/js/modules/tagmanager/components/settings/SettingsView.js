@@ -80,15 +80,12 @@ export default function SettingsView() {
 		if ( ! googleTagGatewayEnabled ) {
 			return [];
 		}
-		const {
-			isGoogleTagGatewayEnabled,
-			isGTGHealthy,
-			isScriptAccessEnabled,
-		} = select( CORE_SITE );
+		const { isGoogleTagGatewayEnabled, isUpstreamHealthy, isMpathHealthy } =
+			select( CORE_SITE );
 		const status =
 			isGoogleTagGatewayEnabled() &&
-			isGTGHealthy() &&
-			isScriptAccessEnabled();
+			isUpstreamHealthy() &&
+			isMpathHealthy();
 		return [
 			{
 				label: __(
