@@ -90,6 +90,12 @@ export default function UserSettingsSelectionPanel() {
 	const onSaveCallback = useCallback( async () => {
 		const { error } = await saveEmailReportingSettings();
 
+		trackEvent(
+			`${ viewContext }_email_reports_user_settings-sidebar`,
+			'update_settings',
+			frequency
+		);
+
 		if ( ! error ) {
 			setNotice( {
 				type: 'success',
