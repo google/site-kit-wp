@@ -34,12 +34,16 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useViewOnly from '@/js/hooks/useViewOnly';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 
 export const EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE =
 	'email_reports_analytics_disconnected_notice';
 
 export default function AnalyticsDisconnectedNotice() {
 	const isViewOnly = useViewOnly();
+	const trackEvents = useNotificationEvents(
+		EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE
+	);
 
 	const isEmailReportingEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isEmailReportingEnabled()
@@ -65,9 +69,15 @@ export default function AnalyticsDisconnectedNotice() {
 		MODULE_SLUG_ANALYTICS_4
 	);
 
+	const handleCTAClick = useCallback( () => {
+		trackEvents.confirm();
+		activateAnalytics();
+	}, [ trackEvents, activateAnalytics ] );
+
 	const handleDismiss = useCallback( async () => {
+		trackEvents.dismiss();
 		await dismissItem( EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE );
-	}, [ dismissItem ] );
+	}, [ dismissItem, trackEvents ] );
 
 	if (
 		! isEmailReportingEnabled ||
@@ -101,7 +111,7 @@ export default function AnalyticsDisconnectedNotice() {
 					? undefined
 					: {
 							label: __( 'Connect Analytics', 'google-site-kit' ),
-							onClick: activateAnalytics,
+							onClick: handleCTAClick,
 					  }
 			}
 			dismissButton={ {
