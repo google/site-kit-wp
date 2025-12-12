@@ -152,7 +152,7 @@ class Uninstallation {
 	/**
 	 * Determines if an event is scheduled for the given hook, regardless of arguments.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param string $hook The hook name.
 	 * @return bool True if an event is scheduled for the hook, false otherwise.

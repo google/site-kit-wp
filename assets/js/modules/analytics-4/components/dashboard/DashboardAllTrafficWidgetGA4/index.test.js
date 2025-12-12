@@ -25,8 +25,11 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserInfo,
 } from '../../../../../../../tests/js/utils';
+import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { render } from '../../../../../../../tests/js/test-utils';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
@@ -151,6 +154,8 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
+		provideSiteInfo( registry );
+		provideUserInfo( registry );
 		provideUserAuthentication( registry );
 		provideModules( registry, [
 			{
@@ -162,7 +167,16 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 
 		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-06' );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID: '123456789',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
+			{
+				_id: '123456789',
+			},
+			{ propertyID: '123456789' }
+		);
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -174,6 +188,8 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 	} );
 
 	it( 'should render the widget', async () => {
+		mockSurveyEndpoints();
+
 		reportOptions.forEach( ( options ) => {
 			provideAnalytics4MockReport( registry, options );
 		} );

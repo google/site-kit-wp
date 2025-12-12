@@ -26,7 +26,7 @@ export const selectors = {
 	 * Gets a URL to the service.
 	 *
 	 * @since 1.14.0
-	 * @since n.e.x.t Adds `utm_source` to the returned URL.
+	 * @since 1.168.0 Adds `utm_source` to the returned URL.
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {Object} [args]       Object containing optional path and query args.

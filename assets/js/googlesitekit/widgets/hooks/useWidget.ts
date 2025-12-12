@@ -1,7 +1,7 @@
 /**
- * Source link styles.
+ * `useWidget` hook.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,27 @@
  * limitations under the License.
  */
 
-.googlesitekit-source-link {
-	color: $c-surfaces-on-surface-variant;
-	font-size: $fs-body-sm;
-	font-weight: $fw-medium;
-	letter-spacing: $ls-xs;
-	line-height: 1;
+/**
+ * WordPress dependencies
+ */
+import { useContext } from '@wordpress/element';
 
-	button {
-		color: $c-content-secondary;
-		letter-spacing: inherit;
-		line-height: inherit;
+/**
+ * Internal dependencies
+ */
+import WidgetContext, {
+	WidgetContextValue,
+} from '@/js/googlesitekit/widgets/components/WidgetContext';
 
-		&:hover {
-			color: $c-content-secondary;
-		}
-	}
+/**
+ * Returns the current widget context.
+ *
+ * @since n.e.x.t
+ *
+ * @return {WidgetContextValue} The current widget context.
+ */
+export default function useWidget(): WidgetContextValue {
+	const widgetContext = useContext( WidgetContext );
+
+	return widgetContext;
 }

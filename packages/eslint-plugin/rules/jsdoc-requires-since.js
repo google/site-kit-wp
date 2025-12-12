@@ -79,7 +79,7 @@ const SINCE_VALIDATION_RULES = [
 /**
  * Gets the description from a tag's source string.
  *
- * @since n.e.x.t
+ * @since 1.168.0
  *
  * @param {Object} tag The tag object.
  * @return {string} The tag description.

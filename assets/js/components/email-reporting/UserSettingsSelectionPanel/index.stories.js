@@ -24,6 +24,8 @@ import {
 	provideUserAuthentication,
 	provideSiteInfo,
 	provideUserInfo,
+	provideModules,
+	provideUserCapabilities,
 } from '../../../../../tests/js/utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -34,6 +36,8 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import UserSettingsSelectionPanel from '.';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 function Template( { viewContext } ) {
 	return (
@@ -48,6 +52,11 @@ function Template( { viewContext } ) {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {};
+Default.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {} );
+	},
+};
 
 export const ViewOnly = Template.bind( {} );
 ViewOnly.storyName = 'View-only user';
@@ -65,17 +74,134 @@ Subscribed.args = {
 	},
 };
 
+export const AnalyticsWasConnected = Template.bind( {} );
+AnalyticsWasConnected.storyName =
+	'Analytics disconnected, was connected before';
+AnalyticsWasConnected.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: true,
+		} );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+	},
+};
+
+export const AnalyticsWasConnectedViewOnly = Template.bind( {} );
+AnalyticsWasConnectedViewOnly.storyName =
+	'Analytics disconnected, was connected before, view-only user';
+AnalyticsWasConnectedViewOnly.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: true,
+		} );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+
+export const AnalyticsWasNeverConnected = Template.bind( {} );
+AnalyticsWasNeverConnected.storyName =
+	'Analytics disconnected, never connected before';
+AnalyticsWasNeverConnected.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: true,
+		} );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetWasAnalytics4Connected( { wasConnected: false } );
+	},
+};
+
+export const EmailReportingDisabled = Template.bind( {} );
+EmailReportingDisabled.storyName = 'Email reporting disabled';
+EmailReportingDisabled.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: false,
+		} );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetWasAnalytics4Connected( { wasConnected: false } );
+	},
+};
+
+export const EmailReportingDisabledViewOnly = Template.bind( {} );
+EmailReportingDisabledViewOnly.storyName =
+	'Email reporting disabled, view-only user';
+EmailReportingDisabledViewOnly.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: false,
+		} );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetWasAnalytics4Connected( { wasConnected: false } );
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+
 export default {
-	title: 'EmailReporting/UserSettingsSelectionPanel',
+	title: 'Components/EmailReporting/UserSettingsSelectionPanel',
 	component: UserSettingsSelectionPanel,
 	decorators: [
 		( Story, { args } ) => {
 			function setupRegistry( registry ) {
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+				] );
 				provideUserAuthentication( registry );
+				provideUserCapabilities( registry );
 				provideSiteInfo( registry );
 				provideUserInfo( registry, {
 					wpEmail: 'someone@anybusiness.com',
 				} );
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetWasAnalytics4Connected( { wasConnected: true } );
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetEmailReportingSettings( {
+						enabled: true,
+					} );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetEmailReportingSettings( {
+						subscribed: true,
+					} );
 
 				registry
 					.dispatch( CORE_UI )
