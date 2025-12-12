@@ -77,8 +77,12 @@ export default function UserSettingsSelectionPanel() {
 				setNotice( null );
 			}, 310 ); // Wait until after the panel close animation.
 			setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
+			trackEvent(
+				`${ viewContext }_email_reports_user_settings_panel`,
+				'close_panel'
+			);
 		}
-	}, [ isOpen, resetEmailReportingSettings, setValue ] );
+	}, [ isOpen, resetEmailReportingSettings, setValue, viewContext ] );
 
 	const onSaveCallback = useCallback( async () => {
 		const { error } = await saveEmailReportingSettings();
