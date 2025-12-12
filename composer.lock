@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c71ae91707a1e63e890687b66846c64c",
+    "content-hash": "2b1b1613bee7722cc2ed1e23f86e7040",
     "packages": [
         {
             "name": "cweagans/composer-patches",
@@ -244,6 +244,20 @@
                     "AdSenseLinks.php"
                 ]
             },
+            "transport-options": {
+                "symlink": false,
+                "relative": true
+            }
+        },
+        {
+            "name": "google/apiclient-services-pagespeedonline",
+            "version": "dev-latest",
+            "dist": {
+                "type": "path",
+                "url": "packages/apiclient-services-pagespeedonline",
+                "reference": "7dfac791e2afa0a90c3d3fc3dc311752b4305512"
+            },
+            "type": "library",
             "transport-options": {
                 "symlink": false,
                 "relative": true
@@ -5240,6 +5254,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "google/apiclient-services-pagespeedonline": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
