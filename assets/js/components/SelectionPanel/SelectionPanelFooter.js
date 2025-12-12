@@ -42,13 +42,11 @@ import { Button, SpinnerButton } from 'googlesitekit-components';
 import { safelySort } from '@/js/util';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import PreviewBlock from '@/js/components/PreviewBlock';
-import Notice from '@/js/components/Notice';
 
 export default function SelectionPanelFooter( {
 	savedItemSlugs = [],
 	selectedItemSlugs = [],
 	saveSettings = () => {},
-	itemLimitError,
 	minSelectedItemCount = 0,
 	maxSelectedItemCount = 0,
 	isBusy,
@@ -150,14 +148,7 @@ export default function SelectionPanelFooter( {
 	return (
 		<footer className="googlesitekit-selection-panel-footer">
 			<div className="googlesitekit-selection-panel-footer__content">
-				{ haveSettingsChanged && itemLimitError ? (
-					<Notice
-						type={ Notice.TYPES.ERROR }
-						description={ itemLimitError }
-					/>
-				) : (
-					itemCountElement
-				) }
+				{ itemCountElement }
 				<div className="googlesitekit-selection-panel-footer__actions">
 					<Button
 						onClick={ onCancelClick }
@@ -188,7 +179,6 @@ SelectionPanelFooter.propTypes = {
 	savedItemSlugs: PropTypes.array,
 	selectedItemSlugs: PropTypes.array,
 	saveSettings: PropTypes.func,
-	itemLimitError: PropTypes.string,
 	minSelectedItemCount: PropTypes.number,
 	maxSelectedItemCount: PropTypes.number,
 	isBusy: PropTypes.bool,

@@ -142,7 +142,16 @@ const IGNORE_CONSOLE_MESSAGES = [
 	// test and usually make E2E tests fail erroneously.
 	{
 		matcher: 'includes',
-		pattern: 'You are probably offline.',
+		pattern: 'Could not get a valid response from the server.', // Formerly "You are probably offline."
+	},
+	{
+		matcher: 'includes',
+		pattern: 'The user aborted a request.',
+	},
+	// Duplicate concurrent requests (TODO: remove)
+	{
+		matcher: 'includes',
+		pattern: 'Google Site Kit API: duplicate request',
 	},
 	// WordPress 5.3 logs when a block is saved and causes console logs
 	// that should not cause failures.

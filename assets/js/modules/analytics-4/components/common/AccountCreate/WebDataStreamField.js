@@ -58,7 +58,7 @@ export default function WebDataStreamField() {
 	return (
 		<Fragment>
 			<CreateAccountField
-				label={ __( 'Web Data Stream', 'google-site-kit' ) }
+				label={ __( 'Web data stream', 'google-site-kit' ) }
 				value={ value }
 				hasError={ ! value }
 				setValue={ setValue }

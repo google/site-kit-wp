@@ -28,7 +28,7 @@ final class View_Only_Pointer {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 * @var Context
 	 */
 	private $context;
@@ -36,7 +36,7 @@ final class View_Only_Pointer {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @param Context $context Plugin context.
 	 */
@@ -63,7 +63,7 @@ final class View_Only_Pointer {
 	 * Gets the view-only pointer.
 	 *
 	 * @since 1.83.0.
-	 * @since n.e.x.t Updated to work with extended Pointer class.
+	 * @since 1.166.0 Updated to work with extended Pointer class.
 	 *
 	 * @return Pointer Admin notice instance.
 	 */

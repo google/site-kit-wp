@@ -83,6 +83,17 @@ class Email_Reporting_Settings extends User_Setting {
 	}
 
 	/**
+	 * Gets the meta key used to store the setting.
+	 *
+	 * @since 1.167.0
+	 *
+	 * @return string Meta key for the user option.
+	 */
+	public function get_meta_key() {
+		return $this->user_options->get_meta_key( static::OPTION );
+	}
+
+	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * @since 1.161.0

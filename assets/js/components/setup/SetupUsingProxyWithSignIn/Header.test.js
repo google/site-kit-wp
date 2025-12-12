@@ -23,18 +23,28 @@ import {
 	provideUserAuthentication,
 	provideUserInfo,
 	provideModules,
+	fireEvent,
+	provideSiteInfo,
 } from '../../../../../tests/js/test-utils';
 import Header from './Header';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
+import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
+import * as tracking from '@/js/util/tracking';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'Header', () => {
+	mockLocation();
+
 	let registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 
 		provideModules( registry );
+		provideSiteInfo( registry );
 		provideUserInfo( registry );
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
@@ -89,5 +99,24 @@ describe( 'Header', () => {
 		);
 		// Only the stub segment should be present at initial render.
 		expect( segments.length ).toBe( 1 );
+	} );
+
+	it( 'should track an event when the user clicks the "Exit setup" component with setupFlowRefresh enabled', async () => {
+		const { getByRole, waitForRegistry } = render( <Header />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SPLASH,
+			features: [ 'setupFlowRefresh' ],
+		} );
+
+		await waitForRegistry();
+
+		fireEvent.click( getByRole( 'button', { name: 'Exit setup' } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			VIEW_CONTEXT_SPLASH,
+			'setup_flow_v3_exit_setup',
+			'splash'
+		);
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 	} );
 } );

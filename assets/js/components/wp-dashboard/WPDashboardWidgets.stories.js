@@ -69,7 +69,10 @@ ReadyGA4.args = {
 			.receiveIsGatheringData( false );
 	},
 };
-ReadyGA4.scenario = {};
+ReadyGA4.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 200,
+};
 
 export const ReadyWithActivateModuleCTA = Template.bind( {} );
 ReadyWithActivateModuleCTA.storyName = 'Ready with Activate Module CTA';
@@ -113,9 +116,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 	},
 };
 
-ReadyWithActivateAnalyticsCTA.scenario = {
-	delay: 6000, // This extra delay is required to fix unstable VRTs.
-};
+ReadyWithActivateAnalyticsCTA.scenario = {};
 
 export const ReadyWithCompleteAnalyticsActivationCTA = Template.bind( {} );
 ReadyWithCompleteAnalyticsActivationCTA.storyName =
@@ -242,7 +243,10 @@ NoDataInComparisonDateRange.args = {
 			.receiveIsGatheringData( false );
 	},
 };
-NoDataInComparisonDateRange.scenario = {};
+NoDataInComparisonDateRange.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 200,
+};
 
 export default {
 	title: 'Views/WPDashboardApp/WPDashboardWidgets',

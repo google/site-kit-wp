@@ -16,12 +16,12 @@ exports[`Analytics EnhancedConversionsNotification should render the notice 1`] 
       <p
         class="googlesitekit-notice__title"
       >
-        Boost your Analytics data with enhanced conversions
+        Boost your Analytics data with more metrics about your visitors
       </p>
       <p
         class="googlesitekit-notice__description"
       >
-        Site Kit now supports enhanced conversions. This free feature helps you get a more complete and reliable count of your sales and leads from your website, even when people switch devices. To activate, turn on the setting for collecting user data in your Analytics account. 
+        Site Kit now supports user-provided data collection, a free feature which helps you get a more complete and reliable count of your sales and leads from your website, even when people switch devices. To activate, turn on the setting for collecting user data in your Analytics account. 
         <a
           aria-label="Learn more (opens in a new tab)"
           class="googlesitekit-cta-link"
@@ -33,6 +33,12 @@ exports[`Analytics EnhancedConversionsNotification should render the notice 1`] 
             class="googlesitekit-cta-link__contents"
           >
             Learn more
+          </span>
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 5px;"
+          >
+            <svg />
           </span>
         </a>
       </p>
@@ -53,7 +59,7 @@ exports[`Analytics EnhancedConversionsNotification should render the notice 1`] 
       <a
         aria-label="Go to Analytics (opens in a new tab)"
         class="mdc-button googlesitekit-notice__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
-        href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Fa123456p654321%2Fadmin%2Fdatapolicies%2Fdatacollection&Email=wapuu.wordpress%40gmail.com"
+        href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%23%2Fa123456p654321%2Fadmin%2Fdatapolicies%2Fdatacollection%3Futm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
         role="button"
         target="_blank"
       >

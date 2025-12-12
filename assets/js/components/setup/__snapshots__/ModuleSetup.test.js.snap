@@ -158,7 +158,7 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
                                 >
                                   <label
                                     class="mdc-floating-label mdc-floating-label--float-above"
-                                    for="googlesitekit-select-15"
+                                    for="googlesitekit-select-0"
                                     style=""
                                   >
                                     Account
@@ -200,7 +200,7 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
                                 >
                                   <label
                                     class="mdc-floating-label mdc-floating-label--float-above"
-                                    for="googlesitekit-select-16"
+                                    for="googlesitekit-select-1"
                                     style=""
                                   >
                                     Property
@@ -254,10 +254,10 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
                                 >
                                   <label
                                     class="mdc-floating-label mdc-floating-label--float-above"
-                                    for="googlesitekit-select-17"
+                                    for="googlesitekit-select-2"
                                     style=""
                                   >
-                                    Web Data Stream
+                                    Web data stream
                                   </label>
                                 </div>
                                 <div
@@ -302,7 +302,7 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
                                 <input
                                   checked=""
                                   class="mdc-switch__native-control"
-                                  id="googlesitekit-switch-5"
+                                  id="googlesitekit-switch-0"
                                   readonly=""
                                   role="switch"
                                   type="checkbox"
@@ -312,7 +312,7 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
                           </div>
                           <label
                             class=""
-                            for="googlesitekit-switch-5"
+                            for="googlesitekit-switch-0"
                           >
                             Enable enhanced measurement
                           </label>
@@ -621,7 +621,6 @@ exports[`ModuleSetup Analytics 4 not initial setup flow should match the snapsho
                                 >
                                   <label
                                     class="mdc-floating-label mdc-floating-label--float-above"
-                                    for="googlesitekit-select-33"
                                     style=""
                                   >
                                     Account
@@ -663,7 +662,6 @@ exports[`ModuleSetup Analytics 4 not initial setup flow should match the snapsho
                                 >
                                   <label
                                     class="mdc-floating-label mdc-floating-label--float-above"
-                                    for="googlesitekit-select-34"
                                     style=""
                                   >
                                     Property
@@ -705,10 +703,9 @@ exports[`ModuleSetup Analytics 4 not initial setup flow should match the snapsho
                                 >
                                   <label
                                     class="mdc-floating-label mdc-floating-label--float-above"
-                                    for="googlesitekit-select-35"
                                     style=""
                                   >
-                                    Web Data Stream
+                                    Web data stream
                                   </label>
                                 </div>
                                 <div
@@ -741,7 +738,7 @@ exports[`ModuleSetup Analytics 4 not initial setup flow should match the snapsho
                                 <input
                                   checked=""
                                   class="mdc-switch__native-control"
-                                  id="googlesitekit-switch-11"
+                                  id="googlesitekit-switch-undefined"
                                   readonly=""
                                   role="switch"
                                   type="checkbox"
@@ -751,7 +748,7 @@ exports[`ModuleSetup Analytics 4 not initial setup flow should match the snapsho
                           </div>
                           <label
                             class=""
-                            for="googlesitekit-switch-11"
+                            for="googlesitekit-switch-undefined"
                           >
                             Enable enhanced measurement
                           </label>

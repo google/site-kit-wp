@@ -23,8 +23,26 @@ const {
 	default: iterateJsdoc,
 } = require( 'eslint-plugin-jsdoc/dist/iterateJsdoc' );
 
+/**
+ * Internal dependencies
+ */
+const { getJsdocContent } = require( '../utils' );
+
+/**
+ * Compares tags by line number.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} tagA The first tag to compare.
+ * @param {Object} tagB The second tag to compare.
+ * @return {number} The result of the comparison.
+ */
+function compareTagsByLineNumber( tagA, tagB ) {
+	return tagA.source[ 0 ].number > tagB.source[ 0 ].number ? 1 : -1;
+}
+
 module.exports = iterateJsdoc(
-	( { context, jsdoc, jsdocNode, utils } ) => {
+	( { context, jsdocNode, utils } ) => {
 		const expectedTagOrder = [
 			'since',
 			'see',
@@ -39,9 +57,7 @@ module.exports = iterateJsdoc(
 			.filterTags( ( { tag } ) => {
 				return expectedTagOrder.includes( tag );
 			} )
-			.sort( ( tagA, tagB ) => {
-				return tagA.line > tagB.line ? 1 : -1;
-			} )
+			.sort( compareTagsByLineNumber )
 			.map( ( tag ) => {
 				return tag.tag;
 			} );
@@ -55,9 +71,11 @@ module.exports = iterateJsdoc(
 				return;
 			}
 
+			const source = getJsdocContent( context, jsdocNode );
+
 			if (
 				previousTag &&
-				jsdoc.source.match(
+				source.match(
 					new RegExp( `@${ previousTag }.*\\n\\n@${ tag }`, 'gm' )
 				)
 			) {
@@ -88,9 +106,7 @@ module.exports = iterateJsdoc(
 					tag
 				);
 			} )
-			.sort( ( tagA, tagB ) => {
-				return tagA.line > tagB.line ? 1 : -1;
-			} )
+			.sort( compareTagsByLineNumber )
 			.map( ( tag ) => {
 				return tag.tag;
 			} )
@@ -106,9 +122,7 @@ module.exports = iterateJsdoc(
 			.filterTags( ( { tag } ) => {
 				return [ 'param', 'type', 'return' ].includes( tag );
 			} )
-			.sort( ( tagA, tagB ) => {
-				return tagA.line > tagB.line ? 1 : -1;
-			} )
+			.sort( compareTagsByLineNumber )
 			.map( ( tag ) => {
 				return tag.tag;
 			} )

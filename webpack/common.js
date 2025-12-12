@@ -53,6 +53,7 @@ exports.resolve = {
 		),
 		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
 	},
+	extensions: [ '.tsx', '.ts', '.js', '.jsx', '.mjs' ],
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
 
@@ -189,7 +190,27 @@ exports.svgRule = svgRule;
 exports.createRules = ( mode ) => [
 	svgRule,
 	{
-		test: /\.js$/,
+		test: /\.tsx?$/,
+		exclude: /node_modules/,
+		use: [
+			{
+				loader: 'babel-loader',
+				options: {
+					sourceMap: mode !== 'production',
+					babelrc: false,
+					configFile: false,
+					cacheDirectory: true,
+					presets: [
+						'@babel/preset-typescript',
+						'@wordpress/default',
+						'@babel/preset-react',
+					],
+				},
+			},
+		],
+	},
+	{
+		test: /\.jsx?$/,
 		exclude: /node_modules/,
 		use: [
 			{

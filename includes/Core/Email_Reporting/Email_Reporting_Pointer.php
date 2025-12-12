@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_S
 /**
  * Admin pointer for Email Reporting onboarding.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  * @access private
  * @ignore
  */
@@ -31,7 +31,7 @@ final class Email_Reporting_Pointer {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 * @var Context
 	 */
 	private $context;
@@ -39,7 +39,7 @@ final class Email_Reporting_Pointer {
 	/**
 	 * User_Email_Reporting_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 * @var User_Email_Reporting_Settings
 	 */
 	protected $user_settings;
@@ -47,7 +47,7 @@ final class Email_Reporting_Pointer {
 	/**
 	 * Dismissed_Items instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 * @var Dismissed_Items
 	 */
 	protected $dismissed_items;
@@ -55,7 +55,7 @@ final class Email_Reporting_Pointer {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @param Context                       $context Plugin context.
 	 * @param User_Options                  $user_options User options instance.
@@ -70,7 +70,7 @@ final class Email_Reporting_Pointer {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 */
 	public function register() {
 		add_filter(
@@ -85,7 +85,7 @@ final class Email_Reporting_Pointer {
 	/**
 	 * Builds the Email Reporting pointer.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @return Pointer
 	 */

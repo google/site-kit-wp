@@ -300,8 +300,20 @@ class Google_Proxy {
 		$body = wp_remote_retrieve_body( $response );
 		$body = json_decode( $body, true );
 		if ( $code < 200 || 299 < $code ) {
-			$message = is_array( $body ) && ! empty( $body['error'] ) ? $body['error'] : '';
-			return new WP_Error( 'request_failed', $message, array( 'status' => $code ) );
+			$message    = '';
+			$error_code = 'request_failed';
+
+			if ( is_array( $body ) ) {
+				if ( ! empty( $body['error'] ) ) {
+					$message = $body['error'];
+				}
+
+				if ( ! empty( $body['error_code'] ) ) {
+					$error_code = $body['error_code'];
+				}
+			}
+
+			return new WP_Error( $error_code, $message, array( 'status' => $code ) );
 		}
 
 		if ( ! empty( $args['return'] ) && 'response' === $args['return'] ) {
@@ -512,6 +524,7 @@ class Google_Proxy {
 	 *
 	 * @since 1.27.0
 	 * @since 1.104.0 Added `php_version` to request.
+	 * @since 1.167.0 Added `amp_mode` to request.
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @return array|WP_Error Response of the wp_remote_post request.
@@ -522,6 +535,7 @@ class Google_Proxy {
 		$platform               = self::get_platform();
 		$user_count             = count_users();
 		$connectable_user_count = isset( $user_count['avail_roles']['administrator'] ) ? $user_count['avail_roles']['administrator'] : 0;
+		$amp_mode               = $this->context->get_amp_mode();
 
 		$body = array(
 			'platform'               => $platform . '/google-site-kit',
@@ -531,6 +545,7 @@ class Google_Proxy {
 			'user_count'             => $user_count['total_users'],
 			'connectable_user_count' => $connectable_user_count,
 			'connected_user_count'   => $this->count_connected_users(),
+			'amp_mode'               => $amp_mode ? $amp_mode : '',
 		);
 
 		/**

@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies.
  */
-import { getStablePath } from '@wordpress/api-fetch/build/middlewares/preloading';
+import { normalizePath } from '@wordpress/url';
 
 /**
  * Creates a preloading middleware.
@@ -34,7 +34,7 @@ import { getStablePath } from '@wordpress/api-fetch/build/middlewares/preloading
  */
 function createPreloadingMiddleware( preloadedData ) {
 	const cache = Object.keys( preloadedData ).reduce( ( result, path ) => {
-		result[ getStablePath( path ) ] = preloadedData[ path ];
+		result[ normalizePath( path ) ] = preloadedData[ path ];
 		return result;
 	}, {} );
 
@@ -53,7 +53,7 @@ function createPreloadingMiddleware( preloadedData ) {
 		if ( typeof options.path === 'string' ) {
 			const method = options.method?.toUpperCase() || 'GET';
 
-			const path = getStablePath( uri );
+			const path = normalizePath( uri );
 			if ( parse && 'GET' === method && cache[ path ] ) {
 				const result = Promise.resolve( cache[ path ].body );
 				delete cache[ path ];

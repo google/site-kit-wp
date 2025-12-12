@@ -211,14 +211,7 @@ class Reset_AudiencesTest extends TestCase {
 
 			// Confirm the user's applicable audience settings have been reset.
 			$audience_settings = $this->audience_settings->get();
-			foreach ( array_keys( $default_user_audience_settings ) as $key ) {
-				// `isAudienceSegmentationWidgetHidden` should not be reset.
-				if ( 'isAudienceSegmentationWidgetHidden' === $key ) {
-					$this->assertEquals( $activated_user_audience_settings[ $key ], $audience_settings[ $key ], 'Widget hidden flag should remain unchanged after reset.' );
-				} else {
-					$this->assertEquals( $default_user_audience_settings[ $key ], $audience_settings[ $key ], 'Other audience settings should be reset to defaults.' );
-				}
-			}
+			$this->assertEqualSets( $default_user_audience_settings, $audience_settings, 'Audience settings should match defaults after reset.' );
 		}
 
 		// Restore original user.

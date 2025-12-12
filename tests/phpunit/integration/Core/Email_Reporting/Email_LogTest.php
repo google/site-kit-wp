@@ -210,4 +210,83 @@ class Email_LogTest extends TestCase {
 
 		$this->assertSame( '', call_user_func( $reference_callback, 'invalid' ), 'Sanitize reference dates should reject invalid types.' );
 	}
+
+	public function test_get_date_range_from_log_returns_normalized_dates() {
+		$post_id = self::factory()->post->create(
+			array(
+				'post_type'   => Email_Log::POST_TYPE,
+				'post_status' => Email_Log::STATUS_SENT,
+			)
+		);
+
+		update_post_meta(
+			$post_id,
+			Email_Log::META_REPORT_REFERENCE_DATES,
+			array(
+				'startDate'        => strtotime( '2024-07-01' ),
+				'sendDate'         => strtotime( '2024-07-31' ),
+				'compareStartDate' => strtotime( '2024-06-01' ),
+				'compareEndDate'   => strtotime( '2024-06-30' ),
+			)
+		);
+
+		$date_range = Email_Log::get_date_range_from_log( get_post( $post_id ) );
+
+		$expected = array(
+			'startDate'        => gmdate( 'Y-m-d', strtotime( '2024-07-01' ) ),
+			'endDate'          => gmdate( 'Y-m-d', strtotime( '2024-07-31' ) ),
+			'compareStartDate' => gmdate( 'Y-m-d', strtotime( '2024-06-01' ) ),
+			'compareEndDate'   => gmdate( 'Y-m-d', strtotime( '2024-06-30' ) ),
+		);
+
+		$this->assertSame( $expected, $date_range, 'Date range should be normalized to Y-m-d strings with endDate from sendDate.' );
+	}
+
+	public function test_get_date_range_from_log_returns_null_when_incomplete() {
+		$post_id = self::factory()->post->create(
+			array(
+				'post_type'   => Email_Log::POST_TYPE,
+				'post_status' => Email_Log::STATUS_SENT,
+			)
+		);
+
+		update_post_meta(
+			$post_id,
+			Email_Log::META_REPORT_REFERENCE_DATES,
+			wp_json_encode( array( 'startDate' => strtotime( '2024-07-01' ) ) )
+		);
+
+		$this->assertNull( Email_Log::get_date_range_from_log( get_post( $post_id ) ), 'Missing end date should return null.' );
+
+		update_post_meta(
+			$post_id,
+			Email_Log::META_REPORT_REFERENCE_DATES,
+			wp_json_encode( array( 'sendDate' => strtotime( '2024-07-31' ) ) )
+		);
+
+		$this->assertNull( Email_Log::get_date_range_from_log( get_post( $post_id ) ), 'Missing start date should return null.' );
+	}
+
+	public function test_get_date_range_from_log_rejects_invalid_inputs() {
+		$this->assertNull( Email_Log::get_date_range_from_log( null ), 'Null input should return null.' );
+		$this->assertNull( Email_Log::get_date_range_from_log( new \stdClass() ), 'Non-post input should return null.' );
+
+		$post_id = self::factory()->post->create();
+		$this->assertNull( Email_Log::get_date_range_from_log( get_post( $post_id ) ), 'Non email-log posts should return null.' );
+
+		$post_id = self::factory()->post->create(
+			array(
+				'post_type'   => Email_Log::POST_TYPE,
+				'post_status' => Email_Log::STATUS_SENT,
+			)
+		);
+
+		update_post_meta( $post_id, Email_Log::META_REPORT_REFERENCE_DATES, '{invalid-json' );
+
+		$this->assertNull( Email_Log::get_date_range_from_log( get_post( $post_id ) ), 'Invalid JSON should return null.' );
+
+		update_post_meta( $post_id, Email_Log::META_REPORT_REFERENCE_DATES, array( 'startDate' => 'not-a-date' ) );
+
+		$this->assertNull( Email_Log::get_date_range_from_log( get_post( $post_id ) ), 'Unparseable dates should return null.' );
+	}
 }

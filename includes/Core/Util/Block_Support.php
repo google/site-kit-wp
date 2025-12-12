@@ -39,7 +39,7 @@ class Block_Support {
 	 * Block API version 3 introduces iframe rendering for blocks in the editor.
 	 * This is supported starting with WordPress 6.3.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.166.0
 	 *
 	 * @return bool True if Block API version 3 is supported, false otherwise.
 	 */

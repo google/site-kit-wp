@@ -104,7 +104,6 @@ class AuthenticationTest extends TestCase {
 				'initialVersion',
 				'isUserInputCompleted',
 				'verified',
-				'hasMultipleAdmins',
 			),
 			array_keys( $user_data ),
 			'User data should contain all required authentication keys.'
@@ -123,7 +122,6 @@ class AuthenticationTest extends TestCase {
 				'isUserInputCompleted',
 				'verified',
 				'user',
-				'hasMultipleAdmins',
 			),
 			array_keys( $user_data ),
 			'User data should contain all required authentication keys including user profile data.'

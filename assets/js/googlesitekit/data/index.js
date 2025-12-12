@@ -45,7 +45,7 @@ import {
 import { createReducer } from './create-reducer';
 
 /**
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @typedef {Object} WPDataRegistry
  * @property {Function} registerStore Given a namespace key and settings

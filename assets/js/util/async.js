@@ -107,7 +107,7 @@ async function isPromiseResolved( promise ) {
 /**
  * Returns a function which can process N asynchronous requirements in sequence, stopping at the first to return false.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @param {...Function} requirements Async requirement function checks.
  * @return {function(): Promise<boolean>} Function which processes all requirements in sequence.
@@ -128,7 +128,7 @@ export function asyncRequireAll( ...requirements ) {
  *
  * If any predicates return true, it returns true, otherwise it returns false.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @param {...Function} requirements Async requirement function checks.
  * @return {function(): Promise<boolean>} Function which processes all requirements in sequence.
@@ -147,7 +147,7 @@ export function asyncRequireAny( ...requirements ) {
 /**
  * Returns a predicate function which proxies the given function and returns `true` only if the given function's return equals the given value.
  *
- * @since n.e.x.t
+ * @since 1.166.0
  *
  * @param {*}        want Value to match against predicate return.
  * @param {Function} func Function to proxy and check return value of.

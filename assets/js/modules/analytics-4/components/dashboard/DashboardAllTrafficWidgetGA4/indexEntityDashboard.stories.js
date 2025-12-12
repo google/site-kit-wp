@@ -49,7 +49,12 @@ const widgetComponentProps = getWidgetComponentProps(
 );
 
 function Template() {
-	return <DashboardAllTrafficWidgetGA4 { ...widgetComponentProps } />;
+	// Min height added to fix rare VRT instability where the mobile VRT for Zero Data was not capturing the full height.
+	return (
+		<div style={ { minHeight: '980px' } }>
+			<DashboardAllTrafficWidgetGA4 { ...widgetComponentProps } />
+		</div>
+	);
 }
 
 const baseAllTrafficOptions = {
@@ -165,11 +170,10 @@ EntityDashboardLoaded.args = {
 		} );
 	},
 };
-// TODO: Restore this test
-// (see: https://github.com/google/site-kit-wp/issues/11619) once the
-// underlying issue with Google Charts in VRT tests is diagnosed + resolved.
-//
-// EntityDashboardLoaded.scenario = {};
+EntityDashboardLoaded.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
+};
 
 export const EntityDashboardLoading = Template.bind( {} );
 EntityDashboardLoading.storyName = 'Loading';
@@ -224,7 +228,10 @@ EntityDashboardDataUnavailable.args = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	},
 };
-EntityDashboardDataUnavailable.scenario = {};
+EntityDashboardDataUnavailable.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
+};
 
 export const EntityDashboardZeroData = Template.bind( {} );
 EntityDashboardZeroData.storyName = 'Zero Data';
@@ -265,7 +272,10 @@ EntityDashboardZeroData.args = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	},
 };
-EntityDashboardZeroData.scenario = {};
+EntityDashboardZeroData.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
+};
 
 export const EntityDashboardError = Template.bind( {} );
 EntityDashboardError.storyName = 'Error';
@@ -309,11 +319,10 @@ EntityDashboardOneRowOfData.args = {
 		} );
 	},
 };
-// TODO: Restore this test
-// (see: https://github.com/google/site-kit-wp/issues/11619) once the
-// underlying issue with Google Charts in VRT tests is diagnosed + resolved.
-//
-// EntityDashboardOneRowOfData.scenario = {};
+EntityDashboardOneRowOfData.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
+};
 
 export const NoDataInComparisonDateRange = Template.bind( {} );
 NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
@@ -326,11 +335,10 @@ NoDataInComparisonDateRange.args = {
 		} );
 	},
 };
-// TODO: Restore this test
-// (see: https://github.com/google/site-kit-wp/issues/11619) once the
-// underlying issue with Google Charts in VRT tests is diagnosed + resolved.
-//
-// NoDataInComparisonDateRange.scenario = {};
+NoDataInComparisonDateRange.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
+};
 
 export default {
 	title: 'Modules/Analytics4/Widgets/All Traffic Widget GA4/Entity Dashboard',

@@ -77,7 +77,7 @@ describe( 'WebDataStreamNameInput', () => {
 			}
 		);
 
-		expect( getByLabelText( /Web Data Stream Name/i ) ).toBeInTheDocument();
+		expect( getByLabelText( /Web data stream name/i ) ).toBeInTheDocument();
 
 		expect( container ).toMatchSnapshot();
 	} );

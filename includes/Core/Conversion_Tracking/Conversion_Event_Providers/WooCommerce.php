@@ -193,6 +193,12 @@ class WooCommerce extends Conversion_Events_Provider {
 		add_filter(
 			'woocommerce_loop_add_to_cart_link',
 			function ( $button, $product ) {
+				// If the product is not a valid WC_Product instance, return
+				// early.
+				if ( false === $product instanceof \WC_Product ) {
+					return $button;
+				}
+
 				$this->products[] = $this->get_formatted_product( $product );
 
 				return $button;
@@ -265,7 +271,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 *
 	 * @return array
 	 */
-	public function get_formatted_product( $product, $variation_id = 0, $variation = false, $quantity = false ) {
+	protected function get_formatted_product( WC_Product $product, $variation_id = 0, $variation = false, $quantity = false ) {
 		$product_id = $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id();
 		$price      = $product->get_price();
 
@@ -344,8 +350,16 @@ class WooCommerce extends Conversion_Events_Provider {
 			),
 			'items'       => array_map(
 				function ( $item ) {
+					// If the product is not a valid WC_Product instance, return
+					// early.
+					if ( $item->get_product() instanceof \WC_Product === false ) {
+						return $item;
+					}
+
+					$formatted_product = $this->get_formatted_product( $item->get_product() );
+
 					return array_merge(
-						$this->get_formatted_product( $item->get_product() ),
+						$formatted_product,
 						array(
 							'quantity'                    => $item->get_quantity(),
 							'price_after_coupon_discount' => $this->get_formatted_price( $item->get_total() ),
@@ -455,6 +469,17 @@ class WooCommerce extends Conversion_Events_Provider {
 			return '';
 		}
 
+		// Check if the original input started with + (user explicitly provided country code).
+		$original_started_with_plus = strpos( trim( $phone ), '+' ) === 0;
+
+		// Remove any non-digit characters.
+		$phone_digits = preg_replace( '/[^0-9]/', '', $phone );
+
+		// Skip if phone is empty after cleaning.
+		if ( empty( $phone_digits ) ) {
+			return '';
+		}
+
 		// Try to use WooCommerce's country calling codes for proper E.164 formatting.
 		if ( class_exists( 'WC_Countries' ) && ! empty( $country ) ) {
 			$countries    = new \WC_Countries();
@@ -462,16 +487,45 @@ class WooCommerce extends Conversion_Events_Provider {
 
 			// If we have a valid calling code, format to E.164.
 			if ( ! empty( $calling_code ) ) {
-				// Remove any non-digit characters and leading zeros.
-				$phone = ltrim( preg_replace( '/[^0-9]/', '', $phone ), '0' );
+				// Extract country code digits (without the + sign).
+				$country_code_digits = ltrim( $calling_code, '+' );
 
-				// Skip if phone is empty after cleaning.
-				if ( empty( $phone ) ) {
-					return '';
+				// Check if the phone number starts with 00 (international dialing format).
+				// This is commonly used instead of + in many countries.
+				// To distinguish from national numbers with leading zeros, ensure that after
+				// stripping 00, there are at least 10 digits remaining (country code + number).
+				$starts_with_00_international = false;
+				if ( strpos( $phone_digits, '00' ) === 0 && strlen( $phone_digits ) > 2 ) {
+					$digits_after_00              = substr( $phone_digits, 2 );
+					$starts_with_00_international = strlen( $digits_after_00 ) >= 10;
 				}
 
-				// Prepend the calling code (which already includes the + sign).
-				$phone = $calling_code . $phone;
+				// Check if the phone number already starts with the billing country code.
+				if ( strpos( $phone_digits, $country_code_digits ) === 0 ) {
+					// Phone already has the correct country code, just add + and validate.
+					$phone = '+' . $phone_digits;
+				} elseif ( $starts_with_00_international ) {
+					// Phone starts with 00 (international dialing format).
+					// Strip the 00 prefix and format as E.164.
+					// This handles any country code, not just the billing country.
+					$phone = '+' . substr( $phone_digits, 2 );
+				} elseif ( $original_started_with_plus ) {
+					// User explicitly entered a +, indicating they provided their own country code.
+					// Trust their input and use their number as-is.
+					$phone = '+' . $phone_digits;
+				} else {
+					// No country code detected, treat as national number.
+					// Remove leading zeros from the national number.
+					$phone_digits = ltrim( $phone_digits, '0' );
+
+					// Skip if phone is empty after removing leading zeros.
+					if ( empty( $phone_digits ) ) {
+						return '';
+					}
+
+					// Prepend the calling code (which already includes the + sign).
+					$phone = $calling_code . $phone_digits;
+				}
 
 				// Validate the number is the correct length (11-15 digits including +).
 				if ( strlen( $phone ) < 11 || strlen( $phone ) > 15 ) {

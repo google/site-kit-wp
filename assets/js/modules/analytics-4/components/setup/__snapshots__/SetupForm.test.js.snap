@@ -130,7 +130,7 @@ exports[`SetupForm renders the form correctly 1`] = `
                 for="googlesitekit-select-2"
                 style=""
               >
-                Web Data Stream
+                Web data stream
               </label>
             </div>
             <div
@@ -363,7 +363,7 @@ exports[`SetupForm renders the form correctly with setupFlowRefresh enabled 1`] 
                 for="googlesitekit-select-5"
                 style=""
               >
-                Web Data Stream
+                Web data stream
               </label>
             </div>
             <div

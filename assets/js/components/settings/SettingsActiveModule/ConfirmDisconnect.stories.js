@@ -24,6 +24,8 @@ import { provideModules } from '../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { SettingsDisconnectNote } from '@/js/modules/ads/components/settings';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 
 function Template( args ) {
 	return <ConfirmDisconnect { ...args } />;
@@ -90,6 +92,42 @@ ConfirmDisconnectWithFeaturesAndLongText.decorators = [
 			registry
 				.dispatch( CORE_UI )
 				.setValue( 'module-third-party-module-dialogActive', true );
+		}
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const ConfirmDisconnectWithDisconnectNote = Template.bind( {} );
+ConfirmDisconnectWithDisconnectNote.storyName =
+	'ConfirmDisconnect dialog with features, long text and disconnect note component';
+ConfirmDisconnectWithDisconnectNote.args = {
+	slug: MODULE_SLUG_ADS,
+};
+ConfirmDisconnectWithDisconnectNote.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ADS,
+					active: true,
+					connected: true,
+					name: 'Ads',
+					features: [
+						'Module overview, on a long line to test wrapping, and more text to test wrapping with a long line of text',
+						'Another feature',
+					],
+					SettingsDisconnectNoteComponent: SettingsDisconnectNote,
+				},
+			] );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( 'module-ads-dialogActive', true );
 		}
 
 		return (

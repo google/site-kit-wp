@@ -33,6 +33,7 @@ import { Grid, Row, Cell } from '@/js/material-components';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	ANALYTICS_NOTICE_FORM_NAME,
 	ANALYTICS_NOTICE_CHECKBOX,
@@ -54,6 +55,7 @@ export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { activateModule } = useDispatch( CORE_MODULES );
+	const { saveInitialSetupSettings } = useDispatch( CORE_USER );
 
 	const proxySetupURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxySetupURL()
@@ -80,7 +82,9 @@ export default function SetupUsingProxyWithSignIn() {
 				if ( ! error ) {
 					await trackEvent(
 						`${ viewContext }_setup`,
-						'start_setup_with_analytics'
+						setupFlowRefreshEnabled
+							? 'setup_flow_v3_start_with_analytics'
+							: 'start_setup_with_analytics'
 					);
 
 					moduleReauthURL = response.moduleReauthURL;
@@ -88,6 +92,10 @@ export default function SetupUsingProxyWithSignIn() {
 					if ( setupFlowRefreshEnabled ) {
 						moduleReauthURL = addQueryArgs( moduleReauthURL, {
 							showProgress: true,
+						} );
+
+						await saveInitialSetupSettings( {
+							isAnalyticsSetupComplete: false,
 						} );
 					}
 				}
@@ -98,7 +106,9 @@ export default function SetupUsingProxyWithSignIn() {
 					setItem( 'start_user_setup', true ),
 					trackEvent(
 						`${ viewContext }_setup`,
-						'start_user_setup',
+						setupFlowRefreshEnabled
+							? 'setup_flow_v3_start_user_setup'
+							: 'start_user_setup',
 						'proxy'
 					),
 				] );
@@ -109,7 +119,9 @@ export default function SetupUsingProxyWithSignIn() {
 					setItem( 'start_site_setup', true ),
 					trackEvent(
 						`${ viewContext }_setup`,
-						'start_site_setup',
+						setupFlowRefreshEnabled
+							? 'setup_flow_v3_start_site_setup'
+							: 'start_site_setup',
 						'proxy'
 					),
 				] );
@@ -130,6 +142,7 @@ export default function SetupUsingProxyWithSignIn() {
 			activateModule,
 			viewContext,
 			setupFlowRefreshEnabled,
+			saveInitialSetupSettings,
 			navigateTo,
 		]
 	);
