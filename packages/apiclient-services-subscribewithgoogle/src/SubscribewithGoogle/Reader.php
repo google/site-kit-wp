@@ -46,6 +46,10 @@ class Reader extends \Google\Model
   /**
    * @var string
    */
+  public $readerGoogleId;
+  /**
+   * @var string
+   */
   public $readerId;
 
   /**
@@ -131,6 +135,20 @@ class Reader extends \Google\Model
   public function getName()
   {
     return $this->name;
+  }
+  /**
+   * @param string
+   */
+  public function setReaderGoogleId($readerGoogleId)
+  {
+    $this->readerGoogleId = $readerGoogleId;
+  }
+  /**
+   * @return string
+   */
+  public function getReaderGoogleId()
+  {
+    return $this->readerGoogleId;
   }
   /**
    * @param string

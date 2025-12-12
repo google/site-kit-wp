@@ -17,46 +17,9 @@
 
 namespace Google\Service\SubscribewithGoogle;
 
-class BusinessPredicates extends \Google\Model
+class RefundOrderRequest extends \Google\Model
 {
-  /**
-   * @var bool
-   */
-  public $canSell;
-  /**
-   * @var bool
-   */
-  public $supportsSiteKit;
-
-  /**
-   * @param bool
-   */
-  public function setCanSell($canSell)
-  {
-    $this->canSell = $canSell;
-  }
-  /**
-   * @return bool
-   */
-  public function getCanSell()
-  {
-    return $this->canSell;
-  }
-  /**
-   * @param bool
-   */
-  public function setSupportsSiteKit($supportsSiteKit)
-  {
-    $this->supportsSiteKit = $supportsSiteKit;
-  }
-  /**
-   * @return bool
-   */
-  public function getSupportsSiteKit()
-  {
-    return $this->supportsSiteKit;
-  }
 }
 
 // Adding a class alias for backwards compatibility with the previous class name.
-class_alias(BusinessPredicates::class, 'Google_Service_SubscribewithGoogle_BusinessPredicates');
+class_alias(RefundOrderRequest::class, 'Google_Service_SubscribewithGoogle_RefundOrderRequest');
