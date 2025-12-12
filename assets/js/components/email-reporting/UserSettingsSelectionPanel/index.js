@@ -43,8 +43,8 @@ export default function UserSettingsSelectionPanel() {
 
 	const onSideSheetOpen = useCallback( () => {
 		trackEvent(
-			`${ viewContext }_email_reports_user_settings_panel`,
-			'view_panel'
+			`${ viewContext }_email_reports_user_settings-sidebar`,
+			'user_settings_sidebar_view'
 		);
 	}, [ viewContext ] );
 
@@ -81,8 +81,8 @@ export default function UserSettingsSelectionPanel() {
 			}, 310 ); // Wait until after the panel close animation.
 			setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
 			trackEvent(
-				`${ viewContext }_email_reports_user_settings_panel`,
-				'close_panel'
+				`${ viewContext }_email_reports_user_settings-sidebar`,
+				'user_settings_sidebar_close'
 			);
 		}
 	}, [ isOpen, resetEmailReportingSettings, setValue, viewContext ] );
@@ -114,7 +114,7 @@ export default function UserSettingsSelectionPanel() {
 		} );
 
 		trackEvent(
-			`${ viewContext }_email_reports_user_settings_panel`,
+			`${ viewContext }_email_reports_user_settings-sidebar`,
 			'subscribe',
 			frequency
 		);
@@ -143,7 +143,7 @@ export default function UserSettingsSelectionPanel() {
 		} );
 
 		trackEvent(
-			`${ viewContext }_email_reports_user_settings_panel`,
+			`${ viewContext }_email_reports_user_settings-sidebar`,
 			'unsubscribe'
 		);
 
