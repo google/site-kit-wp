@@ -34,12 +34,20 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useViewOnly from '@/js/hooks/useViewOnly';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 
-export const EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE_DISMISSED_ITEM =
-	'email-reporting-analytics-disconnected-notice';
+export const EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE =
+	'email_reports_analytics_disconnected_notice';
+
+const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
 
 export default function AnalyticsDisconnectedNotice() {
 	const isViewOnly = useViewOnly();
+
+	const trackEvents = useNotificationEvents(
+		EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE
+	);
 
 	const isEmailReportingEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isEmailReportingEnabled()
@@ -55,7 +63,7 @@ export default function AnalyticsDisconnectedNotice() {
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
-			EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE_DISMISSED_ITEM
+			EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE
 		)
 	);
 
@@ -65,11 +73,15 @@ export default function AnalyticsDisconnectedNotice() {
 		MODULE_SLUG_ANALYTICS_4
 	);
 
+	const handleCTAClick = useCallback( () => {
+		trackEvents.confirm();
+		activateAnalytics();
+	}, [ trackEvents, activateAnalytics ] );
+
 	const handleDismiss = useCallback( async () => {
-		await dismissItem(
-			EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE_DISMISSED_ITEM
-		);
-	}, [ dismissItem ] );
+		trackEvents.dismiss();
+		await dismissItem( EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE );
+	}, [ dismissItem, trackEvents ] );
 
 	if (
 		! isEmailReportingEnabled ||
@@ -93,7 +105,7 @@ export default function AnalyticsDisconnectedNotice() {
 	}
 
 	return (
-		<Notice
+		<NoticeWithIntersectionObserver
 			className="googlesitekit-email-reporting__analytics-disconnected-notice"
 			type={ TYPES.WARNING }
 			title={ __( 'Analytics is disconnected', 'google-site-kit' ) }
@@ -103,13 +115,14 @@ export default function AnalyticsDisconnectedNotice() {
 					? undefined
 					: {
 							label: __( 'Connect Analytics', 'google-site-kit' ),
-							onClick: activateAnalytics,
+							onClick: handleCTAClick,
 					  }
 			}
 			dismissButton={ {
 				label: __( 'Got it', 'google-site-kit' ),
 				onClick: handleDismiss,
 			} }
+			onInView={ trackEvents.view }
 		/>
 	);
 }
