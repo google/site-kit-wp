@@ -36,8 +36,12 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import Notice from '@/js/components/Notice';
 import { TYPES } from '@/js/components/Notice/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 
 export const EMAIL_REPORTING_CARD_NOTICE = 'email_reports_settings_new_notice';
+
+const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
 
 export default function EmailReportingCardNotice( { className } ) {
 	const settings = useSelect( ( select ) =>
@@ -51,6 +55,8 @@ export default function EmailReportingCardNotice( { className } ) {
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( EMAIL_REPORTING_CARD_NOTICE )
 	);
+
+	const trackEvents = useNotificationEvents( EMAIL_REPORTING_CARD_NOTICE );
 
 	const { setValue } = useDispatch( CORE_UI );
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -72,7 +78,7 @@ export default function EmailReportingCardNotice( { className } ) {
 	}
 
 	return (
-		<Notice
+		<NoticeWithIntersectionObserver
 			className={ className }
 			type={ TYPES.NEW }
 			title={ __( 'Get site insights in your inbox', 'google-site-kit' ) }
@@ -88,6 +94,7 @@ export default function EmailReportingCardNotice( { className } ) {
 				label: __( 'Maybe later', 'google-site-kit' ),
 				onClick: handleDismiss,
 			} }
+			onInView={ trackEvents.view }
 		/>
 	);
 }
