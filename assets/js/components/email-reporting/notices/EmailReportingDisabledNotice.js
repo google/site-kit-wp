@@ -61,8 +61,9 @@ export default function EmailReportingDisabledNotice() {
 	// keeping the Settings Panel open. So we should close it.
 	const { setValue } = useDispatch( CORE_UI );
 	const onCTAClick = useCallback( () => {
+		trackEvents.confirm();
 		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
-	}, [ setValue ] );
+	}, [ setValue, trackEvents ] );
 
 	if ( isEmailReportingEnabled || isViewOnly ) {
 		return null;
