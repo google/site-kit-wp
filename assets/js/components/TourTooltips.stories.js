@@ -445,7 +445,7 @@ export default {
 	component: TourTooltips,
 	decorators: [
 		( Story ) => {
-			// Set up fetchMock with overwriteRoutes to handle story switching
+			// Set up fetchMock with overwriteRoutes to handle story switching.
 			fetchMock.post(
 				/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/,
 				{
